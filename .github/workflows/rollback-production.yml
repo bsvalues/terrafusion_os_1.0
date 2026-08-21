@@ -273,7 +273,7 @@ jobs:
           touch "$BACKUP/backup.ready"
 
           restore_previous() {
-            trap - ERR
+            trap - ERR HUP INT TERM
             set +e
             failed=0
             rm -rf docs/spec-lock config || failed=1
@@ -299,7 +299,7 @@ jobs:
             rm -rf "$INCOMING" "$BACKUP"
             exit 1
           }
-          trap restore_previous ERR
+          trap restore_previous ERR HUP INT TERM
 
           rm -rf docs/spec-lock config
           mv "$INCOMING/docs/spec-lock" docs/spec-lock
@@ -310,7 +310,7 @@ jobs:
           printf '%s\n' "$ROLLBACK_SHA" > requested.sha
           docker compose -f runtime-compose.yml --env-file release.env pull
           docker compose -f runtime-compose.yml --env-file release.env up -d
-          trap - ERR
+          trap - ERR HUP INT TERM
           SSH
 
       - name: Verify public health and release header
@@ -357,7 +357,7 @@ jobs:
           SSH
 
       - name: Restore pre-rollback runtime if rollback did not commit
-        if: failure() && env.ROLLBACK_NOOP != 'true'
+        if: (failure() || cancelled()) && env.ROLLBACK_NOOP != 'true'
         shell: bash
         run: |
           set -euo pipefail

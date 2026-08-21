@@ -301,16 +301,43 @@ describe('D. CI release gate coverage', () => {
     );
   });
 
-  it('D9: release-lane validates a protected pre-provisioned account without auth mutation', () => {
+  it('D9: release-lane verifies a protected account through the read-only credential boundary', () => {
     const content = readFileSync(join(WORKFLOWS, 'release-lane.yml'), 'utf8');
-    assert.ok(content.includes('Protected account auth contract smoke'));
-    assert.ok(content.includes('TF_AUTH_BOOTSTRAP_EMAIL'));
-    assert.ok(content.includes('TF_AUTH_BOOTSTRAP_PASSWORD'));
-    assert.ok(content.includes('/api/auth/login'));
+    const provisioner = readFileSync(
+      join(ROOT, 'backend', 'tools', 'TerraFusion.AuthProvisioner', 'Program.cs'),
+      'utf8'
+    );
+    const security = readFileSync(
+      join(
+        ROOT,
+        'backend',
+        'src',
+        'TerraFusion.API',
+        'Security',
+        'Services',
+        'DatabaseProvisionedSecurityService.cs'
+      ),
+      'utf8'
+    );
+    assert.ok(content.includes('Protected account read-only verifier smoke'));
+    assert.ok(content.includes('TF_RELEASE_SMOKE_EMAIL'));
+    assert.ok(content.includes('TF_RELEASE_SMOKE_PASSWORD'));
+    assert.ok(content.includes('TerraFusion.AuthProvisioner.dll --verify-only --password-stdin'));
+    assert.ok(content.includes(`printf '%s\\n' "$TF_RELEASE_SMOKE_PASSWORD" | ssh -T`));
+    assert.ok(provisioner.includes('ProvisionedPasswordHasher.VerifyPasswordReadOnlyAsync'));
+    assert.ok(security.includes('.AsNoTracking()'));
+    assert.ok(
+      security.includes(
+        'return user is not null && user.IsActive && VerifyPassword(user, password)'
+      )
+    );
+    assert.ok(provisioner.indexOf('if (options.VerifyOnly)') < provisioner.indexOf('db.Counties'));
     for (const forbidden of [
-      'TerraFusion.AuthProvisioner.dll',
-      'Provision DB-backed operator account',
-      'Remove ephemeral bootstrap material',
+      '/api/auth/login',
+      'LOGIN_PAYLOAD=',
+      'LOGIN_RESPONSE=',
+      '--password-env TF_RELEASE_SMOKE_PASSWORD',
+      '-e TF_RELEASE_SMOKE_PASSWORD',
       '--env-from-file',
       'PROVISION_OUTPUT=',
       'PROVISION_JSON=',
@@ -318,7 +345,7 @@ describe('D. CI release gate coverage', () => {
     ]) {
       assert.ok(
         !content.includes(forbidden),
-        'release lane must not mutate auth state via ' + forbidden
+        'release lane must not mutate or transfer auth state via ' + forbidden
       );
     }
   });
@@ -474,7 +501,8 @@ describe('D. CI release gate coverage', () => {
     assert.ok(release.includes("grep -Fx 'TF_AUTO_MIGRATE_MODE=validate-only'"));
     assert.ok(release.includes('Verify migration validation executed'));
     assert.ok(release.includes('AutoMigrate validate-only: no pending migrations'));
-    assert.ok(!release.includes('TerraFusion.AuthProvisioner.dll'));
+    assert.ok(release.includes('TerraFusion.AuthProvisioner.dll --verify-only --password-stdin'));
+    assert.ok(!release.includes('/api/auth/login'));
     assert.ok(release.includes('Stage and validate exact runtime bundle'));
     assert.ok(release.includes('.release-incoming-$RUN_TOKEN'));
     assert.ok(release.includes('.release-backup-$RUN_TOKEN'));

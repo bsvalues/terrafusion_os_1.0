@@ -65,6 +65,25 @@ public static class ProvisionedPasswordHasher
         return result is PasswordVerificationResult.Success or PasswordVerificationResult.SuccessRehashNeeded;
     }
 
+    public static async System.Threading.Tasks.Task<bool> VerifyPasswordReadOnlyAsync(
+        DataDbContext db,
+        string email,
+        string password,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(db);
+        if (string.IsNullOrWhiteSpace(email) || string.IsNullOrEmpty(password))
+        {
+            return false;
+        }
+
+        var normalizedEmail = email.Trim().ToLowerInvariant();
+        var user = await db.GovernmentUsers
+            .AsNoTracking()
+            .SingleOrDefaultAsync(item => item.Email.ToLower() == normalizedEmail, cancellationToken);
+        return user is not null && user.IsActive && VerifyPassword(user, password);
+    }
+
     public static bool NeedsRehash(GovernmentUser user, string password)
     {
         if (string.IsNullOrWhiteSpace(user.PasswordHash) || string.IsNullOrEmpty(password))

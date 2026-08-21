@@ -25,7 +25,7 @@ const bashExecutable =
 function extractInlineRestore(workflowPath) {
   const source = readFileSync(workflowPath, 'utf8').replace(/\r/g, '');
   const startMarker = '          restore_previous() {';
-  const endMarker = '\n          }\n          trap restore_previous ERR';
+  const endMarker = '\n          }\n          trap restore_previous ERR HUP INT TERM';
   const start = source.indexOf(startMarker);
   const end = source.indexOf(endMarker, start);
   assert.ok(start >= 0 && end > start, `${workflowPath} must contain an inline ERR restore`);
@@ -60,52 +60,67 @@ function prepareFixture(dockerExit) {
   return root;
 }
 
+test('uncommitted runtime recovery runs after failure or workflow cancellation', () => {
+  for (const workflowPath of workflows) {
+    const source = readFileSync(workflowPath, 'utf8');
+    const recoveryName = workflowPath.includes('release-lane')
+      ? 'Restore prior runtime if deployment did not commit'
+      : 'Restore pre-rollback runtime if rollback did not commit';
+    const start = source.indexOf(recoveryName);
+    assert.ok(start >= 0, workflowPath + ' is missing the recovery step');
+    const recovery = source.slice(start, source.indexOf('shell: bash', start));
+    assert.match(recovery, /if: \(failure\(\) \|\| cancelled\(\)\)/, workflowPath);
+  }
+});
+
 for (const workflowPath of workflows) {
   for (const dockerExit of [0, 1]) {
-    test(`${workflowPath} terminates after an injected mutation failure when restore docker exits ${dockerExit}`, () => {
-      const root = prepareFixture(dockerExit);
-      try {
-        const restore = extractInlineRestore(workflowPath);
-        const script = `
+    for (const trigger of ['false', 'kill -TERM $$', 'kill -HUP $$']) {
+      test(`${workflowPath} terminates after ${trigger} when restore docker exits ${dockerExit}`, () => {
+        const root = prepareFixture(dockerExit);
+        try {
+          const restore = extractInlineRestore(workflowPath);
+          const script = `
 set -Eeuo pipefail
 INCOMING="$PWD/incoming"
 BACKUP="$PWD/backup"
 docker() { return ${dockerExit}; }
 ${restore}
-trap restore_previous ERR
-false
+trap restore_previous ERR HUP INT TERM
+${trigger}
 printf 'continued\\n' > after-failure
 `;
-        let status = 0;
-        try {
-          execFileSync(bashExecutable, ['-c', script], {
-            cwd: root,
-            env: process.env,
-            stdio: ['ignore', 'pipe', 'pipe'],
-          });
-        } catch (error) {
-          status = error.status ?? 127;
-        }
+          let status = 0;
+          try {
+            execFileSync(bashExecutable, ['-c', script], {
+              cwd: root,
+              env: process.env,
+              stdio: ['ignore', 'pipe', 'pipe'],
+            });
+          } catch (error) {
+            status = error.status ?? 127;
+          }
 
-        assert.notEqual(status, 0, 'remote mutation shell must remain failed after recovery');
-        assert.equal(
-          existsSync(join(root, 'after-failure')),
-          false,
-          'post-failure mutation continued'
-        );
-        assert.equal(
-          existsSync(join(root, 'requested.sha')),
-          false,
-          'prior requested absence not restored'
-        );
-        assert.equal(
-          existsSync(join(root, 'backup')),
-          dockerExit !== 0,
-          'backup retention must track restore convergence'
-        );
-      } finally {
-        rmSync(root, { recursive: true, force: true, maxRetries: 3, retryDelay: 50 });
-      }
-    });
+          assert.notEqual(status, 0, 'remote mutation shell must remain failed after recovery');
+          assert.equal(
+            existsSync(join(root, 'after-failure')),
+            false,
+            'post-failure mutation continued'
+          );
+          assert.equal(
+            existsSync(join(root, 'requested.sha')),
+            false,
+            'prior requested absence not restored'
+          );
+          assert.equal(
+            existsSync(join(root, 'backup')),
+            dockerExit !== 0,
+            'backup retention must track restore convergence'
+          );
+        } finally {
+          rmSync(root, { recursive: true, force: true, maxRetries: 3, retryDelay: 50 });
+        }
+      });
+    }
   }
 }

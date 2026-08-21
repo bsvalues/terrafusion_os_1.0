@@ -125,6 +125,58 @@ test('fails closed for missing, unresolved, and conflicting license evidence', (
   );
 });
 
+test('binds mapbox-gl to exact installed Mapbox TOS evidence instead of pnpm BSD grouping', () => {
+  const inventory = {
+    BSD: [
+      {
+        name: 'mapbox-gl',
+        versions: ['3.20.0'],
+        paths: ['/install/mapbox-gl'],
+        license: 'BSD',
+      },
+    ],
+  };
+  const manifest = { name: 'mapbox-gl', version: '3.20.0', license: 'SEE LICENSE IN LICENSE.txt' };
+  const options = {
+    readInstalledManifest: packagePath => {
+      assert.equal(packagePath, '/install/mapbox-gl');
+      return manifest;
+    },
+    readInstalledLicenseText: (packagePath, fileName) => {
+      assert.equal(packagePath, '/install/mapbox-gl');
+      assert.equal(fileName, 'LICENSE.txt');
+      return 'Mapbox test terms - exact installed license evidence';
+    },
+  };
+
+  const document = buildFrontendDependencySpdx(inventory, 'browser-production', options);
+  assert.equal(document.packages[0].licenseDeclared, 'LicenseRef-npm-mapbox-gl-3.20.0-Mapbox-TOS');
+  assert.deepEqual(document.hasExtractedLicensingInfos, [
+    {
+      licenseId: 'LicenseRef-npm-mapbox-gl-3.20.0-Mapbox-TOS',
+      extractedText: 'Mapbox test terms - exact installed license evidence',
+      name: 'Mapbox Terms of Service for mapbox-gl@3.20.0',
+      comment: 'Source: installed mapbox-gl@3.20.0/LICENSE.txt',
+    },
+  ]);
+  assert.throws(
+    () =>
+      buildFrontendDependencySpdx(inventory, 'browser-production', {
+        ...options,
+        readInstalledManifest: () => ({ ...manifest, license: 'BSD' }),
+      }),
+    /expected installed license SEE LICENSE IN LICENSE.txt/
+  );
+  assert.throws(
+    () =>
+      buildFrontendDependencySpdx(inventory, 'browser-production', {
+        ...options,
+        readInstalledLicenseText: () => '   ',
+      }),
+    /LICENSE.txt must be a non-empty string/
+  );
+});
+
 test('pins Mapbox JSON lint to a Node20-compatible release with explicit MIT metadata', () => {
   const packageJson = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8'));
   const lockfile = readFileSync(join(root, 'pnpm-lock.yaml'), 'utf8');

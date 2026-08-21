@@ -599,7 +599,7 @@ jobs:
           touch "$BACKUP/backup.ready"
 
           restore_previous() {
-            trap - ERR
+            trap - ERR HUP INT TERM
             set +e
             failed=0
             rm -rf docs/spec-lock config || failed=1
@@ -625,7 +625,7 @@ jobs:
             rm -rf "$INCOMING" "$BACKUP"
             exit 1
           }
-          trap restore_previous ERR
+          trap restore_previous ERR HUP INT TERM
 
           rm -rf docs/spec-lock config
           mv "$INCOMING/docs/spec-lock" docs/spec-lock
@@ -643,7 +643,7 @@ jobs:
             | grep -Fx 'TF_SKIP_AUTO_MIGRATE=false'
           docker inspect --format '{{range .Config.Env}}{{println .}}{{end}}' "$BACKEND_CONTAINER" \
             | grep -Fx 'TF_AUTO_MIGRATE_MODE=validate-only'
-          trap - ERR
+          trap - ERR HUP INT TERM
           SSH
 
       - name: Verify public health and release header
@@ -713,14 +713,14 @@ jobs:
           probe "/property"
           echo "Shell route contract intact after deploy"
 
-      - name: Protected account auth contract smoke
+      - name: Protected account read-only verifier smoke
         shell: bash
         env:
-          TF_AUTH_BOOTSTRAP_EMAIL: ${{ secrets.TF_AUTH_BOOTSTRAP_EMAIL }}
-          TF_AUTH_BOOTSTRAP_PASSWORD: ${{ secrets.TF_AUTH_BOOTSTRAP_PASSWORD }}
+          TF_RELEASE_SMOKE_EMAIL: ${{ secrets.TF_AUTH_BOOTSTRAP_EMAIL }}
+          TF_RELEASE_SMOKE_PASSWORD: ${{ secrets.TF_AUTH_BOOTSTRAP_PASSWORD }}
         run: |
           set -euo pipefail
-          echo "=== Protected account auth contract smoke ==="
+          echo "=== Protected account read-only verifier smoke ==="
 
           POLICY_JSON="$(curl -fsS --max-time 10 "${PUBLIC_URL}/api/auth/access-policy")"
           POLICY_JSON="$POLICY_JSON" node <<'NODE'
@@ -734,76 +734,18 @@ jobs:
           console.log("Access policy is provisioned-access-only");
           NODE
 
-          LOGIN_PAYLOAD="$(node <<'NODE'
-          process.stdout.write(JSON.stringify({
-            email: process.env.TF_AUTH_BOOTSTRAP_EMAIL,
-            password: process.env.TF_AUTH_BOOTSTRAP_PASSWORD
-          }));
-          NODE
-          )"
-
-          LOGIN_RESPONSE=""
-          LOGIN_STATUS=1
-          LOGIN_BODY="$(mktemp)"
-          LOGIN_ERROR="$(mktemp)"
-          trap 'rm -f "$LOGIN_BODY" "$LOGIN_ERROR"' EXIT
-
-          for attempt in $(seq 1 12); do
-            : > "$LOGIN_BODY"
-            : > "$LOGIN_ERROR"
-
-            CURL_EXIT=0
-            HTTP_CODE="$(curl -sS --max-time 30 \
-              -H 'Content-Type: application/json' \
-              -d "$LOGIN_PAYLOAD" \
-              -o "$LOGIN_BODY" \
-              -w '%{http_code}' \
-              "${PUBLIC_URL}/api/auth/login" 2>"$LOGIN_ERROR")" || CURL_EXIT=$?
-
-            if [ "$CURL_EXIT" -eq 0 ] && [[ "$HTTP_CODE" =~ ^2 ]]; then
-              LOGIN_RESPONSE="$(cat "$LOGIN_BODY")"
-              LOGIN_STATUS=0
-              echo "Protected account login responded on attempt $attempt/12"
-              break
-            fi
-
-            if [[ "$HTTP_CODE" =~ ^(400|401|403|404|405)$ ]]; then
-              echo "::error::Protected account login failed with non-retryable HTTP $HTTP_CODE."
-              head -5 "$LOGIN_BODY"
-              exit 1
-            fi
-
-            echo "Protected account login not ready on attempt $attempt/12 (curl=$CURL_EXIT http=${HTTP_CODE:-000})"
-            if [ "$attempt" -eq 12 ]; then
-              echo "::error::Protected account login did not succeed after retry window."
-              head -5 "$LOGIN_ERROR"
-              exit 1
-            fi
-
-            sleep 10
-          done
-
-          rm -f "$LOGIN_BODY" "$LOGIN_ERROR"
-          trap - EXIT
-
-          if [ "$LOGIN_STATUS" -ne 0 ] || [ -z "$LOGIN_RESPONSE" ]; then
-            echo "::error::Protected account auth smoke did not receive a login response."
+          if [ -z "$TF_RELEASE_SMOKE_EMAIL" ] || [ -z "$TF_RELEASE_SMOKE_PASSWORD" ]; then
+            echo "::error::Protected account verifier secrets are not configured."
             exit 1
           fi
 
-          LOGIN_RESPONSE="$LOGIN_RESPONSE" node <<'NODE'
-          const response = JSON.parse(process.env.LOGIN_RESPONSE || "{}");
-          const token = response.token || response.Token;
-          const email = response.email || response.Email || response.user?.email || response.User?.Email;
-          const roles = response.roles || response.Roles || response.user?.roles || response.User?.Roles || [];
-          if (!token) {
-            throw new Error("Protected account auth smoke did not receive a token");
-          }
-          if (email !== process.env.TF_AUTH_BOOTSTRAP_EMAIL) {
-            throw new Error(`Protected account auth smoke returned unexpected email: ${email}`);
-          }
-          console.log(`Provisioned login returned token for ${email} with ${Array.isArray(roles) ? roles.length : 0} roles`);
-          NODE
+          printf -v SMOKE_EMAIL_Q '%q' "$TF_RELEASE_SMOKE_EMAIL"
+          if ! printf '%s\n' "$TF_RELEASE_SMOKE_PASSWORD" | ssh -T -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" \
+            "cd '$APP_ROOT' && docker compose -f runtime-compose.yml --env-file release.env run -T --no-deps --entrypoint dotnet backend /app/tools/TerraFusion.AuthProvisioner/TerraFusion.AuthProvisioner.dll --verify-only --password-stdin --email $SMOKE_EMAIL_Q"; then
+            echo "::error::Protected account read-only verification failed."
+            exit 1
+          fi
+          echo "Protected account credentials verified without creating a session or mutating auth state"
 
       - name: Finalize immutable artifact snapshot and current SHA
         shell: bash
@@ -845,7 +787,7 @@ jobs:
           SSH
 
       - name: Restore prior runtime if deployment did not commit
-        if: failure() && env.RUNTIME_MUTATION_ARMED == 'true'
+        if: (failure() || cancelled()) && env.RUNTIME_MUTATION_ARMED == 'true'
         shell: bash
         run: |
           set -euo pipefail

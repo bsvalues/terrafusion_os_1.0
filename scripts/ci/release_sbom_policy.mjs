@@ -1,17 +1,77 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import parseSpdxExpression from 'spdx-expression-parse';
 
 const LICENSE_FIELDS = ['licenseConcluded', 'licenseDeclared'];
 const PROHIBITED = /^(?:AGPL|GPL)-/i;
-const UNRESOLVED_LICENSE_REFERENCE = /^(?:DocumentRef-[^:]+:)?LicenseRef-/;
+const EXTERNAL_LICENSE_REFERENCE = /DocumentRef-[^:()\s]+:LicenseRef-[A-Za-z0-9.-]+/i;
+const LOCAL_LICENSE_REFERENCE = /^LicenseRef-[A-Za-z0-9.-]+$/;
+const UNRESOLVED_PLACEHOLDER =
+  /(?:\b(?:UNKNOWN|UNLICENSED)\b|SEE\s+LICENSE\s+IN\s+LICENSE(?:\.[A-Za-z0-9]+)?)/i;
+const NO_ASSERTION = /^(?:NOASSERTION|NONE)$/i;
 
-function licenseTokens(value) {
-  if (typeof value !== 'string') return [];
-  return value
-    .split(/[\s()+]+/)
-    .map(token => token.trim())
-    .filter(Boolean);
+function walkLicenseLeaves(node, visit) {
+  if (node && typeof node.license === 'string') {
+    visit(node.license);
+    return;
+  }
+  if (!node || !node.left || !node.right || !node.conjunction) {
+    throw new Error('SPDX parser returned an unexpected expression tree');
+  }
+  walkLicenseLeaves(node.left, visit);
+  walkLicenseLeaves(node.right, visit);
+}
+
+function extractedLicensesById(document, source) {
+  if (document.hasExtractedLicensingInfos === undefined) return new Map();
+  if (!Array.isArray(document.hasExtractedLicensingInfos)) {
+    throw new Error(`${source}: hasExtractedLicensingInfos must be an array`);
+  }
+
+  const extracted = new Map();
+  for (const [index, info] of document.hasExtractedLicensingInfos.entries()) {
+    if (!info || typeof info !== 'object' || Array.isArray(info)) {
+      throw new Error(`${source}: extracted license ${index} is malformed`);
+    }
+    const licenseId = typeof info.licenseId === 'string' ? info.licenseId.trim() : '';
+    if (!LOCAL_LICENSE_REFERENCE.test(licenseId)) {
+      throw new Error(`${source}: extracted license ${index} has invalid licenseId ${licenseId}`);
+    }
+    if (extracted.has(licenseId)) {
+      throw new Error(`${source}: duplicate extracted license ${licenseId}`);
+    }
+    if (typeof info.extractedText !== 'string' || info.extractedText.trim() === '') {
+      throw new Error(`${source}: extracted license ${licenseId} has empty extractedText`);
+    }
+    if (typeof info.name !== 'string' || info.name.trim() === '') {
+      throw new Error(`${source}: extracted license ${licenseId} is missing a source-bound name`);
+    }
+    if (typeof info.comment !== 'string' || info.comment.trim() === '') {
+      throw new Error(
+        `${source}: extracted license ${licenseId} is missing a source-bound comment`
+      );
+    }
+    extracted.set(licenseId, info);
+  }
+  return extracted;
+}
+
+function packageExpressions(pkg) {
+  const values = LICENSE_FIELDS.flatMap(field =>
+    typeof pkg[field] === 'string' && pkg[field].trim() ? [pkg[field].trim()] : []
+  );
+  if (Array.isArray(pkg.licenseInfoFromFiles)) {
+    for (const value of pkg.licenseInfoFromFiles) {
+      if (typeof value !== 'string' || !value.trim()) {
+        throw new Error('licenseInfoFromFiles entries must be non-empty strings');
+      }
+      values.push(value.trim());
+    }
+  } else if (pkg.licenseInfoFromFiles !== undefined) {
+    throw new Error('licenseInfoFromFiles must be an array');
+  }
+  return values;
 }
 
 export function validateSpdxLicensePolicy(document, source = '<memory>') {
@@ -22,33 +82,70 @@ export function validateSpdxLicensePolicy(document, source = '<memory>') {
     throw new Error(`${source}: SPDX document must contain at least one package`);
   }
 
+  const extractedLicenses = extractedLicensesById(document, source);
+  const referencedCustomLicenses = new Set();
   const violations = [];
   for (const [index, pkg] of document.packages.entries()) {
-    if (!pkg || typeof pkg !== 'object')
+    if (!pkg || typeof pkg !== 'object') {
       throw new Error(`${source}: package ${index} is malformed`);
-    const name = typeof pkg.name === 'string' && pkg.name ? pkg.name : `package-${index}`;
-    const expressions = LICENSE_FIELDS.flatMap(field => licenseTokens(pkg[field]));
-    if (Array.isArray(pkg.licenseInfoFromFiles)) {
-      expressions.push(...pkg.licenseInfoFromFiles.flatMap(licenseTokens));
-    } else if (pkg.licenseInfoFromFiles !== undefined) {
-      throw new Error(`${source}: ${name}.licenseInfoFromFiles must be an array`);
     }
-    const asserted = expressions.filter(
-      token => token.toUpperCase() !== 'NOASSERTION' && token.toUpperCase() !== 'NONE'
-    );
+    const name = typeof pkg.name === 'string' && pkg.name ? pkg.name : `package-${index}`;
+    let expressions;
+    try {
+      expressions = packageExpressions(pkg);
+    } catch (error) {
+      violations.push(`${name}: ${error instanceof Error ? error.message : String(error)}`);
+      continue;
+    }
+
+    const asserted = expressions.filter(expression => !NO_ASSERTION.test(expression));
     if (asserted.length === 0) {
       violations.push(`${name}: missing asserted license metadata`);
       continue;
     }
-    const unresolved = asserted.filter(token => UNRESOLVED_LICENSE_REFERENCE.test(token));
-    if (unresolved.length > 0) {
-      violations.push(
-        `${name}: unresolved custom license reference ${[...new Set(unresolved)].join(', ')}`
-      );
-      continue;
+
+    for (const expression of asserted) {
+      if (UNRESOLVED_PLACEHOLDER.test(expression)) {
+        violations.push(`${name}: unresolved license placeholder ${expression}`);
+        continue;
+      }
+      if (EXTERNAL_LICENSE_REFERENCE.test(expression)) {
+        violations.push(`${name}: external custom license reference is not allowed ${expression}`);
+        continue;
+      }
+
+      let tree;
+      try {
+        tree = parseSpdxExpression(expression);
+      } catch (error) {
+        violations.push(`${name}: invalid SPDX license expression ${expression}`);
+        continue;
+      }
+
+      const prohibited = [];
+      walkLicenseLeaves(tree, license => {
+        if (UNRESOLVED_PLACEHOLDER.test(license)) {
+          prohibited.push(`unresolved license placeholder ${license}`);
+        } else if (LOCAL_LICENSE_REFERENCE.test(license)) {
+          if (!extractedLicenses.has(license)) {
+            prohibited.push(`unresolved custom license reference ${license}`);
+          } else {
+            referencedCustomLicenses.add(license);
+          }
+        } else if (PROHIBITED.test(license)) {
+          prohibited.push(`prohibited ${license}`);
+        }
+      });
+      if (prohibited.length > 0) {
+        violations.push(`${name}: ${[...new Set(prohibited)].join(', ')}`);
+      }
     }
-    const prohibited = asserted.filter(token => PROHIBITED.test(token));
-    if (prohibited.length > 0) violations.push(`${name}: ${[...new Set(prohibited)].join(', ')}`);
+  }
+
+  for (const licenseId of extractedLicenses.keys()) {
+    if (!referencedCustomLicenses.has(licenseId)) {
+      violations.push(`unreferenced extracted license ${licenseId}`);
+    }
   }
 
   if (violations.length > 0) {
