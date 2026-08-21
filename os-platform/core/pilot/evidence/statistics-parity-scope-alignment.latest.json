@@ -103,10 +103,7 @@
     "terraForgeRatioStudy": {
       "populationConcept": "County-wide effective qualified sale ratio study",
       "countLabel": "countWithRatio",
-      "sourceTables": [
-        "ComparableSales",
-        "Properties"
-      ],
+      "sourceTables": ["ComparableSales", "Properties"],
       "codePath": "backend/src/TerraFusion.API/Controllers/TerraForgeController.cs"
     }
   },
@@ -177,9 +174,7 @@
     "status": "sanitized",
     "replacement": "[REDACTED]",
     "originalValuesRemoved": true,
-    "categories": [
-      "sensitive-field"
-    ],
+    "categories": ["sensitive-field"],
     "occurrenceCount": 1
   }
 }

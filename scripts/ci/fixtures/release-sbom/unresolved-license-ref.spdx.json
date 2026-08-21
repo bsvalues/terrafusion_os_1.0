@@ -1,0 +1,16 @@
+{
+  "spdxVersion": "SPDX-2.3",
+  "packages": [
+    {
+      "name": "custom-license-package",
+      "licenseConcluded": "LicenseRef-CustomCopyleft",
+      "licenseDeclared": "LicenseRef-CustomCopyleft"
+    }
+  ],
+  "hasExtractedLicensingInfos": [
+    {
+      "licenseId": "LicenseRef-CustomCopyleft",
+      "extractedText": "Custom license text requires manual policy review."
+    }
+  ]
+}

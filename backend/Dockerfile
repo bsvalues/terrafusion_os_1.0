@@ -54,6 +54,11 @@ RUN dotnet publish tools/TerraFusion.AuthProvisioner/TerraFusion.AuthProvisioner
     --no-restore \
     --verbosity minimal
 
+# Fail before image export if any emitted project retains a vulnerable dependency identity.
+RUN grep -q -E '"(Microsoft\.Kiota\.Abstractions/1\.9\.1|Npgsql/8\.0\.0|SQLitePCLRaw\.lib\.e_sqlite3/2\.1\.6)"' \
+    /app/publish/*.deps.json /app/auth-provisioner/*.deps.json; \
+    test "$?" -eq 1
+
 # Stage 2: Development (with hot-reload)
 FROM mcr.microsoft.com/dotnet/sdk:8.0-alpine AS development
 WORKDIR /app

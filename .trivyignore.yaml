@@ -1,0 +1,8 @@
+vulnerabilities:
+  - id: CVE-2026-25592
+    purls:
+      - pkg:nuget/Microsoft.SemanticKernel.Core@1.4.0
+    statement: >-
+      Official Microsoft advisory GHSA-2ww3-72rp-wpp4 affects
+      Microsoft.SemanticKernel.Plugins.Core and SessionsPythonPlugin, neither of which
+      is present in the exact release image as enforced by the release runtime guard.

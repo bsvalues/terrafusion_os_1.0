@@ -285,7 +285,7 @@ describe('D. CI release gate coverage', () => {
     assert.ok(hasLint, 'PR gate must include lint step');
   });
 
-  it('D8: backend runtime image packages the DB-backed AuthProvisioner', () => {
+  it('D8: backend runtime retains the governed AuthProvisioner as an operator-only tool', () => {
     const content = readFileSync(join(ROOT, 'backend', 'Dockerfile'), 'utf8');
     assert.ok(
       content.includes(
@@ -297,34 +297,57 @@ describe('D. CI release gate coverage', () => {
       content.includes(
         'COPY --from=build /app/auth-provisioner ./tools/TerraFusion.AuthProvisioner/'
       ),
-      'Backend runtime image must package TerraFusion.AuthProvisioner for DB-backed production operator provisioning'
+      'Backend runtime image may retain the governed AuthProvisioner for explicit operator use'
     );
   });
 
-  it('D9: release-lane provisions DB-backed operator before auth smoke', () => {
+  it('D9: release-lane verifies a protected account through the read-only credential boundary', () => {
     const content = readFileSync(join(WORKFLOWS, 'release-lane.yml'), 'utf8');
-    const provisionerIndex = content.indexOf('TerraFusion.AuthProvisioner.dll');
-    const smokeIndex = content.indexOf('Provisioned auth contract smoke');
-    assert.ok(
-      provisionerIndex >= 0,
-      'Release lane must invoke TerraFusion.AuthProvisioner against the runtime TerraFusion DB'
+    const provisioner = readFileSync(
+      join(ROOT, 'backend', 'tools', 'TerraFusion.AuthProvisioner', 'Program.cs'),
+      'utf8'
     );
-    assert.ok(
-      smokeIndex >= 0 && provisionerIndex < smokeIndex,
-      'Release lane must provision/reset the operator account before the provisioned auth smoke'
+    const security = readFileSync(
+      join(
+        ROOT,
+        'backend',
+        'src',
+        'TerraFusion.API',
+        'Security',
+        'Services',
+        'DatabaseProvisionedSecurityService.cs'
+      ),
+      'utf8'
     );
+    assert.ok(content.includes('Protected account read-only verifier smoke'));
+    assert.ok(content.includes('TF_RELEASE_SMOKE_EMAIL'));
+    assert.ok(content.includes('TF_RELEASE_SMOKE_PASSWORD'));
+    assert.ok(content.includes('TerraFusion.AuthProvisioner.dll --verify-only --password-stdin'));
+    assert.ok(content.includes(`printf '%s\\n' "$TF_RELEASE_SMOKE_PASSWORD" | ssh -T`));
+    assert.ok(provisioner.includes('ProvisionedPasswordHasher.VerifyPasswordReadOnlyAsync'));
+    assert.ok(security.includes('.AsNoTracking()'));
     assert.ok(
-      content.includes('--entrypoint sh') &&
-        content.includes('TERRAFUSION_BOOTSTRAP_EMAIL') &&
-        content.includes('PROVISION_OUTPUT=') &&
-        content.includes('PROVISION_JSON=') &&
-        content.includes("awk '/^\\{/{line=$0} END{print line}'"),
-      'Release lane must expand bootstrap credentials inside the env-file-backed container and validate provisioner JSON on the runner'
+      security.includes(
+        'return user is not null && user.IsActive && VerifyPassword(user, password)'
+      )
     );
-    assert.ok(
-      !content.includes('/tmp/terrafusion-auth-provisioner.json'),
-      'Release lane must stream AuthProvisioner JSON from the one-off container instead of reading a host /tmp file'
-    );
+    assert.ok(provisioner.indexOf('if (options.VerifyOnly)') < provisioner.indexOf('db.Counties'));
+    for (const forbidden of [
+      '/api/auth/login',
+      'LOGIN_PAYLOAD=',
+      'LOGIN_RESPONSE=',
+      '--password-env TF_RELEASE_SMOKE_PASSWORD',
+      '-e TF_RELEASE_SMOKE_PASSWORD',
+      '--env-from-file',
+      'PROVISION_OUTPUT=',
+      'PROVISION_JSON=',
+      '.bootstrap-$GITHUB_RUN_ID.env',
+    ]) {
+      assert.ok(
+        !content.includes(forbidden),
+        'release lane must not mutate or transfer auth state via ' + forbidden
+      );
+    }
   });
 
   it('D10: production runtime compose does not override app.env TerraFusion DB binding', () => {
@@ -361,7 +384,7 @@ describe('D. CI release gate coverage', () => {
     }
   });
 
-  it('D12: release-lane provisions auth against the same configured TerraFusion DB as runtime', () => {
+  it('D12: release-lane validates protected auth against the configured DB-backed runtime', () => {
     const content = readFileSync(join(WORKFLOWS, 'release-lane.yml'), 'utf8');
     assert.ok(
       content.includes('ConnectionStrings__DefaultConnection') &&
@@ -371,7 +394,7 @@ describe('D. CI release gate coverage', () => {
     assert.ok(
       !content.includes('--provider Sqlite') &&
         !content.includes('--connection-string "Data Source=/app/data/terrafusion.db"'),
-      'AuthProvisioner must not be pinned to a separate SQLite DB in production'
+      'Release auth validation must not pin a separate SQLite DB in production'
     );
   });
 
@@ -392,34 +415,200 @@ describe('D. CI release gate coverage', () => {
     );
   });
 
-  it('D14: canonical backend container builds preserve the exact source revision', () => {
+  it('D14: canonical backend image publication preserves the exact source revision', () => {
     const ci = readFileSync(join(WORKFLOWS, 'ci.yml'), 'utf8');
-    const releaseLane = readFileSync(join(WORKFLOWS, 'release-lane.yml'), 'utf8');
+    const compliance = readFileSync(join(WORKFLOWS, 'release-compliance.yml'), 'utf8');
     const backendDockerfile = readFileSync(join(ROOT, 'backend', 'Dockerfile'), 'utf8');
     const apiDockerfile = readFileSync(join(ROOT, 'backend', 'Dockerfile.API'), 'utf8');
-
-    assert.ok(
-      ci.includes('--build-arg GIT_SHA=${{ github.sha }}'),
-      'Canonical CI must pass github.sha into the backend image build'
-    );
-    assert.ok(
-      releaseLane.includes('--build-arg GIT_SHA="$RELEASE_SHA"'),
-      'Release lane must pass its validated RELEASE_SHA into the backend image build'
-    );
-
-    for (const [name, content] of [
-      ['backend/Dockerfile', backendDockerfile],
-      ['backend/Dockerfile.API', apiDockerfile],
-    ]) {
-      assert.ok(
-        content.includes('/p:SourceRevisionId="${GIT_SHA}"'),
-        `${name} must stamp the supplied GIT_SHA into the published assembly`
-      );
-      assert.ok(
-        content.includes('ENV TF_GIT_SHA=${GIT_SHA}'),
-        `${name} must expose the supplied GIT_SHA to the runtime health endpoint`
-      );
+    assert.ok(ci.includes('--build-arg GIT_SHA=${{ github.sha }}'));
+    assert.ok(compliance.includes('GIT_SHA=${{ github.sha }}'));
+    for (const content of [backendDockerfile, apiDockerfile]) {
+      assert.ok(content.includes('/p:SourceRevisionId="${GIT_SHA}"'));
+      assert.ok(content.includes('ENV TF_GIT_SHA=${GIT_SHA}'));
     }
+  });
+
+  it('D15: release lane consumes an approved immutable manifest and never rebuilds', () => {
+    const content = readFileSync(join(WORKFLOWS, 'release-lane.yml'), 'utf8');
+    for (const required of [
+      'compliance_run_id:',
+      'Resolve technically approved artifacts (backend distribution approval still required)',
+      "run.path !== '.github/workflows/release-compliance.yml'",
+      'run.head_sha !== process.env.RELEASE_SHA',
+      "artifact.name === 'approved-release-images' && !artifact.expired",
+      'release_image_manifest.mjs verify',
+      '--backend-license-evidence "$APPROVED_DIR/backend-runtime-license-evidence.json"',
+      'BACKEND LEGAL WALL: technical artifact approval is not backend distribution-license approval.',
+      'Enforce protected backend distribution approval binding',
+      'BACKEND_DISTRIBUTION_APPROVAL_RELEASE_SHA',
+      'test "$BACKEND_DISTRIBUTION_APPROVAL_RELEASE_SHA" = "$RELEASE_SHA"',
+      'test "$BACKEND_DISTRIBUTION_APPROVAL_IMAGE_DIGEST" = "$BACKEND_IMAGE_DIGEST"',
+      'test "$BACKEND_DISTRIBUTION_APPROVAL_EVIDENCE_SHA256" = "$BACKEND_LICENSE_EVIDENCE_SHA256"',
+      'Reverify immutable candidate before packaging',
+    ])
+      assert.ok(content.includes(required), 'missing approved-artifact guard: ' + required);
+    assert.ok(
+      content.indexOf('release_image_manifest.mjs verify') <
+        content.indexOf('Enforce protected backend distribution approval binding'),
+      'distribution approval binding must run after exact artifact verification'
+    );
+    assert.ok(
+      content.indexOf('Enforce protected backend distribution approval binding') <
+        content.indexOf('Validate environment configuration'),
+      'distribution approval binding must fail before deployment preparation or mutation'
+    );
+    for (const forbidden of ['docker build', 'docker push', 'origin/main:', 'packages: write']) {
+      assert.ok(!content.includes(forbidden), 'release lane must not contain ' + forbidden);
+    }
+  });
+
+  it('D16: deploy evidence binds candidate, compliance run, and exact image digests', () => {
+    const content = readFileSync(join(WORKFLOWS, 'release-lane.yml'), 'utf8');
+    for (const required of [
+      'TF_BACKEND_IMAGE=${BACKEND_IMAGE_REF}',
+      'TF_FRONTEND_IMAGE=${FRONTEND_IMAGE_REF}',
+      'docker pull "$BACKEND_IMAGE_REF"',
+      'docker pull "$FRONTEND_IMAGE_REF"',
+      '"checkedOutSha": "${CHECKED_OUT_SHA}"',
+      '"candidateTreeSha": "${CANDIDATE_TREE_SHA}"',
+      '"complianceRunId": "${COMPLIANCE_RUN_ID}"',
+      '"backendImageDigest": "${BACKEND_IMAGE_DIGEST}"',
+      '"backendDistributionApprovalRequired": true',
+      '"backendDistributionApprovalValidated": true',
+      '"backendDistributionApprovalId": "${BACKEND_DISTRIBUTION_APPROVAL_ID}"',
+      '"backendDistributionApprovalReleaseSha": "${BACKEND_DISTRIBUTION_APPROVAL_RELEASE_SHA}"',
+      '"backendDistributionApprovalImageDigest": "${BACKEND_DISTRIBUTION_APPROVAL_IMAGE_DIGEST}"',
+      '"backendDistributionApprovalEvidenceSha256": "${BACKEND_DISTRIBUTION_APPROVAL_EVIDENCE_SHA256}"',
+      '"backendLicenseEvidenceSha256": "${BACKEND_LICENSE_EVIDENCE_SHA256}"',
+      'backend-runtime-license-evidence.json',
+      '"frontendImageDigest": "${FRONTEND_IMAGE_DIGEST}"',
+      'const digestPattern = /^sha256:[0-9a-f]{64}$/;',
+    ])
+      assert.ok(content.includes(required), 'missing evidence binding: ' + required);
+  });
+
+  it('D17: protected deployment boundaries and workflow-definition trust remain enforced', () => {
+    const content = readFileSync(join(WORKFLOWS, 'release-lane.yml'), 'utf8');
+    assert.ok(content.includes('workflow_dispatch'));
+    assert.ok(content.includes('environment: ${{ inputs.target_env }}'));
+    assert.ok(content.includes('group: terrafusion-runtime-${{ inputs.target_env }}'));
+    assert.ok(content.includes('cancel-in-progress: false'));
+    assert.ok(content.includes('if [ "$GITHUB_REF" != "refs/heads/main" ]'));
+  });
+
+  it('D18: protected deployments accept only candidates contained in trusted main', () => {
+    const content = readFileSync(join(WORKFLOWS, 'release-lane.yml'), 'utf8');
+    const trust = content.indexOf(
+      'git merge-base --is-ancestor "$RELEASE_SHA" "$TRUSTED_MAIN_SHA"'
+    );
+    const upload = content.indexOf('Stage and validate exact runtime bundle');
+    assert.ok(content.includes('+refs/heads/main:refs/remotes/origin/main'));
+    assert.ok(trust >= 0 && trust < upload);
+  });
+
+  it('D19: first migration and rollback use secretless exact artifacts with explicit targets', () => {
+    const release = readFileSync(join(WORKFLOWS, 'release-lane.yml'), 'utf8');
+    const runtimeCompose = readFileSync(
+      join(ROOT, 'ops', 'prod', 'runtime-compose.template.yml'),
+      'utf8'
+    );
+    assert.ok(release.includes('Preserve exact current artifact bundle for rollback'));
+    assert.ok(release.includes('resolve_running_ref()'));
+    assert.ok(release.includes('artifact.env'));
+    assert.ok(release.includes('TF_SKIP_AUTO_MIGRATE=false'));
+    assert.ok(release.includes('TF_AUTO_MIGRATE_MODE=validate-only'));
+    assert.ok(release.includes('TF_RELEASE_ENV|TF_SKIP_AUTO_MIGRATE|TF_AUTO_MIGRATE_MODE'));
+    assert.match(
+      runtimeCompose,
+      /backend:[\s\S]*?env_file:\s*\n\s*- \.\/app\.env\s*\n\s*- \.\/release\.env/
+    );
+    assert.ok(release.includes("grep -Fx 'TF_SKIP_AUTO_MIGRATE=false'"));
+    assert.ok(release.includes("grep -Fx 'TF_AUTO_MIGRATE_MODE=validate-only'"));
+    assert.ok(release.includes('Verify migration validation executed'));
+    assert.ok(release.includes('AutoMigrate validate-only: no pending migrations'));
+    assert.ok(release.includes('TerraFusion.AuthProvisioner.dll --verify-only --password-stdin'));
+    assert.ok(!release.includes('/api/auth/login'));
+    assert.ok(release.includes('Stage and validate exact runtime bundle'));
+    assert.ok(release.includes('.release-incoming-$RUN_TOKEN'));
+    assert.ok(release.includes('.release-backup-$RUN_TOKEN'));
+    const releaseRequestedSnapshot = release.indexOf('touch "$BACKUP/requested.absent"');
+    const releaseBackupReady = release.indexOf('touch "$BACKUP/backup.ready"');
+    const releaseTrap = release.indexOf('trap restore_previous ERR', releaseBackupReady);
+    assert.ok(releaseRequestedSnapshot >= 0 && releaseBackupReady > releaseRequestedSnapshot);
+    assert.ok(releaseBackupReady >= 0 && releaseTrap > releaseBackupReady);
+    assert.ok(release.includes('if [ ! -f "$BACKUP/backup.ready" ]'));
+    assert.ok(release.includes('preserving $BACKUP for governed recovery'));
+    assert.ok(release.includes('trap restore_previous ERR'));
+    assert.ok(release.includes('Restore prior runtime if deployment did not commit'));
+    assert.ok(release.includes('DEPLOY_SSH_KNOWN_HOSTS'));
+    assert.ok(release.includes('StrictHostKeyChecking yes'));
+    assert.ok(!release.includes('ssh-keyscan'));
+    assert.ok(!release.includes('StrictHostKeyChecking accept-new'));
+    assert.ok(release.includes('TARGET_SNAPSHOT="$APP_ROOT/releases/$RELEASE_SHA"'));
+    assert.ok(release.includes('TARGET_SNAPSHOT/artifact.env'));
+    assert.ok(!release.includes('previous.sha'));
+    for (const workflow of ['rollback-production.yml', 'rollback-staging.yml']) {
+      const content = readFileSync(join(WORKFLOWS, workflow), 'utf8');
+      const environment = workflow.includes('production') ? 'production' : 'staging';
+      assert.ok(content.includes('rollback_sha:'));
+      assert.ok(content.includes('group: terrafusion-runtime-' + environment));
+      assert.ok(content.includes('ROLLBACK_NOOP=true'));
+      const noOpDecision = content.indexOf('ROLLBACK_NOOP=true');
+      const noOpRequestedWrite = content.indexOf("'$APP_ROOT/requested.sha'", noOpDecision);
+      const transactionStart = content.indexOf('Restore exact artifact bundle transactionally');
+      const transactionalRequestedWrite = content.indexOf(
+        `printf '%s\\n' "$ROLLBACK_SHA" > requested.sha`,
+        transactionStart
+      );
+      assert.ok(noOpRequestedWrite > noOpDecision);
+      assert.ok(transactionalRequestedWrite > transactionStart);
+      assert.ok(content.includes('cmp "$SNAPSHOT_ROOT/artifact.env" release.env'));
+      const rollbackRequestedSnapshot = content.indexOf('touch "$BACKUP/requested.absent"');
+      const rollbackBackupReady = content.indexOf('touch "$BACKUP/backup.ready"');
+      const rollbackTrap = content.indexOf('trap restore_previous ERR', rollbackBackupReady);
+      assert.ok(rollbackRequestedSnapshot >= 0 && rollbackBackupReady > rollbackRequestedSnapshot);
+      const rollbackFinalize = content.indexOf('Finalize explicit idempotent rollback identity');
+      const rollbackRecovery = content.indexOf(
+        'Restore pre-rollback runtime if rollback did not commit'
+      );
+      const rollbackVerify = content.indexOf('Verify requested/current/header invariant');
+      assert.ok(rollbackBackupReady >= 0 && rollbackTrap > rollbackBackupReady);
+      assert.ok(rollbackFinalize >= 0 && rollbackRecovery > rollbackFinalize);
+      assert.ok(rollbackVerify > rollbackRecovery);
+      assert.ok(content.includes('if [ ! -f "$BACKUP/backup.ready" ]'));
+      assert.ok(content.includes('preserving $BACKUP for governed recovery'));
+      assert.ok(content.includes('trap restore_previous ERR'));
+      assert.ok(content.includes('Restore pre-rollback runtime if rollback did not commit'));
+      assert.ok(content.includes('$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT'));
+      assert.ok(content.includes('if [ "$GITHUB_REF" != "refs/heads/main" ]'));
+      assert.ok(content.includes('DEPLOY_SSH_KNOWN_HOSTS'));
+      assert.ok(!content.includes('ssh-keyscan'));
+      assert.ok(!content.includes('StrictHostKeyChecking accept-new'));
+      assert.ok(content.includes('artifact.env'));
+      assert.ok(content.includes('.rollback-backup-'));
+      assert.ok(content.includes('last-rollback-from.sha'));
+      assert.ok(!content.includes('previous.sha'));
+      assert.ok(!content.includes('internal:${ROLLBACK_SHA}'));
+    }
+  });
+
+  it('D20: release lifecycle executable suite is mandatory in PR and release CI', () => {
+    const packageJson = JSON.parse(readFileSync(join(ROOT, 'package.json'), 'utf8'));
+    const lifecycle = packageJson.scripts['test:release-lifecycle'];
+    const seal = readFileSync(join(WORKFLOWS, 'seal-gate-fast.yml'), 'utf8');
+    const compliance = readFileSync(join(WORKFLOWS, 'release-compliance.yml'), 'utf8');
+    for (const required of [
+      'release_compliance_workflow.contract.test.mjs',
+      'release_image_manifest.test.mjs',
+      'release_recovery_trap.test.mjs',
+      'release_sbom_policy.test.mjs',
+      'release_state_policy.test.mjs',
+      'release_workflow_shell_syntax.test.mjs',
+    ]) {
+      assert.ok(lifecycle.includes(required), 'release lifecycle suite omits ' + required);
+    }
+    assert.ok(seal.includes('run: pnpm run test:release-lifecycle'));
+    assert.ok(compliance.includes('run: pnpm run test:release-lifecycle'));
   });
 });
 

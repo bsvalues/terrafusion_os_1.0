@@ -34,10 +34,7 @@
       "payload": {
         "token": "[REDACTED]",
         "email": "admin@terrafusionmarket.com",
-        "roles": [
-          "GovernmentUser",
-          "Administrator"
-        ],
+        "roles": ["GovernmentUser", "Administrator"],
         "expiresAt": "2026-03-21T12:44:42.3515968Z",
         "refreshToken": null
       },
@@ -72,10 +69,7 @@
       "payload": {
         "token": "[REDACTED]",
         "email": "admin@terrafusionmarket.com",
-        "roles": [
-          "GovernmentUser",
-          "Administrator"
-        ],
+        "roles": ["GovernmentUser", "Administrator"],
         "expiresAt": "2026-03-21T12:44:44.4022246Z",
         "refreshToken": null
       },
@@ -114,10 +108,7 @@
     "status": "sanitized",
     "replacement": "[REDACTED]",
     "originalValuesRemoved": true,
-    "categories": [
-      "compact-jwt",
-      "sensitive-field"
-    ],
+    "categories": ["compact-jwt", "sensitive-field"],
     "occurrenceCount": 4
   }
 }

@@ -55,7 +55,29 @@ else
 await using var db = new TerraFusionDbContext(dbOptions.Options, configuration);
 
 var normalizedEmail = options.Email!.Trim().ToLowerInvariant();
-var password = options.ResolvePassword()!;
+var password = await options.ResolvePasswordAsync();
+if (string.IsNullOrEmpty(password))
+{
+    Console.Error.WriteLine("Password input was empty.");
+    return 2;
+}
+
+if (options.VerifyOnly)
+{
+    var verified = await ProvisionedPasswordHasher.VerifyPasswordReadOnlyAsync(
+        db,
+        normalizedEmail,
+        password);
+    if (!verified)
+    {
+        Console.Error.WriteLine("Protected account verification failed.");
+        return 1;
+    }
+
+    Console.WriteLine(JsonSerializer.Serialize(new { result = "verified" }));
+    return 0;
+}
+
 var now = DateTime.UtcNow;
 
 Guid? countyId = options.CountyId;
@@ -171,6 +193,8 @@ internal sealed class CliOptions
     public string? CountyState { get; private init; }
     public string? CountyFips { get; private init; }
     public bool CreateCounty { get; private init; }
+    public bool VerifyOnly { get; private init; }
+    public bool PasswordStdin { get; private init; }
     public bool ShowHelp { get; private init; }
 
     public static CliOptions Parse(string[] args)
@@ -198,7 +222,9 @@ internal sealed class CliOptions
                 continue;
             }
 
-            if (key.Equals("create-county", StringComparison.OrdinalIgnoreCase))
+            if (key.Equals("create-county", StringComparison.OrdinalIgnoreCase)
+                || key.Equals("verify-only", StringComparison.OrdinalIgnoreCase)
+                || key.Equals("password-stdin", StringComparison.OrdinalIgnoreCase))
             {
                 flags.Add(key);
                 continue;
@@ -223,6 +249,8 @@ internal sealed class CliOptions
         {
             ShowHelp = flags.Contains("help"),
             CreateCounty = flags.Contains("create-county"),
+            VerifyOnly = flags.Contains("verify-only"),
+            PasswordStdin = flags.Contains("password-stdin"),
             ConnectionString = Value(values, "connection-string"),
             Provider = Value(values, "provider"),
             Email = Value(values, "email"),
@@ -247,13 +275,33 @@ internal sealed class CliOptions
             return false;
         }
 
-        if (string.IsNullOrWhiteSpace(Password) && string.IsNullOrWhiteSpace(PasswordEnv))
+        if (PasswordStdin && (!string.IsNullOrWhiteSpace(Password) || !string.IsNullOrWhiteSpace(PasswordEnv)))
+        {
+            error = "--password-stdin cannot be combined with --password or --password-env.";
+            return false;
+        }
+
+        if (VerifyOnly != PasswordStdin)
+        {
+            error = "--verify-only and --password-stdin must be used together.";
+            return false;
+        }
+
+        if (VerifyOnly && HasProvisioningArguments())
+        {
+            error = "Provisioning arguments cannot be used with --verify-only.";
+            return false;
+        }
+
+        if (!VerifyOnly && string.IsNullOrWhiteSpace(Password) && string.IsNullOrWhiteSpace(PasswordEnv))
         {
             error = "--password-env is required unless --password is supplied for local-only use.";
             return false;
         }
 
-        if (!string.IsNullOrWhiteSpace(PasswordEnv) && string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable(PasswordEnv)))
+        if (!VerifyOnly
+            && !string.IsNullOrWhiteSpace(PasswordEnv)
+            && string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable(PasswordEnv)))
         {
             error = $"Password environment variable '{PasswordEnv}' is not set.";
             return false;
@@ -263,11 +311,29 @@ internal sealed class CliOptions
         return true;
     }
 
-    public string? ResolvePassword()
+    public async Task<string?> ResolvePasswordAsync()
     {
+        if (PasswordStdin)
+        {
+            return await Console.In.ReadLineAsync();
+        }
+
         return !string.IsNullOrWhiteSpace(PasswordEnv)
             ? Environment.GetEnvironmentVariable(PasswordEnv)
             : Password;
+    }
+
+    private bool HasProvisioningArguments()
+    {
+        return !string.IsNullOrWhiteSpace(FirstName)
+            || !string.IsNullOrWhiteSpace(LastName)
+            || !string.IsNullOrWhiteSpace(Roles)
+            || !string.IsNullOrWhiteSpace(Permissions)
+            || CountyId.HasValue
+            || !string.IsNullOrWhiteSpace(CountyName)
+            || !string.IsNullOrWhiteSpace(CountyState)
+            || !string.IsNullOrWhiteSpace(CountyFips)
+            || CreateCounty;
     }
 
     public static string[] ParseCsv(string? raw)
@@ -282,11 +348,15 @@ internal sealed class CliOptions
     public static void PrintHelp()
     {
         Console.WriteLine("""
-TerraFusion.AuthProvisioner provisions real TerraFusion DB-backed operator accounts.
+TerraFusion.AuthProvisioner provisions or read-only verifies real TerraFusion DB-backed operator accounts.
 
-Required:
+Provisioning:
   --email <email>
   --password-env <env var>       Preferred; reads password from environment.
+
+Read-only verification:
+  --verify-only --password-stdin --email <email>
+                                Reads one password line from stdin; never updates auth state.
 
 Database:
   --connection-string <value>    Defaults to ConnectionStrings__DefaultConnection.

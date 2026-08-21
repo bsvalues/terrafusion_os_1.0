@@ -745,9 +745,7 @@
     "status": "sanitized",
     "replacement": "[REDACTED]",
     "originalValuesRemoved": true,
-    "categories": [
-      "sensitive-field"
-    ],
+    "categories": ["sensitive-field"],
     "occurrenceCount": 1
   }
 }

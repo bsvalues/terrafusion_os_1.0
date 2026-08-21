@@ -184,6 +184,7 @@
     "type-check": "tsc -p tsconfig.core.json",
     "typecheck:core": "tsc -p tsconfig.core.json",
     "test:governed": "pnpm run type-check && node --test os-platform/core/tests/phase83-tools.test.mjs && node --test os-platform/core/tests/tool-maturity.test.mjs && node --test os-platform/core/pilot/evidence-redaction.test.mjs && node --test os-platform/core/pilot/june10-*.test.mjs",
+    "test:release-lifecycle": "node --test scripts/ci/backend_published_deps_guard.test.mjs scripts/ci/backend_runtime_license_evidence.test.mjs scripts/ci/backend_semantic_kernel_advisory_guard.test.mjs scripts/ci/release_compliance_workflow.contract.test.mjs scripts/ci/frontend_dependency_sbom.test.mjs scripts/ci/release_image_manifest.test.mjs scripts/ci/release_recovery_trap.test.mjs scripts/ci/release_sbom_policy.test.mjs scripts/ci/release_state_policy.test.mjs scripts/ci/release_workflow_shell_syntax.test.mjs tests/deployment-truth-gate.test.mjs os-platform/core/pilot/acceptance-truth.workflow.contract.test.mjs",
     "test:governance:ui": "vitest run tests/governance/noNewRawColors.contract.test.ts tests/governance/uiTokenBaseline.contract.test.ts tests/governance/ratchetGuardScope.contract.test.ts tests/governance/tfHsAnchorsDefined.contract.test.ts",
     "lint:platform": "node scripts/platform-lint.mjs",
     "doctor": "node scripts/doctor.mjs",
@@ -461,6 +462,7 @@
     "nodemon": "^3.0.1",
     "playwright": "^1.54.2",
     "prettier": "^3.2.0",
+    "spdx-expression-parse": "5.0.0",
     "tailwind-merge": "3.3.1",
     "ts-node": "10.9.2",
     "tsx": "^4.21.0",
@@ -571,9 +573,37 @@
   },
   "pnpm": {
     "overrides": {
-      "shell-quote": ">=1.8.4",
+      "shell-quote": ">=1.9.0",
+      "minimatch@3": "3.1.4",
+      "minimatch@5": "5.1.8",
+      "minimatch@9": "9.0.7",
+      "brace-expansion@1": "1.1.18",
+      "brace-expansion@2": "2.1.4",
+      "@microsoft/signalr>ws": "7.5.13",
+      "mapbox-gl>@mapbox/jsonlint-lines-primitives": "2.0.2",
+      "ws@8": "8.21.0",
+      "handlebars": "4.7.9",
+      "workbox-build>rollup": "2.80.0",
+      "vite>rollup": "4.59.0",
+      "@storybook/test": "8.6.17",
+      "@rollup/plugin-terser>serialize-javascript": "7.0.3",
+      "flatted": "3.4.2",
+      "fast-uri": "3.1.5",
+      "basic-ftp": "5.3.1",
+      "js-yaml@3": "3.15.1",
+      "js-yaml@4": "4.3.1",
+      "picomatch@2": "2.3.2",
+      "picomatch@4": "4.0.4",
+      "nanoid@5": "5.1.16",
+      "ip-address": "10.3.1",
+      "@babel/plugin-transform-modules-systemjs": "7.29.4",
+      "protocol-buffers-schema": "3.6.1",
+      "yaml@1": "1.10.3",
       "aframe@1.7.1>three-bmfont-text": "3.0.0",
-      "@tailwindcss/oxide>tar": ">=7.5.19"
+      "@tailwindcss/oxide>tar": ">=7.5.21"
+    },
+    "patchedDependencies": {
+      "@mapbox/jsonlint-lines-primitives@2.0.2": "patches/@mapbox__jsonlint-lines-primitives@2.0.2.patch"
     }
   }
 }

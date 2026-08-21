@@ -605,10 +605,10 @@ jobs:
         shell: bash
         run: node scripts/governance/workflow-inventory.mjs --check
 
-      - name: Deployment truth gate (63 specs)
+      - name: Release lifecycle truth gate
         id: deployment-truth-gate
         shell: bash
-        run: node --test tests/deployment-truth-gate.test.mjs
+        run: pnpm run test:release-lifecycle
 
       - name: Repo shape guard (root spine allowlist)
         id: shape-guard

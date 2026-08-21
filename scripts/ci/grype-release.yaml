@@ -1,0 +1,12 @@
+# Exact false-positive containment for the backend runtime gate.
+# Official advisory: https://github.com/microsoft/semantic-kernel/security/advisories/GHSA-2ww3-72rp-wpp4
+# Microsoft GHSA-2ww3-72rp-wpp4 affects Microsoft.SemanticKernel.Plugins.Core
+# and its SessionsPythonPlugin, neither of which is present in the release SBOM.
+# Grype v0.99.1 misassociates it with Microsoft.SemanticKernel.Core 1.4.0.
+ignore:
+  - vulnerability: GHSA-2ww3-72rp-wpp4
+    package:
+      name: Microsoft.SemanticKernel.Core
+      version: 1.4.0
+      type: UnknownPackage
+show-suppressed: true

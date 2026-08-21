@@ -25,6 +25,10 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" />
     <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
+    <!-- Direct runtime floors keep the exact published closure above known advisories. -->
+    <PackageReference Include="Npgsql" />
+    <PackageReference Include="Microsoft.Kiota.Abstractions" />
+    <PackageReference Include="SQLitePCLRaw.lib.e_sqlite3" />
     <PackageReference Include="Pgvector.EntityFrameworkCore" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -81,6 +85,11 @@
     <Compile Remove="bin\**\*.cs;obj\**\*.cs" />
     <EmbeddedResource Remove="bin\**\*;obj\**\*" />
     <None Remove="bin\**\*;obj\**\*" />
+    <!-- Never repackage the repo-tracked legacy publish snapshot. -->
+    <Compile Remove="publish\**\*.cs" />
+    <Content Remove="publish\**\*" />
+    <EmbeddedResource Remove="publish\**\*" />
+    <None Remove="publish\**\*" />
     <Compile Remove="Controllers.disabled\**" />
     <EmbeddedResource Remove="Controllers.disabled\**" />
     <None Remove="Controllers.disabled\**" />

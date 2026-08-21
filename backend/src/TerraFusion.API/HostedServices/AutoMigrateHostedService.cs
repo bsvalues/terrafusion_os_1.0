@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using System.Data;
 using TerraFusion.Data;
 
@@ -15,25 +16,39 @@ namespace TerraFusion.API.HostedServices;
 ///
 /// Behavior:
 /// - Opt-out via <c>TF_SKIP_AUTO_MIGRATE=true</c> (configuration key, env var, or appsettings).
+/// - <c>TF_AUTO_MIGRATE_MODE=validate-only</c> fails startup when migrations are pending
+///   and never applies or repairs schema state.
 /// - No-op when there are no pending migrations.
-/// - Non-fatal on failure: logs an error and lets the host continue, so the
-///   operator can fix the DB and restart without losing the backend.
+/// - Apply-mode failures remain non-fatal for backward compatibility: the operator
+///   can fix the DB and restart without losing the backend.
 /// </summary>
 public sealed class AutoMigrateHostedService : IHostedService
 {
+    private const string ApplyMode = "apply";
+    private const string ValidateOnlyMode = "validate-only";
+
     private readonly IServiceScopeFactory _scopeFactory;
     private readonly ILogger<AutoMigrateHostedService> _logger;
+    private readonly string _mode;
 
     public AutoMigrateHostedService(
         IServiceScopeFactory scopeFactory,
-        ILogger<AutoMigrateHostedService> logger)
+        ILogger<AutoMigrateHostedService> logger,
+        IConfiguration configuration)
     {
         _scopeFactory = scopeFactory;
         _logger = logger;
+        _mode = (configuration["TF_AUTO_MIGRATE_MODE"] ?? ApplyMode).Trim().ToLowerInvariant();
+        if (_mode is not ApplyMode and not ValidateOnlyMode)
+        {
+            throw new InvalidOperationException(
+                "TF_AUTO_MIGRATE_MODE must be either 'apply' or 'validate-only'.");
+        }
     }
 
     public async Task StartAsync(CancellationToken ct)
     {
+        var validateOnly = _mode == ValidateOnlyMode;
         try
         {
             using var scope = _scopeFactory.CreateScope();
@@ -41,9 +56,20 @@ public sealed class AutoMigrateHostedService : IHostedService
             var pending = (await db.Database.GetPendingMigrationsAsync(ct)).ToList();
             if (pending.Count == 0)
             {
-                _logger.LogInformation("AutoMigrate: no pending migrations");
+                _logger.LogInformation("AutoMigrate {Mode}: no pending migrations", _mode);
                 return;
             }
+            if (validateOnly)
+            {
+                _logger.LogError(
+                    "AutoMigrate validate-only: {Count} pending migrations: {List}",
+                    pending.Count,
+                    string.Join(",", pending));
+                throw new InvalidOperationException(
+                    "AutoMigrate validate-only rejected pending migrations: " +
+                    string.Join(",", pending));
+            }
+
             _logger.LogInformation(
                 "AutoMigrate: applying {Count} migrations: {List}",
                 pending.Count,
@@ -51,7 +77,7 @@ public sealed class AutoMigrateHostedService : IHostedService
             await db.Database.MigrateAsync(ct);
             _logger.LogInformation("AutoMigrate: complete");
         }
-        catch (Exception ex)
+        catch (Exception ex) when (!validateOnly)
         {
             // Non-fatal: log and continue. Operator can fix and restart.
             _logger.LogError(ex, "AutoMigrate failed; backend will continue but DB may be out of sync");

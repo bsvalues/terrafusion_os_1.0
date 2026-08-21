@@ -1,0 +1,11 @@
+{
+  "spdxVersion": "SPDX-2.3",
+  "packages": [
+    {
+      "name": "prohibited-package",
+      "licenseConcluded": "AGPL-3.0-only",
+      "licenseDeclared": "NOASSERTION",
+      "licenseInfoFromFiles": []
+    }
+  ]
+}
