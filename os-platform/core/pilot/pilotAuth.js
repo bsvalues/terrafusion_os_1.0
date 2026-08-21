@@ -8,7 +8,7 @@
  *
  * Credentials are resolved from environment variables:
  *   TF_PILOT_EMAIL     (default: admin@gov.)
- *   TF_PILOT_PASSWORD  (default: TerraFusion2026!)
+ *   TF_PILOT_PASSWORD  (required)
  *
  * Tokens are cached in-process and refreshed 5 minutes before expiry.
  */
@@ -33,7 +33,10 @@ async function acquirePilotToken() {
         return cachedToken;
     }
     const email = process.env.TF_PILOT_EMAIL || 'admin@gov.';
-    const password = process.env.TF_PILOT_PASSWORD || 'TerraFusion2026!';
+    const password = process.env.TF_PILOT_PASSWORD;
+    if (!password) {
+        throw new Error('TF_PILOT_PASSWORD is required for Pilot authentication');
+    }
     const result = await (0, backendClient_js_1.backendPost)('/api/auth/login', { email, password });
     if (result.ok === false) {
         cachedToken = null;

@@ -12,7 +12,7 @@ const PRODUCTION_BASE_URL = "https://terrafusionmarket.com";
 const WORKBENCH_PARCEL_ID = process.env.TF_PHASE14_PARCEL_ID || "10001";
 const LOGIN_EMAIL = process.env.TF_PHASE14_EMAIL || process.env.TF_PHASE8_EMAIL || "admin@terrafusionmarket.com";
 const LOGIN_PASSWORD =
-  process.env.TF_PHASE14_PASSWORD || process.env.TF_PHASE8_PASSWORD || "TerraFusion2026!";
+  process.env.TF_PHASE14_PASSWORD || process.env.TF_PHASE8_PASSWORD || "";
 const DEFAULT_OUT_PATH = path.resolve(
   process.cwd(),
   "os-platform/core/pilot/evidence/phase14-benton-operator-workflow.latest.json"
