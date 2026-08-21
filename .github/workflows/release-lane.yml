@@ -146,8 +146,16 @@ jobs:
             --backend-image "ghcr.io/$OWNER/terrafusion-os-backend-internal" \
             --frontend-image "ghcr.io/$OWNER/terrafusion-os-frontend-internal" \
             --backend-license-evidence "$APPROVED_DIR/backend-runtime-license-evidence.json" \
+            --forge-image "ghcr.io/bsvalues/terrafusion-forge-valuation-kernel" \
+            --forge-digest "sha256:0701e52e2b48fe2ceb614ee3c8f3c26992425096f014a0995704fc04a7a70066" \
+            --forge-producer-commit "3fc296da17aaca4c32dd9b727ab62d2d3725d789" \
+            --forge-canonical-source-commit "24059c3642339f36877cb454ca63683180915b71" \
+            --forge-artifact-type "terraforge.valuation-kernel.linux-x64-musl@1" \
+            --forge-producer-manifest "$APPROVED_DIR/forge-valuation-kernel-producer-manifest.json" \
+            --forge-executable-sha256 "a371d8f421b66cd2f83073ed108c885facc97323f9a351547d7293259978c298" \
             --github-env "$GITHUB_ENV"
           echo "BACKEND_LICENSE_EVIDENCE_PATH=$APPROVED_DIR/backend-runtime-license-evidence.json" >> "$GITHUB_ENV"
+          echo "FORGE_VALUATION_KERNEL_PRODUCER_MANIFEST_PATH=$APPROVED_DIR/forge-valuation-kernel-producer-manifest.json" >> "$GITHUB_ENV"
           echo "BACKEND LEGAL WALL: technical artifact approval is not backend distribution-license approval." >> "$GITHUB_STEP_SUMMARY"
           {
             echo "COMPLIANCE_RUN_ID=$COMPLIANCE_RUN_ID"
@@ -922,6 +930,16 @@ jobs:
           frontend_image=${FRONTEND_IMAGE}
           frontend_image_digest=${FRONTEND_IMAGE_DIGEST}
           frontend_image_ref=${FRONTEND_IMAGE_REF}
+          forge_valuation_kernel_image=${FORGE_VALUATION_KERNEL_IMAGE}
+          forge_valuation_kernel_digest=${FORGE_VALUATION_KERNEL_DIGEST}
+          forge_valuation_kernel_ref=${FORGE_VALUATION_KERNEL_REF}
+          forge_valuation_kernel_producer_commit=${FORGE_VALUATION_KERNEL_PRODUCER_COMMIT}
+          forge_valuation_kernel_canonical_source_commit=${FORGE_VALUATION_KERNEL_CANONICAL_SOURCE_COMMIT}
+          forge_valuation_kernel_producer_manifest_sha256=${FORGE_VALUATION_KERNEL_PRODUCER_MANIFEST_SHA256}
+          forge_valuation_kernel_executable_sha256=${FORGE_VALUATION_KERNEL_EXECUTABLE_SHA256}
+          forge_valuation_kernel_platform_attestation=${FORGE_VALUATION_KERNEL_PLATFORM_ATTESTATION}
+          forge_valuation_contract_crosscut_audit_sha256=3a098f290ed21fb1b713ae4879b407d045c26f73ac88d7b009a2496266b3b86c
+          forge_valuation_contract_forge_valuation_sha256=0e7db3fa3e01db4ba446ae67dbd8266384834e31cbe5ee6e699e7a44ca6c75cc
           workflow_run_id=${GITHUB_RUN_ID}
           workflow_run_attempt=${GITHUB_RUN_ATTEMPT}
           deployed_at_utc=${DEPLOYED_AT}
@@ -955,18 +973,31 @@ jobs:
             "frontendImage": "${FRONTEND_IMAGE}",
             "frontendImageDigest": "${FRONTEND_IMAGE_DIGEST}",
             "frontendImageRef": "${FRONTEND_IMAGE_REF}",
+            "forgeValuationKernelImage": "${FORGE_VALUATION_KERNEL_IMAGE}",
+            "forgeValuationKernelDigest": "${FORGE_VALUATION_KERNEL_DIGEST}",
+            "forgeValuationKernelRef": "${FORGE_VALUATION_KERNEL_REF}",
+            "forgeValuationKernelProducerCommit": "${FORGE_VALUATION_KERNEL_PRODUCER_COMMIT}",
+            "forgeValuationKernelCanonicalSourceCommit": "${FORGE_VALUATION_KERNEL_CANONICAL_SOURCE_COMMIT}",
+            "forgeValuationKernelProducerManifestSha256": "${FORGE_VALUATION_KERNEL_PRODUCER_MANIFEST_SHA256}",
+            "forgeValuationKernelExecutableSha256": "${FORGE_VALUATION_KERNEL_EXECUTABLE_SHA256}",
+            "forgeValuationKernelPlatformAttestation": "${FORGE_VALUATION_KERNEL_PLATFORM_ATTESTATION}",
+            "forgeValuationKernelContracts": {
+              "crosscut.audit@1.0.0": "3a098f290ed21fb1b713ae4879b407d045c26f73ac88d7b009a2496266b3b86c",
+              "forge.valuation@1.0.0": "0e7db3fa3e01db4ba446ae67dbd8266384834e31cbe5ee6e699e7a44ca6c75cc"
+            },
             "workflowRunId": "${GITHUB_RUN_ID}",
             "workflowRunAttempt": "${GITHUB_RUN_ATTEMPT}",
             "deployedAtUtc": "${DEPLOYED_AT}"
           }
           EOF
           cp "$BACKEND_LICENSE_EVIDENCE_PATH" evidence/backend-runtime-license-evidence.json
+          cp "$FORGE_VALUATION_KERNEL_PRODUCER_MANIFEST_PATH" evidence/forge-valuation-kernel-producer-manifest.json
 
       - name: Validate evidence schema
         shell: bash
         run: |
           set -euo pipefail
-          for required in evidence.json evidence.txt backend-runtime-license-evidence.json curl_headers.txt compose_ps.txt uptime.txt logs_backend.txt logs_proxy.txt; do
+          for required in evidence.json evidence.txt backend-runtime-license-evidence.json forge-valuation-kernel-producer-manifest.json curl_headers.txt compose_ps.txt uptime.txt logs_backend.txt logs_proxy.txt; do
             test -s "evidence/$required"
           done
 
@@ -976,6 +1007,9 @@ jobs:
           const evidence = JSON.parse(fs.readFileSync('evidence/evidence.json', 'utf8'));
           const backendLicenseEvidence = fs.readFileSync(
             'evidence/backend-runtime-license-evidence.json'
+          );
+          const forgeProducerManifest = fs.readFileSync(
+            'evidence/forge-valuation-kernel-producer-manifest.json'
           );
           const shaPattern = /^[0-9a-f]{40}$/;
           const digestPattern = /^sha256:[0-9a-f]{64}$/;
@@ -1009,6 +1043,35 @@ jobs:
             .digest('hex');
           if (backendEvidenceHash !== evidence.backendLicenseEvidenceSha256) {
             throw new Error('backend license evidence is detached from deploy evidence');
+          }
+          const forgeManifestHash = crypto
+            .createHash('sha256')
+            .update(forgeProducerManifest)
+            .digest('hex');
+          const expectedForge = {
+            image: 'ghcr.io/bsvalues/terrafusion-forge-valuation-kernel',
+            digest: 'sha256:0701e52e2b48fe2ceb614ee3c8f3c26992425096f014a0995704fc04a7a70066',
+            producerCommit: '3fc296da17aaca4c32dd9b727ab62d2d3725d789',
+            canonicalSourceCommit: '24059c3642339f36877cb454ca63683180915b71',
+            producerManifestSha256: '3d83a4a998eabb30b2993e6c777ae5924ca2a7e6f1bd915f7698606fd077fcd6',
+            executableSha256: 'a371d8f421b66cd2f83073ed108c885facc97323f9a351547d7293259978c298',
+          };
+          if (
+            evidence.forgeValuationKernelImage !== expectedForge.image ||
+            evidence.forgeValuationKernelDigest !== expectedForge.digest ||
+            evidence.forgeValuationKernelRef !== `${expectedForge.image}@${expectedForge.digest}` ||
+            evidence.forgeValuationKernelProducerCommit !== expectedForge.producerCommit ||
+            evidence.forgeValuationKernelCanonicalSourceCommit !== expectedForge.canonicalSourceCommit ||
+            evidence.forgeValuationKernelProducerManifestSha256 !== expectedForge.producerManifestSha256 ||
+            evidence.forgeValuationKernelExecutableSha256 !== expectedForge.executableSha256 ||
+            forgeManifestHash !== expectedForge.producerManifestSha256 ||
+            evidence.forgeValuationKernelPlatformAttestation !== 'unavailable' ||
+            evidence.forgeValuationKernelContracts?.['crosscut.audit@1.0.0'] !==
+              '3a098f290ed21fb1b713ae4879b407d045c26f73ac88d7b009a2496266b3b86c' ||
+            evidence.forgeValuationKernelContracts?.['forge.valuation@1.0.0'] !==
+              '0e7db3fa3e01db4ba446ae67dbd8266384834e31cbe5ee6e699e7a44ca6c75cc'
+          ) {
+            throw new Error('Forge valuation payload is detached from deploy evidence');
           }
           if (!shaPattern.test(evidence.candidateTreeSha)) {
             throw new Error('candidateTreeSha is not a full git tree SHA');
