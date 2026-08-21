@@ -313,6 +313,36 @@ public class RustKernelProcessHostTests
     }
 
     [Fact]
+    public async Task ValuationKernel_AdmittedReleasePayload_InvokesThroughProcessHost()
+    {
+        var executablePath = Environment.GetEnvironmentVariable(
+            "TF_TEST_FORGE_VALUATION_KERNEL_PATH");
+        var manifestPath = Environment.GetEnvironmentVariable(
+            "TF_TEST_FORGE_VALUATION_KERNEL_MANIFEST_PATH");
+        if (string.IsNullOrWhiteSpace(executablePath) && string.IsNullOrWhiteSpace(manifestPath))
+            return;
+
+        Assert.False(string.IsNullOrWhiteSpace(executablePath));
+        Assert.False(string.IsNullOrWhiteSpace(manifestPath));
+        Assert.True(File.Exists(executablePath));
+        Assert.True(File.Exists(manifestPath));
+
+        var host = CreateSut(configure: options =>
+        {
+            options.ValuationKernelPath = executablePath!;
+            options.ValuationKernelManifestPath = manifestPath!;
+        });
+        var result = await host.InvokeAsync<ValuationKernelPayload, ValuationKernelResult>(
+            executablePath!,
+            "terraforge.kernel.valuation",
+            SampleValuationInvocation());
+
+        Assert.True(result.Success, result.ErrorMessage);
+        Assert.Equal(RustKernelsOptions.ForgeValuationExecutableSha256, result.KernelBinarySha256);
+        Assert.NotNull(result.Data);
+    }
+
+    [Fact]
     public void ValuationKernel_ProducerManifestValidators_AreExactAndFailClosed()
     {
         using var sources = JsonDocument.Parse(JsonSerializer.Serialize(ForgeSourceSha256));
