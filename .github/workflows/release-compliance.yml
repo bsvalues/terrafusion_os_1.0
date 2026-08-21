@@ -222,7 +222,9 @@ jobs:
           trap cleanup_backend_container EXIT
           test ! -e backend-runtime-root
           mkdir backend-runtime-root
-          docker cp "$BACKEND_CONTAINER:/app/." backend-runtime-root/
+          docker cp "$BACKEND_CONTAINER:/app/." - |
+            tar --extract --file=- --directory=backend-runtime-root \
+              --no-same-owner --no-same-permissions --delay-directory-restore
           test -n "$(find backend-runtime-root -type f -print -quit)"
           EMBEDDED_FORGE_ROOT="backend-runtime-root/.terrafusion/runtime/forge/valuation"
           test -x "$EMBEDDED_FORGE_ROOT/terraforge-kernel-valuation"
@@ -402,7 +404,7 @@ jobs:
           limit-severities-for-sarif: true
           exit-code: '1'
           version: 'v0.70.0'
-          skip-dirs: 'backend/ai-models,backend/publish,backend/src/TerraFusion.API/publish'
+          skip-dirs: 'backend/ai-models,backend/publish,backend/src/TerraFusion.API/publish,backend/**/bin,backend/**/obj'
       - name: Upload backend vulnerability results
         if: always()
         uses: github/codeql-action/upload-sarif@v3

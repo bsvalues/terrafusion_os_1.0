@@ -16,6 +16,10 @@ const backendApiProject = readFileSync(
   join(root, 'backend/src/TerraFusion.API/TerraFusion.API.csproj'),
   'utf8'
 );
+const workbenchSmokeConfig = readFileSync(
+  join(root, 'tests/playwright.workbench-smoke.config.ts'),
+  'utf8'
+);
 const grypeReleaseConfig = readFileSync(join(root, 'scripts/ci/grype-release.yaml'), 'utf8');
 const sealWorkflow = readFileSync(join(root, '.github/workflows/seal-gate-fast.yml'), 'utf8');
 const packageJson = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8'));
@@ -56,15 +60,43 @@ test('affected Semantic Kernel plugin guard inspects the exact backend image fil
   const text = job('sbom-compliance');
   const pull = text.indexOf('docker pull "$BACKEND_IMAGE_REF"');
   const create = text.indexOf('docker create "$BACKEND_IMAGE_REF"');
-  const copy = text.indexOf('docker cp "$BACKEND_CONTAINER:/app/." backend-runtime-root/');
+  const copy = text.indexOf('docker cp "$BACKEND_CONTAINER:/app/." - |');
+  const extract = text.indexOf('tar --extract --file=- --directory=backend-runtime-root');
   const depsGuard = text.indexOf('backend_published_deps_guard.mjs backend-runtime-root');
   const guard = text.indexOf(
     'backend_semantic_kernel_advisory_guard.mjs sbom-backend-runtime-spdx.json backend-runtime-root backend'
   );
-  assert.ok(pull >= 0 && create > pull && copy > create && depsGuard > copy && guard > depsGuard);
+  assert.ok(
+    pull >= 0 &&
+      create > pull &&
+      copy > create &&
+      extract > copy &&
+      depsGuard > extract &&
+      guard > depsGuard
+  );
+  assert.match(
+    text,
+    /tar --extract --file=- --directory=backend-runtime-root[\s\\]*--no-same-owner --no-same-permissions --delay-directory-restore/
+  );
+  assert.doesNotMatch(text, /docker cp "\$BACKEND_CONTAINER:\/app\/\." backend-runtime-root\//);
   assert.match(text, /trap cleanup_backend_container EXIT/);
   assert.match(text, /cleanup_backend_container[\s\S]*trap - EXIT/);
   assert.match(text, /test -n "\$\(find backend-runtime-root -type f -print -quit\)"/);
+});
+
+test('Workbench release smoke prepares its disposable SQLite directory before use', () => {
+  const validation = workbenchSmokeConfig.indexOf(
+    'WORKBENCH_SMOKE_DATABASE_PATH must name a parcel-journey database inside .tmp/workbench-smoke.'
+  );
+  const mkdir = workbenchSmokeConfig.indexOf('mkdirSync(smokeRoot, { recursive: true });');
+  const existingDatabaseGuard = workbenchSmokeConfig.indexOf(
+    'Refusing to replace pre-existing smoke database:'
+  );
+  const webServer = workbenchSmokeConfig.indexOf('webServer: {');
+
+  assert.ok(validation >= 0 && mkdir > validation);
+  assert.ok(existingDatabaseGuard > mkdir && webServer > existingDatabaseGuard);
+  assert.match(workbenchSmokeConfig, /dirname\(smokeDatabasePath\) !== smokeRoot/);
 });
 
 test('backend Grype false-positive containment is one exact visible tuple', () => {
@@ -455,7 +487,7 @@ test('canonical vulnerability scope is bounded while secret coverage remains all
   assert.match(vulnerability, /trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25/);
   assert.match(
     vulnerability,
-    /skip-dirs: 'backend\/ai-models,backend\/publish,backend\/src\/TerraFusion\.API\/publish'/
+    /skip-dirs: 'backend\/ai-models,backend\/publish,backend\/src\/TerraFusion\.API\/publish,backend\/\*\*\/bin,backend\/\*\*\/obj'/
   );
   assert.doesNotMatch(vulnerability, /skip-dirs:[\s\S]*backend\/src\s*(?:\r?\n|$)/);
   assert.doesNotMatch(vulnerability, /skip-dirs:[\s\S]*backend\/tools\s*(?:\r?\n|$)/);
