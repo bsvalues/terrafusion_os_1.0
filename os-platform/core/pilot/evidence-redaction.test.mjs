@@ -288,6 +288,38 @@ test("structured JSON redaction decodes escaped keys and preserves valid non-str
     }
   }
 
+  for (const safeJsonLikeString of ["[\n]", "[\r\n]"]) {
+    let safeWrapped = safeJsonLikeString;
+    for (let serializationDepth = 0; serializationDepth <= 8; serializationDepth += 1) {
+      assert.equal(redactEvidenceText(safeWrapped), safeWrapped);
+      assert.equal(findEvidenceCredentialFindings(safeWrapped).length, 0);
+      safeWrapped = JSON.stringify(safeWrapped);
+    }
+  }
+
+  for (const lineEnding of ["\n", "\r\n"]) {
+    const prettyUnicode = [
+      "{",
+      '  "to\\u006ben": "pretty-secret\\\\",',
+      '  "next": "[\\n]"',
+      "}",
+    ].join(lineEnding);
+    const prettyExpected = '{"token":"[REDACTED]","next":"[\\n]"}';
+    for (let fragmentDepth = 1; fragmentDepth <= 8; fragmentDepth += 1) {
+      const prettyInput =
+        `response=${encodeSerializedFragment(prettyUnicode, fragmentDepth)}; tail=keep`;
+      const expected =
+        `response=${encodeSerializedFragment(prettyExpected, fragmentDepth)}; tail=keep`;
+      const redacted = redactEvidenceText(prettyInput);
+      assert.equal(redacted, expected);
+      assert.ok(!redacted.includes("pretty-secret"));
+      assert.ok(redacted.endsWith("; tail=keep"));
+      assert.ok(findEvidenceCredentialFindings(prettyInput).length > 0);
+      assert.equal(findEvidenceCredentialFindings(redacted).length, 0);
+      assert.equal(redactEvidenceText(redacted), redacted);
+    }
+  }
+
   const rawPrefixedUnicode =
     String.raw`{"to\u006ben":"fragment-secret\\","next":"safe"}`;
   const rawPrefixedUnicodeExpected =

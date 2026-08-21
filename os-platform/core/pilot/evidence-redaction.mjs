@@ -334,8 +334,8 @@ function isPossibleJsonFragmentStart(value, start) {
   if (value[cursor] === closing) return true;
 
   while (value[cursor] === "\\") cursor += 1;
-  if (opening === "{") return value[cursor] === '"';
-  return /["{[\]tfn\d-]/.test(value[cursor] ?? "");
+  if (opening === "{") return /["nrt]/.test(value[cursor] ?? "");
+  return /["{[\]tfnr\d-]/.test(value[cursor] ?? "");
 }
 
 function serializedJsonFragmentEnd(value, start) {
@@ -425,6 +425,9 @@ function redactUnstructuredText(value) {
 export function redactEvidenceText(value) {
   const structured = parseStructuredJsonText(value);
   if (structured) {
+    if (findEvidenceCredentialFindings(structured.value).length === 0) {
+      return String(value);
+    }
     return stringifyStructuredJsonText(structured.value, structured.wrapperDepth);
   }
 
