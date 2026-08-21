@@ -285,7 +285,7 @@ describe('D. CI release gate coverage', () => {
     assert.ok(hasLint, 'PR gate must include lint step');
   });
 
-  it('D8: backend runtime image packages the DB-backed AuthProvisioner', () => {
+  it('D8: backend runtime retains the governed AuthProvisioner as an operator-only tool', () => {
     const content = readFileSync(join(ROOT, 'backend', 'Dockerfile'), 'utf8');
     assert.ok(
       content.includes(
@@ -297,34 +297,30 @@ describe('D. CI release gate coverage', () => {
       content.includes(
         'COPY --from=build /app/auth-provisioner ./tools/TerraFusion.AuthProvisioner/'
       ),
-      'Backend runtime image must package TerraFusion.AuthProvisioner for DB-backed production operator provisioning'
+      'Backend runtime image may retain the governed AuthProvisioner for explicit operator use'
     );
   });
 
-  it('D9: release-lane provisions DB-backed operator before auth smoke', () => {
+  it('D9: release-lane validates a protected pre-provisioned account without auth mutation', () => {
     const content = readFileSync(join(WORKFLOWS, 'release-lane.yml'), 'utf8');
-    const provisionerIndex = content.indexOf('TerraFusion.AuthProvisioner.dll');
-    const smokeIndex = content.indexOf('Provisioned auth contract smoke');
-    assert.ok(
-      provisionerIndex >= 0,
-      'Release lane must invoke TerraFusion.AuthProvisioner against the runtime TerraFusion DB'
-    );
-    assert.ok(
-      smokeIndex >= 0 && provisionerIndex < smokeIndex,
-      'Release lane must provision/reset the operator account before the provisioned auth smoke'
-    );
-    assert.ok(
-      content.includes('--entrypoint sh') &&
-        content.includes('TERRAFUSION_BOOTSTRAP_EMAIL') &&
-        content.includes('PROVISION_OUTPUT=') &&
-        content.includes('PROVISION_JSON=') &&
-        content.includes("awk '/^\\{/{line=$0} END{print line}'"),
-      'Release lane must expand bootstrap credentials inside the env-file-backed container and validate provisioner JSON on the runner'
-    );
-    assert.ok(
-      !content.includes('/tmp/terrafusion-auth-provisioner.json'),
-      'Release lane must stream AuthProvisioner JSON from the one-off container instead of reading a host /tmp file'
-    );
+    assert.ok(content.includes('Protected account auth contract smoke'));
+    assert.ok(content.includes('TF_AUTH_BOOTSTRAP_EMAIL'));
+    assert.ok(content.includes('TF_AUTH_BOOTSTRAP_PASSWORD'));
+    assert.ok(content.includes('/api/auth/login'));
+    for (const forbidden of [
+      'TerraFusion.AuthProvisioner.dll',
+      'Provision DB-backed operator account',
+      'Remove ephemeral bootstrap material',
+      '--env-from-file',
+      'PROVISION_OUTPUT=',
+      'PROVISION_JSON=',
+      '.bootstrap-$GITHUB_RUN_ID.env',
+    ]) {
+      assert.ok(
+        !content.includes(forbidden),
+        'release lane must not mutate auth state via ' + forbidden
+      );
+    }
   });
 
   it('D10: production runtime compose does not override app.env TerraFusion DB binding', () => {
@@ -361,7 +357,7 @@ describe('D. CI release gate coverage', () => {
     }
   });
 
-  it('D12: release-lane provisions auth against the same configured TerraFusion DB as runtime', () => {
+  it('D12: release-lane validates protected auth against the configured DB-backed runtime', () => {
     const content = readFileSync(join(WORKFLOWS, 'release-lane.yml'), 'utf8');
     assert.ok(
       content.includes('ConnectionStrings__DefaultConnection') &&
@@ -371,7 +367,7 @@ describe('D. CI release gate coverage', () => {
     assert.ok(
       !content.includes('--provider Sqlite') &&
         !content.includes('--connection-string "Data Source=/app/data/terrafusion.db"'),
-      'AuthProvisioner must not be pinned to a separate SQLite DB in production'
+      'Release auth validation must not pin a separate SQLite DB in production'
     );
   });
 
@@ -460,9 +456,25 @@ describe('D. CI release gate coverage', () => {
 
   it('D19: first migration and rollback use secretless exact artifacts with explicit targets', () => {
     const release = readFileSync(join(WORKFLOWS, 'release-lane.yml'), 'utf8');
+    const runtimeCompose = readFileSync(
+      join(ROOT, 'ops', 'prod', 'runtime-compose.template.yml'),
+      'utf8'
+    );
     assert.ok(release.includes('Preserve exact current artifact bundle for rollback'));
     assert.ok(release.includes('resolve_running_ref()'));
     assert.ok(release.includes('artifact.env'));
+    assert.ok(release.includes('TF_SKIP_AUTO_MIGRATE=false'));
+    assert.ok(release.includes('TF_AUTO_MIGRATE_MODE=validate-only'));
+    assert.ok(release.includes('TF_RELEASE_ENV|TF_SKIP_AUTO_MIGRATE|TF_AUTO_MIGRATE_MODE'));
+    assert.match(
+      runtimeCompose,
+      /backend:[\s\S]*?env_file:\s*\n\s*- \.\/app\.env\s*\n\s*- \.\/release\.env/
+    );
+    assert.ok(release.includes("grep -Fx 'TF_SKIP_AUTO_MIGRATE=false'"));
+    assert.ok(release.includes("grep -Fx 'TF_AUTO_MIGRATE_MODE=validate-only'"));
+    assert.ok(release.includes('Verify migration validation executed'));
+    assert.ok(release.includes('AutoMigrate validate-only: no pending migrations'));
+    assert.ok(!release.includes('TerraFusion.AuthProvisioner.dll'));
     assert.ok(release.includes('Stage and validate exact runtime bundle'));
     assert.ok(release.includes('.release-incoming-$RUN_TOKEN'));
     assert.ok(release.includes('.release-backup-$RUN_TOKEN'));
@@ -527,16 +539,23 @@ describe('D. CI release gate coverage', () => {
     }
   });
 
-  it('D20: lifecycle state fixtures reject digest rebinding and rollback oscillation', () => {
-    const policy = readFileSync(join(ROOT, 'scripts', 'ci', 'release_state_policy.mjs'), 'utf8');
-    const tests = readFileSync(
-      join(ROOT, 'scripts', 'ci', 'release_state_policy.test.mjs'),
-      'utf8'
-    );
-    assert.ok(policy.includes('same SHA cannot be rebound to different image digests'));
-    assert.ok(tests.includes('repeated rollback is a no-op'));
-    assert.ok(tests.includes('legacy current state is preserved once'));
-    assert.ok(tests.includes('excludes protected values'));
+  it('D20: release lifecycle executable suite is mandatory in PR and release CI', () => {
+    const packageJson = JSON.parse(readFileSync(join(ROOT, 'package.json'), 'utf8'));
+    const lifecycle = packageJson.scripts['test:release-lifecycle'];
+    const seal = readFileSync(join(WORKFLOWS, 'seal-gate-fast.yml'), 'utf8');
+    const compliance = readFileSync(join(WORKFLOWS, 'release-compliance.yml'), 'utf8');
+    for (const required of [
+      'release_compliance_workflow.contract.test.mjs',
+      'release_image_manifest.test.mjs',
+      'release_recovery_trap.test.mjs',
+      'release_sbom_policy.test.mjs',
+      'release_state_policy.test.mjs',
+      'release_workflow_shell_syntax.test.mjs',
+    ]) {
+      assert.ok(lifecycle.includes(required), 'release lifecycle suite omits ' + required);
+    }
+    assert.ok(seal.includes('run: pnpm run test:release-lifecycle'));
+    assert.ok(compliance.includes('run: pnpm run test:release-lifecycle'));
   });
 });
 

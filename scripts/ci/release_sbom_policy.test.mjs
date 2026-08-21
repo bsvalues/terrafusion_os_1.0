@@ -16,6 +16,17 @@ test('rejects prohibited AGPL/GPL licenses', () => {
   assert.throws(() => validateSpdxLicensePolicy(load('prohibited-agpl.spdx.json')), /prohibited/);
 });
 
+test('rejects unresolved package and document-scoped custom license references', () => {
+  assert.throws(
+    () => validateSpdxLicensePolicy(load('unresolved-license-ref.spdx.json')),
+    /unresolved custom license reference/
+  );
+  assert.throws(
+    () => validateSpdxLicensePolicy(load('unresolved-document-license-ref.spdx.json')),
+    /unresolved custom license reference/
+  );
+});
+
 test('rejects missing and NOASSERTION package licenses', () => {
   for (const pkg of [
     { name: 'missing-license' },

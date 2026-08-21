@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 
 const LICENSE_FIELDS = ['licenseConcluded', 'licenseDeclared'];
 const PROHIBITED = /^(?:AGPL|GPL)-/i;
+const UNRESOLVED_LICENSE_REFERENCE = /^(?:DocumentRef-[^:]+:)?LicenseRef-/;
 
 function licenseTokens(value) {
   if (typeof value !== 'string') return [];
@@ -37,6 +38,13 @@ export function validateSpdxLicensePolicy(document, source = '<memory>') {
     );
     if (asserted.length === 0) {
       violations.push(`${name}: missing asserted license metadata`);
+      continue;
+    }
+    const unresolved = asserted.filter(token => UNRESOLVED_LICENSE_REFERENCE.test(token));
+    if (unresolved.length > 0) {
+      violations.push(
+        `${name}: unresolved custom license reference ${[...new Set(unresolved)].join(', ')}`
+      );
       continue;
     }
     const prohibited = asserted.filter(token => PROHIBITED.test(token));

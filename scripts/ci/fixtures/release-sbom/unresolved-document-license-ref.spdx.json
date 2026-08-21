@@ -1,0 +1,10 @@
+{
+  "spdxVersion": "SPDX-2.3",
+  "packages": [
+    {
+      "name": "external-custom-license-package",
+      "licenseConcluded": "DocumentRef-upstream:LicenseRef-ExternalCopyleft",
+      "licenseDeclared": "DocumentRef-upstream:LicenseRef-ExternalCopyleft"
+    }
+  ]
+}

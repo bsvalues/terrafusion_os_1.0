@@ -329,6 +329,8 @@ jobs:
           COMPOSE_PROJECT_NAME=terrafusion-${TARGET_ENV}
           TF_RELEASE_SHA=${RELEASE_SHA}
           TF_RELEASE_ENV=${TARGET_ENV}
+          TF_SKIP_AUTO_MIGRATE=false
+          TF_AUTO_MIGRATE_MODE=validate-only
           TF_RELEASE_DEPLOYED_AT=${DEPLOYED_AT}
           TF_PUBLIC_URL=${PUBLIC_URL}
           TF_PUBLIC_HOST=${PUBLIC_HOST}
@@ -420,7 +422,7 @@ jobs:
           test ! -e "$INCOMING"
           install -d -m 0700 "$INCOMING/docs/spec-lock" "$INCOMING/config"
           printf '%s\n' "$CURRENT_SHA" > "$INCOMING/release.sha"
-          awk -F= '/^(COMPOSE_PROJECT_NAME|TF_RELEASE_SHA|TF_RELEASE_ENV|TF_RELEASE_DEPLOYED_AT|TF_PUBLIC_URL|TF_PUBLIC_HOST)=/ { print }' \
+          awk -F= '/^(COMPOSE_PROJECT_NAME|TF_RELEASE_SHA|TF_RELEASE_ENV|TF_SKIP_AUTO_MIGRATE|TF_AUTO_MIGRATE_MODE|TF_RELEASE_DEPLOYED_AT|TF_PUBLIC_URL|TF_PUBLIC_HOST)=/ { print }' \
             "$APP_ROOT/release.env" > "$INCOMING/artifact.env"
           printf 'TF_BACKEND_IMAGE=%s\nTF_FRONTEND_IMAGE=%s\n' "$RESOLVED_BACKEND" "$RESOLVED_FRONTEND" >> "$INCOMING/artifact.env"
           for file in runtime-compose.yml Caddyfile sovereign.yaml; do
@@ -635,67 +637,14 @@ jobs:
           docker compose -f runtime-compose.yml --env-file release.env config >/dev/null
           docker compose -f runtime-compose.yml --env-file release.env pull
           docker compose -f runtime-compose.yml --env-file release.env up -d
+          BACKEND_CONTAINER="$(docker compose -f runtime-compose.yml --env-file release.env ps -q backend)"
+          test -n "$BACKEND_CONTAINER"
+          docker inspect --format '{{range .Config.Env}}{{println .}}{{end}}' "$BACKEND_CONTAINER" \
+            | grep -Fx 'TF_SKIP_AUTO_MIGRATE=false'
+          docker inspect --format '{{range .Config.Env}}{{println .}}{{end}}' "$BACKEND_CONTAINER" \
+            | grep -Fx 'TF_AUTO_MIGRATE_MODE=validate-only'
           trap - ERR
           SSH
-
-      - name: Provision DB-backed operator account
-        shell: bash
-        env:
-          TF_AUTH_BOOTSTRAP_EMAIL: ${{ secrets.TF_AUTH_BOOTSTRAP_EMAIL }}
-          TF_AUTH_BOOTSTRAP_PASSWORD: ${{ secrets.TF_AUTH_BOOTSTRAP_PASSWORD }}
-          TF_AUTH_BOOTSTRAP_ROLES: ${{ secrets.TF_AUTH_BOOTSTRAP_ROLES }}
-        run: |
-          set -euo pipefail
-          BOOTSTRAP_FILE="$RUNNER_TEMP/terrafusion-bootstrap-$GITHUB_RUN_ID.env"
-          REMOTE_BOOTSTRAP="$APP_ROOT/.bootstrap-$GITHUB_RUN_ID.env"
-          umask 077
-          TF_AUTH_BOOTSTRAP_ROLES="${TF_AUTH_BOOTSTRAP_ROLES:-GovernmentUser,Administrator,FullSystemAccess}"
-          printf 'TERRAFUSION_BOOTSTRAP_EMAIL=%s\nTERRAFUSION_BOOTSTRAP_PASSWORD=%s\nTERRAFUSION_BOOTSTRAP_ROLES=%s\n' \
-            "$TF_AUTH_BOOTSTRAP_EMAIL" "$TF_AUTH_BOOTSTRAP_PASSWORD" "$TF_AUTH_BOOTSTRAP_ROLES" > "$BOOTSTRAP_FILE"
-          trap 'rm -f "$BOOTSTRAP_FILE"' EXIT
-          scp -P "$DEPLOY_PORT" "$BOOTSTRAP_FILE" "$DEPLOY_USER@$DEPLOY_HOST:$REMOTE_BOOTSTRAP"
-          PROVISION_OUTPUT="$(ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" "APP_ROOT='$APP_ROOT' REMOTE_BOOTSTRAP='$REMOTE_BOOTSTRAP' bash -s" <<'SSH'
-          set -euo pipefail
-          cd "$APP_ROOT"
-          trap 'rm -f "$REMOTE_BOOTSTRAP"' EXIT
-          chmod 0600 "$REMOTE_BOOTSTRAP"
-          docker compose -f runtime-compose.yml --env-file release.env run --rm --no-deps \
-            --env-from-file "$REMOTE_BOOTSTRAP" \
-            --entrypoint sh \
-            backend \
-            -c 'set -eu
-              : "${DatabaseProvider:?DatabaseProvider missing from runtime environment}"
-              : "${ConnectionStrings__DefaultConnection:?ConnectionStrings__DefaultConnection missing from runtime environment}"
-              dotnet /app/tools/TerraFusion.AuthProvisioner/TerraFusion.AuthProvisioner.dll \
-                --email "$TERRAFUSION_BOOTSTRAP_EMAIL" \
-                --password-env TERRAFUSION_BOOTSTRAP_PASSWORD \
-                --roles "${TERRAFUSION_BOOTSTRAP_ROLES:-GovernmentUser,Administrator,FullSystemAccess}" \
-                --permissions "runtime:read,county:read,workbench:access" \
-                --county-name Benton \
-                --county-state WA \
-                --county-fips 53005 \
-                --create-county'
-          SSH
-          )"
-          PROVISION_JSON="$(printf '%s\n' "$PROVISION_OUTPUT" | awk '/^\{/{line=$0} END{print line}')"
-          PROVISION_JSON="$PROVISION_JSON" node <<'NODE'
-          const receipt = JSON.parse(process.env.PROVISION_JSON || "{}");
-          if (!receipt.passwordHashStored) {
-            throw new Error("AuthProvisioner did not store a password hash");
-          }
-          if (!receipt.countyId) {
-            throw new Error("AuthProvisioner did not bind the operator to a county");
-          }
-          console.log(`DB-backed operator account ${receipt.result}; password hash stored; county bound.`);
-          NODE
-
-      - name: Remove ephemeral bootstrap material
-        if: always()
-        shell: bash
-        run: |
-          rm -f "$RUNNER_TEMP/terrafusion-bootstrap-$GITHUB_RUN_ID.env"
-          ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" \
-            "rm -f '$APP_ROOT/.bootstrap-$GITHUB_RUN_ID.env'" || true
 
       - name: Verify public health and release header
         shell: bash
@@ -730,6 +679,14 @@ jobs:
 
           grep -iE '^HTTP/.* 200' curl_headers.txt
 
+      - name: Verify migration validation executed
+        shell: bash
+        run: |
+          set -euo pipefail
+          ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" \
+            "cd '$APP_ROOT' && docker compose -f runtime-compose.yml --env-file release.env logs --no-color backend" \
+            | grep -F 'AutoMigrate validate-only: no pending migrations'
+
       - name: Shell route contract smoke
         shell: bash
         run: |
@@ -756,14 +713,14 @@ jobs:
           probe "/property"
           echo "Shell route contract intact after deploy"
 
-      - name: Provisioned auth contract smoke
+      - name: Protected account auth contract smoke
         shell: bash
         env:
           TF_AUTH_BOOTSTRAP_EMAIL: ${{ secrets.TF_AUTH_BOOTSTRAP_EMAIL }}
           TF_AUTH_BOOTSTRAP_PASSWORD: ${{ secrets.TF_AUTH_BOOTSTRAP_PASSWORD }}
         run: |
           set -euo pipefail
-          echo "=== Provisioned auth contract smoke ==="
+          echo "=== Protected account auth contract smoke ==="
 
           POLICY_JSON="$(curl -fsS --max-time 10 "${PUBLIC_URL}/api/auth/access-policy")"
           POLICY_JSON="$POLICY_JSON" node <<'NODE'
@@ -806,19 +763,19 @@ jobs:
             if [ "$CURL_EXIT" -eq 0 ] && [[ "$HTTP_CODE" =~ ^2 ]]; then
               LOGIN_RESPONSE="$(cat "$LOGIN_BODY")"
               LOGIN_STATUS=0
-              echo "Provisioned auth login responded on attempt $attempt/12"
+              echo "Protected account login responded on attempt $attempt/12"
               break
             fi
 
             if [[ "$HTTP_CODE" =~ ^(400|401|403|404|405)$ ]]; then
-              echo "::error::Provisioned auth login failed with non-retryable HTTP $HTTP_CODE."
+              echo "::error::Protected account login failed with non-retryable HTTP $HTTP_CODE."
               head -5 "$LOGIN_BODY"
               exit 1
             fi
 
-            echo "Provisioned auth login not ready on attempt $attempt/12 (curl=$CURL_EXIT http=${HTTP_CODE:-000})"
+            echo "Protected account login not ready on attempt $attempt/12 (curl=$CURL_EXIT http=${HTTP_CODE:-000})"
             if [ "$attempt" -eq 12 ]; then
-              echo "::error::Provisioned auth login did not succeed after retry window."
+              echo "::error::Protected account login did not succeed after retry window."
               head -5 "$LOGIN_ERROR"
               exit 1
             fi
@@ -830,7 +787,7 @@ jobs:
           trap - EXIT
 
           if [ "$LOGIN_STATUS" -ne 0 ] || [ -z "$LOGIN_RESPONSE" ]; then
-            echo "::error::Provisioned auth smoke did not receive a login response."
+            echo "::error::Protected account auth smoke did not receive a login response."
             exit 1
           fi
 
@@ -840,10 +797,10 @@ jobs:
           const email = response.email || response.Email || response.user?.email || response.User?.Email;
           const roles = response.roles || response.Roles || response.user?.roles || response.User?.Roles || [];
           if (!token) {
-            throw new Error("Provisioned auth smoke did not receive a token");
+            throw new Error("Protected account auth smoke did not receive a token");
           }
           if (email !== process.env.TF_AUTH_BOOTSTRAP_EMAIL) {
-            throw new Error(`Provisioned auth smoke returned unexpected email: ${email}`);
+            throw new Error(`Protected account auth smoke returned unexpected email: ${email}`);
           }
           console.log(`Provisioned login returned token for ${email} with ${Array.isArray(roles) ? roles.length : 0} roles`);
           NODE

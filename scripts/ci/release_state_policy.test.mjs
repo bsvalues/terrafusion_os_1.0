@@ -51,6 +51,8 @@ test('legacy conversion keeps release metadata and excludes protected values', (
     {
       TF_RELEASE_SHA: shaA,
       TF_RELEASE_ENV: 'production',
+      TF_SKIP_AUTO_MIGRATE: 'false',
+      TF_AUTO_MIGRATE_MODE: 'validate-only',
       TF_PUBLIC_URL: 'https://example.invalid',
       TERRAFUSION_BOOTSTRAP_PASSWORD: 'must-not-survive',
       API_TOKEN: 'must-not-survive',
@@ -58,6 +60,8 @@ test('legacy conversion keeps release metadata and excludes protected values', (
     { backendRef: ref('backend', 'a'), frontendRef: ref('frontend', 'a') }
   );
   assert.equal(metadata.TF_RELEASE_SHA, shaA);
+  assert.equal(metadata.TF_SKIP_AUTO_MIGRATE, 'false');
+  assert.equal(metadata.TF_AUTO_MIGRATE_MODE, 'validate-only');
   assert.equal(metadata.TERRAFUSION_BOOTSTRAP_PASSWORD, undefined);
   assert.equal(metadata.API_TOKEN, undefined);
 });

@@ -43,7 +43,10 @@ public sealed class AutoMigrateHostedServiceTests
         var provider = services.BuildServiceProvider();
         var scopeFactory = provider.GetRequiredService<IServiceScopeFactory>();
         var logger = new CapturingLogger<AutoMigrateHostedService>();
-        var svc = new AutoMigrateHostedService(scopeFactory, logger);
+        var svc = new AutoMigrateHostedService(
+            scopeFactory,
+            logger,
+            new ConfigurationBuilder().Build());
         return (svc, logger);
     }
 
@@ -54,7 +57,10 @@ public sealed class AutoMigrateHostedServiceTests
         // a misconfigured DI graph or a transient resolution failure.
         var scopeFactory = new ThrowingScopeFactory(new InvalidOperationException("boom"));
         var logger = new CapturingLogger<AutoMigrateHostedService>();
-        var svc = new AutoMigrateHostedService(scopeFactory, logger);
+        var svc = new AutoMigrateHostedService(
+            scopeFactory,
+            logger,
+            new ConfigurationBuilder().Build());
 
         // Act: must not throw.
         Func<Task> act = () => svc.StartAsync(CancellationToken.None);
@@ -109,7 +115,10 @@ public sealed class AutoMigrateHostedServiceTests
         // Arrange: any service instance — StopAsync has no work to do.
         var scopeFactory = new ThrowingScopeFactory(new InvalidOperationException("never reached"));
         var logger = new CapturingLogger<AutoMigrateHostedService>();
-        var svc = new AutoMigrateHostedService(scopeFactory, logger);
+        var svc = new AutoMigrateHostedService(
+            scopeFactory,
+            logger,
+            new ConfigurationBuilder().Build());
 
         // Act.
         var task = svc.StopAsync(CancellationToken.None);
@@ -162,7 +171,10 @@ public sealed class AutoMigrateHostedServiceTests
             services.AddDbContext<TerraFusionDbContext>(o => o.UseSqlite($"Data Source={dbPath}"));
             var provider = services.BuildServiceProvider();
             var logger = new CapturingLogger<AutoMigrateHostedService>();
-            var svc = new AutoMigrateHostedService(provider.GetRequiredService<IServiceScopeFactory>(), logger);
+            var svc = new AutoMigrateHostedService(
+                provider.GetRequiredService<IServiceScopeFactory>(),
+                logger,
+                provider.GetRequiredService<IConfiguration>());
 
             await svc.StartAsync(CancellationToken.None);
 
@@ -189,6 +201,78 @@ public sealed class AutoMigrateHostedServiceTests
                 // The SQLite provider can release temp files slightly after
                 // DbContext disposal on Windows; leaked temp files must not mask
                 // the assertion that proves the schema repair behavior.
+            }
+        }
+    }
+
+    [Fact]
+    public async Task StartAsync_validate_only_rejects_pending_migrations_without_repairing_schema()
+    {
+        var dbPath = Path.Combine(
+            Path.GetTempPath(),
+            "tf-auto-migrate-validate-" + Guid.NewGuid().ToString("N") + ".db");
+        try
+        {
+            await using (var connection = new SqliteConnection("Data Source=" + dbPath))
+            {
+                await connection.OpenAsync();
+                var command = connection.CreateCommand();
+                command.CommandText = """
+                    CREATE TABLE "__EFMigrationsHistory" (
+                        "MigrationId" TEXT NOT NULL CONSTRAINT "PK___EFMigrationsHistory" PRIMARY KEY,
+                        "ProductVersion" TEXT NOT NULL
+                    );
+                    CREATE TABLE "Counties" (
+                        "Id" TEXT NOT NULL CONSTRAINT "PK_Counties" PRIMARY KEY,
+                        "Name" TEXT NOT NULL,
+                        "State" TEXT NOT NULL,
+                        "FipsCode" TEXT NULL
+                    );
+                    """;
+                await command.ExecuteNonQueryAsync();
+            }
+
+            var configuration = new ConfigurationBuilder()
+                .AddInMemoryCollection(new Dictionary<string, string?>
+                {
+                    ["ConnectionStrings:DefaultConnection"] = "Data Source=" + dbPath,
+                    ["TF_AUTO_MIGRATE_MODE"] = "validate-only",
+                })
+                .Build();
+            var services = new ServiceCollection();
+            services.AddSingleton<IConfiguration>(configuration);
+            services.AddDbContext<TerraFusionDbContext>(o => o.UseSqlite("Data Source=" + dbPath));
+            var provider = services.BuildServiceProvider();
+            var logger = new CapturingLogger<AutoMigrateHostedService>();
+            var svc = new AutoMigrateHostedService(
+                provider.GetRequiredService<IServiceScopeFactory>(),
+                logger,
+                configuration);
+
+            Func<Task> act = () => svc.StartAsync(CancellationToken.None);
+            await act.Should().ThrowAsync<InvalidOperationException>()
+                .WithMessage("*validate-only rejected pending migrations*");
+
+            await using var verify = new SqliteConnection("Data Source=" + dbPath);
+            await verify.OpenAsync();
+            var tableCheck = verify.CreateCommand();
+            tableCheck.CommandText =
+                "SELECT COUNT(*) FROM sqlite_master WHERE type = 'table' AND name = 'QueueItems';";
+            var queueTableCount = (long)(await tableCheck.ExecuteScalarAsync() ?? 0L);
+            queueTableCount.Should().Be(0, "validate-only mode must never apply or repair schema state");
+            logger.Entries.Should().Contain(e =>
+                e.Level == LogLevel.Error &&
+                e.Message.Contains("AutoMigrate validate-only"));
+        }
+        finally
+        {
+            try
+            {
+                if (File.Exists(dbPath))
+                    File.Delete(dbPath);
+            }
+            catch (IOException)
+            {
             }
         }
     }
