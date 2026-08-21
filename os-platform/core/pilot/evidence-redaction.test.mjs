@@ -41,7 +41,7 @@ function encodeSerializedFragment(value, serializationDepth) {
 
 test("deep evidence redaction removes credential fields and compact JWTs", () => {
   const fixtureJwt =
-    "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJub3QtYS1yZWFsLXRva2VuIn0.fixture-signature-only";
+    "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJub3QtYS1yZWFsLXRva2VuIn0.Zml4dHVyZS1zaWduYXR1cmUtb25seQ";
   const evidence = {
     safe: "operator probe completed",
     nested: {
@@ -67,7 +67,7 @@ test("deep evidence redaction removes credential fields and compact JWTs", () =>
 
 test("text redaction handles bearer and assignment representations", () => {
   const fixtureJwt =
-    "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJub3QtYS1yZWFsLXRva2VuIn0.fixture-signature-only";
+    "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJub3QtYS1yZWFsLXRva2VuIn0.Zml4dHVyZS1zaWduYXR1cmUtb25seQ";
   const input = `Authorization: Bearer ${fixtureJwt}\npassword=fixture-password`;
   const redacted = redactEvidenceText(input);
 
@@ -514,11 +514,12 @@ test("compact JWT candidates allow short claims with algorithm-consistent signat
     "base64url"
   );
   const shortClaims = Buffer.from("{}", "utf8").toString("base64url");
+  const canonicalSignature = Buffer.from("synthetic-signature", "utf8").toString("base64url");
   assert.equal(shortClaims, "e30");
 
   for (const token of [
     `${noneHeader}.${shortClaims}.`,
-    `${signedHeader}.${shortClaims}.synthetic-signature`,
+    `${signedHeader}.${shortClaims}.${canonicalSignature}`,
   ]) {
     const input = `prefix ${token}; suffix=keep`;
     const findings = findEvidenceCredentialFindings(input);
@@ -531,9 +532,20 @@ test("compact JWT candidates allow short claims with algorithm-consistent signat
     assert.equal(redactEvidenceText(redacted), redacted);
   }
 
+  const emptyAlgHeader = Buffer.from(JSON.stringify({ alg: "" }), "utf8").toString("base64url");
+  const whitespaceAlgHeader = Buffer.from(JSON.stringify({ alg: "  " }), "utf8").toString("base64url");
+  const arrayHeader = Buffer.from("[]", "utf8").toString("base64url");
+  const arrayClaims = Buffer.from("[]", "utf8").toString("base64url");
   for (const invalid of [
     `${signedHeader}.${shortClaims}.`,
-    `${noneHeader}.${shortClaims}.synthetic-signature`,
+    `${noneHeader}.${shortClaims}.${canonicalSignature}`,
+    `${noneHeader}.${shortClaims}..tail`,
+    `${signedHeader}.${shortClaims}.${canonicalSignature}.tail`,
+    `${noneHeader}.e31.`,
+    `${emptyAlgHeader}.${shortClaims}.${canonicalSignature}`,
+    `${whitespaceAlgHeader}.${shortClaims}.${canonicalSignature}`,
+    `${arrayHeader}.${shortClaims}.${canonicalSignature}`,
+    `${signedHeader}.${arrayClaims}.${canonicalSignature}`,
   ]) {
     assert.equal(findEvidenceCredentialFindings(invalid).length, 0);
     assert.equal(redactEvidenceText(invalid), invalid);
@@ -576,7 +588,7 @@ test("authorization findings use captured schemes and safe markers converge", ()
 
 test("text findings emit one absolute span per independent credential", () => {
   const jwt =
-    "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJub3QtYS1yZWFsLXRva2VuIn0.fixture-signature-only";
+    "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJub3QtYS1yZWFsLXRva2VuIn0.Zml4dHVyZS1zaWduYXR1cmUtb25seQ";
   const input = [
     "password=first-assignment-secret",
     "token=second-assignment-secret",

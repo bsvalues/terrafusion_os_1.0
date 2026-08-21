@@ -1,7 +1,7 @@
 const REDACTION_MARKER = "[REDACTED]";
 
 const COMPACT_JWT_PATTERN =
-  /(?<![A-Za-z0-9_-])[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]*(?![A-Za-z0-9_-])/g;
+  /(?<![A-Za-z0-9_.-])[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]*(?![A-Za-z0-9_.-])/g;
 const AUTHORIZATION_HEADER_PATTERN =
   /(\bAuthorization\s*:\s*)(Bearer|Basic)\s+[A-Za-z0-9._~+/=-]+/gi;
 const COOKIE_HEADER_PATTERN = /(\b(?:Set-Cookie|Cookie)\s*:\s*)[^\r\n]+/gi;
@@ -310,25 +310,37 @@ function redactSensitiveAssignments(value) {
   return result + value.slice(cursor);
 }
 
+function decodeCanonicalBase64Url(segment) {
+  const decoded = Buffer.from(segment, "base64url");
+  return decoded.toString("base64url") === segment ? decoded : null;
+}
+
 function isCompactJwt(candidate) {
   const segments = candidate.split(".");
   if (segments.length !== 3) return false;
+  const headerBytes = decodeCanonicalBase64Url(segments[0]);
+  const payloadBytes = decodeCanonicalBase64Url(segments[1]);
+  const signatureIsCanonical =
+    segments[2] === "" || decodeCanonicalBase64Url(segments[2]) !== null;
+  if (!headerBytes || !payloadBytes || !signatureIsCanonical) return false;
   try {
-    const header = JSON.parse(Buffer.from(segments[0], "base64url").toString("utf8"));
-    const payload = JSON.parse(Buffer.from(segments[1], "base64url").toString("utf8"));
+    const header = JSON.parse(headerBytes.toString("utf8"));
+    const payload = JSON.parse(payloadBytes.toString("utf8"));
     return (
       header !== null &&
       typeof header === "object" &&
+      !Array.isArray(header) &&
       typeof header.alg === "string" &&
+      header.alg.trim() !== "" &&
       payload !== null &&
       typeof payload === "object" &&
+      !Array.isArray(payload) &&
       (header.alg === "none" ? segments[2] === "" : segments[2] !== "")
     );
   } catch {
     return false;
   }
 }
-
 function parseStructuredJsonText(value) {
   let current = String(value);
   let wrapperDepth = 0;
