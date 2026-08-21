@@ -322,7 +322,6 @@ public class AtlasGisController : ControllerBase
         var values = User.FindAll("countyId")
             .Select(claim => claim.Value.Trim())
             .Where(value => value.Length > 0)
-            .Distinct(StringComparer.OrdinalIgnoreCase)
             .Take(2)
             .ToArray();
 
