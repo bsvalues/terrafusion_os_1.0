@@ -282,7 +282,7 @@ public class KernelValuationServiceIntegrationTests
     }
 
     [LocalForgePersistentRuntimeRollbackFact]
-    public async Task LocalForgePersistentRuntimeSelection_BindsDisposableConfiguration()
+    public void LocalForgePersistentRuntimeSelection_BindsDisposableConfiguration()
     {
         var configPath = RequireEnvironmentPath("TERRAFUSION_FORGE_REHEARSAL_CONFIG_PATH");
         var expectedSha256 =
