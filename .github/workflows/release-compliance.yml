@@ -196,6 +196,8 @@ jobs:
           test -s sbom-frontend-build-dependencies-spdx.json
           cleanup_frontend_container
           trap - EXIT
+      - name: Guard exact published backend dependency identities
+        run: node scripts/ci/backend_published_deps_guard.mjs backend-runtime-root
       - name: Guard exact Semantic Kernel advisory suppression
         run: node scripts/ci/backend_semantic_kernel_advisory_guard.mjs sbom-backend-runtime-spdx.json backend-runtime-root backend
       - name: Generate backend runtime license evidence summary
@@ -276,7 +278,9 @@ jobs:
           severity: 'CRITICAL,HIGH'
           limit-severities-for-sarif: true
           exit-code: '1'
+          timeout: '15m'
           version: 'v0.70.0'
+          trivyignores: '.trivyignore.yaml'
       - name: Upload container security results
         if: always()
         uses: github/codeql-action/upload-sarif@v3

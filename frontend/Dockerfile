@@ -47,7 +47,7 @@ RUN NODE_OPTIONS="--max-old-space-size=4096" pnpm exec vite build --outDir /app/
 RUN test -f /app/dist/index.html || (echo 'ERROR: /app/dist/index.html missing after build' && exit 1)
 
 # ── Runtime stage ────────────────────────────────────────────────────────────
-FROM nginx:1.27-alpine AS production
+FROM nginx:1.30.4-alpine3.24@sha256:97d490c12ba55b4946b01546d1c3ed324e8d41ab1c9fcb2a616aa470620e5b46 AS production
 WORKDIR /usr/share/nginx/html
 
 # Remove default nginx content

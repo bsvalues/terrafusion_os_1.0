@@ -9,6 +9,13 @@ const root = join(dirname(fileURLToPath(import.meta.url)), '../..');
 const workflow = readFileSync(join(root, '.github/workflows/release-compliance.yml'), 'utf8');
 const dockerignore = readFileSync(join(root, '.dockerignore'), 'utf8');
 const frontendDockerfile = readFileSync(join(root, 'frontend/Dockerfile'), 'utf8');
+const backendDockerfile = readFileSync(join(root, 'backend/Dockerfile'), 'utf8');
+const trivyIgnore = readFileSync(join(root, '.trivyignore.yaml'), 'utf8');
+const backendPackages = readFileSync(join(root, 'backend/Directory.Packages.props'), 'utf8');
+const backendApiProject = readFileSync(
+  join(root, 'backend/src/TerraFusion.API/TerraFusion.API.csproj'),
+  'utf8'
+);
 const grypeReleaseConfig = readFileSync(join(root, 'scripts/ci/grype-release.yaml'), 'utf8');
 const sealWorkflow = readFileSync(join(root, '.github/workflows/seal-gate-fast.yml'), 'utf8');
 const packageJson = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8'));
@@ -50,10 +57,11 @@ test('affected Semantic Kernel plugin guard inspects the exact backend image fil
   const pull = text.indexOf('docker pull "$BACKEND_IMAGE_REF"');
   const create = text.indexOf('docker create "$BACKEND_IMAGE_REF"');
   const copy = text.indexOf('docker cp "$BACKEND_CONTAINER:/app/." backend-runtime-root/');
+  const depsGuard = text.indexOf('backend_published_deps_guard.mjs backend-runtime-root');
   const guard = text.indexOf(
     'backend_semantic_kernel_advisory_guard.mjs sbom-backend-runtime-spdx.json backend-runtime-root backend'
   );
-  assert.ok(pull >= 0 && create > pull && copy > create && guard > copy);
+  assert.ok(pull >= 0 && create > pull && copy > create && depsGuard > copy && guard > depsGuard);
   assert.match(text, /trap cleanup_backend_container EXIT/);
   assert.match(text, /cleanup_backend_container[\s\S]*trap - EXIT/);
   assert.match(text, /test -n "\$\(find backend-runtime-root -type f -print -quit\)"/);
@@ -74,6 +82,62 @@ ignore:
 show-suppressed: true
 `;
   assert.equal(grypeReleaseConfig.replace(/\r\n/g, '\n'), expected);
+});
+
+test('Trivy exception is exact, package-scoped, and release-image-only', () => {
+  const expected = `vulnerabilities:
+  - id: CVE-2026-25592
+    purls:
+      - pkg:nuget/Microsoft.SemanticKernel.Core@1.4.0
+    statement: >-
+      Official Microsoft advisory GHSA-2ww3-72rp-wpp4 affects
+      Microsoft.SemanticKernel.Plugins.Core and SessionsPythonPlugin, neither of which
+      is present in the exact release image as enforced by the release runtime guard.
+`;
+  assert.equal(trivyIgnore.replace(/\r\n/g, '\n'), expected);
+  const text = job('container-security');
+  assert.match(text, /severity: 'CRITICAL,HIGH'/);
+  assert.match(text, /exit-code: '1'/);
+  assert.match(text, /timeout: '15m'/);
+  assert.match(text, /version: 'v0\.70\.0'[\s\S]*trivyignores: '\.trivyignore\.yaml'/);
+  assert.doesNotMatch(job('security-deep-scan'), /trivyignores:/);
+});
+
+test('backend image build fails before export on stale published dependency metadata', () => {
+  assert.match(backendDockerfile, /RUN grep -q -E[\s\S]*\*\.deps\.json[\s\S]*test \"\$\?\" -eq 1/);
+  assert.doesNotMatch(backendDockerfile, /grep -R/);
+  assert.ok(backendApiProject.includes('<Content Remove="publish\\**\\*" />'));
+  assert.ok(backendApiProject.includes('<None Remove="publish\\**\\*" />'));
+  for (const identity of [
+    'Microsoft\\.Kiota\\.Abstractions/1\\.9\\.1',
+    'Npgsql/8\\.0\\.0',
+    'SQLitePCLRaw\\.lib\\.e_sqlite3/2\\.1\\.6',
+  ]) {
+    assert.ok(backendDockerfile.includes(identity), `missing Docker publish guard for ${identity}`);
+  }
+  assert.match(
+    packageJson.scripts['test:release-lifecycle'],
+    /backend_published_deps_guard\.test\.mjs/
+  );
+});
+
+test('published backend closure pins exact advisory-remediated runtime packages', () => {
+  assert.match(backendPackages, /PackageVersion Include="Npgsql" Version="8\.0\.5"/);
+  assert.match(
+    backendPackages,
+    /PackageVersion Include="Microsoft\.Kiota\.Abstractions" Version="1\.22\.0"/
+  );
+  assert.match(
+    backendPackages,
+    /PackageVersion Include="SQLitePCLRaw\.lib\.e_sqlite3" Version="2\.1\.13"/
+  );
+  for (const name of ['Npgsql', 'Microsoft.Kiota.Abstractions', 'SQLitePCLRaw.lib.e_sqlite3']) {
+    assert.match(
+      backendApiProject,
+      new RegExp(`PackageReference Include="${name.replaceAll('.', '\\.')}"`)
+    );
+  }
+  assert.doesNotMatch(backendPackages, /CentralPackageTransitivePinningEnabled/);
 });
 
 test('publisher creates each canonical runtime image exactly once and records digests', () => {
@@ -141,6 +205,11 @@ test('published frontend image embeds and scans browser and build dependency evi
   assert.match(text, /path: \|[\s\S]*sbom-\*\.json[\s\S]*backend-runtime-license-evidence\.json/);
   assert.doesNotMatch(text, /target: build|terrafusion-frontend-build|frontend-build-spdx/);
   assert.doesNotMatch(text, /syft dir:\./);
+  assert.match(
+    frontendDockerfile,
+    /^FROM nginx:1\.30\.4-alpine3\.24@sha256:97d490c12ba55b4946b01546d1c3ed324e8d41ab1c9fcb2a616aa470620e5b46 AS production$/m,
+    'frontend production runtime base must remain exact and Trivy-verified'
+  );
   assert.match(
     frontendDockerfile,
     /pnpm licenses list --json --prod --filter \.\/frontend\.\.\.[\s\S]*browser-production/

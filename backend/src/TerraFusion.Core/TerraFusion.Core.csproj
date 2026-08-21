@@ -23,11 +23,14 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" />
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" />
     <PackageReference Include="Microsoft.Graph" />
+    <PackageReference Include="Microsoft.Kiota.Abstractions" />
     <PackageReference Include="Microsoft.Identity.Web" />
     <PackageReference Include="Microsoft.ML" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
+    <PackageReference Include="Npgsql" />
     <PackageReference Include="Microsoft.Data.SqlClient" />
     <PackageReference Include="Microsoft.Data.Sqlite" />
+    <PackageReference Include="SQLitePCLRaw.lib.e_sqlite3" />
     <PackageReference Include="Dapper" />
     <PackageReference Include="prometheus-net" />
     <PackageReference Include="Serilog.Extensions.Hosting" />
