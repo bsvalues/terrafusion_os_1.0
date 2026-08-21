@@ -13,7 +13,16 @@ namespace TerraFusion.API.Tests.Services.Valuation;
 
 public class RustKernelProcessHostTests
 {
-    private const string ForgeCommit = "24059c3642339f36877cb454ca63683180915b71";
+    private const string ForgeSourceCommit = "24059c3642339f36877cb454ca63683180915b71";
+    private const string ForgeProducerCommit = "3fc296da17aaca4c32dd9b727ab62d2d3725d789";
+    private static readonly IReadOnlyDictionary<string, string> ForgeContractSha256 =
+        new Dictionary<string, string>
+        {
+            ["crosscut.audit@1.0.0"] =
+                "3a098f290ed21fb1b713ae4879b407d045c26f73ac88d7b009a2496266b3b86c",
+            ["forge.valuation@1.0.0"] =
+                "0e7db3fa3e01db4ba446ae67dbd8266384834e31cbe5ee6e699e7a44ca6c75cc",
+        };
     private static readonly IReadOnlyDictionary<string, string> ForgeSourceSha256 =
         new Dictionary<string, string>
         {
@@ -246,7 +255,7 @@ public class RustKernelProcessHostTests
         var host = CreateSut(configure: options =>
         {
             options.ValuationKernelManifestPath = fixture.MissingManifestPath;
-            options.ValuationKernelSourceCommit = ForgeCommit;
+            options.ValuationKernelSourceCommit = ForgeSourceCommit;
         });
 
         var result = await host.InvokeAsync<ValuationKernelPayload, ValuationKernelResult>(
@@ -266,7 +275,7 @@ public class RustKernelProcessHostTests
         var host = CreateSut(configure: options =>
         {
             options.ValuationKernelManifestPath = fixture.ManifestPath;
-            options.ValuationKernelSourceCommit = ForgeCommit;
+            options.ValuationKernelSourceCommit = ForgeSourceCommit;
         });
 
         var result = await host.InvokeAsync<ValuationKernelPayload, ValuationKernelResult>(
@@ -290,7 +299,7 @@ public class RustKernelProcessHostTests
         var host = CreateSut(configure: options =>
         {
             options.ValuationKernelManifestPath = fixture.ManifestPath;
-            options.ValuationKernelSourceCommit = ForgeCommit;
+            options.ValuationKernelSourceCommit = ForgeSourceCommit;
         });
 
         var result = await host.InvokeAsync<ValuationKernelPayload, ValuationKernelResult>(
@@ -301,6 +310,71 @@ public class RustKernelProcessHostTests
         Assert.False(result.Success);
         Assert.Equal(KernelFailureMode.ProvenanceFailure, result.FailureMode);
         Assert.Contains("did not match", result.ErrorMessage, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public void ValuationKernel_ProducerManifestValidators_AreExactAndFailClosed()
+    {
+        using var sources = JsonDocument.Parse(JsonSerializer.Serialize(ForgeSourceSha256));
+        var sourceValidator = typeof(RustKernelProcessHost).GetMethod(
+            "SourceHashesMatch",
+            BindingFlags.NonPublic | BindingFlags.Static);
+        Assert.NotNull(sourceValidator);
+        Assert.True((bool)sourceValidator!.Invoke(null, new object[] { sources.RootElement })!);
+
+        var changedSources = new Dictionary<string, string>(ForgeSourceSha256)
+        {
+            ["kernels/terraforge.kernel.valuation/src/main.rs"] = new string('0', 64),
+        };
+        using var changed = JsonDocument.Parse(JsonSerializer.Serialize(changedSources));
+        Assert.False((bool)sourceValidator.Invoke(null, new object[] { changed.RootElement })!);
+
+        var contracts = ForgeContractSha256.Select(contract => new
+        {
+            id = contract.Key,
+            authorityRepository = "bsvalues/terrafusion_os_1.0",
+            authorityFreezeCommit = "e6cbbe8aa05687a1d187531d63bef3cec8e57134",
+            digestAlgorithm = "sha256(sorted path:sha256 newline)",
+            digest = contract.Value,
+        }).ToArray();
+        using var contractDocument = JsonDocument.Parse(JsonSerializer.Serialize(contracts));
+        var contractValidator = typeof(RustKernelProcessHost).GetMethod(
+            "ContractsMatch",
+            BindingFlags.NonPublic | BindingFlags.Static);
+        Assert.NotNull(contractValidator);
+        Assert.True((bool)contractValidator!.Invoke(
+            null, new object[] { contractDocument.RootElement })!);
+
+        var tamperedContracts = contracts.Select((contract, index) => new
+        {
+            contract.id,
+            contract.authorityRepository,
+            contract.authorityFreezeCommit,
+            contract.digestAlgorithm,
+            digest = index == 0 ? new string('0', 64) : contract.digest,
+        }).ToArray();
+        using var tampered = JsonDocument.Parse(JsonSerializer.Serialize(tamperedContracts));
+        Assert.False((bool)contractValidator.Invoke(null, new object[] { tampered.RootElement })!);
+    }
+
+    [Fact]
+    public async Task ValuationKernel_ConfigurationIdentityMismatch_FailsClosedBeforeExecution()
+    {
+        using var fixture = ProvenanceFixture.Create(writeManifest: true, useActualExecutableSha256: true);
+        var host = CreateSut(configure: options =>
+        {
+            options.ValuationKernelManifestPath = fixture.ManifestPath;
+            options.ValuationKernelProducerCommit = new string('0', 40);
+        });
+
+        var result = await host.InvokeAsync<ValuationKernelPayload, ValuationKernelResult>(
+            fixture.ExecutablePath,
+            "terraforge.kernel.valuation",
+            SampleValuationInvocation());
+
+        Assert.False(result.Success);
+        Assert.Equal(KernelFailureMode.ProvenanceFailure, result.FailureMode);
+        Assert.Contains("configuration", result.ErrorMessage, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
@@ -410,7 +484,7 @@ public class RustKernelProcessHostTests
         private ProvenanceFixture(string root)
         {
             Root = root;
-            ExecutablePath = Path.Combine(root, "terraforge-kernel-valuation.exe");
+            ExecutablePath = Path.Combine(root, "terraforge-kernel-valuation");
             ManifestPath = Path.Combine(root, "manifest.json");
             MissingManifestPath = Path.Combine(root, "missing-manifest.json");
         }
@@ -442,15 +516,28 @@ public class RustKernelProcessHostTests
                 var manifest = new
                 {
                     schemaVersion = 1,
+                    artifactType = RustKernelsOptions.ForgeValuationArtifactType,
                     repository = "bsvalues/terrafusion-forge",
-                    commit = ForgeCommit,
-                    transport = "local-os-managed-artifact-slot",
-                    sourceBlobSha256,
-                    executableFilename = Path.GetFileName(fixture.ExecutablePath),
-                    executableSha256 = useActualExecutableSha256
-                        ? Convert.ToHexString(SHA256.HashData(
-                            File.ReadAllBytes(fixture.ExecutablePath))).ToLowerInvariant()
-                        : executableSha256,
+                    producerCommit = ForgeProducerCommit,
+                    canonicalSourceCommit = ForgeSourceCommit,
+                    canonicalSourceIntegrity = new { files = sourceBlobSha256 },
+                    contracts = ForgeContractSha256.Select(contract => new
+                    {
+                        id = contract.Key,
+                        authorityRepository = "bsvalues/terrafusion_os_1.0",
+                        authorityFreezeCommit = "e6cbbe8aa05687a1d187531d63bef3cec8e57134",
+                        digestAlgorithm = "sha256(sorted path:sha256 newline)",
+                        digest = contract.Value,
+                    }),
+                    build = new { target = "x86_64-unknown-linux-musl" },
+                    executable = new
+                    {
+                        filename = Path.GetFileName(fixture.ExecutablePath),
+                        sha256 = useActualExecutableSha256
+                            ? Convert.ToHexString(SHA256.HashData(
+                                File.ReadAllBytes(fixture.ExecutablePath))).ToLowerInvariant()
+                            : executableSha256,
+                    },
                 };
                 File.WriteAllText(fixture.ManifestPath, JsonSerializer.Serialize(manifest));
             }
