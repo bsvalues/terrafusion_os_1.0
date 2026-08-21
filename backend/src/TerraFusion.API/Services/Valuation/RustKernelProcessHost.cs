@@ -12,7 +12,10 @@ namespace TerraFusion.API.Services.Valuation;
 /// <summary>Runs a manifest-verified kernel with bounded, sanitized process evidence.</summary>
 public class RustKernelProcessHost : IRustKernelProcessHost
 {
-    private const string ForgeSourceCommit = "24059c3642339f36877cb454ca63683180915b71";
+    private const string ForgeRepository = "bsvalues/terrafusion-forge";
+    private const string ForgeAuthorityRepository = "bsvalues/terrafusion_os_1.0";
+    private const string ForgeAuthorityFreezeCommit = "e6cbbe8aa05687a1d187531d63bef3cec8e57134";
+    private const string ForgeContractDigestAlgorithm = "sha256(sorted path:sha256 newline)";
     private static readonly IReadOnlyDictionary<string, string> ForgeSourceSha256 =
         new Dictionary<string, string>(StringComparer.Ordinal)
         {
@@ -24,6 +27,14 @@ public class RustKernelProcessHost : IRustKernelProcessHost
                 "9220a3d4c6011d835c4fd45ef07cf34a109fe434527926d4e12848ebbae921f6",
             ["kernels/terraforge.kernel.valuation/src/main.rs"] =
                 "3dbad9a2c89c061fccdfc2a0d05d7074a6b397bc05da6ee5e9a23844d209f4ae",
+        };
+    private static readonly IReadOnlyDictionary<string, string> ForgeContractSha256 =
+        new Dictionary<string, string>(StringComparer.Ordinal)
+        {
+            ["crosscut.audit@1.0.0"] =
+                "3a098f290ed21fb1b713ae4879b407d045c26f73ac88d7b009a2496266b3b86c",
+            ["forge.valuation@1.0.0"] =
+                "0e7db3fa3e01db4ba446ae67dbd8266384834e31cbe5ee6e699e7a44ca6c75cc",
         };
 
     private static readonly JsonSerializerOptions JsonOpts = new()
@@ -310,28 +321,57 @@ public class RustKernelProcessHost : IRustKernelProcessHost
         var options = _options.Value;
         if (string.IsNullOrWhiteSpace(options.ValuationKernelManifestPath))
             return ("Valuation kernel provenance manifest is not configured.", null);
+        if (!string.Equals(options.ValuationKernelArtifactType, RustKernelsOptions.ForgeValuationArtifactType, StringComparison.Ordinal)
+            || !string.Equals(options.ValuationKernelProducerCommit, RustKernelsOptions.ForgeValuationProducerCommit, StringComparison.Ordinal)
+            || !string.Equals(options.ValuationKernelSourceCommit, RustKernelsOptions.ForgeValuationCanonicalSourceCommit, StringComparison.Ordinal)
+            || !string.Equals(options.ValuationKernelProducerManifestSha256, RustKernelsOptions.ForgeValuationProducerManifestSha256, StringComparison.OrdinalIgnoreCase)
+            || !string.Equals(options.ValuationKernelExecutableSha256, RustKernelsOptions.ForgeValuationExecutableSha256, StringComparison.OrdinalIgnoreCase))
+            return ("Valuation kernel provenance configuration did not match the admitted Forge artifact.", null);
+
         var manifestPath = ResolveRepositoryRelativePath(options.ValuationKernelManifestPath);
         if (!File.Exists(manifestPath))
             return ("Valuation kernel provenance manifest was not found.", null);
 
         string binarySha256;
-        try { binarySha256 = ComputeFileSha256(executablePath); }
-        catch { return ("Valuation kernel executable could not be hashed.", null); }
+        string manifestSha256;
+        try
+        {
+            binarySha256 = ComputeFileSha256(executablePath);
+            manifestSha256 = ComputeFileSha256(manifestPath);
+        }
+        catch
+        {
+            return ("Valuation kernel artifact could not be hashed.", null);
+        }
+
+        if (!string.Equals(binarySha256, RustKernelsOptions.ForgeValuationExecutableSha256, StringComparison.OrdinalIgnoreCase)
+            || !string.Equals(binarySha256, options.ValuationKernelExecutableSha256, StringComparison.OrdinalIgnoreCase)
+            || !string.Equals(manifestSha256, RustKernelsOptions.ForgeValuationProducerManifestSha256, StringComparison.OrdinalIgnoreCase)
+            || !string.Equals(manifestSha256, options.ValuationKernelProducerManifestSha256, StringComparison.OrdinalIgnoreCase))
+            return ("Valuation kernel provenance did not match the admitted Forge artifact.", binarySha256);
 
         try
         {
             using var manifest = JsonDocument.Parse(File.ReadAllText(manifestPath));
             var root = manifest.RootElement;
-            var hashes = root.GetProperty("sourceBlobSha256");
+            var hashes = root.GetProperty("canonicalSourceIntegrity").GetProperty("files");
+            var executable = root.GetProperty("executable");
+            var build = root.GetProperty("build");
             if (root.GetProperty("schemaVersion").GetInt32() != 1
-                || !string.Equals(root.GetProperty("repository").GetString(), "bsvalues/terrafusion-forge", StringComparison.Ordinal)
-                || !string.Equals(root.GetProperty("commit").GetString(), ForgeSourceCommit, StringComparison.OrdinalIgnoreCase)
-                || !string.Equals(root.GetProperty("commit").GetString(), options.ValuationKernelSourceCommit, StringComparison.OrdinalIgnoreCase)
-                || !string.Equals(root.GetProperty("transport").GetString(), "local-os-managed-artifact-slot", StringComparison.Ordinal)
-                || !string.Equals(root.GetProperty("executableFilename").GetString(), Path.GetFileName(executablePath), StringComparison.OrdinalIgnoreCase)
-                || !string.Equals(root.GetProperty("executableSha256").GetString(), binarySha256, StringComparison.OrdinalIgnoreCase)
-                || !SourceHashesMatch(hashes))
-                return ("Valuation kernel provenance did not match the configured Forge artifact.", binarySha256);
+                || !string.Equals(root.GetProperty("artifactType").GetString(), RustKernelsOptions.ForgeValuationArtifactType, StringComparison.Ordinal)
+                || !string.Equals(root.GetProperty("artifactType").GetString(), options.ValuationKernelArtifactType, StringComparison.Ordinal)
+                || !string.Equals(root.GetProperty("repository").GetString(), ForgeRepository, StringComparison.Ordinal)
+                || !string.Equals(root.GetProperty("producerCommit").GetString(), RustKernelsOptions.ForgeValuationProducerCommit, StringComparison.Ordinal)
+                || !string.Equals(root.GetProperty("producerCommit").GetString(), options.ValuationKernelProducerCommit, StringComparison.Ordinal)
+                || !string.Equals(root.GetProperty("canonicalSourceCommit").GetString(), RustKernelsOptions.ForgeValuationCanonicalSourceCommit, StringComparison.Ordinal)
+                || !string.Equals(root.GetProperty("canonicalSourceCommit").GetString(), options.ValuationKernelSourceCommit, StringComparison.Ordinal)
+                || !string.Equals(build.GetProperty("target").GetString(), "x86_64-unknown-linux-musl", StringComparison.Ordinal)
+                || !string.Equals(executable.GetProperty("filename").GetString(), "terraforge-kernel-valuation", StringComparison.Ordinal)
+                || !string.Equals(executable.GetProperty("filename").GetString(), Path.GetFileName(executablePath), StringComparison.Ordinal)
+                || !string.Equals(executable.GetProperty("sha256").GetString(), binarySha256, StringComparison.OrdinalIgnoreCase)
+                || !SourceHashesMatch(hashes)
+                || !ContractsMatch(root.GetProperty("contracts")))
+                return ("Valuation kernel provenance did not match the admitted Forge artifact.", binarySha256);
         }
         catch (Exception exception) when (exception is IOException or UnauthorizedAccessException or JsonException
             or KeyNotFoundException or InvalidOperationException or FormatException or OverflowException)
@@ -348,6 +388,31 @@ public class RustKernelProcessHost : IRustKernelProcessHost
         return ForgeSourceSha256.All(expected => hashes.TryGetProperty(expected.Key, out var actual)
             && actual.ValueKind == JsonValueKind.String
             && string.Equals(actual.GetString(), expected.Value, StringComparison.OrdinalIgnoreCase));
+    }
+
+    private static bool ContractsMatch(JsonElement contracts)
+    {
+        if (contracts.ValueKind != JsonValueKind.Array || contracts.GetArrayLength() != ForgeContractSha256.Count)
+            return false;
+        var seen = new HashSet<string>(StringComparer.Ordinal);
+        foreach (var contract in contracts.EnumerateArray())
+        {
+            if (!contract.TryGetProperty("id", out var idElement)
+                || idElement.ValueKind != JsonValueKind.String
+                || idElement.GetString() is not string id
+                || !ForgeContractSha256.TryGetValue(id, out var expectedDigest)
+                || !seen.Add(id)
+                || !contract.TryGetProperty("digest", out var digest)
+                || !string.Equals(digest.GetString(), expectedDigest, StringComparison.OrdinalIgnoreCase)
+                || !contract.TryGetProperty("authorityRepository", out var authorityRepository)
+                || !string.Equals(authorityRepository.GetString(), ForgeAuthorityRepository, StringComparison.Ordinal)
+                || !contract.TryGetProperty("authorityFreezeCommit", out var authorityFreezeCommit)
+                || !string.Equals(authorityFreezeCommit.GetString(), ForgeAuthorityFreezeCommit, StringComparison.Ordinal)
+                || !contract.TryGetProperty("digestAlgorithm", out var digestAlgorithm)
+                || !string.Equals(digestAlgorithm.GetString(), ForgeContractDigestAlgorithm, StringComparison.Ordinal))
+                return false;
+        }
+        return seen.Count == ForgeContractSha256.Count;
     }
 
     private static string ResolveRepositoryRelativePath(string path)
