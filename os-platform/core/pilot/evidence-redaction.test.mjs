@@ -1,9 +1,13 @@
 import assert from "node:assert/strict";
 import fs from "node:fs/promises";
+import os from "node:os";
 import path from "node:path";
 import test from "node:test";
 
-import { scanEvidenceDirectory } from "./evidence-credential-guard.mjs";
+import {
+  sanitizeEvidenceDirectory,
+  scanEvidenceDirectory,
+} from "./evidence-credential-guard.mjs";
 import {
   REDACTION_MARKER,
   findEvidenceCredentialFindings,
@@ -498,6 +502,90 @@ test("text redaction handles generic compact tokens, Basic auth, and cookies", (
   assert.ok(!redacted.includes("Zml4dHVyZTpub3QtYS1jcmVkZW50aWFs"));
   assert.ok(!redacted.includes("fixture-cookie"));
   assert.equal(findEvidenceCredentialFindings(redacted).length, 0);
+});
+
+test("directory guard sanitizes top-level duplicate sensitive members before parsing", async () => {
+  const temporaryDirectory = await fs.mkdtemp(
+    path.join(os.tmpdir(), "tf-evidence-source-guard-")
+  );
+  const cases = [
+    [
+      "earlier-null",
+      ['{', '  "to\\u006ben": "TOP-LEVEL-SECRET-null",', '  "token": null,', '  "next": "safe"', '}'],
+    ],
+    [
+      "earlier-false",
+      ['{', '  "to\\u006ben": "TOP-LEVEL-SECRET-false",', '  "token": false,', '  "next": "safe"', '}'],
+    ],
+    [
+      "earlier-marker",
+      [
+        '{',
+        '  "to\\u006ben": "TOP-LEVEL-SECRET-marker",',
+        '  "token": "[REDACTED]",',
+        '  "next": "safe"',
+        '}',
+      ],
+    ],
+    [
+      "reversed",
+      ['{', '  "token": null,', '  "to\\u006ben": "TOP-LEVEL-SECRET-reversed",', '  "next": "safe"', '}'],
+    ],
+    [
+      "multiple",
+      [
+        '{',
+        '  "to\\u006ben": "TOP-LEVEL-SECRET-first",',
+        '  "token": "TOP-LEVEL-SECRET-second",',
+        '  "token": false,',
+        '  "next": "safe"',
+        '}',
+      ],
+    ],
+  ];
+
+  try {
+    for (const [endingName, lineEnding] of [
+      ["lf", "\n"],
+      ["crlf", "\r\n"],
+    ]) {
+      for (const [caseName, lines] of cases) {
+        await fs.writeFile(
+          path.join(temporaryDirectory, `${endingName}-${caseName}.json`),
+          `${lines.join(lineEnding)}${lineEnding}`,
+          "utf8"
+        );
+      }
+    }
+
+    const before = await scanEvidenceDirectory(temporaryDirectory);
+    assert.equal(before.length, cases.length * 2);
+    assert.ok(before.every((result) => result.findings.length > 0));
+
+    const sanitized = await sanitizeEvidenceDirectory(temporaryDirectory);
+    assert.equal(sanitized.length, cases.length * 2);
+    const contentsAfterFirstPass = new Map();
+    for (const entry of await fs.readdir(temporaryDirectory)) {
+      const filePath = path.join(temporaryDirectory, entry);
+      const source = await fs.readFile(filePath, "utf8");
+      const value = JSON.parse(source);
+      contentsAfterFirstPass.set(entry, source);
+      assert.ok(!source.includes("TOP-LEVEL-SECRET"));
+      assert.equal(value.next, "safe");
+      assert.equal(findEvidenceCredentialFindings(source).length, 0);
+    }
+
+    assert.deepEqual(await scanEvidenceDirectory(temporaryDirectory), []);
+    assert.deepEqual(await sanitizeEvidenceDirectory(temporaryDirectory), []);
+    for (const [entry, source] of contentsAfterFirstPass) {
+      assert.equal(
+        await fs.readFile(path.join(temporaryDirectory, entry), "utf8"),
+        source
+      );
+    }
+  } finally {
+    await fs.rm(temporaryDirectory, { recursive: true, force: true });
+  }
 });
 
 test("all current Pilot evidence is free of populated credential material", async () => {

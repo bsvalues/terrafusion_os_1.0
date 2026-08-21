@@ -9,6 +9,7 @@ import {
   REDACTION_MARKER,
   findEvidenceCredentialFindings,
   redactEvidence,
+  redactEvidenceText,
 } from "./evidence-redaction.mjs";
 
 const EVIDENCE_DIRECTORY = path.resolve(
@@ -50,10 +51,16 @@ function addRedactionMetadata(value, findings) {
 export async function scanEvidenceDirectory(directory = EVIDENCE_DIRECTORY) {
   const results = [];
   for (const filePath of await listJsonFiles(directory)) {
-    const value = JSON.parse(await fs.readFile(filePath, "utf8"));
-    const findings = findEvidenceCredentialFindings(value);
+    const source = await fs.readFile(filePath, "utf8");
+    // Inspect the raw artifact before JSON.parse can collapse duplicate members.
+    // The structured text detector also visits the parsed value, so this covers
+    // both source-level and ordinary parsed-object credential representations.
+    const findings = findEvidenceCredentialFindings(source);
+    // Preserve the guard's fail-closed JSON validity contract even when the raw
+    // source has no credential finding.
+    JSON.parse(source);
     if (findings.length > 0) {
-      results.push({ filePath, findings, value });
+      results.push({ filePath, findings, source });
     }
   }
   return results;
@@ -62,7 +69,11 @@ export async function scanEvidenceDirectory(directory = EVIDENCE_DIRECTORY) {
 export async function sanitizeEvidenceDirectory(directory = EVIDENCE_DIRECTORY) {
   const results = await scanEvidenceDirectory(directory);
   for (const result of results) {
-    const sanitized = addRedactionMetadata(result.value, result.findings);
+    // Sanitize the raw representation before parsing so an earlier populated
+    // duplicate cannot be discarded by last-member-wins JSON semantics.
+    const sanitizedSource = redactEvidenceText(result.source);
+    const sanitizedValue = JSON.parse(sanitizedSource);
+    const sanitized = addRedactionMetadata(sanitizedValue, result.findings);
     await fs.writeFile(result.filePath, `${JSON.stringify(sanitized, null, 2)}\n`, "utf8");
   }
   return results.map(({ filePath, findings }) => ({ filePath, findings }));
