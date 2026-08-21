@@ -432,14 +432,31 @@ describe('D. CI release gate coverage', () => {
     const content = readFileSync(join(WORKFLOWS, 'release-lane.yml'), 'utf8');
     for (const required of [
       'compliance_run_id:',
-      'Resolve approved compliance manifest',
+      'Resolve technically approved artifacts (backend distribution approval still required)',
       "run.path !== '.github/workflows/release-compliance.yml'",
       'run.head_sha !== process.env.RELEASE_SHA',
       "artifact.name === 'approved-release-images' && !artifact.expired",
       'release_image_manifest.mjs verify',
+      '--backend-license-evidence "$APPROVED_DIR/backend-runtime-license-evidence.json"',
+      'BACKEND LEGAL WALL: technical artifact approval is not backend distribution-license approval.',
+      'Enforce protected backend distribution approval binding',
+      'BACKEND_DISTRIBUTION_APPROVAL_RELEASE_SHA',
+      'test "$BACKEND_DISTRIBUTION_APPROVAL_RELEASE_SHA" = "$RELEASE_SHA"',
+      'test "$BACKEND_DISTRIBUTION_APPROVAL_IMAGE_DIGEST" = "$BACKEND_IMAGE_DIGEST"',
+      'test "$BACKEND_DISTRIBUTION_APPROVAL_EVIDENCE_SHA256" = "$BACKEND_LICENSE_EVIDENCE_SHA256"',
       'Reverify immutable candidate before packaging',
     ])
       assert.ok(content.includes(required), 'missing approved-artifact guard: ' + required);
+    assert.ok(
+      content.indexOf('release_image_manifest.mjs verify') <
+        content.indexOf('Enforce protected backend distribution approval binding'),
+      'distribution approval binding must run after exact artifact verification'
+    );
+    assert.ok(
+      content.indexOf('Enforce protected backend distribution approval binding') <
+        content.indexOf('Validate environment configuration'),
+      'distribution approval binding must fail before deployment preparation or mutation'
+    );
     for (const forbidden of ['docker build', 'docker push', 'origin/main:', 'packages: write']) {
       assert.ok(!content.includes(forbidden), 'release lane must not contain ' + forbidden);
     }
@@ -456,6 +473,14 @@ describe('D. CI release gate coverage', () => {
       '"candidateTreeSha": "${CANDIDATE_TREE_SHA}"',
       '"complianceRunId": "${COMPLIANCE_RUN_ID}"',
       '"backendImageDigest": "${BACKEND_IMAGE_DIGEST}"',
+      '"backendDistributionApprovalRequired": true',
+      '"backendDistributionApprovalValidated": true',
+      '"backendDistributionApprovalId": "${BACKEND_DISTRIBUTION_APPROVAL_ID}"',
+      '"backendDistributionApprovalReleaseSha": "${BACKEND_DISTRIBUTION_APPROVAL_RELEASE_SHA}"',
+      '"backendDistributionApprovalImageDigest": "${BACKEND_DISTRIBUTION_APPROVAL_IMAGE_DIGEST}"',
+      '"backendDistributionApprovalEvidenceSha256": "${BACKEND_DISTRIBUTION_APPROVAL_EVIDENCE_SHA256}"',
+      '"backendLicenseEvidenceSha256": "${BACKEND_LICENSE_EVIDENCE_SHA256}"',
+      'backend-runtime-license-evidence.json',
       '"frontendImageDigest": "${FRONTEND_IMAGE_DIGEST}"',
       'const digestPattern = /^sha256:[0-9a-f]{64}$/;',
     ])

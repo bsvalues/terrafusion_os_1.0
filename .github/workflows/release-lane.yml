@@ -15,7 +15,7 @@ on:
         required: true
         type: string
       compliance_run_id:
-        description: Successful release-compliance run that approved this exact SHA
+        description: Successful technical compliance run; backend distribution approval remains protected
         required: true
         type: string
 
@@ -41,6 +41,10 @@ jobs:
       DEPLOY_USER: ${{ vars.DEPLOY_USER }}
       PUBLIC_URL: ${{ vars.PUBLIC_URL }}
       APP_ROOT: ${{ vars.APP_ROOT }}
+      BACKEND_DISTRIBUTION_APPROVAL_ID: ${{ vars.BACKEND_DISTRIBUTION_APPROVAL_ID }}
+      BACKEND_DISTRIBUTION_APPROVAL_RELEASE_SHA: ${{ vars.BACKEND_DISTRIBUTION_APPROVAL_RELEASE_SHA }}
+      BACKEND_DISTRIBUTION_APPROVAL_IMAGE_DIGEST: ${{ vars.BACKEND_DISTRIBUTION_APPROVAL_IMAGE_DIGEST }}
+      BACKEND_DISTRIBUTION_APPROVAL_EVIDENCE_SHA256: ${{ vars.BACKEND_DISTRIBUTION_APPROVAL_EVIDENCE_SHA256 }}
     steps:
       - name: Checkout requested SHA
         uses: actions/checkout@v5
@@ -96,7 +100,7 @@ jobs:
             printf 'TRUSTED_MAIN_SHA=%s\n' "$TRUSTED_MAIN_SHA"
           } >> "$GITHUB_ENV"
 
-      - name: Resolve approved compliance manifest
+      - name: Resolve technically approved artifacts (backend distribution approval still required)
         shell: bash
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -141,11 +145,41 @@ jobs:
             --release-sha "$RELEASE_SHA" \
             --backend-image "ghcr.io/$OWNER/terrafusion-os-backend-internal" \
             --frontend-image "ghcr.io/$OWNER/terrafusion-os-frontend-internal" \
+            --backend-license-evidence "$APPROVED_DIR/backend-runtime-license-evidence.json" \
             --github-env "$GITHUB_ENV"
+          echo "BACKEND_LICENSE_EVIDENCE_PATH=$APPROVED_DIR/backend-runtime-license-evidence.json" >> "$GITHUB_ENV"
+          echo "BACKEND LEGAL WALL: technical artifact approval is not backend distribution-license approval." >> "$GITHUB_STEP_SUMMARY"
           {
             echo "COMPLIANCE_RUN_ID=$COMPLIANCE_RUN_ID"
             echo "COMPLIANCE_RUN_URL=https://github.com/$GITHUB_REPOSITORY/actions/runs/$COMPLIANCE_RUN_ID"
           } >> "$GITHUB_ENV"
+
+      - name: Enforce protected backend distribution approval binding
+        shell: bash
+        run: |
+          set -euo pipefail
+          for required in \
+            BACKEND_DISTRIBUTION_APPROVAL_ID \
+            BACKEND_DISTRIBUTION_APPROVAL_RELEASE_SHA \
+            BACKEND_DISTRIBUTION_APPROVAL_IMAGE_DIGEST \
+            BACKEND_DISTRIBUTION_APPROVAL_EVIDENCE_SHA256; do
+            if [ -z "${!required:-}" ]; then
+              echo "Missing protected environment approval binding: ${required}"
+              exit 1
+            fi
+          done
+          if [[ ! "$BACKEND_DISTRIBUTION_APPROVAL_ID" =~ ^[A-Za-z0-9][A-Za-z0-9._:/-]{0,127}$ ]]; then
+            echo "BACKEND_DISTRIBUTION_APPROVAL_ID has an invalid format"
+            exit 1
+          fi
+          [[ "$BACKEND_DISTRIBUTION_APPROVAL_RELEASE_SHA" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$BACKEND_DISTRIBUTION_APPROVAL_IMAGE_DIGEST" =~ ^sha256:[0-9a-f]{64}$ ]]
+          [[ "$BACKEND_DISTRIBUTION_APPROVAL_EVIDENCE_SHA256" =~ ^[0-9a-f]{64}$ ]]
+          test "$BACKEND_DISTRIBUTION_APPROVAL_RELEASE_SHA" = "$RELEASE_SHA"
+          test "$BACKEND_DISTRIBUTION_APPROVAL_IMAGE_DIGEST" = "$BACKEND_IMAGE_DIGEST"
+          test "$BACKEND_DISTRIBUTION_APPROVAL_EVIDENCE_SHA256" = "$BACKEND_LICENSE_EVIDENCE_SHA256"
+          echo "BACKEND_DISTRIBUTION_APPROVAL_VALIDATED=true" >> "$GITHUB_ENV"
+          echo "Backend distribution approval is exactly bound to this release SHA, backend digest, and license-evidence hash." >> "$GITHUB_STEP_SUMMARY"
 
       - name: Validate environment configuration
         shell: bash
@@ -878,6 +912,13 @@ jobs:
           backend_image=${BACKEND_IMAGE}
           backend_image_digest=${BACKEND_IMAGE_DIGEST}
           backend_image_ref=${BACKEND_IMAGE_REF}
+          backend_distribution_approval_required=${BACKEND_DISTRIBUTION_APPROVAL_REQUIRED}
+          backend_distribution_approval_validated=${BACKEND_DISTRIBUTION_APPROVAL_VALIDATED}
+          backend_distribution_approval_id=${BACKEND_DISTRIBUTION_APPROVAL_ID}
+          backend_distribution_approval_release_sha=${BACKEND_DISTRIBUTION_APPROVAL_RELEASE_SHA}
+          backend_distribution_approval_image_digest=${BACKEND_DISTRIBUTION_APPROVAL_IMAGE_DIGEST}
+          backend_distribution_approval_evidence_sha256=${BACKEND_DISTRIBUTION_APPROVAL_EVIDENCE_SHA256}
+          backend_license_evidence_sha256=${BACKEND_LICENSE_EVIDENCE_SHA256}
           frontend_image=${FRONTEND_IMAGE}
           frontend_image_digest=${FRONTEND_IMAGE_DIGEST}
           frontend_image_ref=${FRONTEND_IMAGE_REF}
@@ -904,6 +945,13 @@ jobs:
             "backendImage": "${BACKEND_IMAGE}",
             "backendImageDigest": "${BACKEND_IMAGE_DIGEST}",
             "backendImageRef": "${BACKEND_IMAGE_REF}",
+            "backendDistributionApprovalRequired": true,
+            "backendDistributionApprovalValidated": true,
+            "backendDistributionApprovalId": "${BACKEND_DISTRIBUTION_APPROVAL_ID}",
+            "backendDistributionApprovalReleaseSha": "${BACKEND_DISTRIBUTION_APPROVAL_RELEASE_SHA}",
+            "backendDistributionApprovalImageDigest": "${BACKEND_DISTRIBUTION_APPROVAL_IMAGE_DIGEST}",
+            "backendDistributionApprovalEvidenceSha256": "${BACKEND_DISTRIBUTION_APPROVAL_EVIDENCE_SHA256}",
+            "backendLicenseEvidenceSha256": "${BACKEND_LICENSE_EVIDENCE_SHA256}",
             "frontendImage": "${FRONTEND_IMAGE}",
             "frontendImageDigest": "${FRONTEND_IMAGE_DIGEST}",
             "frontendImageRef": "${FRONTEND_IMAGE_REF}",
@@ -912,18 +960,23 @@ jobs:
             "deployedAtUtc": "${DEPLOYED_AT}"
           }
           EOF
+          cp "$BACKEND_LICENSE_EVIDENCE_PATH" evidence/backend-runtime-license-evidence.json
 
       - name: Validate evidence schema
         shell: bash
         run: |
           set -euo pipefail
-          for required in evidence.json evidence.txt curl_headers.txt compose_ps.txt uptime.txt logs_backend.txt logs_proxy.txt; do
+          for required in evidence.json evidence.txt backend-runtime-license-evidence.json curl_headers.txt compose_ps.txt uptime.txt logs_backend.txt logs_proxy.txt; do
             test -s "evidence/$required"
           done
 
           node <<'NODE'
+          const crypto = require('node:crypto');
           const fs = require('node:fs');
           const evidence = JSON.parse(fs.readFileSync('evidence/evidence.json', 'utf8'));
+          const backendLicenseEvidence = fs.readFileSync(
+            'evidence/backend-runtime-license-evidence.json'
+          );
           const shaPattern = /^[0-9a-f]{40}$/;
           const digestPattern = /^sha256:[0-9a-f]{64}$/;
 
@@ -934,6 +987,28 @@ jobs:
             if (evidence[field] !== evidence.releaseSha) {
               throw new Error(`${field} does not match releaseSha`);
             }
+          }
+          if (evidence.backendDistributionApprovalRequired !== true) {
+            throw new Error('backend distribution approval wall is missing');
+          }
+          if (
+            evidence.backendDistributionApprovalValidated !== true ||
+            !/^[A-Za-z0-9][A-Za-z0-9._:/-]{0,127}$/.test(
+              evidence.backendDistributionApprovalId ?? ''
+            ) ||
+            evidence.backendDistributionApprovalReleaseSha !== evidence.releaseSha ||
+            evidence.backendDistributionApprovalImageDigest !== evidence.backendImageDigest ||
+            evidence.backendDistributionApprovalEvidenceSha256 !==
+              evidence.backendLicenseEvidenceSha256
+          ) {
+            throw new Error('backend distribution approval is not exactly bound to deploy evidence');
+          }
+          const backendEvidenceHash = crypto
+            .createHash('sha256')
+            .update(backendLicenseEvidence)
+            .digest('hex');
+          if (backendEvidenceHash !== evidence.backendLicenseEvidenceSha256) {
+            throw new Error('backend license evidence is detached from deploy evidence');
           }
           if (!shaPattern.test(evidence.candidateTreeSha)) {
             throw new Error('candidateTreeSha is not a full git tree SHA');

@@ -6,6 +6,9 @@ import { fileURLToPath } from 'node:url';
 const LICENSE_FIELDS = ['licenseConcluded', 'licenseDeclared'];
 const NO_ASSERTION = /^(?:NOASSERTION|NONE)$/i;
 const COPYLEFT_CANDIDATE = /(?:^|[^A-Za-z])(?:A?GPL|LGPL|MPL|EPL|CDDL)-/i;
+const SHA_PATTERN = /^[0-9a-f]{40}$/;
+const DIGEST_PATTERN = /^sha256:[0-9a-f]{64}$/;
+const BACKEND_IMAGE_PATTERN = /^ghcr\.io\/[a-z0-9_.-]+\/terrafusion-os-backend-internal$/;
 
 function compareText(left, right) {
   return left < right ? -1 : left > right ? 1 : 0;
@@ -73,7 +76,65 @@ function assertedLicenseExpressions(pkg, label) {
   return [...new Set(expressions)].sort(compareText);
 }
 
-export function buildBackendRuntimeLicenseEvidence(spdxBytes, document) {
+export function validateBackendRuntimeLicenseEvidence(evidence, expected = {}) {
+  if (!evidence || typeof evidence !== 'object' || Array.isArray(evidence)) {
+    throw new Error('backend runtime license evidence must be an object');
+  }
+  if (evidence.schemaVersion !== 1) throw new Error('backend evidence schemaVersion must equal 1');
+  const binding = evidence.binding;
+  if (!binding || typeof binding !== 'object' || Array.isArray(binding)) {
+    throw new Error('backend evidence binding must be an object');
+  }
+  const releaseSha = requiredString(binding.releaseSha, 'binding.releaseSha');
+  const backendImage = requiredString(binding.backendImage, 'binding.backendImage');
+  const backendDigest = requiredString(binding.backendDigest, 'binding.backendDigest');
+  const backendRef = requiredString(binding.backendRef, 'binding.backendRef');
+  if (!SHA_PATTERN.test(releaseSha))
+    throw new Error('binding.releaseSha must be a full lowercase git SHA');
+  if (!BACKEND_IMAGE_PATTERN.test(backendImage))
+    throw new Error('binding.backendImage is not canonical');
+  if (!DIGEST_PATTERN.test(backendDigest)) throw new Error('binding.backendDigest is invalid');
+  if (backendRef !== `${backendImage}@${backendDigest}`) {
+    throw new Error('binding.backendRef is not digest-bound');
+  }
+  for (const [field, actual] of Object.entries({
+    releaseSha,
+    backendImage,
+    backendDigest,
+    backendRef,
+  })) {
+    if (expected[field] && expected[field] !== actual) {
+      throw new Error(`backend evidence ${field} does not match the approved artifact`);
+    }
+  }
+  if (
+    evidence.disposition?.automatedLegalApproval !== false ||
+    evidence.disposition?.requiresProtectedReleaseLegalApproval !== true ||
+    evidence.disposition?.backendDistributionApprovalRequired !== true
+  ) {
+    throw new Error(
+      'backend evidence disposition must preserve the protected distribution approval wall'
+    );
+  }
+  if (!/^[0-9a-f]{64}$/.test(evidence.input?.spdxSha256 ?? '')) {
+    throw new Error('backend evidence input.spdxSha256 is invalid');
+  }
+  if (
+    !Number.isInteger(evidence.input?.packageOccurrenceCount) ||
+    evidence.input.packageOccurrenceCount < 1
+  ) {
+    throw new Error('backend evidence packageOccurrenceCount must be positive');
+  }
+  if (
+    !Array.isArray(evidence.inventory?.identities) ||
+    !Array.isArray(evidence.copyleftCandidates)
+  ) {
+    throw new Error('backend evidence inventory arrays are required');
+  }
+  return { releaseSha, backendImage, backendDigest, backendRef };
+}
+
+export function buildBackendRuntimeLicenseEvidence(spdxBytes, document, binding) {
   if (!Buffer.isBuffer(spdxBytes) && !(spdxBytes instanceof Uint8Array)) {
     throw new Error('SPDX input must be raw bytes');
   }
@@ -166,9 +227,15 @@ export function buildBackendRuntimeLicenseEvidence(spdxBytes, document) {
     }))
     .filter(item => item.assertedLicenseExpressions.length > 0);
 
-  return {
+  const evidence = {
     schemaVersion: 1,
     generatedBy: 'TerraFusion backend_runtime_license_evidence.mjs',
+    binding: {
+      releaseSha: binding?.releaseSha,
+      backendImage: binding?.backendImage,
+      backendDigest: binding?.backendDigest,
+      backendRef: binding?.backendRef,
+    },
     input: {
       spdxSha256: crypto.createHash('sha256').update(spdxBytes).digest('hex'),
       documentName: typeof document.name === 'string' ? document.name : null,
@@ -179,6 +246,7 @@ export function buildBackendRuntimeLicenseEvidence(spdxBytes, document) {
     disposition: {
       automatedLegalApproval: false,
       requiresProtectedReleaseLegalApproval: true,
+      backendDistributionApprovalRequired: true,
       statement:
         'Backend runtime license inventory is evidence only; distribution and license disposition require protected release/legal approval before RC promotion.',
     },
@@ -194,18 +262,25 @@ export function buildBackendRuntimeLicenseEvidence(spdxBytes, document) {
     },
     copyleftCandidates,
   };
+  validateBackendRuntimeLicenseEvidence(evidence, binding);
+  return evidence;
 }
 
 function main(args) {
-  if (args.length !== 2) {
+  if (args.length !== 6) {
     throw new Error(
-      'usage: backend_runtime_license_evidence.mjs <backend-runtime.spdx.json> <evidence.json>'
+      'usage: backend_runtime_license_evidence.mjs <backend-runtime.spdx.json> <evidence.json> <release-sha> <backend-image> <backend-digest> <backend-ref>'
     );
   }
-  const [inputPath, outputPath] = args;
+  const [inputPath, outputPath, releaseSha, backendImage, backendDigest, backendRef] = args;
   const bytes = fs.readFileSync(inputPath);
   const document = JSON.parse(bytes.toString('utf8'));
-  const evidence = buildBackendRuntimeLicenseEvidence(bytes, document);
+  const evidence = buildBackendRuntimeLicenseEvidence(bytes, document, {
+    releaseSha,
+    backendImage,
+    backendDigest,
+    backendRef,
+  });
   fs.writeFileSync(outputPath, `${JSON.stringify(evidence, null, 2)}\n`);
   console.log(
     `${outputPath}: recorded ${evidence.input.packageOccurrenceCount} backend runtime occurrences across ${evidence.inventory.uniqueIdentityCount} unique identities; protected release/legal approval remains required`

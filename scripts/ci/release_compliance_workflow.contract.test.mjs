@@ -57,6 +57,11 @@ test('publisher creates each canonical runtime image exactly once and records di
   );
   assert.match(text, /backend_digest=\$BACKEND_DIGEST[\s\S]*frontend_digest=\$FRONTEND_DIGEST/);
   assert.match(text, /release_image_manifest\.mjs create/);
+  assert.match(text, /--backend-license-evidence backend-runtime-license-evidence\.json/);
+  assert.match(
+    text,
+    /name: release-image-inputs[\s\S]*release-images\.json[\s\S]*backend-runtime-license-evidence\.json/
+  );
 });
 
 test('published frontend image embeds and scans browser and build dependency evidence fail closed', () => {
@@ -88,7 +93,11 @@ test('published frontend image embeds and scans browser and build dependency evi
   );
   assert.match(
     text,
-    /backend_runtime_license_evidence\.mjs sbom-backend-runtime-spdx\.json backend-runtime-license-evidence\.json/
+    /backend_runtime_license_evidence\.mjs[\s\S]*backend-runtime-license-evidence\.json/
+  );
+  assert.match(
+    text,
+    /backend-runtime-license-evidence\.json[\s\S]*steps\.publish-refs\.outputs\.backend_digest/
   );
   assert.match(text, /path: \|[\s\S]*sbom-\*\.json[\s\S]*backend-runtime-license-evidence\.json/);
   assert.doesNotMatch(text, /target: build|terrafusion-frontend-build|frontend-build-spdx/);
@@ -186,7 +195,15 @@ test('provenance binds both image digests and blocks approval', () => {
     gate,
     /--frontend-digest "\$\{\{ needs\.sbom-compliance\.outputs\.frontend-digest \}\}"/
   );
+  assert.match(
+    gate,
+    /--backend-license-evidence approved-inputs\/backend-runtime-license-evidence\.json/
+  );
   assert.match(gate, /name: approved-release-images/);
+  assert.match(
+    gate,
+    /path: \|[\s\S]*approved-inputs\/release-images\.json[\s\S]*approved-inputs\/backend-runtime-license-evidence\.json/
+  );
 });
 
 test('OIDC is job scoped and the full test claim is strict', () => {

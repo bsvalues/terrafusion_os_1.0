@@ -1,10 +1,15 @@
+import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import { validateBackendRuntimeLicenseEvidence } from './backend_runtime_license_evidence.mjs';
+
 const SHA_PATTERN = /^[0-9a-f]{40}$/;
 const DIGEST_PATTERN = /^sha256:[0-9a-f]{64}$/;
+const EVIDENCE_HASH_PATTERN = /^[0-9a-f]{64}$/;
 const IMAGE_PATTERN = /^ghcr\.io\/[a-z0-9_.-]+\/terrafusion-os-(backend|frontend)-internal$/;
+const BACKEND_LICENSE_EVIDENCE_FILE = 'backend-runtime-license-evidence.json';
 
 function requiredString(value, field) {
   if (typeof value !== 'string' || value.length === 0) {
@@ -17,7 +22,7 @@ export function validateReleaseImageManifest(manifest, expected = {}) {
   if (!manifest || typeof manifest !== 'object' || Array.isArray(manifest)) {
     throw new Error('release image manifest must be an object');
   }
-  if (manifest.schemaVersion !== 1) throw new Error('schemaVersion must equal 1');
+  if (manifest.schemaVersion !== 2) throw new Error('schemaVersion must equal 2');
   const releaseSha = requiredString(manifest.releaseSha, 'releaseSha');
   if (!SHA_PATTERN.test(releaseSha)) throw new Error('releaseSha must be a full lowercase git SHA');
   if (expected.releaseSha && releaseSha !== expected.releaseSha) {
@@ -27,7 +32,7 @@ export function validateReleaseImageManifest(manifest, expected = {}) {
   if (!manifest.images || typeof manifest.images !== 'object') {
     throw new Error('images must be an object');
   }
-  const result = { schemaVersion: 1, releaseSha, images: {} };
+  const result = { schemaVersion: 2, releaseSha, images: {} };
   for (const component of ['backend', 'frontend']) {
     const record = manifest.images[component];
     if (!record || typeof record !== 'object') throw new Error(`images.${component} is required`);
@@ -44,16 +49,42 @@ export function validateReleaseImageManifest(manifest, expected = {}) {
     if (expected[`${component}Digest`] && digest !== expected[`${component}Digest`]) {
       throw new Error(`images.${component}.digest does not match the approved job output`);
     }
-    if (ref !== `${image}@${digest}`)
+    if (ref !== `${image}@${digest}`) {
       throw new Error(`images.${component}.ref is not digest-bound`);
+    }
     result.images[component] = { image, digest, ref };
   }
-  return result;
+
+  if (manifest.backendDistributionApprovalRequired !== true) {
+    throw new Error('backendDistributionApprovalRequired must equal true');
+  }
+  const evidence = manifest.backendLicenseEvidence;
+  if (!evidence || typeof evidence !== 'object' || Array.isArray(evidence)) {
+    throw new Error('backendLicenseEvidence is required');
+  }
+  if (evidence.file !== BACKEND_LICENSE_EVIDENCE_FILE) {
+    throw new Error(`backendLicenseEvidence.file must equal ${BACKEND_LICENSE_EVIDENCE_FILE}`);
+  }
+  const evidenceSha256 = requiredString(evidence.sha256, 'backendLicenseEvidence.sha256');
+  if (!EVIDENCE_HASH_PATTERN.test(evidenceSha256)) {
+    throw new Error('backendLicenseEvidence.sha256 is invalid');
+  }
+  if (
+    expected.backendLicenseEvidenceSha256 &&
+    evidenceSha256 !== expected.backendLicenseEvidenceSha256
+  ) {
+    throw new Error('backendLicenseEvidence.sha256 does not match the supplied evidence artifact');
+  }
+  return {
+    ...result,
+    backendDistributionApprovalRequired: true,
+    backendLicenseEvidence: { file: BACKEND_LICENSE_EVIDENCE_FILE, sha256: evidenceSha256 },
+  };
 }
 
 export function createReleaseImageManifest(values) {
   return validateReleaseImageManifest({
-    schemaVersion: 1,
+    schemaVersion: 2,
     releaseSha: values.releaseSha,
     images: {
       backend: {
@@ -67,7 +98,30 @@ export function createReleaseImageManifest(values) {
         ref: `${values.frontendImage}@${values.frontendDigest}`,
       },
     },
+    backendDistributionApprovalRequired: true,
+    backendLicenseEvidence: {
+      file: BACKEND_LICENSE_EVIDENCE_FILE,
+      sha256: values.backendLicenseEvidenceSha256,
+    },
   });
+}
+
+export function verifyBackendLicenseEvidence(evidenceBytes, evidence, manifest) {
+  const evidenceSha256 = crypto.createHash('sha256').update(evidenceBytes).digest('hex');
+  if (evidenceSha256 !== manifest.backendLicenseEvidence.sha256) {
+    throw new Error('backend license evidence file hash does not match release manifest');
+  }
+  return validateBackendRuntimeLicenseEvidence(evidence, {
+    releaseSha: manifest.releaseSha,
+    backendImage: manifest.images.backend.image,
+    backendDigest: manifest.images.backend.digest,
+    backendRef: manifest.images.backend.ref,
+  });
+}
+
+function readBackendEvidence(file) {
+  const bytes = fs.readFileSync(file);
+  return { bytes, evidence: JSON.parse(bytes.toString('utf8')) };
 }
 
 function parseArgs(argv) {
@@ -86,13 +140,24 @@ function parseArgs(argv) {
 function main(argv) {
   const args = parseArgs(argv);
   if (args.command === 'create') {
-    const manifest = createReleaseImageManifest(args);
+    const { bytes, evidence } = readBackendEvidence(args.backendLicenseEvidence);
+    const manifest = createReleaseImageManifest({
+      ...args,
+      backendLicenseEvidenceSha256: crypto.createHash('sha256').update(bytes).digest('hex'),
+    });
+    verifyBackendLicenseEvidence(bytes, evidence, manifest);
     fs.writeFileSync(args.out, `${JSON.stringify(manifest, null, 2)}\n`, 'utf8');
     return;
   }
   if (args.command === 'verify') {
-    const manifest = JSON.parse(fs.readFileSync(args.manifest, 'utf8'));
-    const verified = validateReleaseImageManifest(manifest, args);
+    const rawManifest = JSON.parse(fs.readFileSync(args.manifest, 'utf8'));
+    const { bytes, evidence } = readBackendEvidence(args.backendLicenseEvidence);
+    const evidenceSha256 = crypto.createHash('sha256').update(bytes).digest('hex');
+    const verified = validateReleaseImageManifest(rawManifest, {
+      ...args,
+      backendLicenseEvidenceSha256: evidenceSha256,
+    });
+    verifyBackendLicenseEvidence(bytes, evidence, verified);
     if (args.githubEnv) {
       fs.appendFileSync(
         args.githubEnv,
@@ -103,6 +168,8 @@ function main(argv) {
           `FRONTEND_IMAGE=${verified.images.frontend.image}`,
           `FRONTEND_IMAGE_DIGEST=${verified.images.frontend.digest}`,
           `FRONTEND_IMAGE_REF=${verified.images.frontend.ref}`,
+          'BACKEND_DISTRIBUTION_APPROVAL_REQUIRED=true',
+          `BACKEND_LICENSE_EVIDENCE_SHA256=${verified.backendLicenseEvidence.sha256}`,
           '',
         ].join('\n'),
         'utf8'

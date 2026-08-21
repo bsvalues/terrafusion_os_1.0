@@ -184,7 +184,14 @@ jobs:
           cleanup_frontend_container
           trap - EXIT
       - name: Generate backend runtime license evidence summary
-        run: node scripts/ci/backend_runtime_license_evidence.mjs sbom-backend-runtime-spdx.json backend-runtime-license-evidence.json
+        run: |
+          node scripts/ci/backend_runtime_license_evidence.mjs \
+            sbom-backend-runtime-spdx.json \
+            backend-runtime-license-evidence.json \
+            "${GITHUB_SHA}" \
+            "${{ steps.publish-refs.outputs.backend_image }}" \
+            "${{ steps.publish-refs.outputs.backend_digest }}" \
+            "${BACKEND_IMAGE_REF}"
       - name: Blocking vulnerability policy
         run: |
           set -euo pipefail
@@ -201,6 +208,7 @@ jobs:
             --backend-digest "${{ steps.publish-refs.outputs.backend_digest }}" \
             --frontend-image "${{ steps.publish-refs.outputs.frontend_image }}" \
             --frontend-digest "${{ steps.publish-refs.outputs.frontend_digest }}" \
+            --backend-license-evidence backend-runtime-license-evidence.json \
             --out release-images.json
       - name: Upload full SBOM evidence
         if: always()
@@ -211,11 +219,13 @@ jobs:
             sbom-*.json
             backend-runtime-license-evidence.json
           retention-days: 365
-      - name: Upload release image inputs
+      - name: Upload technical release inputs (backend distribution approval remains required)
         uses: actions/upload-artifact@v4
         with:
           name: release-image-inputs
-          path: release-images.json
+          path: |
+            release-images.json
+            backend-runtime-license-evidence.json
           retention-days: 365
 
   container-security:
@@ -374,10 +384,13 @@ jobs:
             --backend-image "${{ needs.sbom-compliance.outputs.backend-image }}" \
             --backend-digest "${{ needs.sbom-compliance.outputs.backend-digest }}" \
             --frontend-image "${{ needs.sbom-compliance.outputs.frontend-image }}" \
-            --frontend-digest "${{ needs.sbom-compliance.outputs.frontend-digest }}"
-      - name: Publish approved release image manifest
+            --frontend-digest "${{ needs.sbom-compliance.outputs.frontend-digest }}" \
+            --backend-license-evidence approved-inputs/backend-runtime-license-evidence.json
+      - name: Publish technically approved release artifacts (not backend distribution-license approval)
         uses: actions/upload-artifact@v4
         with:
           name: approved-release-images
-          path: approved-inputs/release-images.json
+          path: |
+            approved-inputs/release-images.json
+            approved-inputs/backend-runtime-license-evidence.json
           retention-days: 365
