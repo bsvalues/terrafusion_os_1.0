@@ -1,12 +1,31 @@
 import assert from 'node:assert/strict';
+import crypto from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import test from 'node:test';
 import { fileURLToPath } from 'node:url';
 import { validateSpdxLicensePolicy } from './release_sbom_policy.mjs';
 
-const fixtures = join(dirname(fileURLToPath(import.meta.url)), 'fixtures', 'release-sbom');
+const root = join(dirname(fileURLToPath(import.meta.url)), '../..');
+const fixtures = join(root, 'scripts', 'ci', 'fixtures', 'release-sbom');
 const load = name => JSON.parse(readFileSync(join(fixtures, name), 'utf8'));
+const mapboxLicenseId = 'LicenseRef-npm-mapbox-gl-3.20.0-Mapbox-TOS';
+const mapboxText = readFileSync(
+  join(root, 'frontend', 'node_modules', 'mapbox-gl', 'LICENSE.txt'),
+  'utf8'
+);
+const mapboxInfo = {
+  licenseId: mapboxLicenseId,
+  extractedText: mapboxText,
+  name: 'Mapbox Terms of Service for mapbox-gl@3.20.0',
+  comment: 'Source: installed mapbox-gl@3.20.0/LICENSE.txt',
+};
+const mapboxPackage = {
+  name: 'mapbox-gl',
+  versionInfo: '3.20.0',
+  licenseDeclared: mapboxLicenseId,
+  licenseConcluded: mapboxLicenseId,
+};
 
 test('allows permissive and LGPL licenses', () => {
   assert.equal(validateSpdxLicensePolicy(load('allowed.spdx.json')).packageCount, 1);
@@ -16,10 +35,10 @@ test('rejects prohibited AGPL/GPL licenses', () => {
   assert.throws(() => validateSpdxLicensePolicy(load('prohibited-agpl.spdx.json')), /prohibited/);
 });
 
-test('rejects incomplete package and document-scoped custom license references', () => {
+test('rejects unsupported package and document-scoped custom license references', () => {
   assert.throws(
     () => validateSpdxLicensePolicy(load('unresolved-license-ref.spdx.json')),
-    /missing a source-bound name/
+    /unsupported custom license reference/
   );
   assert.throws(
     () => validateSpdxLicensePolicy(load('unresolved-document-license-ref.spdx.json')),
@@ -27,54 +46,131 @@ test('rejects incomplete package and document-scoped custom license references',
   );
 });
 
-test('allows only exact same-document custom license evidence and rejects mismatches', () => {
-  const info = {
-    licenseId: 'LicenseRef-npm-mapbox-gl-3.20.0-Mapbox-TOS',
-    extractedText: 'Exact installed Mapbox test terms',
-    name: 'Mapbox Terms of Service for mapbox-gl@3.20.0',
-    comment: 'Source: installed mapbox-gl@3.20.0/LICENSE.txt',
-  };
-  const pkg = { name: 'mapbox-gl', licenseDeclared: info.licenseId };
+test('allows only the exact hash-bound mapbox-gl 3.20.0 Mapbox TOS evidence', () => {
   assert.equal(
-    validateSpdxLicensePolicy({ hasExtractedLicensingInfos: [info], packages: [pkg] }).packageCount,
+    validateSpdxLicensePolicy({
+      hasExtractedLicensingInfos: [mapboxInfo],
+      packages: [mapboxPackage],
+    }).packageCount,
     1
   );
-  assert.throws(
-    () => validateSpdxLicensePolicy({ packages: [pkg] }),
-    /unresolved custom license reference/
+  assert.equal(
+    crypto.createHash('sha256').update(mapboxInfo.extractedText, 'utf8').digest('hex'),
+    'c24eff481bf098c82fda9949b2d982589df8b36db11fffa49653d4afe1903998'
   );
+});
+
+test('rejects fabricated and external custom license evidence fail closed', () => {
+  const customId = 'LicenseRef-Custom-Copyleft';
   assert.throws(
     () =>
       validateSpdxLicensePolicy({
-        hasExtractedLicensingInfos: [info, { ...info }],
-        packages: [pkg],
+        hasExtractedLicensingInfos: [
+          {
+            licenseId: customId,
+            extractedText: 'AGPL-3.0-only terms disguised as custom evidence',
+            name: 'Custom license',
+            comment: 'Source: attacker-controlled evidence',
+          },
+        ],
+        packages: [
+          {
+            name: 'malicious',
+            versionInfo: '1.0.0',
+            licenseDeclared: customId,
+            licenseConcluded: customId,
+          },
+        ],
       }),
-    /duplicate extracted license/
+    /unsupported custom license reference LicenseRef-Custom-Copyleft/
   );
   assert.throws(
     () =>
       validateSpdxLicensePolicy({
-        hasExtractedLicensingInfos: [{ ...info, extractedText: '' }],
-        packages: [pkg],
+        packages: [{ name: 'custom', licenseDeclared: 'LicenseRef-Arbitrary' }],
       }),
-    /empty extractedText/
+    /unsupported custom license reference LicenseRef-Arbitrary/
   );
   assert.throws(
     () =>
       validateSpdxLicensePolicy({
-        hasExtractedLicensingInfos: [{ ...info, licenseId: 'LicenseRef-unused' }],
-        packages: [pkg],
-      }),
-    /unresolved custom license reference/
-  );
-  assert.throws(
-    () =>
-      validateSpdxLicensePolicy({
-        hasExtractedLicensingInfos: [info],
+        hasExtractedLicensingInfos: [mapboxInfo],
         packages: [{ name: 'external', licenseDeclared: 'DocumentRef-upstream:LicenseRef-Custom' }],
       }),
     /external custom license reference is not allowed/
   );
+});
+
+test('rejects every Mapbox evidence identity, source, and content mismatch', () => {
+  for (const [label, info, pkg, pattern] of [
+    ['missing evidence', undefined, mapboxPackage, /unresolved custom license reference/],
+    [
+      'duplicate evidence',
+      [mapboxInfo, { ...mapboxInfo }],
+      mapboxPackage,
+      /duplicate extracted license/,
+    ],
+    ['empty text', { ...mapboxInfo, extractedText: '' }, mapboxPackage, /empty extractedText/],
+    [
+      'altered text',
+      { ...mapboxInfo, extractedText: `${mapboxText}altered` },
+      mapboxPackage,
+      /unexpected text hash/,
+    ],
+    [
+      'whitespace license id',
+      { ...mapboxInfo, licenseId: ` ${mapboxLicenseId}` },
+      mapboxPackage,
+      /invalid licenseId/,
+    ],
+    [
+      'wrong evidence name',
+      { ...mapboxInfo, name: 'Mapbox terms' },
+      mapboxPackage,
+      /unexpected source-bound name/,
+    ],
+    [
+      'wrong evidence comment',
+      { ...mapboxInfo, comment: 'Source: elsewhere' },
+      mapboxPackage,
+      /unexpected source-bound comment/,
+    ],
+    [
+      'wrong package name',
+      mapboxInfo,
+      { ...mapboxPackage, name: 'not-mapbox-gl' },
+      /custom license package name must be mapbox-gl/,
+    ],
+    [
+      'wrong package version',
+      mapboxInfo,
+      { ...mapboxPackage, versionInfo: '3.20.1' },
+      /custom license package version must be 3.20.0/,
+    ],
+    [
+      'wrong declared field',
+      mapboxInfo,
+      { ...mapboxPackage, licenseDeclared: 'MIT' },
+      /licenseDeclared must equal/,
+    ],
+    [
+      'wrong concluded field',
+      mapboxInfo,
+      { ...mapboxPackage, licenseConcluded: 'MIT' },
+      /licenseConcluded must equal/,
+    ],
+  ]) {
+    const infos = info === undefined ? undefined : Array.isArray(info) ? info : [info];
+    assert.throws(
+      () =>
+        validateSpdxLicensePolicy({
+          ...(infos ? { hasExtractedLicensingInfos: infos } : {}),
+          packages: [pkg],
+        }),
+      pattern,
+      label
+    );
+  }
 });
 
 test('rejects missing and NOASSERTION package licenses', () => {

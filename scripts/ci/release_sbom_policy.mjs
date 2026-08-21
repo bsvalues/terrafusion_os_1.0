@@ -1,7 +1,10 @@
+import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import parseSpdxExpression from 'spdx-expression-parse';
+
+import { MAPBOX_GL_LICENSE_ALLOW_RECORD } from './frontend_dependency_sbom.mjs';
 
 const LICENSE_FIELDS = ['licenseConcluded', 'licenseDeclared'];
 const PROHIBITED = /^(?:AGPL|GPL)-/i;
@@ -29,14 +32,19 @@ function extractedLicensesById(document, source) {
     throw new Error(`${source}: hasExtractedLicensingInfos must be an array`);
   }
 
+  const expectedName = `Mapbox Terms of Service for mapbox-gl@${MAPBOX_GL_LICENSE_ALLOW_RECORD.version}`;
+  const expectedComment = `Source: installed mapbox-gl@${MAPBOX_GL_LICENSE_ALLOW_RECORD.version}/LICENSE.txt`;
   const extracted = new Map();
   for (const [index, info] of document.hasExtractedLicensingInfos.entries()) {
     if (!info || typeof info !== 'object' || Array.isArray(info)) {
       throw new Error(`${source}: extracted license ${index} is malformed`);
     }
-    const licenseId = typeof info.licenseId === 'string' ? info.licenseId.trim() : '';
+    const licenseId = typeof info.licenseId === 'string' ? info.licenseId : '';
     if (!LOCAL_LICENSE_REFERENCE.test(licenseId)) {
       throw new Error(`${source}: extracted license ${index} has invalid licenseId ${licenseId}`);
+    }
+    if (licenseId !== MAPBOX_GL_LICENSE_ALLOW_RECORD.licenseId) {
+      throw new Error(`${source}: unsupported custom license reference ${licenseId}`);
     }
     if (extracted.has(licenseId)) {
       throw new Error(`${source}: duplicate extracted license ${licenseId}`);
@@ -44,12 +52,19 @@ function extractedLicensesById(document, source) {
     if (typeof info.extractedText !== 'string' || info.extractedText.trim() === '') {
       throw new Error(`${source}: extracted license ${licenseId} has empty extractedText`);
     }
-    if (typeof info.name !== 'string' || info.name.trim() === '') {
-      throw new Error(`${source}: extracted license ${licenseId} is missing a source-bound name`);
+    const extractedTextSha256 = crypto
+      .createHash('sha256')
+      .update(info.extractedText, 'utf8')
+      .digest('hex');
+    if (extractedTextSha256 !== MAPBOX_GL_LICENSE_ALLOW_RECORD.extractedTextSha256) {
+      throw new Error(`${source}: extracted license ${licenseId} has unexpected text hash`);
     }
-    if (typeof info.comment !== 'string' || info.comment.trim() === '') {
+    if (info.name !== expectedName) {
+      throw new Error(`${source}: extracted license ${licenseId} has unexpected source-bound name`);
+    }
+    if (info.comment !== expectedComment) {
       throw new Error(
-        `${source}: extracted license ${licenseId} is missing a source-bound comment`
+        `${source}: extracted license ${licenseId} has unexpected source-bound comment`
       );
     }
     extracted.set(licenseId, info);
@@ -72,6 +87,26 @@ function packageExpressions(pkg) {
     throw new Error('licenseInfoFromFiles must be an array');
   }
   return values;
+}
+
+function mapboxReferenceFindings(pkg) {
+  const findings = [];
+  if (pkg.name !== MAPBOX_GL_LICENSE_ALLOW_RECORD.packageName) {
+    findings.push(
+      `custom license package name must be ${MAPBOX_GL_LICENSE_ALLOW_RECORD.packageName}`
+    );
+  }
+  if (pkg.versionInfo !== MAPBOX_GL_LICENSE_ALLOW_RECORD.version) {
+    findings.push(
+      `custom license package version must be ${MAPBOX_GL_LICENSE_ALLOW_RECORD.version}`
+    );
+  }
+  for (const field of LICENSE_FIELDS) {
+    if (pkg[field] !== MAPBOX_GL_LICENSE_ALLOW_RECORD.licenseId) {
+      findings.push(`${field} must equal ${MAPBOX_GL_LICENSE_ALLOW_RECORD.licenseId}`);
+    }
+  }
+  return findings;
 }
 
 export function validateSpdxLicensePolicy(document, source = '<memory>') {
@@ -127,10 +162,17 @@ export function validateSpdxLicensePolicy(document, source = '<memory>') {
         if (UNRESOLVED_PLACEHOLDER.test(license)) {
           prohibited.push(`unresolved license placeholder ${license}`);
         } else if (LOCAL_LICENSE_REFERENCE.test(license)) {
-          if (!extractedLicenses.has(license)) {
+          if (license !== MAPBOX_GL_LICENSE_ALLOW_RECORD.licenseId) {
+            prohibited.push(`unsupported custom license reference ${license}`);
+          } else if (!extractedLicenses.has(license)) {
             prohibited.push(`unresolved custom license reference ${license}`);
           } else {
-            referencedCustomLicenses.add(license);
+            const bindingFindings = mapboxReferenceFindings(pkg);
+            if (bindingFindings.length > 0) {
+              prohibited.push(...bindingFindings);
+            } else {
+              referencedCustomLicenses.add(license);
+            }
           }
         } else if (PROHIBITED.test(license)) {
           prohibited.push(`prohibited ${license}`);

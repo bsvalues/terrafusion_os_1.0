@@ -21,6 +21,29 @@ function job(name) {
   return next < 0 ? workflow.slice(start) : workflow.slice(start, start + marker.length + next);
 }
 
+test('SBOM policy job installs governed Node dependencies before policy execution', () => {
+  const text = job('sbom-compliance');
+  const pnpmSetup = text.indexOf('uses: pnpm/action-setup@v4');
+  const nodeSetup = text.indexOf('uses: actions/setup-node@v4');
+  const frozenInstall = text.indexOf('pnpm install --frozen-lockfile --ignore-scripts');
+  const policy = text.indexOf('node scripts/ci/release_sbom_policy.mjs');
+  assert.ok(pnpmSetup >= 0, 'SBOM policy job must set up governed pnpm');
+  assert.ok(
+    nodeSetup > pnpmSetup,
+    'Node setup must follow pnpm setup so cache resolution is valid'
+  );
+  assert.ok(frozenInstall > nodeSetup, 'frozen dependency install must follow Node setup');
+  assert.ok(
+    policy > frozenInstall,
+    'license policy must run only after its parser dependency is installed'
+  );
+  assert.doesNotMatch(
+    text,
+    /(?:pnpm|npx) dlx/,
+    'SBOM policy dependencies must come from the lockfile'
+  );
+});
+
 test('publisher creates each canonical runtime image exactly once and records digests', () => {
   const text = job('sbom-compliance');
   assert.equal((text.match(/push: true/g) || []).length, 2);

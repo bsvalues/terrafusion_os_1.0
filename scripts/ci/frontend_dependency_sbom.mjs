@@ -9,6 +9,12 @@ const MAPBOX_GL_NAME = 'mapbox-gl';
 const MAPBOX_GL_GROUP_LICENSE = 'BSD';
 const MAPBOX_GL_MANIFEST_LICENSE = 'SEE LICENSE IN LICENSE.txt';
 const MAPBOX_GL_LICENSE_FILE = 'LICENSE.txt';
+export const MAPBOX_GL_LICENSE_ALLOW_RECORD = Object.freeze({
+  packageName: 'mapbox-gl',
+  version: '3.20.0',
+  licenseId: 'LicenseRef-npm-mapbox-gl-3.20.0-Mapbox-TOS',
+  extractedTextSha256: 'c24eff481bf098c82fda9949b2d982589df8b36db11fffa49653d4afe1903998',
+});
 const SCOPE_LABELS = new Map([
   ['browser-production', 'browser production'],
   ['docker-build', 'Docker build'],
@@ -44,10 +50,12 @@ function readInstalledPackageLicenseText(packagePath, fileName) {
 }
 
 function mapboxLicenseRef(version) {
-  if (!/^[0-9A-Za-z.-]+$/.test(version)) {
-    throw new Error(`mapbox-gl@${version}: version cannot form a deterministic LicenseRef`);
+  if (version !== MAPBOX_GL_LICENSE_ALLOW_RECORD.version) {
+    throw new Error(
+      `mapbox-gl@${version}: unsupported Mapbox TOS evidence version; expected ${MAPBOX_GL_LICENSE_ALLOW_RECORD.version}`
+    );
   }
-  return `LicenseRef-npm-mapbox-gl-${version}-Mapbox-TOS`;
+  return MAPBOX_GL_LICENSE_ALLOW_RECORD.licenseId;
 }
 
 function installedMapboxLicenseByVersion(
@@ -85,6 +93,13 @@ function installedMapboxLicenseByVersion(
     const extractedText = readInstalledLicenseText(packagePath, MAPBOX_GL_LICENSE_FILE);
     if (typeof extractedText !== 'string' || extractedText.trim() === '') {
       throw new Error(`mapbox-gl@${version} ${MAPBOX_GL_LICENSE_FILE} must be a non-empty string`);
+    }
+    const extractedTextSha256 = crypto
+      .createHash('sha256')
+      .update(extractedText, 'utf8')
+      .digest('hex');
+    if (extractedTextSha256 !== MAPBOX_GL_LICENSE_ALLOW_RECORD.extractedTextSha256) {
+      throw new Error(`mapbox-gl@${version}: installed Mapbox TOS evidence hash mismatch`);
     }
     const licenseId = mapboxLicenseRef(version);
     const current = {
@@ -183,8 +198,13 @@ export function buildFrontendDependencySpdx(licenseInventory, scope, options = {
       const installedLicenses = unresolved
         ? installedLicenseByVersion(entry, name, versions, readInstalledManifest)
         : null;
+      if (name === MAPBOX_GL_NAME && license !== MAPBOX_GL_GROUP_LICENSE) {
+        throw new Error(
+          `mapbox-gl: expected pnpm license group ${MAPBOX_GL_GROUP_LICENSE}, found ${license}`
+        );
+      }
       const mapboxEvidence =
-        name === MAPBOX_GL_NAME && license === MAPBOX_GL_GROUP_LICENSE
+        name === MAPBOX_GL_NAME
           ? installedMapboxLicenseByVersion(
               entry,
               versions,

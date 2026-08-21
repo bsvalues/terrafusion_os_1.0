@@ -85,6 +85,14 @@ jobs:
       frontend-ref: ${{ steps.publish-refs.outputs.frontend_ref }}
     steps:
       - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+      - name: Install SBOM policy dependencies
+        run: pnpm install --frozen-lockfile --ignore-scripts
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
       - name: Log in to GHCR

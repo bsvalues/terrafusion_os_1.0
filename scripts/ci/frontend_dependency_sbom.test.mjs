@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import crypto from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import test from 'node:test';
@@ -125,40 +126,37 @@ test('fails closed for missing, unresolved, and conflicting license evidence', (
   );
 });
 
-test('binds mapbox-gl to exact installed Mapbox TOS evidence instead of pnpm BSD grouping', () => {
+test('binds mapbox-gl to the exact installed 3.20.0 Mapbox TOS evidence', () => {
+  const packagePath = join(root, 'frontend', 'node_modules', 'mapbox-gl');
+  const extractedText = readFileSync(join(packagePath, 'LICENSE.txt'), 'utf8');
   const inventory = {
     BSD: [
       {
         name: 'mapbox-gl',
         versions: ['3.20.0'],
-        paths: ['/install/mapbox-gl'],
+        paths: [packagePath],
         license: 'BSD',
       },
     ],
   };
+
+  const document = buildFrontendDependencySpdx(inventory, 'browser-production');
+  const info = document.hasExtractedLicensingInfos[0];
+  assert.equal(document.packages[0].licenseDeclared, 'LicenseRef-npm-mapbox-gl-3.20.0-Mapbox-TOS');
+  assert.equal(document.packages[0].licenseConcluded, document.packages[0].licenseDeclared);
+  assert.equal(info.licenseId, document.packages[0].licenseDeclared);
+  assert.equal(info.name, 'Mapbox Terms of Service for mapbox-gl@3.20.0');
+  assert.equal(info.comment, 'Source: installed mapbox-gl@3.20.0/LICENSE.txt');
+  assert.equal(
+    crypto.createHash('sha256').update(info.extractedText, 'utf8').digest('hex'),
+    'c24eff481bf098c82fda9949b2d982589df8b36db11fffa49653d4afe1903998'
+  );
+
   const manifest = { name: 'mapbox-gl', version: '3.20.0', license: 'SEE LICENSE IN LICENSE.txt' };
   const options = {
-    readInstalledManifest: packagePath => {
-      assert.equal(packagePath, '/install/mapbox-gl');
-      return manifest;
-    },
-    readInstalledLicenseText: (packagePath, fileName) => {
-      assert.equal(packagePath, '/install/mapbox-gl');
-      assert.equal(fileName, 'LICENSE.txt');
-      return 'Mapbox test terms - exact installed license evidence';
-    },
+    readInstalledManifest: () => manifest,
+    readInstalledLicenseText: () => extractedText,
   };
-
-  const document = buildFrontendDependencySpdx(inventory, 'browser-production', options);
-  assert.equal(document.packages[0].licenseDeclared, 'LicenseRef-npm-mapbox-gl-3.20.0-Mapbox-TOS');
-  assert.deepEqual(document.hasExtractedLicensingInfos, [
-    {
-      licenseId: 'LicenseRef-npm-mapbox-gl-3.20.0-Mapbox-TOS',
-      extractedText: 'Mapbox test terms - exact installed license evidence',
-      name: 'Mapbox Terms of Service for mapbox-gl@3.20.0',
-      comment: 'Source: installed mapbox-gl@3.20.0/LICENSE.txt',
-    },
-  ]);
   assert.throws(
     () =>
       buildFrontendDependencySpdx(inventory, 'browser-production', {
@@ -171,9 +169,49 @@ test('binds mapbox-gl to exact installed Mapbox TOS evidence instead of pnpm BSD
     () =>
       buildFrontendDependencySpdx(inventory, 'browser-production', {
         ...options,
+        readInstalledLicenseText: () => `${extractedText}altered`,
+      }),
+    /evidence hash mismatch/
+  );
+  assert.throws(
+    () =>
+      buildFrontendDependencySpdx(inventory, 'browser-production', {
+        ...options,
         readInstalledLicenseText: () => '   ',
       }),
     /LICENSE.txt must be a non-empty string/
+  );
+  assert.throws(
+    () =>
+      buildFrontendDependencySpdx(
+        {
+          BSD: [
+            {
+              name: 'mapbox-gl',
+              versions: ['3.21.0'],
+              paths: [packagePath],
+              license: 'BSD',
+            },
+          ],
+        },
+        'browser-production',
+        {
+          readInstalledManifest: () => ({ ...manifest, version: '3.21.0' }),
+          readInstalledLicenseText: () => extractedText,
+        }
+      ),
+    /unsupported Mapbox TOS evidence version/
+  );
+  assert.throws(
+    () =>
+      buildFrontendDependencySpdx(
+        {
+          MIT: [{ name: 'mapbox-gl', versions: ['3.20.0'], paths: [packagePath], license: 'MIT' }],
+        },
+        'browser-production',
+        options
+      ),
+    /expected pnpm license group BSD/
   );
 });
 
