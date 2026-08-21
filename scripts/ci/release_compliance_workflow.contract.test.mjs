@@ -321,6 +321,69 @@ test('provenance binds both image digests and blocks approval', () => {
   );
 });
 
+test('Forge valuation payload is digest-bound, embedded, validated, and carried to approval', () => {
+  const sbom = job('sbom-compliance');
+  const gate = job('release-gate');
+  const provenance = job('provenance');
+  const forgeRef =
+    'ghcr.io/bsvalues/terrafusion-forge-valuation-kernel@sha256:0701e52e2b48fe2ceb614ee3c8f3c26992425096f014a0995704fc04a7a70066';
+
+  const login = sbom.indexOf('uses: docker/login-action@v4');
+  const preflight = sbom.indexOf('Verify exact Forge valuation producer payload');
+  const backendBuild = sbom.indexOf('Publish backend runtime image');
+  assert.ok(login >= 0 && preflight > login && backendBuild > preflight);
+  assert.ok(sbom.includes(`docker pull "$FORGE_VALUATION_KERNEL_REF"`));
+  assert.ok(sbom.includes(`forge-valuation-kernel=docker-image://${forgeRef}`));
+  assert.match(
+    sbom,
+    /validateForgeProducerManifestDocument[\s\S]*FORGE_VALUATION_KERNEL_PRODUCER_MANIFEST_SHA256[\s\S]*FORGE_VALUATION_KERNEL_EXECUTABLE_SHA256/
+  );
+  assert.match(sbom, /release-forge-accepted[\s\S]*release-forge-rejected/);
+  assert.match(
+    sbom,
+    /EMBEDDED_FORGE_ROOT="backend-runtime-root\/\.terrafusion\/runtime\/forge\/valuation"[\s\S]*cmp forge-valuation-kernel-producer-manifest\.json/
+  );
+  assert.match(
+    backendDockerfile,
+    /FROM forge-valuation-kernel AS forge-valuation-kernel-payload/
+  );
+  assert.match(
+    backendDockerfile,
+    /COPY --from=forge-valuation-kernel-payload --chmod=0555 \/terraforge-kernel-valuation \/app\/\.terrafusion\/runtime\/forge\/valuation\/terraforge-kernel-valuation/
+  );
+  assert.match(
+    backendDockerfile,
+    /COPY --from=forge-valuation-kernel-payload --chmod=0444 \/manifest\.json \/app\/\.terrafusion\/runtime\/forge\/valuation\/producer-manifest\.json/
+  );
+  for (const identity of [
+    '--forge-image "$FORGE_VALUATION_KERNEL_IMAGE"',
+    '--forge-digest "$FORGE_VALUATION_KERNEL_DIGEST"',
+    '--forge-producer-commit "$FORGE_VALUATION_KERNEL_PRODUCER_COMMIT"',
+    '--forge-canonical-source-commit "$FORGE_VALUATION_KERNEL_CANONICAL_SOURCE_COMMIT"',
+    '--forge-artifact-type "$FORGE_VALUATION_KERNEL_ARTIFACT_TYPE"',
+    '--forge-producer-manifest forge-valuation-kernel-producer-manifest.json',
+    '--forge-executable-sha256 "$FORGE_VALUATION_KERNEL_EXECUTABLE_SHA256"',
+  ]) {
+    assert.ok(sbom.includes(identity), 'missing Forge manifest create input: ' + identity);
+  }
+  assert.match(
+    sbom,
+    /name: release-image-inputs[\s\S]*forge-valuation-kernel-producer-manifest\.json/
+  );
+  assert.match(
+    gate,
+    /--forge-producer-manifest approved-inputs\/forge-valuation-kernel-producer-manifest\.json/
+  );
+  assert.match(
+    gate,
+    /name: approved-release-images[\s\S]*approved-inputs\/forge-valuation-kernel-producer-manifest\.json/
+  );
+  assert.match(provenance, /Forge producer platform attestation: unavailable/);
+  assert.match(provenance, /no Workbench-adoption or county-readiness claim/);
+  assert.equal((provenance.match(/subject-name:/g) || []).length, 2);
+  assert.doesNotMatch(provenance, /subject-name:.*forge/i);
+});
+
 test('OIDC is job scoped and the full test claim is strict', () => {
   const header = workflow.slice(0, workflow.indexOf('jobs:'));
   const tests = job('full-tests');
