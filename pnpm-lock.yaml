@@ -12,6 +12,7 @@ overrides:
   brace-expansion@1: 1.1.18
   brace-expansion@2: 2.1.4
   '@microsoft/signalr>ws': 7.5.13
+  mapbox-gl>@mapbox/jsonlint-lines-primitives: 2.0.2
   ws@8: 8.21.0
   handlebars: 4.7.9
   workbox-build>rollup: 2.80.0
@@ -32,6 +33,11 @@ overrides:
   yaml@1: 1.10.3
   aframe@1.7.1>three-bmfont-text: 3.0.0
   '@tailwindcss/oxide>tar': '>=7.5.21'
+
+patchedDependencies:
+  '@mapbox/jsonlint-lines-primitives@2.0.2':
+    hash: zvnn5ppofe7fsvoqnmlhigtmvq
+    path: patches/@mapbox__jsonlint-lines-primitives@2.0.2.patch
 
 importers:
 
@@ -4233,9 +4239,9 @@ packages:
     resolution: {integrity: sha512-9QOtNffcOF/c1seMCDnjckb3R9WHcG34tky+FHpNKKCW0wc/scYLwMtO+ptyGUfMW0/b/n4qRiALlaFHc9Oj7Q==}
     engines: {node: '>= 10.0.0'}
 
-  '@mapbox/jsonlint-lines-primitives@2.0.3':
-    resolution: {integrity: sha512-0SElaV0uMxEnxzBhhX9WTuPyUeMsAN/SS0i16tjuba4/mio63MG9khjC1a0JAiPGXAwvwm4UfHJURCN7nyudQg==}
-    engines: {node: '>= 22'}
+  '@mapbox/jsonlint-lines-primitives@2.0.2':
+    resolution: {integrity: sha512-rY0o9A5ECsTQRVhv7tL/OyDpGAoUB4tTvLiW1DSzQGq4bvTPhNw1VpSNjDJc5GFZ2XuyOtSWSVN05qOtcD71qQ==}
+    engines: {node: '>= 0.6'}
 
   '@mapbox/mapbox-gl-supported@3.0.0':
     resolution: {integrity: sha512-2XghOwu16ZwPJLOFVuIOaLbN0iKMn867evzXFyf0P22dqugezfJwLmdanAgU25ITvz1TvOfVP4jsDImlDJzcWg==}
@@ -17640,7 +17646,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@mapbox/jsonlint-lines-primitives@2.0.3': {}
+  '@mapbox/jsonlint-lines-primitives@2.0.2(patch_hash=zvnn5ppofe7fsvoqnmlhigtmvq)': {}
 
   '@mapbox/mapbox-gl-supported@3.0.0': {}
 
@@ -28203,7 +28209,7 @@ snapshots:
 
   mapbox-gl@3.20.0:
     dependencies:
-      '@mapbox/jsonlint-lines-primitives': 2.0.3
+      '@mapbox/jsonlint-lines-primitives': 2.0.2(patch_hash=zvnn5ppofe7fsvoqnmlhigtmvq)
       '@mapbox/mapbox-gl-supported': 3.0.0
       '@mapbox/point-geometry': 1.1.0
       '@mapbox/tiny-sdf': 2.0.7

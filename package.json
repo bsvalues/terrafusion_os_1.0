@@ -579,6 +579,7 @@
       "brace-expansion@1": "1.1.18",
       "brace-expansion@2": "2.1.4",
       "@microsoft/signalr>ws": "7.5.13",
+      "mapbox-gl>@mapbox/jsonlint-lines-primitives": "2.0.2",
       "ws@8": "8.21.0",
       "handlebars": "4.7.9",
       "workbox-build>rollup": "2.80.0",
@@ -599,6 +600,9 @@
       "yaml@1": "1.10.3",
       "aframe@1.7.1>three-bmfont-text": "3.0.0",
       "@tailwindcss/oxide>tar": ">=7.5.21"
+    },
+    "patchedDependencies": {
+      "@mapbox/jsonlint-lines-primitives@2.0.2": "patches/@mapbox__jsonlint-lines-primitives@2.0.2.patch"
     }
   }
 }

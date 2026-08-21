@@ -1,0 +1,11 @@
+diff --git a/package.json b/package.json
+--- a/package.json
++++ b/package.json
+@@ -15,6 +15,7 @@
+     "url": "http://github.com/mapbox/jsonlint/issues"
+   },
+   "main": "lib/jsonlint.js",
++  "license": "MIT",
+   "engines": {
+     "node": ">= 0.6"
+   },

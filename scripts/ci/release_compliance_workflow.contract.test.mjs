@@ -68,6 +68,7 @@ test('published frontend image embeds and scans browser and build dependency evi
     '/usr/share/terrafusion/sbom/pnpm-lock.yaml',
     '/usr/share/terrafusion/sbom/pnpm-workspace.yaml',
     '/usr/share/terrafusion/sbom/frontend/package.json',
+    '/usr/share/terrafusion/sbom/patches/@mapbox__jsonlint-lines-primitives@2.0.2.patch',
     '/usr/share/terrafusion/sbom/frontend-dependencies.spdx.json',
     '/usr/share/terrafusion/sbom/frontend-build-dependencies.spdx.json',
   ]) {
@@ -76,6 +77,20 @@ test('published frontend image embeds and scans browser and build dependency evi
       'missing exact frontend build input: ' + required
     );
   }
+  const patchCopies = [...frontendDockerfile.matchAll(/COPY patches\/ patches\//g)].map(
+    match => match.index
+  );
+  const frozenInstall = frontendDockerfile.indexOf('pnpm install --frozen-lockfile');
+  const developmentInstall = frontendDockerfile.indexOf('pnpm install --filter ./frontend...');
+  assert.equal(patchCopies.length, 2, 'both frontend Docker build targets need pnpm patches');
+  assert.ok(
+    patchCopies[0] >= 0 && patchCopies[0] < frozenInstall,
+    'pnpm patch inputs must be available before the frozen production install'
+  );
+  assert.ok(
+    patchCopies[1] > frozenInstall && patchCopies[1] < developmentInstall,
+    'pnpm patch inputs must be available before the development install'
+  );
   assert.match(
     frontendDockerfile,
     /pnpm exec vite build --outDir \/app\/dist/,

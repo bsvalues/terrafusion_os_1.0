@@ -26,7 +26,47 @@ function npmPurl(name, version) {
   return `pkg:npm/${encodedName}@${encodeURIComponent(version)}`;
 }
 
-export function buildFrontendDependencySpdx(licenseInventory, scope) {
+function readInstalledPackageManifest(packagePath) {
+  return JSON.parse(fs.readFileSync(path.join(packagePath, 'package.json'), 'utf8'));
+}
+
+function installedLicenseByVersion(entry, name, versions, readInstalledManifest) {
+  if (!Array.isArray(entry.paths) || entry.paths.length === 0) {
+    throw new Error(`${name}: unresolved license requires installed package paths`);
+  }
+
+  const expectedVersions = new Set(versions);
+  const licenses = new Map();
+  for (const [pathIndex, pathValue] of entry.paths.entries()) {
+    const packagePath = requiredString(pathValue, `${name}.paths[${pathIndex}]`);
+    const manifest = readInstalledManifest(packagePath);
+    if (!manifest || typeof manifest !== 'object' || Array.isArray(manifest)) {
+      throw new Error(`${name}: installed manifest must be an object`);
+    }
+    const manifestName = requiredString(manifest.name, `${name} installed manifest name`);
+    const version = requiredString(manifest.version, `${name} installed manifest version`);
+    const license = requiredString(manifest.license, `${name}@${version} installed license`);
+    if (manifestName !== name || !expectedVersions.has(version)) {
+      throw new Error(`${name}: installed manifest identity mismatch ${manifestName}@${version}`);
+    }
+    if (INVALID_LICENSE.test(license) || UNRESOLVED_LICENSE_REFERENCE.test(license)) {
+      throw new Error(`${name}@${version}: unresolved installed license ${license}`);
+    }
+    const prior = licenses.get(version);
+    if (prior && prior !== license) {
+      throw new Error(`${name}@${version}: conflicting installed licenses ${prior} and ${license}`);
+    }
+    licenses.set(version, license);
+  }
+
+  return licenses;
+}
+
+export function buildFrontendDependencySpdx(licenseInventory, scope, options = {}) {
+  const readInstalledManifest = options.readInstalledManifest ?? readInstalledPackageManifest;
+  if (typeof readInstalledManifest !== 'function') {
+    throw new Error('readInstalledManifest must be a function');
+  }
   const scopeLabel = SCOPE_LABELS.get(scope);
   if (!scopeLabel) {
     throw new Error('scope must be browser-production or docker-build');
@@ -55,23 +95,34 @@ export function buildFrontendDependencySpdx(licenseInventory, scope) {
       if (license !== groupLicense) {
         throw new Error(`${name}: entry license ${license} does not match group ${groupLicense}`);
       }
-      if (INVALID_LICENSE.test(license) || UNRESOLVED_LICENSE_REFERENCE.test(license)) {
-        throw new Error(`${name}: unresolved license ${license}`);
-      }
       if (!Array.isArray(entry.versions) || entry.versions.length === 0) {
         throw new Error(`${name}.versions must contain at least one version`);
       }
+      const versions = entry.versions.map((versionValue, versionIndex) =>
+        requiredString(versionValue, `${name}.versions[${versionIndex}]`)
+      );
+      const unresolved =
+        INVALID_LICENSE.test(license) || UNRESOLVED_LICENSE_REFERENCE.test(license);
+      const installedLicenses = unresolved
+        ? installedLicenseByVersion(entry, name, versions, readInstalledManifest)
+        : null;
 
-      for (const [versionIndex, versionValue] of entry.versions.entries()) {
-        const version = requiredString(versionValue, `${name}.versions[${versionIndex}]`);
+      for (const version of versions) {
+        const effectiveLicense = installedLicenses?.get(version) ?? license;
+        if (
+          INVALID_LICENSE.test(effectiveLicense) ||
+          UNRESOLVED_LICENSE_REFERENCE.test(effectiveLicense)
+        ) {
+          throw new Error(`${name}@${version}: unresolved license ${effectiveLicense}`);
+        }
         const key = `${name}\0${version}`;
         const prior = resolved.get(key);
-        if (prior && prior.license !== license) {
+        if (prior && prior.license !== effectiveLicense) {
           throw new Error(
-            `${name}@${version}: conflicting licenses ${prior.license} and ${license}`
+            `${name}@${version}: conflicting licenses ${prior.license} and ${effectiveLicense}`
           );
         }
-        resolved.set(key, { name, version, license });
+        resolved.set(key, { name, version, license: effectiveLicense });
       }
     }
   }

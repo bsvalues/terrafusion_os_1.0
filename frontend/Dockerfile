@@ -11,8 +11,9 @@ ENV VITE_BUILD_SHA=$VITE_BUILD_SHA
 # Enable corepack for pnpm
 RUN corepack enable && corepack prepare pnpm@9.0.0 --activate
 
-# Copy workspace root config + lockfile (single source of truth)
+# Copy workspace root config, lockfile, and deterministic pnpm patches.
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY patches/ patches/
 
 # Copy frontend package manifest and deterministic dependency-evidence generator
 COPY frontend/package.json frontend/package.json
@@ -58,11 +59,12 @@ COPY --from=build /app/dist ./
 # Preserve the exact dependency-resolution inputs that produced this bundle.
 # This path is outside the nginx document root, so it is available to image
 # inventory tooling without being served to end users.
-RUN mkdir -p /usr/share/terrafusion/sbom/frontend
+RUN mkdir -p /usr/share/terrafusion/sbom/frontend /usr/share/terrafusion/sbom/patches
 COPY --from=build /app/package.json /usr/share/terrafusion/sbom/package.json
 COPY --from=build /app/pnpm-lock.yaml /usr/share/terrafusion/sbom/pnpm-lock.yaml
 COPY --from=build /app/pnpm-workspace.yaml /usr/share/terrafusion/sbom/pnpm-workspace.yaml
 COPY --from=build /app/frontend/package.json /usr/share/terrafusion/sbom/frontend/package.json
+COPY --from=build /app/patches/@mapbox__jsonlint-lines-primitives@2.0.2.patch /usr/share/terrafusion/sbom/patches/@mapbox__jsonlint-lines-primitives@2.0.2.patch
 COPY --from=build /app/frontend-dependencies.spdx.json /usr/share/terrafusion/sbom/frontend-dependencies.spdx.json
 COPY --from=build /app/frontend-build-dependencies.spdx.json /usr/share/terrafusion/sbom/frontend-build-dependencies.spdx.json
 
@@ -91,6 +93,7 @@ RUN apk add --no-cache git python3 make g++
 RUN corepack enable && corepack prepare pnpm@9.0.0 --activate
 
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY patches/ patches/
 COPY frontend/package.json frontend/package.json
 
 RUN echo "fetch-timeout=120000" >> .npmrc && echo "fetch-retries=5" >> .npmrc
