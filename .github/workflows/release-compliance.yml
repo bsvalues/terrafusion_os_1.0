@@ -171,6 +171,19 @@ jobs:
           set -euo pipefail
           syft "registry:$BACKEND_IMAGE_REF" -o spdx-json=sbom-backend-runtime-spdx.json -o cyclonedx-json=sbom-backend-runtime-cyclonedx.json
 
+          docker pull "$BACKEND_IMAGE_REF"
+          BACKEND_CONTAINER="$(docker create "$BACKEND_IMAGE_REF")"
+          cleanup_backend_container() {
+            docker rm -f "$BACKEND_CONTAINER" >/dev/null 2>&1 || true
+          }
+          trap cleanup_backend_container EXIT
+          test ! -e backend-runtime-root
+          mkdir backend-runtime-root
+          docker cp "$BACKEND_CONTAINER:/app/." backend-runtime-root/
+          test -n "$(find backend-runtime-root -type f -print -quit)"
+          cleanup_backend_container
+          trap - EXIT
+
           docker pull "$FRONTEND_IMAGE_REF"
           FRONTEND_CONTAINER="$(docker create "$FRONTEND_IMAGE_REF")"
           cleanup_frontend_container() {
@@ -183,6 +196,8 @@ jobs:
           test -s sbom-frontend-build-dependencies-spdx.json
           cleanup_frontend_container
           trap - EXIT
+      - name: Guard exact Semantic Kernel advisory suppression
+        run: node scripts/ci/backend_semantic_kernel_advisory_guard.mjs sbom-backend-runtime-spdx.json backend-runtime-root backend
       - name: Generate backend runtime license evidence summary
         run: |
           node scripts/ci/backend_runtime_license_evidence.mjs \
@@ -195,7 +210,7 @@ jobs:
       - name: Blocking vulnerability policy
         run: |
           set -euo pipefail
-          grype sbom:sbom-backend-runtime-spdx.json -o table --fail-on critical
+          grype --config scripts/ci/grype-release.yaml sbom:sbom-backend-runtime-spdx.json -o table --fail-on critical
           grype sbom:sbom-frontend-dependencies-spdx.json -o table --fail-on high
           grype sbom:sbom-frontend-build-dependencies-spdx.json -o table --fail-on high
       - name: Blocking frontend dependency license policy

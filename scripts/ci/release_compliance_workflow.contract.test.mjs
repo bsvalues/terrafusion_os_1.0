@@ -9,6 +9,7 @@ const root = join(dirname(fileURLToPath(import.meta.url)), '../..');
 const workflow = readFileSync(join(root, '.github/workflows/release-compliance.yml'), 'utf8');
 const dockerignore = readFileSync(join(root, '.dockerignore'), 'utf8');
 const frontendDockerfile = readFileSync(join(root, 'frontend/Dockerfile'), 'utf8');
+const grypeReleaseConfig = readFileSync(join(root, 'scripts/ci/grype-release.yaml'), 'utf8');
 const sealWorkflow = readFileSync(join(root, '.github/workflows/seal-gate-fast.yml'), 'utf8');
 const packageJson = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8'));
 
@@ -44,6 +45,37 @@ test('SBOM policy job installs governed Node dependencies before policy executio
   );
 });
 
+test('affected Semantic Kernel plugin guard inspects the exact backend image filesystem', () => {
+  const text = job('sbom-compliance');
+  const pull = text.indexOf('docker pull "$BACKEND_IMAGE_REF"');
+  const create = text.indexOf('docker create "$BACKEND_IMAGE_REF"');
+  const copy = text.indexOf('docker cp "$BACKEND_CONTAINER:/app/." backend-runtime-root/');
+  const guard = text.indexOf(
+    'backend_semantic_kernel_advisory_guard.mjs sbom-backend-runtime-spdx.json backend-runtime-root backend'
+  );
+  assert.ok(pull >= 0 && create > pull && copy > create && guard > copy);
+  assert.match(text, /trap cleanup_backend_container EXIT/);
+  assert.match(text, /cleanup_backend_container[\s\S]*trap - EXIT/);
+  assert.match(text, /test -n "\$\(find backend-runtime-root -type f -print -quit\)"/);
+});
+
+test('backend Grype false-positive containment is one exact visible tuple', () => {
+  const expected = `# Exact false-positive containment for the backend runtime gate.
+# Official advisory: https://github.com/microsoft/semantic-kernel/security/advisories/GHSA-2ww3-72rp-wpp4
+# Microsoft GHSA-2ww3-72rp-wpp4 affects Microsoft.SemanticKernel.Plugins.Core
+# and its SessionsPythonPlugin, neither of which is present in the release SBOM.
+# Grype v0.99.1 misassociates it with Microsoft.SemanticKernel.Core 1.4.0.
+ignore:
+  - vulnerability: GHSA-2ww3-72rp-wpp4
+    package:
+      name: Microsoft.SemanticKernel.Core
+      version: 1.4.0
+      type: UnknownPackage
+show-suppressed: true
+`;
+  assert.equal(grypeReleaseConfig.replace(/\r\n/g, '\n'), expected);
+});
+
 test('publisher creates each canonical runtime image exactly once and records digests', () => {
   const text = job('sbom-compliance');
   assert.equal((text.match(/push: true/g) || []).length, 2);
@@ -74,7 +106,14 @@ test('published frontend image embeds and scans browser and build dependency evi
     text,
     /docker cp[\s\S]*frontend-dependencies\.spdx\.json[\s\S]*sbom-frontend-dependencies-spdx\.json/
   );
-  assert.match(text, /grype sbom:sbom-backend-runtime-spdx\.json -o table --fail-on critical/);
+  assert.match(
+    text,
+    /backend_semantic_kernel_advisory_guard\.mjs sbom-backend-runtime-spdx\.json backend-runtime-root backend/
+  );
+  assert.match(
+    text,
+    /grype --config scripts\/ci\/grype-release\.yaml sbom:sbom-backend-runtime-spdx\.json -o table --fail-on critical/
+  );
   assert.match(text, /grype sbom:sbom-frontend-dependencies-spdx\.json -o table --fail-on high/);
   assert.match(
     text,
@@ -154,7 +193,10 @@ test('backend runtime evidence preserves the blocking scan and protected legal w
   const sbom = job('sbom-compliance');
   const provenance = job('provenance');
   assert.match(sbom, /syft "registry:\$BACKEND_IMAGE_REF"/);
-  assert.match(sbom, /grype sbom:sbom-backend-runtime-spdx\.json -o table --fail-on critical/);
+  assert.match(
+    sbom,
+    /grype --config scripts\/ci\/grype-release\.yaml sbom:sbom-backend-runtime-spdx\.json -o table --fail-on critical/
+  );
   assert.match(
     provenance,
     /Backend runtime SBOM was recorded and passed the blocking CRITICAL vulnerability gate/
