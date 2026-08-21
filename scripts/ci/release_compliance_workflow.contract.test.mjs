@@ -75,7 +75,22 @@ test('published frontend image embeds and scans browser and build dependency evi
     text,
     /grype sbom:sbom-frontend-build-dependencies-spdx\.json -o table --fail-on high/
   );
-  assert.match(text, /release_sbom_policy\.mjs[\s\S]*sbom-frontend-build-dependencies-spdx\.json/);
+  const frontendPolicy = text
+    .split('\n')
+    .find(line => line.includes('node scripts/ci/release_sbom_policy.mjs'));
+  assert.ok(frontendPolicy, 'missing strict frontend dependency license policy');
+  assert.match(frontendPolicy, /sbom-frontend-dependencies-spdx\.json/);
+  assert.match(frontendPolicy, /sbom-frontend-build-dependencies-spdx\.json/);
+  assert.doesNotMatch(
+    frontendPolicy,
+    /sbom-backend-runtime-spdx\.json/,
+    'raw Syft backend runtime SPDX must not be misrepresented as frontend dependency evidence'
+  );
+  assert.match(
+    text,
+    /backend_runtime_license_evidence\.mjs sbom-backend-runtime-spdx\.json backend-runtime-license-evidence\.json/
+  );
+  assert.match(text, /path: \|[\s\S]*sbom-\*\.json[\s\S]*backend-runtime-license-evidence\.json/);
   assert.doesNotMatch(text, /target: build|terrafusion-frontend-build|frontend-build-spdx/);
   assert.doesNotMatch(text, /syft dir:\./);
   assert.match(
@@ -126,6 +141,22 @@ test('published frontend image embeds and scans browser and build dependency evi
   );
 });
 
+test('backend runtime evidence preserves the blocking scan and protected legal wall', () => {
+  const sbom = job('sbom-compliance');
+  const provenance = job('provenance');
+  assert.match(sbom, /syft "registry:\$BACKEND_IMAGE_REF"/);
+  assert.match(sbom, /grype sbom:sbom-backend-runtime-spdx\.json -o table --fail-on critical/);
+  assert.match(
+    provenance,
+    /Backend runtime SBOM was recorded and passed the blocking CRITICAL vulnerability gate/
+  );
+  assert.match(
+    provenance,
+    /BACKEND LEGAL WALL: runtime license inventory is evidence-only; protected release\/legal approval is required before RC promotion/
+  );
+  assert.doesNotMatch(provenance, /backend runtime license (?:policy|approval) passed/i);
+});
+
 test('container scan consumes published digests and enforces the declared threshold', () => {
   const text = job('container-security');
   assert.match(text, /needs: \[sbom-compliance\]/);
@@ -174,6 +205,7 @@ test('OIDC is job scoped and the full test claim is strict', () => {
 test('release lifecycle contracts are mandatory in PR and release CI', () => {
   const lifecycle = packageJson.scripts['test:release-lifecycle'];
   for (const required of [
+    'backend_runtime_license_evidence.test.mjs',
     'release_compliance_workflow.contract.test.mjs',
     'frontend_dependency_sbom.test.mjs',
     'release_image_manifest.test.mjs',

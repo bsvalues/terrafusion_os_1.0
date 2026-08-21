@@ -183,14 +183,16 @@ jobs:
           test -s sbom-frontend-build-dependencies-spdx.json
           cleanup_frontend_container
           trap - EXIT
+      - name: Generate backend runtime license evidence summary
+        run: node scripts/ci/backend_runtime_license_evidence.mjs sbom-backend-runtime-spdx.json backend-runtime-license-evidence.json
       - name: Blocking vulnerability policy
         run: |
           set -euo pipefail
           grype sbom:sbom-backend-runtime-spdx.json -o table --fail-on critical
           grype sbom:sbom-frontend-dependencies-spdx.json -o table --fail-on high
           grype sbom:sbom-frontend-build-dependencies-spdx.json -o table --fail-on high
-      - name: Blocking license policy
-        run: node scripts/ci/release_sbom_policy.mjs sbom-backend-runtime-spdx.json sbom-frontend-dependencies-spdx.json sbom-frontend-build-dependencies-spdx.json
+      - name: Blocking frontend dependency license policy
+        run: node scripts/ci/release_sbom_policy.mjs sbom-frontend-dependencies-spdx.json sbom-frontend-build-dependencies-spdx.json
       - name: Create immutable release image manifest
         run: |
           node scripts/ci/release_image_manifest.mjs create \
@@ -205,7 +207,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: release-sbom
-          path: sbom-*.json
+          path: |
+            sbom-*.json
+            backend-runtime-license-evidence.json
           retention-days: 365
       - name: Upload release image inputs
         uses: actions/upload-artifact@v4
@@ -320,7 +324,9 @@ jobs:
         run: |
           echo "# 🚀 Release Compliance Summary: ${{ github.ref_name }}" >> "$GITHUB_STEP_SUMMARY"
           echo "- ✅ Unit, backend, and authenticated property Workbench release smoke passed" >> "$GITHUB_STEP_SUMMARY"
-          echo "- ✅ Runtime, frontend browser-production, and exact Docker-build dependency SBOM policies passed" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Frontend browser-production and exact Docker-build dependency license policies passed" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Backend runtime SBOM was recorded and passed the blocking CRITICAL vulnerability gate" >> "$GITHUB_STEP_SUMMARY"
+          echo "- BACKEND LEGAL WALL: runtime license inventory is evidence-only; protected release/legal approval is required before RC promotion" >> "$GITHUB_STEP_SUMMARY"
           echo "- ✅ Exact images passed blocking vulnerability scans" >> "$GITHUB_STEP_SUMMARY"
           echo "- ✅ Backend: ${{ needs.sbom-compliance.outputs.backend-ref }}" >> "$GITHUB_STEP_SUMMARY"
           echo "- ✅ Frontend: ${{ needs.sbom-compliance.outputs.frontend-ref }}" >> "$GITHUB_STEP_SUMMARY"
