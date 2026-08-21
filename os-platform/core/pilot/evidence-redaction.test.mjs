@@ -490,6 +490,22 @@ test("credential finding identities include containing fragment offsets", () => 
   assert.equal(redactEvidenceText(redacted), redacted);
 });
 
+test("credential finding paths use unambiguous JSON Pointer components", () => {
+  const fragment = 'x={"token":"path-secret"}';
+  const findings = findEvidenceCredentialFindings({
+    "a.b": fragment,
+    a: { b: fragment },
+    "a/b": fragment,
+    "a~b": fragment,
+  });
+  assert.equal(findings.length, 4);
+  assert.equal(new Set(findings.map((finding) => finding.location)).size, 4);
+  assert.ok(findings.some((finding) => finding.location.startsWith("$/a.b<")));
+  assert.ok(findings.some((finding) => finding.location.startsWith("$/a/b<")));
+  assert.ok(findings.some((finding) => finding.location.startsWith("$/a~1b<")));
+  assert.ok(findings.some((finding) => finding.location.startsWith("$/a~0b<")));
+});
+
 test("credential findings use an independent assignment detector", async () => {
   const source = await fs.readFile(path.join(PILOT_DIRECTORY, "evidence-redaction.mjs"), "utf8");
   assert.doesNotMatch(source, /redactEvidenceText\(node\)\s*!==\s*node/);
@@ -531,6 +547,18 @@ test("directory guard sanitizes top-level duplicate sensitive members before par
       ['{', '  "token": "TOP-LEVEL-SECRET-ordinary",', '  "next": "safe"', '}'],
     ],
     [
+      "duplicate-wrapper",
+      [
+        '{',
+        `  "payload": ${JSON.stringify(
+          'left={"token":"TOP-LEVEL-SECRET-wrapper"}'
+        )},`,
+        '  "payload": "safe",',
+        '  "next": "safe"',
+        '}',
+      ],
+    ],
+    [
       "earlier-null",
       ['{', '  "to\\u006ben": "TOP-LEVEL-SECRET-null",', '  "token": null,', '  "next": "safe"', '}'],
     ],
@@ -566,6 +594,7 @@ test("directory guard sanitizes top-level duplicate sensitive members before par
   ];
   const expectedOccurrenceCounts = new Map([
     ["ordinary", 1],
+    ["duplicate-wrapper", 1],
     ["earlier-null", 1],
     ["earlier-false", 1],
     ["earlier-marker", 1],

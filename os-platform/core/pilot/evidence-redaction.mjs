@@ -368,8 +368,32 @@ function populatedSensitiveJsonSourceMemberOffsets(value) {
   return offsets;
 }
 
-function containsPopulatedSensitiveJsonSource(value) {
-  return populatedSensitiveJsonSourceMemberOffsets(value).length > 0;
+function jsonSourceStringValues(value) {
+  const stringValues = [];
+  for (let cursor = 0; cursor < value.length; cursor += 1) {
+    if (value[cursor] !== '"') continue;
+    const end = jsonStringEnd(value, cursor);
+    if (end === null) break;
+
+    let separator = end;
+    while (separator < value.length && /[ \t\r\n]/.test(value[separator])) separator += 1;
+    if (value[separator] !== ":") {
+      try {
+        const parsed = JSON.parse(value.slice(cursor, end));
+        if (typeof parsed === "string") {
+          stringValues.push({ offset: cursor, value: parsed });
+        }
+      } catch {
+        // The containing structured JSON parser owns malformed-source failure.
+      }
+    }
+    cursor = end - 1;
+  }
+  return stringValues;
+}
+
+function jsonPointerSegment(value) {
+  return String(value).replaceAll("~", "~0").replaceAll("/", "~1");
 }
 
 function decodeSerializedJsonFragment(candidate) {
@@ -506,10 +530,7 @@ function redactUnstructuredText(value) {
 export function redactEvidenceText(value) {
   const structured = parseStructuredJsonText(value);
   if (structured) {
-    if (
-      !containsPopulatedSensitiveJsonSource(structured.source ?? "") &&
-      findEvidenceCredentialFindings(structured.value).length === 0
-    ) {
+    if (findEvidenceCredentialFindings(String(value)).length === 0) {
       return String(value);
     }
     return stringifyStructuredJsonText(structured.value, structured.wrapperDepth);
@@ -524,8 +545,7 @@ export function redactEvidenceText(value) {
   for (const fragment of fragments) {
     result += redactUnstructuredText(text.slice(cursor, fragment.start));
     result +=
-      !containsPopulatedSensitiveJsonSource(fragment.source) &&
-      findEvidenceCredentialFindings(fragment.value).length === 0
+      findEvidenceCredentialFindings(fragment.source).length === 0
         ? text.slice(fragment.start, fragment.end)
         : encodeSerializedJsonFragment(
             fragment.value,
@@ -564,18 +584,34 @@ export function findEvidenceCredentialFindings(value, location = "$") {
     }
   };
 
-  const visit = (node, currentLocation, sourceCoversSensitiveFields = false) => {
+  let visit;
+  const inspectStructuredSource = (source, currentLocation, memberKind) => {
+    addSourceMemberFindings(source, currentLocation, memberKind);
+    for (const stringValue of jsonSourceStringValues(source)) {
+      visit(
+        stringValue.value,
+        `${currentLocation}<string@${stringValue.offset}>`
+      );
+    }
+  };
+
+  visit = (node, currentLocation) => {
     if (typeof node === "string") {
       const structured = parseStructuredJsonText(node);
       if (structured) {
-        addSourceMemberFindings(
-          structured.source ?? "",
-          currentLocation,
-          "sensitive-field"
-        );
-        // Raw member identities cover every parsed field, including duplicates.
-        // Continue visiting values for independent JWT/text representations only.
-        visit(structured.value, `${currentLocation}<json>`, true);
+        if (structured.source) {
+          // Inspect every raw string value before JSON.parse can discard an earlier
+          // duplicate non-sensitive wrapper member.
+          inspectStructuredSource(
+            structured.source,
+            currentLocation,
+            "sensitive-field"
+          );
+        } else {
+          // A serialized wrapper may decode to unstructured text rather than an
+          // object. Inspect that decoded value before restoring wrapper depth.
+          visit(structured.value, `${currentLocation}<decoded>`);
+        }
         return;
       }
 
@@ -600,15 +636,10 @@ export function findEvidenceCredentialFindings(value, location = "$") {
       let cursor = 0;
       for (const fragment of fragments) {
         inspectText(node.slice(cursor, fragment.start), currentLocation);
-        addSourceMemberFindings(
+        inspectStructuredSource(
           fragment.source,
           `${currentLocation}<json@${fragment.start}>`,
           "sensitive-text"
-        );
-        visit(
-          fragment.value,
-          `${currentLocation}<json@${fragment.start}>`,
-          true
         );
         cursor = fragment.end;
       }
@@ -617,24 +648,18 @@ export function findEvidenceCredentialFindings(value, location = "$") {
     }
 
     if (Array.isArray(node)) {
-      node.forEach((child, index) =>
-        visit(child, `${currentLocation}[${index}]`, sourceCoversSensitiveFields)
-      );
+      node.forEach((child, index) => visit(child, `${currentLocation}/${index}`));
       return;
     }
 
     if (node === null || typeof node !== "object") return;
 
     for (const [key, child] of Object.entries(node)) {
-      const childLocation = `${currentLocation}.${key}`;
-      if (
-        !sourceCoversSensitiveFields &&
-        isSensitiveKey(key) &&
-        !isAlreadySafeSensitiveValue(child)
-      ) {
+      const childLocation = `${currentLocation}/${jsonPointerSegment(key)}`;
+      if (isSensitiveKey(key) && !isAlreadySafeSensitiveValue(child)) {
         findings.push({ kind: "sensitive-field", location: childLocation });
       }
-      visit(child, childLocation, sourceCoversSensitiveFields);
+      visit(child, childLocation);
     }
   };
 
