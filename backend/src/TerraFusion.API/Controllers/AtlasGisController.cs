@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using TerraFusion.Core.GIS;
 using TerraFusion.Core.GIS.Connectors;
 using TerraFusion.Core.Interfaces;
+using TerraFusion.API.Security;
 
 namespace TerraFusion.API.Controllers;
 
@@ -237,57 +238,110 @@ public class AtlasGisController : ControllerBase
             ImportResult: importResult));
     }
 
-    // ── PACS-Sourced Parcel Data ─────────────────────────────────────
+    // ── County-Scoped Legacy Parcel Compatibility ─────────────────────
 
     /// <summary>
-    /// Return a parcel boundary approximation from PACS situs + land_detail data.
-    /// Includes centroid, lot dimensions, and area.
+    /// Return the legacy Benton GIS boundary only after authentication,
+    /// read:parcel authorization, county resolution, and selector validation.
+    /// Missing, ambiguous, wrong-county, and absent parcels are all 404.
     /// </summary>
-    /// <param name="parcelId">GeoId or SimpleGeoId of the parcel.</param>
-    /// <param name="ct">Request cancellation token.</param>
     [HttpGet("parcels/{parcelId}/boundary")]
-    [AllowAnonymous]
+    [RequiresPermission("read:parcel")]
     [ProducesResponseType(typeof(ParcelBoundaryResult), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetParcelBoundary(string parcelId, CancellationToken ct)
     {
-        _logger.LogInformation("Atlas parcel boundary: {ParcelId}", parcelId);
-        var result = await _gisData.GetParcelBoundaryAsync(parcelId, ct);
+        if (!TryResolveAuthenticatedCounty(out var countyId) ||
+            !TryNormalizeParcelSelector(parcelId, out var normalizedParcelId))
+        {
+            return NotFound();
+        }
 
-        return Ok(result);
+        _logger.LogInformation(
+            "Atlas parcel boundary: county={CountyId}, parcel={ParcelId}",
+            countyId,
+            normalizedParcelId);
+        var result = await _gisData.GetParcelBoundaryAsync(countyId, normalizedParcelId, ct);
+        return result is null ? NotFound() : Ok(result);
     }
 
-    /// <summary>
-    /// Return GIS layer data (flood zone, tax area, land classification) for a parcel.
-    /// </summary>
-    /// <param name="parcelId">GeoId of the parcel.</param>
-    /// <param name="ct">Request cancellation token.</param>
+    /// <summary>Return legacy GIS layers only within the authenticated county boundary.</summary>
     [HttpGet("parcels/{parcelId}/layers")]
-    [AllowAnonymous]
+    [RequiresPermission("read:parcel")]
     [ProducesResponseType(typeof(ParcelLayersResult), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetParcelLayers(string parcelId, CancellationToken ct)
     {
-        _logger.LogInformation("Atlas parcel layers: {ParcelId}", parcelId);
-        var result = await _gisData.GetParcelLayersAsync(parcelId, ct);
-        return Ok(result);
+        if (!TryResolveAuthenticatedCounty(out var countyId) ||
+            !TryNormalizeParcelSelector(parcelId, out var normalizedParcelId))
+        {
+            return NotFound();
+        }
+
+        _logger.LogInformation(
+            "Atlas parcel layers: county={CountyId}, parcel={ParcelId}",
+            countyId,
+            normalizedParcelId);
+        var result = await _gisData.GetParcelLayersAsync(countyId, normalizedParcelId, ct);
+        return result is null ? NotFound() : Ok(result);
     }
 
     /// <summary>
-    /// Combined boundary + layers in one round trip — the preferred endpoint for the UI.
-    /// Single query to GisParcelGeometries.
+    /// Combined boundary and layer compatibility response for the Workbench.
+    /// The second read is not attempted when the first county-scoped read fails.
     /// </summary>
-    /// <param name="parcelId">GeoId of the parcel.</param>
-    /// <param name="ct">Request cancellation token.</param>
     [HttpGet("parcels/{parcelId}")]
-    [AllowAnonymous]
+    [RequiresPermission("read:parcel")]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetParcel(string parcelId, CancellationToken ct)
     {
-        _logger.LogInformation("Atlas parcel combined: {ParcelId}", parcelId);
-        // Both methods share the same underlying query — no extra DB hit
-        var boundary = await _gisData.GetParcelBoundaryAsync(parcelId, ct);
+        if (!TryResolveAuthenticatedCounty(out var countyId) ||
+            !TryNormalizeParcelSelector(parcelId, out var normalizedParcelId))
+        {
+            return NotFound();
+        }
 
-        var layers = await _gisData.GetParcelLayersAsync(parcelId, ct);
-        return Ok(new { boundary, layers });
+        _logger.LogInformation(
+            "Atlas parcel combined: county={CountyId}, parcel={ParcelId}",
+            countyId,
+            normalizedParcelId);
+        var boundary = await _gisData.GetParcelBoundaryAsync(countyId, normalizedParcelId, ct);
+        if (boundary is null)
+        {
+            return NotFound();
+        }
+
+        var layers = await _gisData.GetParcelLayersAsync(countyId, normalizedParcelId, ct);
+        return layers is null ? NotFound() : Ok(new { boundary, layers });
+    }
+
+    private bool TryResolveAuthenticatedCounty(out Guid countyId)
+    {
+        countyId = Guid.Empty;
+        var values = User.FindAll("countyId")
+            .Select(claim => claim.Value.Trim())
+            .Where(value => value.Length > 0)
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .Take(2)
+            .ToArray();
+
+        return values.Length == 1 &&
+               Guid.TryParse(values[0], out countyId) &&
+               countyId != Guid.Empty;
+    }
+
+    private static bool TryNormalizeParcelSelector(string? parcelId, out string normalized)
+    {
+        normalized = parcelId?.Trim() ?? string.Empty;
+        if (normalized.Length is < 1 or > 50)
+        {
+            return false;
+        }
+
+        return normalized.All(character =>
+            char.IsLetterOrDigit(character) ||
+            character is '-' or '_' or '.');
     }
 
     // ── Response DTOs ────────────────────────────────────────────────
