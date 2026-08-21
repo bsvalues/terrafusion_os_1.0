@@ -93,6 +93,28 @@ test("assignment redaction consumes complete quoted and whitespace-bearing value
   assert.equal(findEvidenceCredentialFindings(firstPass).length, 0);
   assert.equal(findEvidenceCredentialFindings(escapedFirstPass).length, 0);
 
+  const multilineCases = [
+    'password="line-one\nline-two"\nnext=safe',
+    'secret="line-one\r\nline-two"\r\nnext=safe',
+    'client_secret="-----BEGIN PRIVATE KEY-----\nsynthetic-body\n-----END PRIVATE KEY-----"\nnext=safe',
+    String.raw`response={\"token\":\"line-one
+line-two\",\"next\":\"safe\"}`,
+  ];
+  for (const multiline of multilineCases) {
+    const multilineFirstPass = redactEvidenceText(multiline);
+    assert.ok(!multilineFirstPass.includes("line-one"));
+    assert.ok(!multilineFirstPass.includes("line-two"));
+    assert.ok(!multilineFirstPass.includes("synthetic-body"));
+    assert.ok(multilineFirstPass.includes("next"));
+    assert.equal(redactEvidenceText(multilineFirstPass), multilineFirstPass);
+    assert.ok(
+      findEvidenceCredentialFindings(multiline).some(
+        (finding) => finding.kind === "sensitive-text"
+      )
+    );
+    assert.equal(findEvidenceCredentialFindings(multilineFirstPass).length, 0);
+  }
+
   for (let escapeDepth = 0; escapeDepth <= 5; escapeDepth += 1) {
     const delimiter = "\\".repeat(escapeDepth) + '"';
     const nested = `response={${delimiter}token${delimiter}:${delimiter}opaque-depth-${escapeDepth}${delimiter},${delimiter}next${delimiter}:${delimiter}safe${delimiter}}`;

@@ -65,7 +65,7 @@ function assignmentValueSpan(value, start) {
   if (quote === '"' || quote === "'") {
     const delimiter = "\\".repeat(slashCount) + quote;
     const contentStart = start + delimiter.length;
-    for (let cursor = contentStart; cursor < lineEnd; cursor += 1) {
+    for (let cursor = contentStart; cursor < value.length; cursor += 1) {
       if (
         value[cursor] !== quote ||
         !isClosingAssignmentDelimiter(value, cursor, slashCount)
@@ -79,6 +79,12 @@ function assignmentValueSpan(value, start) {
         replacement: delimiter + REDACTION_MARKER + delimiter,
       };
     }
+    return {
+      delimiter,
+      end: value.length,
+      original: value.slice(start),
+      replacement: delimiter + REDACTION_MARKER + delimiter,
+    };
   }
 
   return {
