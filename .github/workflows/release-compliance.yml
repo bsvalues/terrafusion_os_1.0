@@ -319,6 +319,7 @@ jobs:
           limit-severities-for-sarif: true
           exit-code: '1'
           version: 'v0.70.0'
+          skip-dirs: 'backend/ai-models,backend/publish,backend/src/TerraFusion.API/publish'
       - name: Upload backend Trivy results
         if: always()
         uses: github/codeql-action/upload-sarif@v3

@@ -350,11 +350,22 @@ test('release lifecycle contracts are mandatory in PR and release CI', () => {
   assert.match(job('full-tests'), /run: pnpm run test:release-lifecycle/);
 });
 
-test('canonical scanners are pinned and archive content is excluded', () => {
+test('canonical scanners are pinned and source scope excludes only non-runtime generated trees', () => {
   const scan = job('security-deep-scan');
   assert.match(scan, /config-file: \.\/\.github\/codeql\/codeql-config\.yml/);
   assert.match(scan, /scan-ref: 'backend'/);
   assert.match(scan, /trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25/);
+  assert.match(
+    scan,
+    /skip-dirs: 'backend\/ai-models,backend\/publish,backend\/src\/TerraFusion\.API\/publish'/
+  );
+  assert.doesNotMatch(scan, /skip-dirs:[\s\S]*backend\/src\s*(?:\r?\n|$)/);
+  assert.doesNotMatch(scan, /skip-dirs:[\s\S]*backend\/tools\s*(?:\r?\n|$)/);
+  assert.doesNotMatch(scan, /trivyignores:/);
+  assert.match(
+    backendPackages,
+    /PackageVersion Include="Microsoft\.AspNetCore\.SignalR\.Protocols\.MessagePack" Version="8\.0\.28"/
+  );
   assert.doesNotMatch(scan, /scan-ref: '\.'/);
   assert.match(dockerignore, /^QUARANTINE\/$/m);
   assert.match(dockerignore, /^\.pnpm-store\/$/m);
