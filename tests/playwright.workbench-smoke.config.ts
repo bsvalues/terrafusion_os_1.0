@@ -1,5 +1,5 @@
 import { defineConfig, devices } from '@playwright/test';
-import { existsSync, unlinkSync } from 'node:fs';
+import { existsSync, mkdirSync, unlinkSync } from 'node:fs';
 import { basename, dirname, isAbsolute, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -24,12 +24,15 @@ if (
   !smokeDatabaseRelativePath ||
   smokeDatabaseRelativePath.startsWith('..') ||
   isAbsolute(smokeDatabaseRelativePath) ||
+  dirname(smokeDatabasePath) !== smokeRoot ||
   !/^parcel-journey-\d+\.db$/.test(basename(smokeDatabasePath))
 ) {
   throw new Error(
     'WORKBENCH_SMOKE_DATABASE_PATH must name a parcel-journey database inside .tmp/workbench-smoke.'
   );
 }
+
+mkdirSync(smokeRoot, { recursive: true });
 
 const isPlaywrightWorker = process.env.TEST_WORKER_INDEX !== undefined;
 
