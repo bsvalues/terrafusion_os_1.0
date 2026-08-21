@@ -115,16 +115,68 @@ line-two\",\"next\":\"safe\"}`,
     assert.equal(findEvidenceCredentialFindings(multilineFirstPass).length, 0);
   }
 
-  for (let escapeDepth = 0; escapeDepth <= 5; escapeDepth += 1) {
+  for (let escapeDepth = 0; escapeDepth <= 12; escapeDepth += 1) {
     const delimiter = "\\".repeat(escapeDepth) + '"';
-    const nested = `response={${delimiter}token${delimiter}:${delimiter}opaque-depth-${escapeDepth}${delimiter},${delimiter}next${delimiter}:${delimiter}safe${delimiter}}`;
+    const newline = escapeDepth % 2 === 0 ? "\n" : "\r\n";
+    const nested = `response={${delimiter}token${delimiter}:${delimiter}opaque-depth-${escapeDepth}${newline}tail-depth-${escapeDepth}${delimiter},${delimiter}next${delimiter}:${delimiter}safe${delimiter}}`;
     const expected = `response={${delimiter}token${delimiter}:${delimiter}[REDACTED]${delimiter},${delimiter}next${delimiter}:${delimiter}safe${delimiter}}`;
     const nestedFirstPass = redactEvidenceText(nested);
     assert.equal(nestedFirstPass, expected);
     assert.equal(redactEvidenceText(nestedFirstPass), nestedFirstPass);
     assert.ok(!nestedFirstPass.includes(`opaque-depth-${escapeDepth}`));
+    assert.ok(!nestedFirstPass.includes(`tail-depth-${escapeDepth}`));
+    assert.ok(nestedFirstPass.includes("safe"));
     assert.ok(findEvidenceCredentialFindings(nested).some((finding) => finding.kind === "sensitive-text"));
     assert.equal(findEvidenceCredentialFindings(nestedFirstPass).length, 0);
+  }
+
+  const unterminatedCases = [
+    {
+      input: 'password="line-one\nmetadata="safe"\nline-two-secret',
+      expected: 'password="[REDACTED]"\nmetadata="safe"',
+    },
+    {
+      input: 'password="line-one\r\nmetadata="safe"\r\nline-two-secret',
+      expected: 'password="[REDACTED]"\r\nmetadata="safe"',
+    },
+  ];
+  for (const { input: unterminated, expected } of unterminatedCases) {
+    const unterminatedFirstPass = redactEvidenceText(unterminated);
+    assert.equal(unterminatedFirstPass, expected);
+    assert.ok(!unterminatedFirstPass.includes("line-two-secret"));
+    assert.ok(unterminatedFirstPass.includes('metadata="safe"'));
+    assert.ok(
+      findEvidenceCredentialFindings(unterminated).some(
+        (finding) => finding.kind === "sensitive-text"
+      )
+    );
+    assert.equal(findEvidenceCredentialFindings(unterminatedFirstPass).length, 0);
+    assert.equal(redactEvidenceText(unterminatedFirstPass), unterminatedFirstPass);
+  }
+
+  const unquotedPemCases = [
+    'client_secret=-----BEGIN PRIVATE KEY-----\nsynthetic-private-body\n-----END PRIVATE KEY-----\nnext=safe',
+    'client_secret=-----BEGIN RSA PRIVATE KEY-----\r\nsynthetic-rsa-body\r\n-----END RSA PRIVATE KEY-----\r\nnext=safe',
+  ];
+  for (const unquotedPem of unquotedPemCases) {
+    const unquotedPemFirstPass = redactEvidenceText(unquotedPem);
+    assert.ok(!unquotedPemFirstPass.includes("synthetic-private-body"));
+    assert.ok(!unquotedPemFirstPass.includes("synthetic-rsa-body"));
+    assert.ok(!unquotedPemFirstPass.includes("END PRIVATE KEY"));
+    assert.ok(!unquotedPemFirstPass.includes("END RSA PRIVATE KEY"));
+    assert.ok(unquotedPemFirstPass.includes("next=safe"));
+    assert.ok(
+      findEvidenceCredentialFindings(unquotedPem).some(
+        (finding) => finding.kind === "sensitive-text"
+      )
+    );
+    assert.equal(findEvidenceCredentialFindings(unquotedPemFirstPass).length, 0);
+    assert.equal(redactEvidenceText(unquotedPemFirstPass), unquotedPemFirstPass);
+  }
+
+  for (const emptyAssignment of ["password=\nnext=safe", "password=\r\nnext=safe"]) {
+    assert.equal(redactEvidenceText(emptyAssignment), emptyAssignment);
+    assert.equal(findEvidenceCredentialFindings(emptyAssignment).length, 0);
   }
 
   const multiplyEscaped =

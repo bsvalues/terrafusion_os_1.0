@@ -5,7 +5,7 @@ const AUTHORIZATION_HEADER_PATTERN = /(\bAuthorization\s*:\s*)(?:Bearer|Basic)\s
 const COOKIE_HEADER_PATTERN = /(\b(?:Set-Cookie|Cookie)\s*:\s*)[^\r\n]+/gi;
 const BEARER_PATTERN = /\bBearer\s+[A-Za-z0-9._~+/=-]{8,}/gi;
 const SENSITIVE_ASSIGNMENT_PREFIX_PATTERN =
-  /(\b(?:access[_-]?token|refresh[_-]?token|id[_-]?token|token|password|authorization|cookie|set-cookie|api[_-]?key|client[_-]?secret|secret)\b(?:\\*["'])?\s*[:=]\s*)/gi;
+  /(\b(?:access[_-]?token|refresh[_-]?token|id[_-]?token|token|password|authorization|cookie|set-cookie|api[_-]?key|client[_-]?secret|secret)\b(?:\\*["'])?[ \t]*[:=][ \t]*)/gi;
 const SENSITIVE_KEYS = new Set([
   "token",
   "accesstoken",
@@ -53,6 +53,70 @@ function isClosingAssignmentDelimiter(value, index, openingSlashCount) {
   return Number.isInteger(quotient) && quotient % 2 === 1;
 }
 
+function isStructurallyTerminatedDelimiter(value, index) {
+  let cursor = index + 1;
+  while (cursor < value.length && (value[cursor] === " " || value[cursor] === "\t")) {
+    cursor += 1;
+  }
+  return (
+    cursor === value.length ||
+    value[cursor] === "\r" ||
+    value[cursor] === "\n" ||
+    value[cursor] === "," ||
+    value[cursor] === ";" ||
+    value[cursor] === "}" ||
+    value[cursor] === "]"
+  );
+}
+
+function unquotedPemSpan(value, start, lineEnd) {
+  const firstLine = value.slice(start, lineEnd);
+  const match = /^-----BEGIN ([A-Z0-9]+(?: [A-Z0-9]+)*)-----[ \t]*$/.exec(firstLine);
+  if (!match) return null;
+
+  const endMarker = "-----END " + match[1] + "-----";
+  const markerIndex = value.indexOf(endMarker, lineEnd);
+  const end = markerIndex === -1 ? value.length : markerIndex + endMarker.length;
+  return {
+    delimiter: "",
+    end,
+    original: value.slice(start, end),
+    replacement: REDACTION_MARKER,
+  };
+}
+
+function neighboringAssignmentLines(value, contentStart) {
+  const neighbors = [];
+  const firstLineEnd = value.slice(contentStart).search(/[\r\n]/);
+  if (firstLineEnd === -1) return neighbors;
+
+  let lineStart = contentStart + firstLineEnd;
+  lineStart += value[lineStart] === "\r" && value[lineStart + 1] === "\n" ? 2 : 1;
+  while (lineStart < value.length) {
+    const relativeLineEnd = value.slice(lineStart).search(/[\r\n]/);
+    const lineEnd = relativeLineEnd === -1 ? value.length : lineStart + relativeLineEnd;
+    const line = value.slice(lineStart, lineEnd);
+    const match = /^([A-Za-z_][A-Za-z0-9_.-]*)[ \t]*[:=]/.exec(line);
+    if (match && !isSensitiveKey(match[1])) {
+      const separatorStart =
+        lineStart >= 2 && value.slice(lineStart - 2, lineStart) === "\r\n"
+          ? lineStart - 2
+          : lineStart - 1;
+      neighbors.push({
+        start: lineStart,
+        end: lineEnd,
+        preserved: value.slice(separatorStart, lineEnd),
+      });
+    }
+    if (lineEnd === value.length) break;
+    lineStart =
+      value[lineEnd] === "\r" && value[lineEnd + 1] === "\n"
+        ? lineEnd + 2
+        : lineEnd + 1;
+  }
+  return neighbors;
+}
+
 function assignmentValueSpan(value, start) {
   const relativeLineEnd = value.slice(start).search(/[\r\n]/);
   const lineEnd = relativeLineEnd === -1 ? value.length : start + relativeLineEnd;
@@ -65,13 +129,26 @@ function assignmentValueSpan(value, start) {
   if (quote === '"' || quote === "'") {
     const delimiter = "\\".repeat(slashCount) + quote;
     const contentStart = start + delimiter.length;
+    const neighboringAssignments = neighboringAssignmentLines(value, contentStart);
+    const firstNeighborStart = neighboringAssignments[0]?.start ?? Number.POSITIVE_INFINITY;
+    let sawAmbiguousDelimiterOnLine = false;
     for (let cursor = contentStart; cursor < value.length; cursor += 1) {
+      if (value[cursor] === "\r" || value[cursor] === "\n") {
+        sawAmbiguousDelimiterOnLine = false;
+        continue;
+      }
       if (
+        cursor >= firstNeighborStart ||
         value[cursor] !== quote ||
         !isClosingAssignmentDelimiter(value, cursor, slashCount)
       ) {
         continue;
       }
+      if (!isStructurallyTerminatedDelimiter(value, cursor)) {
+        sawAmbiguousDelimiterOnLine = true;
+        continue;
+      }
+      if (sawAmbiguousDelimiterOnLine) continue;
       return {
         delimiter,
         end: cursor + 1,
@@ -83,9 +160,16 @@ function assignmentValueSpan(value, start) {
       delimiter,
       end: value.length,
       original: value.slice(start),
-      replacement: delimiter + REDACTION_MARKER + delimiter,
+      replacement:
+        delimiter +
+        REDACTION_MARKER +
+        delimiter +
+        neighboringAssignments.map((neighbor) => neighbor.preserved).join(""),
     };
   }
+
+  const pemSpan = unquotedPemSpan(value, start, lineEnd);
+  if (pemSpan) return pemSpan;
 
   return {
     delimiter: "",
