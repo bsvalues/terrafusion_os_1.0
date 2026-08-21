@@ -99,6 +99,9 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
           cache-dependency-path: pnpm-lock.yaml
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
       - name: Install SBOM policy dependencies
         run: pnpm install --frozen-lockfile --ignore-scripts
       - name: Set up Docker Buildx
@@ -227,6 +230,10 @@ jobs:
           echo "$FORGE_VALUATION_KERNEL_EXECUTABLE_SHA256  $EMBEDDED_FORGE_ROOT/terraforge-kernel-valuation" | sha256sum -c -
           echo "$FORGE_VALUATION_KERNEL_PRODUCER_MANIFEST_SHA256  $EMBEDDED_FORGE_ROOT/producer-manifest.json" | sha256sum -c -
           cmp forge-valuation-kernel-producer-manifest.json "$EMBEDDED_FORGE_ROOT/producer-manifest.json"
+          EMBEDDED_ACCEPTED="$(printf '%s' '{"contractPackVersion":"1.0.0","moduleApiVersion":"1.0.0","requestId":"release-embedded-accepted","action":"valuate","payload":{"subject":{"parcelId":"RELEASE-EMBEDDED","attributes":{}},"costBreakdown":{"replacementCost":100,"depreciation":10,"rcnld":90},"model":{"landValue":30,"adjustmentFactors":null}}}' | "$EMBEDDED_FORGE_ROOT/terraforge-kernel-valuation")"
+          EMBEDDED_REJECTED="$(printf '%s' '{"contractPackVersion":"1.0.0","moduleApiVersion":"1.0.0","requestId":"release-embedded-rejected","action":"not-admitted","payload":{}}' | "$EMBEDDED_FORGE_ROOT/terraforge-kernel-valuation")"
+          jq -e '.success == true and .data.totalValue == 120' <<<"$EMBEDDED_ACCEPTED" >/dev/null
+          jq -e '.success == false and (.data == null)' <<<"$EMBEDDED_REJECTED" >/dev/null
           cp "$EMBEDDED_FORGE_ROOT/producer-manifest.json" forge-valuation-kernel-producer-manifest.json
           cleanup_backend_container
           trap - EXIT
@@ -243,6 +250,15 @@ jobs:
           test -s sbom-frontend-build-dependencies-spdx.json
           cleanup_frontend_container
           trap - EXIT
+      - name: Invoke exact embedded Forge payload through the C# process host
+        env:
+          TF_TEST_FORGE_VALUATION_KERNEL_PATH: ${{ github.workspace }}/backend-runtime-root/.terrafusion/runtime/forge/valuation/terraforge-kernel-valuation
+          TF_TEST_FORGE_VALUATION_KERNEL_MANIFEST_PATH: ${{ github.workspace }}/backend-runtime-root/.terrafusion/runtime/forge/valuation/producer-manifest.json
+        run: >-
+          dotnet test backend/TerraFusion.API.Tests/TerraFusion.API.Tests.csproj
+          -c Release
+          --filter "FullyQualifiedName~ValuationKernel_AdmittedReleasePayload_InvokesThroughProcessHost"
+          --verbosity normal
       - name: Guard exact published backend dependency identities
         run: node scripts/ci/backend_published_deps_guard.mjs backend-runtime-root
       - name: Guard exact Semantic Kernel advisory suppression
@@ -499,4 +515,5 @@ jobs:
           path: |
             approved-inputs/release-images.json
             approved-inputs/backend-runtime-license-evidence.json
+            approved-inputs/forge-valuation-kernel-producer-manifest.json
           retention-days: 365
