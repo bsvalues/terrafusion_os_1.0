@@ -506,12 +506,53 @@ test("credential finding paths use unambiguous JSON Pointer components", () => {
   assert.ok(findings.some((finding) => finding.location.startsWith("$/a~0b<")));
 });
 
+test("text findings emit one absolute span per independent credential", () => {
+  const jwt =
+    "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJub3QtYS1yZWFsLXRva2VuIn0.fixture-signature-only";
+  const input = [
+    "password=first-assignment-secret",
+    "token=second-assignment-secret",
+    "Authorization: Basic Zml4dHVyZTpub3QtYS1jcmVkZW50aWFs",
+    "Cookie: session=fixture-cookie; secure=true",
+    "Bearer standalone-bearer-secret",
+    jwt,
+  ].join("\n");
+
+  const findings = findEvidenceCredentialFindings(input);
+  assert.equal(findings.length, 6);
+  assert.equal(new Set(findings.map((finding) => finding.location)).size, 6);
+  assert.deepEqual(
+    findings.map((finding) => finding.kind).sort(),
+    ["basic-auth", "bearer", "compact-jwt", "cookie", "sensitive-text", "sensitive-text"]
+  );
+  assert.ok(
+    findings.every(
+      (finding) =>
+        finding.location.includes("<text@") && finding.location.endsWith(">")
+    )
+  );
+
+  const redacted = redactEvidenceText(input);
+  assert.equal(findEvidenceCredentialFindings(redacted).length, 0);
+  assert.equal(redactEvidenceText(redacted), redacted);
+  for (const secret of [
+    "first-assignment-secret",
+    "second-assignment-secret",
+    "Zml4dHVyZTpub3QtYS1jcmVkZW50aWFs",
+    "fixture-cookie",
+    "standalone-bearer-secret",
+    jwt,
+  ]) {
+    assert.ok(!redacted.includes(secret));
+  }
+});
+
 test("credential findings use an independent assignment detector", async () => {
   const source = await fs.readFile(path.join(PILOT_DIRECTORY, "evidence-redaction.mjs"), "utf8");
   assert.doesNotMatch(source, /redactEvidenceText\(node\)\s*!==\s*node/);
   assert.match(
     source,
-    /const inspectText = \(text, textLocation\) => \{[\s\S]*containsPopulatedSensitiveAssignment\(text\)/
+    /const inspectText = \(text, textLocation, sourceOffset = 0\) => \{[\s\S]*textCredentialFindingSpans\(text\)/
   );
 });
 
@@ -595,6 +636,7 @@ test("directory guard sanitizes top-level duplicate sensitive members before par
   const expectedOccurrenceCounts = new Map([
     ["ordinary", 1],
     ["duplicate-wrapper", 1],
+    ["duplicate-wrapper-assignments", 2],
     ["earlier-null", 1],
     ["earlier-false", 1],
     ["earlier-marker", 1],
@@ -614,14 +656,31 @@ test("directory guard sanitizes top-level duplicate sensitive members before par
           "utf8"
         );
       }
+      const assignmentWrapper = [
+        "{",
+        `  "payload": ${JSON.stringify(
+          `password=TOP-LEVEL-SECRET-password${lineEnding}token=TOP-LEVEL-SECRET-token`
+        )},`,
+        '  "payload": "safe",',
+        '  "next": "safe"',
+        "}",
+      ];
+      await fs.writeFile(
+        path.join(
+          temporaryDirectory,
+          `${endingName}-duplicate-wrapper-assignments.json`
+        ),
+        `${assignmentWrapper.join(lineEnding)}${lineEnding}`,
+        "utf8"
+      );
     }
 
     const before = await scanEvidenceDirectory(temporaryDirectory);
-    assert.equal(before.length, cases.length * 2);
+    assert.equal(before.length, (cases.length + 1) * 2);
     assert.ok(before.every((result) => result.findings.length > 0));
 
     const sanitized = await sanitizeEvidenceDirectory(temporaryDirectory);
-    assert.equal(sanitized.length, cases.length * 2);
+    assert.equal(sanitized.length, (cases.length + 1) * 2);
     const contentsAfterFirstPass = new Map();
     for (const entry of await fs.readdir(temporaryDirectory)) {
       const filePath = path.join(temporaryDirectory, entry);

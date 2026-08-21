@@ -191,20 +191,96 @@ function isAlreadyRedactedAssignmentValue(value, delimiter) {
   );
 }
 
-function containsPopulatedSensitiveAssignment(value) {
+function populatedSensitiveAssignmentSpans(value) {
+  const spans = [];
   const detector = new RegExp(
     SENSITIVE_ASSIGNMENT_PREFIX_PATTERN.source,
     SENSITIVE_ASSIGNMENT_PREFIX_PATTERN.flags
   );
 
   for (let match; (match = detector.exec(value)); ) {
-    const span = assignmentValueSpan(value, detector.lastIndex);
-    if (span.end === detector.lastIndex) continue;
-    if (!isAlreadyRedactedAssignmentValue(span.original, span.delimiter)) return true;
+    const valueStart = detector.lastIndex;
+    const span = assignmentValueSpan(value, valueStart);
+    if (span.end === valueStart) continue;
+    if (!isAlreadyRedactedAssignmentValue(span.original, span.delimiter)) {
+      spans.push({ start: match.index, end: span.end });
+    }
     detector.lastIndex = span.end;
   }
 
-  return false;
+  return spans;
+}
+
+function regexCredentialSpans(pattern, value, kindForMatch, priority) {
+  const detector = new RegExp(pattern.source, pattern.flags);
+  const spans = [];
+  for (const match of value.matchAll(detector)) {
+    const kind = kindForMatch(match);
+    if (kind === null) continue;
+    spans.push({
+      start: match.index,
+      end: match.index + match[0].length,
+      kind,
+      priority,
+    });
+  }
+  return spans;
+}
+
+function textCredentialFindingSpans(value) {
+  const candidates = [
+    ...populatedSensitiveAssignmentSpans(value).map((span) => ({
+      ...span,
+      kind: "sensitive-text",
+      priority: 4,
+    })),
+    ...regexCredentialSpans(
+      AUTHORIZATION_HEADER_PATTERN,
+      value,
+      (match) => (match[0].toLowerCase().includes("basic") ? "basic-auth" : "bearer"),
+      5
+    ),
+    ...regexCredentialSpans(
+      COOKIE_HEADER_PATTERN,
+      value,
+      (match) =>
+        isAlreadyRedactedAssignmentValue(match[0].slice(match[1].length), "")
+          ? null
+          : "cookie",
+      5
+    ),
+    ...regexCredentialSpans(BEARER_PATTERN, value, () => "bearer", 3),
+    ...[
+      ...value.matchAll(
+        new RegExp(COMPACT_JWT_PATTERN.source, COMPACT_JWT_PATTERN.flags)
+      ),
+    ].filter((match) => isCompactJwt(match[0]))
+      .map((match) => ({
+        start: match.index,
+        end: match.index + match[0].length,
+        kind: "compact-jwt",
+        priority: 2,
+      })),
+  ].sort(
+    (left, right) =>
+      left.start - right.start ||
+      right.priority - left.priority ||
+      right.end - left.end
+  );
+
+  const findings = [];
+  for (const candidate of candidates) {
+    if (
+      findings.some(
+        (finding) =>
+          candidate.start < finding.end && finding.start < candidate.end
+      )
+    ) {
+      continue;
+    }
+    findings.push(candidate);
+  }
+  return findings.sort((left, right) => left.start - right.start);
 }
 
 function redactSensitiveAssignments(value) {
@@ -229,11 +305,6 @@ function redactSensitiveAssignments(value) {
   return result + value.slice(cursor);
 }
 
-function patternMatches(pattern, value) {
-  pattern.lastIndex = 0;
-  return pattern.test(value);
-}
-
 function isCompactJwt(candidate) {
   const segments = candidate.split(".");
   if (segments.length !== 3) return false;
@@ -250,11 +321,6 @@ function isCompactJwt(candidate) {
   } catch {
     return false;
   }
-}
-
-function containsCompactJwt(value) {
-  COMPACT_JWT_PATTERN.lastIndex = 0;
-  return [...value.matchAll(COMPACT_JWT_PATTERN)].some((match) => isCompactJwt(match[0]));
 }
 
 function parseStructuredJsonText(value) {
@@ -615,15 +681,12 @@ export function findEvidenceCredentialFindings(value, location = "$") {
         return;
       }
 
-      const inspectText = (text, textLocation) => {
-        if (containsCompactJwt(text)) {
-          findings.push({ kind: "compact-jwt", location: textLocation });
-        }
-        if (patternMatches(BEARER_PATTERN, text)) {
-          findings.push({ kind: "bearer", location: textLocation });
-        }
-        if (containsPopulatedSensitiveAssignment(text)) {
-          findings.push({ kind: "sensitive-text", location: textLocation });
+      const inspectText = (text, textLocation, sourceOffset = 0) => {
+        for (const span of textCredentialFindingSpans(text)) {
+          findings.push({
+            kind: span.kind,
+            location: `${textLocation}<text@${sourceOffset + span.start}:${sourceOffset + span.end}>`,
+          });
         }
       };
 
@@ -635,7 +698,7 @@ export function findEvidenceCredentialFindings(value, location = "$") {
 
       let cursor = 0;
       for (const fragment of fragments) {
-        inspectText(node.slice(cursor, fragment.start), currentLocation);
+        inspectText(node.slice(cursor, fragment.start), currentLocation, cursor);
         inspectStructuredSource(
           fragment.source,
           `${currentLocation}<json@${fragment.start}>`,
@@ -643,7 +706,7 @@ export function findEvidenceCredentialFindings(value, location = "$") {
         );
         cursor = fragment.end;
       }
-      inspectText(node.slice(cursor), currentLocation);
+      inspectText(node.slice(cursor), currentLocation, cursor);
       return;
     }
 
