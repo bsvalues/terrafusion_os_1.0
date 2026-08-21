@@ -292,55 +292,120 @@ function stringifyStructuredJsonText(value, wrapperDepth) {
   return result;
 }
 
+function decodeSerializedJsonFragment(candidate) {
+  let current = candidate;
+  let serializationDepth = 0;
+
+  while (true) {
+    try {
+      const parsed = JSON.parse(current);
+      if (parsed !== null && typeof parsed === "object") {
+        return { value: parsed, serializationDepth };
+      }
+    } catch {
+      // The candidate may be JSON string content with independently escaped quotes.
+    }
+
+    let decoded;
+    try {
+      decoded = JSON.parse(`"${current}"`);
+    } catch {
+      return null;
+    }
+    if (typeof decoded !== "string" || decoded.length >= current.length) return null;
+    current = decoded;
+    serializationDepth += 1;
+  }
+}
+
+function encodeSerializedJsonFragment(value, serializationDepth) {
+  let result = JSON.stringify(redactEvidence(value));
+  for (let depth = 0; depth < serializationDepth; depth += 1) {
+    result = JSON.stringify(result).slice(1, -1);
+  }
+  return result;
+}
+
+function isPossibleJsonFragmentStart(value, start) {
+  const opening = value[start];
+  const closing = opening === "{" ? "}" : "]";
+  let cursor = start + 1;
+  while (cursor < value.length && /\s/.test(value[cursor])) cursor += 1;
+  if (value[cursor] === closing) return true;
+
+  while (value[cursor] === "\\") cursor += 1;
+  if (opening === "{") return value[cursor] === '"';
+  return /["{[\]tfn\d-]/.test(value[cursor] ?? "");
+}
+
+function serializedJsonFragmentEnd(value, start) {
+  const stack = [value[start]];
+  let delimiterSlashCount = null;
+  let inString = false;
+
+  for (let cursor = start + 1; cursor < value.length; cursor += 1) {
+    const character = value[cursor];
+    if (character === '"') {
+      const slashCount = countBackslashesBefore(value, cursor);
+      if (delimiterSlashCount === null) {
+        if (!Number.isInteger(Math.log2(slashCount + 1))) return null;
+        delimiterSlashCount = slashCount;
+        inString = true;
+      } else if (!inString && slashCount === delimiterSlashCount) {
+        inString = true;
+      } else if (
+        inString &&
+        isClosingAssignmentDelimiter(value, cursor, delimiterSlashCount)
+      ) {
+        inString = false;
+      }
+      continue;
+    }
+    if (inString) continue;
+
+    if (character === "{" || character === "[") {
+      stack.push(character);
+      continue;
+    }
+    if (character !== "}" && character !== "]") continue;
+
+    const opening = stack.pop();
+    if (
+      (opening === "{" && character !== "}") ||
+      (opening === "[" && character !== "]")
+    ) {
+      return null;
+    }
+    if (stack.length === 0) return cursor + 1;
+  }
+
+  return null;
+}
+
 function structuredJsonFragments(value) {
   const fragments = [];
 
   for (let start = 0; start < value.length; start += 1) {
-    if (value[start] !== "{" && value[start] !== "[") continue;
-
-    const stack = [value[start]];
-    let inString = false;
-    let escaped = false;
-    for (let cursor = start + 1; cursor < value.length; cursor += 1) {
-      const character = value[cursor];
-      if (inString) {
-        if (escaped) {
-          escaped = false;
-        } else if (character === "\\") {
-          escaped = true;
-        } else if (character === '"') {
-          inString = false;
-        }
-        continue;
-      }
-
-      if (character === '"') {
-        inString = true;
-      } else if (character === "{" || character === "[") {
-        stack.push(character);
-      } else if (character === "}" || character === "]") {
-        const opening = stack.pop();
-        if (
-          (opening === "{" && character !== "}") ||
-          (opening === "[" && character !== "]")
-        ) {
-          break;
-        }
-        if (stack.length === 0) {
-          const end = cursor + 1;
-          try {
-            const parsed = JSON.parse(value.slice(start, end));
-            if (parsed !== null && typeof parsed === "object") {
-              fragments.push({ start, end, value: parsed });
-              start = cursor;
-            }
-          } catch {
-            // Keep malformed fragments in the fail-closed text-assignment path.
-          }
-          break;
-        }
-      }
+    const opening = value[start];
+    if (
+      (opening !== "{" && opening !== "[") ||
+      !isPossibleJsonFragmentStart(value, start)
+    ) {
+      continue;
     }
+
+    const end = serializedJsonFragmentEnd(value, start);
+    if (end === null) continue;
+    const decoded = decodeSerializedJsonFragment(value.slice(start, end));
+    if (!decoded) continue;
+
+    fragments.push({
+      start,
+      end,
+      value: decoded.value,
+      serializationDepth: decoded.serializationDepth,
+    });
+    start = end - 1;
   }
 
   return fragments;
@@ -371,7 +436,10 @@ export function redactEvidenceText(value) {
   let cursor = 0;
   for (const fragment of fragments) {
     result += redactUnstructuredText(text.slice(cursor, fragment.start));
-    result += JSON.stringify(redactEvidence(fragment.value));
+    result += encodeSerializedJsonFragment(
+      fragment.value,
+      fragment.serializationDepth
+    );
     cursor = fragment.end;
   }
   return result + redactUnstructuredText(text.slice(cursor));
@@ -428,7 +496,15 @@ export function findEvidenceCredentialFindings(value, location = "$") {
       let cursor = 0;
       for (const fragment of fragments) {
         inspectText(node.slice(cursor, fragment.start), currentLocation);
+        const findingStart = findings.length;
         visit(fragment.value, `${currentLocation}<json@${fragment.start}>`);
+        if (
+          findings
+            .slice(findingStart)
+            .some((finding) => finding.kind === "sensitive-field")
+        ) {
+          findings.push({ kind: "sensitive-text", location: currentLocation });
+        }
         cursor = fragment.end;
       }
       inspectText(node.slice(cursor), currentLocation);

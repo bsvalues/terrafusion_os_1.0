@@ -27,6 +27,14 @@ function unwrapSerializedText(value) {
   }
 }
 
+function encodeSerializedFragment(value, serializationDepth) {
+  let result = value;
+  for (let depth = 0; depth < serializationDepth; depth += 1) {
+    result = JSON.stringify(result).slice(1, -1);
+  }
+  return result;
+}
+
 test("deep evidence redaction removes credential fields and compact JWTs", () => {
   const fixtureJwt =
     "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJub3QtYS1yZWFsLXRva2VuIn0.fixture-signature-only";
@@ -277,6 +285,47 @@ test("structured JSON redaction decodes escaped keys and preserves valid non-str
       assert.equal(redactEvidenceText(redacted), redacted);
       input = JSON.stringify(input);
       expected = JSON.stringify(expected);
+    }
+  }
+
+  const rawPrefixedUnicode =
+    String.raw`{"to\u006ben":"fragment-secret\\","next":"safe"}`;
+  const rawPrefixedUnicodeExpected =
+    '{"token":"[REDACTED]","next":"safe"}';
+  const rawPrefixedSafe = '{"token":null,"next":"safe"}';
+  for (let fragmentDepth = 1; fragmentDepth <= 8; fragmentDepth += 1) {
+    const unicodeInput =
+      `response=${encodeSerializedFragment(rawPrefixedUnicode, fragmentDepth)}; tail=keep`;
+    const unicodeExpected =
+      `response=${encodeSerializedFragment(rawPrefixedUnicodeExpected, fragmentDepth)}; tail=keep`;
+    const unicodeRedacted = redactEvidenceText(unicodeInput);
+    assert.equal(unicodeRedacted, unicodeExpected);
+    assert.ok(!unicodeRedacted.includes("fragment-secret"));
+    assert.ok(unicodeRedacted.endsWith("; tail=keep"));
+    assert.ok(findEvidenceCredentialFindings(unicodeInput).length > 0);
+    assert.equal(findEvidenceCredentialFindings(unicodeRedacted).length, 0);
+    assert.equal(redactEvidenceText(unicodeRedacted), unicodeRedacted);
+
+    const safeInput =
+      `response=${encodeSerializedFragment(rawPrefixedSafe, fragmentDepth)}; tail=keep`;
+    assert.equal(redactEvidenceText(safeInput), safeInput);
+    assert.equal(findEvidenceCredentialFindings(safeInput).length, 0);
+
+    for (const populatedValue of [true, 42, { nested: "secret" }, ["secret"]]) {
+      const populatedInput = `response=${encodeSerializedFragment(
+        JSON.stringify({ token: populatedValue, next: "safe" }),
+        fragmentDepth
+      )}; tail=keep`;
+      const populatedExpected = `response=${encodeSerializedFragment(
+        JSON.stringify({ token: REDACTION_MARKER, next: "safe" }),
+        fragmentDepth
+      )}; tail=keep`;
+      const populatedRedacted = redactEvidenceText(populatedInput);
+      assert.equal(populatedRedacted, populatedExpected);
+      assert.ok(populatedRedacted.endsWith("; tail=keep"));
+      assert.ok(findEvidenceCredentialFindings(populatedInput).length > 0);
+      assert.equal(findEvidenceCredentialFindings(populatedRedacted).length, 0);
+      assert.equal(redactEvidenceText(populatedRedacted), populatedRedacted);
     }
   }
 
