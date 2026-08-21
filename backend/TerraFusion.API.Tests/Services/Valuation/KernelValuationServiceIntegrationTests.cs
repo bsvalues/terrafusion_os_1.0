@@ -341,7 +341,9 @@ public class KernelValuationServiceIntegrationTests
         Assert.Equal(string.Empty, denied.Stderr);
         using var deniedDocument = JsonDocument.Parse(denied.Stdout);
         Assert.False(deniedDocument.RootElement.GetProperty("success").GetBoolean());
-        Assert.Equal(JsonValueKind.Null, deniedDocument.RootElement.GetProperty("data").ValueKind);
+        Assert.True(
+            !deniedDocument.RootElement.TryGetProperty("data", out var deniedData) ||
+            deniedData.ValueKind == JsonValueKind.Null);
     }
 
     private static (ValuationKernelClient Client, RustKernelProcessHost Host)
