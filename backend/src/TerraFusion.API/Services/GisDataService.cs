@@ -14,7 +14,7 @@ namespace TerraFusion.API.Services;
 public sealed class GisDataService : IGisDataService
 {
     private const string LegacyCountyState = "WA";
-    private const string LegacyCountyFips = "005";
+    private const string LegacyCountyFips = "53005";
 
     private readonly TerraFusionDbContext _db;
     private readonly ILogger<GisDataService> _logger;
