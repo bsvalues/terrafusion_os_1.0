@@ -506,6 +506,46 @@ test("credential finding paths use unambiguous JSON Pointer components", () => {
   assert.ok(findings.some((finding) => finding.location.startsWith("$/a~0b<")));
 });
 
+test("compact JWT candidates allow short claims and empty signatures", () => {
+  const header = Buffer.from(JSON.stringify({ alg: "none" }), "utf8").toString(
+    "base64url"
+  );
+  const shortClaims = Buffer.from("{}", "utf8").toString("base64url");
+  assert.equal(shortClaims, "e30");
+
+  for (const token of [
+    `${header}.${shortClaims}.`,
+    `${header}.${shortClaims}.synthetic-signature`,
+  ]) {
+    const input = `prefix ${token}; suffix=keep`;
+    const findings = findEvidenceCredentialFindings(input);
+    assert.equal(findings.length, 1);
+    assert.equal(findings[0].kind, "compact-jwt");
+    const redacted = redactEvidenceText(input);
+    assert.ok(!redacted.includes(token));
+    assert.ok(redacted.endsWith("; suffix=keep"));
+    assert.equal(findEvidenceCredentialFindings(redacted).length, 0);
+    assert.equal(redactEvidenceText(redacted), redacted);
+  }
+});
+
+test("authorization findings use captured schemes and safe markers converge", () => {
+  const bearerWithBasicSubstring =
+    "Authorization: Bearer abcdefghbasicijkl";
+  const findings = findEvidenceCredentialFindings(bearerWithBasicSubstring);
+  assert.equal(findings.length, 1);
+  assert.equal(findings[0].kind, "bearer");
+  assert.equal(findEvidenceCredentialFindings(redactEvidenceText(bearerWithBasicSubstring)).length, 0);
+
+  for (const safe of [
+    "Authorization: Basic [REDACTED]",
+    "Authorization: Bearer [REDACTED]",
+  ]) {
+    assert.equal(findEvidenceCredentialFindings(safe).length, 0);
+    assert.equal(redactEvidenceText(safe), safe);
+  }
+});
+
 test("text findings emit one absolute span per independent credential", () => {
   const jwt =
     "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJub3QtYS1yZWFsLXRva2VuIn0.fixture-signature-only";

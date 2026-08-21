@@ -1,7 +1,9 @@
 const REDACTION_MARKER = "[REDACTED]";
 
-const COMPACT_JWT_PATTERN = /\b[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\b/g;
-const AUTHORIZATION_HEADER_PATTERN = /(\bAuthorization\s*:\s*)(?:Bearer|Basic)\s+[A-Za-z0-9._~+/=-]+/gi;
+const COMPACT_JWT_PATTERN =
+  /(?<![A-Za-z0-9_-])[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]*(?![A-Za-z0-9_-])/g;
+const AUTHORIZATION_HEADER_PATTERN =
+  /(\bAuthorization\s*:\s*)(Bearer|Basic)\s+[A-Za-z0-9._~+/=-]+/gi;
 const COOKIE_HEADER_PATTERN = /(\b(?:Set-Cookie|Cookie)\s*:\s*)[^\r\n]+/gi;
 const BEARER_PATTERN = /\bBearer\s+[A-Za-z0-9._~+/=-]{8,}/gi;
 const SENSITIVE_ASSIGNMENT_PREFIX_PATTERN =
@@ -187,6 +189,7 @@ function isAlreadyRedactedAssignmentValue(value, delimiter) {
       : trimmed;
   return (
     unquoted === REDACTION_MARKER ||
+    /^(?:Bearer|Basic)\s+\[REDACTED\]$/i.test(unquoted) ||
     /^\[REDACTED\](?:\s*[}\]])+\s*$/.test(unquoted)
   );
 }
@@ -237,7 +240,7 @@ function textCredentialFindingSpans(value) {
     ...regexCredentialSpans(
       AUTHORIZATION_HEADER_PATTERN,
       value,
-      (match) => (match[0].toLowerCase().includes("basic") ? "basic-auth" : "bearer"),
+      (match) => (match[2].toLowerCase() === "basic" ? "basic-auth" : "bearer"),
       5
     ),
     ...regexCredentialSpans(
