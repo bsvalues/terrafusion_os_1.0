@@ -548,6 +548,14 @@ test("compact JWT candidates allow short claims with algorithm-consistent signat
     Buffer.from([0xff]),
     Buffer.from('"}', "utf8"),
   ]).toString("base64url");
+  const bomHeader = Buffer.concat([
+    Buffer.from([0xef, 0xbb, 0xbf]),
+    Buffer.from(JSON.stringify({ alg: "HS256" }), "utf8"),
+  ]).toString("base64url");
+  const bomClaims = Buffer.concat([
+    Buffer.from([0xef, 0xbb, 0xbf]),
+    Buffer.from("{}", "utf8"),
+  ]).toString("base64url");
   for (const invalid of [
     `${signedHeader}.${shortClaims}.`,
     `${noneHeader}.${shortClaims}.${canonicalSignature}`,
@@ -560,6 +568,8 @@ test("compact JWT candidates allow short claims with algorithm-consistent signat
     `${signedHeader}.${arrayClaims}.${canonicalSignature}`,
     `${malformedHeader}.${shortClaims}.${canonicalSignature}`,
     `${signedHeader}.${malformedClaims}.${canonicalSignature}`,
+    `${bomHeader}.${shortClaims}.${canonicalSignature}`,
+    `${signedHeader}.${bomClaims}.${canonicalSignature}`,
   ]) {
     assert.equal(findEvidenceCredentialFindings(invalid).length, 0);
     assert.equal(redactEvidenceText(invalid), invalid);

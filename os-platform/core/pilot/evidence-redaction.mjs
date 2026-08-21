@@ -1,5 +1,5 @@
 const REDACTION_MARKER = "[REDACTED]";
-const FATAL_UTF8_DECODER = new TextDecoder("utf-8", { fatal: true });
+const FATAL_UTF8_DECODER = new TextDecoder("utf-8", { fatal: true, ignoreBOM: true });
 
 const COMPACT_JWT_PATTERN =
   /(?<![A-Za-z0-9_.-])[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]*(?![A-Za-z0-9_.-])/g;
