@@ -250,6 +250,15 @@ jobs:
           test -s sbom-frontend-build-dependencies-spdx.json
           cleanup_frontend_container
           trap - EXIT
+      - name: Execute exact backend image Forge payload under release runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(docker run --rm --entrypoint /bin/sh "$BACKEND_IMAGE_REF" -c 'id -u')" = "1001"
+          IMAGE_ACCEPTED="$(printf '%s' '{"contractPackVersion":"1.0.0","moduleApiVersion":"1.0.0","requestId":"release-image-accepted","action":"valuate","payload":{"subject":{"parcelId":"RELEASE-IMAGE","attributes":{}},"costBreakdown":{"replacementCost":100,"depreciation":10,"rcnld":90},"model":{"landValue":30,"adjustmentFactors":null}}}' | docker run --rm -i --entrypoint /app/.terrafusion/runtime/forge/valuation/terraforge-kernel-valuation "$BACKEND_IMAGE_REF")"
+          IMAGE_REJECTED="$(printf '%s' '{"contractPackVersion":"1.0.0","moduleApiVersion":"1.0.0","requestId":"release-image-rejected","action":"not-admitted","payload":{}}' | docker run --rm -i --entrypoint /app/.terrafusion/runtime/forge/valuation/terraforge-kernel-valuation "$BACKEND_IMAGE_REF")"
+          jq -e '.success == true and .data.totalValue == 120' <<<"$IMAGE_ACCEPTED" >/dev/null
+          jq -e '.success == false and (.data == null)' <<<"$IMAGE_REJECTED" >/dev/null
       - name: Invoke exact embedded Forge payload through the C# process host
         env:
           TF_TEST_FORGE_VALUATION_KERNEL_PATH: ${{ github.workspace }}/backend-runtime-root/.terrafusion/runtime/forge/valuation/terraforge-kernel-valuation
