@@ -350,17 +350,31 @@ test('release lifecycle contracts are mandatory in PR and release CI', () => {
   assert.match(job('full-tests'), /run: pnpm run test:release-lifecycle/);
 });
 
-test('canonical scanners are pinned and source scope excludes only non-runtime generated trees', () => {
+test('canonical vulnerability scope is bounded while secret coverage remains all-tracked', () => {
   const scan = job('security-deep-scan');
+  const vulnerabilityStart = scan.indexOf('Trivy canonical backend vulnerability scan');
+  const secretStart = scan.indexOf('Trivy all-tracked backend secret scan');
+  const secretUpload = scan.indexOf('Upload backend secret results');
+  assert.ok(
+    vulnerabilityStart >= 0 && secretStart > vulnerabilityStart && secretUpload > secretStart
+  );
+  const vulnerability = scan.slice(vulnerabilityStart, secretStart);
+  const secret = scan.slice(secretStart, secretUpload);
   assert.match(scan, /config-file: \.\/\.github\/codeql\/codeql-config\.yml/);
-  assert.match(scan, /scan-ref: 'backend'/);
-  assert.match(scan, /trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25/);
+  assert.match(vulnerability, /scan-ref: 'backend'/);
+  assert.match(vulnerability, /scanners: 'vuln'/);
+  assert.match(vulnerability, /trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25/);
   assert.match(
-    scan,
+    vulnerability,
     /skip-dirs: 'backend\/ai-models,backend\/publish,backend\/src\/TerraFusion\.API\/publish'/
   );
-  assert.doesNotMatch(scan, /skip-dirs:[\s\S]*backend\/src\s*(?:\r?\n|$)/);
-  assert.doesNotMatch(scan, /skip-dirs:[\s\S]*backend\/tools\s*(?:\r?\n|$)/);
+  assert.doesNotMatch(vulnerability, /skip-dirs:[\s\S]*backend\/src\s*(?:\r?\n|$)/);
+  assert.doesNotMatch(vulnerability, /skip-dirs:[\s\S]*backend\/tools\s*(?:\r?\n|$)/);
+  assert.match(secret, /scan-ref: 'backend'/);
+  assert.match(secret, /scanners: 'secret'/);
+  assert.match(secret, /severity: 'CRITICAL,HIGH'/);
+  assert.match(secret, /exit-code: '1'/);
+  assert.doesNotMatch(secret, /skip-dirs:|skip-files:|trivyignores:/);
   assert.doesNotMatch(scan, /trivyignores:/);
   assert.match(
     backendPackages,

@@ -308,24 +308,43 @@ jobs:
         uses: github/codeql-action/autobuild@v3
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
-      - name: Trivy canonical backend source scan
+      - name: Trivy canonical backend vulnerability scan
         uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
         with:
           scan-type: 'fs'
           scan-ref: 'backend'
+          scanners: 'vuln'
           format: 'sarif'
-          output: 'trivy-fs-backend.sarif'
+          output: 'trivy-fs-backend-vulnerabilities.sarif'
           severity: 'CRITICAL,HIGH'
           limit-severities-for-sarif: true
           exit-code: '1'
           version: 'v0.70.0'
           skip-dirs: 'backend/ai-models,backend/publish,backend/src/TerraFusion.API/publish'
-      - name: Upload backend Trivy results
+      - name: Upload backend vulnerability results
         if: always()
         uses: github/codeql-action/upload-sarif@v3
         with:
-          sarif_file: 'trivy-fs-backend.sarif'
-          category: 'release-source-backend'
+          sarif_file: 'trivy-fs-backend-vulnerabilities.sarif'
+          category: 'release-source-backend-vulnerabilities'
+      - name: Trivy all-tracked backend secret scan
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        with:
+          scan-type: 'fs'
+          scan-ref: 'backend'
+          scanners: 'secret'
+          format: 'sarif'
+          output: 'trivy-fs-backend-secrets.sarif'
+          severity: 'CRITICAL,HIGH'
+          limit-severities-for-sarif: true
+          exit-code: '1'
+          version: 'v0.70.0'
+      - name: Upload backend secret results
+        if: always()
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: 'trivy-fs-backend-secrets.sarif'
+          category: 'release-source-backend-secrets'
 
   provenance:
     name: 🔏 Image Digest Provenance
