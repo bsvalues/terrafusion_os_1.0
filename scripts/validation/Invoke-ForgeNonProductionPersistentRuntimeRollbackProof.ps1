@@ -10,10 +10,10 @@ $expectedForgeCommit = '24059c3642339f36877cb454ca63683180915b71'
 $authorizedSovereignBase = '6f868cd6bd02fb29fbf544a6f8493e9e7fcec1a6'
 $priorArtifactSha256 = '7fc77d5f475581ceaa87501d4c521e005857c8cfd85334ab09569d92ae716e88'
 $expectedSourceHashes = [ordered]@{
-    'kernels/terraforge.kernel.valuation/Cargo.toml' = '1d0997f80c718be5bcb4bcbe687f93786bac326975da22026ed738bff60489f0'
-    'kernels/terraforge.kernel.valuation/Cargo.lock' = 'a85a0b72850254f85b74a988ae73cb18dfae97d1cfc28d764a626075d44c80b9'
-    'kernels/terraforge.kernel.valuation/build.rs' = 'af474e3d6639701f5d5d2bbed509b742b7c988015c6fb96164baf740bd088e4f'
-    'kernels/terraforge.kernel.valuation/src/main.rs' = '29fa8345e4921e1fa21cf7745142ec49c42b9b32f88c8a001fbb914f50ed77d9'
+    'kernels/terraforge.kernel.valuation/Cargo.toml' = 'c27750c78f2ddf77e5cfca3fc6a020bd2bf5ddecb97fa10e44d2e20d2c5e2358'
+    'kernels/terraforge.kernel.valuation/Cargo.lock' = '087367b4a37c7a55700b4f9bec1ac073d5c6e8cc3932f1a4220a9abbba0b48bd'
+    'kernels/terraforge.kernel.valuation/build.rs' = '9220a3d4c6011d835c4fd45ef07cf34a109fe434527926d4e12848ebbae921f6'
+    'kernels/terraforge.kernel.valuation/src/main.rs' = '3dbad9a2c89c061fccdfc2a0d05d7074a6b397bc05da6ee5e9a23844d209f4ae'
 }
 
 $sovereignRepository = (Resolve-Path (Join-Path $PSScriptRoot '..\..')).Path

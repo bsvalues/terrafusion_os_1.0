@@ -14,6 +14,14 @@ env:
   DOTNET_VERSION: '8.0.x'
   SYFT_VERSION: 'v1.51.0'
   GRYPE_VERSION: 'v0.99.1'
+  FORGE_VALUATION_KERNEL_IMAGE: 'ghcr.io/bsvalues/terrafusion-forge-valuation-kernel'
+  FORGE_VALUATION_KERNEL_DIGEST: 'sha256:0701e52e2b48fe2ceb614ee3c8f3c26992425096f014a0995704fc04a7a70066'
+  FORGE_VALUATION_KERNEL_REF: 'ghcr.io/bsvalues/terrafusion-forge-valuation-kernel@sha256:0701e52e2b48fe2ceb614ee3c8f3c26992425096f014a0995704fc04a7a70066'
+  FORGE_VALUATION_KERNEL_PRODUCER_COMMIT: '3fc296da17aaca4c32dd9b727ab62d2d3725d789'
+  FORGE_VALUATION_KERNEL_CANONICAL_SOURCE_COMMIT: '24059c3642339f36877cb454ca63683180915b71'
+  FORGE_VALUATION_KERNEL_ARTIFACT_TYPE: 'terraforge.valuation-kernel.linux-x64-musl@1'
+  FORGE_VALUATION_KERNEL_PRODUCER_MANIFEST_SHA256: '3d83a4a998eabb30b2993e6c777ae5924ca2a7e6f1bd915f7698606fd077fcd6'
+  FORGE_VALUATION_KERNEL_EXECUTABLE_SHA256: 'a371d8f421b66cd2f83073ed108c885facc97323f9a351547d7293259978c298'
 
 jobs:
   full-tests:
@@ -91,6 +99,9 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
           cache-dependency-path: pnpm-lock.yaml
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
       - name: Install SBOM policy dependencies
         run: pnpm install --frozen-lockfile --ignore-scripts
       - name: Set up Docker Buildx
@@ -101,6 +112,36 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Verify exact Forge valuation producer payload
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker pull "$FORGE_VALUATION_KERNEL_REF"
+          FORGE_CONTAINER="$(docker create "$FORGE_VALUATION_KERNEL_REF")"
+          cleanup_forge_container() {
+            docker rm -f "$FORGE_CONTAINER" >/dev/null 2>&1 || true
+          }
+          trap cleanup_forge_container EXIT
+          docker cp "$FORGE_CONTAINER:/manifest.json" forge-valuation-kernel-producer-manifest.json
+          docker cp "$FORGE_CONTAINER:/terraforge-kernel-valuation" forge-valuation-kernel-executable
+          test -s forge-valuation-kernel-producer-manifest.json
+          test -s forge-valuation-kernel-executable
+          echo "$FORGE_VALUATION_KERNEL_PRODUCER_MANIFEST_SHA256  forge-valuation-kernel-producer-manifest.json" | sha256sum -c -
+          echo "$FORGE_VALUATION_KERNEL_EXECUTABLE_SHA256  forge-valuation-kernel-executable" | sha256sum -c -
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import { validateForgeProducerManifestDocument } from './scripts/ci/release_image_manifest.mjs';
+          validateForgeProducerManifestDocument(
+            JSON.parse(fs.readFileSync('forge-valuation-kernel-producer-manifest.json', 'utf8'))
+          );
+          NODE
+          chmod 0555 forge-valuation-kernel-executable
+          ACCEPTED="$(printf '%s' '{"contractPackVersion":"1.0.0","moduleApiVersion":"1.0.0","requestId":"release-forge-accepted","action":"valuate","payload":{"subject":{"parcelId":"RELEASE-SYNTHETIC","attributes":{}},"costBreakdown":{"replacementCost":100,"depreciation":10,"rcnld":90},"model":{"landValue":30,"adjustmentFactors":null}}}' | ./forge-valuation-kernel-executable)"
+          REJECTED="$(printf '%s' '{"contractPackVersion":"1.0.0","moduleApiVersion":"1.0.0","requestId":"release-forge-rejected","action":"not-admitted","payload":{}}' | ./forge-valuation-kernel-executable)"
+          jq -e '.success == true and .data.totalValue == 120' <<<"$ACCEPTED" >/dev/null
+          jq -e '.success == false and (.data == null)' <<<"$REJECTED" >/dev/null
+          cleanup_forge_container
+          trap - EXIT
       - name: Resolve canonical image names
         id: images
         shell: bash
@@ -120,6 +161,8 @@ jobs:
           tags: ${{ steps.images.outputs.backend }}:${{ github.sha }}
           build-args: |
             GIT_SHA=${{ github.sha }}
+          build-contexts: |
+            forge-valuation-kernel=docker-image://ghcr.io/bsvalues/terrafusion-forge-valuation-kernel@sha256:0701e52e2b48fe2ceb614ee3c8f3c26992425096f014a0995704fc04a7a70066
           labels: |
             org.opencontainers.image.revision=${{ github.sha }}
       - name: Publish frontend production image
@@ -181,6 +224,17 @@ jobs:
           mkdir backend-runtime-root
           docker cp "$BACKEND_CONTAINER:/app/." backend-runtime-root/
           test -n "$(find backend-runtime-root -type f -print -quit)"
+          EMBEDDED_FORGE_ROOT="backend-runtime-root/.terrafusion/runtime/forge/valuation"
+          test -x "$EMBEDDED_FORGE_ROOT/terraforge-kernel-valuation"
+          test -s "$EMBEDDED_FORGE_ROOT/producer-manifest.json"
+          echo "$FORGE_VALUATION_KERNEL_EXECUTABLE_SHA256  $EMBEDDED_FORGE_ROOT/terraforge-kernel-valuation" | sha256sum -c -
+          echo "$FORGE_VALUATION_KERNEL_PRODUCER_MANIFEST_SHA256  $EMBEDDED_FORGE_ROOT/producer-manifest.json" | sha256sum -c -
+          cmp forge-valuation-kernel-producer-manifest.json "$EMBEDDED_FORGE_ROOT/producer-manifest.json"
+          EMBEDDED_ACCEPTED="$(printf '%s' '{"contractPackVersion":"1.0.0","moduleApiVersion":"1.0.0","requestId":"release-embedded-accepted","action":"valuate","payload":{"subject":{"parcelId":"RELEASE-EMBEDDED","attributes":{}},"costBreakdown":{"replacementCost":100,"depreciation":10,"rcnld":90},"model":{"landValue":30,"adjustmentFactors":null}}}' | "$EMBEDDED_FORGE_ROOT/terraforge-kernel-valuation")"
+          EMBEDDED_REJECTED="$(printf '%s' '{"contractPackVersion":"1.0.0","moduleApiVersion":"1.0.0","requestId":"release-embedded-rejected","action":"not-admitted","payload":{}}' | "$EMBEDDED_FORGE_ROOT/terraforge-kernel-valuation")"
+          jq -e '.success == true and .data.totalValue == 120' <<<"$EMBEDDED_ACCEPTED" >/dev/null
+          jq -e '.success == false and (.data == null)' <<<"$EMBEDDED_REJECTED" >/dev/null
+          cp "$EMBEDDED_FORGE_ROOT/producer-manifest.json" forge-valuation-kernel-producer-manifest.json
           cleanup_backend_container
           trap - EXIT
 
@@ -196,6 +250,24 @@ jobs:
           test -s sbom-frontend-build-dependencies-spdx.json
           cleanup_frontend_container
           trap - EXIT
+      - name: Execute exact backend image Forge payload under release runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(docker run --rm --entrypoint /bin/sh "$BACKEND_IMAGE_REF" -c 'id -u')" = "1001"
+          IMAGE_ACCEPTED="$(printf '%s' '{"contractPackVersion":"1.0.0","moduleApiVersion":"1.0.0","requestId":"release-image-accepted","action":"valuate","payload":{"subject":{"parcelId":"RELEASE-IMAGE","attributes":{}},"costBreakdown":{"replacementCost":100,"depreciation":10,"rcnld":90},"model":{"landValue":30,"adjustmentFactors":null}}}' | docker run --rm -i --entrypoint /app/.terrafusion/runtime/forge/valuation/terraforge-kernel-valuation "$BACKEND_IMAGE_REF")"
+          IMAGE_REJECTED="$(printf '%s' '{"contractPackVersion":"1.0.0","moduleApiVersion":"1.0.0","requestId":"release-image-rejected","action":"not-admitted","payload":{}}' | docker run --rm -i --entrypoint /app/.terrafusion/runtime/forge/valuation/terraforge-kernel-valuation "$BACKEND_IMAGE_REF")"
+          jq -e '.success == true and .data.totalValue == 120' <<<"$IMAGE_ACCEPTED" >/dev/null
+          jq -e '.success == false and (.data == null)' <<<"$IMAGE_REJECTED" >/dev/null
+      - name: Invoke exact embedded Forge payload through the C# process host
+        env:
+          TF_TEST_FORGE_VALUATION_KERNEL_PATH: ${{ github.workspace }}/backend-runtime-root/.terrafusion/runtime/forge/valuation/terraforge-kernel-valuation
+          TF_TEST_FORGE_VALUATION_KERNEL_MANIFEST_PATH: ${{ github.workspace }}/backend-runtime-root/.terrafusion/runtime/forge/valuation/producer-manifest.json
+        run: >-
+          dotnet test backend/TerraFusion.API.Tests/TerraFusion.API.Tests.csproj
+          -c Release
+          --filter "FullyQualifiedName~ValuationKernel_AdmittedReleasePayload_InvokesThroughProcessHost"
+          --verbosity normal
       - name: Guard exact published backend dependency identities
         run: node scripts/ci/backend_published_deps_guard.mjs backend-runtime-root
       - name: Guard exact Semantic Kernel advisory suppression
@@ -226,6 +298,13 @@ jobs:
             --frontend-image "${{ steps.publish-refs.outputs.frontend_image }}" \
             --frontend-digest "${{ steps.publish-refs.outputs.frontend_digest }}" \
             --backend-license-evidence backend-runtime-license-evidence.json \
+            --forge-image "$FORGE_VALUATION_KERNEL_IMAGE" \
+            --forge-digest "$FORGE_VALUATION_KERNEL_DIGEST" \
+            --forge-producer-commit "$FORGE_VALUATION_KERNEL_PRODUCER_COMMIT" \
+            --forge-canonical-source-commit "$FORGE_VALUATION_KERNEL_CANONICAL_SOURCE_COMMIT" \
+            --forge-artifact-type "$FORGE_VALUATION_KERNEL_ARTIFACT_TYPE" \
+            --forge-producer-manifest forge-valuation-kernel-producer-manifest.json \
+            --forge-executable-sha256 "$FORGE_VALUATION_KERNEL_EXECUTABLE_SHA256" \
             --out release-images.json
       - name: Upload full SBOM evidence
         if: always()
@@ -235,6 +314,7 @@ jobs:
           path: |
             sbom-*.json
             backend-runtime-license-evidence.json
+            forge-valuation-kernel-producer-manifest.json
           retention-days: 365
       - name: Upload technical release inputs (backend distribution approval remains required)
         uses: actions/upload-artifact@v4
@@ -243,6 +323,7 @@ jobs:
           path: |
             release-images.json
             backend-runtime-license-evidence.json
+            forge-valuation-kernel-producer-manifest.json
           retention-days: 365
 
   container-security:
@@ -381,7 +462,9 @@ jobs:
           echo "- ✅ Exact images passed blocking vulnerability scans" >> "$GITHUB_STEP_SUMMARY"
           echo "- ✅ Backend: ${{ needs.sbom-compliance.outputs.backend-ref }}" >> "$GITHUB_STEP_SUMMARY"
           echo "- ✅ Frontend: ${{ needs.sbom-compliance.outputs.frontend-ref }}" >> "$GITHUB_STEP_SUMMARY"
-          echo "- ✅ Image-digest provenance published" >> "$GITHUB_STEP_SUMMARY"
+          echo "- ✅ Forge valuation payload: $FORGE_VALUATION_KERNEL_REF (producer $FORGE_VALUATION_KERNEL_PRODUCER_COMMIT; canonical source $FORGE_VALUATION_KERNEL_CANONICAL_SOURCE_COMMIT)" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Forge producer platform attestation: unavailable; this gate makes no Workbench-adoption or county-readiness claim" >> "$GITHUB_STEP_SUMMARY"
+          echo "- ✅ Image-digest provenance published for the TerraFusion backend and frontend images" >> "$GITHUB_STEP_SUMMARY"
 
   release-gate:
     name: 🚀 Release Gate
@@ -426,7 +509,14 @@ jobs:
             --backend-digest "${{ needs.sbom-compliance.outputs.backend-digest }}" \
             --frontend-image "${{ needs.sbom-compliance.outputs.frontend-image }}" \
             --frontend-digest "${{ needs.sbom-compliance.outputs.frontend-digest }}" \
-            --backend-license-evidence approved-inputs/backend-runtime-license-evidence.json
+            --backend-license-evidence approved-inputs/backend-runtime-license-evidence.json \
+            --forge-image "$FORGE_VALUATION_KERNEL_IMAGE" \
+            --forge-digest "$FORGE_VALUATION_KERNEL_DIGEST" \
+            --forge-producer-commit "$FORGE_VALUATION_KERNEL_PRODUCER_COMMIT" \
+            --forge-canonical-source-commit "$FORGE_VALUATION_KERNEL_CANONICAL_SOURCE_COMMIT" \
+            --forge-artifact-type "$FORGE_VALUATION_KERNEL_ARTIFACT_TYPE" \
+            --forge-producer-manifest approved-inputs/forge-valuation-kernel-producer-manifest.json \
+            --forge-executable-sha256 "$FORGE_VALUATION_KERNEL_EXECUTABLE_SHA256"
       - name: Publish technically approved release artifacts (not backend distribution-license approval)
         uses: actions/upload-artifact@v4
         with:
@@ -434,4 +524,5 @@ jobs:
           path: |
             approved-inputs/release-images.json
             approved-inputs/backend-runtime-license-evidence.json
+            approved-inputs/forge-valuation-kernel-producer-manifest.json
           retention-days: 365

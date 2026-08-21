@@ -97,6 +97,9 @@ EXPOSE 5000
 # Use watch for hot-reload
 CMD ["dotnet", "watch", "--project", "src/TerraFusion.API/TerraFusion.API.csproj", "run", "--no-launch-profile"]
 
+# Exact digest-bound Forge payload is supplied as a named BuildKit context.
+FROM forge-valuation-kernel AS forge-valuation-kernel-payload
+
 # Stage 3: Runtime (Production)
 FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine AS runtime
 WORKDIR /app
@@ -110,10 +113,19 @@ USER terrafusion
 ENV ASPNETCORE_ENVIRONMENT=Production
 ENV ASPNETCORE_URLS=http://0.0.0.0:5000
 ENV TF_GIT_SHA=${GIT_SHA}
+ENV RustKernels__ValuationKernelPath=/app/.terrafusion/runtime/forge/valuation/terraforge-kernel-valuation
+ENV RustKernels__ValuationKernelManifestPath=/app/.terrafusion/runtime/forge/valuation/producer-manifest.json
+ENV RustKernels__ValuationKernelSourceCommit=24059c3642339f36877cb454ca63683180915b71
+ENV RustKernels__ValuationKernelArtifactType=terraforge.valuation-kernel.linux-x64-musl@1
+ENV RustKernels__ValuationKernelProducerCommit=3fc296da17aaca4c32dd9b727ab62d2d3725d789
+ENV RustKernels__ValuationKernelProducerManifestSha256=3d83a4a998eabb30b2993e6c777ae5924ca2a7e6f1bd915f7698606fd077fcd6
+ENV RustKernels__ValuationKernelExecutableSha256=a371d8f421b66cd2f83073ed108c885facc97323f9a351547d7293259978c298
 
-# Copy published app
+# Copy published app and the exact Forge producer payload.
 COPY --from=build /app/publish ./
 COPY --from=build /app/auth-provisioner ./tools/TerraFusion.AuthProvisioner/
+COPY --from=forge-valuation-kernel-payload --chmod=0555 /terraforge-kernel-valuation /app/.terrafusion/runtime/forge/valuation/terraforge-kernel-valuation
+COPY --from=forge-valuation-kernel-payload --chmod=0444 /manifest.json /app/.terrafusion/runtime/forge/valuation/producer-manifest.json
 
 # Expose and healthcheck
 EXPOSE 5000
