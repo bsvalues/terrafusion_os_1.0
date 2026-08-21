@@ -371,6 +371,7 @@ test('canonical vulnerability scope is bounded while secret coverage remains all
   assert.doesNotMatch(vulnerability, /skip-dirs:[\s\S]*backend\/src\s*(?:\r?\n|$)/);
   assert.doesNotMatch(vulnerability, /skip-dirs:[\s\S]*backend\/tools\s*(?:\r?\n|$)/);
   assert.match(secret, /scan-ref: 'backend'/);
+  assert.match(secret, /if: \$\{\{ !cancelled\(\) \}\}/);
   assert.match(secret, /scanners: 'secret'/);
   assert.match(secret, /severity: 'CRITICAL,HIGH'/);
   assert.match(secret, /exit-code: '1'/);
