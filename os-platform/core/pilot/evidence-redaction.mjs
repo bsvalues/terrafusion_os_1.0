@@ -335,11 +335,15 @@ function isSafeSensitiveJsonSourceValue(value, start) {
   }
 }
 
-function containsPopulatedSensitiveJsonSource(value) {
+function populatedSensitiveJsonSourceMemberOffsets(value) {
+  const offsets = [];
   for (let cursor = 0; cursor < value.length; cursor += 1) {
     if (value[cursor] !== '"') continue;
     const end = jsonStringEnd(value, cursor);
-    if (end === null) return true;
+    if (end === null) {
+      offsets.push(cursor);
+      break;
+    }
 
     let separator = end;
     while (separator < value.length && /\s/.test(value[separator])) separator += 1;
@@ -348,18 +352,24 @@ function containsPopulatedSensitiveJsonSource(value) {
       try {
         key = JSON.parse(value.slice(cursor, end));
       } catch {
-        return true;
+        offsets.push(cursor);
+        cursor = end - 1;
+        continue;
       }
       if (
         isSensitiveKey(key) &&
         !isSafeSensitiveJsonSourceValue(value, separator + 1)
       ) {
-        return true;
+        offsets.push(cursor);
       }
     }
     cursor = end - 1;
   }
-  return false;
+  return offsets;
+}
+
+function containsPopulatedSensitiveJsonSource(value) {
+  return populatedSensitiveJsonSourceMemberOffsets(value).length > 0;
 }
 
 function decodeSerializedJsonFragment(candidate) {
@@ -548,17 +558,24 @@ export function stringifyEvidence(value) {
 export function findEvidenceCredentialFindings(value, location = "$") {
   const findings = [];
 
-  const visit = (node, currentLocation) => {
+  const addSourceMemberFindings = (source, currentLocation, kind) => {
+    for (const offset of populatedSensitiveJsonSourceMemberOffsets(source)) {
+      findings.push({ kind, location: `${currentLocation}<json@${offset}>` });
+    }
+  };
+
+  const visit = (node, currentLocation, sourceCoversSensitiveFields = false) => {
     if (typeof node === "string") {
       const structured = parseStructuredJsonText(node);
       if (structured) {
-        if (
-          structured.source &&
-          containsPopulatedSensitiveJsonSource(structured.source)
-        ) {
-          findings.push({ kind: "sensitive-text", location: currentLocation });
-        }
-        visit(structured.value, `${currentLocation}<json>`);
+        addSourceMemberFindings(
+          structured.source ?? "",
+          currentLocation,
+          "sensitive-field"
+        );
+        // Raw member identities cover every parsed field, including duplicates.
+        // Continue visiting values for independent JWT/text representations only.
+        visit(structured.value, `${currentLocation}<json>`, true);
         return;
       }
 
@@ -583,18 +600,12 @@ export function findEvidenceCredentialFindings(value, location = "$") {
       let cursor = 0;
       for (const fragment of fragments) {
         inspectText(node.slice(cursor, fragment.start), currentLocation);
-        const findingStart = findings.length;
-        if (containsPopulatedSensitiveJsonSource(fragment.source)) {
-          findings.push({ kind: "sensitive-text", location: currentLocation });
-        }
-        visit(fragment.value, `${currentLocation}<json@${fragment.start}>`);
-        if (
-          findings
-            .slice(findingStart)
-            .some((finding) => finding.kind === "sensitive-field")
-        ) {
-          findings.push({ kind: "sensitive-text", location: currentLocation });
-        }
+        addSourceMemberFindings(fragment.source, currentLocation, "sensitive-text");
+        visit(
+          fragment.value,
+          `${currentLocation}<json@${fragment.start}>`,
+          true
+        );
         cursor = fragment.end;
       }
       inspectText(node.slice(cursor), currentLocation);
@@ -602,7 +613,9 @@ export function findEvidenceCredentialFindings(value, location = "$") {
     }
 
     if (Array.isArray(node)) {
-      node.forEach((child, index) => visit(child, `${currentLocation}[${index}]`));
+      node.forEach((child, index) =>
+        visit(child, `${currentLocation}[${index}]`, sourceCoversSensitiveFields)
+      );
       return;
     }
 
@@ -610,10 +623,14 @@ export function findEvidenceCredentialFindings(value, location = "$") {
 
     for (const [key, child] of Object.entries(node)) {
       const childLocation = `${currentLocation}.${key}`;
-      if (isSensitiveKey(key) && !isAlreadySafeSensitiveValue(child)) {
+      if (
+        !sourceCoversSensitiveFields &&
+        isSensitiveKey(key) &&
+        !isAlreadySafeSensitiveValue(child)
+      ) {
         findings.push({ kind: "sensitive-field", location: childLocation });
       }
-      visit(child, childLocation);
+      visit(child, childLocation, sourceCoversSensitiveFields);
     }
   };
 

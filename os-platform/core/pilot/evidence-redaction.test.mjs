@@ -510,6 +510,10 @@ test("directory guard sanitizes top-level duplicate sensitive members before par
   );
   const cases = [
     [
+      "ordinary",
+      ['{', '  "token": "TOP-LEVEL-SECRET-ordinary",', '  "next": "safe"', '}'],
+    ],
+    [
       "earlier-null",
       ['{', '  "to\\u006ben": "TOP-LEVEL-SECRET-null",', '  "token": null,', '  "next": "safe"', '}'],
     ],
@@ -543,6 +547,14 @@ test("directory guard sanitizes top-level duplicate sensitive members before par
       ],
     ],
   ];
+  const expectedOccurrenceCounts = new Map([
+    ["ordinary", 1],
+    ["earlier-null", 1],
+    ["earlier-false", 1],
+    ["earlier-marker", 1],
+    ["reversed", 1],
+    ["multiple", 2],
+  ]);
 
   try {
     for (const [endingName, lineEnding] of [
@@ -572,6 +584,12 @@ test("directory guard sanitizes top-level duplicate sensitive members before par
       contentsAfterFirstPass.set(entry, source);
       assert.ok(!source.includes("TOP-LEVEL-SECRET"));
       assert.equal(value.next, "safe");
+      const caseName = entry.replace(/^(?:lf|crlf)-/, "").replace(/\.json$/, "");
+      assert.equal(
+        value.redaction.occurrenceCount,
+        expectedOccurrenceCounts.get(caseName),
+        `${entry} must count each populated source member exactly once`
+      );
       assert.equal(findEvidenceCredentialFindings(source).length, 0);
     }
 
