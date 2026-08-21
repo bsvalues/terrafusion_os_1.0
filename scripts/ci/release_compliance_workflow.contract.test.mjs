@@ -8,6 +8,9 @@ import { fileURLToPath } from 'node:url';
 const root = join(dirname(fileURLToPath(import.meta.url)), '../..');
 const workflow = readFileSync(join(root, '.github/workflows/release-compliance.yml'), 'utf8');
 const dockerignore = readFileSync(join(root, '.dockerignore'), 'utf8');
+const frontendDockerfile = readFileSync(join(root, 'frontend/Dockerfile'), 'utf8');
+const sealWorkflow = readFileSync(join(root, '.github/workflows/seal-gate-fast.yml'), 'utf8');
+const packageJson = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8'));
 
 function job(name) {
   const marker = '  ' + name + ':';
@@ -33,17 +36,56 @@ test('publisher creates each canonical runtime image exactly once and records di
   assert.match(text, /release_image_manifest\.mjs create/);
 });
 
-test('runtime and frontend build dependencies are scanned fail closed', () => {
+test('published frontend image embeds and scans browser and build dependency evidence fail closed', () => {
   const text = job('sbom-compliance');
-  assert.match(text, /target: build[\s\S]*push: false[\s\S]*load: true/);
   assert.match(text, /syft "registry:\$BACKEND_IMAGE_REF"/);
-  assert.match(text, /syft "registry:\$FRONTEND_IMAGE_REF"/);
-  assert.match(text, /syft "terrafusion-frontend-build:\${GITHUB_SHA}"/);
-  assert.match(text, /sbom-backend-runtime-spdx\.json[\s\S]*--fail-on critical/);
-  assert.match(text, /sbom-frontend-runtime-spdx\.json[\s\S]*--fail-on critical/);
-  assert.match(text, /sbom-frontend-build-spdx\.json[\s\S]*--fail-on high/);
-  assert.match(text, /release_sbom_policy\.mjs/);
+  assert.doesNotMatch(text, /syft "registry:\$FRONTEND_IMAGE_REF"/);
+  assert.match(text, /docker pull "\$FRONTEND_IMAGE_REF"/);
+  assert.match(text, /FRONTEND_CONTAINER="\$\(docker create "\$FRONTEND_IMAGE_REF"\)"/);
+  assert.match(
+    text,
+    /docker cp[\s\S]*frontend-dependencies\.spdx\.json[\s\S]*sbom-frontend-dependencies-spdx\.json/
+  );
+  assert.match(text, /grype sbom:sbom-backend-runtime-spdx\.json -o table --fail-on critical/);
+  assert.match(text, /grype sbom:sbom-frontend-dependencies-spdx\.json -o table --fail-on high/);
+  assert.match(
+    text,
+    /grype sbom:sbom-frontend-build-dependencies-spdx\.json -o table --fail-on high/
+  );
+  assert.match(text, /release_sbom_policy\.mjs[\s\S]*sbom-frontend-build-dependencies-spdx\.json/);
+  assert.doesNotMatch(text, /target: build|terrafusion-frontend-build|frontend-build-spdx/);
   assert.doesNotMatch(text, /syft dir:\./);
+  assert.match(
+    frontendDockerfile,
+    /pnpm licenses list --json --prod --filter \.\/frontend\.\.\.[\s\S]*browser-production/
+  );
+  assert.match(
+    frontendDockerfile,
+    /pnpm licenses list --json --filter \.\/frontend\.\.\.[\s\S]*docker-build/
+  );
+  for (const required of [
+    '/usr/share/terrafusion/sbom/package.json',
+    '/usr/share/terrafusion/sbom/pnpm-lock.yaml',
+    '/usr/share/terrafusion/sbom/pnpm-workspace.yaml',
+    '/usr/share/terrafusion/sbom/frontend/package.json',
+    '/usr/share/terrafusion/sbom/frontend-dependencies.spdx.json',
+    '/usr/share/terrafusion/sbom/frontend-build-dependencies.spdx.json',
+  ]) {
+    assert.ok(
+      frontendDockerfile.includes(required),
+      'missing exact frontend build input: ' + required
+    );
+  }
+  assert.match(
+    frontendDockerfile,
+    /pnpm exec vite build --outDir \/app\/dist/,
+    "production image must execute the frontend manifest's frozen Vite dependency"
+  );
+  assert.doesNotMatch(
+    frontendDockerfile,
+    /npx vite build/,
+    'npx can resolve the root workspace Vite instead of the frontend dependency'
+  );
 });
 
 test('container scan consumes published digests and enforces the declared threshold', () => {
@@ -85,9 +127,29 @@ test('OIDC is job scoped and the full test claim is strict', () => {
   assert.doesNotMatch(header, /id-token: write|attestations: write|security-events: write/);
   assert.match(provenance, /id-token: write[\s\S]*attestations: write/);
   assert.match(tests, /pnpm run test:unit/);
+  assert.match(tests, /pnpm run test:release-lifecycle/);
   assert.match(tests, /pnpm run smoke:workbench/);
   assert.doesNotMatch(tests, /pnpm run test:e2e/);
   assert.doesNotMatch(tests, /continue-on-error|\|\|/);
+});
+
+test('release lifecycle contracts are mandatory in PR and release CI', () => {
+  const lifecycle = packageJson.scripts['test:release-lifecycle'];
+  for (const required of [
+    'release_compliance_workflow.contract.test.mjs',
+    'frontend_dependency_sbom.test.mjs',
+    'release_image_manifest.test.mjs',
+    'release_recovery_trap.test.mjs',
+    'release_sbom_policy.test.mjs',
+    'release_state_policy.test.mjs',
+    'release_workflow_shell_syntax.test.mjs',
+    'deployment-truth-gate.test.mjs',
+    'acceptance-truth.workflow.contract.test.mjs',
+  ]) {
+    assert.ok(lifecycle.includes(required), 'release lifecycle script omits ' + required);
+  }
+  assert.match(sealWorkflow, /run: pnpm run test:release-lifecycle/);
+  assert.match(job('full-tests'), /run: pnpm run test:release-lifecycle/);
 });
 
 test('canonical scanners are pinned and archive content is excluded', () => {

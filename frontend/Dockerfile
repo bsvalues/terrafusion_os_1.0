@@ -14,13 +14,23 @@ RUN corepack enable && corepack prepare pnpm@9.0.0 --activate
 # Copy workspace root config + lockfile (single source of truth)
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 
-# Copy frontend package manifest
+# Copy frontend package manifest and deterministic dependency-evidence generator
 COPY frontend/package.json frontend/package.json
+COPY scripts/ci/frontend_dependency_sbom.mjs scripts/ci/frontend_dependency_sbom.mjs
 
-# Install dependencies (frozen = deterministic + CI-safe)
+# Install dependencies (frozen = deterministic + CI-safe), then capture both the
+# browser production closure and the complete dependency closure used by this build.
 RUN echo "fetch-timeout=120000" >> .npmrc && echo "fetch-retries=5" >> .npmrc
 RUN --mount=type=cache,id=pnpm,target=/root/.local/share/pnpm/store \
     pnpm install --frozen-lockfile --filter ./frontend...
+RUN --mount=type=cache,id=pnpm,target=/root/.local/share/pnpm/store \
+    pnpm licenses list --json --prod --filter ./frontend... > /tmp/frontend-browser-production-licenses.json \
+    && node scripts/ci/frontend_dependency_sbom.mjs \
+       /tmp/frontend-browser-production-licenses.json /app/frontend-dependencies.spdx.json browser-production \
+    && pnpm licenses list --json --filter ./frontend... > /tmp/frontend-docker-build-licenses.json \
+    && node scripts/ci/frontend_dependency_sbom.mjs \
+       /tmp/frontend-docker-build-licenses.json /app/frontend-build-dependencies.spdx.json docker-build \
+    && rm /tmp/frontend-browser-production-licenses.json /tmp/frontend-docker-build-licenses.json
 
 # Copy workspace packages (vite resolve aliases)
 COPY packages/ packages/
@@ -30,7 +40,7 @@ COPY frontend/ frontend/
 
 # Build production bundle
 WORKDIR /app/frontend
-RUN NODE_OPTIONS="--max-old-space-size=4096" npx vite build --outDir /app/dist
+RUN NODE_OPTIONS="--max-old-space-size=4096" pnpm exec vite build --outDir /app/dist
 
 # Assert build produced output
 RUN test -f /app/dist/index.html || (echo 'ERROR: /app/dist/index.html missing after build' && exit 1)
@@ -44,6 +54,17 @@ RUN rm -rf ./*
 
 # Copy built assets
 COPY --from=build /app/dist ./
+
+# Preserve the exact dependency-resolution inputs that produced this bundle.
+# This path is outside the nginx document root, so it is available to image
+# inventory tooling without being served to end users.
+RUN mkdir -p /usr/share/terrafusion/sbom/frontend
+COPY --from=build /app/package.json /usr/share/terrafusion/sbom/package.json
+COPY --from=build /app/pnpm-lock.yaml /usr/share/terrafusion/sbom/pnpm-lock.yaml
+COPY --from=build /app/pnpm-workspace.yaml /usr/share/terrafusion/sbom/pnpm-workspace.yaml
+COPY --from=build /app/frontend/package.json /usr/share/terrafusion/sbom/frontend/package.json
+COPY --from=build /app/frontend-dependencies.spdx.json /usr/share/terrafusion/sbom/frontend-dependencies.spdx.json
+COPY --from=build /app/frontend-build-dependencies.spdx.json /usr/share/terrafusion/sbom/frontend-build-dependencies.spdx.json
 
 # Copy nginx configuration
 COPY frontend/nginx.conf /etc/nginx/conf.d/default.conf

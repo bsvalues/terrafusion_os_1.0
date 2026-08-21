@@ -127,17 +127,6 @@ jobs:
             VITE_BUILD_SHA=${{ github.sha }}
           labels: |
             org.opencontainers.image.revision=${{ github.sha }}
-      - name: Build frontend dependency-evidence image
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          file: frontend/Dockerfile
-          target: build
-          push: false
-          load: true
-          tags: terrafusion-frontend-build:${{ github.sha }}
-          build-args: |
-            VITE_BUILD_SHA=${{ github.sha }}
       - name: Bind published digest references
         id: publish-refs
         shell: bash
@@ -169,20 +158,31 @@ jobs:
         run: |
           curl -sSfL https://raw.githubusercontent.com/anchore/grype/6e1807dd7130c9eff23c1bad19a96cc6afef33aa/install.sh | sh -s -- -b /usr/local/bin "${GRYPE_VERSION}"
           grype version
-      - name: Generate exact artifact SBOMs
+      - name: Generate backend runtime and frontend browser/build dependency SBOMs
         run: |
           set -euo pipefail
           syft "registry:$BACKEND_IMAGE_REF" -o spdx-json=sbom-backend-runtime-spdx.json -o cyclonedx-json=sbom-backend-runtime-cyclonedx.json
-          syft "registry:$FRONTEND_IMAGE_REF" -o spdx-json=sbom-frontend-runtime-spdx.json -o cyclonedx-json=sbom-frontend-runtime-cyclonedx.json
-          syft "terrafusion-frontend-build:${GITHUB_SHA}" -o spdx-json=sbom-frontend-build-spdx.json -o cyclonedx-json=sbom-frontend-build-cyclonedx.json
+
+          docker pull "$FRONTEND_IMAGE_REF"
+          FRONTEND_CONTAINER="$(docker create "$FRONTEND_IMAGE_REF")"
+          cleanup_frontend_container() {
+            docker rm -f "$FRONTEND_CONTAINER" >/dev/null 2>&1 || true
+          }
+          trap cleanup_frontend_container EXIT
+          docker cp             "$FRONTEND_CONTAINER:/usr/share/terrafusion/sbom/frontend-dependencies.spdx.json"             sbom-frontend-dependencies-spdx.json
+          docker cp             "$FRONTEND_CONTAINER:/usr/share/terrafusion/sbom/frontend-build-dependencies.spdx.json"             sbom-frontend-build-dependencies-spdx.json
+          test -s sbom-frontend-dependencies-spdx.json
+          test -s sbom-frontend-build-dependencies-spdx.json
+          cleanup_frontend_container
+          trap - EXIT
       - name: Blocking vulnerability policy
         run: |
           set -euo pipefail
           grype sbom:sbom-backend-runtime-spdx.json -o table --fail-on critical
-          grype sbom:sbom-frontend-runtime-spdx.json -o table --fail-on critical
-          grype sbom:sbom-frontend-build-spdx.json -o table --fail-on high
+          grype sbom:sbom-frontend-dependencies-spdx.json -o table --fail-on high
+          grype sbom:sbom-frontend-build-dependencies-spdx.json -o table --fail-on high
       - name: Blocking license policy
-        run: node scripts/ci/release_sbom_policy.mjs sbom-backend-runtime-spdx.json sbom-frontend-runtime-spdx.json sbom-frontend-build-spdx.json
+        run: node scripts/ci/release_sbom_policy.mjs sbom-backend-runtime-spdx.json sbom-frontend-dependencies-spdx.json sbom-frontend-build-dependencies-spdx.json
       - name: Create immutable release image manifest
         run: |
           node scripts/ci/release_image_manifest.mjs create \
@@ -203,10 +203,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: release-image-inputs
-          path: |
-            release-images.json
-            sbom-frontend-build-spdx.json
-            sbom-frontend-build-cyclonedx.json
+          path: release-images.json
           retention-days: 365
 
   container-security:
@@ -315,7 +312,7 @@ jobs:
         run: |
           echo "# 🚀 Release Compliance Summary: ${{ github.ref_name }}" >> "$GITHUB_STEP_SUMMARY"
           echo "- ✅ Unit, backend, and authenticated property Workbench release smoke passed" >> "$GITHUB_STEP_SUMMARY"
-          echo "- ✅ Runtime and frontend dependency SBOM policies passed" >> "$GITHUB_STEP_SUMMARY"
+          echo "- ✅ Runtime, frontend browser-production, and exact Docker-build dependency SBOM policies passed" >> "$GITHUB_STEP_SUMMARY"
           echo "- ✅ Exact images passed blocking vulnerability scans" >> "$GITHUB_STEP_SUMMARY"
           echo "- ✅ Backend: ${{ needs.sbom-compliance.outputs.backend-ref }}" >> "$GITHUB_STEP_SUMMARY"
           echo "- ✅ Frontend: ${{ needs.sbom-compliance.outputs.frontend-ref }}" >> "$GITHUB_STEP_SUMMARY"
