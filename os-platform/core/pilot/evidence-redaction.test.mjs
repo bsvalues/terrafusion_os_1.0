@@ -515,11 +515,13 @@ test("compact JWT candidates allow short claims with algorithm-consistent signat
   );
   const shortClaims = Buffer.from("{}", "utf8").toString("base64url");
   const canonicalSignature = Buffer.from("synthetic-signature", "utf8").toString("base64url");
+  const unicodeClaims = Buffer.from(JSON.stringify({ name: "政務" }), "utf8").toString("base64url");
   assert.equal(shortClaims, "e30");
 
   for (const token of [
     `${noneHeader}.${shortClaims}.`,
     `${signedHeader}.${shortClaims}.${canonicalSignature}`,
+    `${signedHeader}.${unicodeClaims}.${canonicalSignature}`,
   ]) {
     const input = `prefix ${token}; suffix=keep`;
     const findings = findEvidenceCredentialFindings(input);
@@ -536,6 +538,16 @@ test("compact JWT candidates allow short claims with algorithm-consistent signat
   const whitespaceAlgHeader = Buffer.from(JSON.stringify({ alg: "  " }), "utf8").toString("base64url");
   const arrayHeader = Buffer.from("[]", "utf8").toString("base64url");
   const arrayClaims = Buffer.from("[]", "utf8").toString("base64url");
+  const malformedHeader = Buffer.concat([
+    Buffer.from('{"alg":"HS256', "utf8"),
+    Buffer.from([0xff]),
+    Buffer.from('"}', "utf8"),
+  ]).toString("base64url");
+  const malformedClaims = Buffer.concat([
+    Buffer.from('{"sub":"fixture', "utf8"),
+    Buffer.from([0xff]),
+    Buffer.from('"}', "utf8"),
+  ]).toString("base64url");
   for (const invalid of [
     `${signedHeader}.${shortClaims}.`,
     `${noneHeader}.${shortClaims}.${canonicalSignature}`,
@@ -546,6 +558,8 @@ test("compact JWT candidates allow short claims with algorithm-consistent signat
     `${whitespaceAlgHeader}.${shortClaims}.${canonicalSignature}`,
     `${arrayHeader}.${shortClaims}.${canonicalSignature}`,
     `${signedHeader}.${arrayClaims}.${canonicalSignature}`,
+    `${malformedHeader}.${shortClaims}.${canonicalSignature}`,
+    `${signedHeader}.${malformedClaims}.${canonicalSignature}`,
   ]) {
     assert.equal(findEvidenceCredentialFindings(invalid).length, 0);
     assert.equal(redactEvidenceText(invalid), invalid);

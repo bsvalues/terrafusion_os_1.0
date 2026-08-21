@@ -1,4 +1,5 @@
 const REDACTION_MARKER = "[REDACTED]";
+const FATAL_UTF8_DECODER = new TextDecoder("utf-8", { fatal: true });
 
 const COMPACT_JWT_PATTERN =
   /(?<![A-Za-z0-9_.-])[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]*(?![A-Za-z0-9_.-])/g;
@@ -324,8 +325,8 @@ function isCompactJwt(candidate) {
     segments[2] === "" || decodeCanonicalBase64Url(segments[2]) !== null;
   if (!headerBytes || !payloadBytes || !signatureIsCanonical) return false;
   try {
-    const header = JSON.parse(headerBytes.toString("utf8"));
-    const payload = JSON.parse(payloadBytes.toString("utf8"));
+    const header = JSON.parse(FATAL_UTF8_DECODER.decode(headerBytes));
+    const payload = JSON.parse(FATAL_UTF8_DECODER.decode(payloadBytes));
     return (
       header !== null &&
       typeof header === "object" &&
