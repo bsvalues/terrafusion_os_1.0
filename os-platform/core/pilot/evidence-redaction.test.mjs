@@ -506,16 +506,19 @@ test("credential finding paths use unambiguous JSON Pointer components", () => {
   assert.ok(findings.some((finding) => finding.location.startsWith("$/a~0b<")));
 });
 
-test("compact JWT candidates allow short claims and empty signatures", () => {
-  const header = Buffer.from(JSON.stringify({ alg: "none" }), "utf8").toString(
+test("compact JWT candidates allow short claims with algorithm-consistent signatures", () => {
+  const noneHeader = Buffer.from(JSON.stringify({ alg: "none" }), "utf8").toString(
+    "base64url"
+  );
+  const signedHeader = Buffer.from(JSON.stringify({ alg: "HS256" }), "utf8").toString(
     "base64url"
   );
   const shortClaims = Buffer.from("{}", "utf8").toString("base64url");
   assert.equal(shortClaims, "e30");
 
   for (const token of [
-    `${header}.${shortClaims}.`,
-    `${header}.${shortClaims}.synthetic-signature`,
+    `${noneHeader}.${shortClaims}.`,
+    `${signedHeader}.${shortClaims}.synthetic-signature`,
   ]) {
     const input = `prefix ${token}; suffix=keep`;
     const findings = findEvidenceCredentialFindings(input);
@@ -526,6 +529,14 @@ test("compact JWT candidates allow short claims and empty signatures", () => {
     assert.ok(redacted.endsWith("; suffix=keep"));
     assert.equal(findEvidenceCredentialFindings(redacted).length, 0);
     assert.equal(redactEvidenceText(redacted), redacted);
+  }
+
+  for (const invalid of [
+    `${signedHeader}.${shortClaims}.`,
+    `${noneHeader}.${shortClaims}.synthetic-signature`,
+  ]) {
+    assert.equal(findEvidenceCredentialFindings(invalid).length, 0);
+    assert.equal(redactEvidenceText(invalid), invalid);
   }
 });
 
@@ -543,6 +554,23 @@ test("authorization findings use captured schemes and safe markers converge", ()
   ]) {
     assert.equal(findEvidenceCredentialFindings(safe).length, 0);
     assert.equal(redactEvidenceText(safe), safe);
+  }
+
+  for (const lineEnding of ["\n", "\r\n"]) {
+    for (const scheme of ["Basic", "Bearer"]) {
+      let structured = [
+        "{",
+        `  "authorization": "${scheme} [REDACTED]",`,
+        '  "next": "safe"',
+        "}",
+      ].join(lineEnding);
+      for (let serializationDepth = 0; serializationDepth <= 8; serializationDepth += 1) {
+        assert.equal(findEvidenceCredentialFindings(structured).length, 0);
+        assert.equal(redactEvidenceText(structured), structured);
+        assert.equal(redactEvidenceText(redactEvidenceText(structured)), structured);
+        structured = JSON.stringify(structured);
+      }
+    }
   }
 });
 

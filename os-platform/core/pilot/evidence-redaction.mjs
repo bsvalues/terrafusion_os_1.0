@@ -36,7 +36,9 @@ function isAlreadySafeSensitiveValue(value) {
     value === undefined ||
     value === false ||
     value === "" ||
-    value === REDACTION_MARKER
+    value === REDACTION_MARKER ||
+    (typeof value === "string" &&
+      /^(?:Bearer|Basic)\s+\[REDACTED\]$/i.test(value.trim()))
   );
 }
 
@@ -319,7 +321,8 @@ function isCompactJwt(candidate) {
       typeof header === "object" &&
       typeof header.alg === "string" &&
       payload !== null &&
-      typeof payload === "object"
+      typeof payload === "object" &&
+      (header.alg === "none" ? segments[2] === "" : segments[2] !== "")
     );
   } catch {
     return false;
