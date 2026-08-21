@@ -26,6 +26,7 @@
     "ops",
     "os-platform",
     "packages",
+    "patches",
     "policy",
     "scripts",
     "tests",
