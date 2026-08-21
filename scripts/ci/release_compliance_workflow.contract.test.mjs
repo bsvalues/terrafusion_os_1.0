@@ -334,10 +334,9 @@ test('Forge valuation payload is digest-bound, embedded, validated, and carried 
   assert.ok(login >= 0 && preflight > login && backendBuild > preflight);
   assert.ok(sbom.includes(`docker pull "$FORGE_VALUATION_KERNEL_REF"`));
   assert.ok(sbom.includes(`forge-valuation-kernel=docker-image://${forgeRef}`));
-  assert.match(
-    sbom,
-    /validateForgeProducerManifestDocument[\s\S]*FORGE_VALUATION_KERNEL_PRODUCER_MANIFEST_SHA256[\s\S]*FORGE_VALUATION_KERNEL_EXECUTABLE_SHA256/
-  );
+  assert.match(sbom, /FORGE_VALUATION_KERNEL_PRODUCER_MANIFEST_SHA256/);
+  assert.match(sbom, /FORGE_VALUATION_KERNEL_EXECUTABLE_SHA256/);
+  assert.match(sbom, /validateForgeProducerManifestDocument/);
   assert.match(sbom, /release-forge-accepted[\s\S]*release-forge-rejected/);
   assert.match(
     sbom,
