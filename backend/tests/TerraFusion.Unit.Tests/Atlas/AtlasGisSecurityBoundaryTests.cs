@@ -4,6 +4,7 @@ using FluentAssertions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -69,6 +70,17 @@ public sealed class AtlasGisSecurityBoundaryTests
         service.TotalCalls.Should().Be(0);
     }
 
+    [Fact]
+    public async Task DuplicateSameCountyClaim_ReturnsSame404WithoutServiceQuery()
+    {
+        var service = new StubGisDataService(CreateBoundary(), CreateLayers());
+        var countyClaim = BentonCounty.ToString("D");
+        var controller = BuildController(service, countyClaim, countyClaim);
+        var result = await controller.GetParcelBoundary(ParcelId, default);
+        result.Should().BeOfType<NotFoundResult>();
+        service.TotalCalls.Should().Be(0);
+    }
+
     [Theory]
     [InlineData("")]
     [InlineData(" ")]
@@ -122,18 +134,20 @@ public sealed class AtlasGisSecurityBoundaryTests
     }
 
     [Fact]
-    public async Task ServiceEmbedsCountyOwnershipPredicateBeforeMaterializingLegacyRow()
+    public async Task RelationalServiceEmbedsCanonicalCountyPredicateBeforeMaterializingLegacyRow()
     {
+        await using var connection = new SqliteConnection("Data Source=:memory:");
+        await connection.OpenAsync();
         var options = new DbContextOptionsBuilder<TerraFusionDbContext>()
-            .UseInMemoryDatabase($"atlas-gis-security-{Guid.NewGuid():N}")
+            .UseSqlite(connection)
             .Options;
         var configuration = new ConfigurationBuilder().Build();
         await using var db = new TerraFusionDbContext(options, configuration);
-        await db.Database.EnsureCreatedAsync();
+        CreateRelationalSchema(db);
 
         db.Counties.AddRange(
-            new County { Id = BentonCounty, Name = "Benton", State = "WA", FipsCode = "005" },
-            new County { Id = OtherCounty, Name = "Other", State = "WA", FipsCode = "033" });
+            new County { Id = BentonCounty, Name = "Benton", State = "WA", FipsCode = "53005" },
+            new County { Id = OtherCounty, Name = "Other", State = "WA", FipsCode = "53033" });
         db.GisParcelGeometries.Add(new GisParcelGeometry
         {
             ParcelId = ParcelId,
@@ -154,6 +168,27 @@ public sealed class AtlasGisSecurityBoundaryTests
         wrongLayers.Should().BeNull();
         sameBoundary.Should().NotBeNull();
         sameBoundary!.OwnerName.Should().Be("Protected Owner");
+    }
+
+    private static void CreateRelationalSchema(TerraFusionDbContext db)
+    {
+        var createScript = db.Database.GenerateCreateScript().Replace("\r\n", "\n");
+        var createdTables = new HashSet<string>(StringComparer.Ordinal);
+        var statements = createScript.Split(";\n", StringSplitOptions.RemoveEmptyEntries)
+            .Select(statement => statement.Trim())
+            .Where(statement => statement.StartsWith(
+                "CREATE TABLE \"", StringComparison.Ordinal));
+
+        foreach (var statement in statements)
+        {
+            var tableNameStart = "CREATE TABLE \"".Length;
+            var tableNameEnd = statement.IndexOf('"', tableNameStart);
+            var tableName = statement[tableNameStart..tableNameEnd];
+            if (createdTables.Add(tableName))
+            {
+                db.Database.ExecuteSqlRaw(statement);
+            }
+        }
     }
 
     private static AtlasGisController BuildController(
