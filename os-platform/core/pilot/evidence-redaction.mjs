@@ -270,7 +270,7 @@ function parseStructuredJsonText(value) {
     }
 
     if (parsed !== null && typeof parsed === "object") {
-      return { value: parsed, wrapperDepth };
+      return { value: parsed, wrapperDepth, source: current };
     }
     if (typeof parsed !== "string" || parsed.length >= current.length) {
       return wrapperDepth > 0 ? { value: current, wrapperDepth } : null;
@@ -292,6 +292,76 @@ function stringifyStructuredJsonText(value, wrapperDepth) {
   return result;
 }
 
+function jsonStringEnd(value, start) {
+  let escaped = false;
+  for (let cursor = start + 1; cursor < value.length; cursor += 1) {
+    if (escaped) {
+      escaped = false;
+    } else if (value[cursor] === "\\") {
+      escaped = true;
+    } else if (value[cursor] === '"') {
+      return cursor + 1;
+    }
+  }
+  return null;
+}
+
+function isJsonValueBoundary(value, index) {
+  return (
+    index === value.length ||
+    /[\s,}\]]/.test(value[index])
+  );
+}
+
+function isSafeSensitiveJsonSourceValue(value, start) {
+  let cursor = start;
+  while (cursor < value.length && /\s/.test(value[cursor])) cursor += 1;
+  for (const literal of ["null", "false"]) {
+    if (
+      value.startsWith(literal, cursor) &&
+      isJsonValueBoundary(value, cursor + literal.length)
+    ) {
+      return true;
+    }
+  }
+  if (value[cursor] !== '"') return false;
+
+  const end = jsonStringEnd(value, cursor);
+  if (end === null) return false;
+  try {
+    return isAlreadySafeSensitiveValue(JSON.parse(value.slice(cursor, end)));
+  } catch {
+    return false;
+  }
+}
+
+function containsPopulatedSensitiveJsonSource(value) {
+  for (let cursor = 0; cursor < value.length; cursor += 1) {
+    if (value[cursor] !== '"') continue;
+    const end = jsonStringEnd(value, cursor);
+    if (end === null) return true;
+
+    let separator = end;
+    while (separator < value.length && /\s/.test(value[separator])) separator += 1;
+    if (value[separator] === ":") {
+      let key;
+      try {
+        key = JSON.parse(value.slice(cursor, end));
+      } catch {
+        return true;
+      }
+      if (
+        isSensitiveKey(key) &&
+        !isSafeSensitiveJsonSourceValue(value, separator + 1)
+      ) {
+        return true;
+      }
+    }
+    cursor = end - 1;
+  }
+  return false;
+}
+
 function decodeSerializedJsonFragment(candidate) {
   let current = candidate;
   let serializationDepth = 0;
@@ -300,7 +370,7 @@ function decodeSerializedJsonFragment(candidate) {
     try {
       const parsed = JSON.parse(current);
       if (parsed !== null && typeof parsed === "object") {
-        return { value: parsed, serializationDepth };
+        return { value: parsed, serializationDepth, source: current };
       }
     } catch {
       // The candidate may be JSON string content with independently escaped quotes.
@@ -404,6 +474,7 @@ function structuredJsonFragments(value) {
       end,
       value: decoded.value,
       serializationDepth: decoded.serializationDepth,
+      source: decoded.source,
     });
     start = end - 1;
   }
@@ -425,7 +496,10 @@ function redactUnstructuredText(value) {
 export function redactEvidenceText(value) {
   const structured = parseStructuredJsonText(value);
   if (structured) {
-    if (findEvidenceCredentialFindings(structured.value).length === 0) {
+    if (
+      !containsPopulatedSensitiveJsonSource(structured.source ?? "") &&
+      findEvidenceCredentialFindings(structured.value).length === 0
+    ) {
       return String(value);
     }
     return stringifyStructuredJsonText(structured.value, structured.wrapperDepth);
@@ -440,6 +514,7 @@ export function redactEvidenceText(value) {
   for (const fragment of fragments) {
     result += redactUnstructuredText(text.slice(cursor, fragment.start));
     result +=
+      !containsPopulatedSensitiveJsonSource(fragment.source) &&
       findEvidenceCredentialFindings(fragment.value).length === 0
         ? text.slice(fragment.start, fragment.end)
         : encodeSerializedJsonFragment(
@@ -477,6 +552,12 @@ export function findEvidenceCredentialFindings(value, location = "$") {
     if (typeof node === "string") {
       const structured = parseStructuredJsonText(node);
       if (structured) {
+        if (
+          structured.source &&
+          containsPopulatedSensitiveJsonSource(structured.source)
+        ) {
+          findings.push({ kind: "sensitive-text", location: currentLocation });
+        }
         visit(structured.value, `${currentLocation}<json>`);
         return;
       }
@@ -503,6 +584,9 @@ export function findEvidenceCredentialFindings(value, location = "$") {
       for (const fragment of fragments) {
         inspectText(node.slice(cursor, fragment.start), currentLocation);
         const findingStart = findings.length;
+        if (containsPopulatedSensitiveJsonSource(fragment.source)) {
+          findings.push({ kind: "sensitive-text", location: currentLocation });
+        }
         visit(fragment.value, `${currentLocation}<json@${fragment.start}>`);
         if (
           findings

@@ -311,6 +311,74 @@ test("structured JSON redaction decodes escaped keys and preserves valid non-str
       assert.equal(redactEvidenceText(redactEvidenceText(safeInput)), safeInput);
     }
 
+    const duplicateCases = [
+      {
+        members: [
+          '  "to\\u006ben": "duplicate-secret\\\\",',
+          '  "token": null,',
+          '  "next": "safe"',
+        ],
+        expected: { token: null, next: "safe" },
+      },
+      {
+        members: [
+          '  "to\\u006ben": "duplicate-secret\\\\",',
+          '  "token": false,',
+          '  "next": "safe"',
+        ],
+        expected: { token: false, next: "safe" },
+      },
+      {
+        members: [
+          '  "to\\u006ben": "duplicate-secret\\\\",',
+          '  "token": "[REDACTED]",',
+          '  "next": "safe"',
+        ],
+        expected: { token: REDACTION_MARKER, next: "safe" },
+      },
+      {
+        members: [
+          '  "token": null,',
+          '  "to\\u006ben": "duplicate-secret\\\\",',
+          '  "next": "safe"',
+        ],
+        expected: { token: REDACTION_MARKER, next: "safe" },
+      },
+      {
+        members: [
+          '  "token": "first-secret",',
+          '  "password": "second-secret",',
+          '  "token": false,',
+          '  "password": "[REDACTED]",',
+          '  "next": "safe"',
+        ],
+        expected: {
+          token: false,
+          password: REDACTION_MARKER,
+          next: "safe",
+        },
+      },
+    ];
+    for (const { members, expected: expectedValue } of duplicateCases) {
+      const duplicateSource = ["{", ...members, "}"].join(lineEnding);
+      const duplicateExpected = JSON.stringify(expectedValue);
+      for (let fragmentDepth = 1; fragmentDepth <= 8; fragmentDepth += 1) {
+        const duplicateInput =
+          `response=${encodeSerializedFragment(duplicateSource, fragmentDepth)}; tail=keep`;
+        const expected =
+          `response=${encodeSerializedFragment(duplicateExpected, fragmentDepth)}; tail=keep`;
+        const redacted = redactEvidenceText(duplicateInput);
+        assert.equal(redacted, expected);
+        assert.ok(!redacted.includes("duplicate-secret"));
+        assert.ok(!redacted.includes("first-secret"));
+        assert.ok(!redacted.includes("second-secret"));
+        assert.ok(redacted.endsWith("; tail=keep"));
+        assert.ok(findEvidenceCredentialFindings(duplicateInput).length > 0);
+        assert.equal(findEvidenceCredentialFindings(redacted).length, 0);
+        assert.equal(redactEvidenceText(redacted), redacted);
+      }
+    }
+
     const prettyUnicode = [
       "{",
       '  "to\\u006ben": "pretty-secret\\\\",',
