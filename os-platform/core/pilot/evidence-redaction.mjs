@@ -600,7 +600,11 @@ export function findEvidenceCredentialFindings(value, location = "$") {
       let cursor = 0;
       for (const fragment of fragments) {
         inspectText(node.slice(cursor, fragment.start), currentLocation);
-        addSourceMemberFindings(fragment.source, currentLocation, "sensitive-text");
+        addSourceMemberFindings(
+          fragment.source,
+          `${currentLocation}<json@${fragment.start}>`,
+          "sensitive-text"
+        );
         visit(
           fragment.value,
           `${currentLocation}<json@${fragment.start}>`,

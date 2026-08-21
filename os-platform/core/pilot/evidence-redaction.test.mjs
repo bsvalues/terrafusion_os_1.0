@@ -473,6 +473,23 @@ test("structured JSON redaction decodes escaped keys and preserves valid non-str
   }
 });
 
+test("credential finding identities include containing fragment offsets", () => {
+  const input =
+    'left={"token":"fragment-one"}; right={"token":"fragment-two"}; tail=keep';
+  const findings = findEvidenceCredentialFindings(input);
+  assert.equal(findings.length, 2);
+  assert.equal(new Set(findings.map((finding) => finding.location)).size, 2);
+  assert.ok(findings.every((finding) => finding.kind === "sensitive-text"));
+
+  const redacted = redactEvidenceText(input);
+  assert.equal(
+    redacted,
+    'left={"token":"[REDACTED]"}; right={"token":"[REDACTED]"}; tail=keep'
+  );
+  assert.equal(findEvidenceCredentialFindings(redacted).length, 0);
+  assert.equal(redactEvidenceText(redacted), redacted);
+});
+
 test("credential findings use an independent assignment detector", async () => {
   const source = await fs.readFile(path.join(PILOT_DIRECTORY, "evidence-redaction.mjs"), "utf8");
   assert.doesNotMatch(source, /redactEvidenceText\(node\)\s*!==\s*node/);
