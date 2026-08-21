@@ -1,11 +1,19 @@
 param(
   [string]$ApiBaseUrl = $(if ($env:TF_API_PORT) { "http://127.0.0.1:$($env:TF_API_PORT)" } else { "http://127.0.0.1:5046" }),
-  [string]$ParcelId = "119802030006001"
+  [string]$ParcelId = "119802030006001",
+  [string]$AccessToken = $env:TF_ATLAS_SMOKE_ACCESS_TOKEN
 )
 
 $ErrorActionPreference = "Stop"
 
 $base = $ApiBaseUrl.TrimEnd("/")
+if ([string]::IsNullOrWhiteSpace($AccessToken)) {
+  throw "TF_ATLAS_SMOKE_ACCESS_TOKEN is required for the protected Atlas GIS runtime proof."
+}
+
+$authorizationHeaders = @{
+  Authorization = "Bearer $($AccessToken.Trim())"
+}
 
 function Assert-True {
   param(
@@ -19,12 +27,23 @@ function Assert-True {
 }
 
 function Get-Json {
-  param([string]$Path)
+  param(
+    [string]$Path,
+    [switch]$Anonymous
+  )
 
-  Invoke-RestMethod -Uri "$base$Path" -TimeoutSec 30
+  $request = @{
+    Uri = "$base$Path"
+    TimeoutSec = 30
+  }
+  if (-not $Anonymous) {
+    $request.Headers = $authorizationHeaders
+  }
+
+  Invoke-RestMethod @request
 }
 
-$health = Get-Json "/health"
+$health = Get-Json "/health" -Anonymous
 Assert-True ($health.status -eq "Healthy") "API health is not Healthy."
 
 $boundary = Get-Json "/api/atlas/gis/parcels/$ParcelId/boundary"
