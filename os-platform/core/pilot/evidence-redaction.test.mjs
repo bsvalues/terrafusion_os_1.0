@@ -14,6 +14,19 @@ import {
 
 const PILOT_DIRECTORY = path.resolve(process.cwd(), "os-platform/core/pilot");
 
+function unwrapSerializedText(value) {
+  let current = value;
+  while (true) {
+    try {
+      const parsed = JSON.parse(current);
+      if (typeof parsed !== "string" || parsed.length >= current.length) return current;
+      current = parsed;
+    } catch {
+      return current;
+    }
+  }
+}
+
 test("deep evidence redaction removes credential fields and compact JWTs", () => {
   const fixtureJwt =
     "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJub3QtYS1yZWFsLXRva2VuIn0.fixture-signature-only";
@@ -219,21 +232,88 @@ line-two\",\"next\":\"safe\"}`,
     assert.equal(redactEvidenceText(trailingBackslashFirstPass), trailingBackslashFirstPass);
     assert.ok(!trailingBackslashFirstPass.includes("secret"));
     assert.ok(trailingBackslashFirstPass.includes("safe"));
-    assert.ok(
-      findEvidenceCredentialFindings(trailingBackslash).some(
-        (finding) => finding.kind === "sensitive-text"
-      )
-    );
+    assert.ok(findEvidenceCredentialFindings(trailingBackslash).length > 0);
     assert.equal(findEvidenceCredentialFindings(trailingBackslashFirstPass).length, 0);
     trailingBackslash = JSON.stringify(trailingBackslash);
     trailingBackslashExpected = JSON.stringify(trailingBackslashExpected);
   }
 });
 
+test("structured JSON redaction decodes escaped keys and preserves valid non-string values", () => {
+  let unicodeEscapedKey = String.raw`{"to\u006ben":"unicode-secret\\","next":"safe"}`;
+  let unicodeExpected = '{"token":"[REDACTED]","next":"safe"}';
+  for (let serializationDepth = 0; serializationDepth <= 8; serializationDepth += 1) {
+    const redacted = redactEvidenceText(unicodeEscapedKey);
+    assert.equal(redacted, unicodeExpected);
+    assert.ok(!redacted.includes("unicode-secret"));
+    assert.ok(redacted.includes("safe"));
+    assert.ok(findEvidenceCredentialFindings(unicodeEscapedKey).length > 0);
+    assert.equal(findEvidenceCredentialFindings(redacted).length, 0);
+    assert.equal(redactEvidenceText(redacted), redacted);
+    unicodeEscapedKey = JSON.stringify(unicodeEscapedKey);
+    unicodeExpected = JSON.stringify(unicodeExpected);
+  }
+
+  for (const safeValue of [null, false]) {
+    let input = JSON.stringify({ token: safeValue, next: "safe" });
+    for (let serializationDepth = 0; serializationDepth <= 8; serializationDepth += 1) {
+      const redacted = redactEvidenceText(input);
+      assert.equal(redacted, input);
+      assert.equal(findEvidenceCredentialFindings(input).length, 0);
+      assert.equal(findEvidenceCredentialFindings(redacted).length, 0);
+      assert.equal(redactEvidenceText(redacted), redacted);
+      input = JSON.stringify(input);
+    }
+  }
+
+  for (const populatedValue of [true, 42, { nested: "opaque" }, ["opaque"]]) {
+    let input = JSON.stringify({ token: populatedValue, next: "safe" });
+    let expected = JSON.stringify({ token: REDACTION_MARKER, next: "safe" });
+    for (let serializationDepth = 0; serializationDepth <= 8; serializationDepth += 1) {
+      const redacted = redactEvidenceText(input);
+      assert.equal(redacted, expected);
+      assert.ok(findEvidenceCredentialFindings(input).length > 0);
+      assert.equal(findEvidenceCredentialFindings(redacted).length, 0);
+      assert.equal(redactEvidenceText(redacted), redacted);
+      input = JSON.stringify(input);
+      expected = JSON.stringify(expected);
+    }
+  }
+
+  let prefixedUnicode =
+    String.raw`response={"to\u006ben":"prefixed-secret\\","next":"safe"}; tail=keep`;
+  let prefixedUnicodeExpected =
+    'response={"token":"[REDACTED]","next":"safe"}; tail=keep';
+  let prefixedNull = 'response={"token":null,"next":"safe"}; tail=keep';
+  for (let serializationDepth = 0; serializationDepth <= 8; serializationDepth += 1) {
+    const unicodeRedacted = redactEvidenceText(prefixedUnicode);
+    assert.equal(unicodeRedacted, prefixedUnicodeExpected);
+    assert.ok(!unicodeRedacted.includes("prefixed-secret"));
+    assert.ok(unwrapSerializedText(unicodeRedacted).endsWith("; tail=keep"));
+    assert.ok(findEvidenceCredentialFindings(prefixedUnicode).length > 0);
+    assert.equal(findEvidenceCredentialFindings(unicodeRedacted).length, 0);
+    assert.equal(redactEvidenceText(unicodeRedacted), unicodeRedacted);
+
+    const nullRedacted = redactEvidenceText(prefixedNull);
+    assert.equal(nullRedacted, prefixedNull);
+    assert.ok(unwrapSerializedText(nullRedacted).endsWith("; tail=keep"));
+    assert.equal(findEvidenceCredentialFindings(prefixedNull).length, 0);
+    assert.equal(findEvidenceCredentialFindings(nullRedacted).length, 0);
+    assert.equal(redactEvidenceText(nullRedacted), nullRedacted);
+
+    prefixedUnicode = JSON.stringify(prefixedUnicode);
+    prefixedUnicodeExpected = JSON.stringify(prefixedUnicodeExpected);
+    prefixedNull = JSON.stringify(prefixedNull);
+  }
+});
+
 test("credential findings use an independent assignment detector", async () => {
   const source = await fs.readFile(path.join(PILOT_DIRECTORY, "evidence-redaction.mjs"), "utf8");
   assert.doesNotMatch(source, /redactEvidenceText\(node\)\s*!==\s*node/);
-  assert.match(source, /containsPopulatedSensitiveAssignment\(node\)/);
+  assert.match(
+    source,
+    /const inspectText = \(text, textLocation\) => \{[\s\S]*containsPopulatedSensitiveAssignment\(text\)/
+  );
 });
 
 test("dev-data truth evidence uses the shared redaction boundary for JSON and Markdown", async () => {

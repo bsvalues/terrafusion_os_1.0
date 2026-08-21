@@ -257,7 +257,96 @@ function containsCompactJwt(value) {
   return [...value.matchAll(COMPACT_JWT_PATTERN)].some((match) => isCompactJwt(match[0]));
 }
 
-export function redactEvidenceText(value) {
+function parseStructuredJsonText(value) {
+  let current = String(value);
+  let wrapperDepth = 0;
+
+  while (true) {
+    let parsed;
+    try {
+      parsed = JSON.parse(current);
+    } catch {
+      return wrapperDepth > 0 ? { value: current, wrapperDepth } : null;
+    }
+
+    if (parsed !== null && typeof parsed === "object") {
+      return { value: parsed, wrapperDepth };
+    }
+    if (typeof parsed !== "string" || parsed.length >= current.length) {
+      return wrapperDepth > 0 ? { value: current, wrapperDepth } : null;
+    }
+
+    current = parsed;
+    wrapperDepth += 1;
+  }
+}
+
+function stringifyStructuredJsonText(value, wrapperDepth) {
+  let result =
+    typeof value === "string"
+      ? redactEvidenceText(value)
+      : JSON.stringify(redactEvidence(value));
+  for (let depth = 0; depth < wrapperDepth; depth += 1) {
+    result = JSON.stringify(result);
+  }
+  return result;
+}
+
+function structuredJsonFragments(value) {
+  const fragments = [];
+
+  for (let start = 0; start < value.length; start += 1) {
+    if (value[start] !== "{" && value[start] !== "[") continue;
+
+    const stack = [value[start]];
+    let inString = false;
+    let escaped = false;
+    for (let cursor = start + 1; cursor < value.length; cursor += 1) {
+      const character = value[cursor];
+      if (inString) {
+        if (escaped) {
+          escaped = false;
+        } else if (character === "\\") {
+          escaped = true;
+        } else if (character === '"') {
+          inString = false;
+        }
+        continue;
+      }
+
+      if (character === '"') {
+        inString = true;
+      } else if (character === "{" || character === "[") {
+        stack.push(character);
+      } else if (character === "}" || character === "]") {
+        const opening = stack.pop();
+        if (
+          (opening === "{" && character !== "}") ||
+          (opening === "[" && character !== "]")
+        ) {
+          break;
+        }
+        if (stack.length === 0) {
+          const end = cursor + 1;
+          try {
+            const parsed = JSON.parse(value.slice(start, end));
+            if (parsed !== null && typeof parsed === "object") {
+              fragments.push({ start, end, value: parsed });
+              start = cursor;
+            }
+          } catch {
+            // Keep malformed fragments in the fail-closed text-assignment path.
+          }
+          break;
+        }
+      }
+    }
+  }
+
+  return fragments;
+}
+
+function redactUnstructuredText(value) {
   const redacted = String(value)
     .replace(COMPACT_JWT_PATTERN, (candidate) =>
       isCompactJwt(candidate) ? REDACTION_MARKER : candidate
@@ -266,6 +355,26 @@ export function redactEvidenceText(value) {
     .replace(COOKIE_HEADER_PATTERN, `$1${REDACTION_MARKER}`)
     .replace(BEARER_PATTERN, `Bearer ${REDACTION_MARKER}`);
   return redactSensitiveAssignments(redacted);
+}
+
+export function redactEvidenceText(value) {
+  const structured = parseStructuredJsonText(value);
+  if (structured) {
+    return stringifyStructuredJsonText(structured.value, structured.wrapperDepth);
+  }
+
+  const text = String(value);
+  const fragments = structuredJsonFragments(text);
+  if (fragments.length === 0) return redactUnstructuredText(text);
+
+  let result = "";
+  let cursor = 0;
+  for (const fragment of fragments) {
+    result += redactUnstructuredText(text.slice(cursor, fragment.start));
+    result += JSON.stringify(redactEvidence(fragment.value));
+    cursor = fragment.end;
+  }
+  return result + redactUnstructuredText(text.slice(cursor));
 }
 
 export function redactEvidence(value) {
@@ -292,15 +401,37 @@ export function findEvidenceCredentialFindings(value, location = "$") {
 
   const visit = (node, currentLocation) => {
     if (typeof node === "string") {
-      if (containsCompactJwt(node)) {
-        findings.push({ kind: "compact-jwt", location: currentLocation });
+      const structured = parseStructuredJsonText(node);
+      if (structured) {
+        visit(structured.value, `${currentLocation}<json>`);
+        return;
       }
-      if (patternMatches(BEARER_PATTERN, node)) {
-        findings.push({ kind: "bearer", location: currentLocation });
+
+      const inspectText = (text, textLocation) => {
+        if (containsCompactJwt(text)) {
+          findings.push({ kind: "compact-jwt", location: textLocation });
+        }
+        if (patternMatches(BEARER_PATTERN, text)) {
+          findings.push({ kind: "bearer", location: textLocation });
+        }
+        if (containsPopulatedSensitiveAssignment(text)) {
+          findings.push({ kind: "sensitive-text", location: textLocation });
+        }
+      };
+
+      const fragments = structuredJsonFragments(node);
+      if (fragments.length === 0) {
+        inspectText(node, currentLocation);
+        return;
       }
-      if (containsPopulatedSensitiveAssignment(node)) {
-        findings.push({ kind: "sensitive-text", location: currentLocation });
+
+      let cursor = 0;
+      for (const fragment of fragments) {
+        inspectText(node.slice(cursor, fragment.start), currentLocation);
+        visit(fragment.value, `${currentLocation}<json@${fragment.start}>`);
+        cursor = fragment.end;
       }
+      inspectText(node.slice(cursor), currentLocation);
       return;
     }
 
