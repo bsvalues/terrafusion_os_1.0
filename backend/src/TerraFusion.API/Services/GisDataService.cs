@@ -6,12 +6,16 @@ using TerraFusion.Data;
 namespace TerraFusion.API.Services;
 
 /// <summary>
-/// Retrieves GIS data for parcels from the TerraFusion canonical store
-/// (GisParcelGeometries table, populated by ArcGisSyncService).
-/// Every public method = exactly ONE database query.
+/// Reads the legacy Benton GIS compatibility store. Every query embeds the
+/// authenticated canonical county predicate in SQL before protected parcel
+/// fields can be materialized. The canonical Atlas projection remains the
+/// preferred cross-county geometry path.
 /// </summary>
 public sealed class GisDataService : IGisDataService
 {
+    private const string LegacyCountyState = "WA";
+    private const string LegacyCountyFips = "53005";
+
     private readonly TerraFusionDbContext _db;
     private readonly ILogger<GisDataService> _logger;
 
@@ -22,18 +26,33 @@ public sealed class GisDataService : IGisDataService
     }
 
     /// <inheritdoc />
-    public async Task<ParcelBoundaryResult> GetParcelBoundaryAsync(string parcelId, CancellationToken ct = default)
+    public async Task<ParcelBoundaryResult?> GetParcelBoundaryAsync(
+        Guid countyId,
+        string parcelId,
+        CancellationToken ct = default)
     {
-        _logger.LogInformation("GisDataService: GetParcelBoundary for {ParcelId}", parcelId);
+        _logger.LogInformation(
+            "GisDataService: GetParcelBoundary for county {CountyId}, parcel {ParcelId}",
+            countyId,
+            parcelId);
 
         var gisRow = await _db.GisParcelGeometries
             .AsNoTracking()
-            .FirstOrDefaultAsync(g => g.ParcelId == parcelId, ct);
+            .Where(g =>
+                g.ParcelId == parcelId &&
+                _db.Counties.Any(c =>
+                    c.Id == countyId &&
+                    c.State == LegacyCountyState &&
+                    c.FipsCode == LegacyCountyFips))
+            .FirstOrDefaultAsync(ct);
 
         if (gisRow is null)
         {
-            _logger.LogWarning("Parcel {ParcelId} not found in GisParcelGeometries", parcelId);
-            return new ParcelBoundaryResult(parcelId, "unavailable", null, null, null, null, null);
+            _logger.LogInformation(
+                "No county-scoped legacy GIS boundary for county {CountyId}, parcel {ParcelId}",
+                countyId,
+                parcelId);
+            return null;
         }
 
         var centroid = gisRow.CentroidLat is not null && gisRow.CentroidLng is not null
@@ -41,37 +60,47 @@ public sealed class GisDataService : IGisDataService
             : null;
 
         return new ParcelBoundaryResult(
-            ParcelId:     parcelId,
-            Source:       "live",
-            Centroid:     centroid,
-            Dimensions:   null,
-            AreaAcres:    gisRow.AreaAcres.HasValue ? (decimal)gisRow.AreaAcres.Value : null,
-            AreaSqFt:     gisRow.AreaSqFt.HasValue  ? (decimal)gisRow.AreaSqFt.Value  : null,
+            ParcelId: parcelId,
+            Source: "live",
+            Centroid: centroid,
+            Dimensions: null,
+            AreaAcres: gisRow.AreaAcres.HasValue ? (decimal)gisRow.AreaAcres.Value : null,
+            AreaSqFt: gisRow.AreaSqFt.HasValue ? (decimal)gisRow.AreaSqFt.Value : null,
             SitusDisplay: gisRow.SitusAddress,
-            RingJson:     gisRow.RingJson,
-            OwnerName:    gisRow.OwnerName,
-            ImageUrl:     gisRow.ImageUrl,
-            SketchUrl:    gisRow.SketchUrl);
+            RingJson: gisRow.RingJson,
+            OwnerName: gisRow.OwnerName,
+            ImageUrl: gisRow.ImageUrl,
+            SketchUrl: gisRow.SketchUrl);
     }
 
     /// <inheritdoc />
-    public async Task<ParcelLayersResult> GetParcelLayersAsync(string parcelId, CancellationToken ct = default)
+    public async Task<ParcelLayersResult?> GetParcelLayersAsync(
+        Guid countyId,
+        string parcelId,
+        CancellationToken ct = default)
     {
-        _logger.LogInformation("GisDataService: GetParcelLayers for {ParcelId}", parcelId);
+        _logger.LogInformation(
+            "GisDataService: GetParcelLayers for county {CountyId}, parcel {ParcelId}",
+            countyId,
+            parcelId);
 
         var gisRow = await _db.GisParcelGeometries
             .AsNoTracking()
-            .FirstOrDefaultAsync(g => g.ParcelId == parcelId, ct);
+            .Where(g =>
+                g.ParcelId == parcelId &&
+                _db.Counties.Any(c =>
+                    c.Id == countyId &&
+                    c.State == LegacyCountyState &&
+                    c.FipsCode == LegacyCountyFips))
+            .FirstOrDefaultAsync(ct);
 
         if (gisRow is null)
         {
-            _logger.LogWarning("Parcel {ParcelId} not found in GisParcelGeometries for layers", parcelId);
-            return new ParcelLayersResult(
-                parcelId, "unavailable",
-                Zoning: null,
-                Flood: new ParcelFloodLayer("X", "Minimal risk", "stub"),
-                TaxArea: null,
-                LandClass: null);
+            _logger.LogInformation(
+                "No county-scoped legacy GIS layers for county {CountyId}, parcel {ParcelId}",
+                countyId,
+                parcelId);
+            return null;
         }
 
         var taxAreaLayer = gisRow.TaxCodeArea is not null
@@ -95,7 +124,10 @@ public sealed class GisDataService : IGisDataService
             ParcelId: parcelId,
             Source: "live",
             Zoning: null,
-            Flood: new ParcelFloodLayer("X", "Minimal risk — FEMA data requires external enrichment", "stub"),
+            Flood: new ParcelFloodLayer(
+                "X",
+                "Minimal risk — FEMA data requires external enrichment",
+                "stub"),
             TaxArea: taxAreaLayer,
             LandClass: landClass);
     }

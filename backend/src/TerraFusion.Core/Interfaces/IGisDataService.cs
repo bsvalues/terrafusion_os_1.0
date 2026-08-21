@@ -7,15 +7,22 @@ namespace TerraFusion.Core.Interfaces;
 public interface IGisDataService
 {
     /// <summary>
-    /// Returns a GeoJSON-like parcel boundary structure built from PACS situs
-    /// address (lat/lon via geocode) and land_detail lot dimensions.
+    /// Returns a legacy parcel boundary only when the supplied authenticated
+    /// county owns the county-specific GIS store. Returns null otherwise.
     /// </summary>
-    Task<ParcelBoundaryResult> GetParcelBoundaryAsync(string parcelId, CancellationToken ct = default);
+    Task<ParcelBoundaryResult?> GetParcelBoundaryAsync(
+        Guid countyId,
+        string parcelId,
+        CancellationToken ct = default);
 
     /// <summary>
-    /// Returns layer data (zoning, flood zone placeholder, tax area) from PACS tables.
+    /// Returns layer data only when the authenticated county is the canonical
+    /// owner of the legacy county-specific GIS store.
     /// </summary>
-    Task<ParcelLayersResult> GetParcelLayersAsync(string parcelId, CancellationToken ct = default);
+    Task<ParcelLayersResult?> GetParcelLayersAsync(
+        Guid countyId,
+        string parcelId,
+        CancellationToken ct = default);
 }
 
 // ── Response DTOs ────────────────────────────────────────────────────────
