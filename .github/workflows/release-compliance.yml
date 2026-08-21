@@ -263,6 +263,7 @@ jobs:
           - component: frontend
             image: ${{ needs.sbom-compliance.outputs.frontend-ref }}
     steps:
+      - uses: actions/checkout@v4
       - name: Log in to GHCR
         uses: docker/login-action@v4
         with:

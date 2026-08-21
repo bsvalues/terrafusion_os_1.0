@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { mkdirSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import test from 'node:test';
 
@@ -11,7 +12,7 @@ function writeDeps(root, name, libraries) {
 }
 
 test('accepts exact package identities across all emitted manifests', () => {
-  const directory = join(process.env.TEMP, `tf-deps-guard-pass-${process.pid}-${Date.now()}`);
+  const directory = join(tmpdir(), `tf-deps-guard-pass-${process.pid}-${Date.now()}`);
   writeDeps(directory, 'TerraFusion.API', {
     'Microsoft.Kiota.Abstractions/1.22.0': {},
     'Npgsql/8.0.5': {},
@@ -31,7 +32,7 @@ for (const [name, stale] of [
 ]) {
   test(`rejects stale ${name} in any emitted manifest`, () => {
     const directory = join(
-      process.env.TEMP,
+      tmpdir(),
       `tf-deps-guard-stale-${name}-${process.pid}-${Date.now()}`
     );
     writeDeps(directory, 'TerraFusion.API', {
@@ -45,14 +46,14 @@ for (const [name, stale] of [
 }
 
 test('fails closed for malformed or incomplete published evidence', () => {
-  const directory = join(process.env.TEMP, `tf-deps-guard-malformed-${process.pid}-${Date.now()}`);
+  const directory = join(tmpdir(), `tf-deps-guard-malformed-${process.pid}-${Date.now()}`);
   mkdirSync(directory, { recursive: true });
   writeFileSync(join(directory, 'bad.deps.json'), '{', 'utf8');
   assert.throws(() => guardPublishedDependencies(directory), /malformed dependency manifest/);
 });
 
 test('fails closed when an expected runtime package disappears', () => {
-  const directory = join(process.env.TEMP, `tf-deps-guard-missing-${process.pid}-${Date.now()}`);
+  const directory = join(tmpdir(), `tf-deps-guard-missing-${process.pid}-${Date.now()}`);
   writeDeps(directory, 'TerraFusion.API', { 'Npgsql/8.0.5': {} });
   assert.throws(() => guardPublishedDependencies(directory), /expected runtime package/);
 });

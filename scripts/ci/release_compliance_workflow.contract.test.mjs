@@ -96,6 +96,10 @@ test('Trivy exception is exact, package-scoped, and release-image-only', () => {
 `;
   assert.equal(trivyIgnore.replace(/\r\n/g, '\n'), expected);
   const text = job('container-security');
+  assert.match(
+    text,
+    /uses: actions\/checkout@v4[\s\S]*Trivy exact release image scan[\s\S]*trivyignores: '\.trivyignore\.yaml'/
+  );
   assert.match(text, /severity: 'CRITICAL,HIGH'/);
   assert.match(text, /exit-code: '1'/);
   assert.match(text, /timeout: '15m'/);
