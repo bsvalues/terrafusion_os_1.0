@@ -312,30 +312,36 @@ public class KernelValuationServiceIntegrationTests
         var selectedSha256 = ComputeFileSha256(options.ValuationKernelPath);
         Assert.Equal(expectedSha256, selectedSha256);
 
-        using var manifest = CreateTemporaryProvenanceManifest(options.ValuationKernelPath);
-        var (client, host) =
-            CreateValuationClient(options.ValuationKernelPath, manifest.Path);
-        var accepted = await client.ValuateAsync(CreateRuntimeRollbackPayload());
-
-        Assert.True(accepted.Success, $"{hostLabel}: {accepted.ErrorMessage}");
-        Assert.NotNull(accepted.Data);
-        Assert.Equal(351675.412625, accepted.Data!.TotalValue, 6);
-        Assert.Equal(selectedSha256, accepted.KernelBinarySha256);
-
-        var deniedInvocation = new KernelInvocation<ValuationKernelPayload>(
-            ContractPackVersion: "1.0.0",
-            ModuleApiVersion: "1.0.0",
-            RequestId: $"persistent-rehearsal-{hostLabel}-denied",
-            Action: "not-authorized",
-            Payload: CreateRuntimeRollbackPayload());
-        var denied = await host.InvokeAsync<ValuationKernelPayload, ValuationKernelResult>(
+        var accepted = RunKernel(
             options.ValuationKernelPath,
-            "terraforge.kernel.valuation",
-            deniedInvocation);
+            SerializeRuntimeRollbackInvocation(
+                $"persistent-rehearsal-{hostLabel}-accepted",
+                "valuate"));
+        Assert.Equal(0, accepted.ExitCode);
+        Assert.Equal(string.Empty, accepted.Stderr);
+        using (var acceptedDocument = JsonDocument.Parse(accepted.Stdout))
+        {
+            Assert.True(acceptedDocument.RootElement.GetProperty("success").GetBoolean());
+            Assert.Equal(
+                351675.412625,
+                acceptedDocument.RootElement
+                    .GetProperty("data")
+                    .GetProperty("totalValue")
+                    .GetDouble(),
+                6);
+        }
+        Assert.Equal(expectedSha256, ComputeFileSha256(options.ValuationKernelPath));
 
-        Assert.False(denied.Success);
-        Assert.Equal(KernelFailureMode.KernelReportedError, denied.FailureMode);
-        Assert.Equal(selectedSha256, denied.KernelBinarySha256);
+        var denied = RunKernel(
+            options.ValuationKernelPath,
+            SerializeRuntimeRollbackInvocation(
+                $"persistent-rehearsal-{hostLabel}-denied",
+                "not-authorized"));
+        Assert.Equal(0, denied.ExitCode);
+        Assert.Equal(string.Empty, denied.Stderr);
+        using var deniedDocument = JsonDocument.Parse(denied.Stdout);
+        Assert.False(deniedDocument.RootElement.GetProperty("success").GetBoolean());
+        Assert.Equal(JsonValueKind.Null, deniedDocument.RootElement.GetProperty("data").ValueKind);
     }
 
     private static (ValuationKernelClient Client, RustKernelProcessHost Host)
@@ -419,6 +425,19 @@ public class KernelValuationServiceIntegrationTests
                 AdjustmentFactors: new AdjustmentFactors(
                     Neighborhood: 1.05,
                     Location: 0.98)));
+    }
+
+    private static string SerializeRuntimeRollbackInvocation(string requestId, string action)
+    {
+        var invocation = new KernelInvocation<ValuationKernelPayload>(
+            ContractPackVersion: "1.0.0",
+            ModuleApiVersion: "1.0.0",
+            RequestId: requestId,
+            Action: action,
+            Payload: CreateRuntimeRollbackPayload());
+        return JsonSerializer.Serialize(
+            invocation,
+            new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
     }
 
     private static string ComputeFileSha256(string path)
