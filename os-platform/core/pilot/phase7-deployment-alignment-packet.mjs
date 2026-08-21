@@ -5,11 +5,13 @@ import path from "node:path";
 import process from "node:process";
 import { spawn } from "node:child_process";
 
+import { redactEvidenceText, stringifyEvidence } from "./evidence-redaction.mjs";
+
 const STAGING_BASE_URL = "https://staging.terrafusionmarket.com";
 const PRODUCTION_BASE_URL = "https://terrafusionmarket.com";
 const PRODUCTION_EDGE_IP = "72.60.126.11";
 const LOGIN_EMAIL = process.env.TF_PHASE7_EMAIL || "admin@terrafusionmarket.com";
-const LOGIN_PASSWORD = process.env.TF_PHASE7_PASSWORD || "TerraFusion2026!";
+const LOGIN_PASSWORD = process.env.TF_PHASE7_PASSWORD || "";
 const DEFAULT_OUT_PATH = path.resolve(
   process.cwd(),
   "os-platform/core/pilot/evidence/phase7-deployment-alignment.latest.json"
@@ -46,13 +48,15 @@ function runCommand(command, args, options = {}) {
     let stderr = "";
     child.stdout.on("data", (chunk) => {
       stdout += String(chunk);
-      process.stdout.write(chunk);
     });
     child.stderr.on("data", (chunk) => {
       stderr += String(chunk);
-      process.stderr.write(chunk);
     });
-    child.on("close", (code) => resolve({ code: code ?? 1, stdout, stderr }));
+    child.on("close", (code) => {
+      if (stdout) process.stdout.write(redactEvidenceText(stdout));
+      if (stderr) process.stderr.write(redactEvidenceText(stderr));
+      resolve({ code: code ?? 1, stdout, stderr });
+    });
   });
 }
 
@@ -299,7 +303,7 @@ async function main() {
   };
 
   await fs.mkdir(path.dirname(outPath), { recursive: true });
-  await fs.writeFile(outPath, `${JSON.stringify(packet, null, 2)}\n`, "utf8");
+  await fs.writeFile(outPath, stringifyEvidence(packet), "utf8");
 
   if (blockers.length > 0) {
     process.exitCode = 1;
@@ -328,6 +332,6 @@ main().catch(async (error) => {
     },
   };
   await fs.mkdir(path.dirname(outPath), { recursive: true });
-  await fs.writeFile(outPath, `${JSON.stringify(packet, null, 2)}\n`, "utf8");
+  await fs.writeFile(outPath, stringifyEvidence(packet), "utf8");
   process.exitCode = 1;
 });

@@ -85,9 +85,12 @@
       "ok": true,
       "detail": "admin@terrafusionmarket.com",
       "payload": {
-        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiI3ZDdiNzU5Mi0wN2M5LTQ3NzYtOGNhYi1mYWE4MDU5NDYwZDYiLCJlbWFpbCI6ImFkbWluQHRlcnJhZnVzaW9ubWFya2V0LmNvbSIsImp0aSI6Ijg1NjVhZDBiLTVkMmMtNGUyYS05YWJiLTk0NGFlMGUwMzI1MCIsImlhdCI6MTc3MzM1MTQ2NCwidGVycmFmdXNpb25fdmVyc2lvbiI6IjEuMCIsImFpX2FnZW50cyI6WyIyMDE2IiwiMjAxNiJdLCJtb2R1bGVzIjoiMzIiLCJyb2xlIjpbIkdvdmVybm1lbnRVc2VyIiwiQWRtaW5pc3RyYXRvciJdLCJjb3VudHlfc3lzdGVtIjoiVGVycmFGdXNpb24iLCJ2ZXJzaW9uIjoiMS4wIiwibW9kdWxlc19hY2Nlc3MiOiIzMiIsInNlY3VyaXR5X2xldmVsIjoiZ292ZXJubWVudCIsInBlcm0iOlsicmVhZDpkb3NzaWVyIiwicmVhZDpwcm9wZXJ0aWVzIiwicmVhZDpwYXJjZWwiLCJyZWFkOmNvc3QtYnJlYWtkb3duIiwicmVhZDpjb3N0LWNvbXBhcmlzb24iLCJyZWFkOmNvc3QtZmFjdG9ycyIsInJlYWQ6Y29zdC1tYXRyaXgiLCJyZWFkOnN5c3RlbS1zdGF0dXMiLCJyZWFkOnBlcmZvcm1hbmNlLW1ldHJpY3MiLCJlY29zeXN0ZW06dmlldyIsIndyaXRlOmRvc3NpZXIiLCJhY2Nlc3M6Y29zdGZvcmdlIiwiY2FsY3VsYXRlOnByb3BlcnR5LWNvc3QiLCJjYWxjdWxhdGU6YmF0Y2gtdmFsdWF0aW9uIiwicmVhZDpjb3N0LWZvcmVjYXN0IiwicmVhZDphaS1hZ2VudHMiLCJtYW5hZ2U6YWktYWdlbnRzIiwic3luYzpleHRlcm5hbC1zeXN0ZW1zIiwiZWNvc3lzdGVtOm1hbmFnZSJdLCJuYmYiOjE3NzMzNTE0NjQsImV4cCI6MTc3MzM1NTA2NCwiaXNzIjoiVGVycmFmdXNpb24uQVBJIiwiYXVkIjoiVGVycmFmdXNpb24uQ2xpZW50In0.2_sUaYa0u-xQJAhKwRoFKeAh-z3dr9iRanMazD93bWU",
+        "token": "[REDACTED]",
         "email": "admin@terrafusionmarket.com",
-        "roles": ["GovernmentUser", "Administrator"],
+        "roles": [
+          "GovernmentUser",
+          "Administrator"
+        ],
         "expiresAt": "2026-03-13T05:37:44.5683907Z",
         "refreshToken": null
       },
@@ -177,9 +180,12 @@
       "ok": true,
       "detail": "admin@terrafusionmarket.com",
       "payload": {
-        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiJjMjdkOTk4YS1mNzAzLTRhMjEtODQ5YS04NTI5YjdkNDE2MjkiLCJlbWFpbCI6ImFkbWluQHRlcnJhZnVzaW9ubWFya2V0LmNvbSIsImp0aSI6ImFkNDY3MWJiLTBlZGItNDM3OC04Y2Y5LWY5NTMxMWUwOTVhNyIsImlhdCI6MTc3MzM1MTQ3NywidGVycmFmdXNpb25fdmVyc2lvbiI6IjEuMCIsImFpX2FnZW50cyI6WyIyMDE2IiwiMjAxNiJdLCJtb2R1bGVzIjoiMzIiLCJyb2xlIjpbIkdvdmVybm1lbnRVc2VyIiwiQWRtaW5pc3RyYXRvciJdLCJjb3VudHlfc3lzdGVtIjoiVGVycmFGdXNpb24iLCJ2ZXJzaW9uIjoiMS4wIiwibW9kdWxlc19hY2Nlc3MiOiIzMiIsInNlY3VyaXR5X2xldmVsIjoiZ292ZXJubWVudCIsInBlcm0iOlsicmVhZDpkb3NzaWVyIiwicmVhZDpwcm9wZXJ0aWVzIiwicmVhZDpwYXJjZWwiLCJyZWFkOmNvc3QtYnJlYWtkb3duIiwicmVhZDpjb3N0LWNvbXBhcmlzb24iLCJyZWFkOmNvc3QtZmFjdG9ycyIsInJlYWQ6Y29zdC1tYXRyaXgiLCJyZWFkOnN5c3RlbS1zdGF0dXMiLCJyZWFkOnBlcmZvcm1hbmNlLW1ldHJpY3MiLCJlY29zeXN0ZW06dmlldyIsIndyaXRlOmRvc3NpZXIiLCJhY2Nlc3M6Y29zdGZvcmdlIiwiY2FsY3VsYXRlOnByb3BlcnR5LWNvc3QiLCJjYWxjdWxhdGU6YmF0Y2gtdmFsdWF0aW9uIiwicmVhZDpjb3N0LWZvcmVjYXN0IiwicmVhZDphaS1hZ2VudHMiLCJtYW5hZ2U6YWktYWdlbnRzIiwic3luYzpleHRlcm5hbC1zeXN0ZW1zIiwiZWNvc3lzdGVtOm1hbmFnZSJdLCJuYmYiOjE3NzMzNTE0NzcsImV4cCI6MTc3MzM1NTA3NywiaXNzIjoiVGVycmFmdXNpb24uQVBJIiwiYXVkIjoiVGVycmFmdXNpb24uQ2xpZW50In0.G1SfmLAfrTc40_0e4Wdstns2UbqUh00J9BFQ_aUROK4",
+        "token": "[REDACTED]",
         "email": "admin@terrafusionmarket.com",
-        "roles": ["GovernmentUser", "Administrator"],
+        "roles": [
+          "GovernmentUser",
+          "Administrator"
+        ],
         "expiresAt": "2026-03-13T05:37:57.0695336Z",
         "refreshToken": null
       },
@@ -241,5 +247,16 @@
       "Production apex domain does not currently resolve publicly",
       "Production deployed runtime is not configured with the Benton canonical sync/data spine"
     ]
+  },
+  "redaction": {
+    "schemaVersion": 1,
+    "status": "sanitized",
+    "replacement": "[REDACTED]",
+    "originalValuesRemoved": true,
+    "categories": [
+      "compact-jwt",
+      "sensitive-field"
+    ],
+    "occurrenceCount": 4
   }
 }

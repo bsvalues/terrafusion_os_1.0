@@ -5,12 +5,14 @@ import path from "node:path";
 import process from "node:process";
 import { execFileSync } from "node:child_process";
 
+import { stringifyEvidence } from "./evidence-redaction.mjs";
+
 const STAGING_BASE_URL = "https://staging.terrafusionmarket.com";
 const PRODUCTION_BASE_URL = "https://terrafusionmarket.com";
 const PRODUCTION_EDGE_IP = "72.60.126.11";
 const SUBJECT_PARCEL_ID = "100984010001008";
 const LOGIN_EMAIL = process.env.TF_PHASE8_EMAIL || "admin@terrafusionmarket.com";
-const LOGIN_PASSWORD = process.env.TF_PHASE8_PASSWORD || "TerraFusion2026!";
+const LOGIN_PASSWORD = process.env.TF_PHASE8_PASSWORD || "";
 const DEFAULT_OUT_PATH = path.resolve(
   process.cwd(),
   "os-platform/core/pilot/evidence/phase8-deployed-operator-parity.latest.json"
@@ -158,7 +160,7 @@ async function main() {
   };
 
   await fs.mkdir(path.dirname(outPath), { recursive: true });
-  await fs.writeFile(outPath, `${JSON.stringify(packet, null, 2)}\n`, "utf8");
+  await fs.writeFile(outPath, stringifyEvidence(packet), "utf8");
 
   if (blockers.length > 0) {
     process.exitCode = 1;
@@ -187,6 +189,6 @@ main().catch(async (error) => {
     },
   };
   await fs.mkdir(path.dirname(outPath), { recursive: true });
-  await fs.writeFile(outPath, `${JSON.stringify(packet, null, 2)}\n`, "utf8");
+  await fs.writeFile(outPath, stringifyEvidence(packet), "utf8");
   process.exitCode = 1;
 });

@@ -5,6 +5,8 @@ import path from "node:path";
 import process from "node:process";
 import { spawn } from "node:child_process";
 
+import { redactEvidenceText, stringifyEvidence } from "./evidence-redaction.mjs";
+
 const LOCAL_BASE_URL =
   process.env.TF_API_BASE_URL || `http://localhost:${process.env.TF_API_PORT || "5046"}`;
 const STAGING_BASE_URL = "https://staging.terrafusionmarket.com";
@@ -50,13 +52,15 @@ function runCommand(command, args, options = {}) {
     let stderr = "";
     child.stdout.on("data", (chunk) => {
       stdout += String(chunk);
-      process.stdout.write(chunk);
     });
     child.stderr.on("data", (chunk) => {
       stderr += String(chunk);
-      process.stderr.write(chunk);
     });
-    child.on("close", (code) => resolve({ code: code ?? 1, stdout, stderr }));
+    child.on("close", (code) => {
+      if (stdout) process.stdout.write(redactEvidenceText(stdout));
+      if (stderr) process.stderr.write(redactEvidenceText(stderr));
+      resolve({ code: code ?? 1, stdout, stderr });
+    });
   });
 }
 
@@ -209,7 +213,7 @@ async function main() {
 
   const localLogin = await login(LOCAL_BASE_URL, {
     email: process.env.TF_PILOT_EMAIL || "admin@gov.",
-    password: process.env.TF_PILOT_PASSWORD || "TerraFusion2026!",
+    password: process.env.TF_PILOT_PASSWORD || "",
   });
   record(
     "local.runtime.login",
@@ -252,7 +256,7 @@ async function main() {
   const remoteCredentials = {
     email: process.env.TF_PHASE12_EMAIL || process.env.TF_PHASE8_EMAIL || "admin@terrafusionmarket.com",
     password:
-      process.env.TF_PHASE12_PASSWORD || process.env.TF_PHASE8_PASSWORD || "TerraFusion2026!",
+      process.env.TF_PHASE12_PASSWORD || process.env.TF_PHASE8_PASSWORD || "",
   };
 
   for (const env of [
@@ -376,7 +380,7 @@ async function main() {
   };
 
   await fs.mkdir(path.dirname(outPath), { recursive: true });
-  await fs.writeFile(outPath, `${JSON.stringify(packet, null, 2)}\n`, "utf8");
+  await fs.writeFile(outPath, stringifyEvidence(packet), "utf8");
 
   if (blockers.length > 0) {
     process.exitCode = 1;
@@ -408,6 +412,6 @@ main().catch(async (error) => {
   };
 
   await fs.mkdir(path.dirname(outPath), { recursive: true });
-  await fs.writeFile(outPath, `${JSON.stringify(packet, null, 2)}\n`, "utf8");
+  await fs.writeFile(outPath, stringifyEvidence(packet), "utf8");
   process.exitCode = 1;
 });
