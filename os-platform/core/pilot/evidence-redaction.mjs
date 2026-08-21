@@ -439,10 +439,13 @@ export function redactEvidenceText(value) {
   let cursor = 0;
   for (const fragment of fragments) {
     result += redactUnstructuredText(text.slice(cursor, fragment.start));
-    result += encodeSerializedJsonFragment(
-      fragment.value,
-      fragment.serializationDepth
-    );
+    result +=
+      findEvidenceCredentialFindings(fragment.value).length === 0
+        ? text.slice(fragment.start, fragment.end)
+        : encodeSerializedJsonFragment(
+            fragment.value,
+            fragment.serializationDepth
+          );
     cursor = fragment.end;
   }
   return result + redactUnstructuredText(text.slice(cursor));

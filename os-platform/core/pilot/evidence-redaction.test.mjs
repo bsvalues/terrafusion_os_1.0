@@ -298,6 +298,19 @@ test("structured JSON redaction decodes escaped keys and preserves valid non-str
   }
 
   for (const lineEnding of ["\n", "\r\n"]) {
+    const prettySafe = [
+      "{",
+      '  "safe": "[\\n]"',
+      "}",
+    ].join(lineEnding);
+    for (let fragmentDepth = 1; fragmentDepth <= 8; fragmentDepth += 1) {
+      const safeInput =
+        `response=${encodeSerializedFragment(prettySafe, fragmentDepth)}; tail=keep`;
+      assert.equal(redactEvidenceText(safeInput), safeInput);
+      assert.equal(findEvidenceCredentialFindings(safeInput).length, 0);
+      assert.equal(redactEvidenceText(redactEvidenceText(safeInput)), safeInput);
+    }
+
     const prettyUnicode = [
       "{",
       '  "to\\u006ben": "pretty-secret\\\\",',
