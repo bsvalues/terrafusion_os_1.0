@@ -37,6 +37,7 @@ CHECKS_JSON=$(cat <<'EOF'
     "contexts": [
       "🔒 TerraFusion Seal Gate",
       "Backend Gate (.NET 8) / Canonical .NET Test Run",
+      "Backend .NET Tests / Canonical .NET Test Run",
       "🧪 Tier-1 UI Harness Validation",
       "phase85-tools",
       "phase86-toolrunner",
