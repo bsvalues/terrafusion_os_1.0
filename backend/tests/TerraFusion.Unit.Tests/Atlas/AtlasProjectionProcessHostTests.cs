@@ -27,6 +27,36 @@ public sealed class AtlasProjectionProcessHostTests
     private const string CountyId = "11111111-2222-3333-4444-555555555555";
     private const string ParcelId = "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee";
 
+    [Theory]
+    [InlineData("v20.20.2", "--experimental-permission")]
+    [InlineData("v21.7.3", "--experimental-permission")]
+    [InlineData("v22.0.0", "--experimental-permission")]
+    [InlineData("v22.12.0", "--experimental-permission")]
+    [InlineData("v22.13.0", "--permission")]
+    [InlineData("v22.23.2", "--permission")]
+    [InlineData("v23.0.0", "--experimental-permission")]
+    [InlineData("v23.4.0", "--experimental-permission")]
+    [InlineData("v23.5.0", "--permission")]
+    [InlineData("v24.19.0", "--permission")]
+    public void PermissionFlagForVersion_SelectsSupportedFailClosedMode(
+        string nodeVersion,
+        string expected)
+    {
+        AtlasProjectionProcessHost.PermissionFlagForVersion(nodeVersion).Should().Be(expected);
+    }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData("not-a-version")]
+    [InlineData("v18.20.8")]
+    public void PermissionFlagForVersion_RejectsUnsupportedRuntime(string nodeVersion)
+    {
+        var action = () => AtlasProjectionProcessHost.PermissionFlagForVersion(nodeVersion);
+
+        action.Should().Throw<ArgumentException>()
+            .WithMessage("*Node 20 or newer*");
+    }
+
     [ExactAtlasProjectionHostFact]
     public async Task ExactModule_ProjectsPolygonWithExactProvenanceAndIdentity()
     {
