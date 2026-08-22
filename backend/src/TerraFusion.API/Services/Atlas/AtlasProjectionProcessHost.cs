@@ -93,6 +93,7 @@ public sealed class AtlasProjectionProcessHost : IAtlasProjectionProcessHost
         """;
 
     private readonly string _nodeExecutablePath;
+    private readonly string _permissionFlag;
     private readonly TimeSpan _timeout;
     private readonly string _temporaryRoot;
     private readonly Func<string, CancellationToken, Task>? _afterModuleCopied;
@@ -112,6 +113,7 @@ public sealed class AtlasProjectionProcessHost : IAtlasProjectionProcessHost
         Func<string, CancellationToken, Task>? afterModuleCopied)
     {
         _nodeExecutablePath = RequireExecutable(nodeExecutablePath);
+        _permissionFlag = ResolvePermissionFlag(_nodeExecutablePath);
         _timeout = timeout ?? TimeSpan.FromSeconds(30);
         if (_timeout <= TimeSpan.Zero || _timeout > TimeSpan.FromSeconds(30))
         {
@@ -245,7 +247,7 @@ public sealed class AtlasProjectionProcessHost : IAtlasProjectionProcessHost
             StandardOutputEncoding = ProcessUtf8,
             StandardErrorEncoding = ProcessUtf8,
         };
-        startInfo.ArgumentList.Add("--permission");
+        startInfo.ArgumentList.Add(_permissionFlag);
         startInfo.ArgumentList.Add($"--allow-fs-read={invocationDirectory}");
         startInfo.ArgumentList.Add($"--allow-fs-write={invocationDirectory}");
         startInfo.ArgumentList.Add(runnerPath);
@@ -859,5 +861,81 @@ public sealed class AtlasProjectionProcessHost : IAtlasProjectionProcessHost
         }
 
         public AtlasProjectionFailure Failure { get; }
+    }
+
+    private static string ResolvePermissionFlag(string nodeExecutablePath)
+    {
+        var startInfo = new ProcessStartInfo
+        {
+            FileName = nodeExecutablePath,
+            RedirectStandardOutput = true,
+            RedirectStandardError = true,
+            UseShellExecute = false,
+            CreateNoWindow = true,
+        };
+        startInfo.ArgumentList.Add("--version");
+        ReplaceWithMinimalEnvironment(startInfo.Environment);
+
+        using var process = new Process { StartInfo = startInfo };
+        try
+        {
+            if (!process.Start())
+            {
+                throw new ArgumentException(
+                    "Node Process.Start returned false while resolving the permission model.",
+                    nameof(nodeExecutablePath));
+            }
+        }
+        catch (Exception exception) when (
+            exception is InvalidOperationException or System.ComponentModel.Win32Exception)
+        {
+            throw new ArgumentException(
+                "Unable to start the explicit Node executable while resolving the permission model.",
+                nameof(nodeExecutablePath),
+                exception);
+        }
+
+        var stdoutTask = process.StandardOutput.ReadToEndAsync();
+        var stderrTask = process.StandardError.ReadToEndAsync();
+        if (!process.WaitForExit(milliseconds: 5_000))
+        {
+            process.Kill(entireProcessTree: true);
+            process.WaitForExit();
+            throw new ArgumentException(
+                "Node version resolution exceeded the five-second limit.",
+                nameof(nodeExecutablePath));
+        }
+
+        var stdout = stdoutTask.GetAwaiter().GetResult().Trim();
+        var stderr = stderrTask.GetAwaiter().GetResult().Trim();
+        if (process.ExitCode != 0)
+        {
+            throw new ArgumentException(
+                $"Node version resolution exited with code {process.ExitCode}: {BoundMessage(stderr)}",
+                nameof(nodeExecutablePath));
+        }
+
+        return PermissionFlagForVersion(stdout);
+    }
+
+    internal static string PermissionFlagForVersion(string nodeVersion)
+    {
+        if (string.IsNullOrWhiteSpace(nodeVersion)
+            || !Version.TryParse(nodeVersion.Trim().TrimStart('v'), out var parsed)
+            || parsed.Major < 20)
+        {
+            throw new ArgumentException(
+                "Atlas projection requires a supported Node 20 or newer runtime.",
+                nameof(nodeVersion));
+        }
+
+        if (parsed.Major is 20 or 21
+            || parsed.Major == 22 && parsed < new Version(22, 13, 0)
+            || parsed.Major == 23 && parsed < new Version(23, 5, 0))
+        {
+            return "--experimental-permission";
+        }
+
+        return "--permission";
     }
 }

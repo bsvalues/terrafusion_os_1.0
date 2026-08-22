@@ -1,5 +1,6 @@
 import { defineConfig, devices } from '@playwright/test';
-import { existsSync, mkdirSync, unlinkSync } from 'node:fs';
+import { createHash } from 'node:crypto';
+import { existsSync, mkdirSync, readFileSync, unlinkSync } from 'node:fs';
 import { basename, dirname, isAbsolute, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -9,6 +10,18 @@ const apiPort = process.env.TF_API_PORT ?? '5046';
 const smokeBaseURL =
   process.env.WORKBENCH_SMOKE_BASE_URL ?? process.env.BASE_URL ?? `http://127.0.0.1:${apiPort}`;
 const smokeRoot = resolve(repoRoot, '.tmp', 'workbench-smoke');
+// Frozen acceptance input from bsvalues/terrafusion-atlas
+// commit 6c530f1b6b77d59225353dede929c0688f1587da. This is test evidence,
+// not a second Atlas implementation or a runtime source-ownership transfer.
+const atlasModulePath = resolve(
+  repoRoot,
+  'tests',
+  'fixtures',
+  'atlas',
+  'project-atlas-feature.mjs'
+);
+const expectedAtlasModuleSha256 =
+  '3ef3d5cfc666f8a27a17510572a376b71d33fa29e796ff79b70abe7e7752ae46';
 const smokeDatabasePath =
   process.env.WORKBENCH_SMOKE_DATABASE_PATH ??
   resolve(smokeRoot, `parcel-journey-${process.pid}.db`);
@@ -33,6 +46,15 @@ if (
 }
 
 mkdirSync(smokeRoot, { recursive: true });
+
+const actualAtlasModuleSha256 = createHash('sha256')
+  .update(readFileSync(atlasModulePath))
+  .digest('hex');
+if (actualAtlasModuleSha256 !== expectedAtlasModuleSha256) {
+  throw new Error(
+    `Atlas smoke fixture hash mismatch: expected ${expectedAtlasModuleSha256}, found ${actualAtlasModuleSha256}.`
+  );
+}
 
 const isPlaywrightWorker = process.env.TEST_WORKER_INDEX !== undefined;
 
@@ -87,6 +109,10 @@ export default defineConfig({
       TF_ENABLE_HARRIS_PACS_BACKGROUND_SYNC: 'false',
       LegacyArcGisSync__Enabled: 'false',
       TF_ENABLE_LEGACY_ARCGIS_SYNC: 'false',
+      AtlasProjection__Mode: 'LocalExact',
+      AtlasProjection__NodeExecutablePath: process.execPath,
+      AtlasProjection__ModulePath: atlasModulePath,
+      AtlasProjection__TimeoutSeconds: '30',
     },
     reuseExistingServer: false,
     timeout: 360_000,

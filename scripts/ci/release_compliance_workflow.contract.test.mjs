@@ -1,5 +1,6 @@
 /** Contract tests for the build-once, scan-once TerraFusion release workflow. */
 import assert from 'node:assert/strict';
+import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import test from 'node:test';
@@ -19,6 +20,9 @@ const backendApiProject = readFileSync(
 const workbenchSmokeConfig = readFileSync(
   join(root, 'tests/playwright.workbench-smoke.config.ts'),
   'utf8'
+);
+const atlasSmokeFixture = readFileSync(
+  join(root, 'tests/fixtures/atlas/project-atlas-feature.mjs')
 );
 const grypeReleaseConfig = readFileSync(join(root, 'scripts/ci/grype-release.yaml'), 'utf8');
 const sealWorkflow = readFileSync(join(root, '.github/workflows/seal-gate-fast.yml'), 'utf8');
@@ -97,6 +101,17 @@ test('Workbench release smoke prepares its disposable SQLite directory before us
   assert.ok(validation >= 0 && mkdir > validation);
   assert.ok(existingDatabaseGuard > mkdir && webServer > existingDatabaseGuard);
   assert.match(workbenchSmokeConfig, /dirname\(smokeDatabasePath\) !== smokeRoot/);
+});
+
+test('Workbench release smoke executes the exact frozen Atlas acceptance fixture', () => {
+  assert.equal(
+    createHash('sha256').update(atlasSmokeFixture).digest('hex'),
+    '3ef3d5cfc666f8a27a17510572a376b71d33fa29e796ff79b70abe7e7752ae46'
+  );
+  assert.match(workbenchSmokeConfig, /AtlasProjection__Mode: 'LocalExact'/);
+  assert.match(workbenchSmokeConfig, /AtlasProjection__NodeExecutablePath: process\.execPath/);
+  assert.match(workbenchSmokeConfig, /AtlasProjection__ModulePath: atlasModulePath/);
+  assert.match(workbenchSmokeConfig, /Atlas smoke fixture hash mismatch/);
 });
 
 test('backend Grype false-positive containment is one exact visible tuple', () => {
