@@ -343,6 +343,18 @@ test('container scan consumes published digests and enforces the declared thresh
 test('provenance binds both image digests and blocks approval', () => {
   const provenance = job('provenance');
   const gate = job('release-gate');
+  const registryLogin = provenance.indexOf(
+    'uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f'
+  );
+  const backendAttestation = provenance.indexOf('name: Attest backend image digest');
+  assert.ok(registryLogin >= 0, 'provenance publication must authenticate to GHCR');
+  assert.ok(
+    backendAttestation > registryLogin,
+    'GHCR login must complete before either image attestation is published'
+  );
+  assert.match(provenance, /registry: ghcr\.io/);
+  assert.match(provenance, /username: \$\{\{ github\.actor \}\}/);
+  assert.match(provenance, /password: \$\{\{ secrets\.GITHUB_TOKEN \}\}/);
   assert.equal((provenance.match(/subject-name:/g) || []).length, 2);
   assert.equal((provenance.match(/subject-digest:/g) || []).length, 2);
   assert.equal((provenance.match(/push-to-registry: true/g) || []).length, 2);
