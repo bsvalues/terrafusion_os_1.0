@@ -442,6 +442,12 @@ jobs:
       id-token: write
       attestations: write
     steps:
+      - name: Log in to GHCR for provenance publication
+        uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
       - name: Attest backend image digest
         uses: actions/attest-build-provenance@v3
         with:
