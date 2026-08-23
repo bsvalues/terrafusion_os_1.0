@@ -75,7 +75,6 @@ const targets = [
   'spec-gates.yml',
   'terra-levy-tests.yml',
   'terraforge-ci.yml',
-  'terrafusion-ci-cd-production.yml',
   'terrafusion-gate-enforcement.yml',
   'terrafusion-pipeline.yml',
   'testing.yml',
