@@ -187,18 +187,18 @@ Reference this policy: `docs/governance/CI_WORKFLOW_LIFECYCLE_POLICY.md`
 | Class | Count |
 |-------|-------|
 | REQUIRED | 3 |
-| PUSH-OPTIONAL | 49 |
-| SCHEDULED | 19 |
-| MANUAL | 25 |
+| PUSH-OPTIONAL | 48 |
+| SCHEDULED | 17 |
+| MANUAL | 26 |
 | DEPRECATED | 2 |
-| **Total** | 98 |
+| **Total** | 96 |
 
 **REQUIRED** (3):
 - `core-governance-gates.yml`
 - `seal-gate-fast.yml`
 - `tier1-ui-harness.yml`
 
-**PUSH-OPTIONAL** (49):
+**PUSH-OPTIONAL** (48):
 - `accessibility.yml`
 - `accreditation-compat.yml`
 - `ai-swarm-safety.yml`
@@ -237,7 +237,6 @@ Reference this policy: `docs/governance/CI_WORKFLOW_LIFECYCLE_POLICY.md`
 - `rust-security-gates.yml`
 - `rust-verify.yml`
 - `seal-import-boundary.yml`
-- `slsa-provenance.yml`
 - `spec-gates.yml`
 - `sqlite-dev-adapter-test.yml`
 - `terra-levy-tests.yml`
@@ -249,7 +248,7 @@ Reference this policy: `docs/governance/CI_WORKFLOW_LIFECYCLE_POLICY.md`
 - `ui-governance.yml`
 - `yaml-sanity.yml`
 
-**SCHEDULED** (19):
+**SCHEDULED** (17):
 - `accessibility-audit.yml`
 - `accreditation-oracle-health.yml`
 - `autonomy-pr-lane.yml`
@@ -259,18 +258,16 @@ Reference this policy: `docs/governance/CI_WORKFLOW_LIFECYCLE_POLICY.md`
 - `external-verify.yml`
 - `governance-audit.yml`
 - `governance-import-hygiene-nightly.yml`
-- `health-check.yml`
 - `nightly.yml`
 - `oracle-health.yml`
 - `perf-skill-audit.yml`
 - `performance-budget.yml`
-- `sbom.yml`
 - `security-compliance-ci.yml`
 - `security-compliance.yml`
 - `security.yml`
 - `terraforge-ci.yml`
 
-**MANUAL** (25):
+**MANUAL** (26):
 - `autonomy-incident-triage.yml`
 - `baseline-guard.yml`
 - `ci-cd-main.yml`
@@ -279,6 +276,7 @@ Reference this policy: `docs/governance/CI_WORKFLOW_LIFECYCLE_POLICY.md`
 - `e2e-smoke.yml`
 - `frontend-ci-isolated.yml`
 - `grfe-ci.yaml`
+- `health-check.yml`
 - `infra-probe.yml`
 - `infrastructure-cicd.yml`
 - `kubernetes-infrastructure-ci.yml`
