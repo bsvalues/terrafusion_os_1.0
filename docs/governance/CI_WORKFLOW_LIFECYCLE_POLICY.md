@@ -187,18 +187,18 @@ Reference this policy: `docs/governance/CI_WORKFLOW_LIFECYCLE_POLICY.md`
 | Class | Count |
 |-------|-------|
 | REQUIRED | 3 |
-| PUSH-OPTIONAL | 48 |
+| PUSH-OPTIONAL | 47 |
 | SCHEDULED | 17 |
 | MANUAL | 26 |
 | DEPRECATED | 2 |
-| **Total** | 96 |
+| **Total** | 95 |
 
 **REQUIRED** (3):
 - `core-governance-gates.yml`
 - `seal-gate-fast.yml`
 - `tier1-ui-harness.yml`
 
-**PUSH-OPTIONAL** (48):
+**PUSH-OPTIONAL** (47):
 - `accessibility.yml`
 - `accreditation-compat.yml`
 - `ai-swarm-safety.yml`
@@ -241,7 +241,6 @@ Reference this policy: `docs/governance/CI_WORKFLOW_LIFECYCLE_POLICY.md`
 - `sqlite-dev-adapter-test.yml`
 - `terra-levy-tests.yml`
 - `terraforge-kernels.yml`
-- `terrafusion-ci-cd-production.yml`
 - `terrafusion-ci.yml`
 - `testing.yml`
 - `tfctl-ci.yml`
