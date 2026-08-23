@@ -187,18 +187,18 @@ Reference this policy: `docs/governance/CI_WORKFLOW_LIFECYCLE_POLICY.md`
 | Class | Count |
 |-------|-------|
 | REQUIRED | 3 |
-| PUSH-OPTIONAL | 47 |
+| PUSH-OPTIONAL | 46 |
 | SCHEDULED | 17 |
-| MANUAL | 26 |
+| MANUAL | 23 |
 | DEPRECATED | 2 |
-| **Total** | 95 |
+| **Total** | 91 |
 
 **REQUIRED** (3):
 - `core-governance-gates.yml`
 - `seal-gate-fast.yml`
 - `tier1-ui-harness.yml`
 
-**PUSH-OPTIONAL** (47):
+**PUSH-OPTIONAL** (46):
 - `accessibility.yml`
 - `accreditation-compat.yml`
 - `ai-swarm-safety.yml`
@@ -214,7 +214,6 @@ Reference this policy: `docs/governance/CI_WORKFLOW_LIFECYCLE_POLICY.md`
 - `branch-protection-snapshot.yml`
 - `build-validation.yml`
 - `canon-gates.yml`
-- `ci-cd-pipeline.yml`
 - `ci-verified.yml`
 - `ci.yml`
 - `cockpit-drift-guard.yml`
@@ -266,19 +265,16 @@ Reference this policy: `docs/governance/CI_WORKFLOW_LIFECYCLE_POLICY.md`
 - `security.yml`
 - `terraforge-ci.yml`
 
-**MANUAL** (26):
+**MANUAL** (23):
 - `autonomy-incident-triage.yml`
 - `baseline-guard.yml`
 - `ci-cd-main.yml`
 - `code-intel.yml`
-- `deployment.yml`
 - `e2e-smoke.yml`
 - `frontend-ci-isolated.yml`
 - `grfe-ci.yaml`
 - `health-check.yml`
 - `infra-probe.yml`
-- `infrastructure-cicd.yml`
-- `kubernetes-infrastructure-ci.yml`
 - `manifest-contract-guard.yml`
 - `os-production-acceptance.yml`
 - `performance-regression.yml`
