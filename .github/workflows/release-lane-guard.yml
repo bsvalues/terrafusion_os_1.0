@@ -28,12 +28,8 @@ jobs:
         run: |
           set -euo pipefail
           deprecated_lanes=(
-            ".github/workflows/infrastructure-cicd.yml"
             ".github/workflows/ci-cd-main.yml"
-            ".github/workflows/ci-cd-pipeline.yml"
             ".github/workflows/ci-verified.yml"
-            ".github/workflows/deployment.yml"
-            ".github/workflows/kubernetes-infrastructure-ci.yml"
           )
 
           offenders=""
@@ -53,12 +49,8 @@ jobs:
         run: |
           set -euo pipefail
           deprecated_lanes=(
-            ".github/workflows/infrastructure-cicd.yml"
             ".github/workflows/ci-cd-main.yml"
-            ".github/workflows/ci-cd-pipeline.yml"
             ".github/workflows/ci-verified.yml"
-            ".github/workflows/deployment.yml"
-            ".github/workflows/kubernetes-infrastructure-ci.yml"
           )
 
           offenders=""

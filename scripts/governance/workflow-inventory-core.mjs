@@ -81,8 +81,17 @@ export function classifyWorkflow(filename, triggers) {
  * @returns {{ total: number, classes: Record<string, string[]> }}
  */
 export function buildInventory(repoRoot) {
-  // Enumerate via git (not filesystem)
-  const gitOutput = execSync('git ls-tree --name-only HEAD .github/workflows/', {
+  // Enumerate via git (not filesystem), from the INDEX rather than HEAD.
+  //
+  // `git ls-tree HEAD` lists what is committed, but the contents below are read from
+  // the working tree. Those two disagree in exactly the case this tool exists for:
+  // retiring a workflow. `git rm` removes the file from the worktree while HEAD still
+  // lists it, so the loop opened a path that was gone and died ENOENT -- forcing the
+  // snapshot to be regenerated in a SEPARATE commit after the deletion landed.
+  //
+  // `git ls-files` reads the index, so it tracks staged additions and deletions and
+  // still excludes untracked files, which is what "via git, not filesystem" was for.
+  const gitOutput = execSync('git ls-files .github/workflows/', {
     cwd: repoRoot,
     encoding: 'utf8',
   });
