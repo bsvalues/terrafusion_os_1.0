@@ -37,7 +37,7 @@ env:
 
 jobs:
   # ===========================================================================
-  # Generate SBOM (Python Backend)
+  # Generate SBOM (Backend, .NET)
   # ===========================================================================
 
   sbom-backend:
@@ -48,11 +48,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-
       - name: Install Syft
         run: |
           curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sh -s -- -b /usr/local/bin
@@ -60,11 +55,13 @@ jobs:
 
       - name: Generate SBOM (SPDX format)
         run: |
-          # SBOM from source
+          # Both formats from the SAME source. This previously emitted CycloneDX from
+          # `file:requirements.txt` -- a Python manifest that does not exist in this
+          # repository and would not describe a .NET backend if it did. Syft failed with
+          # "no source providers were able to resolve the input", which is why this job
+          # has been red on main.
           syft dir:. -o spdx-json=sbom-backend-spdx.json
-
-          # SBOM from requirements.txt
-          syft file:requirements.txt -o cyclonedx-json=sbom-backend-cyclonedx.json
+          syft dir:. -o cyclonedx-json=sbom-backend-cyclonedx.json
 
           # Summary
           echo "## SBOM Summary (Backend)" >> $GITHUB_STEP_SUMMARY
@@ -72,6 +69,13 @@ jobs:
           syft dir:. -o table >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
 
+      # KNOWN GAP: `Dockerfile.backend` does not exist. The backend images live under
+      # `backend/` (`backend/Dockerfile` carries the explicit `runtime` stage), and
+      # building that stage additionally needs the `forge-valuation-kernel` build
+      # context this job does not provide. Repointing the path alone would trade one
+      # failure for another, and backend image building belongs to TF-REL-002, which is
+      # mid-integration. Left failing deliberately rather than made non-fatal: a
+      # container SBOM that silently does not exist is worse than one that says so.
       - name: Generate SBOM (Container image)
         if: github.event_name != 'pull_request'
         run: |
