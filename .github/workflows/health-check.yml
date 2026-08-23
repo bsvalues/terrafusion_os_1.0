@@ -1,9 +1,18 @@
 name: health-check
 
 on:
-  schedule:
-    # Every 15 minutes
-    - cron: '*/15 * * * *'
+  # Schedule intentionally disabled. This checked https://terrafusionmarket.com/health
+  # every 15 minutes and returned HTTP 000 -- no connection -- because promotion to
+  # production is an authority boundary the release has not crossed. Ninety-six failing
+  # runs a day against infrastructure that does not exist teaches everyone to read red
+  # as normal, which is worse than not checking.
+  #
+  # The workflow is kept, not deleted: the capability is correct, its precondition is
+  # absent. Re-enable the cron in the same change that makes a deployment target real,
+  # and replace the hardcoded hosts below with the deployed URLs.
+  #
+  #  schedule:
+  #    - cron: '*/15 * * * *'
   workflow_dispatch:
     inputs:
       verbose:
