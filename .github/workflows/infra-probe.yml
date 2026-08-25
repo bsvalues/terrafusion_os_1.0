@@ -1,31 +1,27 @@
-name: infra-probe
+name: c-lineage-readonly-probe
 
 on:
-  workflow_dispatch:
-    inputs:
-      target_env:
-        description: Environment to probe
-        required: true
-        type: choice
-        options:
-          - staging
-          - production
+  push:
+    branches:
+      - diag/c-lineage-readonly-20260825
 
 permissions:
   contents: read
 
 jobs:
-  probe:
-    name: Probe ${{ inputs.target_env }} infrastructure
+  lineage:
+    name: Alternate production DB connection shape probe
     runs-on: ubuntu-latest
-    environment: ${{ inputs.target_env }}
+    environment: production
+    timeout-minutes: 10
     env:
       DEPLOY_HOST: ${{ vars.DEPLOY_HOST }}
       DEPLOY_PORT: ${{ vars.DEPLOY_PORT }}
       DEPLOY_USER: ${{ vars.DEPLOY_USER }}
+      APP_ROOT: ${{ vars.APP_ROOT }}
       DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
     steps:
-      - name: Configure SSH
+      - name: Configure bounded SSH access
         shell: bash
         run: |
           set -euo pipefail
@@ -37,79 +33,61 @@ jobs:
             ssh-keyscan -T 10 -t ed25519,rsa -p "$DEPLOY_PORT" "$DEPLOY_HOST" >> ~/.ssh/known_hosts 2>/dev/null && break
             sleep 5
           done
+          grep -q "$DEPLOY_HOST" ~/.ssh/known_hosts
           cat > ~/.ssh/config <<SSHCFG
           Host $DEPLOY_HOST
             ConnectTimeout 30
             ServerAliveInterval 15
             ServerAliveCountMax 3
+            StrictHostKeyChecking yes
+            UserKnownHostsFile ~/.ssh/known_hosts
           SSHCFG
-          if ! grep -q "$DEPLOY_HOST" ~/.ssh/known_hosts 2>/dev/null; then
-            printf '  StrictHostKeyChecking accept-new\n' >> ~/.ssh/config
-          fi
           chmod 600 ~/.ssh/config
 
-      - name: K3s / Kubernetes probe
+      - name: Observe connection-string shapes without values
         shell: bash
         run: |
           set -euo pipefail
           DEPLOY_PORT="${DEPLOY_PORT:-22}"
-          echo "=== K3s / Kubernetes Probe ==="
-          ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" bash -s <<'SSH'
+          APP_ROOT="${APP_ROOT:-/opt/terrafusion/production}"
+          ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" "APP_ROOT='$APP_ROOT' bash -s" <<'REMOTE'
           set -euo pipefail
-          echo "--- which k3s ---"
-          which k3s 2>/dev/null && echo "FOUND" || echo "NOT_FOUND"
-          echo "--- systemctl is-active k3s ---"
-          systemctl is-active k3s 2>/dev/null || echo "NOT_ACTIVE"
-          echo "--- kubectl get nodes ---"
-          kubectl get nodes 2>/dev/null || echo "KUBECTL_UNAVAILABLE"
-          echo "--- k3s kubectl get nodes ---"
-          k3s kubectl get nodes 2>/dev/null || echo "K3S_KUBECTL_UNAVAILABLE"
-          echo "--- listening ports (6443/10250) ---"
-          ss -tlnp 2>/dev/null | grep -E '6443|10250' || echo "NO_K8S_PORTS"
-          SSH
+          python3 - "$APP_ROOT/app.env" <<'PY'
+          import pathlib, sys, urllib.parse
+          lines = pathlib.Path(sys.argv[1]).read_text(encoding='utf-8').splitlines()
+          values = {}
+          for line in lines:
+              if not line or line.lstrip().startswith('#') or '=' not in line:
+                  continue
+              key, value = line.split('=', 1)
+              if key in {'ConnectionStrings__DefaultConnection','ConnectionStrings__TerraFusionDatabase','DatabaseProvider'}:
+                  values[key] = value.strip()
 
-      - name: Docker inventory
-        shell: bash
-        run: |
-          set -euo pipefail
-          DEPLOY_PORT="${DEPLOY_PORT:-22}"
-          echo "=== Docker Inventory ==="
-          ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" bash -s <<'SSH'
-          set -euo pipefail
-          echo "--- docker version ---"
-          docker version --format '{{.Server.Version}}' 2>/dev/null || echo "DOCKER_UNAVAILABLE"
-          echo "--- docker compose version ---"
-          docker compose version 2>/dev/null || echo "COMPOSE_UNAVAILABLE"
-          echo "--- running containers ---"
-          docker ps --format 'table {{.Names}}\t{{.Image}}\t{{.Status}}\t{{.Ports}}' 2>/dev/null || echo "DOCKER_PS_FAILED"
-          echo "--- docker networks ---"
-          docker network ls --format 'table {{.Name}}\t{{.Driver}}' 2>/dev/null || echo "NETWORK_LS_FAILED"
-          echo "--- disk usage ---"
-          df -h / /opt 2>/dev/null || true
-          echo "--- memory ---"
-          free -h 2>/dev/null || true
-          SSH
-
-      - name: Edge proxy health
-        shell: bash
-        run: |
-          set -euo pipefail
-          DEPLOY_PORT="${DEPLOY_PORT:-22}"
-          echo "=== Edge Proxy Health ==="
-          ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" bash -s <<'SSH'
-          set -euo pipefail
-          echo "--- edge proxy container ---"
-          docker inspect edge-proxy-edge-1 --format '{{.State.Status}} since {{.State.StartedAt}}' 2>/dev/null || echo "EDGE_PROXY_NOT_FOUND"
-          echo "--- caddy config test ---"
-          docker exec edge-proxy-edge-1 caddy validate --config /etc/caddy/Caddyfile --adapter caddyfile 2>/dev/null || echo "CADDY_VALIDATE_FAILED"
-          echo "--- edge network members ---"
-          docker network inspect terrafusion-edge --format '{{range .Containers}}{{.Name}} {{end}}' 2>/dev/null || echo "EDGE_NETWORK_INSPECT_FAILED"
-          echo "--- bound ports (host 80/443) ---"
-          ss -tlnp 2>/dev/null | grep -E ':80\b|:443\b' || echo "NO_EDGE_PORTS"
-          echo "--- internal health check (production) ---"
-          docker exec edge-proxy-edge-1 wget -qO- --timeout=5 http://terrafusion-production-proxy-1:80/health 2>/dev/null && echo "" || echo "PROD_INTERNAL_UNREACHABLE"
-          echo "--- internal health check (staging) ---"
-          docker exec edge-proxy-edge-1 wget -qO- --timeout=5 http://terrafusion-staging-proxy-1:80/health 2>/dev/null && echo "" || echo "STAGING_INTERNAL_UNREACHABLE"
-          echo "--- external health check (localhost) ---"
-          curl -sSfk --max-time 5 https://127.0.0.1/health -H 'Host: terrafusionmarket.com' 2>/dev/null && echo "" || echo "EXTERNAL_HEALTH_FAILED"
-          SSH
+          print('DatabaseProvider=' + values.get('DatabaseProvider','<unset>'))
+          for key in ('ConnectionStrings__DefaultConnection','ConnectionStrings__TerraFusionDatabase'):
+              raw = values.get(key)
+              print(f'=== {key} ===')
+              if raw is None:
+                  print('PRESENT=false')
+                  continue
+              print('PRESENT=true')
+              if len(raw) >= 2 and raw[0] == raw[-1] and raw[0] in {'\"', "'"}:
+                  raw = raw[1:-1]
+              print(f'LENGTH={len(raw)}')
+              if raw.lower().startswith(('postgres://','postgresql://')):
+                  p = urllib.parse.urlparse(raw)
+                  print('FORMAT=url')
+                  fields = []
+                  for name, present in [('hostname',p.hostname),('port',p.port),('database',p.path and p.path != '/'),('username',p.username),('password',p.password),('query',p.query)]:
+                      if present:
+                          fields.append(name)
+                  print('FIELDS=' + ','.join(fields))
+              else:
+                  print('FORMAT=key-value')
+                  fields = []
+                  for part in raw.split(';'):
+                      if '=' in part:
+                          fields.append(part.split('=',1)[0].strip())
+                  print('FIELDS=' + ','.join(fields))
+          PY
+          REMOTE
