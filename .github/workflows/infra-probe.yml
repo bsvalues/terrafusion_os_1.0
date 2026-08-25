@@ -10,10 +10,10 @@ permissions:
 
 jobs:
   lineage:
-    name: Production lineage read-only schema probe
+    name: Production DB configuration vocabulary probe
     runs-on: ubuntu-latest
     environment: production
-    timeout-minutes: 15
+    timeout-minutes: 10
     env:
       DEPLOY_HOST: ${{ vars.DEPLOY_HOST }}
       DEPLOY_PORT: ${{ vars.DEPLOY_PORT }}
@@ -26,12 +26,6 @@ jobs:
         run: |
           set -euo pipefail
           DEPLOY_PORT="${DEPLOY_PORT:-22}"
-          for required in DEPLOY_HOST DEPLOY_USER DEPLOY_SSH_KEY; do
-            if [ -z "${!required:-}" ]; then
-              echo "MISSING_${required}"
-              exit 1
-            fi
-          done
           install -d -m 700 ~/.ssh
           printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
@@ -39,10 +33,7 @@ jobs:
             ssh-keyscan -T 10 -t ed25519,rsa -p "$DEPLOY_PORT" "$DEPLOY_HOST" >> ~/.ssh/known_hosts 2>/dev/null && break
             sleep 5
           done
-          if ! grep -q "$DEPLOY_HOST" ~/.ssh/known_hosts 2>/dev/null; then
-            echo "DEPLOY_HOST_KEY_UNAVAILABLE"
-            exit 1
-          fi
+          grep -q "$DEPLOY_HOST" ~/.ssh/known_hosts
           cat > ~/.ssh/config <<SSHCFG
           Host $DEPLOY_HOST
             ConnectTimeout 30
@@ -53,48 +44,69 @@ jobs:
           SSHCFG
           chmod 600 ~/.ssh/config
 
-      - name: Observe production Sync lineage schema through read-only transaction
+      - name: Observe key names only
         shell: bash
         run: |
           set -euo pipefail
           DEPLOY_PORT="${DEPLOY_PORT:-22}"
           APP_ROOT="${APP_ROOT:-/opt/terrafusion/production}"
-
-          DB_JSON="$(ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" "APP_ROOT='$APP_ROOT' bash -s" <<'REMOTE'
+          ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" "APP_ROOT='$APP_ROOT' bash -s" <<'REMOTE'
           set -euo pipefail
-          command -v python3 >/dev/null || { echo "REMOTE_PYTHON3_REQUIRED" >&2; exit 21; }
-          test -f "$APP_ROOT/app.env" || { echo "APP_ENV_NOT_FOUND" >&2; exit 22; }
+          test -f "$APP_ROOT/app.env"
+          command -v python3 >/dev/null
           python3 - "$APP_ROOT/app.env" <<'PY'
-          import json
           import pathlib
           import sys
           import urllib.parse
 
           path = pathlib.Path(sys.argv[1])
+          lines = path.read_text(encoding='utf-8').splitlines()
+          interesting = []
           raw = None
-          for line in path.read_text(encoding='utf-8').splitlines():
-              if line.startswith('ConnectionStrings__DefaultConnection='):
-                  raw = line.split('=', 1)[1].strip()
+          for line in lines:
+              if not line or line.lstrip().startswith('#') or '=' not in line:
+                  continue
+              key, value = line.split('=', 1)
+              key = key.strip()
+              upper = key.upper()
+              if key == 'ConnectionStrings__DefaultConnection':
+                  raw = value.strip()
+              if (
+                  key == 'ConnectionStrings__DefaultConnection'
+                  or key == 'DatabaseProvider'
+                  or 'POSTGRES' in upper
+                  or upper.startswith('PG')
+                  or upper.startswith('DB_')
+                  or upper.endswith('_DB')
+                  or 'DATABASE' in upper
+              ):
+                  interesting.append(key)
+
+          print('=== APP.ENV RELEVANT VARIABLE NAMES (VALUES REDACTED) ===')
+          for key in sorted(set(interesting)):
+              print(key)
+
           if raw is None:
-              raise SystemExit('DEFAULT_CONNECTION_NOT_FOUND')
+              print('DEFAULT_CONNECTION_FORMAT=missing')
+              raise SystemExit(0)
           if len(raw) >= 2 and raw[0] == raw[-1] and raw[0] in {'\"', "'"}:
               raw = raw[1:-1]
-
-          def normalize(key):
-              return ''.join(ch for ch in key.lower() if ch.isalnum())
-
-          values = {}
+          print(f'DEFAULT_CONNECTION_LENGTH={len(raw)}')
           if raw.lower().startswith(('postgres://', 'postgresql://')):
               parsed = urllib.parse.urlparse(raw)
-              values = {
-                  'host': parsed.hostname,
-                  'port': parsed.port or 5432,
-                  'database': parsed.path.lstrip('/'),
-                  'username': urllib.parse.unquote(parsed.username or ''),
-                  'password': urllib.parse.unquote(parsed.password or ''),
-                  'sslmode': urllib.parse.parse_qs(parsed.query).get('sslmode', [''])[0],
-              }
+              print('DEFAULT_CONNECTION_FORMAT=url')
+              print('DEFAULT_CONNECTION_URL_FIELDS=' + ','.join(
+                  name for name, present in [
+                      ('hostname', bool(parsed.hostname)),
+                      ('port', bool(parsed.port)),
+                      ('path', bool(parsed.path and parsed.path != '/')),
+                      ('username', bool(parsed.username)),
+                      ('password', bool(parsed.password)),
+                      ('query', bool(parsed.query)),
+                  ] if present
+              ))
           else:
+              print('DEFAULT_CONNECTION_FORMAT=key-value')
               parts = []
               buf = []
               quote = None
@@ -120,115 +132,21 @@ jobs:
                           buf.append(ch)
                   i += 1
               parts.append(''.join(buf))
-              pairs = {}
+              keys = []
               for part in parts:
-                  if not part.strip() or '=' not in part:
-                      continue
-                  key, value = part.split('=', 1)
-                  pairs[normalize(key)] = value.strip()
-              def first(*keys, default=''):
-                  for key in keys:
-                      value = pairs.get(normalize(key))
-                      if value not in (None, ''):
-                          return value
-                  return default
-              values = {
-                  'host': first('Host', 'Server', 'Data Source'),
-                  'port': int(first('Port', default='5432')),
-                  'database': first('Database', 'Initial Catalog'),
-                  'username': first('Username', 'User ID', 'User'),
-                  'password': first('Password', 'Pwd'),
-                  'sslmode': first('SSL Mode', 'SslMode'),
-              }
-
-          missing = [k for k in ('host', 'database', 'username') if not values.get(k)]
-          if missing:
-              raise SystemExit('CONNECTION_FIELDS_MISSING:' + ','.join(missing))
-          print(json.dumps(values, separators=(',', ':')))
+                  if '=' in part:
+                      keys.append(part.split('=', 1)[0].strip())
+              print('DEFAULT_CONNECTION_FIELD_NAMES=' + ','.join(keys))
           PY
+
+          echo '=== RUNNING BACKEND ENV VARIABLE NAMES (VALUES REDACTED) ==='
+          backend="$(docker ps --format '{{.Names}}' | grep -E 'terrafusion-production.*backend|production.*backend' | head -n1 || true)"
+          if [ -n "$backend" ]; then
+            docker inspect "$backend" --format '{{range .Config.Env}}{{println .}}{{end}}' \
+              | cut -d= -f1 \
+              | grep -E '^(ConnectionStrings__|DatabaseProvider|PG|POSTGRES|DB_|.*DATABASE)' \
+              | sort -u || true
+          else
+            echo 'BACKEND_CONTAINER_NOT_FOUND'
+          fi
           REMOTE
-          )"
-
-          DB_HOST="$(jq -er '.host' <<<"$DB_JSON")"
-          DB_PORT="$(jq -er '.port' <<<"$DB_JSON")"
-          DB_NAME="$(jq -er '.database' <<<"$DB_JSON")"
-          DB_USER="$(jq -er '.username' <<<"$DB_JSON")"
-          DB_PASSWORD="$(jq -r '.password // ""' <<<"$DB_JSON")"
-          DB_SSLMODE="$(jq -r '.sslmode // ""' <<<"$DB_JSON" | tr '[:upper:]' '[:lower:]' | tr -d ' ')"
-          echo "::add-mask::$DB_PASSWORD"
-
-          case "$DB_SSLMODE" in
-            '') PGSSLMODE=prefer ;;
-            require|prefer|allow|disable|verify-ca|verify-full) PGSSLMODE="$DB_SSLMODE" ;;
-            verifyca) PGSSLMODE=verify-ca ;;
-            verifyfull) PGSSLMODE=verify-full ;;
-            *)
-              echo "UNSUPPORTED_SSL_MODE_FOR_READONLY_PROBE:$DB_SSLMODE"
-              exit 23
-              ;;
-          esac
-
-          TUNNEL_TARGET="$DB_HOST"
-          case "${DB_HOST,,}" in
-            localhost|127.0.0.1|::1|host.docker.internal) TUNNEL_TARGET=127.0.0.1 ;;
-          esac
-
-          sudo apt-get update -qq
-          sudo apt-get install -y -qq postgresql-client >/dev/null
-
-          LOCAL_PORT=65432
-          ssh -fNT -o ExitOnForwardFailure=yes \
-            -L "${LOCAL_PORT}:${TUNNEL_TARGET}:${DB_PORT}" \
-            -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST"
-          trap 'pkill -f "ssh.*${LOCAL_PORT}:" 2>/dev/null || true' EXIT
-
-          export PGHOST="$DB_HOST"
-          export PGHOSTADDR=127.0.0.1
-          export PGPORT="$LOCAL_PORT"
-          export PGDATABASE="$DB_NAME"
-          export PGUSER="$DB_USER"
-          export PGPASSWORD="$DB_PASSWORD"
-          export PGSSLMODE
-          export PGCONNECT_TIMEOUT=10
-          export PGAPPNAME=terrafusion-c-lineage-readonly
-
-          psql -X -v ON_ERROR_STOP=1 -P pager=off <<'SQL'
-          BEGIN TRANSACTION READ ONLY;
-
-          \echo '=== CONNECTION / READ-ONLY PROOF ==='
-          SELECT
-            current_database() AS database,
-            current_user AS db_user,
-            current_setting('transaction_read_only') AS transaction_read_only,
-            current_setting('server_version') AS server_version;
-
-          \echo '=== RELEVANT TABLE INVENTORY ==='
-          SELECT
-            n.nspname AS table_schema,
-            c.relname AS table_name,
-            c.reltuples::bigint AS estimated_rows
-          FROM pg_class c
-          JOIN pg_namespace n ON n.oid = c.relnamespace
-          WHERE c.relkind IN ('r','p')
-            AND (
-              n.nspname = 'sync_bridge'
-              OR (n.nspname = 'canonical_tf' AND c.relname IN ('tf_parcel','tf_owner','tf_sale'))
-            )
-          ORDER BY n.nspname, c.relname;
-
-          \echo '=== LIVE COLUMN VOCABULARY ==='
-          SELECT
-            table_schema,
-            table_name,
-            ordinal_position,
-            column_name,
-            data_type,
-            is_nullable
-          FROM information_schema.columns
-          WHERE
-            table_schema = 'sync_bridge'
-            OR (table_schema = 'canonical_tf' AND table_name IN ('tf_parcel','tf_owner','tf_sale'))
-          ORDER BY table_schema, table_name, ordinal_position;
-
-          ROLLBACK;
-          SQL
