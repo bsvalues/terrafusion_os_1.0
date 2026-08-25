@@ -895,8 +895,6 @@ public sealed class AtlasProjectionProcessHost : IAtlasProjectionProcessHost
                 exception);
         }
 
-        var stdoutTask = process.StandardOutput.ReadToEndAsync();
-        var stderrTask = process.StandardError.ReadToEndAsync();
         if (!process.WaitForExit(milliseconds: 5_000))
         {
             process.Kill(entireProcessTree: true);
@@ -906,8 +904,11 @@ public sealed class AtlasProjectionProcessHost : IAtlasProjectionProcessHost
                 nameof(nodeExecutablePath));
         }
 
-        var stdout = stdoutTask.GetAwaiter().GetResult().Trim();
-        var stderr = stderrTask.GetAwaiter().GetResult().Trim();
+        // `node --version` writes one short line, so the pipe buffer cannot fill
+        // and block the child before it exits. The streams are therefore drained
+        // after the bounded exit rather than concurrently.
+        var stdout = process.StandardOutput.ReadToEnd().Trim();
+        var stderr = process.StandardError.ReadToEnd().Trim();
         if (process.ExitCode != 0)
         {
             throw new ArgumentException(
