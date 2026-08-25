@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   lineage:
-    name: Production DB configuration vocabulary probe
+    name: Running production DB identity probe
     runs-on: ubuntu-latest
     environment: production
     timeout-minutes: 10
@@ -18,7 +18,6 @@ jobs:
       DEPLOY_HOST: ${{ vars.DEPLOY_HOST }}
       DEPLOY_PORT: ${{ vars.DEPLOY_PORT }}
       DEPLOY_USER: ${{ vars.DEPLOY_USER }}
-      APP_ROOT: ${{ vars.APP_ROOT }}
       DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
     steps:
       - name: Configure bounded SSH access
@@ -44,109 +43,31 @@ jobs:
           SSHCFG
           chmod 600 ~/.ssh/config
 
-      - name: Observe key names only
+      - name: Observe running backend provider and DB truth
         shell: bash
         run: |
           set -euo pipefail
           DEPLOY_PORT="${DEPLOY_PORT:-22}"
-          APP_ROOT="${APP_ROOT:-/opt/terrafusion/production}"
-          ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" "APP_ROOT='$APP_ROOT' bash -s" <<'REMOTE'
+          ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" bash -s <<'REMOTE'
           set -euo pipefail
-          test -f "$APP_ROOT/app.env"
-          command -v python3 >/dev/null
-          python3 - "$APP_ROOT/app.env" <<'PY'
-          import pathlib
-          import sys
-          import urllib.parse
-
-          path = pathlib.Path(sys.argv[1])
-          lines = path.read_text(encoding='utf-8').splitlines()
-          interesting = []
-          raw = None
-          for line in lines:
-              if not line or line.lstrip().startswith('#') or '=' not in line:
-                  continue
-              key, value = line.split('=', 1)
-              key = key.strip()
-              upper = key.upper()
-              if key == 'ConnectionStrings__DefaultConnection':
-                  raw = value.strip()
-              if (
-                  key == 'ConnectionStrings__DefaultConnection'
-                  or key == 'DatabaseProvider'
-                  or 'POSTGRES' in upper
-                  or upper.startswith('PG')
-                  or upper.startswith('DB_')
-                  or upper.endswith('_DB')
-                  or 'DATABASE' in upper
-              ):
-                  interesting.append(key)
-
-          print('=== APP.ENV RELEVANT VARIABLE NAMES (VALUES REDACTED) ===')
-          for key in sorted(set(interesting)):
-              print(key)
-
-          if raw is None:
-              print('DEFAULT_CONNECTION_FORMAT=missing')
-              raise SystemExit(0)
-          if len(raw) >= 2 and raw[0] == raw[-1] and raw[0] in {'\"', "'"}:
-              raw = raw[1:-1]
-          print(f'DEFAULT_CONNECTION_LENGTH={len(raw)}')
-          if raw.lower().startswith(('postgres://', 'postgresql://')):
-              parsed = urllib.parse.urlparse(raw)
-              print('DEFAULT_CONNECTION_FORMAT=url')
-              print('DEFAULT_CONNECTION_URL_FIELDS=' + ','.join(
-                  name for name, present in [
-                      ('hostname', bool(parsed.hostname)),
-                      ('port', bool(parsed.port)),
-                      ('path', bool(parsed.path and parsed.path != '/')),
-                      ('username', bool(parsed.username)),
-                      ('password', bool(parsed.password)),
-                      ('query', bool(parsed.query)),
-                  ] if present
-              ))
-          else:
-              print('DEFAULT_CONNECTION_FORMAT=key-value')
-              parts = []
-              buf = []
-              quote = None
-              i = 0
-              while i < len(raw):
-                  ch = raw[i]
-                  if quote is not None:
-                      if ch == quote:
-                          if i + 1 < len(raw) and raw[i + 1] == quote:
-                              buf.append(ch)
-                              i += 2
-                              continue
-                          quote = None
-                      else:
-                          buf.append(ch)
-                  else:
-                      if ch in {'\"', "'"}:
-                          quote = ch
-                      elif ch == ';':
-                          parts.append(''.join(buf))
-                          buf = []
-                      else:
-                          buf.append(ch)
-                  i += 1
-              parts.append(''.join(buf))
-              keys = []
-              for part in parts:
-                  if '=' in part:
-                      keys.append(part.split('=', 1)[0].strip())
-              print('DEFAULT_CONNECTION_FIELD_NAMES=' + ','.join(keys))
-          PY
-
-          echo '=== RUNNING BACKEND ENV VARIABLE NAMES (VALUES REDACTED) ==='
           backend="$(docker ps --format '{{.Names}}' | grep -E 'terrafusion-production.*backend|production.*backend' | head -n1 || true)"
-          if [ -n "$backend" ]; then
-            docker inspect "$backend" --format '{{range .Config.Env}}{{println .}}{{end}}' \
-              | cut -d= -f1 \
-              | grep -E '^(ConnectionStrings__|DatabaseProvider|PG|POSTGRES|DB_|.*DATABASE)' \
-              | sort -u || true
-          else
+          if [ -z "$backend" ]; then
             echo 'BACKEND_CONTAINER_NOT_FOUND'
+            exit 31
           fi
+
+          echo '=== RUNNING CONFIGURATION CLAIM ==='
+          provider="$(docker inspect "$backend" --format '{{range .Config.Env}}{{println .}}{{end}}' \
+            | awk -F= '$1=="DatabaseProvider" {sub(/^[^=]*=/, ""); print; exit}')"
+          printf 'DatabaseProvider=%s\n' "${provider:-<unset>}"
+
+          echo '=== OBSERVED RUNTIME DB IDENTITY ==='
+          docker exec "$backend" wget -qO- --timeout=15 \
+            http://127.0.0.1:5000/api/runtime/truth/db-identity
+          echo
+
+          echo '=== OBSERVED RUNTIME DB CONTENT ==='
+          docker exec "$backend" wget -qO- --timeout=15 \
+            http://127.0.0.1:5000/api/runtime/truth/db-content
+          echo
           REMOTE
