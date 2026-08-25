@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   lineage:
-    name: Live SQLite provenance schema read-only probe
+    name: Live SQLite runtime characterization read-only probe
     runs-on: ubuntu-latest
     environment: production
     timeout-minutes: 10
@@ -44,7 +44,7 @@ jobs:
           SSHCFG
           chmod 600 ~/.ssh/config
 
-      - name: Inspect exact mounted SQLite database without writes
+      - name: Characterize exact mounted SQLite database without writes
         shell: bash
         run: |
           set -euo pipefail
@@ -65,8 +65,7 @@ jobs:
               raw = line.split('=', 1)[1].strip()
               if len(raw) >= 2 and raw[0] == raw[-1] and raw[0] in {'\"', "'"}:
                   raw = raw[1:-1]
-              parts = [p.strip() for p in raw.split(';') if p.strip()]
-              for part in parts:
+              for part in [p.strip() for p in raw.split(';') if p.strip()]:
                   if '=' not in part:
                       continue
                   key, value = part.split('=', 1)
@@ -82,10 +81,7 @@ jobs:
           import json, os, pathlib
           source = os.environ['DATA_SOURCE']
           mounts = json.loads(os.environ['MOUNTS_JSON'])
-          if source.startswith('/'):
-              container_path = pathlib.PurePosixPath(source)
-          else:
-              container_path = pathlib.PurePosixPath('/app') / source
+          container_path = pathlib.PurePosixPath(source) if source.startswith('/') else pathlib.PurePosixPath('/app') / source
           best = None
           for mount in mounts:
               dest = pathlib.PurePosixPath(mount.get('Destination') or '/')
@@ -96,50 +92,62 @@ jobs:
               score = len(dest.parts)
               if best is None or score > best[0]:
                   best = (score, pathlib.Path(mount['Source']) / pathlib.Path(str(rel)))
-          if best is None:
-              candidate = pathlib.Path(os.environ['APP_ROOT']) / str(container_path).removeprefix('/app/')
-          else:
-              candidate = best[1]
+          candidate = best[1] if best else pathlib.Path(os.environ['APP_ROOT']) / str(container_path).removeprefix('/app/')
           print(candidate)
           PY
           )"
-
-          test -f "$HOST_DB" || { echo 'LIVE_SQLITE_FILE_NOT_FOUND'; exit 41; }
-          echo "LIVE_DB_FILE_PRESENT=true"
-          echo "LIVE_DB_FILE_SIZE_BYTES=$(stat -c %s "$HOST_DB")"
-          test -f "${HOST_DB}-wal" && echo "LIVE_DB_WAL_PRESENT=true" || echo "LIVE_DB_WAL_PRESENT=false"
-          test -f "${HOST_DB}-shm" && echo "LIVE_DB_SHM_PRESENT=true" || echo "LIVE_DB_SHM_PRESENT=false"
+          test -f "$HOST_DB"
 
           python3 - "$HOST_DB" <<'PY'
-          import sqlite3
-          import sys
-          import urllib.parse
-
+          import sqlite3, sys, urllib.parse
           db = sys.argv[1]
           uri = 'file:' + urllib.parse.quote(db, safe='/') + '?mode=ro'
-          con = sqlite3.connect(uri, uri=True, timeout=5)
+          con = sqlite3.connect(uri, uri=True, timeout=10)
           con.execute('PRAGMA query_only=ON')
-          query_only = con.execute('PRAGMA query_only').fetchone()[0]
-          journal_mode = con.execute('PRAGMA journal_mode').fetchone()[0]
-          print(f'QUERY_ONLY={query_only}')
-          print(f'JOURNAL_MODE={journal_mode}')
+          assert con.execute('PRAGMA query_only').fetchone()[0] == 1
 
-          tables = [row[0] for row in con.execute(
-              "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' ORDER BY name"
-          )]
-          print(f'TABLE_COUNT={len(tables)}')
-          print('=== LINEAGE / CANONICAL CANDIDATE TABLES ===')
-          needles = ('source', 'xref', 'load', 'batch', 'promotion', 'gate', 'parcel', 'owner', 'sale', 'canonical', 'sync')
-          candidates = [name for name in tables if any(n in name.lower() for n in needles)]
-          for name in candidates:
+          tables = [r[0] for r in con.execute("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' ORDER BY name")]
+          print('=== ALL LIVE TABLE NAMES ===')
+          for name in tables:
               print(name)
 
-          print('=== CANDIDATE COLUMN VOCABULARY ===')
-          for name in candidates:
-              safe = name.replace('"', '""')
-              print(f'-- {name}')
-              for cid, col, typ, notnull, default, pk in con.execute(f'PRAGMA table_info("{safe}")'):
-                  print(f'{cid}|{col}|{typ}|notnull={notnull}|pk={pk}')
+          print('=== SELECTED LIVE ROW COUNTS ===')
+          for name in ('Counties','Properties','ComparableSales','EtlSyncJobs','PacsProperties','PacsOwners','PacsAssessments','PacsSales','TfParcels','TfOwners','TfSales','ProductLoadReceipts'):
+              if name not in tables:
+                  print(f'{name}=ABSENT')
+                  continue
+              safe = name.replace('"','""')
+              count = con.execute(f'SELECT COUNT(*) FROM "{safe}"').fetchone()[0]
+              print(f'{name}={count}')
+
+          print('=== ETL SYNC JOB SUMMARY ===')
+          if 'EtlSyncJobs' in tables:
+              rows = con.execute('''
+                  SELECT SourceSystem, EntityType, Direction, Status,
+                         COUNT(*) AS jobs,
+                         COALESCE(SUM(TotalRecords),0) AS total_records,
+                         COALESCE(SUM(ProcessedRecords),0) AS processed_records,
+                         COALESCE(SUM(FailedRecords),0) AS failed_records,
+                         COALESCE(SUM(SkippedRecords),0) AS skipped_records
+                  FROM EtlSyncJobs
+                  GROUP BY SourceSystem, EntityType, Direction, Status
+                  ORDER BY SourceSystem, EntityType, Direction, Status
+              ''').fetchall()
+              if not rows:
+                  print('EMPTY')
+              for row in rows:
+                  print('|'.join(str(x) for x in row))
+
+          print('=== EF MIGRATION HISTORY ===')
+          if '__EFMigrationsHistory' not in tables:
+              print('ABSENT')
+          else:
+              history = con.execute('SELECT MigrationId, ProductVersion FROM __EFMigrationsHistory ORDER BY MigrationId').fetchall()
+              print(f'COUNT={len(history)}')
+              if history:
+                  print(f'EARLIEST={history[0][0]}|{history[0][1]}')
+                  print(f'LATEST={history[-1][0]}|{history[-1][1]}')
+
           con.close()
           PY
           REMOTE
