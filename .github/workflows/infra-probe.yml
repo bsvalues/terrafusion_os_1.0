@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   lineage:
-    name: Running production DB identity probe
+    name: Live SQLite provenance schema read-only probe
     runs-on: ubuntu-latest
     environment: production
     timeout-minutes: 10
@@ -18,6 +18,7 @@ jobs:
       DEPLOY_HOST: ${{ vars.DEPLOY_HOST }}
       DEPLOY_PORT: ${{ vars.DEPLOY_PORT }}
       DEPLOY_USER: ${{ vars.DEPLOY_USER }}
+      APP_ROOT: ${{ vars.APP_ROOT }}
       DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
     steps:
       - name: Configure bounded SSH access
@@ -43,31 +44,102 @@ jobs:
           SSHCFG
           chmod 600 ~/.ssh/config
 
-      - name: Observe running backend provider and DB truth
+      - name: Inspect exact mounted SQLite database without writes
         shell: bash
         run: |
           set -euo pipefail
           DEPLOY_PORT="${DEPLOY_PORT:-22}"
-          ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" bash -s <<'REMOTE'
+          APP_ROOT="${APP_ROOT:-/opt/terrafusion/production}"
+          ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" "APP_ROOT='$APP_ROOT' bash -s" <<'REMOTE'
           set -euo pipefail
+          command -v python3 >/dev/null
           backend="$(docker ps --format '{{.Names}}' | grep -E 'terrafusion-production.*backend|production.*backend' | head -n1 || true)"
-          if [ -z "$backend" ]; then
-            echo 'BACKEND_CONTAINER_NOT_FOUND'
-            exit 31
-          fi
+          test -n "$backend"
+          test -f "$APP_ROOT/app.env"
 
-          echo '=== RUNNING CONFIGURATION CLAIM ==='
-          provider="$(docker inspect "$backend" --format '{{range .Config.Env}}{{println .}}{{end}}' \
-            | awk -F= '$1=="DatabaseProvider" {sub(/^[^=]*=/, ""); print; exit}')"
-          printf 'DatabaseProvider=%s\n' "${provider:-<unset>}"
+          DATA_SOURCE="$(python3 - "$APP_ROOT/app.env" <<'PY'
+          import pathlib, sys
+          for line in pathlib.Path(sys.argv[1]).read_text(encoding='utf-8').splitlines():
+              if not line.startswith('ConnectionStrings__DefaultConnection='):
+                  continue
+              raw = line.split('=', 1)[1].strip()
+              if len(raw) >= 2 and raw[0] == raw[-1] and raw[0] in {'\"', "'"}:
+                  raw = raw[1:-1]
+              parts = [p.strip() for p in raw.split(';') if p.strip()]
+              for part in parts:
+                  if '=' not in part:
+                      continue
+                  key, value = part.split('=', 1)
+                  if key.strip().lower().replace(' ', '') == 'datasource':
+                      print(value.strip())
+                      raise SystemExit(0)
+          raise SystemExit('DATA_SOURCE_NOT_FOUND')
+          PY
+          )"
 
-          echo '=== OBSERVED RUNTIME DB IDENTITY ==='
-          docker exec "$backend" wget -qO- --timeout=15 \
-            http://127.0.0.1:5000/api/runtime/truth/db-identity
-          echo
+          MOUNTS_JSON="$(docker inspect "$backend" --format '{{json .Mounts}}')"
+          HOST_DB="$(DATA_SOURCE="$DATA_SOURCE" MOUNTS_JSON="$MOUNTS_JSON" APP_ROOT="$APP_ROOT" python3 - <<'PY'
+          import json, os, pathlib
+          source = os.environ['DATA_SOURCE']
+          mounts = json.loads(os.environ['MOUNTS_JSON'])
+          if source.startswith('/'):
+              container_path = pathlib.PurePosixPath(source)
+          else:
+              container_path = pathlib.PurePosixPath('/app') / source
+          best = None
+          for mount in mounts:
+              dest = pathlib.PurePosixPath(mount.get('Destination') or '/')
+              try:
+                  rel = container_path.relative_to(dest)
+              except ValueError:
+                  continue
+              score = len(dest.parts)
+              if best is None or score > best[0]:
+                  best = (score, pathlib.Path(mount['Source']) / pathlib.Path(str(rel)))
+          if best is None:
+              candidate = pathlib.Path(os.environ['APP_ROOT']) / str(container_path).removeprefix('/app/')
+          else:
+              candidate = best[1]
+          print(candidate)
+          PY
+          )"
 
-          echo '=== OBSERVED RUNTIME DB CONTENT ==='
-          docker exec "$backend" wget -qO- --timeout=15 \
-            http://127.0.0.1:5000/api/runtime/truth/db-content
-          echo
+          test -f "$HOST_DB" || { echo 'LIVE_SQLITE_FILE_NOT_FOUND'; exit 41; }
+          echo "LIVE_DB_FILE_PRESENT=true"
+          echo "LIVE_DB_FILE_SIZE_BYTES=$(stat -c %s "$HOST_DB")"
+          test -f "${HOST_DB}-wal" && echo "LIVE_DB_WAL_PRESENT=true" || echo "LIVE_DB_WAL_PRESENT=false"
+          test -f "${HOST_DB}-shm" && echo "LIVE_DB_SHM_PRESENT=true" || echo "LIVE_DB_SHM_PRESENT=false"
+
+          python3 - "$HOST_DB" <<'PY'
+          import sqlite3
+          import sys
+          import urllib.parse
+
+          db = sys.argv[1]
+          uri = 'file:' + urllib.parse.quote(db, safe='/') + '?mode=ro'
+          con = sqlite3.connect(uri, uri=True, timeout=5)
+          con.execute('PRAGMA query_only=ON')
+          query_only = con.execute('PRAGMA query_only').fetchone()[0]
+          journal_mode = con.execute('PRAGMA journal_mode').fetchone()[0]
+          print(f'QUERY_ONLY={query_only}')
+          print(f'JOURNAL_MODE={journal_mode}')
+
+          tables = [row[0] for row in con.execute(
+              "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' ORDER BY name"
+          )]
+          print(f'TABLE_COUNT={len(tables)}')
+          print('=== LINEAGE / CANONICAL CANDIDATE TABLES ===')
+          needles = ('source', 'xref', 'load', 'batch', 'promotion', 'gate', 'parcel', 'owner', 'sale', 'canonical', 'sync')
+          candidates = [name for name in tables if any(n in name.lower() for n in needles)]
+          for name in candidates:
+              print(name)
+
+          print('=== CANDIDATE COLUMN VOCABULARY ===')
+          for name in candidates:
+              safe = name.replace('"', '""')
+              print(f'-- {name}')
+              for cid, col, typ, notnull, default, pk in con.execute(f'PRAGMA table_info("{safe}")'):
+                  print(f'{cid}|{col}|{typ}|notnull={notnull}|pk={pk}')
+          con.close()
+          PY
           REMOTE
