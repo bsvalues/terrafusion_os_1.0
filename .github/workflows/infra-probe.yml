@@ -1,35 +1,37 @@
-name: infra-probe
+name: c-lineage-readonly-probe
 
 on:
-  workflow_dispatch:
-    inputs:
-      target_env:
-        description: Environment to probe
-        required: true
-        type: choice
-        options:
-          - staging
-          - production
+  push:
+    branches:
+      - diag/c-lineage-readonly-20260825
 
 permissions:
   contents: read
 
 jobs:
-  probe:
-    name: Probe ${{ inputs.target_env }} infrastructure
+  lineage:
+    name: Production lineage read-only schema probe
     runs-on: ubuntu-latest
-    environment: ${{ inputs.target_env }}
+    environment: production
+    timeout-minutes: 15
     env:
       DEPLOY_HOST: ${{ vars.DEPLOY_HOST }}
       DEPLOY_PORT: ${{ vars.DEPLOY_PORT }}
       DEPLOY_USER: ${{ vars.DEPLOY_USER }}
+      APP_ROOT: ${{ vars.APP_ROOT }}
       DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
     steps:
-      - name: Configure SSH
+      - name: Configure bounded SSH access
         shell: bash
         run: |
           set -euo pipefail
           DEPLOY_PORT="${DEPLOY_PORT:-22}"
+          for required in DEPLOY_HOST DEPLOY_USER DEPLOY_SSH_KEY; do
+            if [ -z "${!required:-}" ]; then
+              echo "MISSING_${required}"
+              exit 1
+            fi
+          done
           install -d -m 700 ~/.ssh
           printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
@@ -37,79 +39,196 @@ jobs:
             ssh-keyscan -T 10 -t ed25519,rsa -p "$DEPLOY_PORT" "$DEPLOY_HOST" >> ~/.ssh/known_hosts 2>/dev/null && break
             sleep 5
           done
+          if ! grep -q "$DEPLOY_HOST" ~/.ssh/known_hosts 2>/dev/null; then
+            echo "DEPLOY_HOST_KEY_UNAVAILABLE"
+            exit 1
+          fi
           cat > ~/.ssh/config <<SSHCFG
           Host $DEPLOY_HOST
             ConnectTimeout 30
             ServerAliveInterval 15
             ServerAliveCountMax 3
+            StrictHostKeyChecking yes
+            UserKnownHostsFile ~/.ssh/known_hosts
           SSHCFG
-          if ! grep -q "$DEPLOY_HOST" ~/.ssh/known_hosts 2>/dev/null; then
-            printf '  StrictHostKeyChecking accept-new\n' >> ~/.ssh/config
-          fi
           chmod 600 ~/.ssh/config
 
-      - name: K3s / Kubernetes probe
+      - name: Observe production Sync lineage schema through read-only transaction
         shell: bash
         run: |
           set -euo pipefail
           DEPLOY_PORT="${DEPLOY_PORT:-22}"
-          echo "=== K3s / Kubernetes Probe ==="
-          ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" bash -s <<'SSH'
-          set -euo pipefail
-          echo "--- which k3s ---"
-          which k3s 2>/dev/null && echo "FOUND" || echo "NOT_FOUND"
-          echo "--- systemctl is-active k3s ---"
-          systemctl is-active k3s 2>/dev/null || echo "NOT_ACTIVE"
-          echo "--- kubectl get nodes ---"
-          kubectl get nodes 2>/dev/null || echo "KUBECTL_UNAVAILABLE"
-          echo "--- k3s kubectl get nodes ---"
-          k3s kubectl get nodes 2>/dev/null || echo "K3S_KUBECTL_UNAVAILABLE"
-          echo "--- listening ports (6443/10250) ---"
-          ss -tlnp 2>/dev/null | grep -E '6443|10250' || echo "NO_K8S_PORTS"
-          SSH
+          APP_ROOT="${APP_ROOT:-/opt/terrafusion/production}"
 
-      - name: Docker inventory
-        shell: bash
-        run: |
+          DB_JSON="$(ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" "APP_ROOT='$APP_ROOT' bash -s" <<'REMOTE'
           set -euo pipefail
-          DEPLOY_PORT="${DEPLOY_PORT:-22}"
-          echo "=== Docker Inventory ==="
-          ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" bash -s <<'SSH'
-          set -euo pipefail
-          echo "--- docker version ---"
-          docker version --format '{{.Server.Version}}' 2>/dev/null || echo "DOCKER_UNAVAILABLE"
-          echo "--- docker compose version ---"
-          docker compose version 2>/dev/null || echo "COMPOSE_UNAVAILABLE"
-          echo "--- running containers ---"
-          docker ps --format 'table {{.Names}}\t{{.Image}}\t{{.Status}}\t{{.Ports}}' 2>/dev/null || echo "DOCKER_PS_FAILED"
-          echo "--- docker networks ---"
-          docker network ls --format 'table {{.Name}}\t{{.Driver}}' 2>/dev/null || echo "NETWORK_LS_FAILED"
-          echo "--- disk usage ---"
-          df -h / /opt 2>/dev/null || true
-          echo "--- memory ---"
-          free -h 2>/dev/null || true
-          SSH
+          command -v python3 >/dev/null || { echo "REMOTE_PYTHON3_REQUIRED" >&2; exit 21; }
+          test -f "$APP_ROOT/app.env" || { echo "APP_ENV_NOT_FOUND" >&2; exit 22; }
+          python3 - "$APP_ROOT/app.env" <<'PY'
+          import json
+          import pathlib
+          import sys
+          import urllib.parse
 
-      - name: Edge proxy health
-        shell: bash
-        run: |
-          set -euo pipefail
-          DEPLOY_PORT="${DEPLOY_PORT:-22}"
-          echo "=== Edge Proxy Health ==="
-          ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" bash -s <<'SSH'
-          set -euo pipefail
-          echo "--- edge proxy container ---"
-          docker inspect edge-proxy-edge-1 --format '{{.State.Status}} since {{.State.StartedAt}}' 2>/dev/null || echo "EDGE_PROXY_NOT_FOUND"
-          echo "--- caddy config test ---"
-          docker exec edge-proxy-edge-1 caddy validate --config /etc/caddy/Caddyfile --adapter caddyfile 2>/dev/null || echo "CADDY_VALIDATE_FAILED"
-          echo "--- edge network members ---"
-          docker network inspect terrafusion-edge --format '{{range .Containers}}{{.Name}} {{end}}' 2>/dev/null || echo "EDGE_NETWORK_INSPECT_FAILED"
-          echo "--- bound ports (host 80/443) ---"
-          ss -tlnp 2>/dev/null | grep -E ':80\b|:443\b' || echo "NO_EDGE_PORTS"
-          echo "--- internal health check (production) ---"
-          docker exec edge-proxy-edge-1 wget -qO- --timeout=5 http://terrafusion-production-proxy-1:80/health 2>/dev/null && echo "" || echo "PROD_INTERNAL_UNREACHABLE"
-          echo "--- internal health check (staging) ---"
-          docker exec edge-proxy-edge-1 wget -qO- --timeout=5 http://terrafusion-staging-proxy-1:80/health 2>/dev/null && echo "" || echo "STAGING_INTERNAL_UNREACHABLE"
-          echo "--- external health check (localhost) ---"
-          curl -sSfk --max-time 5 https://127.0.0.1/health -H 'Host: terrafusionmarket.com' 2>/dev/null && echo "" || echo "EXTERNAL_HEALTH_FAILED"
-          SSH
+          path = pathlib.Path(sys.argv[1])
+          raw = None
+          for line in path.read_text(encoding='utf-8').splitlines():
+              if line.startswith('ConnectionStrings__DefaultConnection='):
+                  raw = line.split('=', 1)[1].strip()
+          if raw is None:
+              raise SystemExit('DEFAULT_CONNECTION_NOT_FOUND')
+          if len(raw) >= 2 and raw[0] == raw[-1] and raw[0] in {'\"', "'"}:
+              raw = raw[1:-1]
+
+          def normalize(key):
+              return ''.join(ch for ch in key.lower() if ch.isalnum())
+
+          values = {}
+          if raw.lower().startswith(('postgres://', 'postgresql://')):
+              parsed = urllib.parse.urlparse(raw)
+              values = {
+                  'host': parsed.hostname,
+                  'port': parsed.port or 5432,
+                  'database': parsed.path.lstrip('/'),
+                  'username': urllib.parse.unquote(parsed.username or ''),
+                  'password': urllib.parse.unquote(parsed.password or ''),
+                  'sslmode': urllib.parse.parse_qs(parsed.query).get('sslmode', [''])[0],
+              }
+          else:
+              parts = []
+              buf = []
+              quote = None
+              i = 0
+              while i < len(raw):
+                  ch = raw[i]
+                  if quote is not None:
+                      if ch == quote:
+                          if i + 1 < len(raw) and raw[i + 1] == quote:
+                              buf.append(ch)
+                              i += 2
+                              continue
+                          quote = None
+                      else:
+                          buf.append(ch)
+                  else:
+                      if ch in {'\"', "'"}:
+                          quote = ch
+                      elif ch == ';':
+                          parts.append(''.join(buf))
+                          buf = []
+                      else:
+                          buf.append(ch)
+                  i += 1
+              parts.append(''.join(buf))
+              pairs = {}
+              for part in parts:
+                  if not part.strip() or '=' not in part:
+                      continue
+                  key, value = part.split('=', 1)
+                  pairs[normalize(key)] = value.strip()
+              def first(*keys, default=''):
+                  for key in keys:
+                      value = pairs.get(normalize(key))
+                      if value not in (None, ''):
+                          return value
+                  return default
+              values = {
+                  'host': first('Host', 'Server', 'Data Source'),
+                  'port': int(first('Port', default='5432')),
+                  'database': first('Database', 'Initial Catalog'),
+                  'username': first('Username', 'User ID', 'User'),
+                  'password': first('Password', 'Pwd'),
+                  'sslmode': first('SSL Mode', 'SslMode'),
+              }
+
+          missing = [k for k in ('host', 'database', 'username') if not values.get(k)]
+          if missing:
+              raise SystemExit('CONNECTION_FIELDS_MISSING:' + ','.join(missing))
+          print(json.dumps(values, separators=(',', ':')))
+          PY
+          REMOTE
+          )"
+
+          DB_HOST="$(jq -er '.host' <<<"$DB_JSON")"
+          DB_PORT="$(jq -er '.port' <<<"$DB_JSON")"
+          DB_NAME="$(jq -er '.database' <<<"$DB_JSON")"
+          DB_USER="$(jq -er '.username' <<<"$DB_JSON")"
+          DB_PASSWORD="$(jq -r '.password // ""' <<<"$DB_JSON")"
+          DB_SSLMODE="$(jq -r '.sslmode // ""' <<<"$DB_JSON" | tr '[:upper:]' '[:lower:]' | tr -d ' ')"
+          echo "::add-mask::$DB_PASSWORD"
+
+          case "$DB_SSLMODE" in
+            '') PGSSLMODE=prefer ;;
+            require|prefer|allow|disable|verify-ca|verify-full) PGSSLMODE="$DB_SSLMODE" ;;
+            verifyca) PGSSLMODE=verify-ca ;;
+            verifyfull) PGSSLMODE=verify-full ;;
+            *)
+              echo "UNSUPPORTED_SSL_MODE_FOR_READONLY_PROBE:$DB_SSLMODE"
+              exit 23
+              ;;
+          esac
+
+          TUNNEL_TARGET="$DB_HOST"
+          case "${DB_HOST,,}" in
+            localhost|127.0.0.1|::1|host.docker.internal) TUNNEL_TARGET=127.0.0.1 ;;
+          esac
+
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq postgresql-client >/dev/null
+
+          LOCAL_PORT=65432
+          ssh -fNT -o ExitOnForwardFailure=yes \
+            -L "${LOCAL_PORT}:${TUNNEL_TARGET}:${DB_PORT}" \
+            -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST"
+          trap 'pkill -f "ssh.*${LOCAL_PORT}:" 2>/dev/null || true' EXIT
+
+          export PGHOST="$DB_HOST"
+          export PGHOSTADDR=127.0.0.1
+          export PGPORT="$LOCAL_PORT"
+          export PGDATABASE="$DB_NAME"
+          export PGUSER="$DB_USER"
+          export PGPASSWORD="$DB_PASSWORD"
+          export PGSSLMODE
+          export PGCONNECT_TIMEOUT=10
+          export PGAPPNAME=terrafusion-c-lineage-readonly
+
+          psql -X -v ON_ERROR_STOP=1 -P pager=off <<'SQL'
+          BEGIN TRANSACTION READ ONLY;
+
+          \echo '=== CONNECTION / READ-ONLY PROOF ==='
+          SELECT
+            current_database() AS database,
+            current_user AS db_user,
+            current_setting('transaction_read_only') AS transaction_read_only,
+            current_setting('server_version') AS server_version;
+
+          \echo '=== RELEVANT TABLE INVENTORY ==='
+          SELECT
+            n.nspname AS table_schema,
+            c.relname AS table_name,
+            c.reltuples::bigint AS estimated_rows
+          FROM pg_class c
+          JOIN pg_namespace n ON n.oid = c.relnamespace
+          WHERE c.relkind IN ('r','p')
+            AND (
+              n.nspname = 'sync_bridge'
+              OR (n.nspname = 'canonical_tf' AND c.relname IN ('tf_parcel','tf_owner','tf_sale'))
+            )
+          ORDER BY n.nspname, c.relname;
+
+          \echo '=== LIVE COLUMN VOCABULARY ==='
+          SELECT
+            table_schema,
+            table_name,
+            ordinal_position,
+            column_name,
+            data_type,
+            is_nullable
+          FROM information_schema.columns
+          WHERE
+            table_schema = 'sync_bridge'
+            OR (table_schema = 'canonical_tf' AND table_name IN ('tf_parcel','tf_owner','tf_sale'))
+          ORDER BY table_schema, table_name, ordinal_position;
+
+          ROLLBACK;
+          SQL
