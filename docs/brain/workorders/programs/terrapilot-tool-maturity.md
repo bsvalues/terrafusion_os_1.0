@@ -3,7 +3,7 @@
 **Program:** P5  
 **Status:** ACTIVE  
 **Owner:** Operator (bsvalues@gmail.com)  
-**Last Updated:** 2026-07-03
+**Last Updated:** 2026-08-26
 
 ---
 
@@ -48,7 +48,7 @@ A tool at L1 must be disclosed as "not yet integrated" in any UI and in any oper
 | WO-TERRAPILOT-P13 | Contract-covered metadata change | **COMPLETE IN PR** | Update only `summarize_levy_rate_components` maturity metadata and supporting evidence/routing docs |
 | WO-TERRAPILOT-P14 | Contract-covered metadata stop-gate rollup | **COMPLETE IN PR** | Close the L2 metadata chain and record the stop wall before live/backend integration |
 | WO-TERRAPILOT-P15 | Future promotion authorization decision packet | **COMPLETE IN PR** | Record owner decision choices and evidence required before any future live/backend integration; no implementation in this packet |
-| WO-TERRAPILOT-P16 | Live integration design packet | **BLOCKED — OWNER AUTHORIZATION REQUIRED** | Design-only packet for a possible future live/backend integration path; no implementation unless separately authorized |
+| WO-TERRAPILOT-P16 | Live integration design packet | **COMPLETE ON PROTECTED MERGE** | Select the exact native TerraLevy read integration boundary and runtime proof requirements; no runtime implementation or L3/L4 promotion |
 
 ---
 
@@ -64,7 +64,7 @@ A tool at L1 must be disclosed as "not yet integrated" in any UI and in any oper
 ## Dependency Chain
 
 ```
-P1 (partial) -> P2 -> P3 -> P4 -> P5 -> P6 -> P7 -> P8 -> P9 decision -> P10 evidence packet -> P11 metadata decision -> P12 metadata authorization -> P13 metadata change -> P14 stop-gate rollup -> P15 owner decision packet -> P16 blocked until owner authorization
+P1 (partial) -> P2 -> P3 -> P4 -> P5 -> P6 -> P7 -> P8 -> P9 decision -> P10 evidence packet -> P11 metadata decision -> P12 metadata authorization -> P13 metadata change -> P14 stop-gate rollup -> P15 owner decision packet -> P16 live-integration design (complete on protected merge)
 ```
 
 P2-P7 are governance/evidence work. Any actual stub-to-live promotion is a separate runtime work
@@ -81,14 +81,17 @@ authorization packet for any actual metadata change. P13 applies only the owner-
 `backend-integrated`, `liveIntegration: true`, or `promoted` unless a separate operator-authorized
 runtime work order exists. P14 is evidence/governance only and must not implement live/backend
 integration. P15 is an owner decision packet only; it must not implement live/backend integration and
-it does not authorize metadata promotion beyond the existing L2 / `contract-covered` state.
+it does not authorize metadata promotion beyond the existing L2 / `contract-covered` state. P16
+selects the exact future read integration design for `summarize_levy_rate_components` and completes
+that design-only chain on protected merge. P16 does not admit or fabricate a runtime implementation
+work order and does not authorize an L3/L4 claim.
 
 ---
 
 ## Stop Conditions
 
 - If maturity metadata cannot be enforced without runtime changes, stop and record the gap.
-- If a promotion candidate requires backend, auth, secrets, county data, PACS, live DB, deployment, or runtime behavior changes, stop before implementation.
+- If a promotion candidate requires backend, auth, secrets, county data, PACS, live DB, deployment, or runtime behavior changes, stop before implementation unless a separately admitted runtime Work Order authorizes that exact work.
 - Do not claim TerraPilot is "functional" until at least one tool reaches L4.
 
 ---
