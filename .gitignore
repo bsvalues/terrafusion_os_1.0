@@ -102,6 +102,7 @@ LEGACY_CODE_ARCHIVE/
 pids/
 /.terrafusion/runtime/forge/valuation/
 /.terrafusion/runtime/atlas/spatial-read/
+/.terrafusion/runtime/atlas/adoption-receipts/
 *.pid
 *.seed
 *.pid.lock
