@@ -54,7 +54,7 @@
       "current_execution": {
         "state": "ACTIVE",
         "owner_action_required": false,
-        "current_child_work_order": "WO-SR-010A",
+        "current_child_work_order": "WO-SR-010B",
         "current_pr": null,
         "completed_child": {
           "id": "ATLAS_CANONICAL_RUNTIME_AND_OWNERSHIP",
@@ -66,8 +66,15 @@
           "suite_merge": "708fc5c31988405f9ca2cba7ebea7bb9d1fec3a6",
           "protected_main_verified": true
         },
-        "current_child_result": "WO-SR-010A locally proved exact Dais module, frozen schema and source-manifest identity, typed full-manifest enforcement, byte-identical candidate/publication inventories, same-volume/disjoint build roots, concurrency exclusion, clean bootstrap, backup-verification recovery, publication-failure rollback, and bidirectional rollback inventories.",
-        "next_after_current_child": "Dais persistent governed runtime adoption, Dais standalone ownership finalization, then Dossier and GPT"
+        "completed_dais_staging": {
+          "work_order": "WO-SR-010A",
+          "sovereign_pr": 1466,
+          "sovereign_exact_head": "88e7454b2a64a99d3a917914e486fff410df756c",
+          "sovereign_merge": "5182742d756cea6a939bb12489e660d83b9593b6",
+          "protected_main_verified": true
+        },
+        "current_child_result": "WO-SR-010A proved exact Dais module, frozen schema and source-manifest identity, typed full-manifest enforcement, protected-main reachability and negative refusal, byte-identical publication, concurrency exclusion and executed whole-slot rollback; PR #1466 passed all exact-head checks, merged and was verified on protected main.",
+        "next_after_current_child": "Dais protected-main standalone ownership finalization, then Dossier and GPT"
       }
     },
     {

@@ -13,7 +13,7 @@
 
 ## Active Goal
 
-The Five-Suite Federated Repository Buildout is active under `OWNER-FIVE-SUITE-FEDERATED-COMPLETION-20260826`. Atlas runtime PR #1465 merged as `4fcbfbd0585122f67f640b1b76786b7629f28e1f`; Atlas ownership PR #4 merged as `708fc5c31988405f9ca2cba7ebea7bb9d1fec3a6`; both protected mains were verified. `WO-SR-010A` is active and stages the exact Dais module plus frozen schema through an exact three-file manifest-bound slot with executed whole-slot rollback. Continue to Dais runtime adoption and ownership truth, then Dossier and GPT. The mission hard walls remain binding.
+The Five-Suite Federated Repository Buildout is active under `OWNER-FIVE-SUITE-FEDERATED-COMPLETION-20260826`. Atlas runtime and ownership are complete. Dais staging PR #1466 merged as `5182742d756cea6a939bb12489e660d83b9593b6` and protected main was verified. `WO-SR-010B` is active: adopt the exact three-file Dais artifact as the real persistent Development runtime gate, execute rollback, and retire legacy semantic fallback. Continue to Dais ownership truth, then Dossier and GPT. The mission hard walls remain binding.
 
 The prior `WO-SR-009C` completed before this activation. PR #1424 merged exact assured head
 `e70548cb4938da92b2c0b254d71c5361aa10a6ed` as
@@ -186,7 +186,8 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | **WO-SR-007C Atlas Canonical Artifact Staging** | **DONE / R3 / PR #1464** | Exact head `848546a3d` merged as `5a328e728`; all eight protected contexts passed and 10/10 review threads resolved |
 | **WO-SR-007D Atlas Persistent Local Runtime Adoption** | **DONE / R4 / PR #1465** | Merge `4fcbfbd05`; source-tree Development `LocalExact`; published Development disabled; exact startup/per-invocation provenance; real A/B/restored starts; Disabled rollback; 89/89 focused tests |
 | **Atlas Standalone Canonical Ownership Finalization** | **DONE / R2 / Atlas PR #4** | Exact head `8c2d4d870` merged as `708fc5c319`; protected suite main verified; module bytes unchanged |
-| **WO-SR-010A Dais Canonical Artifact Staging** | **ACTIVE / R3** | Exact module, schema, source manifest, generated three-file slot, clean bootstrap, and executed whole-slot rollback proved locally |
+| **WO-SR-010A Dais Canonical Artifact Staging** | **DONE / R3 / PR #1466** | Exact head `88e7454b2` merged as `5182742d7`; all checks green, review resolved, protected main verified |
+| **WO-SR-010B Dais Persistent Exact Runtime Adoption** | **ACTIVE / R4** | Real controller consumer, exact startup/per-invocation verifier, constrained Node host, persistent Development selection and observed rollback |
 
 ### portfolio-operator (`GOAL-PORTFOLIO-OPERATOR-001` / `LOOP-PORTFOLIO-OPERATOR-001`)
 | WO | State | Notes |

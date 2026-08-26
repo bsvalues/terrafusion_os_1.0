@@ -6,10 +6,14 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Options;
 using Moq;
 using TerraFusion.Core.Entities;
 using TerraFusion.Core.Services;
 using TerraFusion.API.Controllers;
+using TerraFusion.API.Adapters;
+using TerraFusion.API.Configuration;
+using TerraFusion.API.Services.Dais;
 using Xunit;
 using DataDbContext = TerraFusion.Data.TerraFusionDbContext;
 using Task = System.Threading.Tasks.Task;
@@ -63,7 +67,8 @@ public sealed class DaisEndpointContractTests
         ICertificationService? certificationSvc = null,
         INoticeService? noticeSvc = null,
         IQueueService? queueSvc = null,
-        ClaimsPrincipal? principal = null)
+        ClaimsPrincipal? principal = null,
+        IDaisAppealWorkflowConsumer? appealWorkflowConsumer = null)
     {
         var noticeMock = new Mock<INoticeService>();
         noticeMock.Setup(s => s.CreateAsync(It.IsAny<Notice>()))
@@ -100,7 +105,8 @@ public sealed class DaisEndpointContractTests
             noticeSvc ?? noticeMock.Object,
             queueSvc ?? queueMock.Object,
             userContextMock.Object,
-            auditMock.Object);
+            auditMock.Object,
+            appealWorkflowConsumer ?? new ExactContractTestConsumer());
 
         var countyIdStr = BentonCountyId.ToString();
         var claims = principal ?? new ClaimsPrincipal(new ClaimsIdentity(
@@ -255,12 +261,172 @@ public sealed class DaisEndpointContractTests
         problem.Value.Should().BeOfType<ProblemDetails>();
     }
 
+    [TerraFusion.Unit.Tests.Dais.ExactDaisAppealWorkflowHostFact]
+    public async Task DaisController_GetAppealWorkflowByParcel_UsesExactStagedRuntimeEndToEnd()
+    {
+        var modulePath = Path.GetFullPath(
+            Environment.GetEnvironmentVariable("TERRAFUSION_DAIS_HOST_MODULE_PATH")!);
+        var schemaPath = Path.GetFullPath(
+            Environment.GetEnvironmentVariable("TERRAFUSION_DAIS_HOST_SCHEMA_PATH")!);
+        var artifactSlot = Directory.GetParent(modulePath)!.FullName;
+        var sovereignRoot = Directory.GetParent(
+            Directory.GetParent(
+                Directory.GetParent(
+                    Directory.GetParent(artifactSlot)!.FullName)!.FullName)!.FullName)!.FullName;
+        var verifier = new DaisAppealWorkflowArtifactVerifier(sovereignRoot);
+        var verified = verifier.Verify();
+        verified.ModulePath.Should().Be(modulePath);
+        verified.SchemaPath.Should().Be(schemaPath);
+
+        var options = new DaisAppealWorkflowOptions
+        {
+            Mode = DaisAppealWorkflowMode.LocalExact,
+            ModulePath = modulePath,
+            SchemaPath = schemaPath,
+            NodeExecutablePath = FindNodeExecutable(),
+            TimeoutSeconds = 30,
+        };
+        var processHost = new DaisAppealWorkflowProcessHost(options.NodeExecutablePath);
+        var verifiedHost = new DaisAppealWorkflowVerifiedProcessHost(processHost, verifier);
+        var consumer = new DaisAppealWorkflowConsumer(verifiedHost, Options.Create(options));
+
+        await using var db = CreateDbContext(
+            nameof(DaisController_GetAppealWorkflowByParcel_UsesExactStagedRuntimeEndToEnd));
+        var appealId = new Guid("aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee");
+        var appealMock = new Mock<IAppealService>();
+        appealMock.Setup(service => service.GetByParcelAsync("PARCEL-EXACT", BentonCountyId))
+            .ReturnsAsync([
+                new Appeal
+                {
+                    Id = appealId,
+                    ParcelId = "PARCEL-EXACT",
+                    TaxYear = 2026,
+                    AppealGround = "MARKET_VALUE",
+                    Status = "filed",
+                    FiledDate = new DateTime(2026, 1, 10, 0, 0, 0, DateTimeKind.Utc),
+                    CountyId = BentonCountyId,
+                },
+            ]);
+        var controller = CreateDaisController(
+            db,
+            appealMock.Object,
+            appealWorkflowConsumer: consumer);
+
+        var response = await controller.GetAppealWorkflowByParcel("PARCEL-EXACT");
+
+        var content = response.Should().BeOfType<ContentResult>().Subject;
+        var contract = DeserializeAppealWorkflowResult(content);
+        contract.CountyId.Should().Be(BentonCountyId.ToString("D"));
+        contract.Appeals.Should().ContainSingle().Which.AppealId.Should().Be(appealId.ToString("D"));
+    }
+
+    [Fact]
+    public async Task DaisController_GetAppealWorkflowByParcel_DisabledRuntimeReturns503()
+    {
+        await using var db = CreateDbContext(nameof(DaisController_GetAppealWorkflowByParcel_DisabledRuntimeReturns503));
+        var appealMock = new Mock<IAppealService>();
+        appealMock.Setup(service => service.GetByParcelAsync("PARCEL-001", BentonCountyId))
+            .ReturnsAsync([]);
+        var consumer = new Mock<IDaisAppealWorkflowConsumer>();
+        consumer.Setup(service => service.ConsumeAsync(
+                It.IsAny<DaisAppealWorkflowReadRequest>(),
+                It.IsAny<IReadOnlyList<Appeal>>(),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(DaisAppealWorkflowConsumerResult.Failed(
+                DaisAppealWorkflowConsumerFailure.Disabled,
+                "disabled"));
+        var controller = CreateDaisController(
+            db,
+            appealMock.Object,
+            appealWorkflowConsumer: consumer.Object);
+
+        var result = await controller.GetAppealWorkflowByParcel("PARCEL-001");
+
+        var problem = result.Should().BeOfType<ObjectResult>().Subject;
+        problem.StatusCode.Should().Be(StatusCodes.Status503ServiceUnavailable);
+    }
+
+    [Fact]
+    public async Task DaisController_GetAppealWorkflowByParcel_RuntimeFailureReturns500()
+    {
+        await using var db = CreateDbContext(nameof(DaisController_GetAppealWorkflowByParcel_RuntimeFailureReturns500));
+        var appealMock = new Mock<IAppealService>();
+        appealMock.Setup(service => service.GetByParcelAsync("PARCEL-001", BentonCountyId))
+            .ReturnsAsync([]);
+        var consumer = new Mock<IDaisAppealWorkflowConsumer>();
+        consumer.Setup(service => service.ConsumeAsync(
+                It.IsAny<DaisAppealWorkflowReadRequest>(),
+                It.IsAny<IReadOnlyList<Appeal>>(),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(DaisAppealWorkflowConsumerResult.Failed(
+                DaisAppealWorkflowConsumerFailure.RuntimeFailed,
+                "failed"));
+        var controller = CreateDaisController(
+            db,
+            appealMock.Object,
+            appealWorkflowConsumer: consumer.Object);
+
+        var result = await controller.GetAppealWorkflowByParcel("PARCEL-001");
+
+        var problem = result.Should().BeOfType<ObjectResult>().Subject;
+        problem.StatusCode.Should().Be(StatusCodes.Status500InternalServerError);
+    }
+
     private static DaisAppealWorkflowReadResult DeserializeAppealWorkflowResult(ContentResult content)
     {
         content.Content.Should().NotBeNullOrWhiteSpace();
         return JsonSerializer.Deserialize<DaisAppealWorkflowReadResult>(
             content.Content!,
             new JsonSerializerOptions(JsonSerializerDefaults.Web))!;
+    }
+
+    private static string FindNodeExecutable()
+    {
+        var output = new System.Diagnostics.ProcessStartInfo
+        {
+            FileName = "node",
+            RedirectStandardOutput = true,
+            RedirectStandardError = true,
+            UseShellExecute = false,
+            CreateNoWindow = true,
+            Arguments = "-p process.execPath",
+        };
+        using var process = System.Diagnostics.Process.Start(output)
+            ?? throw new InvalidOperationException("Unable to start Node path probe.");
+        var path = process.StandardOutput.ReadToEnd().Trim();
+        process.WaitForExit();
+        if (process.ExitCode != 0 || string.IsNullOrWhiteSpace(path))
+        {
+            throw new InvalidOperationException("Unable to resolve Node executable.");
+        }
+        return Path.GetFullPath(path);
+    }
+
+    private sealed class ExactContractTestConsumer : IDaisAppealWorkflowConsumer
+    {
+        public Task<DaisAppealWorkflowConsumerResult> ConsumeAsync(
+            DaisAppealWorkflowReadRequest request,
+            IReadOnlyList<Appeal> appeals,
+            CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var resultJson = DaisAppealWorkflowReadAdapter.Serialize(request, appeals);
+                return Task.FromResult(DaisAppealWorkflowConsumerResult.Accepted(
+                    resultJson,
+                    DaisAppealWorkflowOptions.ExpectedModuleSha256,
+                    DaisAppealWorkflowOptions.ExpectedModuleSha256,
+                    DaisAppealWorkflowOptions.ExpectedSchemaSha256,
+                    DaisAppealWorkflowOptions.ExpectedSchemaSha256));
+            }
+            catch (Exception exception) when (
+                exception is ArgumentException or InvalidOperationException or JsonException)
+            {
+                return Task.FromResult(DaisAppealWorkflowConsumerResult.Failed(
+                    DaisAppealWorkflowConsumerFailure.InvalidRequest,
+                    exception.Message));
+            }
+        }
     }
 
     [Fact]

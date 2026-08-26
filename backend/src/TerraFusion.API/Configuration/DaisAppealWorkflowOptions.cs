@@ -23,14 +23,21 @@ public sealed class DaisAppealWorkflowOptions
         "contract-compat/dais.appeal-workflow.v1/manifest.json";
     public const string ExpectedSourceManifestSha256 =
         "6dbcef689d7cb1f282bdd34eff56009280fb391bedfa58d0308480365b962859";
+    public const string ExpectedPublishedManifestSha256 =
+        "e9ffd2acd811d7f2d309929757661f7f5dd3873b1027fa1af500b0d7eadb9186";
+    public const int ExpectedPublishedManifestLength = 1161;
     public const string ExpectedContractSourceSha = "e57b1eca9c3291d10203efaa1fd586bcbce13f94";
     public const string ExpectedSourceDtoSha256 =
         "c9bb02054fc5a211ed609a3e9d7fe604e34cd0613701a57f6f2788d312348f47";
     public const string ExpectedTransport = "local-os-managed-artifact-slot";
     public const string ArtifactSlotRelativePath = ".terrafusion/runtime/dais/appeal-workflow";
 
-    // Runtime adoption is a separate child Work Order. Staging must not silently activate it.
+    // Staging alone must not activate the runtime; selection remains explicit and fail closed.
     public DaisAppealWorkflowMode Mode { get; set; } = DaisAppealWorkflowMode.Disabled;
+    public string NodeExecutablePath { get; internal set; } = string.Empty;
+    public string ModulePath { get; internal set; } = string.Empty;
+    public string SchemaPath { get; internal set; } = string.Empty;
+    public int TimeoutSeconds { get; set; } = 30;
 }
 
 public enum DaisAppealWorkflowMode
