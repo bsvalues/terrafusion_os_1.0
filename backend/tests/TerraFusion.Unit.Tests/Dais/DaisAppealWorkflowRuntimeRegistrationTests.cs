@@ -8,8 +8,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
+using TerraFusion.Abstractions.DTOs;
 using TerraFusion.API.Configuration;
 using TerraFusion.API.Services.Dais;
+using AppealEntity = TerraFusion.Core.Entities.Appeal;
 using Xunit;
 
 namespace TerraFusion.Unit.Tests.Dais;
@@ -314,6 +316,87 @@ public sealed class DaisAppealWorkflowRuntimeRegistrationTests
         provider.GetService<IDaisAppealWorkflowConsumer>().Should().BeNull();
     }
 
+    [ExactDaisAppealWorkflowHostFact]
+    public async Task ConfiguredDevelopmentHost_StartsAndExecutesExactRuntime()
+    {
+        var sovereignRoot = ResolveConfiguredSovereignRoot();
+        var builder = CreateConfiguredDevelopmentHostBuilder(sovereignRoot);
+        builder.Services.AddDaisAppealWorkflowRuntime(builder.Configuration, builder.Environment);
+        using var host = builder.Build();
+
+        await host.StartAsync();
+        try
+        {
+            using var scope = host.Services.CreateScope();
+            var options = scope.ServiceProvider
+                .GetRequiredService<IOptions<DaisAppealWorkflowOptions>>()
+                .Value;
+            options.Mode.Should().Be(DaisAppealWorkflowMode.LocalExact);
+            options.ModulePath.Should().Be(Path.GetFullPath(
+                Environment.GetEnvironmentVariable("TERRAFUSION_DAIS_HOST_MODULE_PATH")!));
+            options.SchemaPath.Should().Be(Path.GetFullPath(
+                Environment.GetEnvironmentVariable("TERRAFUSION_DAIS_HOST_SCHEMA_PATH")!));
+
+            var consumer = scope.ServiceProvider.GetRequiredService<IDaisAppealWorkflowConsumer>();
+            var countyId = new Guid("010b010b-010b-010b-010b-010b010b010b");
+            var request = new DaisAppealWorkflowReadRequest
+            {
+                SchemaVersion = "1.0.0",
+                CountyId = countyId.ToString("D"),
+                Selector = new DaisAppealSelector { ParcelId = "PARCEL-EMPTY" },
+                TraceId = "configured-development-host",
+            };
+
+            var result = await consumer.ConsumeAsync(
+                request,
+                Array.Empty<AppealEntity>(),
+                CancellationToken.None);
+
+            result.Success.Should().BeTrue();
+            result.Failure.Should().Be(DaisAppealWorkflowConsumerFailure.None);
+            result.SourceModuleSha256.Should().Be(DaisAppealWorkflowOptions.ExpectedModuleSha256);
+            result.CopiedModuleSha256.Should().Be(DaisAppealWorkflowOptions.ExpectedModuleSha256);
+            result.SourceSchemaSha256.Should().Be(DaisAppealWorkflowOptions.ExpectedSchemaSha256);
+            result.CopiedSchemaSha256.Should().Be(DaisAppealWorkflowOptions.ExpectedSchemaSha256);
+            result.NormalizedResultJson.Should().NotBeNullOrWhiteSpace();
+            using var normalized = JsonDocument.Parse(result.NormalizedResultJson!);
+            normalized.RootElement.GetProperty("countyId").GetString()
+                .Should().Be(countyId.ToString("D"));
+            normalized.RootElement.GetProperty("appeals").GetArrayLength().Should().Be(0);
+        }
+        finally
+        {
+            await host.StopAsync();
+        }
+    }
+
+    [ExactDaisAppealWorkflowHostFact]
+    public async Task ConfiguredDevelopmentHost_DisabledSelectionStartsWithoutRuntime()
+    {
+        var sovereignRoot = ResolveConfiguredSovereignRoot();
+        var builder = CreateConfiguredDevelopmentHostBuilder(sovereignRoot);
+        builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
+        {
+            [$"{DaisAppealWorkflowOptions.SectionName}:Mode"] = "Disabled",
+        });
+        builder.Services.AddDaisAppealWorkflowRuntime(builder.Configuration, builder.Environment);
+        using var host = builder.Build();
+
+        await host.StartAsync();
+        try
+        {
+            host.Services.GetRequiredService<IOptions<DaisAppealWorkflowOptions>>()
+                .Value.Mode.Should().Be(DaisAppealWorkflowMode.Disabled);
+            host.Services.GetService<IDaisAppealWorkflowConsumer>().Should().BeNull();
+            host.Services.GetService<IDaisAppealWorkflowProcessHost>().Should().BeNull();
+            host.Services.GetService<DaisAppealWorkflowProcessHost>().Should().BeNull();
+        }
+        finally
+        {
+            await host.StopAsync();
+        }
+    }
+
     [Fact]
     public void ProductionRefusesLocalExactBeforeArtifactResolution()
     {
@@ -406,6 +489,36 @@ public sealed class DaisAppealWorkflowRuntimeRegistrationTests
             [$"{DaisAppealWorkflowOptions.SectionName}:Mode"] = "LocalExact",
             [$"{DaisAppealWorkflowOptions.SectionName}:TimeoutSeconds"] = "30",
         }).Build();
+
+    private static string ResolveConfiguredSovereignRoot()
+    {
+        var modulePath = Path.GetFullPath(
+            Environment.GetEnvironmentVariable("TERRAFUSION_DAIS_HOST_MODULE_PATH")!);
+        return DaisAppealWorkflowArtifactVerifier.ResolveSovereignRoot(
+            Directory.GetParent(modulePath)!.FullName);
+    }
+
+    private static HostApplicationBuilder CreateConfiguredDevelopmentHostBuilder(
+        string sovereignRoot)
+    {
+        var builder = new HostApplicationBuilder(new HostApplicationBuilderSettings
+        {
+            ApplicationName = typeof(DaisAppealWorkflowRuntimeRegistrationTests).Assembly.FullName,
+            EnvironmentName = Environments.Development,
+            ContentRootPath = sovereignRoot,
+            DisableDefaults = true,
+        });
+        builder.Configuration.SetBasePath(sovereignRoot);
+        builder.Configuration.AddJsonFile(
+            Path.Combine(
+                "backend",
+                "src",
+                "TerraFusion.API",
+                "appsettings.Development.json"),
+            optional: false,
+            reloadOnChange: false);
+        return builder;
+    }
 
     private static string FindNodeExecutable()
     {

@@ -137,6 +137,9 @@ try {
     $sovereignHead = (git -C $sovereignRepository rev-parse HEAD).Trim()
     Invoke-Checked git @('-C', $sovereignRepository, 'merge-base', '--is-ancestor', $expectedSovereignBase, $sovereignHead)
     $changesBefore = @(Get-SovereignChangeSnapshot)
+    if ($changesBefore.Count -ne 0) {
+        throw 'Dais runtime adoption proof requires a clean committed sovereign revision.'
+    }
     $development = Get-Content -LiteralPath (Join-Path $sovereignRepository 'backend\src\TerraFusion.API\appsettings.Development.json') -Raw | ConvertFrom-Json
     $base = Get-Content -LiteralPath (Join-Path $sovereignRepository 'backend\src\TerraFusion.API\appsettings.json') -Raw | ConvertFrom-Json
     if ($development.DaisAppealWorkflow.Mode -ne 'LocalExact' -or $development.DaisAppealWorkflow.TimeoutSeconds -ne 30) { throw 'Development does not persist Dais LocalExact with the bounded timeout.' }
@@ -198,11 +201,12 @@ try {
     $focused = Read-TrxCounters (Join-Path $resultsDirectory 'dais-runtime-adoption.trx')
     if ($focused.Total -lt 110 -or $focused.Executed -ne $focused.Total -or $focused.Passed -ne $focused.Total -or $focused.Failed -ne 0 -or $focused.Skipped -ne 0) { throw "Dais runtime tests were total=$($focused.Total) executed=$($focused.Executed) passed=$($focused.Passed) failed=$($focused.Failed) skipped=$($focused.Skipped)." }
 
-    $exactControllerTest = 'TerraFusion.Unit.Tests.Stage2.DaisEndpointContractTests.DaisController_GetAppealWorkflowByParcel_UsesExactStagedRuntimeEndToEnd'
-    $runtimeStartA = Invoke-ObservedTest 'runtime-start-a' $exactControllerTest
-    $runtimeRestartB = Invoke-ObservedTest 'runtime-restart-b' $exactControllerTest
-    $disabledRollback = Invoke-ObservedTest 'disabled-selection' 'TerraFusion.Unit.Tests.Dais.DaisAppealWorkflowRuntimeRegistrationTests.DisabledSelection_RegistersNoRuntimeHost'
-    $restoredStart = Invoke-ObservedTest 'restored-localexact' $exactControllerTest
+    $configuredHostTest = 'TerraFusion.Unit.Tests.Dais.DaisAppealWorkflowRuntimeRegistrationTests.ConfiguredDevelopmentHost_StartsAndExecutesExactRuntime'
+    $runtimeStartA = Invoke-ObservedTest 'runtime-start-a' $configuredHostTest
+    $runtimeRestartB = Invoke-ObservedTest 'runtime-restart-b' $configuredHostTest
+    $disabledRollback = Invoke-ObservedTest 'disabled-selection' 'TerraFusion.Unit.Tests.Dais.DaisAppealWorkflowRuntimeRegistrationTests.ConfiguredDevelopmentHost_DisabledSelectionStartsWithoutRuntime'
+    $restoredStart = Invoke-ObservedTest 'restored-localexact' $configuredHostTest
+    $exactControllerPath = Invoke-ObservedTest 'exact-controller-path' 'TerraFusion.Unit.Tests.Stage2.DaisEndpointContractTests.DaisController_GetAppealWorkflowByParcel_UsesExactStagedRuntimeEndToEnd'
     $productionRefusal = Invoke-ObservedTest 'production-refusal' 'TerraFusion.Unit.Tests.Dais.DaisAppealWorkflowRuntimeRegistrationTests.ProductionRefusesLocalExactBeforeArtifactResolution'
     $manifestTamper = Invoke-ObservedTest 'manifest-tamper' 'TerraFusion.Unit.Tests.Dais.DaisAppealWorkflowRuntimeRegistrationTests.InvocationWrapper_ReverifiesExactManifestBytesAndRefusesBeforeProcessStart'
     $moduleSchemaTamper = Invoke-ObservedTest 'module-schema-tamper' 'TerraFusion.Unit.Tests.Dais.DaisAppealWorkflowRuntimeRegistrationTests.InvocationWrapper_ReverifiesBothModuleAndSchemaBytes'
@@ -229,7 +233,7 @@ try {
         persistentDevelopmentSelection=$true; configurableArtifactRedirectDenied=$true
         runtimeStartA=$runtimeStartA; runtimeRestartB=$runtimeRestartB; disabledSelectionRollback=$disabledRollback; restoredSelectionStart=$restoredStart
         manifestTamperAfterConstruction=$manifestTamper; moduleAndSchemaTamperAfterConstruction=$moduleSchemaTamper
-        productionSelection=$productionRefusal; exactControllerConsumerProcessPathInvoked=$true
+        productionSelection=$productionRefusal; exactControllerConsumerProcessPathInvoked=$exactControllerPath
         artifactRollbackExecution=$rollbackExecution; adoptedArtifactRestoration=$adoptionRestoration
         focusedTestsTotal=$focused.Total; focusedTestsExecuted=$focused.Executed; focusedTestsPassed=$focused.Passed; focusedTestsFailed=$focused.Failed; focusedTestsSkipped=$focused.Skipped
         durableReceipt=$receiptPath; durableArtifactRollbackSlot=$durableRollbackSlot; rollbackInventory=$stageReceipt.rollbackHashes
