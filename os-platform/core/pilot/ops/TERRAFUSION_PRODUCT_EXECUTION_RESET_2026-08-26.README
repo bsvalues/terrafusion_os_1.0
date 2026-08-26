@@ -1,0 +1,7 @@
+MANDATORY SESSION POINTER
+
+Before claiming completion on TerraFusion work, read:
+  os-platform/core/pilot/ops/TERRAFUSION_PRODUCT_EXECUTION_RESET_2026-08-26.md
+
+A finding, plan, test-only change, CI result, governance change, or synthetic proof is not product completion.
+If discovery produces the next authorized implementation step, continue into it. Stop only at a true authority wall.
