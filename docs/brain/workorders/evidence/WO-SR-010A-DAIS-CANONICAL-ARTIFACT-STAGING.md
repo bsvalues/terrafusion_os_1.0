@@ -19,8 +19,11 @@
 
 ## Observed local proof
 
-The Windows regression performed nine detached exact-commit staging invocations against the verified
-read-only Dais synchronization clone. It observed clean-parent bootstrap and fresh failure cleanup;
+The Windows regression performed ten detached exact-commit staging invocations. A disposable
+canonical-origin fixture retained the exact pinned object while moving protected `main` to a
+non-descendant commit; the stager rejected it before publication and preserved a live-slot sentinel
+byte-for-byte. Against the verified read-only Dais synchronization clone, the regression observed
+clean-parent bootstrap and fresh failure cleanup;
 rejected both a numeric field encoded as a string and a string field encoded as a singleton array
 before publication; published the exact three-file slot
 with byte-identical candidate/published inventories and every manifest field verified; injected a
@@ -40,6 +43,7 @@ schemaSha256=b66579eda680849b9bfc998c9cb89b33079ff3ef87a20ad499643b5f9249dd8c
 sourceManifestSha256=6dbcef689d7cb1f282bdd34eff56009280fb391bedfa58d0308480365b962859
 protectedSourceBranch=main
 protectedMainAncestryVerified=true
+protectedMainNonAncestryRejectedWithoutMutation=true
 exactThreeFileInventoryVerified=true
 candidatePublishedInventoryEqualityVerified=true
 fullManifestIdentityVerified=true
@@ -68,9 +72,9 @@ with three positive and six negative fixtures against contract source `e57b1eca9
 
 Independent review exposed and drove repairs for build-root/live-slot overlap, cross-volume backup
 non-atomicity, incomplete candidate/publication manifest equality, numeric and string JSON type
-coercion, and concurrent transaction interference. The final assurance pass re-ran the offline guards
-and full nine-invocation regression and reported `CLEAN`; the exact staged diff remained the declared
-17 files.
+coercion, concurrent transaction interference, and missing negative coverage for protected-main
+reachability. The final assurance pass re-ran the offline guards and full ten-invocation regression;
+the exact staged diff remained the declared 17 files.
 
 ## Remaining gates
 
