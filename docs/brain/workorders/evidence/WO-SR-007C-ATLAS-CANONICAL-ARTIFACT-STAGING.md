@@ -33,15 +33,16 @@ repository is private and this mission does not authorize a new cross-repository
 
 ## Observed local proof
 
-The regression executed three exact staging runs in an isolated checkout:
+The regression executed five exact staging runs in an isolated checkout:
 
-1. fresh publication of the canonical 917-byte module and manifest;
-2. replacement with a whole-slot rollback directory whose recorded hashes matched its real files;
+1. an injected fresh-slot publication failure followed by verified removal of the partial slot;
+2. fresh publication of the canonical 917-byte module and manifest;
 3. an injected backup-verification exception after the slot move, followed by guarded whole-slot
    restoration and exact inventory comparison;
 4. an injected post-publication failure through the stager's catch path, whole-slot restoration, and
    bidirectional inventory comparison including an unrelated sentinel sidecar;
-5. a successful re-stage whose receipt inventory exactly matched the real backup directory.
+5. a successful re-stage whose whole-slot rollback directory and receipt hashes exactly matched the
+   replaced files.
 
 Observed result:
 
@@ -51,6 +52,7 @@ backupContentsVerified=true
 rollbackExecuted=true
 rollbackHashesVerified=true
 automaticFailureRollbackVerified=true
+freshFailureSlotRemovalVerified=true
 backupVerificationFailureRollbackVerified=true
 moduleLength=917
 moduleSha256=3ef3d5cfc666f8a27a17510572a376b71d33fa29e796ff79b70abe7e7752ae46

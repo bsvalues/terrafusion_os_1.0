@@ -215,7 +215,17 @@ try {
 } catch {
   $stageFailure = $_
   if (Test-Path -LiteralPath $ArtifactSlot) {
-    Remove-Item -LiteralPath $ArtifactSlot -Recurse -Force -ErrorAction SilentlyContinue
+    try {
+      Remove-Item -LiteralPath $ArtifactSlot -Recurse -Force -ErrorAction Stop
+    } catch {
+      $cleanupFailure = $_
+    }
+  }
+  if (Test-Path -LiteralPath $ArtifactSlot) {
+    if ($slotExisted) {
+      throw "ATLAS_ROLLBACK_BLOCKED_BY_FAILED_PUBLICATION_CLEANUP: $cleanupFailure; original failure: $stageFailure"
+    }
+    throw "ATLAS_STAGE_FAILED_PARTIAL_SLOT_REMAINS: $cleanupFailure; original failure: $stageFailure"
   }
   if ($slotExisted) {
     Move-Item -LiteralPath $backupSlot -Destination $ArtifactSlot

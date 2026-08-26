@@ -48,26 +48,41 @@ function Assert-InventoryEqual {
   if ($actualJson -ne $expectedJson) { throw "$Label inventory mismatch: expected $expectedJson, measured $actualJson" }
 }
 
+$optionsFile = Join-Path $sovereignRepository "backend\src\TerraFusion.API\Configuration\AtlasProjectionOptions.cs"
+$optionsSource = Get-Content -LiteralPath $optionsFile -Raw
+$runtimePinMatch = [regex]::Match($optionsSource, 'ExpectedModuleSha256\s*=\s*\r?\n?\s*"([0-9a-fA-F]{64})"')
+if (-not $runtimePinMatch.Success) {
+  throw "AtlasProjectionOptions.ExpectedModuleSha256 was not found as a 64-character SHA-256 value."
+}
+Assert-Equal $runtimePinMatch.Groups[1].Value.ToLowerInvariant() $expectedHash "runtime module hash pin"
+
 if ($OfflineGuardsOnly) {
-  $parseErrors = @()
-  [System.Management.Automation.Language.Parser]::ParseFile($stager, [ref]$null, [ref]$parseErrors) | Out-Null
-  if ($parseErrors.Count) { throw "Atlas stager parse failed: $($parseErrors -join '; ')" }
-  $rejection = $null
   try {
-    & $stager -AtlasRepository "https://evil.example/bsvalues/terrafusion-atlas" -BuildRootBase $runRoot
-  } catch {
-    $rejection = $_.Exception.Message
+    $parseErrors = @()
+    [System.Management.Automation.Language.Parser]::ParseFile($stager, [ref]$null, [ref]$parseErrors) | Out-Null
+    if ($parseErrors.Count) { throw "Atlas stager parse failed: $($parseErrors -join '; ')" }
+    $rejection = $null
+    try {
+      & $stager -AtlasRepository "https://evil.example/bsvalues/terrafusion-atlas" -BuildRootBase $runRoot
+    } catch {
+      $rejection = $_.Exception.Message
+    }
+    if ($rejection -notmatch "ATLAS_REPOSITORY_IDENTITY_MISMATCH") {
+      throw "Strict canonical-origin guard failed: $rejection"
+    }
+    [pscustomobject]@{
+      result = "PASS"
+      terminalCondition = "ATLAS_STAGING_OFFLINE_GUARDS_PROVEN"
+      powerShellParse = $true
+      runtimeModuleHashPinVerified = $true
+      untrustedOriginRejectedBeforeFetch = $true
+      privateSuiteCredentialRequired = $false
+    } | ConvertTo-Json -Depth 4
+  } finally {
+    if (Test-Path -LiteralPath $runRoot) {
+      Remove-Item -LiteralPath $runRoot -Recurse -Force
+    }
   }
-  if ($rejection -notmatch "ATLAS_REPOSITORY_IDENTITY_MISMATCH") {
-    throw "Strict canonical-origin guard failed: $rejection"
-  }
-  [pscustomobject]@{
-    result = "PASS"
-    terminalCondition = "ATLAS_STAGING_OFFLINE_GUARDS_PROVEN"
-    powerShellParse = $true
-    untrustedOriginRejectedBeforeFetch = $true
-    privateSuiteCredentialRequired = $false
-  } | ConvertTo-Json -Depth 4
   return
 }
 
@@ -77,6 +92,20 @@ try {
     if (Test-Path -LiteralPath $originalSlot) { throw "Unique original-slot collision: $originalSlot" }
     Move-Item -LiteralPath $artifactSlot -Destination $originalSlot
     $originalMoved = $true
+  }
+
+  $freshFailure = $null
+  try {
+    $null = Invoke-Stager -InjectPublishFailure
+  } catch {
+    $freshFailure = $_.Exception.Message
+  }
+  if ($freshFailure -notmatch "ATLAS_STAGE_FAILED_SLOT_REMOVED" -or
+      $freshFailure -notmatch "ATLAS_TEST_INJECTED_PUBLICATION_FAILURE") {
+    throw "Fresh-slot publication failure was not reported as cleaned up: $freshFailure"
+  }
+  if (Test-Path -LiteralPath $artifactSlot) {
+    throw "Fresh-slot publication failure left a partial artifact slot behind."
   }
 
   $first = Invoke-Stager
@@ -150,6 +179,7 @@ try {
     rollbackExecuted = $true
     rollbackHashesVerified = $true
     automaticFailureRollbackVerified = $true
+    freshFailureSlotRemovalVerified = $true
     backupVerificationFailureRollbackVerified = $true
   } | ConvertTo-Json -Depth 4
 }

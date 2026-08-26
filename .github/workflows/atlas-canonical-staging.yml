@@ -30,6 +30,8 @@ jobs:
     steps:
       - name: Checkout sovereign source
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Prove parser and fail-closed origin without sibling-repository credentials
         shell: pwsh
