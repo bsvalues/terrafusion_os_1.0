@@ -1,7 +1,7 @@
 # Work Order Program Queue (Current State)
 
 **Version:** 1.0
-**Date:** 2026-08-20
+**Date:** 2026-08-26
 **Authority:** OWNER-TF-STANDING-OPERATOR-AUTHORITY
 **Classification:** Operator Doctrine — live cross-program queue snapshot
 
@@ -167,7 +167,7 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | WO-SR-006A Forge Standalone Kernel Artifact and Shadow-Consumer Gate | DONE / R3 | Exact Forge commit built locally; disposable hash-pinned shadow proof passed; no GitHub credential, runtime switch, deployment, publication, or source retirement |
 | WO-SR-006B Forge Local Runtime-Selection and Rollback Rehearsal Gate | DONE / R3 / AUTHORITY CONSUMED | PR #1380 proved process-local Forge selection, typed fail-closed behavior, and sovereign rollback through the real client/host boundary; no persistent switch or cutover |
 | WO-SR-006C Forge Non-Production Persistent Runtime Adoption and Rollback Gate | DONE / R3 / AUTHORITY CONSUMED | PR #1383 proved disposable Forge selection across two host starts and sovereign rollback in a third; no canonical configuration or cutover |
-| WO-SR-006 Forge Canonical Runtime Ownership Cutover | DONE / R4 / FORGE ONLY / AUTHORITY CONSUMED | Sovereign PR #1386 and Forge PR #4 completed local manifest-bound cutover, fail-closed proof, duplicate valuation-source retirement, cost-kernel preservation, rollback, and cross-repository finalization |
+| WO-SR-006 Forge Canonical Runtime Ownership Cutover | DONE / R4 / FORGE ONLY / AUTHORITY CONSUMED | Sovereign PR #1386 and Forge PR #4 completed local manifest-bound cutover, fail-closed proof, duplicate sovereign valuation-source retirement, cost-kernel preservation, rollback, and cross-repository finalization |
 | WO-SR-007A Atlas Local Sovereign Shadow Projection Proof | COMPLETE / R3 | PR #1389 merged 13-case exact-commit local proof as `3ff78dee1`; terminal closeout consumes authority; no runtime adoption or Atlas mutation |
 | WO-SR-007B-P Atlas Runtime Adoption Boundary Preparation | COMPLETE / R2 | No Atlas runtime host or consumer exists; exact unwired process-host R3 boundary defined without source or runtime changes |
 | WO-SR-007B Atlas Unwired Projection Process Host Foundation | COMPLETE / R3 / AUTHORITY CONSUMED | PR #1393 merged the exact unwired host as `d2bb8d6e1`; build 0/0 and 33 focused tests passed; no DI, runtime consumer, Atlas mutation, deployment, or cutover |
@@ -242,7 +242,9 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 |----|-------|-------|
 | WO-DEPLOY-BENTON-002 / 003A / 003B / 003C | DONE | App Service + DB live; /health green |
 | WO-CONFIG-BENTON-001 | DONE | #1112 merged |
-| WO-DEPLOY-BENTON-003D Post-Provision Smoke / Evidence Rollup | NEXT (if authorized) | Touches live surface |
+| WO-DEPLOY-BENTON-003D Post-Provision Smoke / Evidence Rollup | **NEXT / ACCESS BLOCKED** | Non-production smoke is authorized; this operator environment has no Azure resource execution connector |
+| WO-DEPLOY-BENTON-003E Demo Operator Runbook | DEPENDENCY BLOCKED | Requires 003D live evidence |
+| WO-DEPLOY-BENTON-003F Deployment Readiness Evidence Rollup | DEPENDENCY BLOCKED | Requires 003D/003E; county-facing production authorization remains a later decision |
 | Production launch / county go-live | WALL | **SW-04** |
 
 ### benton-data-quality  (`/goal benton-data-quality`)
@@ -277,7 +279,7 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 |----|-------|-------|
 | WO-TERRAPILOT-P1 Tool Maturity Matrix | DONE/PARTIAL | — |
 | WO-TERRAPILOT-P2 through P15 | DONE / parked baseline | Green contract does not claim live integration |
-| WO-TERRAPILOT-P16 | PARKED | Design-only strategic direction gate for `summarize_levy_rate_components`; L3/L4 require later runtime/promotion authority |
+| WO-TERRAPILOT-P16 | **COMPLETE ON PROTECTED MERGE** | Exact native TerraLevy `districts-overview` read boundary selected; L2 remains current and no runtime/L3/L4 Work Order is admitted |
 
 ### work-order-engine  (`/goal work-order-engine`)
 | WO | State |
@@ -305,25 +307,26 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | WO-AZURE-001 App Service preflight | DONE | PR #1275; committed evidence only, no live access |
 | WO-AZURE-002 App settings and secret inventory | DONE | PR #1293; key names, source classes, storage posture, ownership, and protected gaps |
 | WO-AZURE-003 Deployment slot strategy | DONE ON MERGE | Blue/green policy from committed evidence only; no slot inspection, creation, configuration, swap, or deployment |
-| WO-AZURE-004 Observability and log capture | DEPENDENCY BLOCKED | Requires authorized 003D live-smoke evidence |
-| WO-AZURE-005 Rollback and restart runbook | DEPENDENCY BLOCKED | Requires authorized 003D live-smoke evidence |
-| WO-AZURE-006 County-owned production boundary packet | PARKED | Explicit owner / production authority gate |
+| WO-AZURE-004 Observability and log capture | DEPENDENCY BLOCKED | Requires 003D live-smoke evidence |
+| WO-AZURE-005 Rollback and restart runbook | DEPENDENCY BLOCKED | Requires 003D live-smoke evidence |
+| WO-AZURE-006 County-owned production boundary packet | DEPENDENCY BLOCKED | Requires P1/003F and AZURE-004/005 before the explicit county-facing production decision |
 
 ---
 
 ## Global Walls In Effect — Wall Ledger (per [AUTONOMOUS_CONTINUATION_GATE.md](AUTONOMOUS_CONTINUATION_GATE.md) §3)
 
-*(Updated 2026-07-23 by WO-PORTFOLIO-014 post-contract-freeze reconciliation; every prior wall remains in effect and the five-suite extraction and p8-management-dashboard walls are added below so this canonical ledger carries the full authorization backlog)*
+*(Updated 2026-08-26; completed dispositions are removed from the wall set rather than repeatedly re-authorized.)*
 
 | Program | Parked WO | Wall | Reason | Evidence |
 |---------|-----------|------|--------|----------|
 | benton-data-quality | any new backfill, entitlement mutation, sync pass, or PACS follow-up | SW-02 / SW-03 / SW-08 | safe audit, credentialed verification, and duplicate cleanup are complete; further work is protected | `WO_DATA_BENTON_{EVIDENCE_ROLLUP,QUARANTINE_001,DUPE_001B}_*` |
-| terrapilot-maturity | first-tool L3 promotion | SW-01 / SW-09 / SW-10 | deploy Node runtime + integrate | `WO_TERRAPILOT_P3_P6_*` |
-| benton-demo | DEPLOY-BENTON-003D live smoke / evidence | SW-01 / SW-04 | live deployment and go-live boundary | `programs/benton-demo-deployment.md` |
+| terrapilot-maturity | first-tool L3 promotion | separate runtime WO required | P16 design is complete on protected merge; runtime implementation and L3/L4 promotion are not admitted by P16 | `WO-TERRAPILOT-P16-LIVE-INTEGRATION-DESIGN.md` |
+| benton-demo | DEPLOY-BENTON-003D live smoke / evidence | Azure execution access / SW-04 for later production | non-production 003D smoke is authorized; this operator environment lacks Azure resource execution access; county go-live remains separate | `programs/benton-demo-deployment.md` |
 | cross-project-historical-audit | WO-LOCAL-093 through WO-LOCAL-097 superseded; WO-LOCAL-098 withdrawn | project authority boundary | WilliamOS/TerraGroq surfaces are not executable TerraFusion work | `evidence/WO-PORTFOLIO-013-CROSS-PROJECT-SCOPE-CORRECTION.md` |
-| runtime-import-disposition | WO-CORE-1 | SW-05 / sovereign boundary | explicit import disposition required | `programs/ACTIVE_PROGRAM_PLAYBOOK.md` |
-| azure-county-runtime | WO-AZURE-004 through WO-AZURE-006 | SW-01 / SW-03 / SW-04 | safe docs slice ends at WO-AZURE-003; remaining work needs live evidence, credentials, deployment, or county authority | `programs/azure-county-runtime.md` |
+| azure-county-runtime | WO-AZURE-004 through WO-AZURE-006 | 003D dependency / later county authority | 004/005 require live 003D evidence; 006 requires the completed P1/P8 chain before county-facing decision | `programs/azure-county-runtime.md` |
 | p8-management-dashboard | authenticated verification; county release | SW-03 ; SW-04 / SW-10 | safe dashboard slice complete; authenticated verify and county release need live/credentialed and deployment authority | `programs/p8-management-dashboard.md` |
+
+**Completed disposition removed from wall ledger:** `WO-CORE-1` = `NO IMPORT`; historical Sync PR #133 closed without merge and current canonical repository scopes preserved.
 
 **Current execution result (WO-SR-009C, 2026-08-07):**
 `ATLAS_COUNTY_SCOPED_CANONICAL_PROJECTION_REACHABLE_IN_WORKBENCH_NO_LIVE_PROVIDER_OR_CUTOVER`.
