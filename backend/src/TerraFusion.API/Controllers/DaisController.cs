@@ -7,6 +7,7 @@ using TerraFusion.Core.Auth;
 using TerraFusion.Data;
 using TerraFusion.API.Security;
 using TerraFusion.API.Services;
+using TerraFusion.API.Services.Dais;
 using TerraFusion.API.Adapters;
 using TerraFusion.Abstractions.DTOs;
 using System.Text.Json;
@@ -33,6 +34,7 @@ public class DaisController : ControllerBase
   private readonly IQueueService _queueService;
   private readonly IRequestUserContextAccessor _userContext;
   private readonly IGovernedToolAuditService _audit;
+  private readonly IDaisAppealWorkflowConsumer? _appealWorkflowConsumer;
 
   public DaisController(
     TerraFusion.Data.TerraFusionDbContext db,
@@ -43,7 +45,8 @@ public class DaisController : ControllerBase
     INoticeService noticeService,
     IQueueService queueService,
     IRequestUserContextAccessor userContext,
-    IGovernedToolAuditService audit)
+    IGovernedToolAuditService audit,
+    IDaisAppealWorkflowConsumer? appealWorkflowConsumer = null)
   {
     _db = db;
     _logger = logger;
@@ -54,6 +57,7 @@ public class DaisController : ControllerBase
     _queueService = queueService;
     _userContext = userContext;
     _audit = audit;
+    _appealWorkflowConsumer = appealWorkflowConsumer;
   }
 
   // ── County Isolation Helper ──────────────────────────────────────
@@ -1092,23 +1096,36 @@ public class DaisController : ControllerBase
       TraceId = HttpContext.TraceIdentifier,
     };
 
-    try
+    if (_appealWorkflowConsumer is null)
     {
-      return Content(
-        DaisAppealWorkflowReadAdapter.Serialize(request, appeals),
-        "application/json");
-    }
-    catch (Exception exception) when (exception is ArgumentException or InvalidOperationException)
-    {
-      _logger.LogWarning(
-        exception,
-        "Dais appeal workflow read failed closed for county {CountyId} and trace {TraceId}.",
-        effectiveCountyId,
-        HttpContext.TraceIdentifier);
       return Problem(
-        statusCode: StatusCodes.Status500InternalServerError,
-        title: "Appeal workflow evidence failed contract validation.");
+        statusCode: StatusCodes.Status503ServiceUnavailable,
+        title: "Canonical Dais appeal workflow runtime is unavailable.");
     }
+
+    var consumption = await _appealWorkflowConsumer
+      .ConsumeAsync(request, appeals, HttpContext.RequestAborted)
+      .ConfigureAwait(false);
+    if (consumption.Success && !string.IsNullOrWhiteSpace(consumption.NormalizedResultJson))
+    {
+      return Content(consumption.NormalizedResultJson, "application/json");
+    }
+
+    if (consumption.Failure == DaisAppealWorkflowConsumerFailure.Disabled)
+    {
+      return Problem(
+        statusCode: StatusCodes.Status503ServiceUnavailable,
+        title: "Canonical Dais appeal workflow runtime is disabled.");
+    }
+
+    _logger.LogWarning(
+      "Dais appeal workflow runtime failed closed with {Failure} for county {CountyId} and trace {TraceId}.",
+      consumption.Failure,
+      effectiveCountyId,
+      HttpContext.TraceIdentifier);
+    return Problem(
+      statusCode: StatusCodes.Status500InternalServerError,
+      title: "Appeal workflow evidence failed contract validation.");
   }
 
   private static DateTime RestoreSqliteUtcKind(DateTime value) =>

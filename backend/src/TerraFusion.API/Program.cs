@@ -39,6 +39,7 @@ using TerraFusion.API.Services.SpecLock;
 using TerraFusion.API.Services.Marketplace;
 using TerraFusion.API.Services.Telemetry;
 using TerraFusion.API.Services.Atlas;
+using TerraFusion.API.Services.Dais;
 // Conditional DB providers
 using Npgsql;
 using Microsoft.Data.Sqlite;
@@ -1742,6 +1743,7 @@ builder.Services.AddScoped<
 // artifact. Registration resolves the fixed ignored slot, verifies its manifest
 // and bytes at startup, and wraps every invocation with the same verifier.
 builder.Services.AddAtlasProjectionRuntime(builder.Configuration, builder.Environment);
+builder.Services.AddDaisAppealWorkflowRuntime(builder.Configuration, builder.Environment);
 
 // Slice S1: PACS sale raw landing — drains an IPacsSaleSource into
 // legacy_pacs_raw.sale with provenance and writes the four S1

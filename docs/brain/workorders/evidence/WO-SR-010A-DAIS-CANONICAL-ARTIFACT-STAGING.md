@@ -2,7 +2,7 @@
 
 ## Current verdict
 
-`LOCAL_PROOF_PASS_REMOTE_ASSURANCE_PENDING`
+`COMPLETE`
 
 ## Exact identities
 
@@ -76,8 +76,12 @@ coercion, concurrent transaction interference, and missing negative coverage for
 reachability. The final assurance pass re-ran the offline guards and full ten-invocation regression;
 the exact staged diff remained the declared 17 files.
 
-## Remaining gates
+## Protected merge evidence
 
-Protected PR checks, zero unresolved substantive review threads, exact-head merge, and protected-main
-verification remain required. This
-evidence claims staging only; runtime selection begins in `WO-SR-010B`.
+PR #1466 exact head `88e7454b2a64a99d3a917914e486fff410df756c` passed all observed workflow
+runs, including the full Vitest merge gate, canonical .NET Release tests, security scans, seal gates,
+frontend build, packaging, governance and migration guards. The one substantive Codex review finding
+was fixed, negatively regression-tested, answered and resolved. There were zero unresolved threads
+and zero change requests at merge. The PR squash-merged as
+`5182742d756cea6a939bb12489e660d83b9593b6`; protected `origin/main` was fetched and verified at that
+exact identity. This evidence claims staging only; runtime selection executes in `WO-SR-010B`.
