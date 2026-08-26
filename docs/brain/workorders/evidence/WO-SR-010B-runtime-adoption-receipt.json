@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
   "workOrder": "WO-SR-010B",
-  "runId": "20260826T223117913Z-31eb2bd980cf41ad99369ffa981712d3",
+  "runId": "20260826T230745207Z-26c3bc6694634f4488523ae42f2794d7",
   "result": "PASS",
   "receiptState": "LOCAL_TERMINAL_PROOF_SUCCESS",
   "terminalCondition": "DAIS_PERSISTENT_LOCAL_EXACT_RUNTIME_ADOPTED_ROLLBACK_EXECUTED_AND_LEGACY_SEMANTIC_FALLBACK_RETIRED",
-  "localReceiptSha256": "eaff739bd831f31e3eba0a5fe3425e77848448685b97aa3ebe7e78223ebc0c9a",
-  "sovereignHead": "5182742d756cea6a939bb12489e660d83b9593b6",
+  "localReceiptSha256": "70c4c622a37d65daba4426e7cd727ced5b4565c5517c99e642af64044a403886",
+  "sovereignHead": "ddbb36349132503eb3c6c1ad7aff45d819465cd9",
   "daisCommit": "6932bbbf014cf70d7362e070a1dad2a8a680ad47",
   "artifactIdentity": {
     "moduleLength": 9269,
@@ -30,9 +30,9 @@
     "adoptedArtifactRestoration": "PASS"
   },
   "focusedTests": {
-    "total": 118,
-    "executed": 118,
-    "passed": 118,
+    "total": 120,
+    "executed": 120,
+    "passed": 120,
     "failed": 0,
     "skipped": 0
   },

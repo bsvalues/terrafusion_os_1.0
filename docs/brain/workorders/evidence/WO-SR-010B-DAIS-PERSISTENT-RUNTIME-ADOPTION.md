@@ -32,17 +32,17 @@
 
 The governed adoption wrapper completed with the exact Work Order terminal condition
 `DAIS_PERSISTENT_LOCAL_EXACT_RUNTIME_ADOPTED_ROLLBACK_EXECUTED_AND_LEGACY_SEMANTIC_FALLBACK_RETIRED`
-under run `20260826T223117913Z-31eb2bd980cf41ad99369ffa981712d3`. Its local receipt SHA-256 is
-`eaff739bd831f31e3eba0a5fe3425e77848448685b97aa3ebe7e78223ebc0c9a`; a sanitized machine-readable
+under run `20260826T230745207Z-26c3bc6694634f4488523ae42f2794d7`. Its local receipt SHA-256 is
+`70c4c622a37d65daba4426e7cd727ced5b4565c5517c99e642af64044a403886`; a sanitized machine-readable
 copy is committed beside this evidence as `WO-SR-010B-runtime-adoption-receipt.json`.
 
 | Observation | Result |
 | --- | --- |
-| Sovereign runtime head | `5182742d756cea6a939bb12489e660d83b9593b6` |
+| Sovereign runtime head | clean committed revision `ddbb36349132503eb3c6c1ad7aff45d819465cd9` |
 | Dais suite source | `6932bbbf014cf70d7362e070a1dad2a8a680ad47` |
-| Release exact-runtime tests | 118 total, 118 executed, 118 passed, 0 failed, 0 skipped |
+| Release exact-runtime tests | 120 total, 120 executed, 120 passed, 0 failed, 0 skipped |
 | Persistent Development selection | `LocalExact`, 30-second bound; no configurable module/schema/Node redirects |
-| Runtime start A / restart B | separate exact controller-consumer-process executions; `PASS` / `PASS` |
+| Runtime start A / restart B | separate configured Development Generic Host starts resolving the real consumer and exact process; `PASS` / `PASS` |
 | Disabled rollback / restored LocalExact | separate observed starts; `PASS` / `PASS` |
 | Post-construction tamper | manifest, module and schema each failed closed before process start |
 | Production selection | separate refusal observation; `PASS` |
@@ -59,7 +59,7 @@ the adopted slot. The durable rollback inventory is exactly three files: module
 `b66579eda680849b9bfc998c9cb89b33079ff3ef87a20ad499643b5f9249dd8c`, and manifest
 `e9ffd2acd811d7f2d309929757661f7f5dd3873b1027fa1af500b0d7eadb9186`.
 
-The final combined exact-runtime run executed 118/118 tests with zero skips. Registration hardening
+The final combined exact-runtime run executed 120/120 tests with zero skips. Registration hardening
 separately executed 37/37 tests, including exact manifest byte identity and redirected-ancestor
 refusal. Consumer cancellation verification executed 16/16. The host hardening run executed all new
 cleanup and Node replacement tests; its two environment-gated tests were subsequently executed by
