@@ -39,6 +39,7 @@ public enum AtlasProjectionFailure
     IdentityMismatch,
     InvalidGeometry,
     CleanupFailed,
+    RuntimeIdentityMismatch,
 }
 
 public sealed record AtlasProjectionProcessResult(

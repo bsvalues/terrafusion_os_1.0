@@ -8,7 +8,7 @@ namespace TerraFusion.API.Services.Atlas;
 
 /// <summary>
 /// Executes one hash-pinned local Atlas projection module in a disposable, constrained Node process.
-/// This host is intentionally unwired and must be manually instantiated.
+/// Runtime registration wraps this host with the canonical manifest verifier before every invocation.
 /// </summary>
 public sealed class AtlasProjectionProcessHost : IAtlasProjectionProcessHost
 {
