@@ -54,9 +54,14 @@ if (-not (Test-Path -LiteralPath $optionsFile)) {
   throw "ATLAS_OPTIONS_MISSING: cannot cross-check module identity against $optionsFile"
 }
 $optionsSource = Get-Content -LiteralPath $optionsFile -Raw
-$pinPattern = 'ExpectedModuleSha256\s*=\s*\r?\n?\s*"' + [regex]::Escape($AtlasModuleSha256) + '"'
-if ($optionsSource -notmatch $pinPattern) {
-  throw "ATLAS_IDENTITY_DISAGREEMENT: AtlasProjectionOptions does not pin $AtlasModuleSha256"
+$pinPattern = '(?m)^[ \t]*public[ \t]+const[ \t]+string[ \t]+ExpectedModuleSha256[ \t]*=[ \t\r\n]*"([0-9a-fA-F]{64})"[ \t]*;[ \t\r]*$'
+$pinMatches = [regex]::Matches($optionsSource, $pinPattern)
+if ($pinMatches.Count -ne 1) {
+  throw "ATLAS_IDENTITY_DECLARATION_INVALID: expected exactly one public const string ExpectedModuleSha256 declaration, found $($pinMatches.Count)"
+}
+$runtimeModuleSha256 = $pinMatches[0].Groups[1].Value.ToLowerInvariant()
+if ($runtimeModuleSha256 -ne $AtlasModuleSha256) {
+  throw "ATLAS_IDENTITY_DISAGREEMENT: AtlasProjectionOptions pins $runtimeModuleSha256, expected $AtlasModuleSha256"
 }
 
 function Invoke-Checked {

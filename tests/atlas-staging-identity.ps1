@@ -50,11 +50,12 @@ function Assert-InventoryEqual {
 
 $optionsFile = Join-Path $sovereignRepository "backend\src\TerraFusion.API\Configuration\AtlasProjectionOptions.cs"
 $optionsSource = Get-Content -LiteralPath $optionsFile -Raw
-$runtimePinMatch = [regex]::Match($optionsSource, 'ExpectedModuleSha256\s*=\s*\r?\n?\s*"([0-9a-fA-F]{64})"')
-if (-not $runtimePinMatch.Success) {
-  throw "AtlasProjectionOptions.ExpectedModuleSha256 was not found as a 64-character SHA-256 value."
+$runtimePinPattern = '(?m)^[ \t]*public[ \t]+const[ \t]+string[ \t]+ExpectedModuleSha256[ \t]*=[ \t\r\n]*"([0-9a-fA-F]{64})"[ \t]*;[ \t\r]*$'
+$runtimePinMatches = [regex]::Matches($optionsSource, $runtimePinPattern)
+if ($runtimePinMatches.Count -ne 1) {
+  throw "Expected exactly one public const string AtlasProjectionOptions.ExpectedModuleSha256 declaration; found $($runtimePinMatches.Count)."
 }
-Assert-Equal $runtimePinMatch.Groups[1].Value.ToLowerInvariant() $expectedHash "runtime module hash pin"
+Assert-Equal $runtimePinMatches[0].Groups[1].Value.ToLowerInvariant() $expectedHash "runtime module hash pin"
 
 if ($OfflineGuardsOnly) {
   try {
