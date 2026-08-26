@@ -10,6 +10,7 @@ $ErrorActionPreference = "Stop"
 $sovereignRepository = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
 $stager = Join-Path $sovereignRepository "scripts\bootstrap\Stage-AtlasProjectionModule.ps1"
 $artifactSlot = Join-Path $sovereignRepository ".terrafusion\runtime\atlas\spatial-read"
+$artifactParent = Split-Path -Parent $artifactSlot
 $expectedHash = "3ef3d5cfc666f8a27a17510572a376b71d33fa29e796ff79b70abe7e7752ae46"
 $runRoot = Join-Path $ProofRootBase ([guid]::NewGuid().ToString("N"))
 $stagerBuildRoot = Join-Path $runRoot "stager-runs"
@@ -94,6 +95,16 @@ try {
     Move-Item -LiteralPath $artifactSlot -Destination $originalSlot
     $originalMoved = $true
   }
+  if (Test-Path -LiteralPath $artifactParent -PathType Container) {
+    $remainingParentEntry = Get-ChildItem -LiteralPath $artifactParent -Force | Select-Object -First 1
+    if ($remainingParentEntry) {
+      throw "Clean-parent bootstrap proof requires an otherwise empty Atlas runtime parent; found $($remainingParentEntry.FullName)."
+    }
+    Remove-Item -LiteralPath $artifactParent -Force
+  }
+  if (Test-Path -LiteralPath $artifactParent) {
+    throw "Clean-parent bootstrap precondition failed: $artifactParent still exists."
+  }
 
   $freshFailure = $null
   try {
@@ -107,6 +118,9 @@ try {
   }
   if (Test-Path -LiteralPath $artifactSlot) {
     throw "Fresh-slot publication failure left a partial artifact slot behind."
+  }
+  if (-not (Test-Path -LiteralPath $artifactParent -PathType Container)) {
+    throw "Fresh-slot publication did not bootstrap the canonical runtime parent."
   }
 
   $first = Invoke-Stager
@@ -180,6 +194,7 @@ try {
     rollbackExecuted = $true
     rollbackHashesVerified = $true
     automaticFailureRollbackVerified = $true
+    cleanParentBootstrapVerified = $true
     freshFailureSlotRemovalVerified = $true
     backupVerificationFailureRollbackVerified = $true
   } | ConvertTo-Json -Depth 4
@@ -192,8 +207,15 @@ finally {
     if (Test-Path -LiteralPath $artifactSlot) {
       Remove-Item -LiteralPath $artifactSlot -Recurse -Force
     }
+    if (-not (Test-Path -LiteralPath $artifactParent -PathType Container)) {
+      New-Item -ItemType Directory -Path $artifactParent -Force | Out-Null
+    }
     Move-Item -LiteralPath $originalSlot -Destination $artifactSlot
     $originalMoved = $false
+  } elseif (-not $PreservePublishedArtifact -and
+      (Test-Path -LiteralPath $artifactParent -PathType Container) -and
+      -not (Get-ChildItem -LiteralPath $artifactParent -Force | Select-Object -First 1)) {
+    Remove-Item -LiteralPath $artifactParent -Force
   }
   if (Test-Path -LiteralPath $runRoot) {
     Remove-Item -LiteralPath $runRoot -Recurse -Force

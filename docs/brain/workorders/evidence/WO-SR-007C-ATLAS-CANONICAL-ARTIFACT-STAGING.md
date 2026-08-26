@@ -35,7 +35,8 @@ repository is private and this mission does not authorize a new cross-repository
 
 The regression executed five exact staging runs in an isolated checkout:
 
-1. an injected fresh-slot publication failure followed by verified removal of the partial slot;
+1. a clean checkout-shaped run with the Atlas runtime parent absent, followed by parent bootstrap,
+   an injected fresh-slot publication failure, and verified removal of the partial slot;
 2. fresh publication of the canonical 917-byte module and manifest;
 3. an injected backup-verification exception after the slot move, followed by guarded whole-slot
    restoration and exact inventory comparison;
@@ -52,6 +53,7 @@ backupContentsVerified=true
 rollbackExecuted=true
 rollbackHashesVerified=true
 automaticFailureRollbackVerified=true
+cleanParentBootstrapVerified=true
 freshFailureSlotRemovalVerified=true
 backupVerificationFailureRollbackVerified=true
 moduleLength=917

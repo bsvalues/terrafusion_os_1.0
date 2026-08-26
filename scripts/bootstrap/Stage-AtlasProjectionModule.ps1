@@ -41,6 +41,7 @@ $AtlasModuleSha256   = "3ef3d5cfc666f8a27a17510572a376b71d33fa29e796ff79b70abe7e
 
 $sovereignRepository = (Resolve-Path (Join-Path $PSScriptRoot "..\..")).Path
 $expectedArtifactSlot = Join-Path $sovereignRepository ".terrafusion\runtime\atlas\spatial-read"
+$artifactParent = Split-Path -Parent $expectedArtifactSlot
 
 if (-not $ArtifactSlot) { $ArtifactSlot = $expectedArtifactSlot }
 if ($ArtifactSlot -ine $expectedArtifactSlot) {
@@ -205,6 +206,9 @@ if ($slotExisted) {
   }
 }
 try {
+  if (-not (Test-Path -LiteralPath $artifactParent -PathType Container)) {
+    New-Item -ItemType Directory -Path $artifactParent -Force | Out-Null
+  }
   Copy-Item -LiteralPath $candidate -Destination $ArtifactSlot -Recurse
   $publishedHash = (Get-FileHash -LiteralPath (Join-Path $ArtifactSlot "project-atlas-feature.mjs") -Algorithm SHA256).Hash.ToLowerInvariant()
   if ($publishedHash -ne $AtlasModuleSha256) { throw "ATLAS_PUBLISHED_HASH_MISMATCH: $publishedHash" }
