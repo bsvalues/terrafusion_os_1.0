@@ -13,7 +13,7 @@
 
 ## Active Goal
 
-The Five-Suite Federated Repository Buildout is active under `OWNER-FIVE-SUITE-FEDERATED-COMPLETION-20260826`. `WO-SR-007C` completed on protected `main` as `5a328e728852dc2bb933d704d0daa5c54750728c`. `WO-SR-007D` is active: capable Development source-tree hosts persist `LocalExact`, published Development hosts stay Disabled, fixed manifest and byte identity are enforced at startup and per invocation, and real process-host restarts, observed Disabled rollback, restored selection, and tamper refusal passed 89 focused tests with zero skipped. Continue to Atlas standalone ownership truth, then Dais, Dossier, and GPT. The mission hard walls remain binding.
+The Five-Suite Federated Repository Buildout is active under `OWNER-FIVE-SUITE-FEDERATED-COMPLETION-20260826`. Atlas runtime PR #1465 merged as `4fcbfbd0585122f67f640b1b76786b7629f28e1f`; Atlas ownership PR #4 merged as `708fc5c31988405f9ca2cba7ebea7bb9d1fec3a6`; both protected mains were verified. `WO-SR-010A` is active and stages the exact Dais module plus frozen schema through an exact three-file manifest-bound slot with executed whole-slot rollback. Continue to Dais runtime adoption and ownership truth, then Dossier and GPT. The mission hard walls remain binding.
 
 The prior `WO-SR-009C` completed before this activation. PR #1424 merged exact assured head
 `e70548cb4938da92b2c0b254d71c5361aa10a6ed` as
@@ -184,7 +184,9 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | **WO-SR-009C Atlas Workbench Canonical Projection Adoption** | **DONE / R3 / AUTHORITY CONSUMED** | PR #1424 merged as `b5a02db17`; canonical Polygon, truthful unavailable, and cross-county non-disclosure proven; default Disabled, no Point, live provider, or cutover |
 | **WO-SR-009D Dossier Workbench Canonical Evidence Read Adoption** | **DONE / R3 / AUTHORITY CONSUMED** | PR #1427 exact head `85818a749` merged as `c7f2d7861`; same-county frozen read, foreign-only non-disclosure, honest Workbench states, no writes/custody/live data |
 | **WO-SR-007C Atlas Canonical Artifact Staging** | **DONE / R3 / PR #1464** | Exact head `848546a3d` merged as `5a328e728`; all eight protected contexts passed and 10/10 review threads resolved |
-| **WO-SR-007D Atlas Persistent Local Runtime Adoption** | **ACTIVE / R4** | Source-tree Development `LocalExact`; published Development disabled; exact startup/per-invocation provenance; real A/B/restored starts; Disabled rollback; 89/89 focused tests |
+| **WO-SR-007D Atlas Persistent Local Runtime Adoption** | **DONE / R4 / PR #1465** | Merge `4fcbfbd05`; source-tree Development `LocalExact`; published Development disabled; exact startup/per-invocation provenance; real A/B/restored starts; Disabled rollback; 89/89 focused tests |
+| **Atlas Standalone Canonical Ownership Finalization** | **DONE / R2 / Atlas PR #4** | Exact head `8c2d4d870` merged as `708fc5c319`; protected suite main verified; module bytes unchanged |
+| **WO-SR-010A Dais Canonical Artifact Staging** | **ACTIVE / R3** | Exact module, schema, source manifest, generated three-file slot, clean bootstrap, and executed whole-slot rollback proved locally |
 
 ### portfolio-operator (`GOAL-PORTFOLIO-OPERATOR-001` / `LOOP-PORTFOLIO-OPERATOR-001`)
 | WO | State | Notes |

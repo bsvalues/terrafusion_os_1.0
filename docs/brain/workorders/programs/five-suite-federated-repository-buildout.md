@@ -4,7 +4,7 @@
 
 **Loop:** `LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES`
 
-**Status:** Active execution; mission authority `OWNER-FIVE-SUITE-FEDERATED-COMPLETION-20260826`; WO-SR-007D Atlas runtime adoption
+**Status:** Active execution; mission authority `OWNER-FIVE-SUITE-FEDERATED-COMPLETION-20260826`; WO-SR-010A Dais staging
 
 ## Ratified topology
 
@@ -93,7 +93,8 @@ county contexts, audit spines, deployment control planes, or contract authoritie
 | WO-SR-009C | Make the canonical county-scoped Atlas projection reachable in the Property Workbench | Complete R3; PR #1424 merged exact assured head `e70548cb4` as `b5a02db17`; authority consumed; no Point, live provider, or cutover |
 | WO-SR-009D | Make the frozen county-scoped Dossier evidence registry read reachable in the Property Workbench | Complete R3; PR #1427 exact assured head `85818a749` merged as `c7f2d7861`; authority consumed; no writes, custody mutation, live data, or cutover |
 | WO-SR-007C | Stage the exact Atlas canonical artifact with provenance and executed rollback | Complete R3; PR #1464 exact head `848546a3d` merged as `5a328e728`; protected main verified |
-| WO-SR-007D | Persist and prove the exact Atlas local runtime with rollback | Active R4; source-tree Development selection, published Development disabled, startup/per-invocation identity, A/B/restored starts, Disabled rollback, and 89/89 focused tests |
+| WO-SR-007D | Persist and prove the exact Atlas local runtime with rollback | Complete R4; sovereign PR #1465 merged as `4fcbfbd05`; Atlas ownership PR #4 merged as `708fc5c31`; both protected mains verified |
+| WO-SR-010A | Stage the exact Dais canonical module and frozen schema with provenance and rollback | Active R3; exact three-file slot and transactional rollback proved locally |
 
 ## Extraction and provenance policy
 
@@ -324,6 +325,8 @@ On 2026-08-26 the owner issued `OWNER-FIVE-SUITE-FEDERATED-COMPLETION-20260826`,
 between-cohort program into continuous bounded execution through its already-ratified terminal
 condition. The decision authorizes exact child Work Orders without per-child owner relay while
 preserving the recorded hard walls. `WO-SR-007C` completed as protected-main merge
-`5a328e728852dc2bb933d704d0daa5c54750728c`. `WO-SR-007D` is the dependency-cleared continuation:
-Atlas persistent local runtime selection, observed adoption and rollback, exact per-invocation
-provenance, then standalone ownership truth, Dais, Dossier, and GPT.
+`5a328e728852dc2bb933d704d0daa5c54750728c`. Atlas runtime PR #1465 then merged as
+`4fcbfbd0585122f67f640b1b76786b7629f28e1f`, and Atlas suite PR #4 finalized ownership as
+`708fc5c31988405f9ca2cba7ebea7bb9d1fec3a6`; both protected mains were verified. `WO-SR-010A` is
+the dependency-cleared continuation: exact Dais module/schema staging and rollback, then persistent
+runtime adoption, standalone ownership truth, Dossier, and GPT.

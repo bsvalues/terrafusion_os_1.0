@@ -1,8 +1,8 @@
 {
   "schemaVersion": "0.1.0",
-  "generatedBy": "WO-SR-007C Atlas canonical artifact staging activation",
+  "generatedBy": "WO-SR-010A Dais canonical artifact staging activation",
   "generatedAt": "2026-08-26T00:00:00Z",
-  "description": "The owner-level Five-Suite completion mission is active. WO-SR-007C is merged and protected-main verified; WO-SR-007D is the active exact Atlas persistent local-runtime adoption and rollback child.",
+  "description": "The owner-level Five-Suite completion mission is active. Atlas runtime and ownership are complete on protected mains; WO-SR-010A is the active exact Dais artifact staging and rollback child.",
   "records": [
     {
       "id": "WO-WOE-000",
@@ -10887,7 +10887,7 @@
       "program": "Five-Suite Federated Repository Buildout",
       "goal": "Persist LocalExact selection for capable Development source-tree hosts while published Development hosts remain Disabled, enforce provenance at startup and every invocation, observe real restarts and Disabled rollback, and preserve legitimate sovereign integration seams.",
       "riskClass": "R4",
-      "status": "active",
+      "status": "complete",
       "dependencies": [
         {
           "id": "WO-SR-007C",
@@ -10980,11 +10980,11 @@
         }
       ],
       "validationGates": [
-        { "name": "warnings-as-errors build and focused Atlas runtime suite", "command": "Invoke-AtlasPersistentRuntimeAdoptionRollbackProof.ps1", "required": true, "result": "pass - 88 passed, 0 failed, 0 skipped" },
+        { "name": "warnings-as-errors build and focused Atlas runtime suite", "command": "Invoke-AtlasPersistentRuntimeAdoptionRollbackProof.ps1", "required": true, "result": "pass - 89 passed, 0 failed, 0 skipped" },
         { "name": "real persistent selection and rollback", "command": "fresh LocalExact A/B; Disabled; restored LocalExact; manifest/module tamper", "required": true, "result": "pass" },
-        { "name": "registry and decision JSON parse", "command": "JSON.parse owner-decisions.json and work-order-registry.seed.json", "required": true, "result": "pending final diff" },
-        { "name": "platform and diff checks", "command": "platform lint and git diff --check", "required": true, "result": "pending final diff" },
-        { "name": "remote protected-main checks", "command": "GitHub required checks on exact PR head", "required": true, "result": "pending" }
+        { "name": "registry and decision JSON parse", "command": "JSON.parse owner-decisions.json and work-order-registry.seed.json", "required": true, "result": "pass" },
+        { "name": "platform and diff checks", "command": "platform lint and git diff --check", "required": true, "result": "pass" },
+        { "name": "remote protected-main checks", "command": "GitHub required checks on exact PR head", "required": true, "result": "pass on exact PR #1465 head feb69f85999039db03ef95f52f8a8d4e4c0d2f8f" }
       ],
       "stopConditions": [
         {
@@ -10994,10 +10994,10 @@
       ],
       "nextCandidates": [
         {
-          "id": "WO-SR-007E",
-          "reason": "After sovereign protected-main verification, make the standalone Atlas repository truthfully declare canonical ownership without changing module bytes.",
-          "riskClass": "R2",
-          "blocked": true
+          "id": "WO-SR-010A",
+          "reason": "Atlas standalone ownership finalization completed in Atlas PR #4; the active mission successor is exact Dais staging.",
+          "riskClass": "R3",
+          "blocked": false
         }
       ],
       "authority": {
@@ -11012,9 +11012,74 @@
       },
       "provenance": {
         "createdAt": "2026-08-26T00:00:00Z",
-        "source": "Owner mission directive; verified WO-SR-007C merge 5a328e728852dc2bb933d704d0daa5c54750728c; pinned Atlas commit 6736a53980c73d2b503ec71a440ad8e02aa43782; observed local 88-test runtime and rollback proof.",
+        "source": "Owner mission directive; verified WO-SR-007C merge 5a328e728852dc2bb933d704d0daa5c54750728c; pinned Atlas commit 6736a53980c73d2b503ec71a440ad8e02aa43782; 89-test runtime and rollback proof; sovereign PR #1465 merge 4fcbfbd0585122f67f640b1b76786b7629f28e1f; Atlas PR #4 merge 708fc5c31988405f9ca2cba7ebea7bb9d1fec3a6.",
         "schemaVersion": "0.1.0"
       }
+    },
+    {
+      "id": "WO-SR-010A",
+      "title": "Dais Canonical Artifact Staging",
+      "program": "Five-Suite Federated Repository Buildout",
+      "goal": "Stage the exact protected-main Dais appeal-workflow module and frozen schema through a fixed manifest-bound OS slot with executed whole-slot rollback before runtime adoption.",
+      "riskClass": "R3",
+      "status": "active",
+      "dependencies": [
+        { "id": "ATLAS_CANONICAL_RUNTIME_AND_OWNERSHIP", "status": "satisfied", "evidence": ["Sovereign PR #1465 merged as 4fcbfbd0585122f67f640b1b76786b7629f28e1f; Atlas PR #4 merged as 708fc5c31988405f9ca2cba7ebea7bb9d1fec3a6; both protected mains verified."] },
+        { "id": "OWNER-FIVE-SUITE-FEDERATED-COMPLETION-20260826", "status": "satisfied", "evidence": ["Owner mission authority explicitly permits exact child staging, rollback proof, PR operation, merge, runtime adoption, and ownership completion without per-child owner relay."] }
+      ],
+      "allowedSystems": [
+        {
+          "name": "Dais exact local staging, rollback, path canon and mission governance",
+          "paths": [
+            ".governance/owner-decisions.json", ".github/workflows/dais-canonical-staging.yml", ".gitignore", "PATH_CANON_REGISTER.md",
+            "backend/src/TerraFusion.API/Configuration/DaisAppealWorkflowOptions.cs",
+            "scripts/bootstrap/Stage-DaisAppealWorkflowModule.ps1", "tests/dais-staging-identity.ps1",
+            "docs/brain/workorders/active/WO-SR-010A-dais-canonical-artifact-staging.md",
+            "docs/brain/workorders/evidence/WO-SR-010A-DAIS-CANONICAL-ARTIFACT-STAGING.md",
+            "docs/brain/workorders/registry/work-order-registry.seed.json", "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
+            "docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md", "docs/brain/workorders/programs/five-suite-federated-repository-buildout.md",
+            "docs/brain/workorders/programs/ACTIVE_PROGRAM_PLAYBOOK.md", "docs/brain/workorders/goal-loop/COMMAND_TO_PROGRAM_MAP.md",
+            "docs/brain/workorders/goal-loop/GOAL_COMMANDS.md", "docs/governance/CI_WORKFLOW_LIFECYCLE_POLICY.md"
+          ]
+        }
+      ],
+      "blockedSystems": [
+        { "name": "Runtime activation, provider/data/persistence/schema/migration mutation, frozen adapter or contract changes, Dais repository mutation, credentials, deployment, production, source retirement, and other suites" }
+      ],
+      "allowedFiles": [
+        ".governance/owner-decisions.json", ".github/workflows/dais-canonical-staging.yml", ".gitignore", "PATH_CANON_REGISTER.md",
+        "backend/src/TerraFusion.API/Configuration/DaisAppealWorkflowOptions.cs",
+        "scripts/bootstrap/Stage-DaisAppealWorkflowModule.ps1", "tests/dais-staging-identity.ps1",
+        "docs/brain/workorders/active/WO-SR-010A-dais-canonical-artifact-staging.md",
+        "docs/brain/workorders/evidence/WO-SR-010A-DAIS-CANONICAL-ARTIFACT-STAGING.md",
+        "docs/brain/workorders/registry/work-order-registry.seed.json", "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
+        "docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md", "docs/brain/workorders/programs/five-suite-federated-repository-buildout.md",
+        "docs/brain/workorders/programs/ACTIVE_PROGRAM_PLAYBOOK.md", "docs/brain/workorders/goal-loop/COMMAND_TO_PROGRAM_MAP.md",
+        "docs/brain/workorders/goal-loop/GOAL_COMMANDS.md", "docs/governance/CI_WORKFLOW_LIFECYCLE_POLICY.md"
+      ],
+      "blockedFiles": ["backend/src/TerraFusion.API/Adapters/**", "backend/src/TerraFusion.API/Services/Dais/**", "backend/src/TerraFusion.Abstractions/contracts/**", "frontend/**", "packages/**", "azure-pipelines/**"],
+      "evidenceRequired": [
+        { "kind": "other", "description": "Exact module/schema/source-manifest identity; typed full-manifest identity; exact byte-identical candidate/published three-file slot; same-volume and disjoint build root; reparse-point refusal; concurrent invocation exclusion; clean bootstrap; backup-verification restoration; post-publication rollback; bidirectional inventories; independent review; protected checks; resolved threads; exact-head merge." }
+      ],
+      "evidenceProduced": [
+        { "kind": "file", "location": "docs/brain/workorders/evidence/WO-SR-010A-DAIS-CANONICAL-ARTIFACT-STAGING.md", "summary": "Observed nine-invocation exact staging, typed full-manifest identity, candidate/published equality, concurrency exclusion, failure cleanup, and whole-slot rollback proof." }
+      ],
+      "validationGates": [
+        { "name": "full Dais staging and rollback regression", "command": "tests/dais-staging-identity.ps1 against verified local canonical clone", "required": true, "result": "pass" },
+        { "name": "offline parser and origin guard", "command": "tests/dais-staging-identity.ps1 -OfflineGuardsOnly", "required": true, "result": "pass" },
+        { "name": "independent assurance", "command": "read-only exact staged-diff review plus offline and full regression re-execution", "required": true, "result": "pass - CLEAN" },
+        { "name": "registry and decision JSON parse", "command": "JSON.parse owner-decisions.json and work-order-registry.seed.json", "required": true, "result": "pending final diff" },
+        { "name": "platform and diff checks", "command": "workflow inventory, platform lint and git diff --check", "required": true, "result": "pending final diff" },
+        { "name": "remote protected-main checks", "command": "GitHub required checks on exact PR head", "required": true, "result": "pending" }
+      ],
+      "stopConditions": [
+        { "type": "authority_wall", "description": "Stop on any mission hard-wall crossing, identity/rollback failure, runtime activation, Dais mutation, protected resource, out-of-scope file, failed required check, unresolved substantive review, force push, or branch-protection bypass." }
+      ],
+      "nextCandidates": [
+        { "id": "WO-SR-010B", "reason": "After protected-main verification, adopt the exact Dais validator as the real Development runtime semantic gate with persistent selection and observed rollback.", "riskClass": "R4", "blocked": true }
+      ],
+      "authority": { "mayWrite": true, "mayCommit": true, "mayPush": true, "mayOpenPr": true, "mayMarkReady": true, "mayMerge": true, "mayCleanup": true, "notes": "Exact child scope under OWNER-FIVE-SUITE-FEDERATED-COMPLETION-20260826 and standing protected-PR lifecycle authority." },
+      "provenance": { "createdAt": "2026-08-26T00:00:00Z", "source": "Owner mission directive; verified Atlas terminal merges; pinned Dais protected main 6932bbbf014cf70d7362e070a1dad2a8a680ad47; observed nine-invocation local staging, numeric and string manifest-type tamper refusal, exact candidate/publication equality, concurrency exclusion, and rollback proof.", "schemaVersion": "0.1.0" }
     }
   ]
 }

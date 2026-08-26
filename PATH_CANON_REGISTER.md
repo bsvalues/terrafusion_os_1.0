@@ -8,7 +8,7 @@
 | `bsvalues/terrafusion-os` | `C:\Users\bsval\terrafusion-os` | `github.com/bsvalues/terrafusion-os` | `main` | Sovereign Sync workbook tooling and contract estate |
 | `bsvalues/terrafusion-forge` | `D:\terrafusion-forge` | `git@github.com:bsvalues/terrafusion-forge.git` | `main` | Standalone Forge suite product source, valuation-kernel parity, and evidence |
 | `bsvalues/terrafusion-atlas` | `C:\Users\bsval\terrafusion-atlas` | `github.com/bsvalues/terrafusion-atlas` | `main` | Standalone Atlas suite product source, contract compatibility, and evidence |
-| `bsvalues/terrafusion-dais` | `D:\terrafusion-dais` | `github.com/bsvalues/terrafusion-dais` | `main` | Standalone Dais suite bootstrap, future product source, contract compatibility, and evidence |
+| `bsvalues/terrafusion-dais` | `D:\terrafusion-dais` | `github.com/bsvalues/terrafusion-dais` | `main` | Standalone Dais suite product source, contract compatibility, and evidence |
 | `bsvalues/terrafusion-dossier` | `D:\terrafusion-dossier` | `github.com/bsvalues/terrafusion-dossier` | `main` | Standalone Dossier suite bootstrap, future product source, contract compatibility, and evidence |
 | `bsvalues/terrafusion-gpt` | `D:\terrafusion-gpt` | `github.com/bsvalues/terrafusion-gpt` | `main` | Standalone GPT suite bootstrap, future product source, contract compatibility, and evidence |
 
@@ -50,21 +50,26 @@ On 2026-08-26, authenticated fetch independently resolved `bsvalues/terrafusion-
 `3ef3d5cfc666f8a27a17510572a376b71d33fa29e796ff79b70abe7e7752ae46`). Sovereign PR #1464
 merged exact head `848546a3d5e82ed3694720e47623b965c704511c` as
 `5a328e728852dc2bb933d704d0daa5c54750728c`, establishing the fixed manifest-bound staging and
-rollback slot. `WO-SR-007D` consumes only that identity for Development runtime adoption; the shared
-suite checkout remains read-only and cross-repository Atlas workers still require isolated
-worktrees.
+rollback slot. `WO-SR-007D` completed exact Development runtime adoption in sovereign PR #1465,
+merged as `4fcbfbd0585122f67f640b1b76786b7629f28e1f`; Atlas PR #4 finalized standalone ownership as
+`708fc5c31988405f9ca2cba7ebea7bb9d1fec3a6`. Both protected mains were verified. The shared suite
+checkout remains read-only and cross-repository Atlas workers still require isolated worktrees.
 
-On 2026-07-27, `D:\terrafusion-dais` resolved to remote
-`git@github.com:bsvalues/terrafusion-dais.git`, default branch `main`, at `origin/main`
-`29a34b0feeab32984a4dedf1af853239993b4a26`. GitHub reports the repository as private.
-Cross-repository Dais workers must branch from an isolated worktree attached to this canonical
-repository; the shared checkout is a read-only synchronization surface. Dais PR #3 at head
+The registered `D:\terrafusion-dais` path remains the stable dispatch canon. On 2026-08-26, the
+mission's isolated read-only synchronization clone independently resolved canonical remote
+`github.com/bsvalues/terrafusion-dais`, default branch `main`, at protected head
+`6932bbbf014cf70d7362e070a1dad2a8a680ad47`. The governed stager does not trust a local path: it
+validates the remote identity, checks out that exact commit with line-ending conversion disabled,
+and verifies the module, schema, and source-manifest bytes before publication. Cross-repository Dais
+workers still require isolated branches or worktrees; synchronization checkouts remain read-only.
+Dais PR #3 at head
 `be1a7676fc79f13d7cd3a3516cafa0ad7f3d624f` merged as
 `4ed92e35d3debc4a43b127087703a1e2bc731203` and is recorded as historically unratified. Corrective
 Dais PR #4 at head `93ee267f3258e8989a5acf27fc40c5bb0d24f695` merged as
-`29a34b0feeab32984a4dedf1af853239993b4a26`, which is the current Dais `origin/main`. The final
-capability classification is `RETAINED_PURE_UNWIRED_F1`; no runtime, provider, persistence,
-publication, deployment, or protected-resource authority follows from the retained module.
+`29a34b0feeab32984a4dedf1af853239993b4a26`; later protected-main maintenance produced the pinned
+`6932bbbf` identity. The retained capability remains pure and provider-neutral. Runtime adoption is
+authorized only through the current Five-Suite mission and the fixed OS-managed artifact boundary;
+provider, persistence, deployment, production, and protected-resource work remain denied.
 
 On 2026-07-27, `D:\terrafusion-gpt` resolved to remote
 `git@github.com:bsvalues/terrafusion-gpt.git`, default branch `main`, at `origin/main`

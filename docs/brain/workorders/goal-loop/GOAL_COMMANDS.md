@@ -47,7 +47,7 @@ Success:  Shared contracts are frozen, repositories are bootstrapped, bounded ex
           parity/provenance gates, and duplicate mutable ownership is retired at cutover.
 ```
 
-**Current state:** `WO-SR-007D - Atlas Persistent Local Runtime Adoption` follows verified PR #1464 merge `5a328e728` under active decision `OWNER-FIVE-SUITE-FEDERATED-COMPLETION-20260826`. It persists `LocalExact` for capable Development source-tree hosts while published Development hosts remain Disabled, verifies exact source/artifact identity at startup and every invocation, and proves real restarts, Disabled rollback, restored selection, and tamper refusal before standalone ownership finalization. The mission decision authorizes the dependency-cleared Atlas, Dais, Dossier, and GPT sequence without per-child owner return; one Work Order/branch/PR and every hard wall remain mandatory.
+**Current state:** Atlas runtime PR #1465 and Atlas ownership PR #4 are merged and protected-main verified. `WO-SR-010A - Dais Canonical Artifact Staging` is active under `OWNER-FIVE-SUITE-FEDERATED-COMPLETION-20260826`: it pins protected Dais main, stages the exact standalone module and frozen schema, binds source-manifest provenance, and proves a real whole-slot rollback before runtime adoption. The mission decision authorizes the dependency-cleared Dais, Dossier, and GPT sequence without per-child owner return; one Work Order/branch/PR and every hard wall remain mandatory.
 WO-SR-005D-E1 and WO-SR-005D-E2 completed the unwired Dossier adapter and standalone parity proof.
 WO-SR-005E-A then found that the committed GPT/RAG result drops identity required by the frozen
 grounded-context contract. `WO-SR-005E-A2` completed the source-identity projection design, and
