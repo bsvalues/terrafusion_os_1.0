@@ -98,10 +98,24 @@ if ($candidateHash -ne $AtlasModuleSha256) {
 }
 
 # ---- publish with a restorable backup --------------------------------------------------------
-$hadPrevious = Test-Path -LiteralPath $ArtifactSlot
+# The previous artifact is one known file, so it is copied by exact name and then VERIFIED to exist.
+# An earlier revision used Copy-Item -LiteralPath with a "*" wildcard: -LiteralPath does not expand
+# wildcards, so the backup was silently empty and -ErrorAction SilentlyContinue hid it. A backup that
+# is never checked is not a rollback, and reporting the slot path proved nothing about its contents.
+$previousModule = Join-Path $ArtifactSlot "project-atlas-feature.mjs"
+$hadPrevious = Test-Path -LiteralPath $previousModule
 if ($hadPrevious) {
   New-Item -ItemType Directory -Path $backupSlot -Force | Out-Null
-  Copy-Item -LiteralPath (Join-Path $ArtifactSlot "*") -Destination $backupSlot -Recurse -Force -ErrorAction SilentlyContinue
+  $backupModule = Join-Path $backupSlot "project-atlas-feature.mjs"
+  Copy-Item -LiteralPath $previousModule -Destination $backupModule -Force
+  if (-not (Test-Path -LiteralPath $backupModule)) {
+    throw "ATLAS_BACKUP_NOT_CAPTURED: refusing to publish without a restorable previous artifact"
+  }
+  $backupHash = (Get-FileHash -LiteralPath $backupModule -Algorithm SHA256).Hash.ToLowerInvariant()
+  $previousHash = (Get-FileHash -LiteralPath $previousModule -Algorithm SHA256).Hash.ToLowerInvariant()
+  if ($backupHash -ne $previousHash) {
+    throw "ATLAS_BACKUP_HASH_MISMATCH: backup $backupHash does not match previous $previousHash"
+  }
 }
 New-Item -ItemType Directory -Path $ArtifactSlot -Force | Out-Null
 try {
@@ -110,7 +124,12 @@ try {
   if ($publishedHash -ne $AtlasModuleSha256) { throw "ATLAS_PUBLISHED_HASH_MISMATCH: $publishedHash" }
 } catch {
   if ($hadPrevious) {
-    Copy-Item -LiteralPath (Join-Path $backupSlot "*") -Destination $ArtifactSlot -Recurse -Force -ErrorAction SilentlyContinue
+    Copy-Item -LiteralPath (Join-Path $backupSlot "project-atlas-feature.mjs") -Destination $ArtifactSlot -Force
+    $restored = Join-Path $ArtifactSlot "project-atlas-feature.mjs"
+    if (-not (Test-Path -LiteralPath $restored)) {
+      Write-Error "ATLAS_ROLLBACK_FAILED: previous artifact could not be restored: $_"
+      exit 1
+    }
     Write-Error "ATLAS_STAGE_FAILED_ROLLED_BACK: $_"
   } else {
     Remove-Item -LiteralPath $ArtifactSlot -Recurse -Force -ErrorAction SilentlyContinue
