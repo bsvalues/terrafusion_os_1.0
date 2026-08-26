@@ -55,7 +55,7 @@
         "state": "ACTIVE",
         "owner_action_required": false,
         "current_child_work_order": "WO-SR-007D",
-        "current_pr": null,
+        "current_pr": 1465,
         "completed_child": {
           "id": "WO-SR-007C",
           "pr": 1464,
