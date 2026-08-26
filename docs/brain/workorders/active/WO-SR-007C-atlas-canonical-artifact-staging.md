@@ -2,7 +2,7 @@
 
 | Field | Value |
 | --- | --- |
-| Status | ACTIVE - PR #1464 remediation and exact-head assurance |
+| Status | COMPLETE - PR #1464 merged and protected main verified |
 | Program | Five-Suite Federated Repository Buildout |
 | Goal | `GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES` |
 | Loop | `LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES` |
@@ -12,7 +12,7 @@
 | Atlas source | `bsvalues/terrafusion-atlas@6736a53980c73d2b503ec71a440ad8e02aa43782` |
 | Module | `src/spatial-read/project-atlas-feature.mjs` |
 | Module SHA-256 | `3ef3d5cfc666f8a27a17510572a376b71d33fa29e796ff79b70abe7e7752ae46` |
-| PR | #1464, retained and corrected from verified head `62062d42772b3b53c1470827851d32eae5c740a8` |
+| PR | #1464, exact head `848546a3d5e82ed3694720e47623b965c704511c`, merge `5a328e728852dc2bb933d704d0daa5c54750728c` |
 | Terminal condition | `ATLAS_CANONICAL_ARTIFACT_STAGING_PROVEN` |
 
 ## Objective
@@ -70,5 +70,7 @@ other-suite change, branch-protection bypass, force push, or destructive cleanup
 
 ## Dependency and continuation
 
-Dependencies `WO-SR-007B` and `WO-SR-009C` are satisfied. On verified merge, immediately admit the
-Atlas persistent local-runtime adoption and rollback child under the same mission authority.
+Dependencies `WO-SR-007B` and `WO-SR-009C` are satisfied. All eight protected contexts passed on the
+exact head, all ten review threads were resolved, and protected `main` was independently verified at
+the squash merge above. `WO-SR-007D` is now the active persistent local-runtime adoption child under
+the same mission authority.
