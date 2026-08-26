@@ -1,13 +1,7 @@
 name: Atlas Canonical Staging Guards
 
 on:
-  pull_request:
-    paths:
-      - '.github/workflows/atlas-canonical-staging.yml'
-      - '.gitignore'
-      - 'backend/src/TerraFusion.API/Configuration/AtlasProjectionOptions.cs'
-      - 'scripts/bootstrap/Stage-AtlasProjectionModule.ps1'
-      - 'tests/atlas-staging-identity.ps1'
+  workflow_dispatch:
   push:
     branches:
       - main
