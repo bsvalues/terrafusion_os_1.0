@@ -1,8 +1,8 @@
 {
   "schemaVersion": "0.1.0",
-  "generatedBy": "WO-SR-009D Dossier Workbench canonical evidence read terminal closeout",
-  "generatedAt": "2026-08-20T00:00:00Z",
-  "description": "WO-SR-009D is complete and its bounded authority is consumed. PR #1427 proves the authenticated county-scoped canonical Dossier evidence read is reachable and truthful in the Property Workbench without writes, custody mutation, or live data; all existing denials remain active.",
+  "generatedBy": "WO-SR-007C Atlas canonical artifact staging activation",
+  "generatedAt": "2026-08-26T00:00:00Z",
+  "description": "The owner-level Five-Suite completion mission is active. WO-SR-007C retains and corrects Atlas PR #1464 as the exact provenance-bound artifact staging and rollback child before persistent runtime adoption.",
   "records": [
     {
       "id": "WO-WOE-000",
@@ -10748,6 +10748,129 @@
         "remoteChecks": "19/19 recorded workflow runs successful; combined CodeRabbit status successful",
         "terminalCondition": "DOSSIER_COUNTY_SCOPED_CANONICAL_EVIDENCE_READ_REACHABLE_IN_WORKBENCH_NO_WRITE_CUSTODY_MUTATION_OR_LIVE_DATA",
         "authorityState": "COMPLETED_AND_CONSUMED"
+      }
+    },
+    {
+      "id": "WO-SR-007C",
+      "title": "Atlas Canonical Artifact Staging",
+      "program": "Five-Suite Federated Repository Buildout",
+      "goal": "Stage the exact Atlas-owned projection artifact and provenance manifest in the OS-managed runtime slot with real backup contents and executed hash-verified rollback.",
+      "riskClass": "R3",
+      "status": "review",
+      "dependencies": [
+        {
+          "id": "WO-SR-007B",
+          "status": "satisfied",
+          "evidence": ["PR #1393 merged the exact hash-verifying Atlas process-host foundation."]
+        },
+        {
+          "id": "WO-SR-009C",
+          "status": "satisfied",
+          "evidence": ["PR #1424 merged the default-disabled canonical Atlas consumer, conditional DI, authenticated endpoint, and Workbench path."]
+        },
+        {
+          "id": "OWNER-FIVE-SUITE-FEDERATED-COMPLETION-20260826",
+          "status": "satisfied",
+          "evidence": ["Owner directive issued directly in the Codex mission thread on 2026-08-26 and recorded in .governance/owner-decisions.json."]
+        }
+      ],
+      "allowedSystems": [
+        {
+          "name": "Exact Atlas staging, validation workflow, and mission governance scope",
+          "paths": [
+            ".governance/owner-decisions.json",
+            ".github/workflows/atlas-canonical-staging.yml",
+            "docs/governance/CI_WORKFLOW_LIFECYCLE_POLICY.md",
+            ".gitignore",
+            "scripts/bootstrap/Stage-AtlasProjectionModule.ps1",
+            "tests/atlas-staging-identity.ps1",
+            "docs/brain/workorders/active/WO-SR-007C-atlas-canonical-artifact-staging.md",
+            "docs/brain/workorders/evidence/WO-SR-007C-ATLAS-CANONICAL-ARTIFACT-STAGING.md",
+            "docs/brain/workorders/registry/work-order-registry.seed.json",
+            "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
+            "docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md",
+            "docs/brain/workorders/programs/five-suite-federated-repository-buildout.md",
+            "docs/brain/workorders/programs/ACTIVE_PROGRAM_PLAYBOOK.md",
+            "docs/brain/workorders/goal-loop/COMMAND_TO_PROGRAM_MAP.md",
+            "docs/brain/workorders/goal-loop/GOAL_COMMANDS.md"
+          ]
+        }
+      ],
+      "blockedSystems": [
+        { "name": "Persistent runtime selection, providers, persistence, schema, county/PACS/SQL/live data, credentials, deployment, production, Atlas mutation, source retirement, and other suites" }
+      ],
+      "allowedFiles": [
+        ".governance/owner-decisions.json",
+        ".github/workflows/atlas-canonical-staging.yml",
+        "docs/governance/CI_WORKFLOW_LIFECYCLE_POLICY.md",
+        ".gitignore",
+        "scripts/bootstrap/Stage-AtlasProjectionModule.ps1",
+        "tests/atlas-staging-identity.ps1",
+        "docs/brain/workorders/active/WO-SR-007C-atlas-canonical-artifact-staging.md",
+        "docs/brain/workorders/evidence/WO-SR-007C-ATLAS-CANONICAL-ARTIFACT-STAGING.md",
+        "docs/brain/workorders/registry/work-order-registry.seed.json",
+        "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
+        "docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md",
+        "docs/brain/workorders/programs/five-suite-federated-repository-buildout.md",
+        "docs/brain/workorders/programs/ACTIVE_PROGRAM_PLAYBOOK.md",
+        "docs/brain/workorders/goal-loop/COMMAND_TO_PROGRAM_MAP.md",
+        "docs/brain/workorders/goal-loop/GOAL_COMMANDS.md"
+      ],
+      "blockedFiles": [
+        "backend/**",
+        "frontend/**",
+        "packages/**",
+        "**/appsettings*.json",
+        "azure-pipelines/**"
+      ],
+      "evidenceRequired": [
+        {
+          "kind": "other",
+          "description": "Exact source and module identity, runtime-pin agreement, canonical-origin manifest, real whole-slot backup inventory, automatic failure rollback, bidirectional restored hashes, local Windows integration regression, credential-free CI guards, independent assurance, required checks, resolved threads, and exact-head merge."
+        }
+      ],
+      "evidenceProduced": [
+        {
+          "kind": "file",
+          "location": "docs/brain/workorders/evidence/WO-SR-007C-ATLAS-CANONICAL-ARTIFACT-STAGING.md",
+          "summary": "Local proof and remaining merge gates for PR #1464."
+        }
+      ],
+      "validationGates": [
+        { "name": "PowerShell parse", "command": "Parse Stage-AtlasProjectionModule.ps1 and tests/atlas-staging-identity.ps1", "required": true, "result": "pass" },
+        { "name": "Atlas staging identity and rollback", "command": "pwsh tests/atlas-staging-identity.ps1", "required": true, "result": "pass" },
+        { "name": "registry and decision JSON parse", "command": "JSON.parse owner-decisions.json and work-order-registry.seed.json", "required": true, "result": "pass" },
+        { "name": "diff check", "command": "git diff --check", "required": true, "result": "pass" },
+        { "name": "remote protected-main checks", "command": "GitHub required checks on exact PR head", "required": true, "result": "pending" }
+      ],
+      "stopConditions": [
+        {
+          "type": "authority_wall",
+          "description": "Stop this child on any mission hard-wall crossing, missing exact identity or rollback evidence, out-of-scope file, failed required check, unresolved substantive review, force push, or branch-protection bypass."
+        }
+      ],
+      "nextCandidates": [
+        {
+          "id": "WO-SR-007D",
+          "reason": "A verified canonical artifact clears persistent LocalExact runtime adoption, restart persistence, rollback, and Atlas ownership proof.",
+          "riskClass": "R4",
+          "blocked": true
+        }
+      ],
+      "authority": {
+        "mayWrite": true,
+        "mayCommit": true,
+        "mayPush": true,
+        "mayOpenPr": true,
+        "mayMarkReady": true,
+        "mayMerge": true,
+        "mayCleanup": true,
+        "notes": "Exact child scope under OWNER-FIVE-SUITE-FEDERATED-COMPLETION-20260826 and standing protected-PR lifecycle authority."
+      },
+      "provenance": {
+        "createdAt": "2026-08-26T00:00:00Z",
+        "source": "Owner mission directive; Atlas PR #1464 exact pre-remediation head 62062d42772b3b53c1470827851d32eae5c740a8; independent rollback-content and hash review.",
+        "schemaVersion": "0.1.0"
       }
     }
   ]

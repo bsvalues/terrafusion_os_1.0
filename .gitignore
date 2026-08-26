@@ -101,6 +101,7 @@ LEGACY_CODE_ARCHIVE/
 # Runtime data
 pids/
 /.terrafusion/runtime/forge/valuation/
+/.terrafusion/runtime/atlas/spatial-read/
 *.pid
 *.seed
 *.pid.lock

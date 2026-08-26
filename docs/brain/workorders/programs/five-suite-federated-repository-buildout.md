@@ -4,7 +4,7 @@
 
 **Loop:** `LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES`
 
-**Status:** Active between cohorts; WO-SR-009D complete and authority consumed; portfolio reconciliation current
+**Status:** Active execution; mission authority `OWNER-FIVE-SUITE-FEDERATED-COMPLETION-20260826`; WO-SR-007C on PR #1464
 
 ## Ratified topology
 
@@ -92,6 +92,7 @@ county contexts, audit spines, deployment control planes, or contract authoritie
 | WO-TF-POST-DAIS-001 | Reconcile authoritative post-Dais portfolio state and admit one successor | Complete R2; PR #1421 merged and selected WO-SR-009C |
 | WO-SR-009C | Make the canonical county-scoped Atlas projection reachable in the Property Workbench | Complete R3; PR #1424 merged exact assured head `e70548cb4` as `b5a02db17`; authority consumed; no Point, live provider, or cutover |
 | WO-SR-009D | Make the frozen county-scoped Dossier evidence registry read reachable in the Property Workbench | Complete R3; PR #1427 exact assured head `85818a749` merged as `c7f2d7861`; authority consumed; no writes, custody mutation, live data, or cutover |
+| WO-SR-007C | Stage the exact Atlas canonical artifact with provenance and executed rollback | Active R3; PR #1464 retained and remediated from verified head `62062d427`; persistent runtime selection is the dependent child |
 
 ## Extraction and provenance policy
 
@@ -317,3 +318,13 @@ adapter and tests remain unchanged, and all live-provider, protected-resource, d
 routing, and legacy-anonymous-path denials remain intact.
 
 Issue #1426 activated `WO-SR-009D` under `OWNER-SR-009D-R3-DOSSIER-WORKBENCH-CANONICAL-EVIDENCE-READ-20260807` at exact base `6622ca14e93d6a853c9629308e37a42620c0e08f`. PR #1427 then merged exact assured head `85818a749d4268f84cf8638d991d9cef657a0d19` as `c7f2d78619a9eb19186c2c724876fb4d11c81b00`. The real API and existing Property Dossier tab prove the authenticated frozen-contract read, same-county rendering, foreign-only empty-shape non-disclosure, deterministic ordering and pagination, honest states, and disposable synthetic journey. The route never uses the Development fallback. Evidence/custody writes, frozen contract or adapter changes, entities, migrations, persistence, live data, protected resources, routing/tab changes, deployment, and cutover remain denied. The authority is completed and consumed; portfolio reconciliation is current and no successor is inferred.
+
+On 2026-08-26 the owner issued `OWNER-FIVE-SUITE-FEDERATED-COMPLETION-20260826`, converting the
+between-cohort program into continuous bounded execution through its already-ratified terminal
+condition. The decision authorizes exact child Work Orders without per-child owner relay while
+preserving the recorded hard walls. `WO-SR-007C` retains PR #1464 as the Atlas staging child. The
+owner-reported rollback repair at `62062d427` was independently verified by file contents and hash;
+additional assurance findings are being remediated with whole-slot inventory backup, restored-hash
+verification, canonical-origin enforcement, a provenance manifest, and an executable regression.
+After the staging PR merges, the dependency-cleared continuation is Atlas persistent local runtime
+selection, observed adoption and rollback, canonical ownership, then Dais, Dossier, and GPT.

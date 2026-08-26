@@ -18,8 +18,8 @@ resolves.
 | `codex-operator-playbook` | Codex Operator Work Order Playbook | CLOSED at WO-CODEX-OP-009 | YES - governance capability merged | `once`, `evidence` |
 | `goal-loop-master-playbook` | Master Goal/Loop Playbook Governance | CLOSED at WO-GOAL-LOOP-MASTER-PLAYBOOK-001 | YES - governing baseline merged | `once`, `evidence` |
 | `program-status` | Master Active Program Playbook | Active program graph | NO | `once`, `evidence`, `discovery` |
-| `program-next` | Five-Suite Federated Repository Buildout | Portfolio reconciliation after completed WO-SR-009D | YES - no successor authority inferred | `once`, `evidence`, `discovery` |
-| `suite-repositories` | Five-Suite Federated Repository Buildout | Active between cohorts; WO-SR-009D complete and consumed | YES - portfolio reconciliation; no successor inferred | `once`, `evidence`, `discovery` |
+| `program-next` | Five-Suite Federated Repository Buildout | `WO-SR-007C` Atlas canonical artifact staging and PR #1464 remediation | YES - continuous child execution under `OWNER-FIVE-SUITE-FEDERATED-COMPLETION-20260826` | `once`, `evidence`, `discovery` |
+| `suite-repositories` | Five-Suite Federated Repository Buildout | Active mission: Atlas, then Dais, Dossier, and GPT canonical runtime adoption | YES - one bounded child/branch/PR at a time within the mission hard walls | `once`, `evidence`, `discovery` |
 | `program-stop` | Master Playbook | NONE | YES — operator stop command | `once` |
 | `release-engineering` | Release Engineering | CLOSED at WO-REL-006 | YES - baseline closed after rollup | `once`, `evidence`, `discovery` |
 | `benton-demo` | P1 | WO-DEPLOY-BENTON-003D | YES - live-surface smoke/evidence requires Azure execution access | `once`, `merge-watch`, `evidence` |

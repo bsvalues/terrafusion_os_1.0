@@ -98,9 +98,9 @@ automatically.
 | Goal | `GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES` |
 | Loop | `LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES` |
 | Program slug | `five-suite-federated-repository-buildout` |
-| Status | Active between cohorts; WO-SR-009D complete and authority consumed |
-| Current | Portfolio reconciliation after verified Dossier Workbench canonical evidence read adoption |
-| Next | Highest-value dependency-cleared bounded successor; no successor authority inferred |
+| Status | Active under mission authority `OWNER-FIVE-SUITE-FEDERATED-COMPLETION-20260826` |
+| Current | `WO-SR-007C` Atlas canonical artifact staging and PR #1464 remediation |
+| Next | Continue directly through Atlas runtime adoption, then Dais, Dossier, and GPT canonical cutover children |
 
 The sovereign base remains `terrafusion_os_1.0`. The five ratified suite repositories are
 `terrafusion-forge`, `terrafusion-atlas`, `terrafusion-dais`, `terrafusion-dossier`, and
@@ -208,7 +208,7 @@ transfer, or cutover follows.
 
 Program definition: [five-suite-federated-repository-buildout.md](five-suite-federated-repository-buildout.md).
 
-Current Five-Suite routing is portfolio reconciliation after WO-SR-009D. PR #1427 exact assured head `85818a749d4268f84cf8638d991d9cef657a0d19` merged as `c7f2d78619a9eb19186c2c724876fb4d11c81b00`, proving the authenticated county-scoped frozen Dossier evidence read, same-county Workbench rendering, foreign-only empty-shape non-disclosure, deterministic ordering and pagination, and honest states with disposable synthetic data. The Development fallback, writes, custody mutation, frozen-contract changes, live data, deployment, and cutover remain denied. Authority is completed and consumed; no successor is inferred.
+Current Five-Suite routing is `WO-SR-007C`, which retains and repairs PR #1464 to prove exact Atlas artifact staging, provenance, whole-slot backup, executed rollback, and restored hashes. The bounded owner mission decision `OWNER-FIVE-SUITE-FEDERATED-COMPLETION-20260826` authorizes dependency-cleared child Work Orders through Atlas, Dais, Dossier, and GPT canonical runtime adoption without a new objective or per-child owner return. All mission hard walls remain controlling.
 
 ---
 
@@ -659,8 +659,8 @@ from program evidence.
 | Portfolio loop | `LOOP-PORTFOLIO-OPERATOR-001` |
 | Selected program | Five-Suite Federated Repository Buildout |
 | Last completed interlock | `WO-SR-009D` Dossier Workbench canonical evidence read adoption |
-| Current WO | None; portfolio reconciliation current |
-| Next interlock | Admit only one dependency-cleared successor under existing authority, otherwise return an owner decision packet |
+| Current WO | `WO-SR-007C` Atlas canonical artifact staging and PR #1464 remediation |
+| Next interlock | On verified merge, admit the Atlas persistent local-runtime adoption child, then continue the authorized suite sequence |
 
 Issue #1417 and `OWNER-SR-009B-R3-DAIS-WORKBENCH-APPEAL-READ-20260805` authorized the exact bounded
 read-only Dais adoption sequence. PR #1419 merged exact assured head
