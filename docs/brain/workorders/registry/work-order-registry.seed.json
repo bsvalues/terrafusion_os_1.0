@@ -10885,7 +10885,7 @@
       "id": "WO-SR-007D",
       "title": "Atlas Persistent Local Runtime Adoption",
       "program": "Five-Suite Federated Repository Buildout",
-      "goal": "Persist Development-only LocalExact selection for the fixed Atlas-owned projection artifact, enforce provenance at startup and every invocation, observe real restarts and Disabled rollback, and preserve legitimate sovereign integration seams.",
+      "goal": "Persist LocalExact selection for capable Development source-tree hosts while published Development hosts remain Disabled, enforce provenance at startup and every invocation, observe real restarts and Disabled rollback, and preserve legitimate sovereign integration seams.",
       "riskClass": "R4",
       "status": "active",
       "dependencies": [

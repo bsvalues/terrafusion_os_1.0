@@ -333,10 +333,10 @@ try {
     $testsPassed = [int]$counters.passed
     $testsFailed = [int]$counters.failed
     $testsSkipped = $testsTotal - $testsExecuted
-    if ($testsTotal -ne 88 -or $testsExecuted -ne 88 -or $testsPassed -ne 88 -or
+    if ($testsTotal -ne 89 -or $testsExecuted -ne 89 -or $testsPassed -ne 89 -or
         $testsFailed -ne 0 -or $testsSkipped -ne 0) {
         throw "Atlas runtime TRX counts were total=$testsTotal executed=$testsExecuted " +
-            "passed=$testsPassed failed=$testsFailed skipped=$testsSkipped; expected 88/88/88/0/0."
+            "passed=$testsPassed failed=$testsFailed skipped=$testsSkipped; expected 89/89/89/0/0."
     }
 
     $changesAfter = @(Get-SovereignChangedPaths)

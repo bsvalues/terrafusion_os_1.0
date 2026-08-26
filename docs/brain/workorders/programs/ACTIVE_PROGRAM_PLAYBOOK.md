@@ -208,7 +208,7 @@ transfer, or cutover follows.
 
 Program definition: [five-suite-federated-repository-buildout.md](five-suite-federated-repository-buildout.md).
 
-Current Five-Suite routing is `WO-SR-007D`. `WO-SR-007C` merged as `5a328e728`; the active child persists Development-only `LocalExact`, verifies the fixed Atlas manifest and bytes at startup and every invocation, and proves real restarts plus Disabled rollback. The bounded owner mission decision `OWNER-FIVE-SUITE-FEDERATED-COMPLETION-20260826` authorizes dependency-cleared child Work Orders through Atlas, Dais, Dossier, and GPT canonical runtime adoption without a new objective or per-child owner return. All mission hard walls remain controlling.
+Current Five-Suite routing is `WO-SR-007D`. `WO-SR-007C` merged as `5a328e728`; the active child persists `LocalExact` for capable Development source-tree hosts, leaves published Development hosts Disabled, verifies the fixed Atlas manifest and bytes at startup and every invocation, and proves real restarts plus Disabled rollback. The bounded owner mission decision `OWNER-FIVE-SUITE-FEDERATED-COMPLETION-20260826` authorizes dependency-cleared child Work Orders through Atlas, Dais, Dossier, and GPT canonical runtime adoption without a new objective or per-child owner return. All mission hard walls remain controlling.
 
 ---
 

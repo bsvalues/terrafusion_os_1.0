@@ -15,7 +15,7 @@
 
 ## Objective
 
-Persist `LocalExact` selection in Development only, make the already authenticated Atlas consumer
+Persist `LocalExact` selection for capable Development source-tree hosts only, make the already authenticated Atlas consumer
 resolve the fixed OS-managed artifact slot, enforce the complete suite repository/commit/path/type/
 transport/length/hash identity at startup and before every invocation, invoke the real process host
 across fresh service-provider starts, execute selection rollback to Disabled, restore selection, and
@@ -48,7 +48,9 @@ prove module and manifest tampering fail closed before process start.
 
 ## Runtime boundary
 
-- `appsettings.Development.json` selects `LocalExact`; base and Production remain disabled.
+- `appsettings.Development.json` selects `LocalExact`; only a sovereign source-tree host with the
+  canonical repository markers activates it. Published Development containers, base, and Production
+  remain effectively disabled and register no host or consumer.
 - Configuration cannot supply the module or Node path. The code resolves the fixed ignored slot and
   a canonical absolute Node executable.
 - The exact two-file artifact inventory and all eight manifest fields are required. Links, sidecars,
@@ -66,7 +68,7 @@ prove module and manifest tampering fail closed before process start.
 - Disabled configuration overlay produces no host or consumer;
 - restored `LocalExact` start succeeds;
 - manifest and module tamper after construction fail before process start and bytes are restored;
-- 88 focused Atlas runtime, consumer, host and controller tests pass with zero skipped;
+- 89 focused Atlas runtime, consumer, host and controller tests pass with zero skipped;
 - durable ignored receipt and prior-slot bytes exist for local artifact rollback;
 - independent review, exact changed-file scope, governance/JSON/diff gates, protected checks,
   resolved threads, exact-head merge and protected-main verification.

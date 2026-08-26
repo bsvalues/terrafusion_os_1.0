@@ -23,14 +23,16 @@
 an invocation-owned short path, staged the exact module through the merged `WO-SR-007C` stager,
 compiled the real backend graph under warnings-as-errors, and ran the focused Atlas suite with exact
 artifact environment enabled. The proof emitted TRX, parsed its counters, and refused terminal
-success unless all 88 selected tests were executed and passed with zero failures or skips.
+success unless all 89 selected tests were executed and passed with zero failures or skips. The set
+includes an observed published-Development-host case that resolves effective mode to Disabled and
+registers neither the process host nor consumer when sovereign source markers are absent.
 
 Observed result:
 
 ```text
 result=PASS
 terminalCondition=ATLAS_PERSISTENT_LOCAL_RUNTIME_ADOPTION_AND_ROLLBACK_PROVEN
-focusedTests=88 passed, 0 failed, 0 skipped
+focusedTests=89 passed, 0 failed, 0 skipped
 runtimeStartA=PASS
 runtimeRestartB=PASS
 disabledSelectionRollback=PASS - no host or consumer registered

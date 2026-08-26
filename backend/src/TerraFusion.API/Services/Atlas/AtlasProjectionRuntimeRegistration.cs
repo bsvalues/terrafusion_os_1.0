@@ -46,8 +46,18 @@ public static class AtlasProjectionRuntimeRegistration
                 "Atlas LocalExact selection is restricted to the Development environment.");
         }
 
-        var sovereignRoot = AtlasProjectionArtifactVerifier.ResolveSovereignRoot(
-            environment.ContentRootPath);
+        // Published Development containers do not contain the sovereign source-tree markers,
+        // Node, or the ignored OS-managed artifact slot. Persistent LocalExact selection applies
+        // only to a capable sovereign source checkout; other Development hosts remain Disabled.
+        if (!AtlasProjectionArtifactVerifier.TryResolveSovereignRoot(
+                environment.ContentRootPath,
+                out var sovereignRoot))
+        {
+            options.Mode = AtlasProjectionMode.Disabled;
+            services.AddSingleton<IOptions<AtlasProjectionOptions>>(Options.Create(options));
+            return;
+        }
+
         AddLocalExactRuntime(
             services,
             options,
@@ -289,9 +299,21 @@ internal sealed class AtlasProjectionArtifactVerifier
 
     internal static string ResolveSovereignRoot(string contentRoot)
     {
+        if (TryResolveSovereignRoot(contentRoot, out var sovereignRoot))
+        {
+            return sovereignRoot;
+        }
+
+        throw new InvalidOperationException(
+            $"Unable to resolve the sovereign repository root from '{contentRoot}'.");
+    }
+
+    internal static bool TryResolveSovereignRoot(string contentRoot, out string sovereignRoot)
+    {
+        sovereignRoot = string.Empty;
         if (string.IsNullOrWhiteSpace(contentRoot) || !Path.IsPathFullyQualified(contentRoot))
         {
-            throw new InvalidOperationException("Atlas runtime content root must be absolute.");
+            return false;
         }
 
         var current = new DirectoryInfo(Path.GetFullPath(contentRoot));
@@ -305,14 +327,14 @@ internal sealed class AtlasProjectionArtifactVerifier
                     "TerraFusion.API",
                     "TerraFusion.API.csproj")))
             {
-                return current.FullName;
+                sovereignRoot = current.FullName;
+                return true;
             }
 
             current = current.Parent;
         }
 
-        throw new InvalidOperationException(
-            $"Unable to resolve the sovereign repository root from '{contentRoot}'.");
+        return false;
     }
 
     private void VerifyManifest(string manifestPath)

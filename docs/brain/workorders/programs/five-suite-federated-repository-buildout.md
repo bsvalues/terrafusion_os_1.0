@@ -93,7 +93,7 @@ county contexts, audit spines, deployment control planes, or contract authoritie
 | WO-SR-009C | Make the canonical county-scoped Atlas projection reachable in the Property Workbench | Complete R3; PR #1424 merged exact assured head `e70548cb4` as `b5a02db17`; authority consumed; no Point, live provider, or cutover |
 | WO-SR-009D | Make the frozen county-scoped Dossier evidence registry read reachable in the Property Workbench | Complete R3; PR #1427 exact assured head `85818a749` merged as `c7f2d7861`; authority consumed; no writes, custody mutation, live data, or cutover |
 | WO-SR-007C | Stage the exact Atlas canonical artifact with provenance and executed rollback | Complete R3; PR #1464 exact head `848546a3d` merged as `5a328e728`; protected main verified |
-| WO-SR-007D | Persist and prove the exact Atlas local runtime with rollback | Active R4; Development-only selection, startup/per-invocation identity, A/B/restored starts, Disabled rollback, and 88/88 focused tests |
+| WO-SR-007D | Persist and prove the exact Atlas local runtime with rollback | Active R4; source-tree Development selection, published Development disabled, startup/per-invocation identity, A/B/restored starts, Disabled rollback, and 89/89 focused tests |
 
 ## Extraction and provenance policy
 

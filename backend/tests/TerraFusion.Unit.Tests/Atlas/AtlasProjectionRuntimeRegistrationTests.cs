@@ -153,6 +153,26 @@ public sealed class AtlasProjectionRuntimeRegistrationTests
     }
 
     [Fact]
+    public void DevelopmentLocalExactOutsideSovereignSourceTree_RegistersDisabled()
+    {
+        var services = new ServiceCollection();
+        var contentRoot = Path.GetFullPath(Path.Combine(
+            Path.GetTempPath(),
+            "tf-atlas-published-development-host",
+            Guid.NewGuid().ToString("N")));
+
+        services.AddAtlasProjectionRuntime(
+            LocalExactConfiguration(),
+            new TestHostEnvironment("Development", contentRoot));
+        using var provider = services.BuildServiceProvider();
+
+        provider.GetRequiredService<IOptions<AtlasProjectionOptions>>().Value.Mode
+            .Should().Be(AtlasProjectionMode.Disabled);
+        provider.GetService<IAtlasProjectionProcessHost>().Should().BeNull();
+        provider.GetService<AtlasProjectionConsumer>().Should().BeNull();
+    }
+
+    [Fact]
     public void LocalExactRegistration_UsesVerifiedPathsAndReverificationWrapper()
     {
         using var scope = new ArtifactScope();
