@@ -99,8 +99,8 @@ automatically.
 | Loop | `LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES` |
 | Program slug | `five-suite-federated-repository-buildout` |
 | Status | Active under mission authority `OWNER-FIVE-SUITE-FEDERATED-COMPLETION-20260826` |
-| Current | `WO-SR-007D` Atlas persistent local runtime adoption |
-| Next | Atlas standalone ownership truth, then Dais, Dossier, and GPT canonical cutover children |
+| Current | `WO-SR-010A` Dais canonical artifact staging |
+| Next | Dais persistent runtime adoption and ownership truth, then Dossier and GPT canonical cutover children |
 
 The sovereign base remains `terrafusion_os_1.0`. The five ratified suite repositories are
 `terrafusion-forge`, `terrafusion-atlas`, `terrafusion-dais`, `terrafusion-dossier`, and
@@ -208,7 +208,7 @@ transfer, or cutover follows.
 
 Program definition: [five-suite-federated-repository-buildout.md](five-suite-federated-repository-buildout.md).
 
-Current Five-Suite routing is `WO-SR-007D`. `WO-SR-007C` merged as `5a328e728`; the active child persists `LocalExact` for capable Development source-tree hosts, leaves published Development hosts Disabled, verifies the fixed Atlas manifest and bytes at startup and every invocation, and proves real restarts plus Disabled rollback. The bounded owner mission decision `OWNER-FIVE-SUITE-FEDERATED-COMPLETION-20260826` authorizes dependency-cleared child Work Orders through Atlas, Dais, Dossier, and GPT canonical runtime adoption without a new objective or per-child owner return. All mission hard walls remain controlling.
+Current Five-Suite routing is `WO-SR-010A`. Atlas runtime and standalone ownership are complete on verified protected mains. The active Dais child stages the exact protected-main module and frozen schema through a fixed ignored OS slot, binds source-manifest provenance, and executes whole-slot rollback without selecting runtime mode. The bounded owner mission decision `OWNER-FIVE-SUITE-FEDERATED-COMPLETION-20260826` authorizes dependency-cleared child Work Orders through Dais, Dossier, and GPT canonical runtime adoption without a new objective or per-child owner return. All mission hard walls remain controlling.
 
 ---
 
@@ -659,8 +659,8 @@ from program evidence.
 | Portfolio loop | `LOOP-PORTFOLIO-OPERATOR-001` |
 | Selected program | Five-Suite Federated Repository Buildout |
 | Last completed interlock | `WO-SR-009D` Dossier Workbench canonical evidence read adoption |
-| Current WO | `WO-SR-007D` Atlas persistent local runtime adoption |
-| Next interlock | On verified merge, finalize Atlas standalone ownership truth, then continue the authorized suite sequence |
+| Current WO | `WO-SR-010A` Dais canonical artifact staging |
+| Next interlock | On verified merge, adopt the exact Dais runtime, then finalize Dais standalone ownership truth |
 
 Issue #1417 and `OWNER-SR-009B-R3-DAIS-WORKBENCH-APPEAL-READ-20260805` authorized the exact bounded
 read-only Dais adoption sequence. PR #1419 merged exact assured head
