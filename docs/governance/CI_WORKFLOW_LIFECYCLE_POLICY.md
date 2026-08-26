@@ -187,18 +187,18 @@ Reference this policy: `docs/governance/CI_WORKFLOW_LIFECYCLE_POLICY.md`
 | Class | Count |
 |-------|-------|
 | REQUIRED | 3 |
-| PUSH-OPTIONAL | 47 |
+| PUSH-OPTIONAL | 48 |
 | SCHEDULED | 17 |
 | MANUAL | 23 |
 | DEPRECATED | 2 |
-| **Total** | 92 |
+| **Total** | 93 |
 
 **REQUIRED** (3):
 - `core-governance-gates.yml`
 - `seal-gate-fast.yml`
 - `tier1-ui-harness.yml`
 
-**PUSH-OPTIONAL** (47):
+**PUSH-OPTIONAL** (48):
 - `accessibility.yml`
 - `accreditation-compat.yml`
 - `ai-swarm-safety.yml`
@@ -219,6 +219,7 @@ Reference this policy: `docs/governance/CI_WORKFLOW_LIFECYCLE_POLICY.md`
 - `ci.yml`
 - `cockpit-drift-guard.yml`
 - `county-kit-parity.yml`
+- `dais-canonical-staging.yml`
 - `deps-fast-lane.yml`
 - `designctl.yml`
 - `frontend-build-guarded.yml`

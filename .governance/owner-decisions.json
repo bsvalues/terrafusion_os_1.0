@@ -54,17 +54,20 @@
       "current_execution": {
         "state": "ACTIVE",
         "owner_action_required": false,
-        "current_child_work_order": "WO-SR-007D",
-        "current_pr": 1465,
+        "current_child_work_order": "WO-SR-010A",
+        "current_pr": null,
         "completed_child": {
-          "id": "WO-SR-007C",
-          "pr": 1464,
-          "exact_head": "848546a3d5e82ed3694720e47623b965c704511c",
-          "merge": "5a328e728852dc2bb933d704d0daa5c54750728c",
+          "id": "ATLAS_CANONICAL_RUNTIME_AND_OWNERSHIP",
+          "sovereign_pr": 1465,
+          "sovereign_exact_head": "feb69f85999039db03ef95f52f8a8d4e4c0d2f8f",
+          "sovereign_merge": "4fcbfbd0585122f67f640b1b76786b7629f28e1f",
+          "suite_pr": 4,
+          "suite_exact_head": "8c2d4d8704ac59779ab67ce30ec5b9094350a5ae",
+          "suite_merge": "708fc5c31988405f9ca2cba7ebea7bb9d1fec3a6",
           "protected_main_verified": true
         },
-        "current_child_result": "Persistent Development LocalExact selection, fixed manifest/byte identity, real process-host restarts, Disabled rollback, restored selection, and post-construction tamper refusal passed locally: 88 tests, zero failed or skipped.",
-        "next_after_current_child": "Atlas standalone canonical ownership finalization, then Dais, Dossier, and GPT"
+        "current_child_result": "WO-SR-010A locally proved exact Dais module, frozen schema and source-manifest identity, typed full-manifest enforcement, byte-identical candidate/publication inventories, same-volume/disjoint build roots, concurrency exclusion, clean bootstrap, backup-verification recovery, publication-failure rollback, and bidirectional rollback inventories.",
+        "next_after_current_child": "Dais persistent governed runtime adoption, Dais standalone ownership finalization, then Dossier and GPT"
       }
     },
     {
