@@ -40,6 +40,7 @@ rollback boundary required by the immediately dependent Atlas runtime-adoption c
 12. `docs/brain/workorders/programs/ACTIVE_PROGRAM_PLAYBOOK.md`
 13. `docs/brain/workorders/goal-loop/COMMAND_TO_PROGRAM_MAP.md`
 14. `docs/brain/workorders/goal-loop/GOAL_COMMANDS.md`
+15. `docs/governance/CI_WORKFLOW_LIFECYCLE_POLICY.md`
 
 ## Required proof
 
@@ -50,6 +51,8 @@ rollback boundary required by the immediately dependent Atlas runtime-adoption c
 - automatic failure rollback executed and the complete restored inventory matches in both directions;
 - a local Windows integration regression uses authorized access to the private Atlas repository; focused
   Windows CI guards parse the scripts and reject a forged origin before fetch without new credentials;
+- the non-constitutional focused workflow is manual plus protected-`main` push-only, and the governed
+  workflow-inventory snapshot includes it;
 - exact changed-file scope, PowerShell parse, JSON parse, `git diff --check`, required remote checks,
   independent assurance, zero unresolved substantive threads, and exact-head merge eligibility.
 

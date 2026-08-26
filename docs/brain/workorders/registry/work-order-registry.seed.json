@@ -10780,6 +10780,7 @@
           "paths": [
             ".governance/owner-decisions.json",
             ".github/workflows/atlas-canonical-staging.yml",
+            "docs/governance/CI_WORKFLOW_LIFECYCLE_POLICY.md",
             ".gitignore",
             "scripts/bootstrap/Stage-AtlasProjectionModule.ps1",
             "tests/atlas-staging-identity.ps1",
@@ -10801,6 +10802,7 @@
       "allowedFiles": [
         ".governance/owner-decisions.json",
         ".github/workflows/atlas-canonical-staging.yml",
+        "docs/governance/CI_WORKFLOW_LIFECYCLE_POLICY.md",
         ".gitignore",
         "scripts/bootstrap/Stage-AtlasProjectionModule.ps1",
         "tests/atlas-staging-identity.ps1",

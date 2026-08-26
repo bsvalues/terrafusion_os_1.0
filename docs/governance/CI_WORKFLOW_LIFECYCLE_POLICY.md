@@ -187,21 +187,22 @@ Reference this policy: `docs/governance/CI_WORKFLOW_LIFECYCLE_POLICY.md`
 | Class | Count |
 |-------|-------|
 | REQUIRED | 3 |
-| PUSH-OPTIONAL | 46 |
+| PUSH-OPTIONAL | 47 |
 | SCHEDULED | 17 |
 | MANUAL | 23 |
 | DEPRECATED | 2 |
-| **Total** | 91 |
+| **Total** | 92 |
 
 **REQUIRED** (3):
 - `core-governance-gates.yml`
 - `seal-gate-fast.yml`
 - `tier1-ui-harness.yml`
 
-**PUSH-OPTIONAL** (46):
+**PUSH-OPTIONAL** (47):
 - `accessibility.yml`
 - `accreditation-compat.yml`
 - `ai-swarm-safety.yml`
+- `atlas-canonical-staging.yml`
 - `atlas-validation.yml`
 - `autonomy-break-glass-guard.yml`
 - `autonomy-break-glass-incident-publisher.yml`
