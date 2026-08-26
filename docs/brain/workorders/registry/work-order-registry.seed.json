@@ -2,7 +2,7 @@
   "schemaVersion": "0.1.0",
   "generatedBy": "WO-SR-007C Atlas canonical artifact staging activation",
   "generatedAt": "2026-08-26T00:00:00Z",
-  "description": "The owner-level Five-Suite completion mission is active. WO-SR-007C retains and corrects Atlas PR #1464 as the exact provenance-bound artifact staging and rollback child before persistent runtime adoption.",
+  "description": "The owner-level Five-Suite completion mission is active. WO-SR-007C is merged and protected-main verified; WO-SR-007D is the active exact Atlas persistent local-runtime adoption and rollback child.",
   "records": [
     {
       "id": "WO-WOE-000",
@@ -10756,7 +10756,7 @@
       "program": "Five-Suite Federated Repository Buildout",
       "goal": "Stage the exact Atlas-owned projection artifact and provenance manifest in the OS-managed runtime slot with real backup contents and executed hash-verified rollback.",
       "riskClass": "R3",
-      "status": "review",
+      "status": "complete",
       "dependencies": [
         {
           "id": "WO-SR-007B",
@@ -10841,7 +10841,7 @@
         { "name": "Atlas staging identity and rollback", "command": "pwsh tests/atlas-staging-identity.ps1", "required": true, "result": "pass" },
         { "name": "registry and decision JSON parse", "command": "JSON.parse owner-decisions.json and work-order-registry.seed.json", "required": true, "result": "pass" },
         { "name": "diff check", "command": "git diff --check", "required": true, "result": "pass" },
-        { "name": "remote protected-main checks", "command": "GitHub required checks on exact PR head", "required": true, "result": "pending" }
+        { "name": "remote protected-main checks", "command": "GitHub required checks on exact PR head", "required": true, "result": "pass - eight required contexts; merge 5a328e728852dc2bb933d704d0daa5c54750728c" }
       ],
       "stopConditions": [
         {
@@ -10854,6 +10854,149 @@
           "id": "WO-SR-007D",
           "reason": "A verified canonical artifact clears persistent LocalExact runtime adoption, restart persistence, rollback, and Atlas ownership proof.",
           "riskClass": "R4",
+          "blocked": false
+        }
+      ],
+      "authority": {
+        "mayWrite": true,
+        "mayCommit": true,
+        "mayPush": true,
+        "mayOpenPr": true,
+        "mayMarkReady": true,
+        "mayMerge": true,
+        "mayCleanup": true,
+        "notes": "Exact child scope under OWNER-FIVE-SUITE-FEDERATED-COMPLETION-20260826 and standing protected-PR lifecycle authority."
+      },
+      "completion": {
+        "pr": 1464,
+        "exactHead": "848546a3d5e82ed3694720e47623b965c704511c",
+        "merge": "5a328e728852dc2bb933d704d0daa5c54750728c",
+        "requiredContexts": "8/8 success",
+        "reviewThreads": "10/10 resolved",
+        "protectedMainVerified": true
+      },
+      "provenance": {
+        "createdAt": "2026-08-26T00:00:00Z",
+        "source": "Owner mission directive; Atlas PR #1464 exact pre-remediation head 62062d42772b3b53c1470827851d32eae5c740a8; independent rollback-content and hash review.",
+        "schemaVersion": "0.1.0"
+      }
+    },
+    {
+      "id": "WO-SR-007D",
+      "title": "Atlas Persistent Local Runtime Adoption",
+      "program": "Five-Suite Federated Repository Buildout",
+      "goal": "Persist Development-only LocalExact selection for the fixed Atlas-owned projection artifact, enforce provenance at startup and every invocation, observe real restarts and Disabled rollback, and preserve legitimate sovereign integration seams.",
+      "riskClass": "R4",
+      "status": "active",
+      "dependencies": [
+        {
+          "id": "WO-SR-007C",
+          "status": "satisfied",
+          "evidence": ["PR #1464 exact head 848546a3d5e82ed3694720e47623b965c704511c merged and protected main resolved to 5a328e728852dc2bb933d704d0daa5c54750728c."]
+        },
+        {
+          "id": "OWNER-FIVE-SUITE-FEDERATED-COMPLETION-20260826",
+          "status": "satisfied",
+          "evidence": ["Owner mission authority explicitly permits runtime adoption, rollback proof, exact child scope, PR operation and merge without per-child owner relay."]
+        }
+      ],
+      "allowedSystems": [
+        {
+          "name": "Atlas exact local runtime registration, proof, path canon and mission governance",
+          "paths": [
+            ".governance/owner-decisions.json",
+            ".gitignore",
+            "PATH_CANON_REGISTER.md",
+            "backend/src/TerraFusion.API/Configuration/AtlasProjectionOptions.cs",
+            "backend/src/TerraFusion.API/Program.cs",
+            "backend/src/TerraFusion.API/Services/Atlas/AtlasProjectionProcessHost.cs",
+            "backend/src/TerraFusion.API/Services/Atlas/AtlasProjectionRuntimeRegistration.cs",
+            "backend/src/TerraFusion.API/Services/Atlas/IAtlasProjectionProcessHost.cs",
+            "backend/src/TerraFusion.API/appsettings.Development.json",
+            "backend/tests/TerraFusion.Unit.Tests/Atlas/AtlasProjectionRuntimeRegistrationTests.cs",
+            "scripts/validation/Invoke-AtlasPersistentRuntimeAdoptionRollbackProof.ps1",
+            "docs/brain/workorders/active/WO-SR-007C-atlas-canonical-artifact-staging.md",
+            "docs/brain/workorders/evidence/WO-SR-007C-ATLAS-CANONICAL-ARTIFACT-STAGING.md",
+            "docs/brain/workorders/active/WO-SR-007D-atlas-persistent-runtime-adoption.md",
+            "docs/brain/workorders/evidence/WO-SR-007D-ATLAS-PERSISTENT-RUNTIME-ADOPTION.md",
+            "docs/brain/workorders/registry/work-order-registry.seed.json",
+            "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
+            "docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md",
+            "docs/brain/workorders/programs/five-suite-federated-repository-buildout.md",
+            "docs/brain/workorders/programs/ACTIVE_PROGRAM_PLAYBOOK.md",
+            "docs/brain/workorders/goal-loop/COMMAND_TO_PROGRAM_MAP.md",
+            "docs/brain/workorders/goal-loop/GOAL_COMMANDS.md"
+          ]
+        }
+      ],
+      "blockedSystems": [
+        { "name": "Providers, GIS network, persistence, schema, county/PACS/SQL/live data, credentials, deployment, Production enablement, frozen adapter or contract changes, Workbench changes, source mutation or deletion, and other suites" }
+      ],
+      "allowedFiles": [
+        ".governance/owner-decisions.json",
+        ".gitignore",
+        "PATH_CANON_REGISTER.md",
+        "backend/src/TerraFusion.API/Configuration/AtlasProjectionOptions.cs",
+        "backend/src/TerraFusion.API/Program.cs",
+        "backend/src/TerraFusion.API/Services/Atlas/AtlasProjectionProcessHost.cs",
+        "backend/src/TerraFusion.API/Services/Atlas/AtlasProjectionRuntimeRegistration.cs",
+        "backend/src/TerraFusion.API/Services/Atlas/IAtlasProjectionProcessHost.cs",
+        "backend/src/TerraFusion.API/appsettings.Development.json",
+        "backend/tests/TerraFusion.Unit.Tests/Atlas/AtlasProjectionRuntimeRegistrationTests.cs",
+        "scripts/validation/Invoke-AtlasPersistentRuntimeAdoptionRollbackProof.ps1",
+        "docs/brain/workorders/active/WO-SR-007C-atlas-canonical-artifact-staging.md",
+        "docs/brain/workorders/evidence/WO-SR-007C-ATLAS-CANONICAL-ARTIFACT-STAGING.md",
+        "docs/brain/workorders/active/WO-SR-007D-atlas-persistent-runtime-adoption.md",
+        "docs/brain/workorders/evidence/WO-SR-007D-ATLAS-PERSISTENT-RUNTIME-ADOPTION.md",
+        "docs/brain/workorders/registry/work-order-registry.seed.json",
+        "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
+        "docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md",
+        "docs/brain/workorders/programs/five-suite-federated-repository-buildout.md",
+        "docs/brain/workorders/programs/ACTIVE_PROGRAM_PLAYBOOK.md",
+        "docs/brain/workorders/goal-loop/COMMAND_TO_PROGRAM_MAP.md",
+        "docs/brain/workorders/goal-loop/GOAL_COMMANDS.md"
+      ],
+      "blockedFiles": [
+        ".github/workflows/**",
+        "backend/src/TerraFusion.API/appsettings.json",
+        "backend/src/TerraFusion.API/appsettings.Production.json",
+        "backend/src/TerraFusion.API/Adapters/**",
+        "backend/src/TerraFusion.Abstractions/contracts/**",
+        "frontend/**",
+        "packages/**",
+        "azure-pipelines/**"
+      ],
+      "evidenceRequired": [
+        {
+          "kind": "other",
+          "description": "Exact two-file artifact inventory and eight-field manifest identity, fixed slot and absolute Node path, startup and per-invocation verification, two fresh real runtime starts, Disabled rollback, restored selection, post-construction module and manifest tamper refusal, zero-skip focused tests, durable ignored rollback receipt, independent review, protected checks, resolved threads and exact-head merge."
+        }
+      ],
+      "evidenceProduced": [
+        {
+          "kind": "file",
+          "location": "docs/brain/workorders/evidence/WO-SR-007D-ATLAS-PERSISTENT-RUNTIME-ADOPTION.md",
+          "summary": "Observed exact artifact runtime restarts, selection rollback, tamper refusal and remaining remote assurance."
+        }
+      ],
+      "validationGates": [
+        { "name": "warnings-as-errors build and focused Atlas runtime suite", "command": "Invoke-AtlasPersistentRuntimeAdoptionRollbackProof.ps1", "required": true, "result": "pass - 88 passed, 0 failed, 0 skipped" },
+        { "name": "real persistent selection and rollback", "command": "fresh LocalExact A/B; Disabled; restored LocalExact; manifest/module tamper", "required": true, "result": "pass" },
+        { "name": "registry and decision JSON parse", "command": "JSON.parse owner-decisions.json and work-order-registry.seed.json", "required": true, "result": "pending final diff" },
+        { "name": "platform and diff checks", "command": "platform lint and git diff --check", "required": true, "result": "pending final diff" },
+        { "name": "remote protected-main checks", "command": "GitHub required checks on exact PR head", "required": true, "result": "pending" }
+      ],
+      "stopConditions": [
+        {
+          "type": "authority_wall",
+          "description": "Stop on any mission hard-wall crossing, configurable artifact redirect, non-Development selection, identity or rollback failure, protected resource, out-of-scope file, failed required check, unresolved substantive review, force push, or branch-protection bypass."
+        }
+      ],
+      "nextCandidates": [
+        {
+          "id": "WO-SR-007E",
+          "reason": "After sovereign protected-main verification, make the standalone Atlas repository truthfully declare canonical ownership without changing module bytes.",
+          "riskClass": "R2",
           "blocked": true
         }
       ],
@@ -10869,7 +11012,7 @@
       },
       "provenance": {
         "createdAt": "2026-08-26T00:00:00Z",
-        "source": "Owner mission directive; Atlas PR #1464 exact pre-remediation head 62062d42772b3b53c1470827851d32eae5c740a8; independent rollback-content and hash review.",
+        "source": "Owner mission directive; verified WO-SR-007C merge 5a328e728852dc2bb933d704d0daa5c54750728c; pinned Atlas commit 6736a53980c73d2b503ec71a440ad8e02aa43782; observed local 88-test runtime and rollback proof.",
         "schemaVersion": "0.1.0"
       }
     }

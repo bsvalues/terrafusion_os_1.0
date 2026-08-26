@@ -2,7 +2,7 @@
 
 ## Current verdict
 
-`LOCAL_PROOF_PASS_REMOTE_ASSURANCE_PENDING`
+`COMPLETE_PROTECTED_MAIN_VERIFIED`
 
 ## Exact identities
 
@@ -65,11 +65,11 @@ The staged manifest reported canonical repository `bsvalues/terrafusion-atlas`, 
 
 ## Remaining merge gates
 
-- deterministic local parse/diff/governance checks on the final exact head;
-- independent re-review of the remediated diff;
-- required GitHub checks complete and successful;
-- zero unresolved substantive review threads;
-- exact-head merge followed by protected-main verification.
+- PR exact head: `848546a3d5e82ed3694720e47623b965c704511c`;
+- all eight enforced protected contexts completed successfully, including the native full Vitest suite;
+- all ten review threads were resolved and independent final review passed;
+- squash merge: `5a328e728852dc2bb933d704d0daa5c54750728c`;
+- GitHub protected `main` and a fresh local fetch both resolved to that exact merge.
 
 No runtime selection, deployment, protected resource, live data, credential, or other-suite action is
-claimed by this staging evidence.
+claimed by this staging evidence. Runtime selection begins only in `WO-SR-007D`.

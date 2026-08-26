@@ -54,10 +54,17 @@
       "current_execution": {
         "state": "ACTIVE",
         "owner_action_required": false,
-        "current_child_work_order": "WO-SR-007C",
-        "current_pr": 1464,
-        "verified_pr_head_before_remediation": "62062d42772b3b53c1470827851d32eae5c740a8",
-        "next_after_current_child": "Atlas persistent runtime adoption and canonical ownership, then Dais, Dossier, and GPT"
+        "current_child_work_order": "WO-SR-007D",
+        "current_pr": null,
+        "completed_child": {
+          "id": "WO-SR-007C",
+          "pr": 1464,
+          "exact_head": "848546a3d5e82ed3694720e47623b965c704511c",
+          "merge": "5a328e728852dc2bb933d704d0daa5c54750728c",
+          "protected_main_verified": true
+        },
+        "current_child_result": "Persistent Development LocalExact selection, fixed manifest/byte identity, real process-host restarts, Disabled rollback, restored selection, and post-construction tamper refusal passed locally: 88 tests, zero failed or skipped.",
+        "next_after_current_child": "Atlas standalone canonical ownership finalization, then Dais, Dossier, and GPT"
       }
     },
     {

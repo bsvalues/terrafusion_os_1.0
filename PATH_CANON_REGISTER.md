@@ -44,11 +44,15 @@ On 2026-07-17, `C:\Users\bsval\terrafusion-os` resolved to remote
 `d9fa661e1c19f9d8eac93094a76ed68f6c0de9f6`. That head already contains WO-SYNC-132 through
 WO-SYNC-155, including the program closeout.
 
-On 2026-07-21, `C:\Users\bsval\terrafusion-atlas` resolved to remote
-`https://github.com/bsvalues/terrafusion-atlas.git`, default branch `main`, at `origin/main`
-`a1669e09636743ac18c2525db69e20346a0f408b`. Cross-repository Atlas workers must branch from an
-isolated worktree attached to this canonical repository; the shared checkout is a read-only
-synchronization surface.
+On 2026-08-26, authenticated fetch independently resolved `bsvalues/terrafusion-atlas` commit
+`6736a53980c73d2b503ec71a440ad8e02aa43782` as the exact source of
+`src/spatial-read/project-atlas-feature.mjs` (917 bytes, SHA-256
+`3ef3d5cfc666f8a27a17510572a376b71d33fa29e796ff79b70abe7e7752ae46`). Sovereign PR #1464
+merged exact head `848546a3d5e82ed3694720e47623b965c704511c` as
+`5a328e728852dc2bb933d704d0daa5c54750728c`, establishing the fixed manifest-bound staging and
+rollback slot. `WO-SR-007D` consumes only that identity for Development runtime adoption; the shared
+suite checkout remains read-only and cross-repository Atlas workers still require isolated
+worktrees.
 
 On 2026-07-27, `D:\terrafusion-dais` resolved to remote
 `git@github.com:bsvalues/terrafusion-dais.git`, default branch `main`, at `origin/main`
