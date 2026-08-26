@@ -26,6 +26,7 @@ param(
   [string]$AtlasRepository = "https://github.com/bsvalues/terrafusion-atlas",
   [string]$ArtifactSlot,
   [string]$BuildRootBase = $env:TEMP,
+  [switch]$TestOnlyInjectFailureDuringBackupVerification,
   [switch]$TestOnlyInjectFailureAfterPublish
 )
 
@@ -168,15 +169,34 @@ if ($slotPathExists -and -not $slotExisted) {
 }
 $previousInventory = if ($slotExisted) { Get-DirectoryFileHashes $ArtifactSlot } else { [ordered]@{} }
 if ($slotExisted) {
-  Move-Item -LiteralPath $ArtifactSlot -Destination $backupSlot
-  $backupInventory = Get-DirectoryFileHashes $backupSlot
-  if (($backupInventory | ConvertTo-Json -Compress) -ne ($previousInventory | ConvertTo-Json -Compress)) {
-    Move-Item -LiteralPath $backupSlot -Destination $ArtifactSlot
-    $restoredAfterBackupFailure = Get-DirectoryFileHashes $ArtifactSlot
-    if (($restoredAfterBackupFailure | ConvertTo-Json -Compress) -ne ($previousInventory | ConvertTo-Json -Compress)) {
-      throw "ATLAS_BACKUP_AND_RESTORE_HASH_MISMATCH: backup verification failed and the restored slot does not match the previous inventory"
+  $backupMoved = $false
+  try {
+    Move-Item -LiteralPath $ArtifactSlot -Destination $backupSlot
+    $backupMoved = $true
+    if ($TestOnlyInjectFailureDuringBackupVerification) {
+      throw "ATLAS_TEST_INJECTED_BACKUP_VERIFICATION_FAILURE"
     }
-    throw "ATLAS_BACKUP_HASH_MISMATCH_RESTORED: the rollback slot did not match, so publication was refused and the previous slot was restored"
+    $backupInventory = Get-DirectoryFileHashes $backupSlot
+    if (($backupInventory | ConvertTo-Json -Compress) -ne ($previousInventory | ConvertTo-Json -Compress)) {
+      throw "ATLAS_BACKUP_HASH_MISMATCH"
+    }
+  } catch {
+    $backupFailure = $_
+    if (-not $backupMoved) { throw }
+    try {
+      Move-Item -LiteralPath $backupSlot -Destination $ArtifactSlot
+    } catch {
+      throw "ATLAS_BACKUP_RESTORE_MOVE_FAILED: $($_.Exception.Message); original failure: $backupFailure"
+    }
+    try {
+      $restoredAfterBackupFailure = Get-DirectoryFileHashes $ArtifactSlot
+      if (($restoredAfterBackupFailure | ConvertTo-Json -Compress) -ne ($previousInventory | ConvertTo-Json -Compress)) {
+        throw "restored inventory differs from the previous hashes"
+      }
+    } catch {
+      throw "ATLAS_BACKUP_RESTORED_UNVERIFIABLE: $($_.Exception.Message); original failure: $backupFailure"
+    }
+    throw "ATLAS_BACKUP_VALIDATION_FAILED_RESTORED: $backupFailure"
   }
 }
 try {

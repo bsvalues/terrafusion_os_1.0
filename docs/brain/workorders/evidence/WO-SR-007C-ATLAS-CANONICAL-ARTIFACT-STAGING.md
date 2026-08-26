@@ -37,9 +37,11 @@ The regression executed three exact staging runs in an isolated checkout:
 
 1. fresh publication of the canonical 917-byte module and manifest;
 2. replacement with a whole-slot rollback directory whose recorded hashes matched its real files;
-3. an injected post-publication failure through the stager's catch path, whole-slot restoration, and
+3. an injected backup-verification exception after the slot move, followed by guarded whole-slot
+   restoration and exact inventory comparison;
+4. an injected post-publication failure through the stager's catch path, whole-slot restoration, and
    bidirectional inventory comparison including an unrelated sentinel sidecar;
-4. a successful re-stage whose receipt inventory exactly matched the real backup directory.
+5. a successful re-stage whose receipt inventory exactly matched the real backup directory.
 
 Observed result:
 
@@ -49,6 +51,7 @@ backupContentsVerified=true
 rollbackExecuted=true
 rollbackHashesVerified=true
 automaticFailureRollbackVerified=true
+backupVerificationFailureRollbackVerified=true
 moduleLength=917
 moduleSha256=3ef3d5cfc666f8a27a17510572a376b71d33fa29e796ff79b70abe7e7752ae46
 ```
