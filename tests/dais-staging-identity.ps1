@@ -96,6 +96,28 @@ try{
     if($entry){throw "Clean-parent bootstrap requires empty Dais parent; found $($entry.FullName)"}
     Remove-Item -LiteralPath $artifactParent -Force
   }
+  $unreachableOrigin=Join-Path $runRoot 'unreachable-protected-main.git'
+  $daisGitDirectory=Join-Path $DaisRepository '.git'
+  & git -c "safe.directory=$DaisRepository" -c "safe.directory=$daisGitDirectory" clone --mirror $DaisRepository $unreachableOrigin
+  if($LASTEXITCODE -ne 0){throw 'Failed to create the protected-main ancestry-negative fixture repository'}
+  & git -c safe.directory=$unreachableOrigin -C $unreachableOrigin remote set-url origin 'https://github.com/bsvalues/terrafusion-dais'
+  if($LASTEXITCODE -ne 0){throw 'Failed to bind the ancestry-negative fixture to the canonical Dais origin'}
+  & git -c safe.directory=$unreachableOrigin -C $unreachableOrigin update-ref refs/heads/pinned-source 6932bbbf014cf70d7362e070a1dad2a8a680ad47
+  if($LASTEXITCODE -ne 0){throw 'Failed to retain the pinned Dais object in the ancestry-negative fixture'}
+  $fixtureTree=(& git -c safe.directory=$unreachableOrigin -C $unreachableOrigin rev-parse '6932bbbf014cf70d7362e070a1dad2a8a680ad47^{tree}') -join ''
+  if($LASTEXITCODE -ne 0){throw 'Failed to resolve the pinned Dais tree for the ancestry-negative fixture'}
+  $fixtureMain=('Dais protected-main ancestry-negative fixture' | & git -c safe.directory=$unreachableOrigin -C $unreachableOrigin -c user.name='TerraFusion Test' -c user.email='test@terrafusion.local' commit-tree $fixtureTree) -join ''
+  if($LASTEXITCODE -ne 0 -or -not $fixtureMain){throw 'Failed to create the non-descendant protected-main fixture commit'}
+  & git -c safe.directory=$unreachableOrigin -C $unreachableOrigin update-ref refs/heads/main $fixtureMain
+  if($LASTEXITCODE -ne 0){throw 'Failed to point fixture main at the non-descendant commit'}
+  New-Item -ItemType Directory -Path $artifactSlot -Force|Out-Null
+  Set-Content -LiteralPath (Join-Path $artifactSlot 'ancestry-sentinel.txt') -Value 'must-remain-byte-identical' -Encoding utf8
+  $beforeAncestryRejection=Get-Inventory $artifactSlot
+  $ancestryRejection=$null
+  try{& $stager -DaisRepository $unreachableOrigin -BuildRootBase $stagerBuildRoot}catch{$ancestryRejection=$_.Exception.Message}
+  if($ancestryRejection -notmatch 'DAIS_SOURCE_NOT_ON_PROTECTED_MAIN'){throw "Pinned-but-unreachable source was not refused: $ancestryRejection"}
+  Assert-InventoryEqual (Get-Inventory $artifactSlot) $beforeAncestryRejection 'protected-main ancestry rejection preserved live slot'
+  Remove-Item -LiteralPath $artifactSlot -Recurse -Force
   $manifestTamperFailure=$null
   try{$null=Invoke-Stager -InjectManifestTamper}catch{$manifestTamperFailure=$_.Exception.Message}
   if($manifestTamperFailure -notmatch 'DAIS_CANDIDATE_MANIFEST_IDENTITY_MISMATCH'){throw "Unchecked candidate manifest tamper was not refused: $manifestTamperFailure"}
@@ -198,7 +220,7 @@ try{
   Assert-Equal $manifest.sourceBranch 'main' 'manifest protected source branch'
   Assert-Equal $manifest.sourceManifestSha256 $sourceManifestHash 'manifest source-manifest hash'
 
-  [pscustomobject]@{result='PASS';terminalCondition='DAIS_STAGING_PROVENANCE_AND_ROLLBACK_PROVEN';moduleLength=9269;moduleSha256=$moduleHash;schemaLength=3496;schemaSha256=$schemaHash;sourceManifestSha256=$sourceManifestHash;canonicalRepository='bsvalues/terrafusion-dais';protectedSourceBranch='main';protectedMainAncestryVerified=$true;canonicalCommit='6932bbbf014cf70d7362e070a1dad2a8a680ad47';exactThreeFileInventoryVerified=$true;candidatePublishedInventoryEqualityVerified=$true;fullManifestIdentityVerified=$true;candidateNumericTypeTamperRejectedBeforePublication=$true;candidateStringArrayTamperRejectedBeforePublication=$true;concurrentInvocationRejectedWithoutMutation=$true;backupContentsVerified=$true;rollbackExecuted=$true;rollbackHashesVerified=$true;automaticFailureRollbackVerified=$true;cleanParentBootstrapVerified=$true;freshFailureSlotRemovalVerified=$true;backupVerificationFailureRollbackVerified=$true}|ConvertTo-Json -Depth 4
+  [pscustomobject]@{result='PASS';terminalCondition='DAIS_STAGING_PROVENANCE_AND_ROLLBACK_PROVEN';moduleLength=9269;moduleSha256=$moduleHash;schemaLength=3496;schemaSha256=$schemaHash;sourceManifestSha256=$sourceManifestHash;canonicalRepository='bsvalues/terrafusion-dais';protectedSourceBranch='main';protectedMainAncestryVerified=$true;protectedMainNonAncestryRejectedWithoutMutation=$true;canonicalCommit='6932bbbf014cf70d7362e070a1dad2a8a680ad47';exactThreeFileInventoryVerified=$true;candidatePublishedInventoryEqualityVerified=$true;fullManifestIdentityVerified=$true;candidateNumericTypeTamperRejectedBeforePublication=$true;candidateStringArrayTamperRejectedBeforePublication=$true;concurrentInvocationRejectedWithoutMutation=$true;backupContentsVerified=$true;rollbackExecuted=$true;rollbackHashesVerified=$true;automaticFailureRollbackVerified=$true;cleanParentBootstrapVerified=$true;freshFailureSlotRemovalVerified=$true;backupVerificationFailureRollbackVerified=$true}|ConvertTo-Json -Depth 4
 }finally{
   if(-not $PreservePublishedArtifact -and (Test-Path -LiteralPath $artifactSlot)){Remove-Item -LiteralPath $artifactSlot -Recurse -Force}
   if($originalMoved){
