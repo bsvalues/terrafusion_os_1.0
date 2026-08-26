@@ -1,0 +1,31 @@
+{
+  "request": {
+    "schemaVersion": "1.0.0",
+    "operation": "transition",
+    "commandId": "010c0001-0000-4000-8000-000000000017",
+    "countyId": "010c0000-0000-4000-8000-000000000001",
+    "effectiveAt": "2026-09-12T18:00:00Z",
+    "command": {
+      "appealId": "010c0002-0000-4000-8000-000000000001",
+      "current": {
+        "status": "filed",
+        "filedAt": "2026-08-26T20:00:00Z",
+        "decisionAt": "2026-09-11T18:00:00Z"
+      },
+      "requested": { "status": "heard", "hasDecidedValue": false }
+    }
+  },
+  "result": {
+    "schemaVersion": "1.0.0",
+    "operation": "transition",
+    "commandId": "010c0001-0000-4000-8000-000000000017",
+    "countyId": "010c0000-0000-4000-8000-000000000001",
+    "decision": "rejected",
+    "violations": [
+      {
+        "code": "INVALID_LIFECYCLE",
+        "message": "current lifecycle timestamps conflict with status"
+      }
+    ]
+  }
+}

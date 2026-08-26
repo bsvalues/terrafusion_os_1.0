@@ -1,0 +1,18 @@
+{
+  "request": {
+    "schemaVersion": "1.0.0",
+    "operation": "create",
+    "commandId": "010c0001-0000-4000-8000-000000000012",
+    "countyId": "010c0000-0000-4000-8000-000000000001",
+    "effectiveAt": "2026-08-26T20:00:00Z",
+    "command": { "taxYear": 1899 }
+  },
+  "result": {
+    "schemaVersion": "1.0.0",
+    "operation": "create",
+    "commandId": "010c0001-0000-4000-8000-000000000012",
+    "countyId": "010c0000-0000-4000-8000-000000000001",
+    "decision": "rejected",
+    "violations": [{ "code": "INVALID_TAX_YEAR", "message": "taxYear must be between 1900 and 2200" }]
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "request": {
+    "schemaVersion": "1.0.0",
+    "operation": "transition",
+    "commandId": "010c0001-0000-4000-8000-000000000002",
+    "countyId": "010c0000-0000-4000-8000-000000000001",
+    "effectiveAt": "2026-09-10T18:00:00Z",
+    "traceId": "filed-to-heard",
+    "command": {
+      "appealId": "010c0002-0000-4000-8000-000000000001",
+      "current": { "status": "filed", "filedAt": "2026-08-26T20:00:00Z" },
+      "requested": { "status": "heard", "hasDecidedValue": false }
+    }
+  },
+  "result": {
+    "schemaVersion": "1.0.0",
+    "operation": "transition",
+    "commandId": "010c0001-0000-4000-8000-000000000002",
+    "countyId": "010c0000-0000-4000-8000-000000000001",
+    "traceId": "filed-to-heard",
+    "decision": "accepted",
+    "mutation": { "status": "heard", "updatedAt": "2026-09-10T18:00:00Z" },
+    "violations": []
+  }
+}

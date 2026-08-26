@@ -1,0 +1,25 @@
+{
+  "request": {
+    "schemaVersion": "1.0.0",
+    "operation": "create",
+    "commandId": "010c0001-0000-4000-8000-000000000015",
+    "countyId": "010c0000-0000-4000-8000-000000000001",
+    "effectiveAt": "2026-08-26T20:00:00Z",
+    "command": {}
+  },
+  "result": {
+    "schemaVersion": "1.0.0",
+    "operation": "create",
+    "commandId": "010c0001-0000-4000-8000-000000000015",
+    "countyId": "010c0000-0000-4000-8000-000000000099",
+    "decision": "accepted",
+    "mutation": {
+      "ground": "MARKET_VALUE",
+      "status": "filed",
+      "taxYear": 2026,
+      "filedAt": "2026-08-26T20:00:00Z",
+      "updatedAt": "2026-08-26T20:00:00Z"
+    },
+    "violations": []
+  }
+}

@@ -16,6 +16,10 @@ const atlasContractRoot = path.join(repoRoot, 'backend/src/TerraFusion.Abstracti
 const atlasSchemaPath = path.join(atlasContractRoot, 'atlas.spatial-read.v1.schema.json');
 const atlasFixtureRoot = path.join(atlasContractRoot, 'fixtures');
 const daisSchemaPath = path.join(atlasContractRoot, 'dais.appeal-workflow.v1.schema.json');
+const daisMutationSchemaPath = path.join(
+  atlasContractRoot,
+  'dais.appeal-mutation.v1.schema.json'
+);
 const dossierSchemaPath = path.join(
   atlasContractRoot,
   'dossier.evidence-registry-read.v1.schema.json'
@@ -35,6 +39,15 @@ function daisFixture(name) {
   return JSON.parse(
     fs.readFileSync(
       path.join(atlasFixtureRoot, `dais.appeal-workflow.v1.${name}.synthetic.json`),
+      'utf8'
+    )
+  );
+}
+
+function daisMutationFixture(name) {
+  return JSON.parse(
+    fs.readFileSync(
+      path.join(atlasFixtureRoot, `dais.appeal-mutation.v1.${name}.synthetic.json`),
       'utf8'
     )
   );
@@ -107,6 +120,130 @@ function validateDaisSemantics(exchange) {
     }
   }
   return errors;
+}
+
+const daisGrounds = new Set([
+  'MARKET_VALUE',
+  'UNIFORMITY',
+  'CLASSIFICATION',
+  'EXEMPTION_DENIAL',
+  'CLERICAL_ERROR',
+]);
+const daisStatuses = new Set(['filed', 'scheduled', 'heard', 'decided', 'withdrawn']);
+const daisTransitions = new Map([
+  ['filed', new Set(['scheduled', 'heard', 'decided', 'withdrawn'])],
+  ['scheduled', new Set(['heard', 'decided', 'withdrawn'])],
+  ['heard', new Set(['decided', 'withdrawn'])],
+  ['decided', new Set()],
+  ['withdrawn', new Set()],
+]);
+
+function mutationIdentity(request, decision, violations, mutation) {
+  const result = {
+    schemaVersion: request.schemaVersion,
+    operation: request.operation,
+    commandId: request.commandId,
+    countyId: request.countyId,
+  };
+  if (request.traceId !== undefined) result.traceId = request.traceId;
+  result.decision = decision;
+  if (mutation !== undefined) result.mutation = mutation;
+  result.violations = violations;
+  return result;
+}
+
+function rejectedMutation(request, code, message) {
+  return mutationIdentity(request, 'rejected', [{ code, message }]);
+}
+
+function expectedDaisMutationResult(request) {
+  if (request.operation === 'create') {
+    const ground = request.command.ground ?? 'MARKET_VALUE';
+    if (!daisGrounds.has(ground)) {
+      return rejectedMutation(
+        request,
+        'INVALID_GROUND',
+        'ground is outside the closed Dais vocabulary'
+      );
+    }
+    const taxYear = request.command.taxYear ?? new Date(request.effectiveAt).getUTCFullYear();
+    if (!Number.isInteger(taxYear) || taxYear < 1900 || taxYear > 2200) {
+      return rejectedMutation(
+        request,
+        'INVALID_TAX_YEAR',
+        'taxYear must be between 1900 and 2200'
+      );
+    }
+    return mutationIdentity(request, 'accepted', [], {
+      ground,
+      status: 'filed',
+      taxYear,
+      filedAt: request.effectiveAt,
+      updatedAt: request.effectiveAt,
+    });
+  }
+
+  const current = request.command.current;
+  const requested = request.command.requested;
+  if (!daisStatuses.has(current.status)) {
+    return rejectedMutation(request, 'INVALID_LIFECYCLE', 'current status is invalid');
+  }
+  if (
+    (current.status === 'filed' && (current.hearingAt || current.decisionAt)) ||
+    (current.status !== 'decided' && current.decisionAt)
+  ) {
+    return rejectedMutation(
+      request,
+      'INVALID_LIFECYCLE',
+      'current lifecycle timestamps conflict with status'
+    );
+  }
+  const lifecycleInstants = [current.filedAt, current.hearingAt, current.decisionAt].filter(Boolean);
+  if (
+    lifecycleInstants.some(
+      (instant, index) =>
+        index > 0 && Date.parse(instant) < Date.parse(lifecycleInstants[index - 1])
+    ) ||
+    Date.parse(request.effectiveAt) < Date.parse(lifecycleInstants.at(-1))
+  ) {
+    return rejectedMutation(
+      request,
+      'INVALID_LIFECYCLE',
+      'lifecycle timestamps must be ordered and effectiveAt must not move backward'
+    );
+  }
+  if (!daisStatuses.has(requested.status)) {
+    return rejectedMutation(
+      request,
+      'INVALID_STATUS',
+      'requested status is outside the closed Dais vocabulary'
+    );
+  }
+  if (requested.status !== 'decided' && requested.hasDecidedValue) {
+    return rejectedMutation(
+      request,
+      'INVALID_LIFECYCLE',
+      'hasDecidedValue is allowed only when requested status is decided'
+    );
+  }
+  if (!daisTransitions.get(current.status).has(requested.status)) {
+    const message = ['decided', 'withdrawn'].includes(current.status)
+      ? `${current.status} is terminal`
+      : `${current.status} cannot transition to ${requested.status}`;
+    return rejectedMutation(request, 'INVALID_TRANSITION', message);
+  }
+  const mutation = { status: requested.status, updatedAt: request.effectiveAt };
+  if (requested.status === 'decided' && requested.hasDecidedValue) {
+    mutation.decisionAt = request.effectiveAt;
+  }
+  return mutationIdentity(request, 'accepted', [], mutation);
+}
+
+function validateDaisMutationSemantics(exchange) {
+  const expected = expectedDaisMutationResult(exchange.request);
+  return JSON.stringify(expected) === JSON.stringify(exchange.result)
+    ? []
+    : ['result must exactly match the suite-owned mutation decision'];
 }
 
 function validateDossierSemantics(exchange) {
@@ -351,8 +488,8 @@ function withChangedContractAndManifest(addTransition = false) {
 
 test('current shared-contract freeze is complete and hash-pinned', () => {
   assert.deepEqual(verifyContractFreeze({ repoRoot }), {
-    groups: 6,
-    frozenFiles: 52,
+    groups: 7,
+    frozenFiles: 66,
     deferredFiles: 10,
     osInternalFiles: 5,
   });
@@ -424,6 +561,46 @@ test('Dais appeal workflow negative fixtures fail closed', () => {
     validateJsonSchema(schema, schema, invalidTimestamp),
     [],
     'non-UTC timestamp must be rejected by the schema'
+  );
+});
+
+test('Dais appeal mutation accepted fixtures satisfy schema and exact decision semantics', () => {
+  const schema = JSON.parse(fs.readFileSync(daisMutationSchemaPath, 'utf8'));
+  for (const name of ['create-defaults', 'filed-to-heard', 'heard-to-decided']) {
+    const fixture = daisMutationFixture(name);
+    assert.deepEqual(validateJsonSchema(schema, schema, fixture), [], name);
+    assert.deepEqual(validateDaisMutationSemantics(fixture), [], name);
+  }
+});
+
+test('Dais appeal mutation rejected commands return exact typed decisions', () => {
+  const schema = JSON.parse(fs.readFileSync(daisMutationSchemaPath, 'utf8'));
+  for (const name of [
+    'invalid-ground',
+    'invalid-tax-year',
+    'invalid-status',
+    'invalid-transition',
+    'invalid-lifecycle',
+    'invalid-current-shape',
+    'invalid-decided-value-shape',
+  ]) {
+    const fixture = daisMutationFixture(name);
+    assert.deepEqual(validateJsonSchema(schema, schema, fixture), [], name);
+    assert.equal(fixture.result.decision, 'rejected', name);
+    assert.deepEqual(validateDaisMutationSemantics(fixture), [], name);
+  }
+});
+
+test('Dais appeal mutation identity and cross-lane violations fail closed', () => {
+  const schema = JSON.parse(fs.readFileSync(daisMutationSchemaPath, 'utf8'));
+  const countyMismatch = daisMutationFixture('county-mismatch');
+  assert.deepEqual(validateJsonSchema(schema, schema, countyMismatch), []);
+  assert.notDeepEqual(validateDaisMutationSemantics(countyMismatch), []);
+
+  assert.notDeepEqual(
+    validateJsonSchema(schema, schema, daisMutationFixture('cross-lane-fields')),
+    [],
+    'PII and monetary fields must not cross the mutation decision boundary'
   );
 });
 
@@ -603,8 +780,8 @@ test('versioned transition with Work Order and evidence passes baseline comparis
       baselineManifestPath: manifestPath,
     }),
     {
-      groups: 6,
-      frozenFiles: 52,
+      groups: 7,
+      frozenFiles: 66,
       deferredFiles: 10,
       osInternalFiles: 5,
     }
@@ -695,8 +872,8 @@ test('a genuine type declaration still passes the content check', () => {
   assert.deepEqual(
     verifyContractFreeze({ repoRoot: fixture.tempRoot, manifestPath: fixture.currentManifest }),
     {
-      groups: 6,
-      frozenFiles: 52,
+      groups: 7,
+      frozenFiles: 66,
       deferredFiles: 10,
       osInternalFiles: 5,
     }
