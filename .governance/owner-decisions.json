@@ -3,6 +3,64 @@
   "register": "TerraFusion canonical owner decision register",
   "decisions": [
     {
+      "id": "OWNER-FIVE-SUITE-FEDERATED-COMPLETION-20260826",
+      "program": "Five-Suite Federated Repository Buildout",
+      "goal": "GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES",
+      "loop": "LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES",
+      "work_order": "WO-SR-MISSION-COMPLETION",
+      "status": "active",
+      "authority_class": "R4-bounded-five-suite-federated-repository-completion",
+      "effective_base_sha": "6fa8a420c1b875255bf612802a0d9c93a0e2ea15",
+      "scope_source": "Owner directive issued directly in the Codex mission thread on 2026-08-26. It explicitly authorizes decomposition and execution of the already-ratified Five-Suite program across the sovereign OS and the five named suite repositories without a fresh owner decision for each mechanical successor, file allowlist, worktree, PR, runtime-adoption step, rollback proof, or canonical-ownership step inside the recorded boundaries.",
+      "terminal_condition": "FIVE_SUITE_FEDERATED_REPOSITORIES_CANONICAL_OWNERSHIP_RUNTIME_ADOPTION_PROVEN_AND_PROGRAM_COMPLETE",
+      "authorized_repositories": [
+        "bsvalues/terrafusion_os_1.0",
+        "bsvalues/terrafusion-forge",
+        "bsvalues/terrafusion-atlas",
+        "bsvalues/terrafusion-dais",
+        "bsvalues/terrafusion-dossier",
+        "bsvalues/terrafusion-gpt"
+      ],
+      "authorized_actions": [
+        "create exact child Work Orders that only decompose the ratified Five-Suite objective and record their repository, path, contract, environment, evidence, test, review, rollback, and merge reservations",
+        "preserve completed Forge cutover and all later verified sovereign capability while correcting and completing Atlas PR #1464 from exact head 62062d42772b3b53c1470827851d32eae5c740a8",
+        "implement staging, real local runtime adoption, governed persistent selection, exact source and artifact provenance, executed rollback, canonical ownership, duplicate-retirement analysis, standalone and sovereign integration proof for Atlas then Dais then Dossier then GPT",
+        "create isolated worktrees and branches, edit exact child-WO files, test observed outcomes, obtain independent review, remediate findings, push, operate PRs, monitor checks and reviews, merge eligible exact heads through protected main, verify post-merge state, and continue to the next dependency-cleared child",
+        "retain legitimate sovereign adapters, authentication, county scope, shared contracts, runtime hosts, Workbench integration, persistence and custody seams while retiring only mutable capability ownership proven genuinely duplicate",
+        "change the Five-Suite program from Active to COMPLETE only after every recorded terminal condition is proved"
+      ],
+      "child_work_order_policy": {
+        "fresh_owner_decision_required": false,
+        "exact_child_scope_required": true,
+        "one_work_order_per_pr": true,
+        "independent_assurance_required": true,
+        "protected_main_and_required_checks_required": true,
+        "rollback_and_provenance_evidence_required": true,
+        "sequence": ["Atlas", "Dais", "Dossier", "GPT"]
+      },
+      "explicitly_denied": [
+        "Azure or deployment work; county production; PACS, county SQL, or live county-data mutation",
+        "secret, credential, or credential-policy changes; WilliamOS work; unrelated CI or release-engineering programs",
+        "constitutional topology change, a sixth suite, or a new objective outside the ratified Five-Suite program",
+        "destructive irreversible action without a proven rollback path; force push; branch-protection or required-check bypass; fabricated, deleted, or unverified evidence"
+      ],
+      "merge_mode": "B-standing-bounded-child-work-orders",
+      "revocation_triggers": [
+        "any action crosses an explicit denial or requires a constitutional topology, production, protected-data, credential, legal, financial, or new-objective decision",
+        "a child lane lacks exact repository/path identity, isolation, rollback, source/artifact provenance, deterministic proof, independent review, or a clean exact-head merge path",
+        "false rollback, runtime, test, source-identity, ownership, or completion evidence; unresolved substantive review; required-check bypass; force push; destructive cleanup; or conflicting higher canon"
+      ],
+      "decision_basis": "Forge is the completed canonical-cutover pattern. Atlas, Dais, Dossier, and GPT have standalone foundations but incomplete canonical ownership/runtime adoption. The owner resolved the earlier per-WO authority objection and ordered continuous execution to the program terminal condition while preserving the stated hard walls.",
+      "current_execution": {
+        "state": "ACTIVE",
+        "owner_action_required": false,
+        "current_child_work_order": "WO-SR-007C",
+        "current_pr": 1464,
+        "verified_pr_head_before_remediation": "62062d42772b3b53c1470827851d32eae5c740a8",
+        "next_after_current_child": "Atlas persistent runtime adoption and canonical ownership, then Dais, Dossier, and GPT"
+      }
+    },
+    {
       "id": "OWNER-SR-009D-R3-DOSSIER-WORKBENCH-CANONICAL-EVIDENCE-READ-20260807",
       "program": "Five-Suite Federated Repository Buildout",
       "goal": "GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES",

@@ -13,7 +13,7 @@
 
 ## Active Goal
 
-The Five-Suite Federated Repository Buildout is between cohorts at portfolio reconciliation. WO-SR-009D completed in PR #1427: exact assured head `85818a749d4268f84cf8638d991d9cef657a0d19` merged as `c7f2d78619a9eb19186c2c724876fb4d11c81b00`. The authenticated frozen-contract Dossier read, same-county rendering, foreign-only empty-shape non-disclosure, deterministic pagination, honest UI states, and disposable synthetic proof passed. Decision `OWNER-SR-009D-R3-DOSSIER-WORKBENCH-CANONICAL-EVIDENCE-READ-20260807` is completed and consumed. No successor authority is inferred; writes, custody mutation, frozen-contract changes, live data, deployment, and cutover remain denied.
+The Five-Suite Federated Repository Buildout is active under `OWNER-FIVE-SUITE-FEDERATED-COMPLETION-20260826`. `WO-SR-007C` retains and corrects Atlas PR #1464 as the exact provenance-bound artifact-staging child. The original false rollback proof is preserved; the repaired backup contents/hash were independently verified, and the final child adds whole-slot inventory rollback, restored-hash verification, canonical-origin enforcement, a manifest, and an executable regression. On verified merge, continue directly to Atlas persistent local runtime selection, observed rollback and canonical ownership, then Dais, Dossier, and GPT. The mission hard walls remain binding.
 
 The prior `WO-SR-009C` completed before this activation. PR #1424 merged exact assured head
 `e70548cb4938da92b2c0b254d71c5361aa10a6ed` as
@@ -183,6 +183,7 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | **WO-TF-POST-DAIS-001 Post-Dais Portfolio Reconciliation** | **DONE / R2** | PR #1421 selected and bounded WO-SR-009C |
 | **WO-SR-009C Atlas Workbench Canonical Projection Adoption** | **DONE / R3 / AUTHORITY CONSUMED** | PR #1424 merged as `b5a02db17`; canonical Polygon, truthful unavailable, and cross-county non-disclosure proven; default Disabled, no Point, live provider, or cutover |
 | **WO-SR-009D Dossier Workbench Canonical Evidence Read Adoption** | **DONE / R3 / AUTHORITY CONSUMED** | PR #1427 exact head `85818a749` merged as `c7f2d7861`; same-county frozen read, foreign-only non-disclosure, honest Workbench states, no writes/custody/live data |
+| **WO-SR-007C Atlas Canonical Artifact Staging** | **ACTIVE / R3 / PR #1464** | Exact Atlas module + provenance manifest; whole-slot backup; executed rollback and restored-hash proof; no persistent runtime selection yet |
 
 ### portfolio-operator (`GOAL-PORTFOLIO-OPERATOR-001` / `LOOP-PORTFOLIO-OPERATOR-001`)
 | WO | State | Notes |

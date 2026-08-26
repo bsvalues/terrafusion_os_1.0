@@ -1,0 +1,36 @@
+name: Atlas Canonical Staging Guards
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/atlas-canonical-staging.yml'
+      - '.gitignore'
+      - 'backend/src/TerraFusion.API/Configuration/AtlasProjectionOptions.cs'
+      - 'scripts/bootstrap/Stage-AtlasProjectionModule.ps1'
+      - 'tests/atlas-staging-identity.ps1'
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/atlas-canonical-staging.yml'
+      - '.gitignore'
+      - 'backend/src/TerraFusion.API/Configuration/AtlasProjectionOptions.cs'
+      - 'scripts/bootstrap/Stage-AtlasProjectionModule.ps1'
+      - 'tests/atlas-staging-identity.ps1'
+
+permissions:
+  contents: read
+
+jobs:
+  staging-offline-guards:
+    name: atlas-staging-offline-guards
+    runs-on: windows-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout sovereign source
+        uses: actions/checkout@v4
+
+      - name: Prove parser and fail-closed origin without sibling-repository credentials
+        shell: pwsh
+        run: ./tests/atlas-staging-identity.ps1 -OfflineGuardsOnly
