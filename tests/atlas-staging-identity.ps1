@@ -18,8 +18,10 @@ $hadOriginalSlot = Test-Path -LiteralPath $artifactSlot
 $originalMoved = $false
 
 function Invoke-Stager {
-  param([switch]$InjectFailure)
-  $output = & $stager -AtlasRepository $AtlasRepository -BuildRootBase $stagerBuildRoot -TestOnlyInjectFailureAfterPublish:$InjectFailure
+  param([switch]$InjectBackupFailure, [switch]$InjectPublishFailure)
+  $output = & $stager -AtlasRepository $AtlasRepository -BuildRootBase $stagerBuildRoot `
+    -TestOnlyInjectFailureDuringBackupVerification:$InjectBackupFailure `
+    -TestOnlyInjectFailureAfterPublish:$InjectPublishFailure
   if ($LASTEXITCODE -ne 0) { throw "Atlas stager failed with exit code $LASTEXITCODE" }
   return ($output -join "`n") | ConvertFrom-Json
 }
@@ -85,9 +87,21 @@ try {
 
   Set-Content -LiteralPath (Join-Path $artifactSlot "rollback-sentinel.txt") -Value "whole-slot-rollback-proof" -Encoding utf8
   $preFailureInventory = Get-Inventory $artifactSlot
+  $backupFailure = $null
+  try {
+    $null = Invoke-Stager -InjectBackupFailure
+  } catch {
+    $backupFailure = $_.Exception.Message
+  }
+  if ($backupFailure -notmatch "ATLAS_BACKUP_VALIDATION_FAILED_RESTORED" -or
+      $backupFailure -notmatch "ATLAS_TEST_INJECTED_BACKUP_VERIFICATION_FAILURE") {
+    throw "Backup-verification failure did not restore the slot: $backupFailure"
+  }
+  Assert-InventoryEqual (Get-Inventory $artifactSlot) $preFailureInventory "backup-verification failure restored whole-slot"
+
   $failure = $null
   try {
-    $null = Invoke-Stager -InjectFailure
+    $null = Invoke-Stager -InjectPublishFailure
   } catch {
     $failure = $_.Exception.Message
   }
@@ -136,6 +150,7 @@ try {
     rollbackExecuted = $true
     rollbackHashesVerified = $true
     automaticFailureRollbackVerified = $true
+    backupVerificationFailureRollbackVerified = $true
   } | ConvertTo-Json -Depth 4
 }
 finally {
