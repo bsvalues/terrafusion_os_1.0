@@ -187,11 +187,11 @@ Reference this policy: `docs/governance/CI_WORKFLOW_LIFECYCLE_POLICY.md`
 | Class | Count |
 |-------|-------|
 | REQUIRED | 3 |
-| PUSH-OPTIONAL | 48 |
+| PUSH-OPTIONAL | 49 |
 | SCHEDULED | 17 |
 | MANUAL | 23 |
 | DEPRECATED | 2 |
-| **Total** | 93 |
+| **Total** | 94 |
 
 **REQUIRED** (3):
 - `core-governance-gates.yml`
@@ -220,9 +220,9 @@ Reference this policy: `docs/governance/CI_WORKFLOW_LIFECYCLE_POLICY.md`
 - `cockpit-drift-guard.yml`
 - `county-kit-parity.yml`
 - `dais-canonical-staging.yml`
-- `dossier-canonical-staging.yml`
 - `deps-fast-lane.yml`
 - `designctl.yml`
+- `dossier-canonical-staging.yml`
 - `frontend-build-guarded.yml`
 - `frontend-data-mode-guard.yml`
 - `gate-pipeline.yml`
