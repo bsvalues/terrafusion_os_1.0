@@ -41,6 +41,7 @@ using TerraFusion.API.Services.Telemetry;
 using TerraFusion.API.Services.Atlas;
 using TerraFusion.API.Services.Dais;
 using TerraFusion.API.Services.Dossier;
+using TerraFusion.API.Services.Gpt;
 // Conditional DB providers
 using Npgsql;
 using Microsoft.Data.Sqlite;
@@ -2431,6 +2432,7 @@ builder.Services.AddScoped<TerraFusion.AI.Interfaces.IEmbeddingService>(sp =>
     }
 }
 builder.Services.AddScoped<TerraFusion.AI.Interfaces.IRAGService, TerraFusion.AI.Services.RAGService>();
+builder.Services.AddGptGroundedContextRuntime(builder.Configuration, builder.Environment);
 
 // Phase 15.4: SystemGPT Health Evaluator for Herald threshold-based alerts
 builder.Services.AddSingleton<TerraFusion.AI.Services.ISystemGptHealthEvaluator, TerraFusion.AI.Services.SystemGptHealthEvaluator>();

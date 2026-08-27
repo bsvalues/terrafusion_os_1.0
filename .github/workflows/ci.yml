@@ -48,6 +48,7 @@ jobs:
             "nightly.yml"
             "release-compliance.yml"
             "ci.yml"
+            "gpt-canonical-staging.yml"
           )
 
           grep_args=(--include='*.yml')

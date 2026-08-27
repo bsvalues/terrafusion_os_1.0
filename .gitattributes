@@ -140,3 +140,6 @@
 .gitattributes text eol=lf
 .gitignore text eol=lf
 .gitmessage text eol=lf
+backend/tests/TerraFusion.Unit.Tests/Gpt/Fixtures/*.mjs -text
+backend/tests/TerraFusion.Unit.Tests/Gpt/Fixtures/*.json -text
+backend/tests/TerraFusion.Unit.Tests/Gpt/Fixtures/*.base64 text eol=lf

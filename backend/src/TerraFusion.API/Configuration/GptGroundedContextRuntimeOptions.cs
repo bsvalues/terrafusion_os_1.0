@@ -44,8 +44,14 @@ public sealed class GptGroundedContextRuntimeOptions
     public const string ArtifactSlotRelativePath =
         ".terrafusion/runtime/gpt/grounded-context";
 
-    // Staging is deliberately inert. A successor Work Order must implement and adopt a runtime.
     public GptGroundedContextRuntimeMode Mode { get; set; } = GptGroundedContextRuntimeMode.Disabled;
+    public int TimeoutSeconds { get; set; } = 30;
+
+    // These paths are resolved only from the code-pinned OS-managed slot. Configuration cannot
+    // redirect the runtime to a different module, schema, manifest, repository, or executable.
+    public string ModulePath { get; internal set; } = string.Empty;
+    public string SchemaPath { get; internal set; } = string.Empty;
+    public string NodeExecutablePath { get; internal set; } = string.Empty;
 }
 
 public enum GptGroundedContextRuntimeMode
