@@ -112,7 +112,7 @@ function Invoke-ObservedTest {
 }
 
 function Get-SovereignChangeSnapshot {
-    $entries = @(git -C $sovereignRepository status --porcelain=v1 --untracked-files=all)
+    $entries = @(git -c "safe.directory=$sovereignRepository" -C $sovereignRepository status --porcelain=v1 --untracked-files=all)
     if ($LASTEXITCODE -ne 0) { throw 'Unable to inspect sovereign worktree status.' }
     return @($entries | Sort-Object)
 }
@@ -129,8 +129,8 @@ try {
         }
     }
 
-    $sovereignHead = (git -C $sovereignRepository rev-parse HEAD).Trim()
-    Invoke-Checked git @('-C',$sovereignRepository,'merge-base','--is-ancestor',$expectedSovereignBase,$sovereignHead)
+    $sovereignHead = (git -c "safe.directory=$sovereignRepository" -C $sovereignRepository rev-parse HEAD).Trim()
+    Invoke-Checked git @('-c',"safe.directory=$sovereignRepository",'-C',$sovereignRepository,'merge-base','--is-ancestor',$expectedSovereignBase,$sovereignHead)
     $changesBefore = @(Get-SovereignChangeSnapshot)
     if ($changesBefore.Count -ne 0) { throw 'Dais mutation adoption proof requires a clean committed sovereign revision.' }
 
