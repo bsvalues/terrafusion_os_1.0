@@ -1,4 +1,4 @@
-# WO-SR-010E - Dais Truthful Appeal Route Retirement
+# WO-SR-010F - Dais Truthful Appeal Route Retirement
 
 | Field | Value |
 | --- | --- |
@@ -22,7 +22,7 @@ refusal performs no service, audit, or database mutation.
 1. `backend/src/TerraFusion.API/Controllers/DaisController.cs`
 2. `backend/tests/TerraFusion.Unit.Tests/Dais/DaisTruthfulRetirementTests.cs`
 3. `backend/tests/TerraFusion.Unit.Tests/R2FullPlan/R2FullPlanHandlerAlignmentTests.cs`
-4. `docs/brain/workorders/active/WO-SR-010E-dais-truthful-appeal-route-retirement.md`
+4. `docs/brain/workorders/active/WO-SR-010F-dais-truthful-appeal-route-retirement.md`
 
 ## Required proof
 
