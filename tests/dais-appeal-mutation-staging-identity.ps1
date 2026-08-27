@@ -21,7 +21,7 @@ $stagerBuildRoot = Join-Path $runRoot 'stager-runs'
 $originalSlot = Join-Path $runRoot 'original-slot'
 $adoptedSlot = Join-Path $runRoot 'adopted-slot'
 $rollbackObservation = Join-Path $runRoot 'rollback-observation'
-$hadOriginalSlot = Test-Path -LiteralPath $artifactSlot
+$hadOriginalSlot = $false
 $originalMoved = $false
 
 function Invoke-Stager {
@@ -78,6 +78,18 @@ function Assert-InventoryEqual {
   }
 }
 
+# Hold the same named transaction mutex as the stager for the whole proof. Windows mutex
+# ownership is recursive on the current thread, so the in-process stager invocations can enter
+# and release their own acquisition while concurrent staging processes remain excluded.
+$proofMutex = [Threading.Mutex]::new($false,'Local\TerraFusion.DaisAppealMutation.ArtifactSlot')
+$proofLockHeld = $false
+try { $proofLockHeld = $proofMutex.WaitOne(30000) }
+catch [Threading.AbandonedMutexException] { $proofLockHeld = $true }
+if (-not $proofLockHeld) {
+  $proofMutex.Dispose()
+  throw 'DAIS_MUTATION_PROOF_LOCK_UNAVAILABLE'
+}
+
 if ($OfflineGuardsOnly) {
   try {
     New-Item -ItemType Directory -Path $runRoot -Force | Out-Null
@@ -130,12 +142,15 @@ if ($OfflineGuardsOnly) {
     } | ConvertTo-Json -Depth 4
   } finally {
     if (Test-Path -LiteralPath $runRoot) { Remove-Item -LiteralPath $runRoot -Recurse -Force }
+    if ($proofLockHeld) { $proofMutex.ReleaseMutex(); $proofLockHeld = $false }
+    $proofMutex.Dispose()
   }
   return
 }
 
-New-Item -ItemType Directory -Path $runRoot,$stagerBuildRoot -Force | Out-Null
 try {
+  New-Item -ItemType Directory -Path $runRoot,$stagerBuildRoot -Force | Out-Null
+  $hadOriginalSlot = Test-Path -LiteralPath $artifactSlot
   if ($hadOriginalSlot) {
     Move-Item -LiteralPath $artifactSlot -Destination $originalSlot
     $originalMoved = $true
@@ -247,4 +262,6 @@ try {
     Move-Item -LiteralPath $originalSlot -Destination $artifactSlot
   }
   if (Test-Path -LiteralPath $runRoot) { Remove-Item -LiteralPath $runRoot -Recurse -Force }
+  if ($proofLockHeld) { $proofMutex.ReleaseMutex(); $proofLockHeld = $false }
+  $proofMutex.Dispose()
 }

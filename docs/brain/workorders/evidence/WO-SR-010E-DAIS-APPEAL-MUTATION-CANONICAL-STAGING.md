@@ -31,6 +31,11 @@ The proof also found and repaired one fail-open staging defect before commit: co
 comparison permitted a stringified numeric manifest length. Published manifest validation now
 requires exact scalar types for every string and integer field.
 
+First-party PR review then found that proof-side slot moves were not serialized with a concurrent
+stager. The proof now owns the production named transaction mutex across its entire run; recursive
+in-process stager acquisitions remain valid while other processes cannot publish into a slot the
+proof may move or clean. Offline and full authenticated rollback proofs passed again after repair.
+
 ## Commands
 
 ```powershell
