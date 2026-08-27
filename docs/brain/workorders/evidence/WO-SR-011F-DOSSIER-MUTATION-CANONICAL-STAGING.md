@@ -4,8 +4,8 @@
 
 `PASS_ON_EXACT_PROTECTED_SOURCE_PENDING_SOVEREIGN_PROTECTED_MERGE`
 
-The sovereign staging implementation and full observed proof ran on exact protected OS base
-`142a105a0a9a1aef425a434b962c7d9e3326e50b`, which contains protected mutation-contract merge
+The sovereign staging implementation and full observed proof ran after integrating exact protected OS
+base `1f0889a72497b283140fb0d0a57eed79775f9a34`, which contains protected mutation-contract merge
 `7cb96bf2ea5efea7caccae6d6e8c9f81f672412e`, against Dossier protected merge
 `2c709fe2286b5c1e6bde43fcbc2a35111a456092`.
 

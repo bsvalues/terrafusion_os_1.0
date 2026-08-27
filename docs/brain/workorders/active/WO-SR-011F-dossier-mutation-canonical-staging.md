@@ -7,7 +7,7 @@
 | Goal | `GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES` |
 | Risk | R3 exact artifact staging with recoverable whole-slot replacement |
 | Authority | `OWNER-FIVE-SUITE-FEDERATED-COMPLETION-20260826` |
-| Sovereign base | `142a105a0a9a1aef425a434b962c7d9e3326e50b` |
+| Sovereign base | `1f0889a72497b283140fb0d0a57eed79775f9a34` |
 | Contract merge | `7cb96bf2ea5efea7caccae6d6e8c9f81f672412e` |
 | Dossier source | `bsvalues/terrafusion-dossier@2c709fe2286b5c1e6bde43fcbc2a35111a456092` |
 | Contract | `dossier.mutation-decision@1.0.0` |
