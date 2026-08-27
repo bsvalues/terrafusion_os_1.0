@@ -68,31 +68,15 @@ public class DaisCountyIsolationTests
         await using var ctx = CreateContext("DaisIso_Appeal");
         var (bentonId, kingId) = SeedCounties(ctx);
 
-        var svc = new AppealService(ctx, NullLogger<AppealService>.Instance);
+        var svc = new AppealService(ctx, NullLogger<AppealService>.Instance, new FakeDaisAppealMutationDecisionPort());
 
-        var bentonAppeal = await svc.CreateAsync(new Appeal
-        {
-            ParcelId = "1-0001-001",
-            AppealGround = "MARKET_VALUE",
-            Status = "filed",
-            FiledDate = DateTime.UtcNow,
-            CurrentValue = 300_000m,
-            RequestedValue = 260_000m,
-            TaxYear = 2025,
-            CountyId = bentonId
-        });
+        var bentonAppeal = await svc.CreateAsync(
+            bentonId,
+            new CreateAppealCommand("1-0001-001", "MARKET_VALUE", null, 300_000m, 260_000m, 2025));
 
-        await svc.CreateAsync(new Appeal
-        {
-            ParcelId = "1-0001-001",   // same parcelId, different county
-            AppealGround = "UNIFORMITY",
-            Status = "filed",
-            FiledDate = DateTime.UtcNow,
-            CurrentValue = 500_000m,
-            RequestedValue = 450_000m,
-            TaxYear = 2025,
-            CountyId = kingId
-        });
+        await svc.CreateAsync(
+            kingId,
+            new CreateAppealCommand("1-0001-001", "UNIFORMITY", null, 500_000m, 450_000m, 2025));
 
         var bentonResults = await svc.GetByParcelAsync("1-0001-001", bentonId);
         var kingResults   = await svc.GetByParcelAsync("1-0001-001", kingId);
@@ -114,19 +98,11 @@ public class DaisCountyIsolationTests
         await using var ctx = CreateContext("DaisIso_AppealUpdate");
         var (bentonId, kingId) = SeedCounties(ctx);
 
-        var svc = new AppealService(ctx, NullLogger<AppealService>.Instance);
+        var svc = new AppealService(ctx, NullLogger<AppealService>.Instance, new FakeDaisAppealMutationDecisionPort());
 
-        var appeal = await svc.CreateAsync(new Appeal
-        {
-            ParcelId = "PARCEL-X",
-            AppealGround = "MARKET_VALUE",
-            Status = "filed",
-            FiledDate = DateTime.UtcNow,
-            CurrentValue = 100_000m,
-            RequestedValue = 80_000m,
-            TaxYear = 2025,
-            CountyId = bentonId
-        });
+        var appeal = await svc.CreateAsync(
+            bentonId,
+            new CreateAppealCommand("PARCEL-X", "MARKET_VALUE", null, 100_000m, 80_000m, 2025));
 
         // Attempt to update Benton's appeal from King's context — must be rejected
         var act = async () => await svc.UpdateStatusAsync(appeal.Id, "decided", kingId);

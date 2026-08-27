@@ -147,8 +147,8 @@ public sealed class R2FullPlanHandlerAlignmentTests
       .ReturnsAsync(new List<CertificationStep>());
 
     var appealMock = new Mock<IAppealService>();
-    appealMock.Setup(s => s.CreateAsync(It.IsAny<Guid>(), It.IsAny<CreateAppealCommand>(), It.IsAny<string?>(), It.IsAny<DateTime?>()))
-      .ReturnsAsync((Guid countyId, CreateAppealCommand request, string? createdBy, DateTime? now) => new Appeal
+    appealMock.Setup(s => s.CreateAsync(It.IsAny<Guid>(), It.IsAny<CreateAppealCommand>(), It.IsAny<string?>(), It.IsAny<DateTime?>(), It.IsAny<CancellationToken>()))
+      .ReturnsAsync((Guid countyId, CreateAppealCommand request, string? createdBy, DateTime? now, CancellationToken _) => new Appeal
       {
         Id = Guid.NewGuid(),
         ParcelId = request.ParcelId,
