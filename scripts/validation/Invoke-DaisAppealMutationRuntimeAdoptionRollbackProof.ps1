@@ -29,6 +29,7 @@ $adoptedMutationDuringRollback = Join-Path $durableRunRoot 'adopted-mutation-dur
 $mutationStageReceipt = $null
 $workflowStageReceipt = $null
 $mutationStagePublished = $false
+$workflowStagePublished = $false
 $result = $null
 
 function Invoke-Checked {
@@ -160,17 +161,23 @@ try {
     if ($mutationStageReceipt.suiteCommit -cne $expectedDaisCommit -or
         $mutationStageReceipt.moduleSha256 -cne $expectedModuleSha256 -or
         $mutationStageReceipt.schemaSha256 -cne $expectedSchemaSha256 -or
-        $mutationStageReceipt.publishedManifestSha256 -cne $expectedManifestSha256) { throw 'Dais mutation stage receipt identity mismatch.' }
+        $mutationStageReceipt.publishedManifestSha256 -cne $expectedManifestSha256 -or
+        $mutationStageReceipt.publishedManifestLength -ne 1465) { throw 'Dais mutation stage receipt identity mismatch.' }
     if ([IO.Path]::GetFullPath($mutationStageReceipt.artifactSlot) -ine $mutationSlot) { throw 'Mutation stage used a noncanonical slot.' }
     if ([string]::IsNullOrWhiteSpace($mutationStageReceipt.rollbackSlot) -or $null -eq $mutationStageReceipt.rollbackHashes) { throw 'Mutation proof requires a nonempty prior rollback slot.' }
     Assert-Inventory ([IO.Path]::GetFullPath($mutationStageReceipt.rollbackSlot)) $mutationStageReceipt.rollbackHashes 'Original mutation rollback slot'
     Move-Item -LiteralPath ([IO.Path]::GetFullPath($mutationStageReceipt.rollbackSlot)) -Destination $durableMutationRollbackSlot
     Assert-Inventory $durableMutationRollbackSlot $mutationStageReceipt.rollbackHashes 'Durable mutation rollback slot'
     $publishedMutationInventory = Get-Inventory $mutationSlot
+    if ((@($publishedMutationInventory.Keys | Sort-Object) -join '|') -cne
+        'dais.appeal-mutation.v1.schema.json|decide-dais-appeal-mutation.mjs|manifest.json') {
+        throw 'Published mutation slot does not contain the exact three-file inventory.'
+    }
 
     $workflowOutput = & pwsh -NoProfile -File (Join-Path $sovereignRepository 'scripts\bootstrap\Stage-DaisAppealWorkflowModule.ps1') -DaisRepository $DaisRepository -BuildRootBase $workflowStageRoot
     if ($LASTEXITCODE -ne 0) { throw 'Dais workflow canonical staging failed.' }
     $workflowStageReceipt = Get-ReceiptFromOutput $workflowOutput
+    $workflowStagePublished = $true
     if ($null -ne $workflowStageReceipt.rollbackSlot) {
         Assert-Inventory ([IO.Path]::GetFullPath($workflowStageReceipt.rollbackSlot)) $workflowStageReceipt.rollbackHashes 'Original workflow rollback slot'
         Move-Item -LiteralPath ([IO.Path]::GetFullPath($workflowStageReceipt.rollbackSlot)) -Destination $durableWorkflowRollbackSlot
@@ -242,6 +249,16 @@ try {
 catch {
     $proofFailure = $_
     try {
+        if ($workflowStagePublished -and $null -ne $workflowStageReceipt) {
+            if (Test-Path -LiteralPath $workflowSlot) {
+                $failedWorkflow = Join-Path $durableRunRoot ('failed-workflow-artifact-'+[Guid]::NewGuid().ToString('N'))
+                Move-Item -LiteralPath $workflowSlot -Destination $failedWorkflow
+            }
+            if (Test-Path -LiteralPath $durableWorkflowRollbackSlot -PathType Container) {
+                Move-Item -LiteralPath $durableWorkflowRollbackSlot -Destination $workflowSlot
+                Assert-Inventory $workflowSlot $workflowStageReceipt.rollbackHashes 'Failure-path restored workflow slot'
+            }
+        }
         if ($mutationStagePublished -and $null -ne $mutationStageReceipt -and (Test-Path -LiteralPath $durableMutationRollbackSlot -PathType Container)) {
             if (Test-Path -LiteralPath $mutationSlot) {
                 $failedArtifact = Join-Path $durableRunRoot ('failed-mutation-artifact-'+[Guid]::NewGuid().ToString('N'))
