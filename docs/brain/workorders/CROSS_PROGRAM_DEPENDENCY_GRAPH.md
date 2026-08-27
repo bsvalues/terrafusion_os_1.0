@@ -2,7 +2,7 @@
 
 **Version:** 1.3
 **Date:** 2026-08-27
-**Authority:** WO-WOE-014, current-state refresh by WO-SR-MISSION-COMPLETION
+**Authority:** WO-WOE-014, current-state refresh by WO-WAL-000
 **Classification:** Operator Doctrine - makes the Wall Ledger operational
 **Builds on:** [AUTONOMOUS_CONTINUATION_GATE.md](AUTONOMOUS_CONTINUATION_GATE.md) (WOE-012),
 [WORK_ORDER_PROGRAM_QUEUE.md](WORK_ORDER_PROGRAM_QUEUE.md), and
@@ -22,12 +22,18 @@ completion does not make a closed Work Order executable again.
 
 | Boundary | Parked lanes | Current effect |
 |----------|--------------|----------------|
+| **WAL-READONLY** external county-source boundary | WAL-001-008 | Public acquisition, upload and Sync may ingest into TerraFusion-controlled county-scoped storage; no external county-system DML or write-back is authorized |
+| **WAL-ACCEPTANCE** exact release gate | WAL-008 | Production remains blocked until WAL-007 accepts the exact candidate with zero launch-blocking gaps |
 | **SW-01** deployment / cloud / reachability | Benton 003D, Azure 004-006 | New live inspection, resource mutation, deployment, and reachability remain blocked; P8 MGMT-005 already deployed in PR #1157 |
 | **SW-02 / SW-03 / SW-08** protected data, credentials, integration | New Benton remediation | Prior audit and bounded cleanup grants are consumed; new protected work needs a new packet |
 | **SW-04** production / county go-live | Benton demo, Azure county boundary | No production or county activation is authorized |
 | **SW-05** unresolved authority / sovereign boundary | Runtime import disposition, Sync selection gate | No sovereign import or unselected implementation program starts implicitly |
 | **SW-09** runtime behavior | TerraPilot L3 integration and other TerraFusion runtime changes | Observable runtime mutation needs exact scope; read-only diagnosis and design are not themselves SW-09 |
 | **SW-10** security / auth policy | Management deploy and live product surfaces | Security posture changes remain protected |
+
+The `SW-*` rows continue to govern their named legacy lanes. For WAL only, Issue #1485 supplies the
+new mission authority: it does not clear the `WAL-ACCEPTANCE` gate, authorize external county-system
+write-back, or permit production before the exact WAL-007 candidate is accepted.
 
 ---
 
@@ -44,6 +50,12 @@ The Five-Suite Federated Repository Buildout is complete through `WO-SR-MISSION-
 Protected suite ownership, sovereign runtime adoption, exact provenance, rollback, and duplicate
 retirement are terminal. No automatic successor remains inside that mission; Forge WO-SR-007 is
 legitimately pending outside it.
+
+Washington Assessor Launch V1 is active under Issue #1485 and
+`OWNER-WAL-V1-MISSION-AUTHORITY-20260827`. On protected merge of WO-WAL-000, WAL-001, WAL-002 and
+WAL-003 become dependency-cleared for isolated execution; WAL-004 may overlap only through exact
+reservation-safe bounded children. This is a new applicable objective and authority, not a successor
+inside the completed Five-Suite mission.
 
 ---
 
@@ -64,8 +76,9 @@ TERRAPILOT PROMOTION
   L4 promotion requires evidence-backed maturity and operator-visible capability authority
 
 SOVEREIGN SYNC IMPLEMENTATION
-  starts only after the recorded program-selection gate is cleared
-  Gate 14 and live-data prohibitions remain binding
+  the earlier unselected implementation program remains closed behind its recorded selection gate
+  WAL read-only Sync is a separately authorized, county-scoped child under Issue #1485
+  Gate 14, no-external-DML, credential, and protected-data prohibitions remain binding
 
 CROSS-PROJECT HISTORICAL AUDIT
   WO-LOCAL-093 through WO-LOCAL-097 are WilliamOS/TerraGroq audit history, not TerraFusion capability
@@ -73,6 +86,15 @@ CROSS-PROJECT HISTORICAL AUDIT
 
 RUNTIME IMPORT
   starts at WO-CORE-1 only after the sovereign import disposition is authorized
+
+WASHINGTON ASSESSOR LAUNCH V1
+  WO-WAL-000 activates Issue #1485 on protected main
+  then WO-WAL-001 public baseline, 002 upload and 003 read-only Sync run in isolated lanes
+  bounded non-colliding WO-WAL-004 identity/isolation/trust children may overlap
+  stable 001-004 contracts clear WO-WAL-005 Counties HUB and WO-WAL-006 TerraForge
+  WO-WAL-007 accepts one exact release candidate across all 39 county contexts
+  only that accepted candidate may enter WO-WAL-008 production and external assessor acceptance
+  WO-WAL-009 consumes the mission with no automatic successor
 
 FIVE-SUITE FEDERATED REPOSITORIES
   complete through WO-SR-MISSION-COMPLETION
@@ -89,6 +111,7 @@ FIVE-SUITE FEDERATED REPOSITORIES
 
 | Program | Completed | Next recorded node | Dependency | State |
 |---------|-----------|--------------------|------------|-------|
+| washington-assessor-launch-v1 | 000 complete on protected merge | 001, 002, 003 plus bounded reservation-safe 004 | protected activation merge, exact child reservations, external read-only boundary; 007 gates production | ACTIVE |
 | five-suite-federated-repository-buildout | Complete through `WO-SR-MISSION-COMPLETION` | no automatic successor | New work requires another applicable objective and authority; Forge WO-SR-007 remains outside this mission | CLOSED |
 | p8-management-dashboard | 001-006 | no automatic successor | authenticated verification needs SW-03; county release needs SW-04/SW-10 | BASELINE COMPLETE |
 | benton-demo | 002, 003A-C, CONFIG-001 | 003D live smoke | SW-01 + SW-04 | PARKED |
@@ -107,11 +130,15 @@ FIVE-SUITE FEDERATED REPOSITORIES
 
 ## 5. Operator Reading
 
-1. Five-Suite routing is terminal at `WO-SR-MISSION-COMPLETION`; do not rerun completed child Work
-   Orders or infer a mission successor.
-2. Forge WO-SR-007 remains pending outside the completed mission and is not changed by closeout.
-3. New suite work requires another applicable objective and authority.
-4. Live, data, runtime mutation, TerraPilot direction/promotion, and import paths retain their exact
+1. Washington Assessor Launch V1 is the current active mission. Complete WO-WAL-000 through
+   protected main, then dispatch exact reservation-safe children without treating any child as the
+   mission boundary.
+2. Five-Suite routing remains terminal at `WO-SR-MISSION-COMPLETION`; WAL is a separately authorized
+   product-launch objective, not a reopened Five-Suite successor.
+3. Forge WO-SR-007 remains pending outside the completed Five-Suite mission and is not changed by WAL.
+4. External county sources remain read-only, and WAL production remains gated on exact WAL-007
+   acceptance plus observed production controls and external assessor evidence.
+5. Live, data, runtime mutation, TerraPilot direction/promotion, and import paths retain their exact
    recorded walls. Do not classify read-only diagnosis or design as runtime expansion.
 
 ---
@@ -120,6 +147,7 @@ FIVE-SUITE FEDERATED REPOSITORIES
 
 | Date | Change | WO |
 |------|--------|----|
+| 2026-08-27 | Activated the finite Washington Assessor Launch V1 graph under Issue #1485 while preserving external read-only and exact-production gates | WO-WAL-000 |
 | 2026-08-27 | Closed Five-Suite routing after terminal protected runtime, rollback, ownership, and duplicate-retirement reconciliation | WO-SR-MISSION-COMPLETION |
 | 2026-07-19 | Created, bootstrapped, checked, and protected all five suite repositories; admitted Forge extraction | WO-SR-003 / WO-SR-004 |
 | 2026-07-01 | Cross-program dependency graph; authorization-to-unblocks map; prerequisite chains | WO-WOE-014 |

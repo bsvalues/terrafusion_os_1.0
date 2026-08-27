@@ -37,6 +37,8 @@ The model describes work-order state. It does not override any authority source 
 | `title` | yes | Human-readable work order title. |
 | `program` | yes | Owning program or lane, for example Work Order Engine, DevOps, LocalOps, Backend, or Workbench. |
 | `goal` | yes | Concrete objective of the work order. |
+| `goalId` | no | Canonical program-goal identity used for exact mission authority matching. |
+| `loopId` | no | Canonical program-loop identity used for exact mission authority matching. |
 | `riskClass` | yes | Minimum execution risk for the work order. |
 | `status` | yes | Current lifecycle state. |
 | `dependencies` | yes | Work orders, evidence, or external states required before execution. |

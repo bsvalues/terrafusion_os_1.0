@@ -37,6 +37,34 @@ are compatibility aliases for read-only routing or loop control; they are not se
 Executable repository commands such as `corepack pnpm brain` and `corepack pnpm tf` are outside this
 operator-directive grammar and retain their own help surfaces.
 
+### /goal washington-assessor-launch-v1
+
+```
+Goal:     Launch TerraFusion OS + TerraForge for all 39 Washington assessor contexts.
+Program:  Washington Assessor Launch V1
+File:     programs/washington-assessor-launch-v1.md
+Success:  Truthful 39-county runtime and control-plane state, real governed upload, read-only Sync,
+          Counties HUB, supported county-aware TerraForge workflows, exact-candidate acceptance,
+          production rollback proof, external assessor acceptance, and terminal closeout.
+```
+
+**Current state:** Issue #1485 is ratified as
+`OWNER-WAL-V1-MISSION-AUTHORITY-20260827`. `WO-WAL-000` implementation is complete on the PR head
+and becomes canonical/effective on protected merge of PR #1486; then `WO-WAL-001`, `WO-WAL-002`,
+`WO-WAL-003`, and bounded reservation-safe portions of
+`WO-WAL-004` form the initial parallel wave. 005/006 integrate those contracts, 007 gates the exact
+release candidate, 008 performs production plus external assessor acceptance, and 009 records
+`COMPLETED_AND_CONSUMED` with no automatic successor.
+
+**Allowed loop modes:** `once`, `program`, `merge-watch`, `evidence`, `recovery`, `discovery`
+
+**Blocked:** external county-system write-back; unauthorized non-public or credentialed data;
+cross-county disclosure; silent Benton fallback; unsupported capability claims; production before
+WAL-007 exact-candidate acceptance; required-control bypass; fabricated evidence; or work outside
+Issue #1485.
+
+---
+
 ### /goal suite-repositories
 
 ```
