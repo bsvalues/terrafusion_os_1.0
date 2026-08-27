@@ -114,6 +114,20 @@ describe('PropertyDais source honesty contract', () => {
     expect(vi.mocked(invokeTool)).not.toHaveBeenCalled();
   });
 
+  it('does not offer the retired BOE hearing scheduling write path', async () => {
+    render(<MemoryRouter><PropertyDais /></MemoryRouter>);
+
+    expect(screen.queryByText(/Schedule BOE Hearing/i)).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /Submit Hearing Request|Schedule Hearing/i }))
+      .not.toBeInTheDocument();
+    expect(screen.queryByRole('checkbox', {
+      name: /I confirm this BOE hearing request is ready for submission/i,
+    })).not.toBeInTheDocument();
+
+    const { invokeTool } = await import('../../api/pilotApi');
+    expect(vi.mocked(invokeTool)).not.toHaveBeenCalled();
+  });
+
   it('renders WorkbenchSourceBadge on the Queue Statistics card at idle state', () => {
     render(<MemoryRouter><PropertyDais /></MemoryRouter>);
     const badges = screen.getAllByTestId('workbench-source-badge');
