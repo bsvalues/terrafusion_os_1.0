@@ -47,14 +47,12 @@ function optionsFor(records, overrides = {}) {
       .filter(item => item.status === 'ready')
       .map(item => [
         item.id,
-        [
-          {
-            id: `${item.id}-PATH`,
-            kind: 'path',
-            value: item.allowedFiles[0],
-            status: 'active',
-          },
-        ],
+        item.allowedFiles.map((value, index) => ({
+          id: `${item.id}-PATH-${index + 1}`,
+          kind: 'path',
+          value,
+          status: 'active',
+        })),
       ])
   );
   return {
@@ -509,6 +507,84 @@ describe('wo-wave-plan', () => {
     assert.match(plan.waves[1].workOrders[0].explanation, new RegExp(decision.id));
   });
 
+  it('dispatches a WAL-like R5 protected-system child only after exact mission reservations pass', () => {
+    const mission = record('WO-WAL-000', {
+      program: 'Washington Assessor Launch V1',
+      goalId: 'GOAL-WASHINGTON-ASSESSOR-LAUNCH-V1',
+      loopId: 'LOOP-WASHINGTON-ASSESSOR-LAUNCH-V1',
+      status: 'complete',
+    });
+    const child = record('WO-WAL-002', {
+      program: mission.program,
+      goalId: mission.goalId,
+      loopId: mission.loopId,
+      riskClass: 'R5',
+      dependencies: [{ id: mission.id, status: 'satisfied' }],
+      allowedSystems: [
+        {
+          name: 'Authenticated county-bound backend runtime and frontend upload quarantine',
+        },
+      ],
+      blockedSystems: [
+        {
+          name: 'External county writes, production deployment, and secrets mutation',
+        },
+      ],
+      allowedFiles: [
+        'backend/src/TerraFusion.API/Services/UploadService.cs',
+        'frontend/src/services/upload.ts',
+      ],
+    });
+    const decision = missionDecision(mission);
+    const baseOptions = {
+      authority: 'R5',
+      now: '2026-07-17T12:00:00Z',
+      ownerDecisions: { decisions: [decision] },
+    };
+
+    const plan = planWaves(
+      registry([mission, child]),
+      rules,
+      optionsFor([mission, child], baseOptions)
+    );
+    assert.deepEqual(plan.initialExecutableSet, [child.id]);
+    assert.deepEqual(plan.excludedWorkOrders, [
+      {
+        workOrderId: mission.id,
+        reasons: ['terminal-status'],
+        explanation: 'Excluded: terminal-status.',
+      },
+    ]);
+    assert.match(plan.waves[0].workOrders[0].explanation, new RegExp(decision.id));
+
+    const noAuthority = optionsFor([mission, child], {
+      authority: 'R5',
+      now: baseOptions.now,
+      ownerDecisions: { decisions: [] },
+    });
+    assert.match(
+      planWaves(registry([mission, child]), rules, noAuthority).excludedWorkOrders.find(
+        item => item.workOrderId === child.id
+      ).reasons[0],
+      /missing-protected-path-authority/
+    );
+
+    const deniedEnvironment = optionsFor([mission, child], baseOptions);
+    deniedEnvironment.reservations.candidateReservations[child.id].push({
+      id: 'WO-WAL-002-PRODUCTION',
+      kind: 'environment',
+      value: 'production',
+      scope: 'exact',
+      status: 'active',
+    });
+    assert.match(
+      planWaves(registry([mission, child]), rules, deniedEnvironment).excludedWorkOrders.find(
+        item => item.workOrderId === child.id
+      ).reasons[0],
+      /protected-resource-reservation:environment:production/
+    );
+  });
+
   it('fails closed when mission-child identity or ancestry is not exact', () => {
     const mission = record('WO-MISSION-010', {
       program: 'Mission',
@@ -721,6 +797,21 @@ describe('wo-wave-plan', () => {
         item => item.workOrderId === child.id
       ).reasons[0],
       /outside declared allowedFiles/
+    );
+
+    const secondProtectedFile = {
+      ...child,
+      allowedFiles: [...child.allowedFiles, 'frontend/src/Mission.ts'],
+    };
+    const missingExactReservation = optionsFor([mission, secondProtectedFile], baseOptions);
+    missingExactReservation.reservations.candidateReservations[child.id].pop();
+    assert.match(
+      planWaves(
+        registry([mission, secondProtectedFile]),
+        rules,
+        missingExactReservation
+      ).excludedWorkOrders.find(item => item.workOrderId === child.id).reasons[0],
+      /missing-exact-protected-path-reservation:frontend\/src\/mission\.ts/
     );
 
     const environment = optionsFor([mission, child], baseOptions);

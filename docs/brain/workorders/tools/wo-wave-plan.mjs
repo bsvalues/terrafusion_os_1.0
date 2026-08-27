@@ -668,8 +668,10 @@ function planWaves(registry, rules, options = {}) {
   const plannable = [];
 
   for (const record of records) {
+    const scoredExclusions = staticExclusions(record, rules, authority);
+    const protectedSystemRequired = scoredExclusions.includes('protected-system-required');
     const reasons = [
-      ...staticExclusions(record, rules, authority),
+      ...scoredExclusions.filter(reason => reason !== 'protected-system-required'),
       ...dependencyContradictions(record, recordById),
     ];
     if (!WORK_ORDER_ID.test(record.id)) reasons.push('invalid-work-order-id');
@@ -698,9 +700,10 @@ function planWaves(registry, rules, options = {}) {
 
     let reservations;
     let protectedAuthority;
+    let protectedAllowedPaths;
     try {
       const allowedPaths = allowedPathReservations(record);
-      const protectedAllowedPaths = allowedPaths.filter(protectedReservationReason);
+      protectedAllowedPaths = allowedPaths.filter(protectedReservationReason);
       protectedAuthority = protectedPathAuthority(
         record,
         protectedAllowedPaths,
@@ -747,6 +750,36 @@ function planWaves(registry, rules, options = {}) {
         workOrderId: record.id,
         reasons: [protectedReason],
         explanation: `Excluded: ${protectedReason}.`,
+      });
+      continue;
+    }
+    const missingExactProtectedReservation = protectedAllowedPaths
+      .map(protectedPath => protectedPath.value)
+      .sort()
+      .find(
+        protectedPath =>
+          !reservations.some(
+            reservation =>
+              reservation.kind === 'path' &&
+              reservation.scope === 'exact' &&
+              reservation.value === protectedPath
+          )
+      );
+    if (missingExactProtectedReservation) {
+      const reason = `missing-exact-protected-path-reservation:${missingExactProtectedReservation}`;
+      excluded.push({
+        workOrderId: record.id,
+        reasons: [reason],
+        explanation: `Excluded: ${reason}.`,
+      });
+      continue;
+    }
+    if (protectedSystemRequired && !protectedAuthority.decisionId) {
+      const reason = 'protected-system-required';
+      excluded.push({
+        workOrderId: record.id,
+        reasons: [reason],
+        explanation: `Excluded: ${reason}.`,
       });
       continue;
     }
