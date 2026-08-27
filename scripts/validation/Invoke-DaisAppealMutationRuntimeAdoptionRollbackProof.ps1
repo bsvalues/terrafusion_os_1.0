@@ -79,6 +79,9 @@ function ConvertTo-Inventory {
 
 function Assert-Inventory {
     param([Parameter(Mandatory)][string]$Directory,[Parameter(Mandatory)]$Expected,[Parameter(Mandatory)][string]$Label)
+    if (-not (Test-Path -LiteralPath $Directory -PathType Container)) {
+        throw "$Label directory is absent."
+    }
     $expectedInventory = ConvertTo-Inventory $Expected
     $actualInventory = ConvertTo-Inventory (Get-Inventory $Directory)
     if ($null -ne (Compare-Object @($expectedInventory.Keys) @($actualInventory.Keys))) { throw "$Label paths differ." }
@@ -155,7 +158,9 @@ function Restore-StagedSlot {
         Assert-InventoriesEqual $Receipt.rollbackHashes $expected "$Label receipt versus pre-stage anchor"
     }
 
-    if ($OriginalExisted -and (Test-Inventory $LiveSlot $expected)) {
+    if ($OriginalExisted -and
+        (Test-Path -LiteralPath $LiveSlot -PathType Container) -and
+        (Test-Inventory $LiveSlot $expected)) {
         return 'PREVIOUS_SLOT_ALREADY_LIVE_AND_HASH_VERIFIED'
     }
     if (-not $OriginalExisted -and -not (Test-Path -LiteralPath $LiveSlot)) {
@@ -180,6 +185,26 @@ function Restore-StagedSlot {
     Move-Item -LiteralPath $backup -Destination $LiveSlot
     Assert-Inventory $LiveSlot $expected "$Label restored rollback slot"
     return 'PREVIOUS_SLOT_RESTORED_AND_HASH_VERIFIED'
+}
+
+function Invoke-IndependentRecoveries {
+    param([scriptblock]$WorkflowAction,[scriptblock]$MutationAction)
+    $failures = [Collections.Generic.List[Exception]]::new()
+    $workflowResult = 'NOT_REQUIRED'
+    $mutationResult = 'NOT_REQUIRED'
+    if ($null -ne $WorkflowAction) {
+        try { $workflowResult = & $WorkflowAction }
+        catch { $failures.Add($_.Exception) }
+    }
+    if ($null -ne $MutationAction) {
+        try { $mutationResult = & $MutationAction }
+        catch { $failures.Add($_.Exception) }
+    }
+    return [pscustomobject]@{
+        WorkflowResult=$workflowResult
+        MutationResult=$mutationResult
+        Failures=$failures
+    }
 }
 
 function Invoke-RecoverySelfTest {
@@ -228,9 +253,29 @@ function Invoke-RecoverySelfTest {
             $absentStage $null $false $null 'originally-absent self-test'
         if (Test-Path -LiteralPath $absentLive) { throw 'Originally absent slot was not restored to absence.' }
 
+        $emptyRoot = Join-Path $selfTestRoot 'existing-empty'
+        $emptyLive = Join-Path $emptyRoot 'live'
+        $emptyStage = Join-Path $emptyRoot 'stage'
+        $emptyBackup = Join-Path $emptyStage 'previous-artifact'
+        New-Item -ItemType Directory -Path $emptyBackup -Force | Out-Null
+        $emptyResult = Restore-StagedSlot $emptyLive (Join-Path $emptyRoot 'durable') `
+            $emptyStage $null $true (Get-Inventory $emptyBackup) 'existing-empty self-test'
+        if (-not (Test-Path -LiteralPath $emptyLive -PathType Container)) {
+            throw 'Existing empty slot was not restored as a directory.'
+        }
+
+        $script:mutationCoordinatorObserved = $false
+        $coordinated = Invoke-IndependentRecoveries `
+            -WorkflowAction { throw 'synthetic workflow recovery failure' } `
+            -MutationAction { $script:mutationCoordinatorObserved = $true; throw 'synthetic mutation recovery failure' }
+        if (-not $script:mutationCoordinatorObserved -or $coordinated.Failures.Count -ne 2) {
+            throw 'Independent recovery coordination did not run both recoveries and collect both failures.'
+        }
+
         [ordered]@{
             result='PASS';receiptLossRecovery=$receiptLossResult;corruptCustodyRefused=$corruptRefused;
-            originallyAbsentRecovery=$absentResult
+            originallyAbsentRecovery=$absentResult;existingEmptyRecovery=$emptyResult;
+            independentRecoveryFailuresCollected=$coordinated.Failures.Count
         } | ConvertTo-Json
     }
     finally {
@@ -448,23 +493,26 @@ try {
 }
 catch {
     $proofFailure = $_
-    $recoveryFailures = [Collections.Generic.List[Exception]]::new()
-    $workflowRecovery = 'NOT_REQUIRED'
-    $mutationRecovery = 'NOT_REQUIRED'
-    if ($workflowStageAttempted) {
-        try {
+    $workflowRecoveryAction = if ($workflowStageAttempted) {
+        {
             $workflowRecovery = Restore-StagedSlot $workflowSlot $durableWorkflowRollbackSlot $workflowStageRoot `
                 $workflowStageReceipt $workflowOriginalExisted $workflowOriginalInventory 'workflow artifact'
-            $workflowStageRootSafeToDelete = $true
-        } catch { $recoveryFailures.Add($_.Exception) }
-    }
-    if ($mutationStageAttempted) {
-        try {
+            $script:workflowStageRootSafeToDelete = $true
+            $workflowRecovery
+        }
+    } else { $null }
+    $mutationRecoveryAction = if ($mutationStageAttempted) {
+        {
             $mutationRecovery = Restore-StagedSlot $mutationSlot $durableMutationRollbackSlot $mutationStageRoot `
                 $mutationStageReceipt $mutationOriginalExisted $mutationOriginalInventory 'mutation artifact'
-            $mutationStageRootSafeToDelete = $true
-        } catch { $recoveryFailures.Add($_.Exception) }
-    }
+            $script:mutationStageRootSafeToDelete = $true
+            $mutationRecovery
+        }
+    } else { $null }
+    $coordinatedRecovery = Invoke-IndependentRecoveries $workflowRecoveryAction $mutationRecoveryAction
+    $recoveryFailures = $coordinatedRecovery.Failures
+    $workflowRecovery = $coordinatedRecovery.WorkflowResult
+    $mutationRecovery = $coordinatedRecovery.MutationResult
     try {
         New-Item -ItemType Directory -Path $durableRunRoot -Force | Out-Null
         [ordered]@{result='FAIL';receiptState='TERMINAL_FAILURE';terminalCondition=$terminalCondition;
