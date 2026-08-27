@@ -23,14 +23,16 @@ public sealed class ReadOnlyCountySourceAdapterContractTests
         methods[0].GetParameters().Select(parameter => parameter.ParameterType).Should().Equal(
             typeof(ReadOnlySourceReadRequest),
             typeof(CancellationToken));
-        methods.Select(method => method.Name).Should().NotContain(name =>
-        {
-            var operationName = name.EndsWith("Async", StringComparison.Ordinal)
-                ? name[..^"Async".Length]
-                : name;
-            return new[] { "write", "update", "delete", "execute", "connect", "sync" }
-                .Any(verb => operationName.Contains(verb, StringComparison.OrdinalIgnoreCase));
-        });
+        var forbiddenVerbs = new[] { "write", "update", "delete", "execute", "connect", "sync" };
+        var forbiddenOperations = methods
+            .Select(method => method.Name.EndsWith("Async", StringComparison.Ordinal)
+                ? method.Name.Substring(0, method.Name.Length - "Async".Length)
+                : method.Name)
+            .Where(operationName => forbiddenVerbs.Any(
+                verb => operationName.Contains(verb, StringComparison.OrdinalIgnoreCase)))
+            .ToArray();
+
+        forbiddenOperations.Should().BeEmpty();
     }
 
     [Fact]
