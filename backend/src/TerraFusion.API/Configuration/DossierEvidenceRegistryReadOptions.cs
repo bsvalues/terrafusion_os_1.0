@@ -24,6 +24,9 @@ public sealed class DossierEvidenceRegistryReadOptions
         "contract-compat/dossier.evidence-registry-read.v1/manifest.json";
     public const string ExpectedSourceManifestSha256 =
         "0c8310e45a02face985fd9d628f16ff26bfac6b078107fa8f96e6f22f1ebcb07";
+    public const string ExpectedPublishedManifestSha256 =
+        "a093ebf132709bdf0cb434a5acffb7c60a749008e24abab96e828f0dd2c7bea4";
+    public const int ExpectedPublishedManifestLength = 1246;
     public const string ExpectedContractSourceSha = "cfcd460d6387c7dc5aefbc83a389e74333cf0201";
     public const string ExpectedSourceDtoSha256 =
         "414fd158cd7a0f1e483ab44a83b93a64e4180300561f53088830583220566b7f";
@@ -31,8 +34,12 @@ public sealed class DossierEvidenceRegistryReadOptions
     public const string ArtifactSlotRelativePath =
         ".terrafusion/runtime/dossier/evidence-registry-read";
 
-    // Staging is deliberately inert. A successor Work Order must implement and adopt a runtime.
+    // Staging alone must not activate the runtime; selection remains explicit and fail closed.
     public DossierEvidenceRegistryReadMode Mode { get; set; } = DossierEvidenceRegistryReadMode.Disabled;
+    public string NodeExecutablePath { get; internal set; } = string.Empty;
+    public string ModulePath { get; internal set; } = string.Empty;
+    public string SchemaPath { get; internal set; } = string.Empty;
+    public int TimeoutSeconds { get; set; } = 30;
 }
 
 public enum DossierEvidenceRegistryReadMode
