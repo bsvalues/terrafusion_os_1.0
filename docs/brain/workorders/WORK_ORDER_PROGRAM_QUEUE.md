@@ -14,10 +14,17 @@
 ## Active Washington Assessor Launch V1 Goal
 
 Washington Assessor Launch V1 is active under Issue #1485 and
-`OWNER-WAL-V1-MISSION-AUTHORITY-20260827`. `WO-WAL-000` becomes complete when PR #1486 merges
-through protected main. That protected merge clears `WO-WAL-001`, `WO-WAL-002`, and `WO-WAL-003`
-for isolated parallel execution. `WO-WAL-004` may join the initial wave only through exact bounded
-children whose path, contract, and environment reservations do not collide with 001-003.
+`OWNER-WAL-V1-MISSION-AUTHORITY-20260827`. `WO-WAL-000` completed through protected main in PR
+#1486. The initial executable set is the exact, non-colliding child wave `WO-WAL-001A`,
+`WO-WAL-002A`, `WO-WAL-003A`, and `WO-WAL-004A`; each depends on the completed mission root and
+retains its broad open parent as its association and continuation target. The broad parents are not
+complete or directly dispatched by this routing.
+
+The child reservations are deliberately local and deterministic: 001A owns only
+`wal.public-baseline-ledger.v1` in OS temporary storage with no network/database; 002A owns only
+`wal.county-upload.csv-parser.v1` over in-memory streams; 003A owns only `wal.source-profile.v1` and
+`wal.external-readonly.v1` over mock sources; and 004A owns only `wal.county-identity.v1` and
+`wal.county-authority.v1` over synthetic in-memory county/claim state.
 
 The program continues through 39-county runtime truth, governed county upload, read-only
 multi-county Sync, county identity/isolation/trust, the real Counties HUB, county-aware TerraForge,
@@ -148,10 +155,14 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | WO | State | Notes |
 | --- | --- | --- |
 | **WO-WAL-000 Mission Activation** | **COMPLETE ON PROTECTED MERGE / PR #1486** | Canonize Issue #1485, register the finite mission, validate governance, and clear the initial construction wave |
-| **WO-WAL-001 Statewide Public Baseline Runtime Completion** | **READY AFTER 000 MERGE / R4** | Prove truthful source-to-rows-to-runtime state for all 39 counties with provenance, freshness, capability truth, and no Benton fallback |
-| **WO-WAL-002 Governed County Upload Intake** | **READY AFTER 000 MERGE / R5** | Implement authenticated county-bound upload, validation, quarantine, lineage, idempotency, atomic promotion, and rollback in TerraFusion storage only |
-| **WO-WAL-003 Read-Only Multi-County TerraFusion Sync** | **READY AFTER 000 MERGE / R5** | Parameterize explicit county/source profiles and prove external read-only behavior, checkpoints, lineage, drift handling, and zero external DML |
-| **WO-WAL-004 County Identity, Isolation, Trust and Activation Boundary** | **BOUNDED CHILDREN READY AFTER 000 MERGE / R5** | Admit only exact reservation-safe portions alongside 001-003; derive authority from authenticated context and prove cross-county denial and no default Benton behavior |
+| **WO-WAL-001 Statewide Public Baseline Runtime Completion** | **OPEN; EXACT CHILD ROUTING / R4** | Parent remains open; prove truthful source-to-rows-to-runtime state for all 39 counties with provenance, freshness, capability truth, and no Benton fallback |
+| **WO-WAL-001A Public Baseline Ledger Contract** | **READY / R2** | Three exact files; deterministic 39-county registry-only ledger under `wal.public-baseline-ledger.v1`; local temp only, no network/database and no runtime inference |
+| **WO-WAL-002 Governed County Upload Intake** | **OPEN; EXACT CHILD ROUTING / R5** | Parent remains open; authenticated county-bound upload, validation, quarantine, lineage, idempotency, atomic promotion, and rollback are not completed by its parser child |
+| **WO-WAL-002A Streaming CSV Parser Harness** | **READY / R2** | Three exact files; bounded strict UTF-8 in-memory parser under `wal.county-upload.csv-parser.v1`; no upload/auth/persistence behavior |
+| **WO-WAL-003 Read-Only Multi-County TerraFusion Sync** | **OPEN; EXACT CHILD ROUTING / R5** | Parent remains open; real source profiles, checkpoints, lineage, drift handling and observed zero external DML require later exact children |
+| **WO-WAL-003A Read-Only Source Adapter Contract** | **READY / R3** | Four exact files; mock-only `wal.source-profile.v1` and `wal.external-readonly.v1`; no live source or observed no-DML claim |
+| **WO-WAL-004 County Identity, Isolation, Trust and Activation Boundary** | **OPEN; EXACT CHILD ROUTING / R5** | Parent remains open; only the canonical identity/claim-authority foundation is admitted, not trust/activation or cross-surface integration |
+| **WO-WAL-004A Canonical Washington County Authority Contract** | **READY / R5** | Six exact files; `wal.county-identity.v1` and `wal.county-authority.v1` over synthetic in-memory rows/claims with no default county |
 | **WO-WAL-005 Real 39-County Counties HUB** | **BLOCKED ON STABLE 001-004 CONTRACTS / R4** | Build `/counties` from real control-plane truth for PUBLIC, COUNTY_PROVIDED, CONNECTED, provenance, freshness and capability state |
 | **WO-WAL-006 TerraForge Statewide Launch Runtime** | **BLOCKED ON STABLE 001-004 CONTRACTS / R4** | Run county-aware supported workflows, disclose trust/source state, and withhold unsupported modules without silent fallback |
 | **WO-WAL-007 39-County End-to-End Launch Proof** | **BLOCKED ON 001-006 / R4** | Accept one exact candidate through all-county API/browser coverage, representative source-family journeys, rollback and adversarial isolation proof |

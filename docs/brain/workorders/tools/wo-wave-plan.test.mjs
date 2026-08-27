@@ -541,11 +541,29 @@ describe('wo-wave-plan', () => {
       now: '2026-07-17T12:00:00Z',
       ownerDecisions: { decisions: [decision] },
     };
+    const walContracts = [
+      {
+        id: 'WO-WAL-002-CSV-CONTRACT',
+        kind: 'contract',
+        value: 'wal.county-upload.csv-parser.v1',
+        scope: 'exact',
+        status: 'active',
+      },
+      {
+        id: 'WO-WAL-002-SQL-CONTRACT',
+        kind: 'contract',
+        value: 'wal.sql-source-profile.v1',
+        scope: 'exact',
+        status: 'active',
+      },
+    ];
+    const admitted = optionsFor([mission, child], baseOptions);
+    admitted.reservations.candidateReservations[child.id].push(...walContracts);
 
     const plan = planWaves(
       registry([mission, child]),
       rules,
-      optionsFor([mission, child], baseOptions)
+      admitted
     );
     assert.deepEqual(plan.initialExecutableSet, [child.id]);
     assert.deepEqual(plan.excludedWorkOrders, [
@@ -556,6 +574,12 @@ describe('wo-wave-plan', () => {
       },
     ]);
     assert.match(plan.waves[0].workOrders[0].explanation, new RegExp(decision.id));
+    assert.deepEqual(
+      plan.waves[0].workOrders[0].reservations
+        .filter(reservation => reservation.kind === 'contract')
+        .map(reservation => reservation.value),
+      ['wal.county-upload.csv-parser.v1', 'wal.sql-source-profile.v1']
+    );
 
     const noAuthority = optionsFor([mission, child], {
       authority: 'R5',
@@ -569,20 +593,27 @@ describe('wo-wave-plan', () => {
       /missing-protected-path-authority/
     );
 
-    const deniedEnvironment = optionsFor([mission, child], baseOptions);
-    deniedEnvironment.reservations.candidateReservations[child.id].push({
-      id: 'WO-WAL-002-PRODUCTION',
-      kind: 'environment',
-      value: 'production',
-      scope: 'exact',
-      status: 'active',
-    });
-    assert.match(
-      planWaves(registry([mission, child]), rules, deniedEnvironment).excludedWorkOrders.find(
-        item => item.workOrderId === child.id
-      ).reasons[0],
-      /protected-resource-reservation:environment:production/
-    );
+    for (const environment of [
+      'production',
+      'live-county-db',
+      'county-sql-credential',
+      'secret-store',
+    ]) {
+      const deniedEnvironment = optionsFor([mission, child], baseOptions);
+      deniedEnvironment.reservations.candidateReservations[child.id].push(...walContracts, {
+        id: `WO-WAL-002-${environment}`,
+        kind: 'environment',
+        value: environment,
+        scope: 'exact',
+        status: 'active',
+      });
+      assert.match(
+        planWaves(registry([mission, child]), rules, deniedEnvironment).excludedWorkOrders.find(
+          item => item.workOrderId === child.id
+        ).reasons[0],
+        new RegExp(`protected-resource-reservation:environment:${environment}`)
+      );
+    }
   });
 
   it('fails closed when mission-child identity or ancestry is not exact', () => {

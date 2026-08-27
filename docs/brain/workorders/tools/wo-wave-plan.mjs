@@ -235,7 +235,7 @@ function protectedReservationReason(reservation) {
   ) {
     return `protected-path-reservation:${reservation.value}`;
   }
-  if (reservation.kind !== 'path' && PROTECTED_RESOURCE.test(reservation.value)) {
+  if (reservation.kind === 'environment' && PROTECTED_RESOURCE.test(reservation.value)) {
     return `protected-resource-reservation:${reservation.kind}:${reservation.value}`;
   }
   return null;
