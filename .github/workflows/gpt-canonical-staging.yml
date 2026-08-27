@@ -1,0 +1,26 @@
+name: Gpt Canonical Staging Guards
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  staging-offline-guards:
+    name: gpt-staging-offline-guards
+    runs-on: windows-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout sovereign source
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Prove parser and fail-closed guards without sibling-repository credentials
+        shell: pwsh
+        run: |
+          $runnerWorkRoot = Split-Path -Parent (Split-Path -Parent $env:GITHUB_WORKSPACE)
+          $proofRoot = Join-Path $runnerWorkRoot "tf-gpt-staging-$env:GITHUB_RUN_ID-$env:GITHUB_RUN_ATTEMPT"
+          ./tests/gpt-staging-identity.ps1 -ProofRootBase $proofRoot -OfflineGuardsOnly
