@@ -1625,9 +1625,9 @@ public class DaisController : ControllerBase
   /// </summary>
   [HttpPost("appeals/{appealId}/hearings")]
   [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status501NotImplemented)]
-  public Task<IActionResult> ScheduleBoeHearing(string appealId, [FromBody] ScheduleHearingRequest request)
+  public System.Threading.Tasks.Task<IActionResult> ScheduleBoeHearing(string appealId, [FromBody] ScheduleHearingRequest request)
   {
-    return Task.FromResult(CanonicalDaisCapabilityUnavailable("BOE hearing scheduling"));
+    return System.Threading.Tasks.Task.FromResult(CanonicalDaisCapabilityUnavailable("BOE hearing scheduling"));
   }
 
   /// <summary>
