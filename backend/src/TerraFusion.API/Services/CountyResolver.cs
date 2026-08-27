@@ -50,12 +50,38 @@ public class CountyResolver : ICountyResolver
 
         // Precedence 2: a canonical Washington key, slug, name, FIPS or alias
         // may resolve only when exactly one internally consistent persisted row
-        // represents that canonical identity.
-        if (WashingtonCountyRegistry.TryResolve(input, out var county)
+        // represents that canonical identity. Preserve the established slug
+        // compatibility path while validating it through the canonical registry.
+        var canonicalInput = TryGetCountyNameFromSlug(input) ?? input;
+        if (WashingtonCountyRegistry.TryResolve(canonicalInput, out var county)
             && lookup.CanonicalKeyToId.TryGetValue(county.Key, out var canonicalId))
             return canonicalId;
 
         return null;
+    }
+
+    private static string? TryGetCountyNameFromSlug(string input)
+    {
+        var parts = input.Split(
+            '-',
+            StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        if (parts.Length < 2)
+        {
+            return null;
+        }
+
+        var hasWashingtonPrefix =
+            string.Equals(parts[0], "wa", StringComparison.OrdinalIgnoreCase);
+        var hasWashingtonSuffix =
+            string.Equals(parts[^1], "wa", StringComparison.OrdinalIgnoreCase);
+        if (!hasWashingtonPrefix && !hasWashingtonSuffix)
+        {
+            return null;
+        }
+
+        return WashingtonCountyRegistry.TryResolve(input, out var county)
+            ? county.Name
+            : null;
     }
 
     private async Task<CountyLookup> GetLookupAsync(CancellationToken ct)
