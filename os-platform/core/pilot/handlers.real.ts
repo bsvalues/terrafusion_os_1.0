@@ -1788,37 +1788,6 @@ export const fileAppealRealHandler: ToolHandler<
 };
 
 // ============================================================================
-// R2.9 — Handler 30: schedule_boe_hearing
-// Write-high. Schedules a BOE hearing with panel assignment.
-// Endpoint: POST /api/dais/appeals/{appealId}/hearings
-// ============================================================================
-
-export const scheduleBoeHearingRealHandler: ToolHandler<
-  { county: string; appealId: string; requestedDate: string; panelMembers?: string[] },
-  { hearingId: string; appealId: string; scheduledDate: string; panelSize: number; payloadRef: string }
-> = async (params, context, _tool) => {
-  assertCountyMatch(params.county, context.countyId);
-
-  const { token } = await acquirePilotToken();
-  const raw = await backendPost<{
-    hearingId?: string; scheduledDate?: string; panelSize?: number;
-  }>(`/api/dais/appeals/${encodeURIComponent(params.appealId)}/hearings`, {
-    requestedDate: params.requestedDate,
-    panelMembers: params.panelMembers ?? [],
-    countyId: context.countyId,
-  }, { token });
-  const data = unwrapBackend(raw, 'BOE hearing scheduling failed');
-
-  return {
-    hearingId: data.hearingId ?? `HRG-${Date.now()}`,
-    appealId: params.appealId,
-    scheduledDate: data.scheduledDate ?? params.requestedDate,
-    panelSize: data.panelSize ?? (params.panelMembers?.length ?? 3),
-    payloadRef: `dais://${context.countyId}/appeals/${params.appealId}/hearings/${data.hearingId ?? 'latest'}`,
-  };
-};
-
-// ============================================================================
 // R2.9 — Handler 31: get_certification_progress
 // Read-only. Gets assessment roll certification progress with checklist.
 // Endpoint: GET /api/dais/certification/{county}/{taxYear}/progress
@@ -2587,11 +2556,10 @@ export function registerR1Handlers(
   runner.registerHandler('run_income_valuation', runIncomeValuationRealHandler);
   runner.registerHandler('calculate_depreciation', calculateDepreciationRealHandler);
 
-  // R2.9 TerraDais Hardening handlers (9)
+  // R2.9 TerraDais Hardening handlers (8)
   runner.registerHandler('check_exemption_eligibility', checkExemptionEligibilityRealHandler);
   runner.registerHandler('process_exemption_renewal', processExemptionRenewalRealHandler);
   runner.registerHandler('file_appeal', fileAppealRealHandler);
-  runner.registerHandler('schedule_boe_hearing', scheduleBoeHearingRealHandler);
   runner.registerHandler('get_certification_progress', getCertificationProgressRealHandler);
   runner.registerHandler('sign_off_certification_step', signOffCertificationStepRealHandler);
   runner.registerHandler('queue_notice_for_mailing', queueNoticeForMailingRealHandler);

@@ -426,56 +426,6 @@ describe('PropertyDais', () => {
       });
     });
 
-    it.skip('invokes schedule_boe_hearing and renders the returned hearing schedule details', async () => {
-      const mockResponse = {
-        success: true,
-        correlationId: 'corr-hearing-001',
-        result: {
-          toolId: 'schedule_boe_hearing',
-          output: JSON.stringify({
-            hearingId: 'HEAR-2026-041',
-            appealId: 'APL-2026-041',
-            scheduledDate: '2026-08-14',
-            panelSize: 3,
-            payloadRef: 'payload://hearings/HEAR-2026-041',
-          }),
-        },
-      };
-
-      mockInvokeTool.mockResolvedValue(mockResponse);
-
-  const { container } = render(<TestWrapper parcelId='12345-001' />);
-
-      expect(screen.getByText(/Submit a governed BOE hearing request for this appeal, then review the returned hearing ID, scheduled date, and panel size/i)).toBeInTheDocument();
-      expect(screen.queryByText(/Schedule a Board of Equalization hearing with panel assignment/i)).not.toBeInTheDocument();
-      expect(screen.queryByRole('button', { name: /Schedule Hearing/i })).not.toBeInTheDocument();
-
-      fireEvent.change(screen.getByPlaceholderText(/^Appeal ID$/i), {
-        target: { value: 'APL-2026-041' },
-      });
-      const hearingDateInput = container.querySelector("input[type='date']");
-      expect(hearingDateInput).not.toBeNull();
-      fireEvent.change(hearingDateInput as HTMLInputElement, {
-        target: { value: '2026-08-14' },
-      });
-      fireEvent.click(screen.getByRole('checkbox', { name: /I confirm this BOE hearing request is ready for submission/i }));
-      fireEvent.click(screen.getByRole('button', { name: /Submit Hearing Request/i }));
-
-      await waitFor(() => {
-        expect(mockInvokeTool).toHaveBeenCalledWith({
-          toolId: 'schedule_boe_hearing',
-          params: { county: 'benton', appealId: 'APL-2026-041', requestedDate: '2026-08-14' },
-          parcelId: '12345-001',
-        });
-      });
-
-      await waitFor(() => {
-        expect(screen.getByText(/Returned hearing ID: HEAR-2026-041/i)).toBeInTheDocument();
-        expect(screen.getByText(/Scheduled date: .*\| Panel: 3 members/i)).toBeInTheDocument();
-        expect(screen.getByText(/Shows the returned hearing ID, scheduled date, and panel size for this hearing request\./i)).toBeInTheDocument();
-      });
-    });
-
     it.skip('invokes summarize_levy_rate_components with request wording and returned-summary disclosure', async () => {
       const currentYear = new Date().getFullYear();
       const mockResponse = {
