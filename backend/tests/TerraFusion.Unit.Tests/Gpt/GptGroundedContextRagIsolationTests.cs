@@ -218,6 +218,10 @@ public sealed class GptGroundedContextRagIsolationTests
         TerraFusionDbContext.OnModelCreatingExtensions = GptAiEntityConfigurations.Apply;
         var options = new DbContextOptionsBuilder<TerraFusionDbContext>()
             .UseInMemoryDatabase($"gpt-grounded-isolation-{Guid.NewGuid():N}")
+            // TerraFusionDbContext's optional AI model hook is not part of EF's default
+            // model-cache key. A full-suite test may have cached the core-only model first,
+            // so these isolation tests require their own internal provider/model.
+            .EnableServiceProviderCaching(false)
             .Options;
         return new TerraFusionDbContext(
             options,
