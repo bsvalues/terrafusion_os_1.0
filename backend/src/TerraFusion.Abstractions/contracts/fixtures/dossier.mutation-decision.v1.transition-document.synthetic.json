@@ -1,0 +1,14 @@
+{
+  "request": {
+    "schemaVersion": "1.0.0", "operation": "transitionDocumentStatus", "commandId": "22222222-2222-4222-8222-222222222203",
+    "countyId": "11111111-1111-4111-8111-111111111111", "parcelId": "P-100", "actorId": "actor-7", "effectiveAt": "2026-08-26T10:02:00Z",
+    "hostAssertions": { "actorAuthorized": true, "countyExists": true, "parcelExists": true, "piiApproved": true },
+    "command": { "documentId": "33333333-3333-4333-8333-333333333302", "expectedVersion": 4, "current": { "documentId": "33333333-3333-4333-8333-333333333302", "countyId": "11111111-1111-4111-8111-111111111111", "parcelId": "P-100", "status": "active", "version": 4, "updatedAt": "2026-08-26T09:00:00Z" }, "requestedStatus": "SEALED", "reason": "Review complete" }
+  },
+  "result": {
+    "schemaVersion": "1.0.0", "operation": "transitionDocumentStatus", "commandId": "22222222-2222-4222-8222-222222222203",
+    "countyId": "11111111-1111-4111-8111-111111111111", "parcelId": "P-100", "decision": "accepted",
+    "mutation": { "version": 5, "documentId": "33333333-3333-4333-8333-333333333302", "status": "sealed", "updatedAt": "2026-08-26T10:02:00Z" },
+    "violations": []
+  }
+}
