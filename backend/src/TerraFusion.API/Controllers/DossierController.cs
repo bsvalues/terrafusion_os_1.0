@@ -1180,8 +1180,8 @@ public class DossierController : ControllerBase
   /// <summary>
   /// Real assessor document types sourced from Benton County operations
   /// and the quarantined terra-flow-production validation schema.
-  /// Each type includes accepted file extensions, retention class, and
-  /// whether the document enters the chain-of-custody on intake.
+  /// Each type includes accepted file extensions and its retention class.
+  /// Mutation and custody classification belongs to the suite-owned decision contract.
   /// </summary>
   [HttpGet("document-types")]
   public IActionResult GetDocumentTypes()
@@ -1464,47 +1464,46 @@ public class DossierController : ControllerBase
     // with real WA county assessor document types
     internal sealed record DocumentTypeEntry(
         string Type, string Label, string Description,
-        string[] AcceptedExtensions, string RetentionClass,
-        bool EntersCustodyChain);
+        string[] AcceptedExtensions, string RetentionClass);
 
     internal static readonly DocumentTypeEntry[] DocumentTypes =
     [
       new("deed", "Deed", "Property ownership transfer document",
-          [".pdf", ".tif", ".tiff"], "permanent", true),
+          [".pdf", ".tif", ".tiff"], "permanent"),
       new("mortgage", "Mortgage / Trust Deed", "Lending instrument recorded against property",
-          [".pdf", ".tif"], "permanent", true),
+          [".pdf", ".tif"], "permanent"),
       new("lien", "Lien", "Financial encumbrance against property",
-          [".pdf", ".tif"], "permanent", true),
+          [".pdf", ".tif"], "permanent"),
       new("easement", "Easement", "Right-of-way or access encumbrance",
-          [".pdf", ".tif"], "permanent", true),
+          [".pdf", ".tif"], "permanent"),
       new("plat", "Plat Map", "Recorded subdivision plat",
-          [".pdf", ".tif", ".tiff", ".dwg"], "permanent", true),
+          [".pdf", ".tif", ".tiff", ".dwg"], "permanent"),
       new("survey", "Boundary Survey", "Licensed surveyor boundary determination",
-          [".pdf", ".tif", ".dwg"], "permanent", true),
+          [".pdf", ".tif", ".dwg"], "permanent"),
       new("tax_record", "Tax Record", "Assessment roll or tax statement entry",
-          [".pdf", ".xls", ".xlsx", ".csv"], "assessment-roll-perm", true),
+          [".pdf", ".xls", ".xlsx", ".csv"], "assessment-roll-perm"),
       new("appeal", "Appeal Petition", "Board of Equalization appeal filing",
-          [".pdf", ".doc", ".docx"], "appeal-10yr", true),
+          [".pdf", ".doc", ".docx"], "appeal-10yr"),
       new("photo", "Property Photograph", "Field inspection imagery",
-          [".jpg", ".jpeg", ".png", ".tif", ".heic"], "life-of-property", false),
+          [".jpg", ".jpeg", ".png", ".tif", ".heic"], "life-of-property"),
       new("appraisal", "Appraisal / Valuation Report", "Cost, sales, or income approach worksheet",
-          [".pdf", ".xls", ".xlsx"], "working-6yr", true),
+          [".pdf", ".xls", ".xlsx"], "working-6yr"),
       new("inspection_report", "Field Inspection Report", "On-site property condition assessment",
-          [".pdf", ".doc", ".docx"], "working-6yr", true),
+          [".pdf", ".doc", ".docx"], "working-6yr"),
       new("comparable_analysis", "Comparable Sales Analysis", "Sales comparison approach documentation",
-          [".pdf", ".xls", ".xlsx"], "working-6yr", true),
+          [".pdf", ".xls", ".xlsx"], "working-6yr"),
       new("income_analysis", "Income Approach Analysis", "Rental income capitalization worksheet",
-          [".pdf", ".xls", ".xlsx"], "working-6yr", true),
+          [".pdf", ".xls", ".xlsx"], "working-6yr"),
       new("exemption", "Exemption Application", "Senior, disabled, nonprofit, or current use exemption",
-          [".pdf", ".doc", ".docx"], "exemption-6yr-post", true),
+          [".pdf", ".doc", ".docx"], "exemption-6yr-post"),
       new("permit", "Building Permit", "Construction or remodel permit documentation",
-          [".pdf", ".doc", ".docx"], "working-6yr", false),
+          [".pdf", ".doc", ".docx"], "working-6yr"),
       new("correspondence", "Correspondence", "Letters, notices, and memos",
-          [".pdf", ".doc", ".docx", ".msg"], "correspondence-6yr", false),
+          [".pdf", ".doc", ".docx", ".msg"], "correspondence-6yr"),
       new("sketch", "Property Sketch", "Floor plan or building layout drawing",
-          [".pdf", ".dwg", ".png", ".jpg"], "life-of-property", false),
+          [".pdf", ".dwg", ".png", ".jpg"], "life-of-property"),
       new("other", "Other Document", "Uncategorized supporting documentation",
-          [".pdf", ".doc", ".docx", ".jpg", ".png", ".tif"], "standard-6yr", false),
+          [".pdf", ".doc", ".docx", ".jpg", ".png", ".tif"], "standard-6yr"),
     ];
 
     // WA Secretary of State Local Government CORE Retention Schedule
