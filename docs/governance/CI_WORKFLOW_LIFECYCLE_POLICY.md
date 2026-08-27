@@ -198,7 +198,7 @@ Reference this policy: `docs/governance/CI_WORKFLOW_LIFECYCLE_POLICY.md`
 - `seal-gate-fast.yml`
 - `tier1-ui-harness.yml`
 
-**PUSH-OPTIONAL** (48):
+**PUSH-OPTIONAL** (49):
 - `accessibility.yml`
 - `accreditation-compat.yml`
 - `ai-swarm-safety.yml`
@@ -220,6 +220,7 @@ Reference this policy: `docs/governance/CI_WORKFLOW_LIFECYCLE_POLICY.md`
 - `cockpit-drift-guard.yml`
 - `county-kit-parity.yml`
 - `dais-canonical-staging.yml`
+- `dossier-canonical-staging.yml`
 - `deps-fast-lane.yml`
 - `designctl.yml`
 - `frontend-build-guarded.yml`

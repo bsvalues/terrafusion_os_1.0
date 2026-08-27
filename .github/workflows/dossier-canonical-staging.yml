@@ -1,0 +1,32 @@
+name: Dossier Canonical Staging Guards
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/dossier-canonical-staging.yml'
+      - '.gitignore'
+      - 'backend/src/TerraFusion.API/Configuration/DossierEvidenceRegistryReadOptions.cs'
+      - 'scripts/bootstrap/Stage-DossierEvidenceRegistryReadModule.ps1'
+      - 'tests/dossier-staging-identity.ps1'
+
+permissions:
+  contents: read
+
+jobs:
+  staging-offline-guards:
+    name: dossier-staging-offline-guards
+    runs-on: windows-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout sovereign source
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Prove parser and fail-closed guards without sibling-repository credentials
+        shell: pwsh
+        run: ./tests/dossier-staging-identity.ps1 -OfflineGuardsOnly
