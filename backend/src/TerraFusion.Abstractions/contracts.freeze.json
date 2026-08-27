@@ -25,7 +25,7 @@
     {
       "id": "TerraFusion.Contracts.Dais",
       "status": "planned_not_published",
-      "groups": ["dais.appeal-workflow"]
+      "groups": ["dais.appeal-workflow", "dais.appeal-mutation"]
     },
     {
       "id": "TerraFusion.Contracts.Dossier",
@@ -173,6 +173,74 @@
         {
           "path": "contracts/fixtures/dais.appeal-workflow.v1.selector-mismatch.synthetic.json",
           "sha256": "99828201845dfceccb2ed2392d6ae4f1927918ac78ca652d2cc9a83d9789e8cc"
+        }
+      ]
+    },
+    {
+      "group": "dais.appeal-mutation",
+      "version": "1.0.0",
+      "class": "SUITE",
+      "consumers": ["dais"],
+      "files": [
+        {
+          "path": "DTOs/DaisAppealMutationDto.cs",
+          "sha256": "3c32db475a04cd08dd380b13cfeb9cdd6f793445f67981a009992845727cf843"
+        },
+        {
+          "path": "contracts/dais.appeal-mutation.v1.schema.json",
+          "sha256": "db8f1c93a598da7f9c454d5a43c275b849f2de8fc036e9be28c5c1da44432ce2"
+        },
+        {
+          "path": "contracts/fixtures/dais.appeal-mutation.v1.county-mismatch.synthetic.json",
+          "sha256": "1ba7d127a26dd8ba5931ae2f35f264932b4194b6cdeee423e3cdbccdf7608a3d"
+        },
+        {
+          "path": "contracts/fixtures/dais.appeal-mutation.v1.create-defaults.synthetic.json",
+          "sha256": "6f18b708f2a2890f5733f6755d821ecc0f925c9c6b2ddb76a3c860054f144196"
+        },
+        {
+          "path": "contracts/fixtures/dais.appeal-mutation.v1.cross-lane-fields.synthetic.json",
+          "sha256": "fe81a0abb76759d91ab734bd8292f1d139aaea12f14e2764d298610fd48941c7"
+        },
+        {
+          "path": "contracts/fixtures/dais.appeal-mutation.v1.filed-to-heard.synthetic.json",
+          "sha256": "3bbf197ab62da89bade6fc91f90cccbb27f86ab942336d1e3d84ecfe0ca2ae29"
+        },
+        {
+          "path": "contracts/fixtures/dais.appeal-mutation.v1.heard-to-decided.synthetic.json",
+          "sha256": "e1c4efd476807e26a20408b53785da3cab4ee89f9f4988dd9f1c3b6ed72dabec"
+        },
+        {
+          "path": "contracts/fixtures/dais.appeal-mutation.v1.invalid-ground.synthetic.json",
+          "sha256": "51a2a552d1b1cbe54cdbfbbbfb197a99025e86ba8c128a3f1ebdaa155b6a833f"
+        },
+        {
+          "path": "contracts/fixtures/dais.appeal-mutation.v1.invalid-calendar.synthetic.json",
+          "sha256": "d17988c8d76f6a986eae41a4add9fde4d05779cda0e24068aecea95749a9821b"
+        },
+        {
+          "path": "contracts/fixtures/dais.appeal-mutation.v1.invalid-current-shape.synthetic.json",
+          "sha256": "805a77fe35fc55e18e774068a1f23bc6d4508afade19ef06e8a9e202cb76681c"
+        },
+        {
+          "path": "contracts/fixtures/dais.appeal-mutation.v1.invalid-decided-value-shape.synthetic.json",
+          "sha256": "ee33417dd889e9881299aacc6380439d3b3941007ba0ac747443d4f96fae4008"
+        },
+        {
+          "path": "contracts/fixtures/dais.appeal-mutation.v1.invalid-lifecycle.synthetic.json",
+          "sha256": "1a976a0972152b53d5614672425a4a8cdcf7e2b36e002693c17df172637c4082"
+        },
+        {
+          "path": "contracts/fixtures/dais.appeal-mutation.v1.invalid-status.synthetic.json",
+          "sha256": "1e5748583475a3dabcf4abcab5b8cd21f470424f39c660cc3ba633663a36c716"
+        },
+        {
+          "path": "contracts/fixtures/dais.appeal-mutation.v1.invalid-tax-year.synthetic.json",
+          "sha256": "f7ccdd46278b079f30472efc75f3bd4fe18a02e96e426eab0e8c66071a954892"
+        },
+        {
+          "path": "contracts/fixtures/dais.appeal-mutation.v1.invalid-transition.synthetic.json",
+          "sha256": "c7ef0127fc766241862e34ea16a41caf81c406d1ebd0454b3612d31d039cefe0"
         }
       ]
     },

@@ -1,0 +1,23 @@
+{
+  "request": {
+    "schemaVersion": "1.0.0",
+    "operation": "create",
+    "commandId": "010c0001-0000-4000-8000-000000000016",
+    "countyId": "010c0000-0000-4000-8000-000000000001",
+    "effectiveAt": "2026-08-26T20:00:00Z",
+    "command": {
+      "ground": "MARKET_VALUE",
+      "taxYear": 2026,
+      "petitionerName": "must-not-cross",
+      "requestedValue": 1
+    }
+  },
+  "result": {
+    "schemaVersion": "1.0.0",
+    "operation": "create",
+    "commandId": "010c0001-0000-4000-8000-000000000016",
+    "countyId": "010c0000-0000-4000-8000-000000000001",
+    "decision": "rejected",
+    "violations": [{ "code": "INVALID_LIFECYCLE", "message": "cross-lane fields are forbidden" }]
+  }
+}
