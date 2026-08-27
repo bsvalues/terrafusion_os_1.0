@@ -8,6 +8,7 @@
 
 | Surface | Identity |
 | --- | --- |
+| Integrated sovereign base | `aec4f1e18b619730842c828e4f1c93ecd18d64b2` |
 | GPT protected merge | `bsvalues/terrafusion-gpt@550b50f27af6f0911f16c973cbb6fc57a20eb15a` |
 | Protected source ref | `refs/heads/main`; pinned merge must be reachable from fetched `origin/main` |
 | Execution manifest | 1618 bytes; blob `7a9ca7bf114f34f2562102efa8817fd37506b614`; SHA-256 `6d04e14674e4e91a1a5d12ba12f53684cbad0bcec17e4e53ec01d8287618794b` |

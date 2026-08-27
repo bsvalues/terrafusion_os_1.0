@@ -13,7 +13,7 @@
 
 ## Active Goal
 
-The Five-Suite Federated Repository Buildout is active under `OWNER-FIVE-SUITE-FEDERATED-COMPLETION-20260826`. Atlas runtime and ownership are complete. Dais is terminal on protected merge `f14fc4999f650ed4bbff2633813be6b57ec4bfbc`: exact read and mutation runtimes are adopted, unsupported backend/frontend behavior is truthfully retired, and rollback/restoration are proven. `WO-SR-011A` is staging the exact Dossier-owned evidence-registry read artifact with provenance and observed whole-slot rollback; `WO-SR-011B` follows with persistent exact read runtime adoption, then ownership truth and terminalization, then GPT. The mission hard walls remain binding.
+The Five-Suite Federated Repository Buildout is active under `OWNER-FIVE-SUITE-FEDERATED-COMPLETION-20260826`. Atlas runtime and ownership are complete, and Dais is terminal on protected merge `f14fc4999f650ed4bbff2633813be6b57ec4bfbc`. Dossier exact staging completed in protected merge `aec4f1e18b619730842c828e4f1c93ecd18d64b2`; `WO-SR-011B` now owns persistent exact read runtime adoption, followed by ownership truth and terminalization. GPT portability/provenance completed in suite protected merge `550b50f27af6f0911f16c973cbb6fc57a20eb15a`. `WO-SR-012B` may prepare and open its inert staging PR, but its merge remains gated behind the protected `WO-SR-011B` runtime merge. The mission hard walls remain binding.
 
 The prior `WO-SR-009C` completed before this activation. PR #1424 merged exact assured head
 `e70548cb4938da92b2c0b254d71c5361aa10a6ed` as
@@ -194,7 +194,9 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | **WO-SR-010F Dais Truthful Sovereign Retirement** | **DONE / R3 / PR #1469** | Protected merge `acf4abc59`; four unsupported or fabricated sovereign routes now fail truthfully with no semantic success, service/audit call, or mutation |
 | **WO-SR-010H Dais Frontend Availability Retirement** | **DONE / R3 / PR #1473** | Protected merge `6291e58b1`; unsupported BOE scheduling CTA, handler, and capability exposure removed while read-only hearing surfaces remain |
 | **WO-SR-010G Dais Persistent Exact Mutation Runtime Adoption** | **DONE / R4 / PR #1471** | Protected merge `f14fc4999`; exact Dais mutation runtime, concurrency, tamper, recovery custody, Disabled rollback, restoration, and truthful OS persistence/orchestration boundary proven |
-| **WO-SR-011A Dossier Canonical Artifact Staging** | **ACTIVE / R3** | Exact protected Dossier Git blobs, generated provenance, exact inventory, production refusal, backup-content/hash proof, and observed whole-slot rollback; runtime remains Disabled |
+| **WO-SR-011A Dossier Canonical Artifact Staging** | **DONE / R3 / PR #1474** | Protected merge `aec4f1e18`; exact protected Dossier Git blobs, generated provenance, exact inventory, production refusal, backup-content/hash proof, and observed whole-slot rollback; runtime remains Disabled |
+| **WO-SR-012A GPT Portability and Provenance** | **DONE / R3 / GPT PR #5** | Protected GPT merge `550b50f27`; exact LF-stable execution manifest pins module/schema/source-manifest blob, length, and SHA identities |
+| **WO-SR-012B GPT Canonical Artifact Staging** | **ACTIVE / R3 / MERGE-GATED** | Exact inert GPT staging and rollback proof may publish for CI; merge only after protected WO-SR-011B runtime merge, then integrate that main and rerun proof |
 
 ### portfolio-operator (`GOAL-PORTFOLIO-OPERATOR-001` / `LOOP-PORTFOLIO-OPERATOR-001`)
 | WO | State | Notes |

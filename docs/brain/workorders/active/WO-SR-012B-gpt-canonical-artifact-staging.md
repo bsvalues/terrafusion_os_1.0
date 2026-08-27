@@ -7,7 +7,7 @@
 | Goal | `GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES` |
 | Risk | R3 bounded non-production local artifact staging |
 | Authority | `OWNER-FIVE-SUITE-FEDERATED-COMPLETION-20260826` |
-| Sovereign base | `f14fc4999f650ed4bbff2633813be6b57ec4bfbc` (must update through newer protected main before PR) |
+| Integrated sovereign base | `aec4f1e18b619730842c828e4f1c93ecd18d64b2` |
 | GPT protected source | `bsvalues/terrafusion-gpt@550b50f27af6f0911f16c973cbb6fc57a20eb15a` |
 | Execution manifest | 1618 bytes; Git blob `7a9ca7bf114f34f2562102efa8817fd37506b614`; SHA-256 `6d04e14674e4e91a1a5d12ba12f53684cbad0bcec17e4e53ec01d8287618794b` |
 | Module | 8578 bytes; Git blob `d81a8135caea1685ce02efd5acfdf1f9dfdd930a`; SHA-256 `cd2c6111ab0843d321bea8da5eff77cee89eaa1c721d93489d1985c6820f1beb` |
@@ -32,6 +32,9 @@ also byte pinned. The slot remains inert and reports `runtimeAdopted=false`.
 5. `tests/gpt-staging-identity.ps1`
 6. this Work Order and its evidence record
 7. Five-Suite program routing and canonical workflow inventory
+
+The protected merge remains ordered behind `WO-SR-011B`: after that runtime child merges, this
+branch must integrate its exact protected-main SHA and rerun both proof tiers before merge.
 
 ## Required proof
 
