@@ -2,15 +2,6 @@ name: Dossier Canonical Staging Guards
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - main
-    paths:
-      - '.github/workflows/dossier-canonical-staging.yml'
-      - '.gitignore'
-      - 'backend/src/TerraFusion.API/Configuration/DossierEvidenceRegistryReadOptions.cs'
-      - 'scripts/bootstrap/Stage-DossierEvidenceRegistryReadModule.ps1'
-      - 'tests/dossier-staging-identity.ps1'
 
 permissions:
   contents: read
