@@ -44,4 +44,6 @@ A subsequent required-conversation finding exposed a second fail-open case: shap
 calendar-impossible UTC timestamps could pass the schema regex and `Date.parse` ordering. The
 contract proof now parses actual UTC calendar instants (including only known leap seconds) and adds
 `invalid-calendar.synthetic.json`, which requires typed `INVALID_LIFECYCLE`. The repaired freeze is
-7 groups / 67 frozen files; exact-head and protected-main reruns supersede the 66-file observation.
+7 groups / 67 frozen files. A detached exact-commit checkout of `a29f7a685` was mechanically
+rematerialized from canonical Git blobs; the complete freeze verifier passed and the complete Node
+suite passed 23/23. Protected-main verification remains the final identity observation.
