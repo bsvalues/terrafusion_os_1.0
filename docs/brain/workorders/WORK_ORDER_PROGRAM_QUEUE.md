@@ -13,7 +13,7 @@
 
 ## Active Goal
 
-The Five-Suite Federated Repository Buildout is active under `OWNER-FIVE-SUITE-FEDERATED-COMPLETION-20260826`. Atlas runtime and ownership are complete. Dais is terminal on protected merge `f14fc4999f650ed4bbff2633813be6b57ec4bfbc`: exact read and mutation runtimes are adopted, unsupported backend/frontend behavior is truthfully retired, and rollback/restoration are proven. `WO-SR-011A` is staging the exact Dossier-owned evidence-registry read artifact with provenance and observed whole-slot rollback; `WO-SR-011B` follows with persistent exact read runtime adoption, then ownership truth and terminalization, then GPT. The mission hard walls remain binding.
+The Five-Suite Federated Repository Buildout is active under `OWNER-FIVE-SUITE-FEDERATED-COMPLETION-20260826`. Atlas runtime and ownership are complete. Dais is terminal on protected merge `f14fc4999f650ed4bbff2633813be6b57ec4bfbc`: exact read and mutation runtimes are adopted, unsupported backend/frontend behavior is truthfully retired, and rollback/restoration are proven. `WO-SR-011A` staged the exact Dossier-owned evidence-registry read artifact in protected merge `aec4f1e18b619730842c828e4f1c93ecd18d64b2`. `WO-SR-011B` follows with persistent exact read runtime adoption. `WO-SR-011D` freezes the provider-neutral mutation-decision boundary for later runtime adoption without performing mutation. Dossier ownership truth and terminalization follow, then GPT. The mission hard walls remain binding.
 
 The prior `WO-SR-009C` completed before this activation. PR #1424 merged exact assured head
 `e70548cb4938da92b2c0b254d71c5361aa10a6ed` as

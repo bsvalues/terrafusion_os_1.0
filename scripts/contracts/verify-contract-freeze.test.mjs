@@ -24,6 +24,10 @@ const dossierSchemaPath = path.join(
   atlasContractRoot,
   'dossier.evidence-registry-read.v1.schema.json'
 );
+const dossierMutationSchemaPath = path.join(
+  atlasContractRoot,
+  'dossier.mutation-decision.v1.schema.json'
+);
 const gptSchemaPath = path.join(atlasContractRoot, 'gpt.grounded-context.v1.schema.json');
 
 function atlasFixture(name) {
@@ -57,6 +61,15 @@ function dossierFixture(name) {
   return JSON.parse(
     fs.readFileSync(
       path.join(atlasFixtureRoot, `dossier.evidence-registry-read.v1.${name}.synthetic.json`),
+      'utf8'
+    )
+  );
+}
+
+function dossierMutationFixture(name) {
+  return JSON.parse(
+    fs.readFileSync(
+      path.join(atlasFixtureRoot, `dossier.mutation-decision.v1.${name}.synthetic.json`),
       'utf8'
     )
   );
@@ -330,6 +343,242 @@ function validateDossierSemantics(exchange) {
   return errors;
 }
 
+const dossierDocumentTransitions = new Map([
+  ['active', new Set(['sealed', 'archived'])],
+  ['sealed', new Set(['archived'])],
+  ['archived', new Set()],
+]);
+const dossierCustodyActions = new Set([
+  'verified', 'transferred', 'sealed', 'disputed', 'hash-verified', 'reviewed',
+]);
+const dossierCustodyDocumentTypes = new Set([
+  'deed', 'mortgage', 'lien', 'easement', 'plat', 'survey', 'tax_record', 'appeal',
+  'appraisal', 'inspection_report', 'comparable_analysis', 'income_analysis', 'exemption',
+]);
+
+function dossierDecisionIdentity(request, decision, violations, mutation) {
+  const result = {
+    schemaVersion: request.schemaVersion,
+    operation: request.operation,
+    commandId: request.commandId,
+    countyId: request.countyId,
+    parcelId: request.parcelId,
+  };
+  if (request.traceId !== undefined) result.traceId = request.traceId;
+  result.decision = decision;
+  if (mutation !== undefined) result.mutation = mutation;
+  result.violations = violations;
+  return result;
+}
+
+function rejectDossierMutation(request, code, message) {
+  return dossierDecisionIdentity(request, 'rejected', [{ code, message }]);
+}
+
+function acceptDossierMutation(request, mutation) {
+  return dossierDecisionIdentity(request, 'accepted', [], mutation);
+}
+
+function expectedDossierMutationResult(request) {
+  const effectiveAt = parseMutationUtcTimestamp(request.effectiveAt);
+  if (!effectiveAt) {
+    return rejectDossierMutation(request, 'INVALID_INPUT', 'effectiveAt must be a valid RFC 3339 UTC instant');
+  }
+  const assertions = request.hostAssertions ?? {};
+  if (!assertions.actorAuthorized || !assertions.countyExists || !assertions.parcelExists || !assertions.piiApproved) {
+    return rejectDossierMutation(request, 'HOST_ASSERTION_FAILED', 'all sovereign host assertions must be true');
+  }
+  const command = request.command ?? {};
+  const createOperations = new Set(['createNote', 'registerDocument', 'registerEvidence', 'createPacket']);
+  if (createOperations.has(request.operation) && command.expectedVersion !== 0) {
+    return rejectDossierMutation(request, 'VERSION_CONFLICT', 'create operations require expectedVersion zero');
+  }
+
+  if (request.operation === 'createNote') {
+    if (typeof command.content !== 'string' || command.content.trim().length === 0 || command.content.length > 2000) {
+      return rejectDossierMutation(request, 'INVALID_INPUT', 'content is required and limited to 2000 characters');
+    }
+    const noteType = command.noteType?.trim() || 'case_note';
+    if (noteType.length > 50) return rejectDossierMutation(request, 'INVALID_INPUT', 'noteType is limited to 50 characters');
+    return acceptDossierMutation(request, {
+      version: 1, noteId: command.noteId, content: command.content, noteType,
+      createdBy: request.actorId, createdAt: request.effectiveAt,
+    });
+  }
+
+  if (request.operation === 'registerDocument') {
+    const name = command.name?.trim();
+    const documentType = command.documentType?.trim();
+    const mimeType = command.mimeType?.trim();
+    if (!name || name.length > 200 || !documentType || documentType.length > 50 || !mimeType || mimeType.length > 100 || command.sizeBytes < 0) {
+      return rejectDossierMutation(request, 'INVALID_INPUT', 'document metadata is invalid');
+    }
+    const mutation = {
+      version: 1, documentId: command.documentId, name, documentType, status: 'active', mimeType,
+      sizeBytes: command.sizeBytes, contentHash: command.contentHash,
+    };
+    for (const key of ['description', 'retentionClass', 'storagePath']) {
+      if (command[key] !== undefined) mutation[key] = command[key].trim();
+    }
+    Object.assign(mutation, {
+      entersCustodyChain: dossierCustodyDocumentTypes.has(documentType.toLowerCase()),
+      uploadedBy: request.actorId,
+      uploadedAt: request.effectiveAt,
+    });
+    return acceptDossierMutation(request, mutation);
+  }
+
+  if (request.operation === 'transitionDocumentStatus') {
+    const current = command.current ?? {};
+    if (current.documentId !== command.documentId || current.countyId !== request.countyId || current.parcelId !== request.parcelId) {
+      return rejectDossierMutation(request, 'IDENTITY_MISMATCH', 'current document scope must match the command scope');
+    }
+    if (current.version !== command.expectedVersion) {
+      return rejectDossierMutation(request, 'VERSION_CONFLICT', 'expectedVersion must match current.version');
+    }
+    const currentAt = parseMutationUtcTimestamp(current.updatedAt);
+    if (!currentAt || compareMutationInstants(effectiveAt, currentAt) < 0) {
+      return rejectDossierMutation(request, 'INVALID_CURRENT_STATE', 'effectiveAt must not precede current.updatedAt');
+    }
+    const requestedStatus = command.requestedStatus?.trim().toLowerCase();
+    if (!dossierDocumentTransitions.has(requestedStatus)) {
+      return rejectDossierMutation(request, 'INVALID_STATUS', 'requested status is outside the closed Dossier vocabulary');
+    }
+    if (!dossierDocumentTransitions.has(current.status)) {
+      return rejectDossierMutation(request, 'INVALID_CURRENT_STATE', 'current document status is invalid');
+    }
+    if (!dossierDocumentTransitions.get(current.status).has(requestedStatus)) {
+      return rejectDossierMutation(request, 'INVALID_TRANSITION', `${current.status} cannot transition to ${requestedStatus}`);
+    }
+    return acceptDossierMutation(request, {
+      version: current.version + 1, documentId: command.documentId,
+      status: requestedStatus, updatedAt: request.effectiveAt,
+    });
+  }
+
+  if (request.operation === 'registerEvidence') {
+    const hasDocumentId = command.documentId !== undefined;
+    const hasDocument = command.document !== undefined;
+    if (hasDocumentId !== hasDocument) {
+      return rejectDossierMutation(request, 'INVALID_CURRENT_STATE', 'documentId and document snapshot must be supplied together');
+    }
+    if (hasDocument && (
+      command.document.documentId !== command.documentId ||
+      command.document.countyId !== request.countyId || command.document.parcelId !== request.parcelId
+    )) {
+      return rejectDossierMutation(request, 'IDENTITY_MISMATCH', 'document snapshot must match the evidence scope');
+    }
+    const title = command.title?.trim();
+    const evidenceType = command.evidenceType?.trim();
+    if (!title || title.length > 200 || !evidenceType || evidenceType.length > 50) {
+      return rejectDossierMutation(request, 'INVALID_INPUT', 'evidence metadata is invalid');
+    }
+    const mutation = {
+      version: 1, evidenceId: command.evidenceId, title, evidenceType,
+    };
+    if (hasDocumentId) mutation.documentId = command.documentId;
+    Object.assign(mutation, {
+      integrity: 'pending', createdBy: request.actorId, createdAt: request.effectiveAt,
+      genesisEvent: {
+        eventId: command.genesisEventId, action: 'created', actor: request.actorId,
+        previousEventHash: 'genesis', eventHash: command.genesisHash, timestamp: request.effectiveAt,
+      },
+      chainLength: 1,
+    });
+    return acceptDossierMutation(request, mutation);
+  }
+
+  if (request.operation === 'appendCustodyEvent') {
+    const current = command.current ?? {};
+    if (current.evidenceId !== command.evidenceId || current.countyId !== request.countyId || current.parcelId !== request.parcelId) {
+      return rejectDossierMutation(request, 'IDENTITY_MISMATCH', 'current evidence scope must match the command scope');
+    }
+    if (current.version !== command.expectedVersion) {
+      return rejectDossierMutation(request, 'VERSION_CONFLICT', 'expectedVersion must match current.version');
+    }
+    if (command.previousEventHash !== current.lastEventHash) {
+      return rejectDossierMutation(request, 'HASH_CHAIN_CONFLICT', 'previousEventHash must match the current chain head');
+    }
+    const lastAt = parseMutationUtcTimestamp(current.lastEventAt);
+    if (!lastAt || compareMutationInstants(effectiveAt, lastAt) < 0) {
+      return rejectDossierMutation(request, 'INVALID_CURRENT_STATE', 'effectiveAt must not precede the current chain head');
+    }
+    const action = command.action?.trim().toLowerCase();
+    if (!dossierCustodyActions.has(action)) {
+      return rejectDossierMutation(request, 'INVALID_INPUT', 'custody action is outside the closed Dossier vocabulary');
+    }
+    let integrity = current.integrity;
+    if (action === 'verified' || action === 'hash-verified') integrity = 'verified';
+    else if (action === 'disputed') integrity = 'disputed';
+    const event = {
+      eventId: command.eventId, action, actor: request.actorId,
+    };
+    if (command.notes !== undefined) event.notes = command.notes.trim();
+    Object.assign(event, {
+      previousEventHash: command.previousEventHash, eventHash: command.eventHash,
+      timestamp: request.effectiveAt,
+    });
+    return acceptDossierMutation(request, {
+      version: current.version + 1, evidenceId: command.evidenceId, integrity,
+      event, chainLength: current.chainLength + 1,
+    });
+  }
+
+  if (request.operation === 'createPacket') {
+    const template = command.template ?? {};
+    const packetType = template.packetType?.trim();
+    const templateName = template.name?.trim();
+    const requiredTypes = (template.requiredDocumentTypes ?? []).map(value => value.trim());
+    if (!packetType || !templateName || requiredTypes.some(value => !value)) {
+      return rejectDossierMutation(request, 'INVALID_INPUT', 'packet template is invalid');
+    }
+    const normalized = requiredTypes.map(value => value.toLowerCase());
+    if (new Set(normalized).size !== normalized.length) {
+      return rejectDossierMutation(request, 'DUPLICATE_TEMPLATE_REQUIREMENT', 'required document types must be unique');
+    }
+    const documents = command.currentDocuments ?? [];
+    if (documents.some(document => document.countyId !== request.countyId || document.parcelId !== request.parcelId)) {
+      return rejectDossierMutation(request, 'IDENTITY_MISMATCH', 'every document snapshot must match the packet scope');
+    }
+    if (new Set(documents.map(document => document.documentId)).size !== documents.length) {
+      return rejectDossierMutation(request, 'INVALID_CURRENT_STATE', 'current document identities must be unique');
+    }
+    if (documents.some(document => !parseMutationUtcTimestamp(document.uploadedAt))) {
+      return rejectDossierMutation(request, 'INVALID_CURRENT_STATE', 'document upload times must be valid RFC 3339 UTC instants');
+    }
+    const candidates = documents.filter(document => document.status !== 'archived').toSorted((left, right) => {
+      const instantOrder = compareMutationInstants(
+        parseMutationUtcTimestamp(right.uploadedAt), parseMutationUtcTimestamp(left.uploadedAt)
+      );
+      return instantOrder || left.documentId.localeCompare(right.documentId);
+    });
+    const items = requiredTypes.map((documentType, index) => {
+      const match = candidates.find(document => document.documentType.toLowerCase() === normalized[index]);
+      const item = { documentType, required: true, satisfied: Boolean(match) };
+      if (match) Object.assign(item, { documentId: match.documentId, satisfiedAt: match.uploadedAt });
+      return item;
+    });
+    const satisfiedCount = items.filter(item => item.satisfied).length;
+    const totalRequired = items.length;
+    const completenessPercent = totalRequired === 0 ? 0 : Math.round(satisfiedCount / totalRequired * 1000) / 10;
+    return acceptDossierMutation(request, {
+      version: 1, packetId: command.packetId, packetType,
+      name: `${templateName} - ${request.parcelId}`,
+      status: completenessPercent >= 100 ? 'complete' : 'draft', completenessPercent,
+      satisfiedCount, totalRequired, createdBy: request.actorId, createdAt: request.effectiveAt, items,
+    });
+  }
+
+  return rejectDossierMutation(request, 'INVALID_INPUT', 'operation does not match a Dossier mutation command');
+}
+
+function validateDossierMutationSemantics(exchange) {
+  const expected = expectedDossierMutationResult(exchange.request);
+  return JSON.stringify(expected) === JSON.stringify(exchange.result)
+    ? []
+    : ['result must exactly match the suite-owned Dossier mutation decision'];
+}
+
 function validateGptSemantics(exchange) {
   const errors = [];
   const { request, result } = exchange;
@@ -540,8 +789,8 @@ function withChangedContractAndManifest(addTransition = false) {
 
 test('current shared-contract freeze is complete and hash-pinned', () => {
   assert.deepEqual(verifyContractFreeze({ repoRoot }), {
-    groups: 7,
-    frozenFiles: 67,
+    groups: 8,
+    frozenFiles: 85,
     deferredFiles: 10,
     osInternalFiles: 5,
   });
@@ -696,6 +945,91 @@ test('Dossier evidence registry negative fixtures fail closed', () => {
   );
 });
 
+test('Dossier mutation accepted fixtures satisfy schema and exact decision semantics', () => {
+  const schema = JSON.parse(fs.readFileSync(dossierMutationSchemaPath, 'utf8'));
+  for (const name of [
+    'create-note', 'register-document', 'register-document-photo', 'register-document-unknown', 'transition-document',
+    'register-evidence', 'append-custody', 'create-packet',
+  ]) {
+    const fixture = dossierMutationFixture(name);
+    assert.deepEqual(validateJsonSchema(schema, schema, fixture), [], name);
+    assert.deepEqual(validateDossierMutationSemantics(fixture), [], name);
+  }
+});
+
+test('Dossier mutation typed rejection fixtures satisfy exact decision semantics', () => {
+  const schema = JSON.parse(fs.readFileSync(dossierMutationSchemaPath, 'utf8'));
+  for (const name of [
+    'host-assertion-failed', 'version-conflict', 'invalid-transition',
+    'hash-chain-conflict', 'document-scope-mismatch', 'duplicate-template-requirement',
+  ]) {
+    const fixture = dossierMutationFixture(name);
+    assert.deepEqual(validateJsonSchema(schema, schema, fixture), [], name);
+    assert.equal(fixture.result.decision, 'rejected', name);
+    assert.deepEqual(validateDossierMutationSemantics(fixture), [], name);
+  }
+
+  const invalidCalendar = dossierMutationFixture('create-packet');
+  invalidCalendar.request.command.currentDocuments[0].uploadedAt = '2026-02-30T10:00:00Z';
+  invalidCalendar.result = rejectDossierMutation(
+    invalidCalendar.request,
+    'INVALID_CURRENT_STATE',
+    'document upload times must be valid RFC 3339 UTC instants'
+  );
+  assert.deepEqual(validateJsonSchema(schema, schema, invalidCalendar), []);
+  assert.deepEqual(validateDossierMutationSemantics(invalidCalendar), []);
+
+  const duplicateDocument = dossierMutationFixture('create-packet');
+  duplicateDocument.request.command.currentDocuments[1].documentId =
+    duplicateDocument.request.command.currentDocuments[0].documentId;
+  duplicateDocument.result = rejectDossierMutation(
+    duplicateDocument.request,
+    'INVALID_CURRENT_STATE',
+    'current document identities must be unique'
+  );
+  assert.deepEqual(validateJsonSchema(schema, schema, duplicateDocument), []);
+  assert.deepEqual(validateDossierMutationSemantics(duplicateDocument), []);
+
+  const wrongDocumentSnapshot = dossierMutationFixture('transition-document');
+  wrongDocumentSnapshot.request.command.documentId = '99999999-9999-4999-8999-999999999901';
+  wrongDocumentSnapshot.result = rejectDossierMutation(
+    wrongDocumentSnapshot.request,
+    'IDENTITY_MISMATCH',
+    'current document scope must match the command scope'
+  );
+  assert.deepEqual(validateJsonSchema(schema, schema, wrongDocumentSnapshot), []);
+  assert.deepEqual(validateDossierMutationSemantics(wrongDocumentSnapshot), []);
+
+  const wrongEvidenceSnapshot = dossierMutationFixture('append-custody');
+  wrongEvidenceSnapshot.request.command.evidenceId = '99999999-9999-4999-8999-999999999902';
+  wrongEvidenceSnapshot.result = rejectDossierMutation(
+    wrongEvidenceSnapshot.request,
+    'IDENTITY_MISMATCH',
+    'current evidence scope must match the command scope'
+  );
+  assert.deepEqual(validateJsonSchema(schema, schema, wrongEvidenceSnapshot), []);
+  assert.deepEqual(validateDossierMutationSemantics(wrongEvidenceSnapshot), []);
+});
+
+test('Dossier mutation identity and cross-lane payloads fail closed', () => {
+  const schema = JSON.parse(fs.readFileSync(dossierMutationSchemaPath, 'utf8'));
+  const mismatch = dossierMutationFixture('result-identity-mismatch');
+  assert.deepEqual(validateJsonSchema(schema, schema, mismatch), []);
+  assert.notDeepEqual(validateDossierMutationSemantics(mismatch), []);
+  assert.notDeepEqual(
+    validateJsonSchema(schema, schema, dossierMutationFixture('cross-lane-fields')),
+    [],
+    'HTTP, persistence and authorization implementation fields must not cross the decision boundary'
+  );
+  const hostOwnedCustodyClassification = dossierMutationFixture('register-document');
+  hostOwnedCustodyClassification.request.command.entersCustodyChain = false;
+  assert.notDeepEqual(
+    validateJsonSchema(schema, schema, hostOwnedCustodyClassification),
+    [],
+    'the host must not override suite-owned document custody classification'
+  );
+});
+
 test('GPT grounded context positive fixtures satisfy schema and grounding semantics', () => {
   const schema = JSON.parse(fs.readFileSync(gptSchemaPath, 'utf8'));
   for (const name of ['grounded-two-citations', 'no-relevant-context', 'denied-dataset']) {
@@ -833,8 +1167,8 @@ test('versioned transition with Work Order and evidence passes baseline comparis
       baselineManifestPath: manifestPath,
     }),
     {
-      groups: 7,
-      frozenFiles: 67,
+      groups: 8,
+      frozenFiles: 85,
       deferredFiles: 10,
       osInternalFiles: 5,
     }
@@ -925,8 +1259,8 @@ test('a genuine type declaration still passes the content check', () => {
   assert.deepEqual(
     verifyContractFreeze({ repoRoot: fixture.tempRoot, manifestPath: fixture.currentManifest }),
     {
-      groups: 7,
-      frozenFiles: 67,
+      groups: 8,
+      frozenFiles: 85,
       deferredFiles: 10,
       osInternalFiles: 5,
     }

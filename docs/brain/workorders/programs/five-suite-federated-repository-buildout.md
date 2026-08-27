@@ -100,8 +100,9 @@ county contexts, audit spines, deployment control planes, or contract authoritie
 | WO-SR-010D | Establish the exact Dais-owned appeal-mutation canonical source | Complete R3; Dais PR #6 merged as `8a9cfc608` |
 | WO-SR-010E | Stage the exact Dais mutation module/schema with provenance and observed rollback | Complete R3; PR #1470 exact head `dfce1f5f1` merged as `153103c4f`; protected main verified |
 | WO-SR-010F | Retire fabricated sovereign appeal grounds, timeline, evidence-checklist, and hearing-schedule behavior | Complete R3; PR #1469 exact head `17f2f3fa1` merged as `acf4abc59`; protected main verified |
-| WO-SR-010G | Adopt the exact Dais mutation decision as the persistent real Development runtime, enforce stale-write conflict, and execute rollback | Active R4; 61/61 focused and 2/2 concurrency tests pass; exact Disabled rollback/restoration observed; protected assurance pending |
+| WO-SR-010G | Adopt the exact Dais mutation decision as the persistent real Development runtime, enforce stale-write conflict, and execute rollback | Complete R4; PR #1471 merged as `f14fc4999`; protected main verified |
 | WO-SR-010H | Retire the unsupported PropertyDais hearing-scheduling offer and prove no offered frontend write path | Complete R3; PR #1473 exact head `b6a011620` merged as `6291e58b1`; protected main verified |
+| WO-SR-011D | Freeze the provider-neutral Dossier note/document/evidence/custody/packet mutation-decision boundary | Active R3; focused 3/3 synthetic contract proof passes; protected assurance pending |
 
 ## Extraction and provenance policy
 
@@ -348,9 +349,12 @@ retired duplicate OS lifecycle judgment, proved stale-write conflict and exact D
 and left only sovereign integration/persistence responsibilities in protected merge
 `f14fc4999f650ed4bbff2633813be6b57ec4bfbc`. `WO-SR-010H` removed the
 unsupported frontend scheduling offer in protected merge
-`6291e58b11626ad04bdc89e736be89b2a574261c`. Dais is terminal. `WO-SR-011A` now stages the exact
+`6291e58b11626ad04bdc89e736be89b2a574261c`. Dais is terminal. `WO-SR-011A` staged the exact
 protected Dossier evidence-registry read artifact with provenance, production refusal, and observed
-whole-slot rollback while runtime remains Disabled. It is followed by `WO-SR-011B` persistent exact
-read runtime adoption, `WO-SR-011C` suite ownership-governance truth, and `WO-SR-011D` duplicate-
-adapter judgment plus terminal proof while preserving sovereign custody/write orchestration; GPT
-then follows without a per-child owner relay.
+whole-slot rollback in protected merge `aec4f1e18b619730842c828e4f1c93ecd18d64b2` while runtime
+remains Disabled. `WO-SR-011B` follows with persistent exact read runtime adoption. `WO-SR-011D`
+freezes the additive provider-neutral mutation-decision boundary for real note, document,
+evidence/custody, and explicit-snapshot packet semantics; it performs no mutation and will not merge
+ahead of `WO-SR-011B`. Mutation staging/runtime adoption, suite ownership-governance truth, rollback,
+and duplicate-judgment retirement remain successor work; GPT then follows without a per-child owner
+relay.

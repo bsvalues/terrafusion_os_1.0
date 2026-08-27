@@ -30,7 +30,7 @@
     {
       "id": "TerraFusion.Contracts.Dossier",
       "status": "planned_not_published",
-      "groups": ["dossier.evidence-registry-read"]
+      "groups": ["dossier.evidence-registry-read", "dossier.mutation-decision"]
     },
     {
       "id": "TerraFusion.Contracts.Gpt",
@@ -302,6 +302,32 @@
           "path": "contracts/fixtures/dossier.evidence-registry-read.v1.unstable-tie-order.synthetic.json",
           "sha256": "caf891ee8adbc92fe001441c416946f2bef0f307d33dafff4166a98f7c551316"
         }
+      ]
+    },
+    {
+      "group": "dossier.mutation-decision",
+      "version": "1.0.0",
+      "class": "SUITE",
+      "consumers": ["dossier"],
+      "files": [
+        { "path": "DTOs/DossierMutationDecisionDto.cs", "sha256": "6d47ec6f3d56bcc4501b6dd745847af16794d796ae6a7cefcecb88cc292d9d8a" },
+        { "path": "contracts/dossier.mutation-decision.v1.schema.json", "sha256": "c0fd2ddebba936ebcfeed02884d65d43caea705710df9bf69dc55e769da53d43" },
+        { "path": "contracts/fixtures/dossier.mutation-decision.v1.append-custody.synthetic.json", "sha256": "b58a0027d4b781ce47e7adad3ddd8167ea023af10f44195d31bc8bb184bbaf91" },
+        { "path": "contracts/fixtures/dossier.mutation-decision.v1.create-note.synthetic.json", "sha256": "bfb43560904227285a86164a0e477a48d533c734e69109b41f053e111d28730e" },
+        { "path": "contracts/fixtures/dossier.mutation-decision.v1.create-packet.synthetic.json", "sha256": "a1f84d9a4b1f729e8daecf272281eb7fc346c6cbee31103646e2b9197d890f08" },
+        { "path": "contracts/fixtures/dossier.mutation-decision.v1.cross-lane-fields.synthetic.json", "sha256": "8ed2f9a52a42e93cfeef9778f93932578a0da28551abcdda225667b2cd0389cd" },
+        { "path": "contracts/fixtures/dossier.mutation-decision.v1.document-scope-mismatch.synthetic.json", "sha256": "cd31723ce765cc89e1fbec64eeecfad88c6a72b5402bdf04caa72f57ecda42b6" },
+        { "path": "contracts/fixtures/dossier.mutation-decision.v1.duplicate-template-requirement.synthetic.json", "sha256": "a3489ae9a5888b34e2fb30f067ae6400301132bde463eacd002ade7f42effdce" },
+        { "path": "contracts/fixtures/dossier.mutation-decision.v1.hash-chain-conflict.synthetic.json", "sha256": "de4d62cc81b1dcce75f4515c51c800a19c67e6713cfd6ac77454125dd6c1c1db" },
+        { "path": "contracts/fixtures/dossier.mutation-decision.v1.host-assertion-failed.synthetic.json", "sha256": "e4c1e0f319be2866bb88b43be2e3d3a52bc2bf67e8086df29f43dc0ea0426675" },
+        { "path": "contracts/fixtures/dossier.mutation-decision.v1.invalid-transition.synthetic.json", "sha256": "4e0e2f22ee5686a6ae765049e18164c476215866639e2f085f5e454be4bf8d29" },
+        { "path": "contracts/fixtures/dossier.mutation-decision.v1.register-document-photo.synthetic.json", "sha256": "9895ead0620b33d1ac019338d90b09d3bdd7c0aa209409b076694cf48d0eaf46" },
+        { "path": "contracts/fixtures/dossier.mutation-decision.v1.register-document-unknown.synthetic.json", "sha256": "22b32e18fb2fe05048092c1b22f4ca6fd45d52feaed49b0cd35a8600f4cc3ac1" },
+        { "path": "contracts/fixtures/dossier.mutation-decision.v1.register-document.synthetic.json", "sha256": "6ab1bd43ef3cfc9edb36a583e74c299d0efac46c855132bd2b8420e3ce61eab8" },
+        { "path": "contracts/fixtures/dossier.mutation-decision.v1.register-evidence.synthetic.json", "sha256": "46036a55308ebfb83330ab203007f3fab9e6861678897ebfa237160ff34a49a4" },
+        { "path": "contracts/fixtures/dossier.mutation-decision.v1.result-identity-mismatch.synthetic.json", "sha256": "2c39a3d500053b51ec05cb31b3e2a7bf47155bc812995c1c387fc01f42c49be0" },
+        { "path": "contracts/fixtures/dossier.mutation-decision.v1.transition-document.synthetic.json", "sha256": "44ee7d5ebef372ebe3e416fb35118fe2a551bb03ac13bbd0f09d2548c5a6b1b2" },
+        { "path": "contracts/fixtures/dossier.mutation-decision.v1.version-conflict.synthetic.json", "sha256": "83d6ad09914299b1778bfedf8e5571599f3ac2b2244f689408750de782edb688" }
       ]
     },
     {
