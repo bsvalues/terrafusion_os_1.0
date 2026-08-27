@@ -2,13 +2,13 @@
 
 ## Current verdict
 
-`IMPLEMENTED_LOCAL_PENDING_PROTECTED_MERGE`
+`PASS_ON_CURRENT_PROTECTED_BASE_PENDING_PROTECTED_MERGE`
 
 ## Exact identities
 
 | Surface | Identity |
 | --- | --- |
-| Sovereign base | `54f9e4b411fb886bd592226067928f024b02285b` |
+| Sovereign base | `f14fc4999f650ed4bbff2633813be6b57ec4bfbc` |
 | Dossier repository and commit | `bsvalues/terrafusion-dossier@7558cfebfeea0c7b536251769b1d779c4558a763` |
 | Protected source ref | `refs/heads/main`; pinned commit must be reachable from fetched `origin/main` |
 | Module | 8901 bytes; `bb0427d6634412d86be92a2ef5f6f0bfcdf97ee054887a42d59c2a0bc0127a8b` |
@@ -19,7 +19,8 @@
 
 ## Observed local proof
 
-The Windows regression completed nine detached exact-commit staging invocations from the canonical
+After integrating exact protected sovereign main `f14fc4999f650ed4bbff2633813be6b57ec4bfbc`,
+the Windows regression completed nine detached exact-commit staging invocations from the canonical
 local Dossier synchronization checkout. It rejected a pinned commit when it was not reachable from
 observed protected `main`; refused Production and forged origin before mutation; verified exact
 candidate/published three-file inventories; rejected numeric and singleton-array manifest type
