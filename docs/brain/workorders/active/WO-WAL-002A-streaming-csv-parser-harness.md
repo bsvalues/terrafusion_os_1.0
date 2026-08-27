@@ -2,7 +2,7 @@
 
 | Field | Value |
 | --- | --- |
-| Status | `IMPLEMENTED_PENDING_DOTNET_VALIDATION` |
+| Status | `IMPLEMENTED_PENDING_REMOTE_DOTNET_VALIDATION` |
 | Program | Washington Assessor Launch V1 |
 | Parent | `WO-WAL-002` |
 | Base | `0aba8ff60d09f526b6aa0a8aaf85fd4fc7957778` |
@@ -33,11 +33,12 @@ No other repository path is writable under this child Work Order.
 2. requires one explicit single-character delimiter and a required, non-empty, unique header row;
 3. parses quoted delimiters, quoted CR/LF newlines, and escaped double quotes according to CSV rules;
 4. rejects quotes in unquoted fields, characters after a closing quote, unterminated quoted fields,
-   inconsistent row widths, empty or duplicate headers, invalid UTF-8, and trailing data after a
-   bounded limit is exceeded;
+   inconsistent row widths, blank physical data rows, empty or duplicate headers, invalid UTF-8,
+   and trailing data after a bounded limit is exceeded;
 5. enforces maximum input bytes, data rows, fields per row, and decoded characters per field;
 6. observes cancellation during asynchronous reads;
-7. returns parsed headers and rows in memory without mapping or promoting domain records.
+7. returns parsed headers and rows as a deeply read-only in-memory result without mapping or
+   promoting domain records.
 
 ## Environment reservation
 
@@ -61,10 +62,13 @@ Focused tests must prove:
 
 - strict UTF-8, explicit delimiter, and required header behavior;
 - ordinary rows plus quoted delimiter, newline, and escaped-quote handling;
+- EOF trailing-field behavior, split CRLF/quoted CRLF decoding, and blank-row denial;
+- deeply read-only headers, outer rows, and individual rows;
 - byte, row, field-count, and field-character limits fail closed;
 - malformed quoting, inconsistent row width, duplicate/empty headers, and invalid UTF-8 fail closed;
 - cancellation is observed;
-- unsupported/unknown format behavior has no fallback path;
+- parser syntax never substitutes for format detection; the later upload envelope must independently
+  gate declared format, extension, MIME and magic bytes without fallback;
 - the exact diff contains only the three reserved files.
 
 ## Validation
@@ -76,8 +80,9 @@ git diff --check
 git status --short
 ```
 
-The implementation and focused harness are complete. The authoring environment does not expose a
-`dotnet` executable, so the focused test command must be rerun by the integration owner before this
+The implementation and focused harness are complete, including static review remediation for deeply
+read-only output and explicit boundary cases. The authoring environment does not expose a `dotnet`
+executable, so the focused test command must be rerun remotely by the integration owner before this
 child's terminal condition can be marked complete. Static diff checks remain mandatory here.
 
 ## Continuation

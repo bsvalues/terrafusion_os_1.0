@@ -22,7 +22,8 @@ public sealed record CountyCsvParserOptions
 
 /// <summary>
 /// A parsed CSV document. The first record is always represented by <see cref="Headers"/>;
-/// <see cref="Rows"/> contains only data records.
+/// <see cref="Rows"/> contains only data records. Headers, the outer row collection, and every
+/// individual row are deeply read-only snapshots of the validated parser state.
 /// </summary>
 public sealed record CountyCsvDocument(
     IReadOnlyList<string> Headers,
@@ -36,6 +37,7 @@ public enum CountyCsvErrorCode
     MissingHeader,
     EmptyHeader,
     DuplicateHeader,
+    BlankRow,
     TooManyRows,
     TooManyFields,
     FieldTooLong,
@@ -247,6 +249,7 @@ public sealed class CountyCsvStreamParser
         private FieldState _fieldState;
         private bool _firstDecodedCharacter = true;
         private bool _recordInProgress;
+        private bool _recordHasContent;
         private bool _skipLineFeed;
 
         public ParserState(CountyCsvParserOptions options)
@@ -317,7 +320,10 @@ public sealed class CountyCsvStreamParser
                     "CSV input must contain a required header row.");
             }
 
-            return new CountyCsvDocument(_headers, _rows.ToArray(), inputBytes);
+            return new CountyCsvDocument(
+                _headers,
+                Array.AsReadOnly(_rows.ToArray()),
+                inputBytes);
         }
 
         private void ProcessFieldStart(char value)
@@ -326,12 +332,14 @@ public sealed class CountyCsvStreamParser
 
             if (value == _options.Delimiter)
             {
+                _recordHasContent = true;
                 AddField();
                 return;
             }
 
             if (value == '"')
             {
+                _recordHasContent = true;
                 _fieldState = FieldState.Quoted;
                 return;
             }
@@ -344,6 +352,7 @@ public sealed class CountyCsvStreamParser
                 return;
             }
 
+            _recordHasContent = true;
             Append(value);
             _fieldState = FieldState.Unquoted;
         }
@@ -446,15 +455,24 @@ public sealed class CountyCsvStreamParser
         private void AddRecord()
         {
             var completedRecord = _record.ToArray();
+            var recordHasContent = _recordHasContent;
             _record.Clear();
             _recordInProgress = false;
+            _recordHasContent = false;
             _fieldState = FieldState.Start;
 
             if (_headers is null)
             {
                 ValidateHeaders(completedRecord);
-                _headers = completedRecord;
+                _headers = Array.AsReadOnly(completedRecord);
                 return;
+            }
+
+            if (!recordHasContent)
+            {
+                throw new CountyCsvParseException(
+                    CountyCsvErrorCode.BlankRow,
+                    "CSV data cannot contain a blank physical record.");
             }
 
             if (completedRecord.Length != _headers.Count)
@@ -471,7 +489,7 @@ public sealed class CountyCsvStreamParser
                     $"CSV input exceeds the {_options.MaxDataRows}-data-row limit.");
             }
 
-            _rows.Add(completedRecord);
+            _rows.Add(Array.AsReadOnly(completedRecord));
         }
 
         private static void ValidateHeaders(IReadOnlyList<string> headers)

@@ -64,9 +64,74 @@ public sealed class CountyCsvStreamParserTests
     }
 
     [Fact]
+    public async Task ParseAsync_PreservesSplitCrLfAndQuotedCrLfAcrossOneByteReads()
+    {
+        var bytes = Encoding.UTF8.GetBytes("parcel_id,notes\r\n1,\"line one\r\nline two\"\r\n");
+        await using var stream = new ChunkedMemoryStream(bytes, maximumReadSize: 1);
+        var parser = new CountyCsvStreamParser(CreateOptions());
+
+        var document = await parser.ParseAsync(stream);
+
+        Assert.Equal(new[] { "parcel_id", "notes" }, document.Headers);
+        Assert.Equal(new[] { "1", "line one\r\nline two" }, Assert.Single(document.Rows));
+    }
+
+    [Fact]
+    public async Task ParseAsync_PreservesTrailingEmptyFieldAtEndOfStream()
+    {
+        var document = await ParseAsync("a,b,c\n1,2,");
+
+        Assert.Equal(new[] { "1", "2", "" }, Assert.Single(document.Rows));
+    }
+
+    [Fact]
+    public async Task ParseAsync_AcceptsValuesExactlyAtEveryConfiguredLimit()
+    {
+        const string csv = "aa,bb\n12,34";
+        var options = CreateOptions(
+            maxInputBytes: Encoding.UTF8.GetByteCount(csv),
+            maxDataRows: 1,
+            maxFieldsPerRow: 2,
+            maxCharactersPerField: 2);
+
+        var document = await ParseAsync(csv, options);
+
+        Assert.Equal(new[] { "aa", "bb" }, document.Headers);
+        Assert.Equal(new[] { "12", "34" }, Assert.Single(document.Rows));
+        Assert.Equal(options.MaxInputBytes, document.InputBytes);
+    }
+
+    [Fact]
+    public async Task ParseAsync_ReturnsDeeplyReadOnlyValidatedOutput()
+    {
+        var document = await ParseAsync("parcel_id,owner\n1,Ada");
+        var headers = Assert.IsAssignableFrom<IList<string>>(document.Headers);
+        var rows = Assert.IsAssignableFrom<IList<IReadOnlyList<string>>>(document.Rows);
+        var firstRow = Assert.IsAssignableFrom<IList<string>>(document.Rows[0]);
+
+        Assert.Throws<NotSupportedException>(() => headers[0] = "tampered_header");
+        Assert.Throws<NotSupportedException>(
+            () => rows[0] = Array.AsReadOnly(new[] { "tampered", "row" }));
+        Assert.Throws<NotSupportedException>(() => firstRow[0] = "tampered_value");
+
+        Assert.Equal(new[] { "parcel_id", "owner" }, document.Headers);
+        Assert.Equal(new[] { "1", "Ada" }, Assert.Single(document.Rows));
+    }
+
+    [Fact]
     public async Task ParseAsync_RejectsInvalidUtf8()
     {
         var bytes = Encoding.UTF8.GetBytes("parcel_id\n").Concat(new byte[] { 0xC3, 0x28 }).ToArray();
+
+        await AssertErrorAsync(bytes, CountyCsvErrorCode.InvalidUtf8);
+    }
+
+    [Fact]
+    public async Task ParseAsync_RejectsTruncatedMultibyteUtf8AtEndOfStream()
+    {
+        var bytes = Encoding.UTF8.GetBytes("parcel_id\n")
+            .Concat(new byte[] { 0xC3 })
+            .ToArray();
 
         await AssertErrorAsync(bytes, CountyCsvErrorCode.InvalidUtf8);
     }
@@ -129,6 +194,14 @@ public sealed class CountyCsvStreamParserTests
             CountyCsvErrorCode.InconsistentFieldCount);
     }
 
+    [Fact]
+    public async Task ParseAsync_RejectsBlankPhysicalDataRowEvenForSingleColumnCsv()
+    {
+        await AssertErrorAsync(
+            "parcel_id\n\n1",
+            CountyCsvErrorCode.BlankRow);
+    }
+
     [Theory]
     [InlineData("parcel_id\na\"b")]
     [InlineData("parcel_id\n\"closed\"tail")]
@@ -151,8 +224,10 @@ public sealed class CountyCsvStreamParserTests
     }
 
     [Fact]
-    public async Task ParseAsync_RejectsZipSignatureWithoutFormatFallback()
+    public async Task ParseAsync_RejectsForbiddenControlBytesWithoutClaimingFormatDetection()
     {
+        // A ZIP signature contains bytes forbidden by strict CSV syntax. This is not
+        // file-type detection; the governed upload envelope must gate formats itself.
         byte[] zipSignature = [0x50, 0x4B, 0x03, 0x04, 0x14, 0x00];
 
         await AssertErrorAsync(zipSignature, CountyCsvErrorCode.MalformedCsv);
