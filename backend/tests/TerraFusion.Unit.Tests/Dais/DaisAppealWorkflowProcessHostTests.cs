@@ -22,6 +22,38 @@ public sealed class ExactDaisAppealWorkflowHostFactAttribute : FactAttribute
     }
 }
 
+public sealed class ExactDaisAppealMutationAndWorkflowHostFactAttribute : FactAttribute
+{
+    public ExactDaisAppealMutationAndWorkflowHostFactAttribute()
+    {
+        if (RequiredPaths.Any(name => string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable(name))))
+            Skip = "Exact Dais adoption proof requires staged mutation and workflow artifact paths.";
+    }
+
+    internal static readonly string[] RequiredPaths =
+    [
+        "TERRAFUSION_DAIS_MUTATION_HOST_MODULE_PATH",
+        "TERRAFUSION_DAIS_MUTATION_HOST_SCHEMA_PATH",
+        "TERRAFUSION_DAIS_HOST_MODULE_PATH",
+        "TERRAFUSION_DAIS_HOST_SCHEMA_PATH",
+    ];
+}
+
+public sealed class ExactDaisAppealMutationHostFactAttribute : FactAttribute
+{
+    public ExactDaisAppealMutationHostFactAttribute()
+    {
+        if (new[]
+            {
+                "TERRAFUSION_DAIS_MUTATION_HOST_MODULE_PATH",
+                "TERRAFUSION_DAIS_MUTATION_HOST_SCHEMA_PATH",
+            }.Any(name => string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable(name))))
+        {
+            Skip = "Exact Dais mutation registration proof requires staged artifact paths.";
+        }
+    }
+}
+
 public sealed class DaisAppealWorkflowProcessHostTests
 {
     private const string ExpectedModuleSha256 =

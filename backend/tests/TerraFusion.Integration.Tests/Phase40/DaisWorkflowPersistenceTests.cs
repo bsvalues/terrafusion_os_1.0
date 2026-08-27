@@ -72,24 +72,17 @@ public class DaisWorkflowPersistenceTests
         await using var ctx = CreateContext("DaisPersis_AppealLifecycle");
         var (countyId, _) = SeedBentonCounty(ctx);
 
-        var svc = new AppealService(ctx, NullLogger<AppealService>.Instance);
+        var svc = new AppealService(ctx, NullLogger<AppealService>.Instance, new FakeDaisAppealMutationDecisionPort());
 
         // Create
-        var appeal = await svc.CreateAsync(new Appeal
-        {
-            ParcelId       = "1-0529-100-0001",
-            AppealGround   = "MARKET_VALUE",
-            Status         = "filed",
-            PetitionerName = "Jane Appellant",
-            FiledDate      = new DateTime(2025, 3, 1, 0, 0, 0, DateTimeKind.Utc),
-            CurrentValue   = 450_000m,
-            RequestedValue = 380_000m,
-            TaxYear        = 2025,
-            CountyId       = countyId
-        });
+        var appeal = await svc.CreateAsync(
+            countyId,
+            new CreateAppealCommand(
+                "1-0529-100-0001", "MARKET_VALUE", "Jane Appellant", 450_000m, 380_000m, 2025),
+            utcNow: new DateTime(2025, 3, 1, 0, 0, 0, DateTimeKind.Utc));
 
         appeal.Id.Should().NotBeEmpty("Id must be assigned on create");
-        appeal.CreatedAt.Should().BeAfter(DateTime.UtcNow.AddSeconds(-5));
+        appeal.CreatedAt.Should().Be(new DateTime(2025, 3, 1, 0, 0, 0, DateTimeKind.Utc));
 
         // Transition to heard
         var heard = await svc.UpdateStatusAsync(appeal.Id, "heard", countyId);
@@ -278,20 +271,13 @@ public class DaisWorkflowPersistenceTests
         await using var ctx = CreateContext("DaisPersis_AppealAudit");
         var (countyId, _) = SeedBentonCounty(ctx);
 
-        var svc = new AppealService(ctx, NullLogger<AppealService>.Instance);
+        var svc = new AppealService(ctx, NullLogger<AppealService>.Instance, new FakeDaisAppealMutationDecisionPort());
         var before = DateTime.UtcNow.AddMilliseconds(-100);
 
-        var appeal = await svc.CreateAsync(new Appeal
-        {
-            ParcelId       = "AUDIT-PARCEL",
-            AppealGround   = "CLERICAL_ERROR",
-            Status         = "filed",
-            FiledDate      = DateTime.UtcNow,
-            CurrentValue   = 200_000m,
-            RequestedValue = 195_000m,
-            TaxYear        = 2025,
-            CountyId       = countyId
-        });
+        var appeal = await svc.CreateAsync(
+            countyId,
+            new CreateAppealCommand(
+                "AUDIT-PARCEL", "CLERICAL_ERROR", null, 200_000m, 195_000m, 2025));
 
         appeal.CreatedAt.Should().BeOnOrAfter(before,
             "CreatedAt must be stamped on create");

@@ -1,0 +1,23 @@
+{
+  "request": {
+    "schemaVersion": "1.0.0",
+    "operation": "create",
+    "commandId": "010c0001-0000-4000-8000-000000000019",
+    "countyId": "010c0000-0000-4000-8000-000000000001",
+    "effectiveAt": "2026-13-40T25:00:00Z",
+    "command": { "taxYear": 2026 }
+  },
+  "result": {
+    "schemaVersion": "1.0.0",
+    "operation": "create",
+    "commandId": "010c0001-0000-4000-8000-000000000019",
+    "countyId": "010c0000-0000-4000-8000-000000000001",
+    "decision": "rejected",
+    "violations": [
+      {
+        "code": "INVALID_LIFECYCLE",
+        "message": "lifecycle timestamps must be valid RFC 3339 UTC instants"
+      }
+    ]
+  }
+}

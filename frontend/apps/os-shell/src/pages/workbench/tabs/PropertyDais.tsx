@@ -18,7 +18,6 @@
  * - check_exemption_eligibility: Exemption eligibility check (read_only)
  * - process_exemption_renewal: Exemption renewal (write_low)
  * - file_appeal: File BOE appeal (write_low)
- * - schedule_boe_hearing: Schedule BOE hearing (write_high)
  * - get_certification_progress: Certification progress (read_only)
  * - sign_off_certification_step: Certification sign-off (write_high)
  * - queue_notice_for_mailing: Notice mailing queue (write_low)
@@ -151,9 +150,6 @@ interface RenewalResult { exemptionId: string; taxYear: number; status: string; 
 /** R2.9 — File appeal from file_appeal */
 interface FileAppealResult { appealId: string; parcelId: string; status: string; filedAt: string; payloadRef: string }
 
-/** R2.9 — BOE hearing from schedule_boe_hearing */
-interface HearingResult { hearingId: string; appealId: string; scheduledDate: string; panelSize: number; payloadRef: string }
-
 /** R2.9 — Certification progress from get_certification_progress */
 interface CertProgressResult { county: string; taxYear: number; percentComplete: number; steps: Array<{ id: string; name: string; complete: boolean }>; blockers: string[] }
 
@@ -247,10 +243,6 @@ export const PropertyDais: React.FC = () => {
   const [renewalExemptionId, setRenewalExemptionId] = useState<string>('');
   const [fileAppealState, setFileAppealState] = useState<DaisToolState<FileAppealResult>>({ status: 'idle' });
   const [appealGrounds, setAppealGrounds] = useState<string>('');
-  const [hearingState, setHearingState] = useState<DaisToolState<HearingResult>>({ status: 'idle' });
-  const [hearingAppealId, setHearingAppealId] = useState<string>('');
-  const [hearingDate, setHearingDate] = useState<string>('');
-  const [hearingConfirmed, setHearingConfirmed] = useState(false);
   const [queueNoticeState, setQueueNoticeState] = useState<DaisToolState<QueueNoticeResult>>({ status: 'idle' });
   const [queueNoticeIds, setQueueNoticeIds] = useState<string>('');
   const [escalateState, setEscalateState] = useState<DaisToolState<EscalateResult>>({ status: 'idle' });
@@ -538,24 +530,6 @@ export const PropertyDais: React.FC = () => {
       setFileAppealState({ status: 'error', correlationId: cid, error: { code: 'NETWORK_ERROR', message: err instanceof Error ? err.message : 'Network error', severity: 'error', correlationId: cid } });
     }
   }, [parcelId, appealGrounds]);
-
-  const handleScheduleHearing = useCallback(async () => {
-    if (!hearingAppealId.trim() || !hearingDate.trim()) { setHearingState({ status: 'error', error: { code: 'VALIDATION', message: 'Appeal ID and date are required', severity: 'error' } }); return; }
-    setHearingState({ status: 'loading' });
-    try {
-      const response = await invokeTool({ toolId: 'schedule_boe_hearing', params: { county: 'benton', appealId: hearingAppealId.trim(), requestedDate: hearingDate }, parcelId });
-      if (response.success && response.result) {
-        const parsed = typeof response.result.output === 'string' ? JSON.parse(response.result.output) : response.result.output;
-        setHearingState({ status: 'success', result: parsed, correlationId: response.correlationId });
-        setHistory(prev => [{ id: `inv-${Date.now()}`, toolId: 'schedule_boe_hearing', status: 'success', correlationId: response.correlationId || 'unknown', timestamp: new Date(), meta: { appealId: hearingAppealId } }, ...prev.slice(0, 19)]);
-      } else {
-        setHearingState({ status: 'error', correlationId: response.correlationId, error: { code: response.error?.code || 'HEARING_FAILED', message: response.error?.message || 'Hearing scheduling failed', severity: 'error', correlationId: response.correlationId } });
-      }
-    } catch (err) {
-      const cid = createStableId('net');
-      setHearingState({ status: 'error', correlationId: cid, error: { code: 'NETWORK_ERROR', message: err instanceof Error ? err.message : 'Network error', severity: 'error', correlationId: cid } });
-    }
-  }, [parcelId, hearingAppealId, hearingDate]);
 
   const handleQueueNotice = useCallback(async () => {
     const ids = queueNoticeIds.split(',').map(s => s.trim()).filter(Boolean);
@@ -1122,32 +1096,6 @@ export const PropertyDais: React.FC = () => {
           </div>
         )}
         {fileAppealState.status === 'error' && fileAppealState.error && <ErrorDisplay error={{ message: fileAppealState.error.message, errorCode: fileAppealState.error.code, correlationId: fileAppealState.correlationId }} />}
-      </BentoCard>
-
-      {/* Schedule BOE Hearing (write_high) */}
-      <BentoCard title='📅 Schedule BOE Hearing' actions={<span className='text-xs tf-badge-danger px-2 py-0.5 rounded'>write_high</span>}>
-        <p className='tf-text-tertiary text-sm mb-3'>Schedule a BOE hearing for this appeal.</p>
-        <div className='space-y-2 mb-3'>
-          <input type='text' value={hearingAppealId} onChange={e => setHearingAppealId(e.target.value)} placeholder='Appeal ID' className='w-full p-2 rounded-lg tf-input' />
-          <input type='date' value={hearingDate} onChange={e => setHearingDate(e.target.value)} className='w-full p-2 rounded-lg tf-input' />
-          <div className='tf-panel p-3 rounded-lg border-l-4' style={{ borderLeftColor: 'hsl(var(--tf-warning))' }}>
-            <label className='flex items-center gap-3 cursor-pointer'>
-              <input type='checkbox' checked={hearingConfirmed} onChange={e => setHearingConfirmed(e.target.checked)} className='h-4 w-4' />
-              <span className='text-sm tf-text'>I confirm this BOE hearing request is ready for submission</span>
-            </label>
-          </div>
-        </div>
-        <button onClick={handleScheduleHearing} disabled={hearingState.status === 'loading' || !hearingAppealId.trim() || !hearingDate.trim() || !hearingConfirmed} className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-dais-cta mb-4 disabled:opacity-50'>
-          {hearingState.status === 'loading' ? 'Submitting...' : hearingConfirmed ? 'Submit Hearing Request' : '⚠️ Confirm Above to Enable'}
-        </button>
-        {hearingState.status === 'loading' && <div role='status' className='flex items-center justify-center py-4 gap-3'><div className='tf-spinner h-6 w-6' /><span className='tf-text-tertiary'>Scheduling hearing...</span></div>}
-        {hearingState.status === 'success' && hearingState.result && (
-          <div className='space-y-2'>
-            <div className='tf-panel p-4'><span className='font-semibold tf-text'>Hearing ID: {hearingState.result.hearingId}</span><p className='tf-text-secondary text-sm'>Scheduled date: {formatDate(hearingState.result.scheduledDate)} | Panel: {hearingState.result.panelSize} members</p></div>
-            {hearingState.correlationId && <div className='text-xs tf-text-dim flex items-center gap-2'>Ref: <code className='tf-suite-accent-text font-mono'>{hearingState.correlationId.slice(0, 16)}...</code> <WorkbenchSourceBadge source='live' /></div>}
-          </div>
-        )}
-        {hearingState.status === 'error' && hearingState.error && <ErrorDisplay error={{ message: hearingState.error.message, errorCode: hearingState.error.code, correlationId: hearingState.correlationId }} />}
       </BentoCard>
 
       {/* ═══ R2.9 TerraNotice Module ═══ */}

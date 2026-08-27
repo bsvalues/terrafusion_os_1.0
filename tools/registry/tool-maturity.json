@@ -858,26 +858,6 @@
       }
     },
     {
-      "toolId": "schedule_boe_hearing",
-      "level": "L1",
-      "state": "stub-contract",
-      "liveIntegration": false,
-      "disclosureRequired": true,
-      "disclosure": "tool layer in development",
-      "owner": "TerraPilot Tool Maturity Program",
-      "evidence": {
-        "manifest": "tools/registry/terrapilot.tools.json",
-        "handlerParity": "docs/brain/workorders/evidence/WO-TERRAPILOT-P3-P6-MATURITY-EVIDENCE.md",
-        "promotionProtocol": "docs/brain/workorders/programs/terrapilot-promotion-protocol.md"
-      },
-      "promotion": {
-        "targetState": null,
-        "operatorApproval": null,
-        "promotionDate": null,
-        "rollbackPath": null
-      }
-    },
-    {
       "toolId": "get_certification_progress",
       "level": "L1",
       "state": "stub-contract",

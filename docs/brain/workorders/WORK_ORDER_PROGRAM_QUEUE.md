@@ -13,7 +13,7 @@
 
 ## Active Goal
 
-The Five-Suite Federated Repository Buildout is active under `OWNER-FIVE-SUITE-FEDERATED-COMPLETION-20260826`. Atlas runtime and ownership are complete. Dais staging PR #1466 merged as `5182742d756cea6a939bb12489e660d83b9593b6` and protected main was verified. `WO-SR-010B` is active: adopt the exact three-file Dais artifact as the real persistent Development runtime gate, execute rollback, and retire legacy semantic fallback. Continue to Dais ownership truth, then Dossier and GPT. The mission hard walls remain binding.
+The Five-Suite Federated Repository Buildout is active under `OWNER-FIVE-SUITE-FEDERATED-COMPLETION-20260826`. Atlas runtime and ownership are complete. Dais is terminal on protected merge `f14fc4999f650ed4bbff2633813be6b57ec4bfbc`: exact read and mutation runtimes are adopted, unsupported backend/frontend behavior is truthfully retired, and rollback/restoration are proven. `WO-SR-011A` is staging the exact Dossier-owned evidence-registry read artifact with provenance and observed whole-slot rollback; `WO-SR-011B` follows with persistent exact read runtime adoption, then ownership truth and terminalization, then GPT. The mission hard walls remain binding.
 
 The prior `WO-SR-009C` completed before this activation. PR #1424 merged exact assured head
 `e70548cb4938da92b2c0b254d71c5361aa10a6ed` as
@@ -187,7 +187,14 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | **WO-SR-007D Atlas Persistent Local Runtime Adoption** | **DONE / R4 / PR #1465** | Merge `4fcbfbd05`; source-tree Development `LocalExact`; published Development disabled; exact startup/per-invocation provenance; real A/B/restored starts; Disabled rollback; 89/89 focused tests |
 | **Atlas Standalone Canonical Ownership Finalization** | **DONE / R2 / Atlas PR #4** | Exact head `8c2d4d870` merged as `708fc5c319`; protected suite main verified; module bytes unchanged |
 | **WO-SR-010A Dais Canonical Artifact Staging** | **DONE / R3 / PR #1466** | Exact head `88e7454b2` merged as `5182742d7`; all checks green, review resolved, protected main verified |
-| **WO-SR-010B Dais Persistent Exact Runtime Adoption** | **ACTIVE / R4** | Real controller consumer, exact startup/per-invocation verifier, constrained Node host, persistent Development selection and observed rollback |
+| **WO-SR-010B Dais Persistent Exact Runtime Adoption** | **DONE / R4 / PR #1467** | Exact head `b24f263ac` merged as `54f9e4b41`; real controller consumer, exact runtime, persistent Development selection, observed rollback, 120/120 focused tests |
+| **WO-SR-010C Dais Appeal Mutation Contract Freeze** | **DONE / R3 / PR #1468** | Exact head `377ed29b8` merged as `527442205`; protected main verified |
+| **WO-SR-010D Dais Appeal Mutation Canonical Source** | **DONE / R3 / Dais PR #6** | Protected Dais merge `8a9cfc608`; exact module/schema/source-manifest identities established |
+| **WO-SR-010E Dais Appeal Mutation Canonical Staging** | **DONE / R3 / PR #1470** | Protected merge `153103c4f`; fixed ignored slot, exact protected Git blobs and provenance, nonempty backup, failure rollback, physically observed rollback |
+| **WO-SR-010F Dais Truthful Sovereign Retirement** | **DONE / R3 / PR #1469** | Protected merge `acf4abc59`; four unsupported or fabricated sovereign routes now fail truthfully with no semantic success, service/audit call, or mutation |
+| **WO-SR-010H Dais Frontend Availability Retirement** | **DONE / R3 / PR #1473** | Protected merge `6291e58b1`; unsupported BOE scheduling CTA, handler, and capability exposure removed while read-only hearing surfaces remain |
+| **WO-SR-010G Dais Persistent Exact Mutation Runtime Adoption** | **DONE / R4 / PR #1471** | Protected merge `f14fc4999`; exact Dais mutation runtime, concurrency, tamper, recovery custody, Disabled rollback, restoration, and truthful OS persistence/orchestration boundary proven |
+| **WO-SR-011A Dossier Canonical Artifact Staging** | **ACTIVE / R3** | Exact protected Dossier Git blobs, generated provenance, exact inventory, production refusal, backup-content/hash proof, and observed whole-slot rollback; runtime remains Disabled |
 
 ### portfolio-operator (`GOAL-PORTFOLIO-OPERATOR-001` / `LOOP-PORTFOLIO-OPERATOR-001`)
 | WO | State | Notes |

@@ -2,12 +2,12 @@
 
 | Field | Value |
 | --- | --- |
-| Status | IMPLEMENTED LOCALLY - protected PR sequencing pending |
+| Status | PROVEN ON CURRENT PROTECTED BASE - protected PR pending |
 | Program | Five-Suite Federated Repository Buildout |
 | Goal | `GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES` |
 | Risk | R3 bounded non-production local artifact staging |
 | Authority | `OWNER-FIVE-SUITE-FEDERATED-COMPLETION-20260826` |
-| Sovereign base | `54f9e4b411fb886bd592226067928f024b02285b` |
+| Sovereign base | `f14fc4999f650ed4bbff2633813be6b57ec4bfbc` |
 | Dossier source | `bsvalues/terrafusion-dossier@7558cfebfeea0c7b536251769b1d779c4558a763` |
 | Module | `src/evidence-registry/project-dossier-evidence-registry-read.mjs`, 8901 bytes, SHA-256 `bb0427d6634412d86be92a2ef5f6f0bfcdf97ee054887a42d59c2a0bc0127a8b` |
 | Schema | `contract-compat/dossier.evidence-registry-read.v1/dossier.evidence-registry-read.v1.schema.json`, 2851 bytes, SHA-256 `f658bc2bda718f58bd0353e9635524d5dbd376be515b543da3442b0094e52270` |
@@ -30,6 +30,10 @@ bootstrap failure cleanup and two whole-slot restoration paths before any runtim
 6. `docs/brain/workorders/active/WO-SR-011A-dossier-canonical-artifact-staging.md`
 7. `docs/brain/workorders/evidence/WO-SR-011A-DOSSIER-CANONICAL-ARTIFACT-STAGING.md`
 8. `docs/governance/CI_WORKFLOW_LIFECYCLE_POLICY.md`
+9. `docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md`
+10. `docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md`
+11. `docs/brain/workorders/programs/ACTIVE_PROGRAM_PLAYBOOK.md`
+12. `docs/brain/workorders/programs/five-suite-federated-repository-buildout.md`
 
 ## Required proof
 

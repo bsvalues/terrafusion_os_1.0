@@ -2,7 +2,7 @@
 
 ## Current verdict
 
-`LOCAL_TERMINAL_PROOF_PASS_AWAITING_PROTECTED_REVIEW_AND_MERGE`
+`COMPLETE_PROTECTED_MAIN_VERIFIED`
 
 ## Immutable inputs
 
@@ -73,10 +73,12 @@ proof/governance transaction integrity, and semantic-ownership scope. The owners
 this child is the bounded read-runtime adoption and that the immediate Dais ownership successor must
 classify/cut over remaining mutable defaults and transitions before Dossier begins.
 
-## Remaining protected-repository gates
+## Protected-repository closeout
 
-- exact-head protected checks and resolved review threads;
-- merge and protected-main verification.
+PR #1467 exact head `b24f263ac84fd5403d8fb1ed6e3ba18c511aafbb` passed every required
+first-party context, all three substantive review threads were resolved, and GitHub reported the
+head clean. It squash-merged as `54f9e4b411fb886bd592226067928f024b02285b`; fetched protected
+`origin/main` resolved to that exact merge before successor work began.
 
 ## Boundaries
 
