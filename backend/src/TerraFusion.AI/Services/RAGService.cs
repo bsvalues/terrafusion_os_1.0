@@ -245,6 +245,8 @@ namespace TerraFusion.AI.Services
             decimal scoreThreshold,
             bool strictSearch)
         {
+            ArgumentNullException.ThrowIfNull(query);
+
             try
             {
                 // Query text can contain sensitive material. The canonical grounded-context path
@@ -253,7 +255,7 @@ namespace TerraFusion.AI.Services
                 _logger.LogInformation(
                     "Searching dataset {DatasetId} with a {QueryLength}-character query",
                     datasetId,
-                    query?.Length ?? 0);
+                    query.Length);
 
                 var dataset = await _context.RAGDatasets().FindAsync(datasetId);
                 if (dataset == null)

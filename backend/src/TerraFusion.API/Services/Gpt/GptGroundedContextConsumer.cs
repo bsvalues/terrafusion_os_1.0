@@ -199,19 +199,30 @@ public sealed class GptGroundedContextConsumer(
         DenialCode = denialCode,
     };
 
-    private static bool TryParseDatasetKey(string value, out int datasetId) =>
-        value is not null
-        && value.StartsWith(DatasetKeyPrefix, StringComparison.Ordinal)
-        && int.TryParse(
-            value.AsSpan(DatasetKeyPrefix.Length),
-            NumberStyles.None,
-            CultureInfo.InvariantCulture,
-            out datasetId)
-        && datasetId > 0
-        && string.Equals(
+    private static bool TryParseDatasetKey(string? value, out int datasetId)
+    {
+        datasetId = 0;
+        if (value is null || !value.StartsWith(DatasetKeyPrefix, StringComparison.Ordinal))
+        {
+            return false;
+        }
+
+        if (!int.TryParse(
+                value.AsSpan(DatasetKeyPrefix.Length),
+                NumberStyles.None,
+                CultureInfo.InvariantCulture,
+                out datasetId)
+            || datasetId <= 0)
+        {
+            datasetId = 0;
+            return false;
+        }
+
+        return string.Equals(
             value,
             $"{DatasetKeyPrefix}{datasetId.ToString(CultureInfo.InvariantCulture)}",
             StringComparison.Ordinal);
+    }
 
     private static GptGroundedContextConsumption Failure(
         GptGroundedContextConsumerFailure failure,
