@@ -127,7 +127,7 @@
         "expectedVersion": { "$ref": "#/definitions/version" },
         "current": { "$ref": "#/definitions/custodyState" },
         "action": { "type": "string", "minLength": 1, "maxLength": 50 },
-        "notes": { "type": "string", "minLength": 1, "maxLength": 500 },
+        "notes": { "type": "string", "minLength": 1, "maxLength": 500, "pattern": "\\S" },
         "previousEventHash": { "$ref": "#/definitions/hash" },
         "eventHash": { "$ref": "#/definitions/hash" }
       }
@@ -194,7 +194,7 @@
         "eventId": { "$ref": "#/definitions/guid" },
         "action": { "type": "string", "minLength": 1, "maxLength": 50 },
         "actor": { "type": "string", "minLength": 1, "maxLength": 200 },
-        "notes": { "type": "string", "minLength": 1, "maxLength": 500 },
+        "notes": { "type": "string", "minLength": 1, "maxLength": 500, "pattern": "\\S" },
         "previousEventHash": { "anyOf": [{ "$ref": "#/definitions/hash" }, { "const": "genesis" }] },
         "eventHash": { "$ref": "#/definitions/hash" },
         "timestamp": { "$ref": "#/definitions/timestamp" }
@@ -211,28 +211,84 @@
         "satisfiedAt": { "$ref": "#/definitions/timestamp" }
       }
     },
-    "mutation": {
-      "type": "object",
+    "createNoteMutation": {
+      "type": "object", "additionalProperties": false,
+      "required": ["version", "noteId", "content", "noteType", "createdBy", "createdAt"],
       "properties": {
-        "version": { "type": "integer", "minimum": 1 },
-        "noteId": { "$ref": "#/definitions/guid" }, "content": { "type": "string" }, "noteType": { "type": "string" },
-        "documentId": { "$ref": "#/definitions/guid" }, "name": { "type": "string" }, "documentType": { "type": "string" },
-        "status": { "enum": ["active", "sealed", "archived", "draft", "complete"] }, "mimeType": { "type": "string" },
-        "sizeBytes": { "type": "integer", "minimum": 0 }, "contentHash": { "$ref": "#/definitions/hash" },
-        "description": { "type": "string" }, "retentionClass": { "type": "string" }, "storagePath": { "type": "string" },
-        "entersCustodyChain": { "type": "boolean" }, "uploadedBy": { "type": "string" }, "uploadedAt": { "$ref": "#/definitions/timestamp" },
-        "updatedAt": { "$ref": "#/definitions/timestamp" }, "evidenceId": { "$ref": "#/definitions/guid" },
-        "title": { "type": "string" }, "evidenceType": { "type": "string" }, "integrity": { "$ref": "#/definitions/integrity" },
-        "createdBy": { "type": "string" }, "createdAt": { "$ref": "#/definitions/timestamp" },
-        "genesisEvent": { "$ref": "#/definitions/custodyEventMutation" }, "event": { "$ref": "#/definitions/custodyEventMutation" },
-        "chainLength": { "type": "integer", "minimum": 1 }, "packetId": { "$ref": "#/definitions/guid" },
-        "packetType": { "type": "string" }, "completenessPercent": { "type": "number", "minimum": 0, "maximum": 100 },
-        "satisfiedCount": { "type": "integer", "minimum": 0 }, "totalRequired": { "type": "integer", "minimum": 0 },
-        "items": { "type": "array", "items": { "$ref": "#/definitions/packetItemMutation" } }
-      },
-      "required": ["version"],
-      "additionalProperties": false
+        "version": { "type": "integer", "minimum": 1 }, "noteId": { "$ref": "#/definitions/guid" },
+        "content": { "type": "string", "minLength": 1, "maxLength": 2000 },
+        "noteType": { "type": "string", "minLength": 1, "maxLength": 50 },
+        "createdBy": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "createdAt": { "$ref": "#/definitions/timestamp" }
+      }
     },
+    "registerDocumentMutation": {
+      "type": "object", "additionalProperties": false,
+      "required": ["version", "documentId", "name", "documentType", "status", "mimeType", "sizeBytes", "contentHash", "entersCustodyChain", "uploadedBy", "uploadedAt"],
+      "properties": {
+        "version": { "type": "integer", "minimum": 1 }, "documentId": { "$ref": "#/definitions/guid" },
+        "name": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "documentType": { "type": "string", "minLength": 1, "maxLength": 50 },
+        "status": { "const": "active" }, "mimeType": { "type": "string", "minLength": 1, "maxLength": 100 },
+        "sizeBytes": { "type": "integer", "minimum": 0 }, "contentHash": { "$ref": "#/definitions/hash" },
+        "description": { "type": "string", "minLength": 1, "maxLength": 500 },
+        "retentionClass": { "type": "string", "minLength": 1, "maxLength": 50 },
+        "storagePath": { "type": "string", "minLength": 1, "maxLength": 500 },
+        "entersCustodyChain": { "type": "boolean" },
+        "uploadedBy": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "uploadedAt": { "$ref": "#/definitions/timestamp" }
+      }
+    },
+    "transitionDocumentMutation": {
+      "type": "object", "additionalProperties": false,
+      "required": ["version", "documentId", "status", "updatedAt"],
+      "properties": {
+        "version": { "type": "integer", "minimum": 1 }, "documentId": { "$ref": "#/definitions/guid" },
+        "status": { "$ref": "#/definitions/documentStatus" }, "updatedAt": { "$ref": "#/definitions/timestamp" }
+      }
+    },
+    "registerEvidenceMutation": {
+      "type": "object", "additionalProperties": false,
+      "required": ["version", "evidenceId", "title", "evidenceType", "integrity", "createdBy", "createdAt", "genesisEvent", "chainLength"],
+      "properties": {
+        "version": { "type": "integer", "minimum": 1 }, "evidenceId": { "$ref": "#/definitions/guid" },
+        "title": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "evidenceType": { "type": "string", "minLength": 1, "maxLength": 50 },
+        "documentId": { "$ref": "#/definitions/guid" }, "integrity": { "const": "pending" },
+        "createdBy": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "createdAt": { "$ref": "#/definitions/timestamp" },
+        "genesisEvent": { "$ref": "#/definitions/custodyEventMutation" }, "chainLength": { "const": 1 }
+      }
+    },
+    "appendCustodyMutation": {
+      "type": "object", "additionalProperties": false,
+      "required": ["version", "evidenceId", "integrity", "event", "chainLength"],
+      "properties": {
+        "version": { "type": "integer", "minimum": 1 }, "evidenceId": { "$ref": "#/definitions/guid" },
+        "integrity": { "$ref": "#/definitions/integrity" }, "event": { "$ref": "#/definitions/custodyEventMutation" },
+        "chainLength": { "type": "integer", "minimum": 2 }
+      }
+    },
+    "createPacketMutation": {
+      "type": "object", "additionalProperties": false,
+      "required": ["version", "packetId", "packetType", "name", "status", "completenessPercent", "satisfiedCount", "totalRequired", "createdBy", "createdAt", "items"],
+      "properties": {
+        "version": { "type": "integer", "minimum": 1 }, "packetId": { "$ref": "#/definitions/guid" },
+        "packetType": { "type": "string", "minLength": 1, "maxLength": 50 },
+        "name": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "status": { "enum": ["draft", "complete"] },
+        "completenessPercent": { "type": "number", "minimum": 0, "maximum": 100 },
+        "satisfiedCount": { "type": "integer", "minimum": 0 }, "totalRequired": { "type": "integer", "minimum": 0 },
+        "createdBy": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "createdAt": { "$ref": "#/definitions/timestamp" },
+        "items": { "type": "array", "maxItems": 100, "items": { "$ref": "#/definitions/packetItemMutation" } }
+      }
+    },
+    "mutation": { "anyOf": [
+      { "$ref": "#/definitions/createNoteMutation" }, { "$ref": "#/definitions/registerDocumentMutation" },
+      { "$ref": "#/definitions/transitionDocumentMutation" }, { "$ref": "#/definitions/registerEvidenceMutation" },
+      { "$ref": "#/definitions/appendCustodyMutation" }, { "$ref": "#/definitions/createPacketMutation" }
+    ] },
     "violation": {
       "type": "object", "additionalProperties": false,
       "required": ["code", "message"],
@@ -253,7 +309,15 @@
         "parcelId": { "$ref": "#/definitions/parcelId" }, "traceId": { "$ref": "#/definitions/identifier" },
         "decision": { "const": "accepted" }, "mutation": { "$ref": "#/definitions/mutation" },
         "violations": { "type": "array", "maxItems": 0 }
-      }
+      },
+      "allOf": [{ "anyOf": [
+        { "properties": { "operation": { "const": "createNote" }, "mutation": { "$ref": "#/definitions/createNoteMutation" } } },
+        { "properties": { "operation": { "const": "registerDocument" }, "mutation": { "$ref": "#/definitions/registerDocumentMutation" } } },
+        { "properties": { "operation": { "const": "transitionDocumentStatus" }, "mutation": { "$ref": "#/definitions/transitionDocumentMutation" } } },
+        { "properties": { "operation": { "const": "registerEvidence" }, "mutation": { "$ref": "#/definitions/registerEvidenceMutation" } } },
+        { "properties": { "operation": { "const": "appendCustodyEvent" }, "mutation": { "$ref": "#/definitions/appendCustodyMutation" } } },
+        { "properties": { "operation": { "const": "createPacket" }, "mutation": { "$ref": "#/definitions/createPacketMutation" } } }
+      ] }]
     },
     "rejectedResult": {
       "type": "object", "additionalProperties": false,

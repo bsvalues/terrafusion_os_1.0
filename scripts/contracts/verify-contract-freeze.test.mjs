@@ -513,7 +513,13 @@ function expectedDossierMutationResult(request) {
     const event = {
       eventId: command.eventId, action, actor: request.actorId,
     };
-    if (command.notes !== undefined) event.notes = command.notes.trim();
+    if (command.notes !== undefined) {
+      const notes = command.notes.trim();
+      if (!notes) {
+        return rejectDossierMutation(request, 'INVALID_INPUT', 'custody notes must contain non-whitespace text');
+      }
+      event.notes = notes;
+    }
     Object.assign(event, {
       previousEventHash: command.previousEventHash, eventHash: command.eventHash,
       timestamp: request.effectiveAt,
@@ -1027,6 +1033,30 @@ test('Dossier mutation identity and cross-lane payloads fail closed', () => {
     validateJsonSchema(schema, schema, hostOwnedCustodyClassification),
     [],
     'the host must not override suite-owned document custody classification'
+  );
+
+  const incompleteAcceptedMutation = dossierMutationFixture('create-note');
+  incompleteAcceptedMutation.result.mutation = { version: 1 };
+  assert.notDeepEqual(
+    validateJsonSchema(schema, schema, incompleteAcceptedMutation),
+    [],
+    'an accepted operation must carry its complete operation-specific mutation'
+  );
+
+  const crossOperationMutation = dossierMutationFixture('create-note');
+  crossOperationMutation.result.mutation = dossierMutationFixture('register-document').result.mutation;
+  assert.notDeepEqual(
+    validateJsonSchema(schema, schema, crossOperationMutation),
+    [],
+    'an accepted operation must not carry another operation mutation shape'
+  );
+
+  const whitespaceCustodyNotes = dossierMutationFixture('append-custody');
+  whitespaceCustodyNotes.request.command.notes = '   ';
+  assert.notDeepEqual(
+    validateJsonSchema(schema, schema, whitespaceCustodyNotes),
+    [],
+    'whitespace-only custody notes must fail closed at the schema boundary'
   );
 });
 
