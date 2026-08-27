@@ -7,7 +7,7 @@
 | Goal | `GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES` |
 | Risk | R4 canonical runtime adoption and recoverable ownership cutover |
 | Authority | `OWNER-FIVE-SUITE-FEDERATED-COMPLETION-20260826` |
-| Sovereign dependency | protected `main` `acf4abc5959f468c6a43a00b09cead5d55679795` |
+| Sovereign dependency | protected `main` `6291e58b11626ad04bdc89e736be89b2a574261c` |
 | Suite source | Dais protected `main` `8a9cfc608bcda835126db2054bb7ba7ecf185275` |
 | Contract | `dais.appeal-mutation@1.0.0` |
 | Terminal condition | `DAIS_APPEAL_MUTATION_LOCAL_EXACT_RUNTIME_ADOPTED_ROLLBACK_EXECUTED_AND_DUPLICATE_JUDGMENT_RETIRED` |

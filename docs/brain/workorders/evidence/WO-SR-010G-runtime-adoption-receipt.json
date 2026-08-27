@@ -1,13 +1,13 @@
 {
   "schemaVersion": 1,
   "workOrder": "WO-SR-010G",
-  "runId": "20260827T032840851Z-3b3ac37778fb46fc8064c5de935084bc",
+  "runId": "20260827T040609703Z-96ba0601f08b4987b8f6c005297c4c6a",
   "result": "PASS",
   "receiptState": "LOCAL_TERMINAL_PROOF_SUCCESS",
   "terminalCondition": "DAIS_APPEAL_MUTATION_LOCAL_EXACT_RUNTIME_ADOPTED_ROLLBACK_EXECUTED_AND_DUPLICATE_JUDGMENT_RETIRED",
-  "localReceiptSha256": "30106224c231fdfcf03bf3958cbc5fcdf52edecedeeb40126af4d4eb7ea0d5da",
-  "sovereignHead": "1c8a174c25e9ba1d3bcdb0c7f2e0c4d58eeea55f",
-  "protectedSovereignDependency": "acf4abc5959f468c6a43a00b09cead5d55679795",
+  "localReceiptSha256": "52845b55abd126ed9877ac2683a97812ad6089ab06b4a9cfeb4d2b9f18dfe512",
+  "sovereignHead": "f3f8f675573b21203aad7bbf6a7abc9cd2651806",
+  "protectedSovereignDependency": "6291e58b11626ad04bdc89e736be89b2a574261c",
   "daisCommit": "8a9cfc608bcda835126db2054bb7ba7ecf185275",
   "artifactIdentity": {
     "moduleSha256": "779ef37435e2deb8f181b3c34e0712c35829b7a123f047752fc5bf09de331ff2",

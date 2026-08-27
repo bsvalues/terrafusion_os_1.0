@@ -5,8 +5,8 @@
 `LOCAL_TERMINAL_PROOF_PASS_PROTECTED_ASSURANCE_PENDING`
 
 The terminal local proof passed at sovereign feature head
-`1c8a174c25e9ba1d3bcdb0c7f2e0c4d58eeea55f`, which contains protected sovereign dependency
-`acf4abc5959f468c6a43a00b09cead5d55679795` and exact Dais source
+`f3f8f675573b21203aad7bbf6a7abc9cd2651806`, which contains protected sovereign dependency
+`6291e58b11626ad04bdc89e736be89b2a574261c` and exact Dais source
 `8a9cfc608bcda835126db2054bb7ba7ecf185275`.
 
 ## Observed outcome
@@ -31,7 +31,7 @@ The terminal local proof passed at sovereign feature head
 ## Durable evidence
 
 - tracked receipt: `docs/brain/workorders/evidence/WO-SR-010G-runtime-adoption-receipt.json`;
-- local receipt SHA-256: `30106224c231fdfcf03bf3958cbc5fcdf52edecedeeb40126af4d4eb7ea0d5da`;
+- local receipt SHA-256: `52845b55abd126ed9877ac2683a97812ad6089ab06b4a9cfeb4d2b9f18dfe512`;
 - rollback sentinel SHA-256: `44d57d55fe7a6c433cf28b10bb63da7ab400703909f62d601e1c9ee5907d60a1`;
 - terminal condition:
   `DAIS_APPEAL_MUTATION_LOCAL_EXACT_RUNTIME_ADOPTED_ROLLBACK_EXECUTED_AND_DUPLICATE_JUDGMENT_RETIRED`.
