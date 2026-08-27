@@ -198,11 +198,11 @@ public sealed class CountyCsvStreamParser
 
     private static void ValidateOptions(CountyCsvParserOptions options)
     {
-        if (options.Delimiter is '\0' or '\r' or '\n' or '"')
+        if (options.Delimiter is '\0' or '\r' or '\n' or '"' or '\uFEFF')
         {
             throw new ArgumentOutOfRangeException(
                 nameof(options),
-                "CSV delimiter must be explicit and cannot be NUL, CR, LF, or a double quote.");
+                "CSV delimiter must be explicit and cannot be NUL, CR, LF, a double quote, or the BOM character.");
         }
 
         if (options.MaxInputBytes <= 0)

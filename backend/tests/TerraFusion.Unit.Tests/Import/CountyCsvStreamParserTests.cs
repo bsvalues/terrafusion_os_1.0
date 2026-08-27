@@ -238,6 +238,7 @@ public sealed class CountyCsvStreamParserTests
     [InlineData('\r')]
     [InlineData('\n')]
     [InlineData('"')]
+    [InlineData('\uFEFF')]
     public void Constructor_RejectsAmbiguousDelimiterPolicy(char delimiter)
     {
         var options = CreateOptions(delimiter: delimiter);
