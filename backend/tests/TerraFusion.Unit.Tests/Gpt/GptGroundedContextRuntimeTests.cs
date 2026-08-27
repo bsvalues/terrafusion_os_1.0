@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using TerraFusion.API.Configuration;
 using TerraFusion.API.Services.Gpt;
@@ -146,6 +147,7 @@ public sealed class GptGroundedContextRuntimeTests
         for (var start = 0; start < 2; start++)
         {
             var services = new ServiceCollection();
+            services.AddLogging();
             services.AddGptGroundedContextRuntime(
                 configuration,
                 new TestHostEnvironment("Development", root));
@@ -166,6 +168,7 @@ public sealed class GptGroundedContextRuntimeTests
             })
             .Build();
         var disabledServices = new ServiceCollection();
+        disabledServices.AddLogging();
         disabledServices.AddGptGroundedContextRuntime(
             disabledConfiguration,
             new TestHostEnvironment("Development", root));
@@ -177,6 +180,7 @@ public sealed class GptGroundedContextRuntimeTests
         }
 
         var restoredServices = new ServiceCollection();
+        restoredServices.AddLogging();
         restoredServices.AddGptGroundedContextRuntime(
             configuration,
             new TestHostEnvironment("Development", root));
