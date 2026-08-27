@@ -29,6 +29,9 @@ public class DossierEvidence
   [StringLength(20)]
   public string Integrity { get; set; } = "pending";
 
+  /// <summary>Suite-governed optimistic mutation version.</summary>
+  public long Version { get; set; } = 1;
+
   /// <summary>Optional link to a DossierDocument.</summary>
   public Guid? DocumentId { get; set; }
   public DossierDocument? Document { get; set; }
