@@ -49,6 +49,18 @@ namespace TerraFusion.AI.Interfaces
             decimal scoreThreshold = 0.7m);
 
         /// <summary>
+        /// Read-only retrieval that authorizes one active dataset against the authenticated county
+        /// immediately before and after search and rejects any result document outside the dataset.
+        /// Returns null when the dataset is absent, inactive, or belongs to another county.
+        /// </summary>
+        Task<RAGSearchResult?> GetRelevantContextForCountyAsync(
+            int datasetId,
+            int countyId,
+            string query,
+            int topK = 5,
+            decimal scoreThreshold = 0.7m);
+
+        /// <summary>
         /// Search across multiple datasets
         /// </summary>
         Task<RAGSearchResult> SearchDatasetsAsync(
@@ -142,6 +154,12 @@ namespace TerraFusion.AI.Interfaces
     /// </summary>
     public class RAGChunkDetail
     {
+        /// <summary>
+        /// Stable source document identifier. This is required for governed citation identity;
+        /// full document text is never exposed by the grounded-context contract.
+        /// </summary>
+        public int DocumentId { get; set; }
+
         /// <summary>
         /// Chunk identifier (embedding ID)
         /// </summary>

@@ -46,6 +46,18 @@ namespace TerraFusion.AI.Interfaces
             float minScore = 0.7f);
 
         /// <summary>
+        /// Governed search variant whose storage failures must propagate rather than being
+        /// represented as a legitimate empty result. Repositories without legacy error-swallowing
+        /// behavior can use the default implementation.
+        /// </summary>
+        Task<List<RAGEmbeddingSearchResult>> SearchSimilarStrictAsync(
+            int datasetId,
+            float[] queryEmbedding,
+            int topK = 5,
+            float minScore = 0.7f) =>
+            SearchSimilarAsync(datasetId, queryEmbedding, topK, minScore);
+
+        /// <summary>
         /// Search across multiple datasets
         /// </summary>
         Task<List<RAGEmbeddingSearchResult>> SearchMultipleDatasetsAsync(

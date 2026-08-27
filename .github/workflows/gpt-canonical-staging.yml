@@ -2,6 +2,22 @@ name: Gpt Canonical Staging Guards
 
 on:
   workflow_dispatch:
+  pull_request:
+    paths:
+      - '.github/workflows/gpt-canonical-staging.yml'
+      - 'backend/src/TerraFusion.AI/Interfaces/IRAGEmbeddingRepository.cs'
+      - 'backend/src/TerraFusion.AI/Interfaces/IRAGService.cs'
+      - 'backend/src/TerraFusion.AI/Repositories/PgVectorRAGEmbeddingRepository.cs'
+      - 'backend/src/TerraFusion.AI/Services/OpenAIEmbeddingService.cs'
+      - 'backend/src/TerraFusion.AI/Services/RAGService.cs'
+      - 'backend/src/TerraFusion.API/Configuration/GptGroundedContextRuntimeOptions.cs'
+      - 'backend/src/TerraFusion.API/Controllers/GPTController.cs'
+      - 'backend/src/TerraFusion.API/Program.cs'
+      - 'backend/src/TerraFusion.API/Services/Gpt/**'
+      - 'backend/src/TerraFusion.API/appsettings*.json'
+      - 'backend/tests/TerraFusion.Unit.Tests/Gpt/**'
+      - 'scripts/bootstrap/Stage-GptGroundedContextModule.ps1'
+      - 'tests/gpt-staging-identity.ps1'
 
 permissions:
   contents: read
@@ -24,3 +40,42 @@ jobs:
           $runnerWorkRoot = Split-Path -Parent (Split-Path -Parent $env:GITHUB_WORKSPACE)
           $proofRoot = Join-Path $runnerWorkRoot "tf-gpt-staging-$env:GITHUB_RUN_ID-$env:GITHUB_RUN_ATTEMPT"
           ./tests/gpt-staging-identity.ps1 -ProofRootBase $proofRoot -OfflineGuardsOnly
+
+  runtime-adoption:
+    name: gpt-runtime-adoption
+    runs-on: windows-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout sovereign source without credentials
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Install .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Install Node 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24.x'
+
+      - name: Stage exact protected GPT artifact
+        shell: pwsh
+        run: |
+          ./scripts/bootstrap/Stage-GptGroundedContextModule.ps1 `
+            -GptRepository 'https://github.com/bsvalues/terrafusion-gpt.git' `
+            -EnvironmentName CI
+
+      - name: Prove exact runtime, adoption, rollback, tamper refusal, and consumer boundary
+        shell: pwsh
+        env:
+          TERRAFUSION_GPT_RUNTIME_PROOF_ROOT: ${{ github.workspace }}
+          TERRAFUSION_GPT_RUNTIME_PROOF_REQUIRED: "1"
+        run: |
+          dotnet test backend/tests/TerraFusion.Unit.Tests/TerraFusion.Unit.Tests.csproj `
+            --configuration Release `
+            --filter 'FullyQualifiedName~GptGroundedContext' `
+            --logger 'console;verbosity=normal'

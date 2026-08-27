@@ -95,11 +95,26 @@ namespace TerraFusion.AI.Repositories
             return embeddingsList.Count;
         }
 
-        public async Task<List<RAGEmbeddingSearchResult>> SearchSimilarAsync(
+        public Task<List<RAGEmbeddingSearchResult>> SearchSimilarAsync(
             int datasetId,
             float[] queryEmbedding,
             int topK = 5,
-            float minScore = 0.7f)
+            float minScore = 0.7f) =>
+            SearchSimilarCoreAsync(datasetId, queryEmbedding, topK, minScore, swallowDbFailure: true);
+
+        public Task<List<RAGEmbeddingSearchResult>> SearchSimilarStrictAsync(
+            int datasetId,
+            float[] queryEmbedding,
+            int topK = 5,
+            float minScore = 0.7f) =>
+            SearchSimilarCoreAsync(datasetId, queryEmbedding, topK, minScore, swallowDbFailure: false);
+
+        private async Task<List<RAGEmbeddingSearchResult>> SearchSimilarCoreAsync(
+            int datasetId,
+            float[] queryEmbedding,
+            int topK,
+            float minScore,
+            bool swallowDbFailure)
         {
             _logger.LogDebug(
                 "pgvector search dataset {DatasetId} topK={TopK} minScore={MinScore}",
@@ -146,7 +161,8 @@ namespace TerraFusion.AI.Repositories
             catch (DbException ex)
             {
                 _logger.LogError(ex, "Vector similarity search failed for dataset {DatasetId}", datasetId);
-                return new List<RAGEmbeddingSearchResult>();
+                if (swallowDbFailure) return new List<RAGEmbeddingSearchResult>();
+                throw;
             }
             finally
             {

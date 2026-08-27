@@ -231,15 +231,29 @@ namespace TerraFusion.AI.Services
             return (int)Math.Ceiling(text.Length / 4.0);
         }
 
-        public async System.Threading.Tasks.Task<RAGSearchResult> GetRelevantContextAsync(
+        public System.Threading.Tasks.Task<RAGSearchResult> GetRelevantContextAsync(
             int datasetId,
             string query,
             int topK = 5,
-            decimal scoreThreshold = 0.7m)
+            decimal scoreThreshold = 0.7m) =>
+            GetRelevantContextCoreAsync(datasetId, query, topK, scoreThreshold, strictSearch: false);
+
+        private async System.Threading.Tasks.Task<RAGSearchResult> GetRelevantContextCoreAsync(
+            int datasetId,
+            string query,
+            int topK,
+            decimal scoreThreshold,
+            bool strictSearch)
         {
             try
             {
-                _logger.LogInformation("Searching dataset {DatasetId} for: {Query}", datasetId, query);
+                // Query text can contain sensitive material. The canonical grounded-context path
+                // performs its suite-owned PII preflight before reaching retrieval, and this lower
+                // layer never emits raw query content even when called by a legacy consumer.
+                _logger.LogInformation(
+                    "Searching dataset {DatasetId} with a {QueryLength}-character query",
+                    datasetId,
+                    query?.Length ?? 0);
 
                 var dataset = await _context.RAGDatasets().FindAsync(datasetId);
                 if (dataset == null)
@@ -253,11 +267,17 @@ namespace TerraFusion.AI.Services
                     dataset.EmbeddingModel);
 
                 // Search for similar embeddings using the repository
-                var searchResults = await _embeddingRepository.SearchSimilarAsync(
-                    datasetId,
-                    queryEmbedding,
-                    topK,
-                    (float)scoreThreshold);
+                var searchResults = strictSearch
+                    ? await _embeddingRepository.SearchSimilarStrictAsync(
+                        datasetId,
+                        queryEmbedding,
+                        topK,
+                        (float)scoreThreshold)
+                    : await _embeddingRepository.SearchSimilarAsync(
+                        datasetId,
+                        queryEmbedding,
+                        topK,
+                        (float)scoreThreshold);
 
                 if (!searchResults.Any())
                 {
@@ -274,8 +294,13 @@ namespace TerraFusion.AI.Services
                 // Enrich results with document titles
                 var documentIds = searchResults.Select(r => r.DocumentId).Distinct().ToList();
                 var documents = await _context.RAGDocuments()
-                    .Where(d => documentIds.Contains(d.Id))
+                    .Where(d => d.DatasetId == datasetId && documentIds.Contains(d.Id))
                     .ToDictionaryAsync(d => d.Id, d => d);
+                if (documents.Count != documentIds.Count)
+                {
+                    throw new InvalidOperationException(
+                        "RAG search returned a document outside the requested dataset.");
+                }
 
                 foreach (var searchResult in searchResults)
                 {
@@ -296,6 +321,7 @@ namespace TerraFusion.AI.Services
                 // Phase 11: Build chunk details for audit traceability
                 var chunkDetails = searchResults.Select(r => new RAGChunkDetail
                 {
+                    DocumentId = r.DocumentId,
                     ChunkId = r.EmbeddingId,
                     DocumentTitle = r.DocumentTitle ?? "Unknown",
                     SourceUrl = r.SourceUrl,
@@ -324,6 +350,64 @@ namespace TerraFusion.AI.Services
                 _logger.LogError(ex, "Error searching dataset {DatasetId}", datasetId);
                 throw;
             }
+        }
+
+        public async System.Threading.Tasks.Task<RAGSearchResult?> GetRelevantContextForCountyAsync(
+            int datasetId,
+            int countyId,
+            string query,
+            int topK = 5,
+            decimal scoreThreshold = 0.7m)
+        {
+            var authorizedBefore = await _context.RAGDatasets()
+                .AsNoTracking()
+                .AnyAsync(dataset =>
+                    dataset.Id == datasetId
+                    && dataset.CountyId == countyId
+                    && dataset.Status == "Active");
+            if (!authorizedBefore)
+            {
+                return null;
+            }
+
+            var result = await GetRelevantContextCoreAsync(
+                datasetId,
+                query,
+                topK,
+                scoreThreshold,
+                strictSearch: true);
+
+            var authorizedAfter = await _context.RAGDatasets()
+                .AsNoTracking()
+                .AnyAsync(dataset =>
+                    dataset.Id == datasetId
+                    && dataset.CountyId == countyId
+                    && dataset.Status == "Active");
+            if (!authorizedAfter)
+            {
+                throw new InvalidOperationException(
+                    "RAG dataset authorization changed during governed retrieval.");
+            }
+
+            var resultDocumentIds = result.ChunkDetails
+                .Select(detail => detail.DocumentId)
+                .Distinct()
+                .ToArray();
+            if (resultDocumentIds.Length > 0)
+            {
+                var ownedDocumentCount = await _context.RAGDocuments()
+                    .AsNoTracking()
+                    .CountAsync(document =>
+                        document.DatasetId == datasetId
+                        && resultDocumentIds.Contains(document.Id));
+                if (ownedDocumentCount != resultDocumentIds.Length)
+                {
+                    throw new InvalidOperationException(
+                        "Governed RAG result contained a document outside the authorized dataset.");
+                }
+            }
+
+            return result;
         }
 
         public async System.Threading.Tasks.Task<RAGSearchResult> SearchDatasetsAsync(

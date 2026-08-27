@@ -79,9 +79,8 @@ namespace TerraFusion.AI.Services
 
                 if (!response.IsSuccessStatusCode)
                 {
-                    var error = await response.Content.ReadAsStringAsync();
-                    _logger.LogError("OpenAI API error: {Status} - {Error}",
-                        response.StatusCode, error);
+                    _logger.LogError("OpenAI embedding API returned status {Status}; response body omitted",
+                        response.StatusCode);
                     throw new HttpRequestException($"OpenAI API error: {response.StatusCode}");
                 }
 
@@ -149,9 +148,9 @@ namespace TerraFusion.AI.Services
 
                 if (!response.IsSuccessStatusCode)
                 {
-                    var error = await response.Content.ReadAsStringAsync();
-                    _logger.LogError("OpenAI batch API error: {Status} - {Error}",
-                        response.StatusCode, error);
+                    _logger.LogError(
+                        "OpenAI batch embedding API returned status {Status}; response body omitted",
+                        response.StatusCode);
                     throw new HttpRequestException($"OpenAI API error: {response.StatusCode}");
                 }
 
