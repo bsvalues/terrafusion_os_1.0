@@ -343,9 +343,14 @@ and merged reviewed head `b24f263ac84fd5403d8fb1ed6e3ba18c511aafbb` as
 decision source as `8a9cfc608bcda835126db2054bb7ba7ecf185275`. `WO-SR-010E` staged those exact
 bytes in PR #1470, merged as `153103c4f5356219c142ccfe88174c2c6477e54d`. `WO-SR-010F` then
 truthfully retired four fabricated or unsupported sovereign behaviors in PR #1469, merged as
-`acf4abc5959f468c6a43a00b09cead5d55679795`. `WO-SR-010G` now adopts the staged mutation boundary,
-retires duplicate OS lifecycle judgment, proves stale-write conflict and exact Disabled rollback,
-and leaves only sovereign integration/persistence responsibilities. `WO-SR-010H` removed the
+`acf4abc5959f468c6a43a00b09cead5d55679795`. `WO-SR-010G` adopted the staged mutation boundary,
+retired duplicate OS lifecycle judgment, proved stale-write conflict and exact Disabled rollback,
+and left only sovereign integration/persistence responsibilities in protected merge
+`f14fc4999f650ed4bbff2633813be6b57ec4bfbc`. `WO-SR-010H` removed the
 unsupported frontend scheduling offer in protected merge
-`6291e58b11626ad04bdc89e736be89b2a574261c`. Dossier begins after the WO-SR-010G protected merge,
-then GPT follows without a per-child owner relay.
+`6291e58b11626ad04bdc89e736be89b2a574261c`. Dais is terminal. `WO-SR-011A` now stages the exact
+protected Dossier evidence-registry read artifact with provenance, production refusal, and observed
+whole-slot rollback while runtime remains Disabled. It is followed by `WO-SR-011B` persistent exact
+read runtime adoption, `WO-SR-011C` suite ownership-governance truth, and `WO-SR-011D` duplicate-
+adapter judgment plus terminal proof while preserving sovereign custody/write orchestration; GPT
+then follows without a per-child owner relay.
