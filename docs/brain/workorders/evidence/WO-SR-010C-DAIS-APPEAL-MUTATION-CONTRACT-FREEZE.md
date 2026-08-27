@@ -23,7 +23,7 @@ decided decisions; typed rejection of invalid ground, tax year, requested status
 transition, and time-regressing lifecycle; county/result mismatch; and schema rejection of PII and
 monetary cross-lane fields. All three focused mutation tests pass and both JSON documents parse.
 
-The post-repair complete freeze verifier passed from a fresh disposable exact-commit checkout after
+The pre-calendar-repair complete freeze verifier passed from a fresh disposable exact-commit checkout after
 its manifest-listed files were mechanically rematerialized as canonical LF. It reported 7 groups,
 66 frozen files, 10 deferred files, and 5 OS-internal files; the complete Node suite passed 23/23.
 The Windows
@@ -39,3 +39,9 @@ Independent review found and repaired one pre-freeze P1: the first candidate per
 snapshot with `decisionAt` and permitted `hasDecidedValue=true` on a non-`decided` target. The
 decision semantics now reject both contradictory shapes with typed `INVALID_LIFECYCLE` results and
 dedicated frozen negative fixtures.
+
+A subsequent required-conversation finding exposed a second fail-open case: shape-valid but
+calendar-impossible UTC timestamps could pass the schema regex and `Date.parse` ordering. The
+contract proof now parses actual UTC calendar instants (including only known leap seconds) and adds
+`invalid-calendar.synthetic.json`, which requires typed `INVALID_LIFECYCLE`. The repaired freeze is
+7 groups / 67 frozen files; exact-head and protected-main reruns supersede the 66-file observation.

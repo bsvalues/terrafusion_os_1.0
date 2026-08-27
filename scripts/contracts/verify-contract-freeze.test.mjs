@@ -137,6 +137,45 @@ const daisTransitions = new Map([
   ['decided', new Set()],
   ['withdrawn', new Set()],
 ]);
+const mutationUtcTimestamp =
+  /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})(?:\.(\d+))?Z$/;
+const mutationLeapSecondDates = new Set([
+  '1972-06-30', '1972-12-31', '1973-12-31', '1974-12-31', '1975-12-31',
+  '1976-12-31', '1977-12-31', '1978-12-31', '1979-12-31', '1981-06-30',
+  '1982-06-30', '1983-06-30', '1985-06-30', '1987-12-31', '1989-12-31',
+  '1990-12-31', '1992-06-30', '1993-06-30', '1994-06-30', '1995-12-31',
+  '1997-06-30', '1998-12-31', '2005-12-31', '2008-12-31', '2012-06-30',
+  '2015-06-30', '2016-12-31',
+]);
+
+function parseMutationUtcTimestamp(value) {
+  if (typeof value !== 'string') return null;
+  const match = mutationUtcTimestamp.exec(value);
+  if (!match) return null;
+  const [, yearText, monthText, dayText, hourText, minuteText, secondText, fraction = ''] = match;
+  const [year, month, day, hour, minute, second] = [
+    yearText, monthText, dayText, hourText, minuteText, secondText,
+  ].map(Number);
+  const date = `${yearText}-${monthText}-${dayText}`;
+  const leapSecond = second === 60;
+  if (leapSecond && (hour !== 23 || minute !== 59 || !mutationLeapSecondDates.has(date))) return null;
+  const instant = new Date(0);
+  instant.setUTCFullYear(year, month - 1, day);
+  instant.setUTCHours(hour, minute, leapSecond ? 59 : second, 0);
+  if (
+    Number.isNaN(instant.getTime()) || instant.getUTCFullYear() !== year ||
+    instant.getUTCMonth() !== month - 1 || instant.getUTCDate() !== day ||
+    instant.getUTCHours() !== hour || instant.getUTCMinutes() !== minute ||
+    instant.getUTCSeconds() !== (leapSecond ? 59 : second)
+  ) return null;
+  return { year, dateTime: `${date}T${hourText}:${minuteText}:${secondText}`, fraction };
+}
+
+function compareMutationInstants(left, right) {
+  if (left.dateTime !== right.dateTime) return left.dateTime.localeCompare(right.dateTime);
+  const width = Math.max(left.fraction.length, right.fraction.length);
+  return left.fraction.padEnd(width, '0').localeCompare(right.fraction.padEnd(width, '0'));
+}
 
 function mutationIdentity(request, decision, violations, mutation) {
   const result = {
@@ -157,6 +196,14 @@ function rejectedMutation(request, code, message) {
 }
 
 function expectedDaisMutationResult(request) {
+  const effectiveAt = parseMutationUtcTimestamp(request.effectiveAt);
+  if (!effectiveAt) {
+    return rejectedMutation(
+      request,
+      'INVALID_LIFECYCLE',
+      'lifecycle timestamps must be valid RFC 3339 UTC instants'
+    );
+  }
   if (request.operation === 'create') {
     const ground = request.command.ground ?? 'MARKET_VALUE';
     if (!daisGrounds.has(ground)) {
@@ -166,7 +213,7 @@ function expectedDaisMutationResult(request) {
         'ground is outside the closed Dais vocabulary'
       );
     }
-    const taxYear = request.command.taxYear ?? new Date(request.effectiveAt).getUTCFullYear();
+    const taxYear = request.command.taxYear ?? effectiveAt.year;
     if (!Number.isInteger(taxYear) || taxYear < 1900 || taxYear > 2200) {
       return rejectedMutation(
         request,
@@ -198,14 +245,19 @@ function expectedDaisMutationResult(request) {
       'current lifecycle timestamps conflict with status'
     );
   }
-  const lifecycleInstants = [current.filedAt, current.hearingAt, current.decisionAt].filter(Boolean);
-  if (
-    lifecycleInstants.some(
-      (instant, index) =>
-        index > 0 && Date.parse(instant) < Date.parse(lifecycleInstants[index - 1])
-    ) ||
-    Date.parse(request.effectiveAt) < Date.parse(lifecycleInstants.at(-1))
-  ) {
+  const lifecycleInstants = [current.filedAt, current.hearingAt, current.decisionAt, request.effectiveAt]
+    .filter(Boolean)
+    .map(parseMutationUtcTimestamp);
+  if (lifecycleInstants.some(instant => instant === null)) {
+    return rejectedMutation(
+      request,
+      'INVALID_LIFECYCLE',
+      'lifecycle timestamps must be valid RFC 3339 UTC instants'
+    );
+  }
+  if (lifecycleInstants.some(
+    (instant, index) => index > 0 && compareMutationInstants(instant, lifecycleInstants[index - 1]) < 0
+  )) {
     return rejectedMutation(
       request,
       'INVALID_LIFECYCLE',
@@ -489,7 +541,7 @@ function withChangedContractAndManifest(addTransition = false) {
 test('current shared-contract freeze is complete and hash-pinned', () => {
   assert.deepEqual(verifyContractFreeze({ repoRoot }), {
     groups: 7,
-    frozenFiles: 66,
+    frozenFiles: 67,
     deferredFiles: 10,
     osInternalFiles: 5,
   });
@@ -581,6 +633,7 @@ test('Dais appeal mutation rejected commands return exact typed decisions', () =
     'invalid-status',
     'invalid-transition',
     'invalid-lifecycle',
+    'invalid-calendar',
     'invalid-current-shape',
     'invalid-decided-value-shape',
   ]) {
@@ -781,7 +834,7 @@ test('versioned transition with Work Order and evidence passes baseline comparis
     }),
     {
       groups: 7,
-      frozenFiles: 66,
+      frozenFiles: 67,
       deferredFiles: 10,
       osInternalFiles: 5,
     }
@@ -873,7 +926,7 @@ test('a genuine type declaration still passes the content check', () => {
     verifyContractFreeze({ repoRoot: fixture.tempRoot, manifestPath: fixture.currentManifest }),
     {
       groups: 7,
-      frozenFiles: 66,
+      frozenFiles: 67,
       deferredFiles: 10,
       osInternalFiles: 5,
     }

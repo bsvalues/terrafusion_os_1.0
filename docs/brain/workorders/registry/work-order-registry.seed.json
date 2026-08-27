@@ -11171,7 +11171,7 @@
       ],
       "validationGates": [
         { "name": "focused Dais mutation contract proof", "command": "node --test --test-name-pattern='Dais appeal mutation' scripts/contracts/verify-contract-freeze.test.mjs", "required": true, "result": "pass - 3/3" },
-        { "name": "complete shared-contract freeze", "command": "node scripts/contracts/verify-contract-freeze.mjs and full node test file from LF-preserving checkout", "required": true, "result": "pass post-review - 7 groups, 66 frozen files; 23/23 tests" },
+        { "name": "complete shared-contract freeze", "command": "node scripts/contracts/verify-contract-freeze.mjs and full node test file from LF-preserving checkout", "required": true, "result": "pass before calendar repair - 7 groups, 66 frozen files; exact-head 67-file rerun required" },
         { "name": "C# contract build", "command": "dotnet build TerraFusion.Abstractions", "required": true, "result": "pending CI-capable host" },
         { "name": "governance and protected merge", "command": "JSON parse, diff check, required checks, exact-head merge and protected-main verification", "required": true, "result": "pending" }
       ],

@@ -215,6 +215,10 @@
           "sha256": "51a2a552d1b1cbe54cdbfbbbfb197a99025e86ba8c128a3f1ebdaa155b6a833f"
         },
         {
+          "path": "contracts/fixtures/dais.appeal-mutation.v1.invalid-calendar.synthetic.json",
+          "sha256": "d17988c8d76f6a986eae41a4add9fde4d05779cda0e24068aecea95749a9821b"
+        },
+        {
           "path": "contracts/fixtures/dais.appeal-mutation.v1.invalid-current-shape.synthetic.json",
           "sha256": "805a77fe35fc55e18e774068a1f23bc6d4508afade19ef06e8a9e202cb76681c"
         },
