@@ -688,78 +688,47 @@ public class DaisController : ControllerBase
   // ══════════════════════════════════════════════════════════════════
 
   /// <summary>
-  /// GET api/dais/appeal/grounds — List valid appeal grounds for BOE.
+  /// GET api/dais/appeal/grounds — Reserved until a canonical Dais-backed catalog exists.
   /// </summary>
   [HttpGet("appeal/grounds")]
+  [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status501NotImplemented)]
   public IActionResult GetAppealGrounds()
   {
-    return Ok(new
-    {
-      source = "wa-state-boe-appeals",
-      grounds = new object[]
-      {
-        new { code = "MARKET_VALUE", description = "Assessed value exceeds fair market value", rcw = "RCW 84.48.010", commonEvidence = new[] { "Comparable sales", "Appraisal report" } },
-        new { code = "UNIFORMITY", description = "Assessment not uniform with similar properties", rcw = "RCW 84.48.010", commonEvidence = new[] { "Comparable assessments", "Ratio studies" } },
-        new { code = "CLASSIFICATION", description = "Incorrect property classification", rcw = "RCW 84.40.030", commonEvidence = new[] { "Property photographs", "Use documentation" } },
-        new { code = "EXEMPTION_DENIAL", description = "Exemption improperly denied", rcw = "RCW 84.36", commonEvidence = new[] { "Eligibility documentation", "Income verification" } },
-        new { code = "CLERICAL_ERROR", description = "Computational or clerical error in assessment", rcw = "RCW 84.48.065", commonEvidence = new[] { "Assessment records", "Corrected calculations" } },
-      },
-    });
+    return CanonicalDaisCapabilityUnavailable("appeal grounds");
   }
 
   /// <summary>
-  /// GET api/dais/appeal/timeline — BOE appeal timeline and deadlines.
+  /// GET api/dais/appeal/timeline — Reserved until a canonical Dais-backed calendar exists.
   /// </summary>
   [HttpGet("appeal/timeline")]
+  [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status501NotImplemented)]
   public IActionResult GetAppealTimeline([FromQuery] int? taxYear)
   {
-    var year = taxYear ?? DateTime.UtcNow.Year;
-    return Ok(new
-    {
-      taxYear = year,
-      milestones = new object[]
-      {
-        new { phase = "VALUE_NOTICES", description = "Assessment change notices mailed", deadline = $"{year}-03-01", daysFromNow = (new DateTime(year, 3, 1) - DateTime.UtcNow).Days },
-        new { phase = "APPEAL_WINDOW_OPEN", description = "30-day appeal filing window opens", deadline = $"{year}-03-01", daysFromNow = (new DateTime(year, 3, 1) - DateTime.UtcNow).Days },
-        new { phase = "APPEAL_WINDOW_CLOSE", description = "Last day to file appeal", deadline = $"{year}-07-01", daysFromNow = (new DateTime(year, 7, 1) - DateTime.UtcNow).Days },
-        new { phase = "BOE_HEARINGS", description = "Board of Equalization hearings scheduled", deadline = $"{year}-07-15", daysFromNow = (new DateTime(year, 7, 15) - DateTime.UtcNow).Days },
-        new { phase = "BOE_DECISIONS", description = "BOE decisions published", deadline = $"{year}-08-15", daysFromNow = (new DateTime(year, 8, 15) - DateTime.UtcNow).Days },
-        new { phase = "SBE_APPEAL_DEADLINE", description = "Last day to appeal to State Board", deadline = $"{year}-09-15", daysFromNow = (new DateTime(year, 9, 15) - DateTime.UtcNow).Days },
-      },
-      rcw = "RCW 84.48",
-    });
+    return CanonicalDaisCapabilityUnavailable("appeal timeline");
   }
 
   /// <summary>
-  /// GET api/dais/appeal/evidence-checklist — Required evidence by appeal ground.
+  /// GET api/dais/appeal/evidence-checklist — Reserved until a canonical Dais-backed checklist exists.
   /// </summary>
   [HttpGet("appeal/evidence-checklist")]
+  [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status501NotImplemented)]
   public IActionResult GetAppealEvidenceChecklist([FromQuery] string? ground)
   {
-    var checklist = new Dictionary<string, object[]>
+    return CanonicalDaisCapabilityUnavailable("appeal evidence checklist");
+  }
+
+  private IActionResult CanonicalDaisCapabilityUnavailable(string capability)
+  {
+    var problem = new ProblemDetails
     {
-      ["MARKET_VALUE"] = [
-        new { item = "Recent comparable sales (within 12 months)", required = true },
-        new { item = "Certified appraisal report", required = false },
-        new { item = "Photos showing property condition", required = true },
-        new { item = "Repair/deferred maintenance estimates", required = false },
-      ],
-      ["UNIFORMITY"] = [
-        new { item = "Comparable property assessments", required = true },
-        new { item = "County ratio study data", required = false },
-        new { item = "Property characteristic comparison", required = true },
-      ],
-      ["CLASSIFICATION"] = [
-        new { item = "Current use documentation", required = true },
-        new { item = "Property photographs", required = true },
-        new { item = "Zoning/land use records", required = false },
-      ],
+      Type = "https://terrafusion.local/problems/dais-canonical-capability-unavailable",
+      Title = "Canonical Dais-backed implementation unavailable",
+      Detail = $"No canonical Dais-backed implementation exists for {capability}.",
+      Status = StatusCodes.Status501NotImplemented,
     };
+    problem.Extensions["capability"] = capability;
 
-    if (!string.IsNullOrWhiteSpace(ground) && checklist.TryGetValue(ground.ToUpperInvariant(), out var items))
-      return Ok(new { ground, items, count = items.Length });
-
-    return Ok(new { grounds = checklist.Keys, message = "Specify ?ground=MARKET_VALUE to get specific checklist" });
+    return StatusCode(StatusCodes.Status501NotImplemented, problem);
   }
 
   /// <summary>
@@ -1730,36 +1699,13 @@ public class DaisController : ControllerBase
   }
 
   /// <summary>
-  /// POST api/dais/appeals/{appealId}/hearings — Schedule BOE hearing (handler #30: schedule_boe_hearing).
+  /// POST api/dais/appeals/{appealId}/hearings — Reserved until canonical Dais-backed scheduling exists.
   /// </summary>
   [HttpPost("appeals/{appealId}/hearings")]
-  public async Task<IActionResult> ScheduleBoeHearing(string appealId, [FromBody] ScheduleHearingRequest request)
+  [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status501NotImplemented)]
+  public System.Threading.Tasks.Task<IActionResult> ScheduleBoeHearing(string appealId, [FromBody] ScheduleHearingRequest request)
   {
-    if (request is null || string.IsNullOrWhiteSpace(request.RequestedDate))
-      return BadRequest(new { error = "RequestedDate is required." });
-
-    var countyAccess = await RequireCountyAccessAsync();
-    if (countyAccess.ErrorResult is not null)
-      return countyAccess.ErrorResult;
-
-    var hearingId = $"HRG-{Guid.NewGuid():N}"[..16];
-    var panelSize = request.PanelMembers?.Length ?? 3;
-
-    Response.Headers["X-Dais-Source"] = "dais-boe-hearings";
-
-    await _audit.LogInvocationAsync("schedule_boe_hearing", appealId,
-      User.Identity?.Name ?? "anonymous", "scheduled", HttpContext.RequestAborted);
-
-    return Ok(new
-    {
-      source = "dais-appeal-service",
-      hearingId,
-      appealId,
-      scheduledDate = request.RequestedDate,
-      panelSize,
-      status = "scheduled",
-      createdAt = DateTime.UtcNow.ToString("o"),
-    });
+    return System.Threading.Tasks.Task.FromResult(CanonicalDaisCapabilityUnavailable("BOE hearing scheduling"));
   }
 
   /// <summary>

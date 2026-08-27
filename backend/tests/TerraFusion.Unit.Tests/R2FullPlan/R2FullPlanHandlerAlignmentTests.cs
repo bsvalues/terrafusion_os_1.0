@@ -175,6 +175,18 @@ public sealed class R2FullPlanHandlerAlignmentTests
     return controller;
   }
 
+  private static void AssertCanonicalDaisUnavailable(IActionResult result, string capability)
+  {
+    var objectResult = result.Should().BeOfType<ObjectResult>().Subject;
+    objectResult.StatusCode.Should().Be(StatusCodes.Status501NotImplemented);
+    objectResult.Should().NotBeOfType<OkObjectResult>();
+
+    var problem = objectResult.Value.Should().BeOfType<ProblemDetails>().Subject;
+    problem.Status.Should().Be(StatusCodes.Status501NotImplemented);
+    problem.Title.Should().Be("Canonical Dais-backed implementation unavailable");
+    problem.Detail.Should().Be($"No canonical Dais-backed implementation exists for {capability}.");
+  }
+
   private static async Task SeedCounty(DataDbContext db, Guid countyId)
   {
     if (!await db.Counties.AnyAsync(c => c.Id == countyId))
@@ -304,32 +316,32 @@ public sealed class R2FullPlanHandlerAlignmentTests
 
   [Fact]
   [Trait("Category", "Wave21")]
-  public void Appeal_Grounds_ReturnsAllGrounds()
+  public void Appeal_Grounds_ReturnsCanonicalUnavailable()
   {
     using var db = CreateDbContext("appeal-grounds");
     var controller = CreateDaisController(db);
     var result = controller.GetAppealGrounds();
-    result.Should().BeOfType<OkObjectResult>();
+    AssertCanonicalDaisUnavailable(result, "appeal grounds");
   }
 
   [Fact]
   [Trait("Category", "Wave21")]
-  public void Appeal_Timeline_ReturnsCurrentYear()
+  public void Appeal_Timeline_ReturnsCanonicalUnavailable()
   {
     using var db = CreateDbContext("appeal-timeline");
     var controller = CreateDaisController(db);
     var result = controller.GetAppealTimeline(null);
-    result.Should().BeOfType<OkObjectResult>();
+    AssertCanonicalDaisUnavailable(result, "appeal timeline");
   }
 
   [Fact]
   [Trait("Category", "Wave21")]
-  public void Appeal_EvidenceChecklist_SpecificGround()
+  public void Appeal_EvidenceChecklist_ReturnsCanonicalUnavailable()
   {
     using var db = CreateDbContext("appeal-evidence");
     var controller = CreateDaisController(db);
     var result = controller.GetAppealEvidenceChecklist("MARKET_VALUE");
-    result.Should().BeOfType<OkObjectResult>();
+    AssertCanonicalDaisUnavailable(result, "appeal evidence checklist");
   }
 
   // Handler #14: check_cert_status → GET /api/dais/certification/{county}/{taxYear}
