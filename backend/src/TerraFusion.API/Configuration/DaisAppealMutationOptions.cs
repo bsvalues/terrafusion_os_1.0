@@ -24,9 +24,9 @@ public sealed class DaisAppealMutationOptions
     public const string ExpectedSourceManifestSha256 =
         "8f4b6ae6bd445b6a4f563f549e6ffb7d04f65e3d3c981e0556e9436744e61ef8";
 
-    // Filled from the protected WO-SR-010E staging result before runtime adoption is committed.
-    public const string ExpectedPublishedManifestSha256 = "PENDING_WO_SR_010E";
-    public const int ExpectedPublishedManifestLength = 0;
+    public const string ExpectedPublishedManifestSha256 =
+        "679e221efc8842c613b5a83783726fcc5ba117a7442867b746af0911b8f44447";
+    public const int ExpectedPublishedManifestLength = 1467;
 
     public const string ExpectedContractSourceSha =
         "52744220509a54b6544e0fa193b6d09e8d93c159";

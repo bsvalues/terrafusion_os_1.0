@@ -71,7 +71,7 @@ public class AppealService : IAppealService
             Command = new DaisAppealCreateDecisionCommand
             {
                 Ground = request.AppealGround,
-                TaxYear = request.TaxYear > 0 ? request.TaxYear : null,
+                TaxYear = request.TaxYear == 0 ? null : request.TaxYear,
             },
         };
 
@@ -218,42 +218,46 @@ public class AppealService : IAppealService
         DaisAppealCreateDecisionRequest request,
         DaisAppealCreateDecisionResult result)
     {
-        if (result.Decision == DaisAppealMutationDecision.rejected)
-        {
-            throw new DaisAppealMutationRejectedException(result.Operation, result.Violations);
-        }
         if (result.Operation != DaisAppealMutationOperation.create
             || !string.Equals(result.SchemaVersion, MutationSchemaVersion, StringComparison.Ordinal)
             || !string.Equals(result.CommandId, request.CommandId, StringComparison.Ordinal)
             || !string.Equals(result.CountyId, request.CountyId, StringComparison.Ordinal)
-            || result.Mutation is null
-            || result.Violations.Count != 0)
+            || (result.Decision == DaisAppealMutationDecision.accepted
+                && (result.Mutation is null || result.Violations.Count != 0))
+            || (result.Decision == DaisAppealMutationDecision.rejected
+                && (result.Mutation is not null || result.Violations.Count == 0)))
         {
             throw new DaisAppealMutationUnavailableException(
                 "Canonical Dais create decision identity or shape was invalid.");
         }
-        return result.Mutation;
+        if (result.Decision == DaisAppealMutationDecision.rejected)
+        {
+            throw new DaisAppealMutationRejectedException(result.Operation, result.Violations);
+        }
+        return result.Mutation!;
     }
 
     private static DaisAppealTransitionMutation RequireAcceptedTransitionDecision(
         DaisAppealTransitionDecisionRequest request,
         DaisAppealTransitionDecisionResult result)
     {
-        if (result.Decision == DaisAppealMutationDecision.rejected)
-        {
-            throw new DaisAppealMutationRejectedException(result.Operation, result.Violations);
-        }
         if (result.Operation != DaisAppealMutationOperation.transition
             || !string.Equals(result.SchemaVersion, MutationSchemaVersion, StringComparison.Ordinal)
             || !string.Equals(result.CommandId, request.CommandId, StringComparison.Ordinal)
             || !string.Equals(result.CountyId, request.CountyId, StringComparison.Ordinal)
-            || result.Mutation is null
-            || result.Violations.Count != 0)
+            || (result.Decision == DaisAppealMutationDecision.accepted
+                && (result.Mutation is null || result.Violations.Count != 0))
+            || (result.Decision == DaisAppealMutationDecision.rejected
+                && (result.Mutation is not null || result.Violations.Count == 0)))
         {
             throw new DaisAppealMutationUnavailableException(
                 "Canonical Dais transition decision identity or shape was invalid.");
         }
-        return result.Mutation;
+        if (result.Decision == DaisAppealMutationDecision.rejected)
+        {
+            throw new DaisAppealMutationRejectedException(result.Operation, result.Violations);
+        }
+        return result.Mutation!;
     }
 
     private static DateTimeOffset ToEffectiveInstant(DateTime value)
