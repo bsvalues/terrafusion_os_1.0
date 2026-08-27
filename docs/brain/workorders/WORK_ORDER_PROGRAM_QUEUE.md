@@ -155,6 +155,7 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | WO | State | Notes |
 | --- | --- | --- |
 | **WO-WAL-000 Mission Activation** | **COMPLETE ON PROTECTED MERGE / PR #1486** | Canonize Issue #1485, register the finite mission, validate governance, and clear the initial construction wave |
+| **WO-WAL-000A Initial Exact Child Reservations** | **COMPLETE ON PROTECTED MERGE / R3** | Seven exact governance files; add typed reservation schema/registry truth and fail-closed planner reconciliation for the four initial children |
 | **WO-WAL-001 Statewide Public Baseline Runtime Completion** | **OPEN; EXACT CHILD ROUTING / R4** | Parent remains open; prove truthful source-to-rows-to-runtime state for all 39 counties with provenance, freshness, capability truth, and no Benton fallback |
 | **WO-WAL-001A Public Baseline Ledger Contract** | **READY / R2** | Three exact files; deterministic 39-county registry-only ledger under `wal.public-baseline-ledger.v1`; local temp only, no network/database and no runtime inference |
 | **WO-WAL-002 Governed County Upload Intake** | **OPEN; EXACT CHILD ROUTING / R5** | Parent remains open; authenticated county-bound upload, validation, quarantine, lineage, idempotency, atomic promotion, and rollback are not completed by its parser child |

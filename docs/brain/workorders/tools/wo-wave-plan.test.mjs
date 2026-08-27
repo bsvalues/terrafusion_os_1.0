@@ -47,12 +47,26 @@ function optionsFor(records, overrides = {}) {
       .filter(item => item.status === 'ready')
       .map(item => [
         item.id,
-        item.allowedFiles.map((value, index) => ({
-          id: `${item.id}-PATH-${index + 1}`,
-          kind: 'path',
-          value,
-          status: 'active',
-        })),
+        [
+          ...item.allowedFiles.map((value, index) => ({
+            id: `${item.id}-PATH-${index + 1}`,
+            kind: 'path',
+            value,
+            status: 'active',
+          })),
+          ...(item.contractReservations ?? []).map((value, index) => ({
+            id: `${item.id}-CONTRACT-${index + 1}`,
+            kind: 'contract',
+            value,
+            status: 'active',
+          })),
+          ...(item.environmentReservations ?? []).map((value, index) => ({
+            id: `${item.id}-ENVIRONMENT-${index + 1}`,
+            kind: 'environment',
+            value,
+            status: 'active',
+          })),
+        ],
       ])
   );
   return {
@@ -534,6 +548,11 @@ describe('wo-wave-plan', () => {
         'backend/src/TerraFusion.API/Services/UploadService.cs',
         'frontend/src/services/upload.ts',
       ],
+      contractReservations: [
+        'wal.county-upload.csv-parser.v1',
+        'wal.sql-source-profile.v1',
+      ],
+      environmentReservations: ['local-memory-stream-only'],
     });
     const decision = missionDecision(mission);
     const baseOptions = {
@@ -541,24 +560,7 @@ describe('wo-wave-plan', () => {
       now: '2026-07-17T12:00:00Z',
       ownerDecisions: { decisions: [decision] },
     };
-    const walContracts = [
-      {
-        id: 'WO-WAL-002-CSV-CONTRACT',
-        kind: 'contract',
-        value: 'wal.county-upload.csv-parser.v1',
-        scope: 'exact',
-        status: 'active',
-      },
-      {
-        id: 'WO-WAL-002-SQL-CONTRACT',
-        kind: 'contract',
-        value: 'wal.sql-source-profile.v1',
-        scope: 'exact',
-        status: 'active',
-      },
-    ];
     const admitted = optionsFor([mission, child], baseOptions);
-    admitted.reservations.candidateReservations[child.id].push(...walContracts);
 
     const plan = planWaves(
       registry([mission, child]),
@@ -600,7 +602,7 @@ describe('wo-wave-plan', () => {
       'secret-store',
     ]) {
       const deniedEnvironment = optionsFor([mission, child], baseOptions);
-      deniedEnvironment.reservations.candidateReservations[child.id].push(...walContracts, {
+      deniedEnvironment.reservations.candidateReservations[child.id].push({
         id: `WO-WAL-002-${environment}`,
         kind: 'environment',
         value: environment,
@@ -614,6 +616,204 @@ describe('wo-wave-plan', () => {
         new RegExp(`protected-resource-reservation:environment:${environment}`)
       );
     }
+  });
+
+  it('reconciles the four actual WAL child records and rejects every typed reservation drift', () => {
+    const actualRegistry = JSON.parse(
+      fs.readFileSync(
+        path.join(root, 'docs/brain/workorders/registry/work-order-registry.seed.json'),
+        'utf8'
+      )
+    );
+    const actualOwnerDecisions = JSON.parse(
+      fs.readFileSync(path.join(root, '.governance/owner-decisions.json'), 'utf8')
+    );
+    const childIds = ['WO-WAL-001A', 'WO-WAL-002A', 'WO-WAL-003A', 'WO-WAL-004A'];
+    const selectedIds = new Set([
+      'WO-WAL-000',
+      'WO-WAL-000A',
+      ...childIds,
+      'WO-WAL-005',
+      'WO-WAL-006',
+    ]);
+    const actualRecords = actualRegistry.records.filter(item => selectedIds.has(item.id));
+    const children = childIds.map(id => actualRecords.find(item => item.id === id));
+    assert.ok(children.every(Boolean));
+
+    const schema = JSON.parse(
+      fs.readFileSync(
+        path.join(root, 'docs/brain/workorders/schema/work-order.schema.json'),
+        'utf8'
+      )
+    );
+    const validate = new Ajv2020({ allErrors: true, strict: false }).compile(schema);
+    for (const item of [actualRecords.find(record => record.id === 'WO-WAL-000A'), ...children]) {
+      assert.equal(validate(item), true, `${item.id}: ${JSON.stringify(validate.errors)}`);
+    }
+    assert.equal(validate({ ...children[0], contractReservations: ['production'] }), false);
+    assert.equal(
+      validate({
+        ...children[0],
+        contractReservations: [
+          children[0].contractReservations[0],
+          children[0].contractReservations[0],
+        ],
+      }),
+      false
+    );
+    assert.equal(
+      validate({
+        ...children[0],
+        environmentReservations: [
+          children[0].environmentReservations[0],
+          children[0].environmentReservations[0],
+        ],
+      }),
+      false
+    );
+
+    const baseOptions = optionsFor(actualRecords, {
+      authority: 'R5',
+      maxWorkers: 4,
+      now: '2026-08-27T20:00:00Z',
+      ownerDecisions: actualOwnerDecisions,
+    });
+    const exactPlan = planWaves(registry(actualRecords), rules, baseOptions);
+    assert.deepEqual(exactPlan.initialExecutableSet, childIds);
+    for (const blockedId of ['WO-WAL-005', 'WO-WAL-006']) {
+      assert.equal(actualRecords.find(item => item.id === blockedId).status, 'blocked');
+      assert.ok(
+        exactPlan.excludedWorkOrders
+          .find(item => item.workOrderId === blockedId)
+          .reasons.includes('blocked-status')
+      );
+    }
+
+    function assertDenied(child, mutate, pattern) {
+      const denied = structuredClone(baseOptions);
+      mutate(denied.reservations.candidateReservations[child.id]);
+      const exclusion = planWaves(registry(actualRecords), rules, denied).excludedWorkOrders.find(
+        item => item.workOrderId === child.id
+      );
+      assert.ok(exclusion, `${child.id} should be excluded`);
+      assert.match(exclusion.reasons.join('\n'), pattern);
+    }
+
+    for (const child of children) {
+      assertDenied(
+        child,
+        claims =>
+          claims.splice(
+            claims.findIndex(claim => claim.kind === 'contract'),
+            1
+          ),
+        /missing contract reservation/
+      );
+      assertDenied(
+        child,
+        claims =>
+          claims.splice(
+            claims.findIndex(claim => claim.kind === 'environment'),
+            1
+          ),
+        /missing environment reservation/
+      );
+      assertDenied(
+        child,
+        claims =>
+          claims.push({
+            id: `${child.id}-EXTRA-CONTRACT`,
+            kind: 'contract',
+            value: 'wal.extra-reservation.v1',
+          }),
+        /extra contract reservation wal\.extra-reservation\.v1/
+      );
+      assertDenied(
+        child,
+        claims =>
+          claims.push({
+            id: `${child.id}-EXTRA-ENVIRONMENT`,
+            kind: 'environment',
+            value: 'local-extra-only',
+          }),
+        /extra environment reservation local-extra-only/
+      );
+      assertDenied(
+        child,
+        claims => {
+          claims.find(claim => claim.kind === 'environment').kind = 'contract';
+        },
+        /cross-kind reservation/
+      );
+      assertDenied(
+        child,
+        claims => {
+          claims.find(claim => claim.kind === 'contract').kind = 'environment';
+        },
+        /cross-kind reservation/
+      );
+      assertDenied(
+        child,
+        claims =>
+          claims.push({
+            id: `${child.id}-PRODUCTION-AS-CONTRACT`,
+            kind: 'contract',
+            value: 'production',
+          }),
+        /protected-resource-reservation:contract:production/
+      );
+      assertDenied(
+        child,
+        claims =>
+          claims.push({
+            id: `${child.id}-LIVE-COUNTY`,
+            kind: 'environment',
+            value: 'live-county-db',
+          }),
+        /protected-resource-reservation:environment:live-county-db/
+      );
+    }
+
+    const registryRelabel = actualRecords.map(item =>
+      item.id === children[0].id ? { ...item, contractReservations: ['production'] } : item
+    );
+    const registryRelabelOptions = optionsFor(registryRelabel, {
+      authority: 'R5',
+      maxWorkers: 4,
+      now: '2026-08-27T20:00:00Z',
+      ownerDecisions: actualOwnerDecisions,
+    });
+    assert.match(
+      planWaves(registry(registryRelabel), rules, registryRelabelOptions).excludedWorkOrders.find(
+        item => item.workOrderId === children[0].id
+      ).reasons[0],
+      /must be a versioned contract identifier/
+    );
+  });
+
+  it('preserves non-protected legacy contract and environment claims without typed fields', () => {
+    const legacy = record('WO-LEGACY-001');
+    const admitted = optionsFor([legacy]);
+    admitted.reservations.candidateReservations[legacy.id].push(
+      { id: 'LEGACY-CONTRACT', kind: 'contract', value: 'wal.safe-parser.v1' },
+      { id: 'LEGACY-ENVIRONMENT', kind: 'environment', value: 'local-only' }
+    );
+    assert.deepEqual(planWaves(registry([legacy]), rules, admitted).initialExecutableSet, [
+      legacy.id,
+    ]);
+
+    const relabeled = structuredClone(admitted);
+    relabeled.reservations.candidateReservations[legacy.id].push({
+      id: 'LEGACY-PRODUCTION-AS-CONTRACT',
+      kind: 'contract',
+      value: 'production',
+    });
+    assert.match(
+      planWaves(registry([legacy]), rules, relabeled).excludedWorkOrders.find(
+        item => item.workOrderId === legacy.id
+      ).reasons[0],
+      /protected-resource-reservation:contract:production/
+    );
   });
 
   it('fails closed when mission-child identity or ancestry is not exact', () => {

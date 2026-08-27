@@ -80,6 +80,22 @@
       },
       "default": []
     },
+    "contractReservations": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/contractReservationIdentifier"
+      },
+      "uniqueItems": true,
+      "description": "Optional exact machine-readable contract reservations. When present, planners must reconcile candidate contract claims exactly."
+    },
+    "environmentReservations": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/reservationIdentifier"
+      },
+      "uniqueItems": true,
+      "description": "Optional exact machine-readable environment reservations. When present, planners must reconcile candidate environment claims exactly."
+    },
     "blockedFiles": {
       "type": "array",
       "items": {
@@ -158,6 +174,16 @@
         "superseded",
         "cancelled"
       ]
+    },
+    "reservationIdentifier": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]*$",
+      "description": "Normalized exact contract or environment reservation identifier."
+    },
+    "contractReservationIdentifier": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]*(\\.[a-z0-9][a-z0-9-]*)+\\.v[1-9][0-9]*$",
+      "description": "Normalized dot-delimited versioned contract identifier."
     },
     "dependencyStatus": {
       "type": "string",

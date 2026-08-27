@@ -2,7 +2,7 @@
 
 | Field | Value |
 | --- | --- |
-| Status | `ACTIVE` |
+| Status | `COMPLETE_ON_PROTECTED_MERGE` |
 | Program | Washington Assessor Launch V1 |
 | Goal | `GOAL-WASHINGTON-ASSESSOR-LAUNCH-V1` |
 | Loop | `LOOP-WASHINGTON-ASSESSOR-LAUNCH-V1` |
@@ -17,9 +17,10 @@ Replace the broad initial-wave routing language with four exact, non-colliding c
 Each child is a bounded decomposition of its open parent, inherits the same WAL goal and loop, and
 has an exact path, contract, environment, denial and validation boundary.
 
-Correct the parallel planner's reservation typing so versioned contract identifiers containing
-protected-resource words remain identifiers, while protected environment reservations continue to
-fail closed. This is an R3 governance/planner correction required to validate the exact child wave.
+Correct the parallel planner's reservation typing so exact machine-declared versioned contract
+identifiers containing protected-resource words remain identifiers, while protected environment
+reservations and adversarial contract relabeling continue to fail closed. This is an R3
+governance/planner correction required to validate the exact child wave.
 
 This registration does not complete `WO-WAL-001` through `WO-WAL-004`, stabilize all of their
 contracts, or unblock `WO-WAL-005` or `WO-WAL-006`.
@@ -29,6 +30,7 @@ contracts, or unblock `WO-WAL-005` or `WO-WAL-006`.
 Only these paths may change under this governance child:
 
 - `docs/brain/workorders/active/WO-WAL-000A-initial-child-reservations.md`
+- `docs/brain/workorders/schema/work-order.schema.json`
 - `docs/brain/workorders/registry/work-order-registry.seed.json`
 - `docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md`
 - `docs/brain/workorders/programs/washington-assessor-launch-v1.md`
@@ -99,16 +101,18 @@ dependency.
 ## Validation
 
 - parse `docs/brain/workorders/registry/work-order-registry.seed.json` as JSON;
-- validate every registry record against `docs/brain/workorders/schema/work-order.schema.json`;
+- validate the four new child records against
+  `docs/brain/workorders/schema/work-order.schema.json` and prove the optional schema extension causes
+  no validation regression in pre-existing registry records;
 - query the registry and prove all four children are `ready` with satisfied `WO-WAL-000` mission-
   root dependencies and explicit still-open parent association notes;
 - run the read-only wave planner with exact path, contract and environment candidate reservations and
   prove the four children form a non-colliding initial executable set;
-- prove WAL-like versioned contract identifiers containing `county` or `sql` are admitted under
-  valid inherited mission authority while production/live-county-database/credential/secret
-  environment reservations still fail closed;
+- prove exact machine-declared WAL versioned contract identifiers containing `county` or `sql` are
+  admitted under valid inherited mission authority while missing, extra, duplicate, cross-kind and
+  protected environment or contract-relabel claims fail closed;
 - run focused Work Order query tests and the full parallel-wave planner Node suite;
-- run `git diff --check` and prove only the six exact governance paths changed.
+- run `git diff --check` and prove only the seven exact governance paths changed.
 
 ## Mission Authority Note
 
@@ -119,6 +123,7 @@ access, production access or external-system authority.
 
 ## Completion
 
-This child completes when the four exact records, queue routing and program graph agree and all
-governance validation passes. Execution then continues through the registered children while their
-parents remain open.
+This child becomes complete only when the protected merge contains the four exact child records, the
+truthful `WO-WAL-000A` lifecycle record, consistent queue/program routing, and passing scoped
+governance validation. Execution then continues through the registered children while their parents
+remain open.

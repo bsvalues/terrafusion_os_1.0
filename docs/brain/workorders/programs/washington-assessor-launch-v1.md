@@ -57,6 +57,7 @@ Current protected launch baseline after Gate C repair PR #1484: `3651e2fb6c440f6
 | WO | Outcome | Dependency |
 | --- | --- | --- |
 | `WO-WAL-000` | Canonicalize Issue #1485 mission authority and register this finite program | owner directive |
+| `WO-WAL-000A` | Register and mechanically enforce the four initial exact child reservation sets | satisfied 000; complete only on protected merge |
 | `WO-WAL-001` | 39-county public-baseline acquisition → normalization → landed runtime truth | 000 |
 | `WO-WAL-001A` | Deterministic 39-county source-registry ledger contract; no runtime inference | satisfied 000; bounded child of open 001 |
 | `WO-WAL-002` | Real governed county upload intake | 000 |
@@ -71,7 +72,8 @@ Current protected launch baseline after Gate C repair PR #1484: `3651e2fb6c440f6
 | `WO-WAL-008` | Exact production release + external assessor acceptance | 007 |
 | `WO-WAL-009` | Terminal closeout, exact identities, `COMPLETED_AND_CONSUMED` | 008 |
 
-After `WO-WAL-000`, the exact initial executable set is 001A/002A/003A/004A. The broad
+After `WO-WAL-000` and protected completion of `WO-WAL-000A`, the exact initial executable set is
+001A/002A/003A/004A. The broad
 001/002/003/004 parents remain open and route through exact children rather than being dispatched as
 monoliths. Completion of any A child does not complete its parent or satisfy the stable-contract
 dependencies of 005/006.
@@ -85,7 +87,7 @@ dependencies of 005/006.
 | `WO-WAL-003A` | R3 | `wal.source-profile.v1`; `wal.external-readonly.v1` | `mock-source-only`; strings/reflection only | No connection, credentials, DML/DDL/write-back, production registration or live no-DML claim |
 | `WO-WAL-004A` | R5 | `wal.county-identity.v1`; `wal.county-authority.v1` | `wal004a-local-in-memory`; synthetic rows/claims | No schema/migration, route/controller integration, trust/activation state, frontend authority or default county |
 
-The exact path allowlists and validation gates are canonical in
+The exact path allowlists, machine-readable contract/environment reservations, and validation gates are canonical in
 `docs/brain/workorders/registry/work-order-registry.seed.json` and the corresponding child Work Order
 documents. Contract/environment reservations do not create credential, protected-data, external-
 system or production authority.
