@@ -10,6 +10,7 @@ using Moq;
 using TerraFusion.API.Controllers;
 using TerraFusion.Core.Entities;
 using TerraFusion.Core.Services;
+using TerraFusion.Unit.Tests.Dossier;
 using Xunit;
 using AuditLogger = TerraFusion.Abstractions.Interfaces.IAuditLogger;
 using DataDbContext = TerraFusion.Data.TerraFusionDbContext;
@@ -267,7 +268,7 @@ public class R1Week4Cx15BackendValidationSuiteTests
         db.Properties.Add(CreateProperty(benton.Id, "CX15-PROP-5", "CX15-PARCEL-5"));
         await db.SaveChangesAsync();
 
-        var controller = new DossierController(db, new Mock<ICostForgeService>().Object, NullLogger<DossierController>.Instance, Mock.Of<IHostEnvironment>(e => e.EnvironmentName == "Development"));
+        var controller = new DossierController(db, new Mock<ICostForgeService>().Object, NullLogger<DossierController>.Instance, Mock.Of<IHostEnvironment>(e => e.EnvironmentName == "Development"), mutationPort: new ExplicitDossierMutationDecisionPort());
         AttachPrincipal(controller, CreatePrincipal("BENTON", "BENTON", "cx15-author"));
 
         var createdResult = await controller.CreateNote(
@@ -307,7 +308,7 @@ public class R1Week4Cx15BackendValidationSuiteTests
         });
         await db.SaveChangesAsync();
 
-        var controller = new DossierController(db, new Mock<ICostForgeService>().Object, NullLogger<DossierController>.Instance, Mock.Of<IHostEnvironment>(e => e.EnvironmentName == "Development"));
+        var controller = new DossierController(db, new Mock<ICostForgeService>().Object, NullLogger<DossierController>.Instance, Mock.Of<IHostEnvironment>(e => e.EnvironmentName == "Development"), mutationPort: new ExplicitDossierMutationDecisionPort());
         AttachPrincipal(controller, CreatePrincipal(benton.Id.ToString(), "BENTON"));
 
         var result = await controller.GetNotes("CX15-PARCEL-6");
@@ -323,7 +324,7 @@ public class R1Week4Cx15BackendValidationSuiteTests
     public async Task Dossier_InvalidParcelId_ReturnsBadRequest()
     {
         await using var db = CreateDbContext(nameof(Dossier_InvalidParcelId_ReturnsBadRequest));
-        var controller = new DossierController(db, new Mock<ICostForgeService>().Object, NullLogger<DossierController>.Instance, Mock.Of<IHostEnvironment>(e => e.EnvironmentName == "Development"));
+        var controller = new DossierController(db, new Mock<ICostForgeService>().Object, NullLogger<DossierController>.Instance, Mock.Of<IHostEnvironment>(e => e.EnvironmentName == "Development"), mutationPort: new ExplicitDossierMutationDecisionPort());
         AttachPrincipal(controller, CreatePrincipal(Guid.NewGuid().ToString(), "BENTON"));
 
         var result = await controller.GetCasefile("bad parcel id!", include: null);

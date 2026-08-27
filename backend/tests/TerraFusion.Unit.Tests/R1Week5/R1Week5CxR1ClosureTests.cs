@@ -21,6 +21,7 @@ using TerraFusion.Core.Interfaces;
 using IGovernedToolAuditService = TerraFusion.API.Services.IGovernedToolAuditService;
 using TerraFusion.Core.Models;
 using TerraFusion.Core.PACS;
+using TerraFusion.Unit.Tests.Dossier;
 using Xunit;
 using AuditLogger = TerraFusion.Abstractions.Interfaces.IAuditLogger;
 using CostForgeAIService = TerraFusion.Core.Services.ICostForgeAIService;
@@ -1990,7 +1991,8 @@ public sealed class R1Week5CxR1ClosureTests
     var controller = new DossierController(
         db, costForgeService.Object,
         NullLogger<DossierController>.Instance,
-        hostEnvironment.Object);
+        hostEnvironment.Object,
+        mutationPort: new ExplicitDossierMutationDecisionPort());
 
     if (countyId.HasValue)
       AttachPrincipal(controller, CreatePrincipal(countyId.Value, "BENTON"));
@@ -5013,7 +5015,12 @@ public sealed class R1Week5CxR1ClosureTests
     var costForge = new Mock<CostForgeService>(MockBehavior.Strict);
     var host = new Mock<IHostEnvironment>();
     host.SetupGet(h => h.EnvironmentName).Returns(env);
-    return new DossierController(db, costForge.Object, NullLogger<DossierController>.Instance, host.Object);
+    return new DossierController(
+        db,
+        costForge.Object,
+        NullLogger<DossierController>.Instance,
+        host.Object,
+        mutationPort: new ExplicitDossierMutationDecisionPort());
   }
 
   private static DossierController MakeAuthedDossierController(DataDbContext db, Guid countyId, string env = "Production")
@@ -5527,6 +5534,14 @@ public sealed class R1Week5CxR1ClosureTests
       CreatedBy = "test",
     };
     db.DossierEvidenceItems.Add(evidence);
+    db.DossierCustodyEvents.Add(new DossierCustodyEvent
+    {
+      EvidenceId = evidence.Id,
+      Action = "created",
+      Actor = "test",
+      Hash = "genesis",
+      CountyId = countyId,
+    });
     await db.SaveChangesAsync();
 
     var ctrl = MakeAuthedDossierController(db, countyId);
@@ -5554,6 +5569,14 @@ public sealed class R1Week5CxR1ClosureTests
       CreatedBy = "test",
     };
     db.DossierEvidenceItems.Add(evidence);
+    db.DossierCustodyEvents.Add(new DossierCustodyEvent
+    {
+      EvidenceId = evidence.Id,
+      Action = "created",
+      Actor = "test",
+      Hash = "genesis",
+      CountyId = countyId,
+    });
     await db.SaveChangesAsync();
 
     var ctrl = MakeAuthedDossierController(db, countyId);

@@ -10,6 +10,7 @@ using Moq;
 using TerraFusion.API.Controllers;
 using TerraFusion.Core.Entities;
 using TerraFusion.Core.Services;
+using TerraFusion.Unit.Tests.Dossier;
 using Xunit;
 using Task = System.Threading.Tasks.Task;
 using TerraFusionDbContext = TerraFusion.Data.TerraFusionDbContext;
@@ -210,7 +211,7 @@ public class AtlasDossierControllerGuardsTests
         });
         await db.SaveChangesAsync();
 
-        var controller = new DossierController(db, new Mock<ICostForgeService>().Object, NullLogger<DossierController>.Instance, Mock.Of<IHostEnvironment>(e => e.EnvironmentName == "Development"));
+        var controller = new DossierController(db, new Mock<ICostForgeService>().Object, NullLogger<DossierController>.Instance, Mock.Of<IHostEnvironment>(e => e.EnvironmentName == "Development"), mutationPort: new ExplicitDossierMutationDecisionPort());
         AttachPrincipal(controller, CreatePrincipal(countyA.Id));
 
         var result = await controller.CreateNote(
@@ -247,7 +248,7 @@ public class AtlasDossierControllerGuardsTests
         });
         await db.SaveChangesAsync();
 
-        var controller = new DossierController(db, new Mock<ICostForgeService>().Object, NullLogger<DossierController>.Instance, Mock.Of<IHostEnvironment>(e => e.EnvironmentName == "Development"));
+        var controller = new DossierController(db, new Mock<ICostForgeService>().Object, NullLogger<DossierController>.Instance, Mock.Of<IHostEnvironment>(e => e.EnvironmentName == "Development"), mutationPort: new ExplicitDossierMutationDecisionPort());
         AttachPrincipal(controller, CreatePrincipal(countyA.Id));
 
         var result = await controller.GetCasefile("PARCEL-300", include: null);
@@ -279,7 +280,7 @@ public class AtlasDossierControllerGuardsTests
         });
         await db.SaveChangesAsync();
 
-        var controller = new DossierController(db, new Mock<ICostForgeService>().Object, NullLogger<DossierController>.Instance, Mock.Of<IHostEnvironment>(e => e.EnvironmentName == "Development"));
+        var controller = new DossierController(db, new Mock<ICostForgeService>().Object, NullLogger<DossierController>.Instance, Mock.Of<IHostEnvironment>(e => e.EnvironmentName == "Development"), mutationPort: new ExplicitDossierMutationDecisionPort());
         AttachPrincipal(controller, CreatePrincipal("BENTON"));
 
         var result = await controller.CreateNote(
