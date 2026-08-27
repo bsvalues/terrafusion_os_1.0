@@ -2,7 +2,7 @@
   "schemaVersion": "0.1.0",
   "generatedBy": "WO-SR-011D Dossier mutation decision contract freeze",
   "generatedAt": "2026-08-26T00:00:00Z",
-  "description": "The owner-level Five-Suite completion mission is active. Atlas and Dais runtime/ownership are protected-main complete. Dossier read staging is protected-main complete. WO-SR-011D freezes the provider-neutral Dossier mutation-decision boundary before mutation source, staging, runtime adoption and ownership retirement.",
+  "description": "The owner-level Five-Suite completion mission is active. Atlas and Dais runtime/ownership are protected-main complete. Dossier read staging and exact persistent runtime adoption are protected-main complete. WO-SR-011D freezes the provider-neutral Dossier mutation-decision boundary before mutation source, staging, runtime adoption and ownership retirement.",
   "records": [
     {
       "id": "WO-WOE-000",
@@ -11352,6 +11352,7 @@
       "dependencies": [
         { "id": "WO-SR-010G", "status": "satisfied", "evidence": ["PR #1471 merged as f14fc4999f650ed4bbff2633813be6b57ec4bfbc; protected main supplied as the exact child base."] },
         { "id": "WO-SR-011A", "status": "satisfied", "evidence": ["PR #1474 merged as aec4f1e18b619730842c828e4f1c93ecd18d64b2; this contract branch integrates that exact protected staging merge."] },
+        { "id": "WO-SR-011B", "status": "satisfied", "evidence": ["PR #1477 merged reviewed head 85387bdc6088eb82fc8bcd16cfd1424e95804597 as d82a2d3638a722fa541836abbd5c4ab45f8e060d after 8/8 required successes and zero unresolved threads; this contract branch integrates that exact protected merge."] },
         { "id": "OWNER-FIVE-SUITE-FEDERATED-COMPLETION-20260826", "status": "satisfied", "evidence": ["Owner mission authority permits exact successor contracts, suite adoption, rollback proof, duplicate-judgment retirement, PR operation and merge without per-child relay."] }
       ],
       "allowedSystems": [{ "name": "Sovereign shared Dossier mutation contract, synthetic proof and mission governance" }],
@@ -11381,7 +11382,7 @@
       "stopConditions": [{ "type": "authority_wall", "description": "Stop on mission hard-wall crossing, custody-meaning change, identity/hash failure, runtime or suite mutation in this child, protected data, failed required check, force push or branch-protection bypass." }],
       "nextCandidates": [{ "id": "WO-SR-011E", "reason": "After WO-SR-011B protects the staged read runtime and this contract merges, copy exact contract identities into Dossier and implement the pure decision module before mutation staging and runtime adoption.", "riskClass": "R3", "blocked": true }],
       "authority": { "mayWrite": true, "mayCommit": true, "mayPush": true, "mayOpenPr": true, "mayMarkReady": true, "mayMerge": true, "mayCleanup": true, "notes": "Exact additive contract child under owner mission authority and standing protected-PR lifecycle authority." },
-      "provenance": { "createdAt": "2026-08-27T00:00:00Z", "source": "Owner mission directive; protected Dais runtime merge f14fc4999f650ed4bbff2633813be6b57ec4bfbc; protected Dossier read staging merge aec4f1e18b619730842c828e4f1c93ecd18d64b2; audit of current DossierController and persistent Dossier entities selected the smallest pure decision boundary.", "schemaVersion": "0.1.0" }
+      "provenance": { "createdAt": "2026-08-27T00:00:00Z", "source": "Owner mission directive; protected Dais runtime merge f14fc4999f650ed4bbff2633813be6b57ec4bfbc; protected Dossier read staging merge aec4f1e18b619730842c828e4f1c93ecd18d64b2; protected Dossier read runtime merge d82a2d3638a722fa541836abbd5c4ab45f8e060d; audit of current DossierController and persistent Dossier entities selected the smallest pure decision boundary.", "schemaVersion": "0.1.0" }
     }
   ]
 }

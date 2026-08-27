@@ -42,9 +42,15 @@ The Windows sparse checkout materializes pre-existing frozen files with CRLF, so
 identity is run from canonical Git blobs after commit rather than rewriting any established hash.
 C# compilation is delegated to the protected Backend Gate because this host has no `dotnet` binary.
 
-## Remaining required gates
+## Dependency and remaining required gates
 
-Protected checks, integration of `WO-SR-011B`'s future protected runtime merge, an exact-head proof
-rerun, merge, and protected-main verification remain required. This contract must not merge ahead
-of `WO-SR-011B`. Optional third-party review is non-gating. Rollback is the additive contract
-commit revert; no runtime or county data was touched.
+`WO-SR-011B` passed 8/8 required checks with zero unresolved threads and merged reviewed head
+`85387bdc6088eb82fc8bcd16cfd1424e95804597` as protected main
+`d82a2d3638a722fa541836abbd5c4ab45f8e060d`. This branch integrates that exact merge. The initial
+protected contract checks also exposed and closed a reserved-C#-keyword build failure, an
+operation/mutation schema-coupling gap, and whitespace-only custody notes; Backend Fast, canonical
+Backend, Seal, governance, and the complete canonical Git-blob freeze subsequently passed.
+
+The post-integration exact-head proof rerun, protected checks, merge, and protected-main
+verification remain required. Optional third-party review is non-gating. Rollback is the additive
+contract commit revert; no runtime or county data was touched.

@@ -352,9 +352,10 @@ unsupported frontend scheduling offer in protected merge
 `6291e58b11626ad04bdc89e736be89b2a574261c`. Dais is terminal. `WO-SR-011A` staged the exact
 protected Dossier evidence-registry read artifact with provenance, production refusal, and observed
 whole-slot rollback in protected merge `aec4f1e18b619730842c828e4f1c93ecd18d64b2` while runtime
-remains Disabled. `WO-SR-011B` follows with persistent exact read runtime adoption. `WO-SR-011D`
+remains Disabled. `WO-SR-011B` persistently adopted that exact read runtime in protected merge
+`d82a2d3638a722fa541836abbd5c4ab45f8e060d`. `WO-SR-011D`
 freezes the additive provider-neutral mutation-decision boundary for real note, document,
-evidence/custody, and explicit-snapshot packet semantics; it performs no mutation and will not merge
-ahead of `WO-SR-011B`. Mutation staging/runtime adoption, suite ownership-governance truth, rollback,
+evidence/custody, and explicit-snapshot packet semantics; it performs no mutation and integrates the
+exact protected `WO-SR-011B` merge. Mutation staging/runtime adoption, suite ownership-governance truth, rollback,
 and duplicate-judgment retirement remain successor work; GPT then follows without a per-child owner
 relay.
