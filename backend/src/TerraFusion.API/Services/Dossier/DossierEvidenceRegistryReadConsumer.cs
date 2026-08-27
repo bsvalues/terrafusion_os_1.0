@@ -10,6 +10,8 @@ namespace TerraFusion.API.Services.Dossier;
 
 public interface IDossierEvidenceRegistryReadConsumer
 {
+    bool IsAvailable { get; }
+
     Task<DossierEvidenceRegistryReadConsumerResult> ConsumeAsync(
         DossierEvidenceRegistryReadRequest request,
         int total,
@@ -38,6 +40,8 @@ public sealed class DossierEvidenceRegistryReadConsumer : IDossierEvidenceRegist
         _processHost = processHost;
         _options = options.Value;
     }
+
+    public bool IsAvailable => _options.Mode == DossierEvidenceRegistryReadMode.LocalExact;
 
     public async Task<DossierEvidenceRegistryReadConsumerResult> ConsumeAsync(
         DossierEvidenceRegistryReadRequest request,

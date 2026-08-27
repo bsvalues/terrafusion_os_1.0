@@ -415,6 +415,13 @@ public class DossierController : ControllerBase
     if (countyId is null)
       return Forbid();
 
+    if (_evidenceRegistryReadConsumer is null || !_evidenceRegistryReadConsumer.IsAvailable)
+    {
+      return Problem(
+          statusCode: StatusCodes.Status503ServiceUnavailable,
+          title: "Canonical Dossier evidence registry runtime is unavailable or disabled.");
+    }
+
     var scopedQuery = _db.DossierEvidenceItems
         .AsNoTracking()
         .Where(e => e.CountyId == countyId.Value && e.ParcelId == parcelId);
@@ -444,13 +451,6 @@ public class DossierController : ControllerBase
       Offset = offset,
       TraceId = GetValidInboundCorrelationId(),
     };
-
-    if (_evidenceRegistryReadConsumer is null)
-    {
-      return Problem(
-          statusCode: StatusCodes.Status503ServiceUnavailable,
-          title: "Canonical Dossier evidence registry runtime is unavailable.");
-    }
 
     var consumption = await _evidenceRegistryReadConsumer
         .ConsumeAsync(request, total, sourcePage, HttpContext.RequestAborted)

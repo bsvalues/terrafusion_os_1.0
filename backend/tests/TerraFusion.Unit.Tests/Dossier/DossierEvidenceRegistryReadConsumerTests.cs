@@ -21,6 +21,7 @@ public sealed class DossierEvidenceRegistryReadConsumerTests
         var host = new StubHost((exchange, _) => Accepted(exchange));
         var consumer = CreateConsumer(host);
 
+        consumer.IsAvailable.Should().BeTrue();
         var result = await consumer.ConsumeAsync(CreateRequest(), 1, [CreateEvidence()]);
 
         result.Success.Should().BeTrue();
@@ -48,6 +49,7 @@ public sealed class DossierEvidenceRegistryReadConsumerTests
         var host = new StubHost((exchange, _) => Accepted(exchange));
         var consumer = CreateConsumer(host, DossierEvidenceRegistryReadMode.Disabled);
 
+        consumer.IsAvailable.Should().BeFalse();
         var result = await consumer.ConsumeAsync(CreateRequest(), 1, [CreateEvidence(countyId: Guid.NewGuid())]);
 
         result.Success.Should().BeFalse();

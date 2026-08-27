@@ -1,3 +1,4 @@
+using System.Data.Common;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Reflection;
@@ -8,6 +9,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
@@ -114,16 +116,36 @@ public sealed class DossierEvidenceRegistryReadControllerTests
     result.Result.Should().BeOfType<BadRequestObjectResult>();
   }
 
-  [Fact]
-  public async Task CanonicalRuntimeUnavailableReturnsServiceUnavailable()
+  [Theory]
+  [InlineData(false)]
+  [InlineData(true)]
+  public async Task UnavailableOrDisabledRuntimeReturnsServiceUnavailableWithoutDatabaseExecution(
+      bool includeDisabledConsumer)
   {
-    await using var db = CreateDbContext();
-    var controller = CreateController(db, CountyA.ToString("D"), includeConsumer: false);
+    await using var connection = new SqliteConnection("Data Source=:memory:");
+    await connection.OpenAsync();
+    var interceptor = new RejectingCommandInterceptor();
+    var options = new DbContextOptionsBuilder<DataDbContext>()
+        .UseSqlite(connection)
+        .AddInterceptors(interceptor)
+        .Options;
+    await using var db = new DataDbContext(
+        options,
+        Mock.Of<Microsoft.Extensions.Configuration.IConfiguration>());
+    var consumer = includeDisabledConsumer ? new DisabledConsumer() : null;
+    var controller = CreateController(
+        db,
+        CountyA.ToString("D"),
+        includeConsumer: includeDisabledConsumer,
+        consumer: consumer);
 
     var result = await controller.GetEvidenceRegistryRead("P-100");
 
     var problem = result.Result.Should().BeOfType<ObjectResult>().Subject;
     problem.StatusCode.Should().Be(StatusCodes.Status503ServiceUnavailable);
+    interceptor.CommandCount.Should().Be(0);
+    if (consumer is not null)
+      consumer.CallCount.Should().Be(0);
   }
 
   [Fact]
@@ -402,6 +424,8 @@ public sealed class DossierEvidenceRegistryReadControllerTests
 
   private sealed class AdapterBackedConsumer : IDossierEvidenceRegistryReadConsumer
   {
+    public bool IsAvailable => true;
+
     public Task<DossierEvidenceRegistryReadConsumerResult> ConsumeAsync(
         DossierEvidenceRegistryReadRequest request,
         int total,
@@ -433,6 +457,8 @@ public sealed class DossierEvidenceRegistryReadControllerTests
 
   private sealed class RecordingConsumer : IDossierEvidenceRegistryReadConsumer
   {
+    public bool IsAvailable => true;
+
     public int CallCount { get; private set; }
     public DossierEvidenceRegistryReadRequest? Request { get; private set; }
     public int Total { get; private set; }
@@ -454,6 +480,37 @@ public sealed class DossierEvidenceRegistryReadControllerTests
           DossierEvidenceRegistryReadOptions.ExpectedModuleSha256,
           DossierEvidenceRegistryReadOptions.ExpectedSchemaSha256,
           DossierEvidenceRegistryReadOptions.ExpectedSchemaSha256));
+    }
+  }
+
+  private sealed class DisabledConsumer : IDossierEvidenceRegistryReadConsumer
+  {
+    public bool IsAvailable => false;
+    public int CallCount { get; private set; }
+
+    public Task<DossierEvidenceRegistryReadConsumerResult> ConsumeAsync(
+        DossierEvidenceRegistryReadRequest request,
+        int total,
+        IReadOnlyList<DossierEvidence> sourcePage,
+        CancellationToken cancellationToken = default)
+    {
+      CallCount++;
+      throw new InvalidOperationException("A disabled runtime must not be invoked.");
+    }
+  }
+
+  private sealed class RejectingCommandInterceptor : DbCommandInterceptor
+  {
+    public int CommandCount { get; private set; }
+
+    public override ValueTask<InterceptionResult<DbDataReader>> ReaderExecutingAsync(
+        DbCommand command,
+        CommandEventData eventData,
+        InterceptionResult<DbDataReader> result,
+        CancellationToken cancellationToken = default)
+    {
+      CommandCount++;
+      throw new InvalidOperationException("A disabled runtime must not execute a database command.");
     }
   }
 }
