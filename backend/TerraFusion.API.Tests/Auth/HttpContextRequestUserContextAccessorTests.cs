@@ -28,7 +28,7 @@ public sealed class HttpContextRequestUserContextAccessorTests
 
         Assert.True(sut.Current.IsAuthenticated);
         Assert.Equal("user-1", sut.Current.UserId);
-        Assert.Equal("Benton", sut.Current.CountyId);
+        Assert.Equal("benton", sut.Current.CountyId);
         Assert.Equal(new[] { "Assessor" }, sut.Current.Roles);
     }
 
@@ -40,7 +40,7 @@ public sealed class HttpContextRequestUserContextAccessorTests
             new Claim("county_id", "wa-benton"),
             new Claim("countyCode", "  Wa-Benton  "));
 
-        Assert.Equal("Benton", sut.Current.CountyId);
+        Assert.Equal("benton", sut.Current.CountyId);
     }
 
     [Fact]
@@ -51,7 +51,7 @@ public sealed class HttpContextRequestUserContextAccessorTests
             new Claim("county_id", "benton-wa"),
             new Claim("countyCode", "53005"));
 
-        Assert.Equal("Benton", sut.Current.CountyId);
+        Assert.Equal("benton", sut.Current.CountyId);
     }
 
     [Fact]
@@ -86,20 +86,23 @@ public sealed class HttpContextRequestUserContextAccessorTests
             new Claim("countyId", " "),
             new Claim("countyCode", ""));
 
-        Assert.Equal("Benton", withOneValue.Current.CountyId);
+        Assert.Equal("benton", withOneValue.Current.CountyId);
         Assert.Null(blanksOnly.Current.CountyId);
     }
 
     [Theory]
+    [InlineData("countyId", "benton")]
     [InlineData("countyId", "Benton County")]
     [InlineData("countyCode", "53005")]
-    public void Current_ReturnsCanonicalCountyNameForOneNonGuidAlias(string claimType, string claimValue)
+    public void Current_ReturnsNormalizedCanonicalCountyNameForOneNonGuidAlias(
+        string claimType,
+        string claimValue)
     {
         var sut = CreateSut(
             new Claim(ClaimTypes.NameIdentifier, "user-1"),
             new Claim(claimType, claimValue));
 
-        Assert.Equal("Benton", sut.Current.CountyId);
+        Assert.Equal("benton", sut.Current.CountyId);
     }
 
     [Fact]

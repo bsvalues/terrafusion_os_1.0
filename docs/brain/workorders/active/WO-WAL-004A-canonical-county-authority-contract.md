@@ -56,8 +56,9 @@ county system, credential, secret, production resource or external assessor inte
    and both every present nonblank name/FIPS component resolves and those components identify the same
    canonical county.
 6. With no GUID claim, authenticated request context requires every nonblank county alias to resolve
-   to one canonical Washington county and returns that county's canonical name for compatibility with
-   existing consumers; unknown or conflicting aliases return no county authority.
+   to one canonical Washington county and returns that county's normalized lowercase canonical-name
+   alias for compatibility with existing consumers; unknown or conflicting aliases return no county
+   authority.
 7. With exactly one distinct GUID claim, request context returns its normalized GUID while requiring
    any supplemental non-GUID aliases to be internally canonical and unambiguous. This persistence-free
    accessor does not prove GUID-to-alias equivalence; persisted resolution remains the boundary that

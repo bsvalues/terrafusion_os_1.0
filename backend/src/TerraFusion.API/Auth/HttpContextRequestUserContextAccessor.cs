@@ -72,7 +72,7 @@ public sealed class HttpContextRequestUserContextAccessor : IRequestUserContextA
                 return null;
             }
 
-            countyAliases.Add(county.Name);
+            countyAliases.Add(county.Name.ToLowerInvariant());
         }
 
         if (countyIds.Count > 1 || countyAliases.Count > 1)
