@@ -3,7 +3,8 @@ param(
     [string]$DaisRepository = 'https://github.com/bsvalues/terrafusion-dais',
     [string]$DotNetExecutable,
     [string]$NuGetPackagesPath,
-    [string]$ProofRootBase
+    [string]$ProofRootBase,
+    [switch]$RecoverySelfTest
 )
 
 $ErrorActionPreference = 'Stop'
@@ -28,8 +29,12 @@ $durableWorkflowRollbackSlot = Join-Path $durableRunRoot 'previous-workflow-arti
 $adoptedMutationDuringRollback = Join-Path $durableRunRoot 'adopted-mutation-during-rollback'
 $mutationStageReceipt = $null
 $workflowStageReceipt = $null
-$mutationStagePublished = $false
-$workflowStagePublished = $false
+$mutationStageAttempted = $false
+$workflowStageAttempted = $false
+$mutationOriginalExisted = $false
+$workflowOriginalExisted = $false
+$mutationOriginalInventory = $null
+$workflowOriginalInventory = $null
 $mutationStageRootSafeToDelete = $false
 $workflowStageRootSafeToDelete = $false
 $mutationMutex = $null
@@ -82,6 +87,20 @@ function Assert-Inventory {
     }
 }
 
+function Assert-InventoriesEqual {
+    param([Parameter(Mandatory)]$Actual,[Parameter(Mandatory)]$Expected,[Parameter(Mandatory)][string]$Label)
+    $actualInventory = ConvertTo-Inventory $Actual
+    $expectedInventory = ConvertTo-Inventory $Expected
+    if ($null -ne (Compare-Object @($actualInventory.Keys) @($expectedInventory.Keys))) {
+        throw "$Label paths differ."
+    }
+    foreach ($name in $expectedInventory.Keys) {
+        if ($actualInventory[$name] -cne $expectedInventory[$name]) {
+            throw "$Label hash mismatch for $name."
+        }
+    }
+}
+
 function Test-Inventory {
     param([Parameter(Mandatory)][string]$Directory,[Parameter(Mandatory)]$Expected)
     try { Assert-Inventory $Directory $Expected 'Inventory probe'; return $true }
@@ -103,7 +122,8 @@ function Get-UniqueRollbackSlot {
     $candidates = @(Get-ChildItem -LiteralPath $StageRoot -Directory -Recurse -Force |
         Where-Object { $_.Name -ceq 'previous-artifact' })
     if ($candidates.Count -gt 1) { throw "Multiple rollback slots found under $StageRoot." }
-    return if ($candidates.Count -eq 1) { $candidates[0].FullName } else { $null }
+    if ($candidates.Count -eq 1) { return $candidates[0].FullName }
+    return $null
 }
 
 function Restore-StagedSlot {
@@ -112,6 +132,8 @@ function Restore-StagedSlot {
         [Parameter(Mandatory)][string]$DurableRollbackSlot,
         [Parameter(Mandatory)][string]$StageRoot,
         $Receipt,
+        [Parameter(Mandatory)][bool]$OriginalExisted,
+        $OriginalInventory,
         [Parameter(Mandatory)][string]$Label)
     New-Item -ItemType Directory -Path $durableRunRoot -Force | Out-Null
     $originalRollback = if ($null -ne $Receipt -and
@@ -124,27 +146,97 @@ function Restore-StagedSlot {
         (Test-Path -LiteralPath $originalRollback -PathType Container)) {
         $originalRollback
     } else { $null }
-    $expected = if ($null -ne $Receipt -and $null -ne $Receipt.rollbackHashes) {
-        $Receipt.rollbackHashes
-    } elseif ($null -ne $backup) { Get-Inventory $backup } else { $null }
+    $expected = if ($OriginalExisted) {
+        if ($null -eq $OriginalInventory) { throw "$Label original inventory anchor is missing." }
+        $OriginalInventory
+    } else { $null }
+    if ($null -ne $Receipt -and $null -ne $Receipt.rollbackHashes) {
+        if (-not $OriginalExisted) { throw "$Label receipt reported rollback hashes for an originally absent slot." }
+        Assert-InventoriesEqual $Receipt.rollbackHashes $expected "$Label receipt versus pre-stage anchor"
+    }
 
-    if ($null -ne $expected -and (Test-Inventory $LiveSlot $expected)) {
+    if ($OriginalExisted -and (Test-Inventory $LiveSlot $expected)) {
         return 'PREVIOUS_SLOT_ALREADY_LIVE_AND_HASH_VERIFIED'
     }
-    if ($null -eq $backup -and $null -ne $expected) {
+    if (-not $OriginalExisted -and -not (Test-Path -LiteralPath $LiveSlot)) {
+        return 'PREVIOUS_SLOT_ALREADY_ABSENT'
+    }
+    if ($OriginalExisted -and $null -eq $backup) {
         throw "$Label rollback custody was lost before recovery."
+    }
+    if ($OriginalExisted) {
+        Assert-Inventory $backup $expected "$Label rollback backup versus pre-stage anchor"
+    } elseif ($null -ne $backup) {
+        throw "$Label discovered a rollback backup for an originally absent slot."
     }
     if (Test-Path -LiteralPath $LiveSlot) {
         $failed = Join-Path $durableRunRoot (
             'failed-'+$Label.ToLowerInvariant().Replace(' ','-')+'-'+[Guid]::NewGuid().ToString('N'))
         Move-Item -LiteralPath $LiveSlot -Destination $failed
     }
-    if ($null -eq $backup) {
+    if (-not $OriginalExisted) {
         return 'PREVIOUS_SLOT_WAS_ABSENT_AND_PUBLISHED_SLOT_WAS_REMOVED'
     }
     Move-Item -LiteralPath $backup -Destination $LiveSlot
     Assert-Inventory $LiveSlot $expected "$Label restored rollback slot"
     return 'PREVIOUS_SLOT_RESTORED_AND_HASH_VERIFIED'
+}
+
+function Invoke-RecoverySelfTest {
+    $selfTestRoot = Join-Path ([IO.Path]::GetTempPath()) ('tf-dais-recovery-selftest-'+[Guid]::NewGuid().ToString('N'))
+    $savedDurableRunRoot = $script:durableRunRoot
+    try {
+        New-Item -ItemType Directory -Path $selfTestRoot -Force | Out-Null
+        $script:durableRunRoot = Join-Path $selfTestRoot 'receipts'
+
+        $receiptLossRoot = Join-Path $selfTestRoot 'receipt-loss'
+        $receiptLossLive = Join-Path $receiptLossRoot 'live'
+        $receiptLossStage = Join-Path $receiptLossRoot 'stage'
+        $receiptLossBackup = Join-Path $receiptLossStage 'previous-artifact'
+        New-Item -ItemType Directory -Path $receiptLossLive,$receiptLossBackup -Force | Out-Null
+        Set-Content -LiteralPath (Join-Path $receiptLossBackup 'original.txt') -Value 'original' -NoNewline
+        $receiptLossAnchor = Get-Inventory $receiptLossBackup
+        Set-Content -LiteralPath (Join-Path $receiptLossLive 'adopted.txt') -Value 'adopted' -NoNewline
+        $receiptLossResult = Restore-StagedSlot $receiptLossLive (Join-Path $receiptLossRoot 'durable') `
+            $receiptLossStage $null $true $receiptLossAnchor 'receipt-loss self-test'
+        Assert-Inventory $receiptLossLive $receiptLossAnchor 'Receipt-loss recovery self-test'
+
+        $corruptRoot = Join-Path $selfTestRoot 'corrupt-custody'
+        $corruptLive = Join-Path $corruptRoot 'live'
+        $corruptStage = Join-Path $corruptRoot 'stage'
+        $corruptBackup = Join-Path $corruptStage 'previous-artifact'
+        $corruptAnchorSource = Join-Path $corruptRoot 'anchor'
+        New-Item -ItemType Directory -Path $corruptLive,$corruptBackup,$corruptAnchorSource -Force | Out-Null
+        Set-Content -LiteralPath (Join-Path $corruptLive 'adopted.txt') -Value 'adopted' -NoNewline
+        Set-Content -LiteralPath (Join-Path $corruptBackup 'original.txt') -Value 'corrupt' -NoNewline
+        Set-Content -LiteralPath (Join-Path $corruptAnchorSource 'original.txt') -Value 'original' -NoNewline
+        $corruptRefused = $false
+        try {
+            Restore-StagedSlot $corruptLive (Join-Path $corruptRoot 'durable') $corruptStage $null `
+                $true (Get-Inventory $corruptAnchorSource) 'corrupt-custody self-test' | Out-Null
+        } catch { $corruptRefused = $true }
+        if (-not $corruptRefused -or -not (Test-Path -LiteralPath (Join-Path $corruptLive 'adopted.txt'))) {
+            throw 'Corrupt rollback custody was not refused before changing the live slot.'
+        }
+
+        $absentRoot = Join-Path $selfTestRoot 'originally-absent'
+        $absentLive = Join-Path $absentRoot 'live'
+        $absentStage = Join-Path $absentRoot 'stage'
+        New-Item -ItemType Directory -Path $absentLive,$absentStage -Force | Out-Null
+        Set-Content -LiteralPath (Join-Path $absentLive 'adopted.txt') -Value 'adopted' -NoNewline
+        $absentResult = Restore-StagedSlot $absentLive (Join-Path $absentRoot 'durable') `
+            $absentStage $null $false $null 'originally-absent self-test'
+        if (Test-Path -LiteralPath $absentLive) { throw 'Originally absent slot was not restored to absence.' }
+
+        [ordered]@{
+            result='PASS';receiptLossRecovery=$receiptLossResult;corruptCustodyRefused=$corruptRefused;
+            originallyAbsentRecovery=$absentResult
+        } | ConvertTo-Json
+    }
+    finally {
+        $script:durableRunRoot = $savedDurableRunRoot
+        if (Test-Path -LiteralPath $selfTestRoot) { Remove-Item -LiteralPath $selfTestRoot -Recurse -Force }
+    }
 }
 
 function Read-TrxCounters {
@@ -177,6 +269,11 @@ function Get-SovereignChangeSnapshot {
     $entries = @(git -c "safe.directory=$sovereignRepository" -C $sovereignRepository status --porcelain=v1 --untracked-files=all)
     if ($LASTEXITCODE -ne 0) { throw 'Unable to inspect sovereign worktree status.' }
     return @($entries | Sort-Object)
+}
+
+if ($RecoverySelfTest) {
+    Invoke-RecoverySelfTest
+    return
 }
 
 try {
@@ -231,10 +328,14 @@ try {
         [ordered]@{mode='Disabled';reason='pre-adoption rollback sentinel';schemaVersion=1} |
             ConvertTo-Json | Set-Content -LiteralPath (Join-Path $mutationSlot 'disabled-marker.json') -Encoding utf8
     }
+    $mutationOriginalExisted = Test-Path -LiteralPath $mutationSlot -PathType Container
+    $mutationOriginalInventory = if ($mutationOriginalExisted) { Get-Inventory $mutationSlot } else { $null }
+    $workflowOriginalExisted = Test-Path -LiteralPath $workflowSlot -PathType Container
+    $workflowOriginalInventory = if ($workflowOriginalExisted) { Get-Inventory $workflowSlot } else { $null }
 
+    $mutationStageAttempted = $true
     $mutationOutput = & (Join-Path $sovereignRepository 'scripts\bootstrap\Stage-DaisAppealMutationModule.ps1') -DaisRepository $DaisRepository -BuildRootBase $mutationStageRoot
     if ($LASTEXITCODE -ne 0) { throw 'Dais mutation canonical staging failed.' }
-    $mutationStagePublished = $true
     $mutationStageReceipt = Get-ReceiptFromOutput $mutationOutput
     if ($mutationStageReceipt.suiteCommit -cne $expectedDaisCommit -or
         $mutationStageReceipt.moduleSha256 -cne $expectedModuleSha256 -or
@@ -243,6 +344,7 @@ try {
         $mutationStageReceipt.publishedManifestLength -ne 1465) { throw 'Dais mutation stage receipt identity mismatch.' }
     if ([IO.Path]::GetFullPath($mutationStageReceipt.artifactSlot) -ine $mutationSlot) { throw 'Mutation stage used a noncanonical slot.' }
     if ([string]::IsNullOrWhiteSpace($mutationStageReceipt.rollbackSlot) -or $null -eq $mutationStageReceipt.rollbackHashes) { throw 'Mutation proof requires a nonempty prior rollback slot.' }
+    Assert-InventoriesEqual $mutationStageReceipt.rollbackHashes $mutationOriginalInventory 'Mutation receipt versus pre-stage anchor'
     Assert-Inventory ([IO.Path]::GetFullPath($mutationStageReceipt.rollbackSlot)) $mutationStageReceipt.rollbackHashes 'Original mutation rollback slot'
     Move-Item -LiteralPath ([IO.Path]::GetFullPath($mutationStageReceipt.rollbackSlot)) -Destination $durableMutationRollbackSlot
     Assert-Inventory $durableMutationRollbackSlot $mutationStageReceipt.rollbackHashes 'Durable mutation rollback slot'
@@ -253,14 +355,18 @@ try {
         throw 'Published mutation slot does not contain the exact three-file inventory.'
     }
 
+    $workflowStageAttempted = $true
     $workflowOutput = & (Join-Path $sovereignRepository 'scripts\bootstrap\Stage-DaisAppealWorkflowModule.ps1') -DaisRepository $DaisRepository -BuildRootBase $workflowStageRoot
     if ($LASTEXITCODE -ne 0) { throw 'Dais workflow canonical staging failed.' }
-    $workflowStagePublished = $true
     $workflowStageReceipt = Get-ReceiptFromOutput $workflowOutput
     if ($null -ne $workflowStageReceipt.rollbackSlot) {
+        if (-not $workflowOriginalExisted) { throw 'Workflow receipt reported rollback custody for an originally absent slot.' }
+        Assert-InventoriesEqual $workflowStageReceipt.rollbackHashes $workflowOriginalInventory 'Workflow receipt versus pre-stage anchor'
         Assert-Inventory ([IO.Path]::GetFullPath($workflowStageReceipt.rollbackSlot)) $workflowStageReceipt.rollbackHashes 'Original workflow rollback slot'
         Move-Item -LiteralPath ([IO.Path]::GetFullPath($workflowStageReceipt.rollbackSlot)) -Destination $durableWorkflowRollbackSlot
         Assert-Inventory $durableWorkflowRollbackSlot $workflowStageReceipt.rollbackHashes 'Durable workflow rollback slot'
+    } elseif ($workflowOriginalExisted) {
+        throw 'Workflow receipt omitted rollback custody for an existing original slot.'
     }
     $workflowStageRootSafeToDelete = $true
 
@@ -342,35 +448,39 @@ try {
 }
 catch {
     $proofFailure = $_
-    $recoveryFailure = $null
+    $recoveryFailures = [Collections.Generic.List[Exception]]::new()
     $workflowRecovery = 'NOT_REQUIRED'
     $mutationRecovery = 'NOT_REQUIRED'
-    try {
-        if ($workflowStagePublished) {
-            $workflowRecovery = Restore-StagedSlot $workflowSlot $durableWorkflowRollbackSlot $workflowStageRoot $workflowStageReceipt 'workflow artifact'
+    if ($workflowStageAttempted) {
+        try {
+            $workflowRecovery = Restore-StagedSlot $workflowSlot $durableWorkflowRollbackSlot $workflowStageRoot `
+                $workflowStageReceipt $workflowOriginalExisted $workflowOriginalInventory 'workflow artifact'
             $workflowStageRootSafeToDelete = $true
-        }
-        if ($mutationStagePublished) {
-            $mutationRecovery = Restore-StagedSlot $mutationSlot $durableMutationRollbackSlot $mutationStageRoot $mutationStageReceipt 'mutation artifact'
+        } catch { $recoveryFailures.Add($_.Exception) }
+    }
+    if ($mutationStageAttempted) {
+        try {
+            $mutationRecovery = Restore-StagedSlot $mutationSlot $durableMutationRollbackSlot $mutationStageRoot `
+                $mutationStageReceipt $mutationOriginalExisted $mutationOriginalInventory 'mutation artifact'
             $mutationStageRootSafeToDelete = $true
-        }
-    } catch { $recoveryFailure = $_ }
+        } catch { $recoveryFailures.Add($_.Exception) }
+    }
     try {
         New-Item -ItemType Directory -Path $durableRunRoot -Force | Out-Null
         [ordered]@{result='FAIL';receiptState='TERMINAL_FAILURE';terminalCondition=$terminalCondition;
-            failure=$proofFailure.Exception.Message;recoveryFailure=if($null -ne $recoveryFailure){$recoveryFailure.Exception.Message}else{$null};
+            failure=$proofFailure.Exception.Message;recoveryFailures=@($recoveryFailures | ForEach-Object Message);
             workflowRecovery=$workflowRecovery;mutationRecovery=$mutationRecovery;
             mutationStageRootPreserved=-not $mutationStageRootSafeToDelete;
             workflowStageRootPreserved=-not $workflowStageRootSafeToDelete;
             countyOrProtectedDataUsed=$false;deploymentOrProductionUsed=$false} |
             ConvertTo-Json -Depth 8 | Set-Content -LiteralPath (Join-Path $durableRunRoot 'runtime-adoption-failure.json') -Encoding utf8
     } catch {
-        if ($null -eq $recoveryFailure) { $recoveryFailure = $_ }
+        $recoveryFailures.Add($_.Exception)
     }
-    if ($null -ne $recoveryFailure) {
+    if ($recoveryFailures.Count -gt 0) {
         throw [AggregateException]::new(
             'Dais mutation proof failed and rollback recovery did not complete.',
-            [Exception[]]@($proofFailure.Exception,$recoveryFailure.Exception))
+            [Exception[]]@($proofFailure.Exception)+[Exception[]]@($recoveryFailures))
     }
     throw $proofFailure
 }
