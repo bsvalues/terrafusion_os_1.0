@@ -191,6 +191,14 @@ try {
     $testProject = Join-Path $sovereignRepository 'backend\tests\TerraFusion.Unit.Tests\TerraFusion.Unit.Tests.csproj'
     $resultsDirectory = Join-Path $testRoot 'test-results'
     $artifacts = Join-Path $testRoot 'artifacts'
+    $sovereignManifest = Join-Path $sovereignRepository 'sovereign.yaml'
+    $testSovereignManifest = Join-Path $testRoot 'sovereign.yaml'
+    if (-not (Test-Path -LiteralPath $sovereignManifest -PathType Leaf)) { throw 'Tracked sovereign manifest is unavailable.' }
+    Copy-Item -LiteralPath $sovereignManifest -Destination $testSovereignManifest
+    if ((Get-FileHash -LiteralPath $testSovereignManifest -Algorithm SHA256).Hash -cne
+        (Get-FileHash -LiteralPath $sovereignManifest -Algorithm SHA256).Hash) {
+        throw 'Test-host sovereign manifest differs from the protected source bytes.'
+    }
 
     Invoke-Checked $DotNetExecutable @(
         'test',$testProject,'-c','Release','--artifacts-path',$artifacts,'--results-directory',$resultsDirectory,
