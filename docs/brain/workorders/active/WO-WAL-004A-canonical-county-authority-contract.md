@@ -2,7 +2,8 @@
 
 | Field | Value |
 | --- | --- |
-| Status | `ACTIVE` |
+| Status | `COMPLETE_ON_PROTECTED_MAIN` |
+| Protected merge | PR `#1488`, merge `ca2aef938949ae92fa0aeda095ebd0198616eef0` |
 | Program | Washington Assessor Launch V1 |
 | Goal | `GOAL-WASHINGTON-ASSESSOR-LAUNCH-V1` |
 | Loop | `LOOP-WASHINGTON-ASSESSOR-LAUNCH-V1` |

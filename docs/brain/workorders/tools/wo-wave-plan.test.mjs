@@ -618,7 +618,7 @@ describe('wo-wave-plan', () => {
     }
   });
 
-  it('reconciles the four actual WAL child records and rejects every typed reservation drift', () => {
+  it('reconciles the four current WAL child records and rejects every typed reservation drift', () => {
     const actualRegistry = JSON.parse(
       fs.readFileSync(
         path.join(root, 'docs/brain/workorders/registry/work-order-registry.seed.json'),
@@ -628,10 +628,15 @@ describe('wo-wave-plan', () => {
     const actualOwnerDecisions = JSON.parse(
       fs.readFileSync(path.join(root, '.governance/owner-decisions.json'), 'utf8')
     );
-    const childIds = ['WO-WAL-001A', 'WO-WAL-002A', 'WO-WAL-003A', 'WO-WAL-004A'];
+    const childIds = ['WO-WAL-001B', 'WO-WAL-002B', 'WO-WAL-003B', 'WO-WAL-004B'];
     const selectedIds = new Set([
       'WO-WAL-000',
       'WO-WAL-000A',
+      'WO-WAL-000B',
+      'WO-WAL-001A',
+      'WO-WAL-002A',
+      'WO-WAL-003A',
+      'WO-WAL-004A',
       ...childIds,
       'WO-WAL-005',
       'WO-WAL-006',
@@ -640,8 +645,8 @@ describe('wo-wave-plan', () => {
     const children = childIds.map(id => actualRecords.find(item => item.id === id));
     assert.ok(children.every(Boolean));
     assert.equal(
-      children.find(item => item.id === 'WO-WAL-004A').validationGates[0].command,
-      'dotnet test backend/TerraFusion.API.Tests/TerraFusion.API.Tests.csproj --filter "FullyQualifiedName~CountyResolverTests|FullyQualifiedName~HttpContextRequestUserContextAccessorTests" && git diff --check && exact changed-path audit'
+      children.find(item => item.id === 'WO-WAL-004B').validationGates[0].command,
+      'dotnet test backend/tests/TerraFusion.Unit.Tests/TerraFusion.Unit.Tests.csproj --filter FullyQualifiedName~CountyDataAuthorityBoundaryTests && git diff --check && exact changed-path audit'
     );
 
     const schema = JSON.parse(
@@ -651,7 +656,7 @@ describe('wo-wave-plan', () => {
       )
     );
     const validate = new Ajv2020({ allErrors: true, strict: false }).compile(schema);
-    for (const item of [actualRecords.find(record => record.id === 'WO-WAL-000A'), ...children]) {
+    for (const item of [actualRecords.find(record => record.id === 'WO-WAL-000B'), ...children]) {
       assert.equal(validate(item), true, `${item.id}: ${JSON.stringify(validate.errors)}`);
     }
     assert.equal(validate({ ...children[0], contractReservations: ['production'] }), false);
@@ -685,7 +690,13 @@ describe('wo-wave-plan', () => {
       ownerDecisions: actualOwnerDecisions,
     });
     const exactPlan = planWaves(registry(actualRecords), rules, baseOptions);
-    assert.deepEqual(exactPlan.initialExecutableSet, childIds);
+    assert.deepEqual(
+      exactPlan.initialExecutableSet,
+      childIds,
+      JSON.stringify(
+        exactPlan.excludedWorkOrders.filter(item => childIds.includes(item.workOrderId))
+      )
+    );
     for (const blockedId of ['WO-WAL-005', 'WO-WAL-006']) {
       assert.equal(actualRecords.find(item => item.id === blockedId).status, 'blocked');
       assert.ok(

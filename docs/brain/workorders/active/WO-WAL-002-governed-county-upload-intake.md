@@ -2,7 +2,7 @@
 
 | Field | Value |
 | --- | --- |
-| Status | `BLOCKED_ON_WAL_000` |
+| Status | `ACTIVE_EXACT_CHILD_ROUTING` |
 | Program | Washington Assessor Launch V1 |
 | Risk | R5 authenticated county-data ingestion into TerraFusion-controlled storage |
 | Terminal condition | `COUNTY_UPLOAD_OBSERVED_VALIDATED_LINEAGE_BOUND_COUNTY_SCOPED_AND_NO_EXTERNAL_WRITE` |
