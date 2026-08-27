@@ -1,8 +1,8 @@
 # Cross-Program Dependency Graph
 
-**Version:** 1.2
-**Date:** 2026-07-18
-**Authority:** WO-WOE-014, current-state refresh by WO-SR-003 / WO-SR-004
+**Version:** 1.3
+**Date:** 2026-08-27
+**Authority:** WO-WOE-014, current-state refresh by WO-SR-MISSION-COMPLETION
 **Classification:** Operator Doctrine - makes the Wall Ledger operational
 **Builds on:** [AUTONOMOUS_CONTINUATION_GATE.md](AUTONOMOUS_CONTINUATION_GATE.md) (WOE-012),
 [WORK_ORDER_PROGRAM_QUEUE.md](WORK_ORDER_PROGRAM_QUEUE.md), and
@@ -40,9 +40,10 @@ At WO-PORTFOLIO-003 reconciliation, the previously listed safe lanes are complet
 - Backend Operational Excellence closed at WO-BACKEND-OE-013.
 - Azure's committed-evidence slice closed at WO-AZURE-003.
 
-WO-SR-003 and WO-SR-004 completed repository creation, bootstrap, required-check verification, and
-protected-main configuration for all five suite repositories. Forge is dependency-cleared for
-bounded extraction because its domain contracts are frozen.
+The Five-Suite Federated Repository Buildout is complete through `WO-SR-MISSION-COMPLETION`.
+Protected suite ownership, sovereign runtime adoption, exact provenance, rollback, and duplicate
+retirement are terminal. No automatic successor remains inside that mission; Forge WO-SR-007 is
+legitimately pending outside it.
 
 ---
 
@@ -74,40 +75,12 @@ RUNTIME IMPORT
   starts at WO-CORE-1 only after the sovereign import disposition is authorized
 
 FIVE-SUITE FEDERATED REPOSITORIES
-  WO-SR-002 contract and policy preparation is complete in the sovereign base
-  WO-SR-003A through WO-SR-003E repository creation and bootstrap are complete
-  WO-SR-004 bootstrap and protected-main verification is complete
-  WO-SR-005A Forge valuation-kernel extraction is complete without ownership cutover
-  WO-SR-005B-P Atlas preparation is complete with extraction blocked
-  WO-SR-005B-C Atlas read-contract decomposition is complete
-  WO-SR-005B-I Atlas read-contract implementation and freeze is complete
-  WO-SR-005B-A Atlas adapter and standalone parity preparation is complete
-  WO-SR-005B-E1 pure unwired sovereign adapter implementation is complete
-  WO-SR-005B-E2 standalone synthetic parity is complete
-  WO-SR-005B-E3 bounded extraction scope audit is complete with no safe direct-copy slice
-  WO-SR-005B-F1 built-fresh standalone spatial projection foundation is complete
-  WO-SR-005C-P Dais domain-contract and county-isolation preparation is complete
-  WO-SR-005C-C Dais appeal-workflow contract decomposition is complete
-  WO-SR-005C-I Dais appeal-workflow contract implementation/freeze is complete
-  WO-SR-005C-A Dais adapter/standalone-parity preparation is complete with an implementation-ready verdict
-  WO-SR-005C-E1 pure unwired sovereign adapter is complete in sovereign PR #1357
-  WO-SR-005C-E2 standalone synthetic parity is complete in Dais PR #1
-  WO-SR-005C-E3 exact extraction audit is complete with PASS_NO_DIRECT_EXTRACTION
-  WO-SR-005C-F1 built-fresh standalone foundation remains later than E2 and separately authority-gated
-  WO-SR-005D-P Dossier custody/evidence-integrity preparation is complete with cohort correction
-  WO-SR-005D-C Dossier evidence-snapshot decomposition is complete with NO_GO
-  WO-SR-005D-C2 Dossier evidence-registry read contract decomposition is complete
-  WO-SR-005D-I Dossier evidence-registry read implementation/freeze is complete
-  WO-SR-005D-A Dossier adapter/standalone-parity preparation is complete with an implementation-ready verdict
-  WO-SR-005D-E1 pure unwired sovereign adapter is complete
-  WO-SR-005D-E2 standalone synthetic parity is complete in Dossier PR #1; E1/E2 authority consumed
-  WO-SR-005E-P GPT governed-AI contract and grounding preparation is complete
-  WO-SR-005E-C GPT grounded-context contract decomposition is complete
-  WO-SR-005E-I GPT grounded-context implementation/freeze is complete
-  WO-SR-005E-A GPT adapter/parity preparation is complete with source-identity decomposition required
-  WO-SR-005E-A2 GPT grounded source-identity projection design is current and R2
-  Sequential R3 contract-freeze, Dais E1/E2, and Dossier E1/E2 envelopes are complete and consumed
-  WO-SR-005B through WO-SR-005E extraction/runtime adoption remains gated by exact scope and parity proof
+  complete through WO-SR-MISSION-COMPLETION
+  all five suite repositories own their ratified capability
+  sovereign consumers use governed exact-artifact boundaries with observed rollback
+  duplicate mutable ownership is retired while legitimate OS integration custody is preserved
+  no automatic successor remains inside the completed mission
+  Forge WO-SR-007 remains pending outside this mission
 ```
 
 ---
@@ -116,7 +89,7 @@ FIVE-SUITE FEDERATED REPOSITORIES
 
 | Program | Completed | Next recorded node | Dependency | State |
 |---------|-----------|--------------------|------------|-------|
-| five-suite-federated-repository-buildout | SR-001 through SR-005E-I contract cohort plus SR-005C-A/E1/E2/E3, SR-005D-A/E1/E2, and SR-005E-A | WO-SR-005E-A2 source-identity projection design | Adapter implementation, F1, extraction, and runtime/provider adoption remain separately gated and unauthorized | ACTIVE |
+| five-suite-federated-repository-buildout | Complete through `WO-SR-MISSION-COMPLETION` | no automatic successor | New work requires another applicable objective and authority; Forge WO-SR-007 remains outside this mission | CLOSED |
 | p8-management-dashboard | 001-006 | no automatic successor | authenticated verification needs SW-03; county release needs SW-04/SW-10 | BASELINE COMPLETE |
 | benton-demo | 002, 003A-C, CONFIG-001 | 003D live smoke | SW-01 + SW-04 | PARKED |
 | benton-data-quality | audits, rollup, prior bounded remediation | new protected remediation packet | SW-02 / SW-03 / SW-08 | PARKED |
@@ -134,13 +107,11 @@ FIVE-SUITE FEDERATED REPOSITORIES
 
 ## 5. Operator Reading
 
-1. The contract-freeze cohort and bounded Dais E1/E2 sequence are complete.
-2. Do not treat frozen contracts as authority for extraction, adapters, providers, or runtime adoption.
-3. Do not rerun completed Work Orders or ask the owner to dispatch routine reconciliation.
-4. The E1/E2 envelope is consumed. F1 or any later extraction cohort requires a separate exact
-   scope, parity evidence, and applicable authority; keep provider calls, custody mutation, runtime
-   adoption, protected data, publication/workflow changes, and cutover blocked.
-5. Live, data, runtime mutation, TerraPilot direction/promotion, and import paths retain their exact
+1. Five-Suite routing is terminal at `WO-SR-MISSION-COMPLETION`; do not rerun completed child Work
+   Orders or infer a mission successor.
+2. Forge WO-SR-007 remains pending outside the completed mission and is not changed by closeout.
+3. New suite work requires another applicable objective and authority.
+4. Live, data, runtime mutation, TerraPilot direction/promotion, and import paths retain their exact
    recorded walls. Do not classify read-only diagnosis or design as runtime expansion.
 
 ---
@@ -149,6 +120,7 @@ FIVE-SUITE FEDERATED REPOSITORIES
 
 | Date | Change | WO |
 |------|--------|----|
+| 2026-08-27 | Closed Five-Suite routing after terminal protected runtime, rollback, ownership, and duplicate-retirement reconciliation | WO-SR-MISSION-COMPLETION |
 | 2026-07-19 | Created, bootstrapped, checked, and protected all five suite repositories; admitted Forge extraction | WO-SR-003 / WO-SR-004 |
 | 2026-07-01 | Cross-program dependency graph; authorization-to-unblocks map; prerequisite chains | WO-WOE-014 |
 | 2026-07-16 | Removed completed-node executable claims and recorded all-lanes-parked state | WO-PORTFOLIO-003 |

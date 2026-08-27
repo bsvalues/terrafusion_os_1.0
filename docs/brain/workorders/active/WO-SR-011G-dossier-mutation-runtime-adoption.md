@@ -2,7 +2,7 @@
 
 | Field | Value |
 | --- | --- |
-| Status | ACTIVE - implementation and protected proof |
+| Status | COMPLETE - protected six-operation runtime and rollback verified |
 | Program | Five-Suite Federated Repository Buildout |
 | Goal | `GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES` |
 | Authority | `OWNER-FIVE-SUITE-FEDERATED-COMPLETION-20260826` |
@@ -37,3 +37,11 @@ bounded-output failure, rejected/unavailable no-save, cross-county refusal, opti
 all-six accepted mutation persistence, existing read-consumer observation, Disabled rollback and
 LocalExact restoration, focused unit/integration builds, governance gates, protected PR merge, and
 protected-main verification.
+
+## Protected completion
+
+PR #1481 reviewed exact head `b517a8e01acd37fdc91244caeb988d980c4e73ec`, tree
+`0ecb43c8c7eb7467dda2ffcbdb45406b60ec26d5`, and squash-merged as protected OS
+main `5680f1de637e9e39d702c4cf6f708edee7bd00f3` with exact tree equality. All six
+reachable operations, isolation/concurrency, fail-closed refusal, physical rollback, adopted
+restoration, required first-party checks, and protected-main verification passed.

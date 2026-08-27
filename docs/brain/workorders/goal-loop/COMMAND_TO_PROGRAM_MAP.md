@@ -18,8 +18,8 @@ resolves.
 | `codex-operator-playbook` | Codex Operator Work Order Playbook | CLOSED at WO-CODEX-OP-009 | YES - governance capability merged | `once`, `evidence` |
 | `goal-loop-master-playbook` | Master Goal/Loop Playbook Governance | CLOSED at WO-GOAL-LOOP-MASTER-PLAYBOOK-001 | YES - governing baseline merged | `once`, `evidence` |
 | `program-status` | Master Active Program Playbook | Active program graph | NO | `once`, `evidence`, `discovery` |
-| `program-next` | Five-Suite Federated Repository Buildout | `WO-SR-010B` Dais persistent exact runtime adoption | YES - continuous child execution under `OWNER-FIVE-SUITE-FEDERATED-COMPLETION-20260826` | `once`, `evidence`, `discovery` |
-| `suite-repositories` | Five-Suite Federated Repository Buildout | Active mission: Dais, then Dossier and GPT canonical runtime adoption | YES - one bounded child/branch/PR at a time within the mission hard walls | `once`, `evidence`, `discovery` |
+| `program-next` | Five-Suite Federated Repository Buildout | COMPLETE at `WO-SR-MISSION-COMPLETION` | NO - no successor inside the completed mission | `evidence`, `discovery` |
+| `suite-repositories` | Five-Suite Federated Repository Buildout | COMPLETE; terminal evidence record is canonical | NO - new work requires another applicable objective/authority | `evidence`, `discovery` |
 | `program-stop` | Master Playbook | NONE | YES — operator stop command | `once` |
 | `release-engineering` | Release Engineering | CLOSED at WO-REL-006 | YES - baseline closed after rollup | `once`, `evidence`, `discovery` |
 | `benton-demo` | P1 | WO-DEPLOY-BENTON-003D | YES - live-surface smoke/evidence requires Azure execution access | `once`, `merge-watch`, `evidence` |

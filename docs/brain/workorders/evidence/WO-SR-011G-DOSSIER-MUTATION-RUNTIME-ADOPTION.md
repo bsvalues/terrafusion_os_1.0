@@ -1,5 +1,9 @@
 # WO-SR-011G Evidence - Dossier Mutation Runtime Adoption
 
+## Current verdict
+
+`DOSSIER_MUTATION_LOCAL_EXACT_SIX_OPERATION_RUNTIME_ADOPTED_AND_ROLLBACK_PROVEN`
+
 ## Pinned identity
 
 - OS base: `807a46aad94e5bc8a36d7974130d482e49a73d2b`
@@ -20,6 +24,9 @@
 - Direct execution from the exact staged module validated the frozen schema and byte-equivalent
   accepted result for all six synthetic operations, ending
   `DOSSIER_LOCAL_EXACT_SIX_OPERATION_PROOF`.
-- PR #1481 first compile head exposed three exact C# errors; head `601527a34b49cd54e2b751f317de94a3a26b1947`
-  contains their repair plus focused provenance/identity/tamper tests. Final CI, reviewed head,
-  protected merge and protected-main identities remain pending.
+- PR #1481 first compile head exposed three exact C# errors; the repaired exact reviewed head was
+  `b517a8e01acd37fdc91244caeb988d980c4e73ec`, tree
+  `0ecb43c8c7eb7467dda2ffcbdb45406b60ec26d5`. It squash-merged as protected OS
+  main `5680f1de637e9e39d702c4cf6f708edee7bd00f3` with the same tree. Required
+  first-party checks, two resolved threads, exact-head assurance, and protected-main verification
+  passed.

@@ -11,9 +11,23 @@
 
 ---
 
-## Active Goal
+## Completed Five-Suite Goal
 
-The Five-Suite Federated Repository Buildout is active under `OWNER-FIVE-SUITE-FEDERATED-COMPLETION-20260826`. Atlas runtime and ownership are complete. Dais is terminal on protected merge `f14fc4999f650ed4bbff2633813be6b57ec4bfbc`: exact read and mutation runtimes are adopted, unsupported backend/frontend behavior is truthfully retired, and rollback/restoration are proven. `WO-SR-011A` staged the exact Dossier-owned evidence-registry read artifact in protected merge `aec4f1e18b619730842c828e4f1c93ecd18d64b2`; `WO-SR-011B` persistently adopted that exact read runtime in protected merge `d82a2d3638a722fa541836abbd5c4ab45f8e060d`; and `WO-SR-011D` froze the provider-neutral mutation-decision boundary in protected merge `7cb96bf2ea5efea7caccae6d6e8c9f81f672412e` without performing mutation. Dossier mutation staging/runtime adoption, ownership truth, and terminalization remain before GPT runtime adoption. GPT portability/provenance completed in suite protected merge `550b50f27af6f0911f16c973cbb6fc57a20eb15a`; `WO-SR-012B` has integrated the exact latest protected main and owns inert GPT staging and rollback proof. The mission hard walls remain binding.
+The Five-Suite Federated Repository Buildout is terminal under
+`OWNER-FIVE-SUITE-FEDERATED-COMPLETION-20260826` and `WO-SR-MISSION-COMPLETION`.
+Forge, Atlas, Dais, and Dossier protected suite ownership and sovereign runtime/rollback evidence are
+recorded exactly in the terminal Work Order. GPT inert staging is protected at
+`1f0889a72497b283140fb0d0a57eed79775f9a34`; runtime reviewed head
+`3bd87411966a7d2c61439f4f60a11f0cb498968f`, tree
+`e6797a83c2c47f3a62bcbfd19e544cd0ae6e5bf8`, passed manual proof run
+`33071051037` and independent review with no actionable P0/P1, then squash-merged as protected OS
+main `9ef50aa1cc608fa3aa8075f30cf349b757a31902` with exact tree equality. This
+terminal closeout also records GPT suite protected main
+`cbcbc518d25b000724712b029fed8cc4e05d8ca6`, tree
+`8f4cae82e19cf1ced8a397c2f392ab7dc13c0c85`, exact reviewed-tree equality, and receipt SHA-256
+`4aa0b8ca01e0d89d327457e75ade323fe1c28651373361c42baa85a2e84ecb40`. The mission hard walls
+remain binding. Forge repository packet
+`operations/work-orders/WO-SR-007-forge-release-artifact.md` remains pending outside this mission.
 
 The prior `WO-SR-009C` completed before this activation. PR #1424 merged exact assured head
 `e70548cb4938da92b2c0b254d71c5361aa10a6ed` as
@@ -197,8 +211,13 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | **WO-SR-011A Dossier Canonical Artifact Staging** | **DONE / R3 / PR #1474** | Protected merge `aec4f1e18`; exact protected Dossier Git blobs, generated provenance, exact inventory, production refusal, backup-content/hash proof, and observed whole-slot rollback; runtime remains Disabled |
 | **WO-SR-011B Dossier Persistent Exact Read Runtime Adoption** | **DONE / R4 / PR #1477** | Protected merge `d82a2d363`; exact suite-owned read semantics execute on the real authenticated county-scoped sovereign path; persistent Development LocalExact, production refusal, tamper fail-closed, and physical rollback proven |
 | **WO-SR-011D Dossier Mutation Decision Contract Freeze** | **DONE / R3 / PR #1475** | Protected merge `7cb96bf2e`; provider-neutral note/document/evidence/custody/packet decision boundary frozen with synthetic proof; no mutation performed |
+| **WO-SR-011F Dossier Mutation Canonical Staging** | **DONE / R3 / PR #1479** | Protected merge `807a46aad`; exact suite artifact identities, nonempty rollback contents/hashes, physical rollback and adopted restoration proven |
+| **WO-SR-011G Dossier Six-Operation Mutation Runtime** | **DONE / R4 / PR #1481** | Protected merge `5680f1de6`, tree `0ecb43c8`; six operations, isolation/concurrency, fail-closed refusal and rollback/restoration proven |
+| **WO-SR-011I Dossier Duplicate Reference Retirement** | **DONE / R3 / PR #1482** | Protected merge `65ddfe994`, tree `b9860d53`; duplicate custody classification retired; suite terminal main `4a109acef` |
 | **WO-SR-012A GPT Portability and Provenance** | **DONE / R3 / GPT PR #5** | Protected GPT merge `550b50f27`; exact LF-stable execution manifest pins module/schema/source-manifest blob, length, and SHA identities |
-| **WO-SR-012B GPT Canonical Artifact Staging** | **ACTIVE / R3** | Latest protected main `142a105a0` integrated; rerun inert exact staging and rollback proof before protected merge |
+| **WO-SR-012B GPT Canonical Artifact Staging** | **DONE / R3** | Protected OS merge `1f0889a72`, tree `4e24afd3`; exact inert staging and rollback verified |
+| **WO-SR-012C GPT Grounded-Context Runtime Adoption** | **DONE / R4 / PR #1480** | Reviewed head `3bd874119` squash-merged as protected main `9ef50aa1c`, tree `e6797a83` exact equality; manual proof run `33071051037` success; 8/8 required plus broader first-party checks success; zero threads |
+| **WO-SR-MISSION-COMPLETION** | **COMPLETE / GOVERNANCE** | Terminal suite/runtime/rollback/retirement evidence reconciled, including GPT suite protected main `cbcbc518d2`, tree `8f4cae82`, and terminal receipt SHA-256 `4aa0b8ca01e0d89d327457e75ade323fe1c28651373361c42baa85a2e84ecb40` |
 
 ### portfolio-operator (`GOAL-PORTFOLIO-OPERATOR-001` / `LOOP-PORTFOLIO-OPERATOR-001`)
 | WO | State | Notes |

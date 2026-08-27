@@ -4,7 +4,7 @@
 
 **Loop:** `LOOP-PORTFOLIO-OPERATOR-001`
 
-**Status:** Five-suite program active with exact contract-implementation authority boundary
+**Status:** Five-Suite program completed and closed; no unrelated next program selected
 
 ## Purpose
 
@@ -54,21 +54,11 @@ work, preserved their documents as historical audit material, removed them from 
 executable routing, and withdrew proposed WO-LOCAL-098. No TerraFusion capability was delivered by
 those Work Orders and no authority transfers to the foreign project.
 
-After that correction, the ratified Five-Suite Federated Repository Buildout remains active.
-WO-SR-003 and WO-SR-004 created, bootstrapped, checked, and protected all five suite repositories.
-WO-SR-005B-I implemented and hash-froze the Atlas read boundary without runtime adoption.
-WO-SR-005B-A selected the safe canonical adapter source and admitted the two-repository E1/E2
-implementation sequence. WO-SR-005B-E1 completed the pure unwired adapter with 30 passing tests and
-a zero-warning solution build. WO-SR-005B-E2 merged the standalone synthetic parity harness in
-Atlas PR #1. WO-SR-005B-E3 rejected direct source copying because no sovereign candidate has a clean
-suite-only boundary. WO-SR-005B-F1 merged the built-fresh standalone projection foundation in Atlas
-PR #2 without runtime adoption. WO-SR-005C-P verified county-isolated Dais workflow truth and
-selected appeals as the first contract cohort. WO-SR-005C-C completed the read-only decomposition;
-WO-SR-005C-I, WO-SR-005D-I, and WO-SR-005E-I are complete after all R2 suite-contract design
-completed. The contract-freeze envelope is consumed. Portfolio reconciliation admitted
-WO-SR-005C-A, which completed with an implementation-ready pure-adapter then standalone-parity
-sequence. E1 remains blocked on its exact proposed R3 envelope. Provider calls, extraction, runtime
-adoption, and protected resources remain blocked. WO-SR-005C-E3 separately confirmed there is no
-safe direct-copy Dais source and left F1 as a later built-fresh candidate after parity.
+After that correction, the ratified Five-Suite Federated Repository Buildout proceeded through its
+bounded child Work Orders and is now complete at `WO-SR-MISSION-COMPLETION`. Forge, Atlas, Dais,
+Dossier, and GPT protected suite ownership is reconciled with governed sovereign runtime adoption,
+exact provenance, observed rollback, and duplicate-retirement evidence. The mission has no automatic
+successor. Forge WO-SR-007 remains pending outside the mission and this reconciliation does not select
+or authorize unrelated portfolio work.
 
-STOP_TYPE: `PORTFOLIO_RECONCILIATION`
+STOP_TYPE: `COMPLETED_PROGRAM_NO_AUTOMATIC_SUCCESSOR`

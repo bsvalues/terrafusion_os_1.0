@@ -2,7 +2,7 @@
 
 ## Current verdict
 
-`FOCUSED_CONTRACT_PROOF_PASS_REMOTE_ASSURANCE_PENDING`
+`DAIS_APPEAL_MUTATION_CONTRACT_FROZEN`
 
 ## Frozen boundary
 
@@ -30,10 +30,10 @@ The Windows
 sparse worktree materializes text as CRLF while the manifest correctly pins canonical Git LF blobs,
 so no pre-existing frozen hash was rewritten to accommodate that checkout transformation.
 
-## Remaining gates
+## Claim boundary
 
-C# compilation, protected PR checks, exact-head merge, and protected-main verification remain
-required. This evidence does not claim mutation runtime adoption or Dais source ownership.
+This contract-freeze evidence does not by itself claim mutation runtime adoption or Dais source
+ownership; those claims are established by their protected successor records below.
 
 Independent review found and repaired one pre-freeze P1: the first candidate permitted a `filed`
 snapshot with `decisionAt` and permitted `hasDecidedValue=true` on a non-`decided` target. The
@@ -46,4 +46,11 @@ contract proof now parses actual UTC calendar instants (including only known lea
 `invalid-calendar.synthetic.json`, which requires typed `INVALID_LIFECYCLE`. The repaired freeze is
 7 groups / 67 frozen files. A detached exact-commit checkout of `a29f7a685` was mechanically
 rematerialized from canonical Git blobs; the complete freeze verifier passed and the complete Node
-suite passed 23/23. Protected-main verification remains the final identity observation.
+suite passed 23/23.
+
+## Protected completion
+
+Sovereign PR #1468 reviewed exact head `377ed29b84c4f46b623f61a64d7644f911f76db6`
+and merged as protected main `52744220509a54b6544e0fa193b6d09e8d93c159` with tree
+`45c652086876c0e3841f742012614e1bf377674c`. Backend compilation, required
+checks, exact-head merge, and protected-main verification passed.

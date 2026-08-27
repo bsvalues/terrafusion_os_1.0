@@ -2,7 +2,7 @@
 
 | Field | Value |
 | --- | --- |
-| Status | EXACT STAGING AND ROLLBACK PROVEN LOCALLY - protected sovereign merge pending |
+| Status | COMPLETE - protected exact staging and rollback verified |
 | Program | Five-Suite Federated Repository Buildout |
 | Goal | `GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES` |
 | Risk | R3 exact artifact staging with recoverable whole-slot replacement |
@@ -72,5 +72,7 @@ select a runtime, mutate Dossier or county data, change the contract, deploy, or
 
 ## Continuation
 
-After exact-head review, protected checks, merge, and protected-main verification, proceed to a
-separate runtime-adoption child. This staging result does not authorize runtime selection.
+PR #1479 merged as protected OS main `807a46aad94e5bc8a36d7974130d482e49a73d2b`
+with tree `1e516f6fe07d321db707be932068eb27bda0764f`. Required first-party checks,
+exact-head merge, and protected-main verification passed. This staging result did not itself
+authorize runtime selection; WO-SR-011G separately completed that adoption.

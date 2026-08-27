@@ -2,7 +2,7 @@
 
 | Field | Value |
 | --- | --- |
-| Status | ACTIVE - contract implementation and focused synthetic proof pass |
+| Status | COMPLETE - contract frozen on protected main |
 | Program | Five-Suite Federated Repository Buildout |
 | Goal | `GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES` |
 | Risk | R3 bounded shared-contract addition |
@@ -48,6 +48,7 @@ publication.
 
 ## Continuation
 
-After protected-main verification, copy the exact frozen schema and fixtures into Dais with their
-sovereign identities, implement the pure suite module, then wire the OS service through the
-governed process boundary and retire only the duplicated defaults and transition graph.
+Sovereign PR #1468 reviewed exact head `377ed29b84c4f46b623f61a64d7644f911f76db6`
+and merged as protected main `52744220509a54b6544e0fa193b6d09e8d93c159`
+(tree `45c652086876c0e3841f742012614e1bf377674c`). The suite publication and governed
+runtime successors completed; this contract Work Order is consumed.

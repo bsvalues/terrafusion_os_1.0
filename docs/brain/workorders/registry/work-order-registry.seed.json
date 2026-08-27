@@ -1,8 +1,8 @@
 {
   "schemaVersion": "0.1.0",
-  "generatedBy": "WO-SR-011D Dossier mutation decision contract freeze",
-  "generatedAt": "2026-08-26T00:00:00Z",
-  "description": "The owner-level Five-Suite completion mission is active. Atlas and Dais runtime/ownership are protected-main complete. Dossier read staging and exact persistent runtime adoption are protected-main complete. WO-SR-011D freezes the provider-neutral Dossier mutation-decision boundary before mutation source, staging, runtime adoption and ownership retirement.",
+  "generatedBy": "WO-SR-MISSION-COMPLETION Five-Suite terminal closeout",
+  "generatedAt": "2026-08-27T00:00:00Z",
+  "description": "The owner-level Five-Suite completion mission is terminal. Exact protected suite/runtime/rollback and ownership evidence is reconciled; Forge WO-SR-007 remains pending outside the mission.",
   "records": [
     {
       "id": "WO-WOE-000",
@@ -11012,7 +11012,7 @@
       },
       "provenance": {
         "createdAt": "2026-08-26T00:00:00Z",
-        "source": "Owner mission directive; verified WO-SR-007C merge 5a328e728852dc2bb933d704d0daa5c54750728c; pinned Atlas commit 6736a53980c73d2b503ec71a440ad8e02aa43782; 89-test runtime and rollback proof; sovereign PR #1465 merge 4fcbfbd0585122f67f640b1b76786b7629f28e1f; Atlas PR #4 merge 708fc5c31988405f9ca2cba7ebea7bb9d1fec3a6.",
+        "source": "Owner mission directive; verified WO-SR-007C merge 5a328e728852dc2bb933d704d0daa5c54750728c; pinned Atlas commit 6736a53980c73d2b503ec71a440ad8e02aa43782; 89-test runtime and rollback proof; sovereign PR #1465 merge 4fcbfbd0585122f67f640b1b76786b7629f28e1f; Atlas PR #4 merge 708fc5c31988405f9ca2cba7ebea7bb9d1fec3a6, tree d986cc31da0077adb3a133bd1fa6d44bb2a79acc.",
         "schemaVersion": "0.1.0"
       }
     },
@@ -11024,7 +11024,7 @@
       "riskClass": "R3",
       "status": "complete",
       "dependencies": [
-        { "id": "ATLAS_CANONICAL_RUNTIME_AND_OWNERSHIP", "status": "satisfied", "evidence": ["Sovereign PR #1465 merged as 4fcbfbd0585122f67f640b1b76786b7629f28e1f; Atlas PR #4 merged as 708fc5c31988405f9ca2cba7ebea7bb9d1fec3a6; both protected mains verified."] },
+        { "id": "ATLAS_CANONICAL_RUNTIME_AND_OWNERSHIP", "status": "satisfied", "evidence": ["Sovereign PR #1465 merged as 4fcbfbd0585122f67f640b1b76786b7629f28e1f; Atlas PR #4 merged as 708fc5c31988405f9ca2cba7ebea7bb9d1fec3a6, tree d986cc31da0077adb3a133bd1fa6d44bb2a79acc; both protected mains verified."] },
         { "id": "OWNER-FIVE-SUITE-FEDERATED-COMPLETION-20260826", "status": "satisfied", "evidence": ["Owner mission authority explicitly permits exact child staging, rollback proof, PR operation, merge, runtime adoption, and ownership completion without per-child owner relay."] }
       ],
       "allowedSystems": [
@@ -11348,7 +11348,7 @@
       "program": "Five-Suite Federated Repository Buildout",
       "goal": "Freeze the provider-neutral county/parcel-scoped decision boundary for Dossier note, document, evidence/custody and explicit-snapshot packet mutations without moving sovereign integration responsibilities.",
       "riskClass": "R3",
-      "status": "active",
+      "status": "complete",
       "dependencies": [
         { "id": "WO-SR-010G", "status": "satisfied", "evidence": ["PR #1471 merged as f14fc4999f650ed4bbff2633813be6b57ec4bfbc; protected main supplied as the exact child base."] },
         { "id": "WO-SR-011A", "status": "satisfied", "evidence": ["PR #1474 merged as aec4f1e18b619730842c828e4f1c93ecd18d64b2; this contract branch integrates that exact protected staging merge."] },
@@ -11374,15 +11374,134 @@
       "evidenceRequired": [{ "kind": "other", "description": "Hash-pinned DTO/schema/fixtures; deterministic six-operation decisions; exact suite-owned document custody classification; typed host/version/transition/hash/scope/template rejection; identity and cross-lane failure; complete freeze/build/governance proof; independent review; protected checks; exact-head merge and protected-main verification." }],
       "evidenceProduced": [{ "kind": "file", "location": "docs/brain/workorders/evidence/WO-SR-011D-DOSSIER-MUTATION-DECISION-CONTRACT-FREEZE.md", "summary": "Focused accepted, typed-rejected, custody integrity, identity and cross-lane synthetic contract proof." }],
       "validationGates": [
-        { "name": "focused Dossier mutation contract proof", "command": "node --test --test-name-pattern='Dossier mutation' scripts/contracts/verify-contract-freeze.test.mjs", "required": true, "result": "pass - 3/3" },
-        { "name": "complete shared-contract freeze", "command": "canonical Git-blob freeze verifier and full Node test file", "required": true, "result": "pass at 5744c63ea1e4018d595c482d971af7f102df9ab6 atop aec4f1e18b619730842c828e4f1c93ecd18d64b2 - 8 groups, 85 frozen files; 26/26 tests" },
-        { "name": "C# contract build", "command": "dotnet build TerraFusion.Abstractions", "required": true, "result": "pending protected Backend Gate; local host lacks dotnet" },
-        { "name": "governance and protected merge", "command": "JSON parse, diff check, independent review, required checks, exact-head merge and protected-main verification", "required": true, "result": "pending" }
+        { "name": "focused Dossier mutation contract proof", "command": "node --test --test-name-pattern='Dossier mutation' scripts/contracts/verify-contract-freeze.test.mjs", "required": true, "result": "pass", "evidence": ["3/3 focused tests"] },
+        { "name": "complete shared-contract freeze", "command": "canonical Git-blob freeze verifier and full Node test file", "required": true, "result": "pass", "evidence": ["Commit 5744c63ea1e4018d595c482d971af7f102df9ab6 atop aec4f1e18b619730842c828e4f1c93ecd18d64b2; 8 groups, 85 frozen files; 26/26 tests"] },
+        { "name": "C# contract build", "command": "dotnet build TerraFusion.Abstractions", "required": true, "result": "pass", "evidence": ["Protected Backend Gate"] },
+        { "name": "governance and protected merge", "command": "JSON parse, diff check, independent review, required checks, exact-head merge and protected-main verification", "required": true, "result": "pass", "evidence": ["PR #1475 merged as 7cb96bf2ea5efea7caccae6d6e8c9f81f672412e; tree 62b20eac67690c5bd3fa486316bdfe0d46cf0bda"] }
       ],
       "stopConditions": [{ "type": "authority_wall", "description": "Stop on mission hard-wall crossing, custody-meaning change, identity/hash failure, runtime or suite mutation in this child, protected data, failed required check, force push or branch-protection bypass." }],
-      "nextCandidates": [{ "id": "WO-SR-011E", "reason": "After WO-SR-011B protects the staged read runtime and this contract merges, copy exact contract identities into Dossier and implement the pure decision module before mutation staging and runtime adoption.", "riskClass": "R3", "blocked": true }],
+      "nextCandidates": [{ "id": "WO-SR-011E", "reason": "Completed and consumed by protected suite publication and later staging/runtime successors.", "riskClass": "R3", "blocked": false }],
       "authority": { "mayWrite": true, "mayCommit": true, "mayPush": true, "mayOpenPr": true, "mayMarkReady": true, "mayMerge": true, "mayCleanup": true, "notes": "Exact additive contract child under owner mission authority and standing protected-PR lifecycle authority." },
       "provenance": { "createdAt": "2026-08-27T00:00:00Z", "source": "Owner mission directive; protected Dais runtime merge f14fc4999f650ed4bbff2633813be6b57ec4bfbc; protected Dossier read staging merge aec4f1e18b619730842c828e4f1c93ecd18d64b2; protected Dossier read runtime merge d82a2d3638a722fa541836abbd5c4ab45f8e060d; audit of current DossierController and persistent Dossier entities selected the smallest pure decision boundary.", "schemaVersion": "0.1.0" }
+    },
+    {
+      "id": "WO-SR-011A",
+      "title": "Dossier Canonical Artifact Staging",
+      "program": "Five-Suite Federated Repository Buildout",
+      "goal": "Stage the exact Dossier evidence-registry read artifact with provenance and observed rollback.",
+      "riskClass": "R3",
+      "status": "complete",
+      "dependencies": [{ "id": "WO-SR-010G", "status": "satisfied" }],
+      "allowedSystems": [{ "name": "Exact Dossier read artifact staging and rollback evidence" }],
+      "blockedSystems": [{ "name": "Runtime adoption, Production, deployment, county data, secrets and topology" }],
+      "evidenceRequired": [{ "kind": "file", "description": "Protected exact staging and rollback evidence." }],
+      "evidenceProduced": [{ "kind": "file", "location": "docs/brain/workorders/evidence/WO-SR-011A-DOSSIER-CANONICAL-ARTIFACT-STAGING.md", "summary": "Exact staging and rollback evidence." }],
+      "validationGates": [{ "name": "protected assurance", "command": "required checks, exact-head merge and protected-main verification", "required": true, "result": "pass", "evidence": ["PR #1474 merged as aec4f1e18b619730842c828e4f1c93ecd18d64b2; tree 4366886e5fdc1333334bbd92dd840cbbcb5f7933"] }],
+      "stopConditions": [{ "type": "authority_wall", "description": "Stop on any mission hard-wall or exact identity failure." }],
+      "nextCandidates": [],
+      "provenance": { "createdAt": "2026-08-27T00:00:00Z", "source": "Protected OS merge aec4f1e18b619730842c828e4f1c93ecd18d64b2.", "schemaVersion": "0.1.0" }
+    },
+    {
+      "id": "WO-SR-011F",
+      "title": "Dossier Mutation Canonical Staging",
+      "program": "Five-Suite Federated Repository Buildout",
+      "goal": "Stage the exact Dossier mutation-decision artifact and execute whole-slot rollback.",
+      "riskClass": "R3",
+      "status": "complete",
+      "dependencies": [{ "id": "WO-SR-011E", "status": "satisfied" }],
+      "allowedSystems": [{ "name": "Exact Dossier mutation artifact staging and rollback evidence" }],
+      "blockedSystems": [{ "name": "Runtime adoption, Production, deployment, county data, secrets and topology" }],
+      "evidenceRequired": [{ "kind": "file", "description": "Protected exact mutation staging and rollback evidence." }],
+      "evidenceProduced": [{ "kind": "file", "location": "docs/brain/workorders/evidence/WO-SR-011F-DOSSIER-MUTATION-CANONICAL-STAGING.md", "summary": "Exact mutation staging, backup inventory, rollback and restoration evidence." }],
+      "validationGates": [{ "name": "protected assurance", "command": "required checks, exact-head merge and protected-main verification", "required": true, "result": "pass", "evidence": ["PR #1479 merged as 807a46aad94e5bc8a36d7974130d482e49a73d2b; tree 1e516f6fe07d321db707be932068eb27bda0764f"] }],
+      "stopConditions": [{ "type": "authority_wall", "description": "Stop on any mission hard-wall or exact identity/rollback failure." }],
+      "nextCandidates": [],
+      "provenance": { "createdAt": "2026-08-27T00:00:00Z", "source": "Protected OS merge 807a46aad94e5bc8a36d7974130d482e49a73d2b.", "schemaVersion": "0.1.0" }
+    },
+    {
+      "id": "WO-SR-011G",
+      "title": "Dossier Mutation Runtime Adoption",
+      "program": "Five-Suite Federated Repository Buildout",
+      "goal": "Adopt the exact six-operation Dossier mutation decision through the governed sovereign runtime and execute rollback.",
+      "riskClass": "R4",
+      "status": "complete",
+      "dependencies": [{ "id": "WO-SR-011F", "status": "satisfied" }],
+      "allowedSystems": [{ "name": "Dossier six-operation governed mutation runtime and rollback evidence" }],
+      "blockedSystems": [{ "name": "Production, deployment, live county/PACS/SQL data, secrets and topology" }],
+      "evidenceRequired": [{ "kind": "file", "description": "Protected runtime, isolation, concurrency and rollback evidence." }],
+      "evidenceProduced": [{ "kind": "file", "location": "docs/brain/workorders/evidence/WO-SR-011G-DOSSIER-MUTATION-RUNTIME-ADOPTION.md", "summary": "Six-operation runtime, isolation, concurrency, refusal and rollback evidence." }],
+      "validationGates": [{ "name": "protected assurance", "command": "required first-party checks, two resolved threads, exact-head merge and tree equality", "required": true, "result": "pass", "evidence": ["Reviewed head b517a8e01acd37fdc91244caeb988d980c4e73ec merged as 5680f1de637e9e39d702c4cf6f708edee7bd00f3; tree 0ecb43c8c7eb7467dda2ffcbdb45406b60ec26d5"] }],
+      "stopConditions": [{ "type": "authority_wall", "description": "Stop on any mission hard-wall or runtime/rollback/isolation failure." }],
+      "nextCandidates": [],
+      "provenance": { "createdAt": "2026-08-27T00:00:00Z", "source": "Protected OS merge 5680f1de637e9e39d702c4cf6f708edee7bd00f3.", "schemaVersion": "0.1.0" }
+    },
+    {
+      "id": "WO-SR-011I",
+      "title": "Dossier Duplicate Reference Retirement",
+      "program": "Five-Suite Federated Repository Buildout",
+      "goal": "Retire duplicate sovereign custody-classification reference ownership while preserving integration custody fields.",
+      "riskClass": "R3",
+      "status": "complete",
+      "dependencies": [{ "id": "WO-SR-011G", "status": "satisfied" }],
+      "allowedSystems": [{ "name": "Duplicate sovereign custody-classification reference retirement" }],
+      "blockedSystems": [{ "name": "Legitimate integration custody fields, Production, deployment, live data, secrets and topology" }],
+      "evidenceRequired": [{ "kind": "file", "description": "Protected duplicate-retirement and suite terminal evidence." }],
+      "evidenceProduced": [{ "kind": "file", "location": "docs/brain/workorders/evidence/WO-SR-011I-DOSSIER-DUPLICATE-REFERENCE-RETIREMENT.md", "summary": "Duplicate reference retirement and protected suite terminal evidence." }],
+      "validationGates": [{ "name": "protected assurance", "command": "eight required contexts, zero threads, exact-head merge and tree equality", "required": true, "result": "pass", "evidence": ["Reviewed head b173b8d16c434373064341e51c6a1b3b1f61dedc merged as 65ddfe9948b02c0cd6089fc95c83e48885cc92ab; tree b9860d533d91fc0ac930bc0787d545b2151a4184"] }],
+      "stopConditions": [{ "type": "authority_wall", "description": "Stop on any mission hard-wall or legitimate integration-boundary retirement." }],
+      "nextCandidates": [],
+      "provenance": { "createdAt": "2026-08-27T00:00:00Z", "source": "Protected OS merge 65ddfe9948b02c0cd6089fc95c83e48885cc92ab; Dossier protected main 4a109acef12804f89c894f8f139034bf975c0811.", "schemaVersion": "0.1.0" }
+    },
+    {
+      "id": "WO-SR-012B",
+      "title": "GPT Canonical Artifact Staging",
+      "program": "Five-Suite Federated Repository Buildout",
+      "goal": "Stage the exact GPT grounded-context artifact with provenance and observed rollback.",
+      "riskClass": "R3",
+      "status": "complete",
+      "dependencies": [{ "id": "WO-SR-012A", "status": "satisfied" }],
+      "allowedSystems": [{ "name": "Exact GPT grounded-context artifact staging and rollback evidence" }],
+      "blockedSystems": [{ "name": "Runtime adoption, provider access, Production, deployment, county data, secrets and topology" }],
+      "evidenceRequired": [{ "kind": "file", "description": "Protected exact GPT staging and rollback evidence." }],
+      "evidenceProduced": [{ "kind": "file", "location": "docs/brain/workorders/evidence/WO-SR-012B-GPT-CANONICAL-ARTIFACT-STAGING.md", "summary": "Exact inert GPT staging and rollback evidence." }],
+      "validationGates": [{ "name": "protected assurance", "command": "exact staging proof, required checks and protected-main verification", "required": true, "result": "pass", "evidence": ["Protected OS merge 1f0889a72497b283140fb0d0a57eed79775f9a34; tree 4e24afd3c3818715713b4ac8326b99405fda5960"] }],
+      "stopConditions": [{ "type": "authority_wall", "description": "Stop on any mission hard-wall or exact identity/rollback failure." }],
+      "nextCandidates": [],
+      "provenance": { "createdAt": "2026-08-27T00:00:00Z", "source": "Protected OS merge 1f0889a72497b283140fb0d0a57eed79775f9a34.", "schemaVersion": "0.1.0" }
+    },
+    {
+      "id": "WO-SR-012C",
+      "title": "GPT Grounded-Context Runtime Adoption",
+      "program": "Five-Suite Federated Repository Buildout",
+      "goal": "Adopt the exact GPT grounded-context runtime with county/dataset isolation, fail-closed provider absence and observed rollback.",
+      "riskClass": "R4",
+      "status": "complete",
+      "dependencies": [{ "id": "WO-SR-012B", "status": "satisfied" }],
+      "allowedSystems": [{ "name": "GPT grounded-context governed runtime and rollback evidence" }],
+      "blockedSystems": [{ "name": "Provider generation claim, Production, deployment, live county/PACS/SQL data, secrets and topology" }],
+      "evidenceRequired": [{ "kind": "file", "description": "Protected runtime, county/dataset isolation, fail-closed provider absence and rollback evidence." }],
+      "evidenceProduced": [{ "kind": "file", "location": "docs/brain/workorders/evidence/WO-SR-012C-GPT-GROUNDED-CONTEXT-RUNTIME-ADOPTION.md", "summary": "Reviewed candidate, protected tree equality, first-party assurance and protected-main proof reservation." }],
+      "validationGates": [{ "name": "candidate assurance", "command": "manual workflow and independent P0/P1 review", "required": true, "result": "pass", "evidence": ["Run 33071051037 on head 3bd87411966a7d2c61439f4f60a11f0cb498968f tree e6797a83c2c47f3a62bcbfd19e544cd0ae6e5bf8; no actionable P0/P1"] }, { "name": "protected assurance", "command": "protected OS merge/tree and protected-main proof", "required": true, "result": "pass", "evidence": ["Protected merge 9ef50aa1cc608fa3aa8075f30cf349b757a31902 tree e6797a83c2c47f3a62bcbfd19e544cd0ae6e5bf8; protected proof run 33073723122 success"] }],
+      "stopConditions": [{ "type": "authority_wall", "description": "Stop on any mission hard-wall or GPT identity/isolation/rollback failure." }],
+      "nextCandidates": [],
+      "provenance": { "createdAt": "2026-08-27T00:00:00Z", "source": "Reviewed OS candidate based on 65ddfe9948b02c0cd6089fc95c83e48885cc92ab.", "schemaVersion": "0.1.0" }
+    },
+    {
+      "id": "WO-SR-MISSION-COMPLETION",
+      "title": "Five-Suite Federated Repository Buildout Closeout",
+      "program": "Five-Suite Federated Repository Buildout",
+      "goal": "Reconcile exact protected runtime, rollback, duplicate retirement, and suite ownership evidence and close the ratified mission.",
+      "riskClass": "R4",
+      "status": "complete",
+      "dependencies": [{ "id": "WO-SR-012C", "status": "satisfied" }],
+      "allowedSystems": [{ "name": "Governance-only Five-Suite terminal reconciliation" }],
+      "blockedSystems": [{ "name": "All mission hard walls and any new implementation objective" }],
+      "evidenceRequired": [{ "kind": "file", "description": "Exact protected runtime, rollback, duplicate-retirement and suite ownership evidence." }],
+      "evidenceProduced": [{ "kind": "file", "location": "docs/brain/workorders/evidence/WO-SR-MISSION-COMPLETION-FIVE-SUITE-FEDERATED-REPOSITORIES.md", "summary": "Terminal cross-repository protected suite/runtime/rollback, duplicate-retirement and ownership evidence." }],
+      "validationGates": [{ "name": "terminal governance", "command": "JSON, registry, governance, documentation, sentinel and diff checks", "required": true, "result": "pass", "evidence": ["GPT suite protected merge cbcbc518d25b000724712b029fed8cc4e05d8ca6, tree 8f4cae82e19cf1ced8a397c2f392ab7dc13c0c85 and terminal receipt SHA-256 4aa0b8ca01e0d89d327457e75ade323fe1c28651373361c42baa85a2e84ecb40 observed; zero sentinels remain"] }],
+      "stopConditions": [{ "type": "authority_wall", "description": "Any new work requires another applicable objective and authority; all mission hard walls remain binding." }],
+      "nextCandidates": [],
+      "provenance": { "createdAt": "2026-08-27T00:00:00Z", "source": "Owner mission directive and exact protected suite/runtime evidence; reviewed GPT candidate 3bd87411966a7d2c61439f4f60a11f0cb498968f.", "schemaVersion": "0.1.0" }
     }
   ]
 }

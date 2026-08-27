@@ -2,7 +2,7 @@
 
 | Field | Value |
 | --- | --- |
-| Status | ACTIVE - implementation and focused synthetic proof pass |
+| Status | COMPLETE - contract frozen on protected main |
 | Program | Five-Suite Federated Repository Buildout |
 | Goal | `GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES` |
 | Risk | R3 bounded shared-contract addition |
@@ -70,6 +70,7 @@ appeal, and memo handler-alignment endpoints are explicitly outside this contrac
 ## Rollback and continuation
 
 Rollback is the single-commit revert/removal of this additive, unwired contract group; there is no
-runtime or stored county state to restore. After protected-main verification, the next exact child
-may copy the frozen identities into Dossier and implement the pure decision module before staging,
-runtime adoption, and duplicate sovereign judgment retirement.
+runtime or stored county state to restore. PR #1475 merged as protected OS main
+`7cb96bf2ea5efea7caccae6d6e8c9f81f672412e` with tree
+`62b20eac67690c5bd3fa486316bdfe0d46cf0bda`; all later suite publication, staging,
+runtime adoption, and duplicate-retirement successors completed.

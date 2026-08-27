@@ -2,7 +2,7 @@
 
 ## Current verdict
 
-`FOCUSED_CONTRACT_PROOF_PASS_PROTECTED_ASSURANCE_PENDING`
+`DOSSIER_MUTATION_DECISION_CONTRACT_FROZEN`
 
 ## Boundary evidence
 
@@ -42,7 +42,7 @@ The Windows sparse checkout materializes pre-existing frozen files with CRLF, so
 identity is run from canonical Git blobs after commit rather than rewriting any established hash.
 C# compilation is delegated to the protected Backend Gate because this host has no `dotnet` binary.
 
-## Dependency and remaining required gates
+## Dependency and protected completion
 
 `WO-SR-011B` passed 8/8 required checks with zero unresolved threads and merged reviewed head
 `85387bdc6088eb82fc8bcd16cfd1424e95804597` as protected main
@@ -51,6 +51,7 @@ protected contract checks also exposed and closed a reserved-C#-keyword build fa
 operation/mutation schema-coupling gap, and whitespace-only custody notes; Backend Fast, canonical
 Backend, Seal, governance, and the complete canonical Git-blob freeze subsequently passed.
 
-The post-integration exact-head proof rerun, protected checks, merge, and protected-main
-verification remain required. Optional third-party review is non-gating. Rollback is the additive
-contract commit revert; no runtime or county data was touched.
+The exact-head proof rerun and required first-party checks passed. PR #1475 merged as protected OS
+main `7cb96bf2ea5efea7caccae6d6e8c9f81f672412e`, tree
+`62b20eac67690c5bd3fa486316bdfe0d46cf0bda`, and protected-main verification
+passed. Rollback is the additive contract commit revert; no runtime or county data was touched.

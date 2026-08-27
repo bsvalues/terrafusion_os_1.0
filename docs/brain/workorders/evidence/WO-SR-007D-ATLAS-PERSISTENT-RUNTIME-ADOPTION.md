@@ -2,7 +2,7 @@
 
 ## Current verdict
 
-`LOCAL_RUNTIME_AND_ROLLBACK_PROOF_PASS_REMOTE_ASSURANCE_PENDING`
+`ATLAS_PERSISTENT_LOCAL_RUNTIME_ADOPTION_AND_ROLLBACK_PROVEN`
 
 ## Exact identities
 
@@ -63,12 +63,14 @@ the entire staging transaction root from cleanup rather than risking the only ro
 The mutable provider-neutral projection module is fetched only from the pinned Atlas repository.
 There is no second sovereign copy to delete. The sovereign `AtlasSpatialReadAdapter`, frozen
 `atlas.spatial-read` contract, authenticated county scope, parcel reader, process host, API and
-Workbench route are legitimate integration responsibilities and remain. The remaining Atlas step is
-truthful standalone repository ownership finalization; it does not require module-byte changes.
+Workbench route are legitimate integration responsibilities and remain. Truthful standalone
+repository ownership finalization subsequently completed without module-byte changes.
 
-## Remaining merge gates
+## Protected completion
 
-- independent review of the complete exact-scope diff;
-- governance, JSON, platform lint and `git diff --check` on the final head;
-- protected GitHub checks and zero unresolved substantive review threads;
-- exact-head merge followed by protected-main verification.
+Sovereign PR #1465 reviewed exact head `feb69f85999039db03ef95f52f8a8d4e4c0d2f8f`
+and merged as `4fcbfbd0585122f67f640b1b76786b7629f28e1f` with protected tree
+`1084c60d6aec72802a8dd477b633058b818573d6`. Atlas PR #4 merged as protected
+suite main `708fc5c31988405f9ca2cba7ebea7bb9d1fec3a6`, tree
+`d986cc31da0077adb3a133bd1fa6d44bb2a79acc`. Required assurance and both
+protected-main observations passed.

@@ -91,16 +91,16 @@ automatically.
 
 ---
 
-## Active Program - Five-Suite Federated Repository Buildout
+## Completed Program - Five-Suite Federated Repository Buildout
 
 | Field | Value |
 | --- | --- |
 | Goal | `GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES` |
 | Loop | `LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES` |
 | Program slug | `five-suite-federated-repository-buildout` |
-| Status | Active under mission authority `OWNER-FIVE-SUITE-FEDERATED-COMPLETION-20260826` |
-| Current | `WO-SR-012B` exact GPT canonical artifact staging |
-| Next | Dossier mutation staging/runtime adoption and terminalization; then GPT persistent runtime adoption |
+| Status | COMPLETE through `WO-SR-MISSION-COMPLETION` |
+| Current | Terminal governance and evidence reconciliation complete |
+| Next | No mission successor; Forge WO-SR-007 remains outside this mission |
 
 The sovereign base remains `terrafusion_os_1.0`. The five ratified suite repositories are
 `terrafusion-forge`, `terrafusion-atlas`, `terrafusion-dais`, `terrafusion-dossier`, and
@@ -208,7 +208,20 @@ transfer, or cutover follows.
 
 Program definition: [five-suite-federated-repository-buildout.md](five-suite-federated-repository-buildout.md).
 
-Current Five-Suite routing is `WO-SR-012B`. Atlas runtime and standalone ownership are complete on verified protected mains, Dais is terminal, and Dossier exact read staging plus persistent read runtime adoption completed in protected merges `aec4f1e18b619730842c828e4f1c93ecd18d64b2` and `d82a2d3638a722fa541836abbd5c4ab45f8e060d`, with governed proof repair on protected main `142a105a0a9a1aef425a434b962c7d9e3326e50b`. Dossier's provider-neutral mutation-decision contract froze in protected merge `7cb96bf2ea5efea7caccae6d6e8c9f81f672412e`; mutation staging/runtime adoption, ownership-governance truth, rollback, and duplicate-judgment terminal proof remain before GPT runtime adoption. GPT portability/provenance completed in suite protected merge `550b50f27af6f0911f16c973cbb6fc57a20eb15a`. WO-SR-012B has integrated exact latest protected main and must rerun inert staging/rollback proof before protected merge. Sovereign authentication, county isolation, persistence, authorization, provider orchestration, API, Workbench, TerraPilot, and TerraTrace remain OS responsibilities. All mission hard walls remain controlling.
+Five-Suite routing is terminal at `WO-SR-MISSION-COMPLETION`. Forge, Atlas, Dais, and Dossier
+suite ownership and sovereign runtime/rollback evidence are protected-main complete. GPT inert
+staging is protected at `1f0889a72497b283140fb0d0a57eed79775f9a34`; reviewed runtime head
+`3bd87411966a7d2c61439f4f60a11f0cb498968f`, tree
+`e6797a83c2c47f3a62bcbfd19e544cd0ae6e5bf8`, passed manual proof run
+`33071051037` and independent review with no actionable P0/P1, then squash-merged as protected OS
+main `9ef50aa1cc608fa3aa8075f30cf349b757a31902` with exact tree equality. The
+GPT suite reviewed head `c17c4136a6d6819b687df597943dae667273b7e2` squash-merged as protected main
+`cbcbc518d25b000724712b029fed8cc4e05d8ca6`, tree
+`8f4cae82e19cf1ced8a397c2f392ab7dc13c0c85`, with exact reviewed-tree equality; its terminal
+receipt SHA-256 is `4aa0b8ca01e0d89d327457e75ade323fe1c28651373361c42baa85a2e84ecb40`.
+Sovereign authentication, county isolation, persistence, authorization,
+provider orchestration, API, Workbench, TerraPilot, and TerraTrace remain OS responsibilities. All
+mission hard walls remain controlling; Forge WO-SR-007 remains pending outside this mission.
 
 ---
 
@@ -657,10 +670,10 @@ from program evidence.
 |-------|-------|
 | Portfolio goal | `GOAL-PORTFOLIO-OPERATOR-001` |
 | Portfolio loop | `LOOP-PORTFOLIO-OPERATOR-001` |
-| Selected program | Five-Suite Federated Repository Buildout |
-| Last completed interlock | `WO-SR-011D` Dossier mutation-decision contract freeze; protected merge `7cb96bf2ea5efea7caccae6d6e8c9f81f672412e` |
-| Current WO | `WO-SR-012B` exact GPT canonical artifact staging |
-| Next interlock | Dossier mutation staging/runtime adoption and terminalization; then GPT persistent runtime adoption |
+| Selected program | None; portfolio reconciliation has not selected unrelated successor work |
+| Last completed interlock | `WO-SR-MISSION-COMPLETION` terminal evidence reconciliation |
+| Current WO | None; Five-Suite terminal closeout complete |
+| Next interlock | Portfolio selection outside this completed mission; Forge WO-SR-007 remains unchanged |
 
 Issue #1417 and `OWNER-SR-009B-R3-DAIS-WORKBENCH-APPEAL-READ-20260805` authorized the exact bounded
 read-only Dais adoption sequence. PR #1419 merged exact assured head

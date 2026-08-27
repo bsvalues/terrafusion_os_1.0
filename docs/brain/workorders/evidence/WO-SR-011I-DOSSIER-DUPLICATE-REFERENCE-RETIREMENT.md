@@ -19,5 +19,10 @@ the accepted suite result.
 
 ## Protected completion
 
-Pending exact reviewed head, protected checks, squash merge, protected-main tree equality, and the
-successor Dossier suite terminal-record repair.
+PR #1482 reviewed exact head `b173b8d16c434373064341e51c6a1b3b1f61dedc`, tree
+`b9860d533d91fc0ac930bc0787d545b2151a4184`, and squash-merged as protected OS
+main `65ddfe9948b02c0cd6089fc95c83e48885cc92ab` with exact tree equality. Zero
+threads and all eight required contexts plus backend, security, seal, frontend, and package
+first-party checks passed. The successor Dossier terminal repair merged as protected suite main
+`4a109acef12804f89c894f8f139034bf975c0811`, tree
+`eedad9c4e8b5c3f30d33f5e58a2856b896f7ae86`.

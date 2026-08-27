@@ -2,7 +2,7 @@
 
 | Field | Value |
 | --- | --- |
-| Status | PROVEN ON CURRENT PROTECTED BASE - protected PR pending |
+| Status | COMPLETE - protected exact staging and rollback verified |
 | Program | Five-Suite Federated Repository Buildout |
 | Goal | `GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES` |
 | Risk | R3 bounded non-production local artifact staging |
@@ -62,8 +62,6 @@ seams.
 
 ## Continuation
 
-After protected merge and exact-main verification, a separate dependency-cleared child may implement
-a fail-closed process host and make the exact staged Dossier module a real non-production runtime
-consumer. That successor must preserve authentication, county isolation, persistence, custody,
-TerraTrace, and API/Workbench responsibilities in the sovereign OS and must execute observed
-selection and rollback proof before any ownership claim.
+PR #1474 merged as protected OS main `aec4f1e18b619730842c828e4f1c93ecd18d64b2`
+with tree `4366886e5fdc1333334bbd92dd840cbbcb5f7933`. Exact-main verification passed;
+the later runtime and ownership successors completed without changing this staging claim.
