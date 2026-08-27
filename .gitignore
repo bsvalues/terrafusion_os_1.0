@@ -689,5 +689,6 @@ backend/TerraFusion.API.Tests/Services/ModuleRuntimeHealthTest.txt
 .terrafusion/runtime/dais/appeal-mutation/
 .terrafusion/runtime/dais/adoption-receipts/
 .terrafusion/runtime/dossier/evidence-registry-read/
+.terrafusion/runtime/dossier/mutation-decision/
 .terrafusion/runtime/dossier/adoption-receipts/
 .terrafusion/runtime/gpt/grounded-context/
