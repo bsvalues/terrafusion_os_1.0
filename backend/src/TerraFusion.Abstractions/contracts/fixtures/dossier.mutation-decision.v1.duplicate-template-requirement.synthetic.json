@@ -1,0 +1,4 @@
+{
+  "request": { "schemaVersion": "1.0.0", "operation": "createPacket", "commandId": "22222222-2222-4222-8222-222222222216", "countyId": "11111111-1111-4111-8111-111111111111", "parcelId": "P-100", "actorId": "actor-7", "effectiveAt": "2026-08-26T11:05:00Z", "hostAssertions": { "actorAuthorized": true, "countyExists": true, "parcelExists": true, "piiApproved": true }, "command": { "packetId": "33333333-3333-4333-8333-333333333316", "expectedVersion": 0, "template": { "packetType": "appeal", "name": "Appeal Packet", "requiredDocumentTypes": ["photo", "PHOTO"] }, "currentDocuments": [] } },
+  "result": { "schemaVersion": "1.0.0", "operation": "createPacket", "commandId": "22222222-2222-4222-8222-222222222216", "countyId": "11111111-1111-4111-8111-111111111111", "parcelId": "P-100", "decision": "rejected", "violations": [{ "code": "DUPLICATE_TEMPLATE_REQUIREMENT", "message": "required document types must be unique" }] }
+}
