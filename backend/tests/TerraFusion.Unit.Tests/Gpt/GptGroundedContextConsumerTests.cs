@@ -5,6 +5,7 @@ using Moq;
 using TerraFusion.Abstractions.DTOs;
 using TerraFusion.AI.Interfaces;
 using TerraFusion.API.Services.Gpt;
+using Xunit;
 
 namespace TerraFusion.Unit.Tests.Gpt;
 

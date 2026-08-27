@@ -9,6 +9,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using TerraFusion.API.Configuration;
 using TerraFusion.API.Services.Gpt;
+using Xunit;
 
 namespace TerraFusion.Unit.Tests.Gpt;
 

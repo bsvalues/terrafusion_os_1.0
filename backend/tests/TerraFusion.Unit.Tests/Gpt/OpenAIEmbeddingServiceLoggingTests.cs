@@ -3,6 +3,7 @@ using FluentAssertions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using TerraFusion.AI.Services;
+using Xunit;
 
 namespace TerraFusion.Unit.Tests.Gpt;
 

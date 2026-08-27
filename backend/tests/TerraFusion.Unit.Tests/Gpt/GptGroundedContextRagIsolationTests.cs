@@ -8,6 +8,7 @@ using TerraFusion.AI.Entities;
 using TerraFusion.AI.Interfaces;
 using TerraFusion.AI.Services;
 using TerraFusion.Data;
+using Xunit;
 
 namespace TerraFusion.Unit.Tests.Gpt;
 
