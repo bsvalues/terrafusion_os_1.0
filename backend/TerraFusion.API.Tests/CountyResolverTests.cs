@@ -8,6 +8,7 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging.Abstractions;
 using TerraFusion.API.Services;
 using TerraFusion.API.Tests.TestHelpers;
+using TerraFusion.Core.Counties;
 using TerraFusion.Core.Entities;
 using TerraFusion.Core.Services;
 using Xunit;
@@ -20,16 +21,72 @@ public class CountyResolverTests
     private static readonly Guid BentonId = Guid.Parse("19190019-1919-1919-1919-191919191919");
     private static readonly Guid KingId   = Guid.Parse("29290029-2929-2929-2929-292929292929");
 
-    private static CountyResolver CreateSut()
+    private static CountyResolver CreateSut(params County[] counties)
     {
         var ctx = TestDbContextFactory.CreateInMemoryContext();
-        ctx.Counties.AddRange(
-            new County { Id = BentonId, Name = "Benton", State = "WA", FipsCode = "53005" },
-            new County { Id = KingId,   Name = "King",   State = "WA", FipsCode = "53033" });
+        var seededCounties = counties.Length > 0
+            ? counties
+            : new[]
+            {
+                new County { Id = BentonId, Name = "Benton", State = "WA", FipsCode = "53005" },
+                new County { Id = KingId, Name = "King", State = "WA", FipsCode = "53033" },
+            };
+        ctx.Counties.AddRange(seededCounties);
         ctx.SaveChanges();
 
         var cache = new MemoryCache(new MemoryCacheOptions());
         return new CountyResolver(ctx, cache, NullLogger<CountyResolver>.Instance);
+    }
+
+    [Fact]
+    public void WashingtonCountyRegistry_DefinesExactly39UniqueCanonicalIdentities()
+    {
+        var counties = WashingtonCountyRegistry.Counties;
+
+        Assert.Equal(39, counties.Count);
+        Assert.Equal(39, counties.Select(county => county.Key).Distinct(StringComparer.OrdinalIgnoreCase).Count());
+        Assert.Equal(39, counties.Select(county => county.Slug).Distinct(StringComparer.OrdinalIgnoreCase).Count());
+        Assert.Equal(39, counties.Select(county => county.Name).Distinct(StringComparer.OrdinalIgnoreCase).Count());
+        Assert.Equal(39, counties.Select(county => county.FipsCode).Distinct(StringComparer.OrdinalIgnoreCase).Count());
+        Assert.All(counties, county =>
+        {
+            Assert.Equal("WA", county.State);
+            Assert.Matches("^53[0-9]{3}$", county.FipsCode);
+            Assert.Equal(3, county.CountyCode.Length);
+        });
+    }
+
+    [Fact]
+    public void WashingtonCountyRegistry_ResolvesEveryCanonicalAliasToOneIdentity()
+    {
+        foreach (var county in WashingtonCountyRegistry.Counties)
+        {
+            var aliases = new[]
+            {
+                county.Key,
+                county.Slug,
+                county.Name,
+                $"{county.Name} County",
+                county.FipsCode,
+                county.CountyCode,
+            };
+
+            foreach (var alias in aliases)
+            {
+                Assert.True(WashingtonCountyRegistry.TryResolve($"  {alias.ToUpperInvariant()}  ", out var resolved));
+                Assert.Equal(county, resolved);
+            }
+        }
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("unknown")]
+    [InlineData("53079")]
+    public void WashingtonCountyRegistry_UnknownInputHasNoDefault(string? input)
+    {
+        Assert.False(WashingtonCountyRegistry.TryResolve(input, out _));
     }
 
     [Fact]
@@ -61,6 +118,19 @@ public class CountyResolverTests
     {
         var sut = CreateSut();
         var result = await sut.ResolveAsync("  benton  ");
+        Assert.Equal(BentonId, result);
+    }
+
+    [Theory]
+    [InlineData("wa-benton")]
+    [InlineData("benton-wa")]
+    [InlineData("Benton County")]
+    [InlineData("53005")]
+    [InlineData("005")]
+    public async Task ResolveAsync_AcceptsCanonicalWashingtonIdentityAliases(string input)
+    {
+        var sut = CreateSut();
+        var result = await sut.ResolveAsync(input);
         Assert.Equal(BentonId, result);
     }
 
@@ -104,6 +174,37 @@ public class CountyResolverTests
         var sut = CreateSut();
         var result = await sut.TryResolveAsync("");
         Assert.Null(result);
+    }
+
+    [Fact]
+    public async Task TryResolveAsync_ReturnsNullWhenPersistedIdentityRowsAreDuplicated()
+    {
+        var sut = CreateSut(
+            new County { Id = BentonId, Name = "Benton", State = "WA", FipsCode = "53005" },
+            new County { Id = KingId, Name = "Benton", State = "WA", FipsCode = "53005" });
+
+        Assert.Null(await sut.TryResolveAsync("benton"));
+        Assert.Null(await sut.TryResolveAsync("53005"));
+    }
+
+    [Fact]
+    public async Task TryResolveAsync_ReturnsNullWhenPersistedNameAndFipsConflict()
+    {
+        var sut = CreateSut(
+            new County { Id = BentonId, Name = "Benton", State = "WA", FipsCode = "53033" });
+
+        Assert.Null(await sut.TryResolveAsync("benton"));
+        Assert.Null(await sut.TryResolveAsync("53033"));
+    }
+
+    [Fact]
+    public async Task TryResolveAsync_DoesNotTreatNonWashingtonRowAsCountyAuthority()
+    {
+        var sut = CreateSut(
+            new County { Id = BentonId, Name = "Benton", State = "OR", FipsCode = "53005" });
+
+        Assert.Null(await sut.TryResolveAsync("benton"));
+        Assert.Null(await sut.TryResolveAsync(BentonId.ToString()));
     }
 
     [Fact]
