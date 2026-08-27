@@ -24,8 +24,13 @@ public sealed class ReadOnlyCountySourceAdapterContractTests
             typeof(ReadOnlySourceReadRequest),
             typeof(CancellationToken));
         methods.Select(method => method.Name).Should().NotContain(name =>
-            new[] { "write", "update", "delete", "execute", "connect", "sync" }
-                .Any(verb => name.Contains(verb, StringComparison.OrdinalIgnoreCase)));
+        {
+            var operationName = name.EndsWith("Async", StringComparison.Ordinal)
+                ? name[..^"Async".Length]
+                : name;
+            return new[] { "write", "update", "delete", "execute", "connect", "sync" }
+                .Any(verb => operationName.Contains(verb, StringComparison.OrdinalIgnoreCase));
+        });
     }
 
     [Fact]
