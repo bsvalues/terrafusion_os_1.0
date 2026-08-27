@@ -20,6 +20,8 @@ function record(id, overrides = {}) {
     title: id,
     program: 'Test',
     goal: 'test',
+    goalId: 'GOAL-TEST',
+    loopId: 'LOOP-TEST',
     riskClass: 'R1',
     status: 'ready',
     dependencies: [],
@@ -29,7 +31,7 @@ function record(id, overrides = {}) {
     evidenceRequired: [],
     evidenceProduced: [],
     validationGates: [],
-    stopConditions: [{ type: 'scope_boundary' }],
+    stopConditions: [{ type: 'scope_boundary', description: 'Stay inside the test scope.' }],
     nextCandidates: [],
     ...overrides,
   };
@@ -73,6 +75,22 @@ function protectedPathDecision(workOrderId, authorizedFiles, overrides = {}) {
     authority_class: 'R3-bounded-protected-path',
     authorized_files: authorizedFiles,
     effective_base_sha: 'a'.repeat(40),
+    expires_at: '2026-08-17T23:59:59Z',
+    ...overrides,
+  };
+}
+
+function missionDecision(rootRecord, overrides = {}) {
+  return {
+    id: `OWNER-${rootRecord.id}-MISSION-TEST`,
+    work_order: rootRecord.id,
+    program: rootRecord.program,
+    goal: rootRecord.goalId,
+    loop: rootRecord.loopId,
+    status: 'active',
+    authority_class: 'R5-bounded-mission',
+    authorized_repositories: ['bsvalues/terrafusion_os_1.0'],
+    child_work_order_policy: { fresh_owner_decision_required: false },
     expires_at: '2026-08-17T23:59:59Z',
     ...overrides,
   };
@@ -446,6 +464,296 @@ describe('wo-wave-plan', () => {
       planWaves(registry(records), rules, options).excludedWorkOrders[0].reasons[0],
       /protected-resource-reservation:environment:production/
     );
+  });
+
+  it('inherits exact protected child authority from one registered terminal mission root', () => {
+    const mission = record('WO-MISSION-000', {
+      program: 'Mission',
+      goalId: 'GOAL-MISSION',
+      loopId: 'LOOP-MISSION',
+      status: 'complete',
+    });
+    const child = record('WO-MISSION-001', {
+      program: 'Mission',
+      goalId: 'GOAL-MISSION',
+      loopId: 'LOOP-MISSION',
+      riskClass: 'R4',
+      dependencies: [{ id: mission.id, status: 'satisfied' }],
+      allowedFiles: ['backend/src/Mission.cs'],
+    });
+    const grandchild = record('WO-MISSION-002', {
+      program: 'Mission',
+      goalId: 'GOAL-MISSION',
+      loopId: 'LOOP-MISSION',
+      riskClass: 'R4',
+      dependencies: [{ id: child.id, status: 'required' }],
+      allowedFiles: ['frontend/src/mission.ts'],
+    });
+    const records = [mission, child, grandchild];
+    const decision = missionDecision(mission);
+    const options = optionsFor(records, {
+      authority: 'R5',
+      maxWorkers: 2,
+      now: '2026-07-17T12:00:00Z',
+      ownerDecisions: { decisions: [decision] },
+    });
+
+    const plan = planWaves(registry(records), rules, options);
+
+    assert.deepEqual(plan.initialExecutableSet, [child.id]);
+    assert.deepEqual(
+      plan.waves.map(wave => wave.workOrders.map(item => item.workOrderId)),
+      [[child.id], [grandchild.id]]
+    );
+    assert.match(plan.waves[0].workOrders[0].explanation, new RegExp(decision.id));
+    assert.match(plan.waves[1].workOrders[0].explanation, new RegExp(decision.id));
+  });
+
+  it('fails closed when mission-child identity or ancestry is not exact', () => {
+    const mission = record('WO-MISSION-010', {
+      program: 'Mission',
+      goalId: 'GOAL-MISSION',
+      loopId: 'LOOP-MISSION',
+      status: 'complete',
+    });
+    const baseChild = record('WO-MISSION-011', {
+      program: 'Mission',
+      goalId: 'GOAL-MISSION',
+      loopId: 'LOOP-MISSION',
+      riskClass: 'R4',
+      dependencies: [{ id: mission.id, status: 'satisfied' }],
+      allowedFiles: ['backend/src/Mission.cs'],
+    });
+    const cases = [
+      {
+        name: 'policy true',
+        decision: { child_work_order_policy: { fresh_owner_decision_required: true } },
+      },
+      { name: 'policy absent', decision: { child_work_order_policy: undefined } },
+      { name: 'repository absent', decision: { authorized_repositories: [] } },
+      { name: 'program mismatch', child: { program: 'Other' } },
+      { name: 'goal mismatch', child: { goalId: 'GOAL-OTHER' } },
+      { name: 'goal missing', child: { goalId: undefined } },
+      { name: 'loop mismatch', child: { loopId: 'LOOP-OTHER' } },
+      { name: 'loop missing', child: { loopId: undefined } },
+      { name: 'not a descendant', child: { dependencies: [] } },
+      {
+        name: 'root nonterminal',
+        root: { status: 'in_progress' },
+        child: { dependencies: [{ id: mission.id, status: 'required' }] },
+      },
+      { name: 'root missing', decision: { work_order: 'WO-MISSION-099' } },
+      { name: 'inactive', decision: { status: 'completed' } },
+    ];
+
+    for (const testCase of cases) {
+      const root = { ...mission, ...(testCase.root ?? {}) };
+      const child = { ...baseChild, ...(testCase.child ?? {}) };
+      const decision = missionDecision(root, testCase.decision ?? {});
+      const records = [root, child];
+      const options = optionsFor(records, {
+        authority: 'R5',
+        now: '2026-07-17T12:00:00Z',
+        ownerDecisions: { decisions: [decision] },
+      });
+      const plan = planWaves(registry(records), rules, options);
+      const excluded = plan.excludedWorkOrders.find(item => item.workOrderId === child.id);
+      assert.ok(excluded, testCase.name);
+      assert.ok(
+        excluded.reasons.includes(`missing-protected-path-authority:${child.id}`),
+        `${testCase.name}: ${excluded.reasons.join(', ')}`
+      );
+    }
+  });
+
+  it('rejects a transitive dependency path that crosses another mission identity', () => {
+    const mission = record('WO-MISSION-015', {
+      program: 'Mission',
+      goalId: 'GOAL-MISSION',
+      loopId: 'LOOP-MISSION',
+      status: 'complete',
+    });
+    const foreignBridge = record('WO-MISSION-016', {
+      program: 'Other',
+      goalId: 'GOAL-OTHER',
+      loopId: 'LOOP-OTHER',
+      status: 'complete',
+      dependencies: [{ id: mission.id, status: 'satisfied' }],
+    });
+    const child = record('WO-MISSION-017', {
+      program: 'Mission',
+      goalId: 'GOAL-MISSION',
+      loopId: 'LOOP-MISSION',
+      riskClass: 'R4',
+      dependencies: [{ id: foreignBridge.id, status: 'satisfied' }],
+      allowedFiles: ['backend/src/Mission.cs'],
+    });
+    const records = [mission, foreignBridge, child];
+    const options = optionsFor(records, {
+      authority: 'R5',
+      now: '2026-07-17T12:00:00Z',
+      ownerDecisions: { decisions: [missionDecision(mission)] },
+    });
+
+    const plan = planWaves(registry(records), rules, options);
+
+    assert.ok(
+      plan.excludedWorkOrders
+        .find(item => item.workOrderId === child.id)
+        .reasons.includes(`missing-protected-path-authority:${child.id}`)
+    );
+  });
+
+  it('fails closed on expired, insufficient, or conflicting mission authority', () => {
+    const mission = record('WO-MISSION-020', {
+      program: 'Mission',
+      goalId: 'GOAL-MISSION',
+      loopId: 'LOOP-MISSION',
+      status: 'complete',
+    });
+    const child = record('WO-MISSION-021', {
+      program: 'Mission',
+      goalId: 'GOAL-MISSION',
+      loopId: 'LOOP-MISSION',
+      riskClass: 'R4',
+      dependencies: [{ id: mission.id, status: 'satisfied' }],
+      allowedFiles: ['backend/src/Mission.cs'],
+    });
+    const cases = [
+      {
+        decisions: [missionDecision(mission, { expires_at: '2026-07-17T11:59:59Z' })],
+        expected: /expired-protected-path-authority/,
+      },
+      {
+        decisions: [missionDecision(mission, { authority_class: 'R3-bounded-mission' })],
+        expected: /insufficient-protected-path-authority/,
+      },
+      {
+        decisions: [
+          missionDecision(mission),
+          missionDecision(mission, { id: 'OWNER-WO-MISSION-020-MISSION-SECOND' }),
+        ],
+        expected: /conflicting-protected-path-authority/,
+      },
+    ];
+
+    for (const testCase of cases) {
+      const records = [mission, child];
+      const options = optionsFor(records, {
+        authority: 'R5',
+        now: '2026-07-17T12:00:00Z',
+        ownerDecisions: { decisions: testCase.decisions },
+      });
+      assert.match(
+        planWaves(registry(records), rules, options).excludedWorkOrders.find(
+          item => item.workOrderId === child.id
+        ).reasons[0],
+        testCase.expected
+      );
+    }
+  });
+
+  it('prefers an exact child decision over inherited mission authority', () => {
+    const mission = record('WO-MISSION-030', {
+      program: 'Mission',
+      goalId: 'GOAL-MISSION',
+      loopId: 'LOOP-MISSION',
+      status: 'complete',
+    });
+    const child = record('WO-MISSION-031', {
+      program: 'Mission',
+      goalId: 'GOAL-MISSION',
+      loopId: 'LOOP-MISSION',
+      riskClass: 'R3',
+      dependencies: [{ id: mission.id, status: 'satisfied' }],
+      allowedFiles: ['backend/src/Mission.cs'],
+    });
+    const exact = protectedPathDecision(child.id, child.allowedFiles);
+    const records = [mission, child];
+    const options = optionsFor(records, {
+      authority: 'R5',
+      now: '2026-07-17T12:00:00Z',
+      ownerDecisions: { decisions: [missionDecision(mission), exact] },
+    });
+
+    const plan = planWaves(registry(records), rules, options);
+
+    assert.deepEqual(plan.initialExecutableSet, [child.id]);
+    assert.match(plan.waves[0].workOrders[0].explanation, new RegExp(exact.id));
+  });
+
+  it('keeps mission child paths and reservations exact and protected environments denied', () => {
+    const mission = record('WO-MISSION-040', {
+      program: 'Mission',
+      goalId: 'GOAL-MISSION',
+      loopId: 'LOOP-MISSION',
+      status: 'complete',
+    });
+    const child = record('WO-MISSION-041', {
+      program: 'Mission',
+      goalId: 'GOAL-MISSION',
+      loopId: 'LOOP-MISSION',
+      riskClass: 'R4',
+      dependencies: [{ id: mission.id, status: 'satisfied' }],
+      allowedFiles: ['backend/src/Mission.cs'],
+    });
+    const ownerDecisions = { decisions: [missionDecision(mission)] };
+    const baseOptions = {
+      authority: 'R5',
+      now: '2026-07-17T12:00:00Z',
+      ownerDecisions,
+    };
+
+    const subtree = { ...child, allowedFiles: ['backend/src/**'] };
+    assert.match(
+      planWaves(
+        registry([mission, subtree]),
+        rules,
+        optionsFor([mission, subtree], baseOptions)
+      ).excludedWorkOrders.find(item => item.workOrderId === child.id).reasons[0],
+      /non-exact-protected-path-scope/
+    );
+
+    const outside = optionsFor([mission, child], baseOptions);
+    outside.reservations.candidateReservations[child.id][0].value = 'backend/src/Other.cs';
+    assert.match(
+      planWaves(registry([mission, child]), rules, outside).excludedWorkOrders.find(
+        item => item.workOrderId === child.id
+      ).reasons[0],
+      /outside declared allowedFiles/
+    );
+
+    const environment = optionsFor([mission, child], baseOptions);
+    environment.reservations.candidateReservations[child.id] = [
+      { id: 'PROD', kind: 'environment', value: 'production', scope: 'exact' },
+    ];
+    assert.match(
+      planWaves(registry([mission, child]), rules, environment).excludedWorkOrders.find(
+        item => item.workOrderId === child.id
+      ).reasons[0],
+      /protected-resource-reservation:environment:production/
+    );
+  });
+
+  it('validates optional mission routing identities against the Work Order schema', () => {
+    const schema = JSON.parse(
+      fs.readFileSync(
+        path.join(root, 'docs/brain/workorders/schema/work-order.schema.json'),
+        'utf8'
+      )
+    );
+    const validate = new Ajv2020({ allErrors: true, strict: false }).compile(schema);
+    const missionChild = record('WO-MISSION-050', {
+      program: 'Mission',
+      goal: 'Execute the exact mission child.',
+      goalId: 'GOAL-MISSION',
+      loopId: 'LOOP-MISSION',
+      allowedFiles: ['backend/src/Mission.cs'],
+    });
+
+    assert.equal(validate(missionChild), true, JSON.stringify(validate.errors));
+    assert.equal(validate({ ...missionChild, goalId: 'mission' }), false);
+    assert.equal(validate({ ...missionChild, loopId: 'mission' }), false);
   });
 
   it('reconciles path claims with declared scope and blocks denied CI/deployment declarations', () => {

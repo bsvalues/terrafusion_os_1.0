@@ -39,6 +39,16 @@
       "type": "string",
       "minLength": 1
     },
+    "goalId": {
+      "type": "string",
+      "pattern": "^GOAL-[A-Z0-9][A-Z0-9-]*$",
+      "description": "Optional canonical program-goal identity used for exact mission authority matching."
+    },
+    "loopId": {
+      "type": "string",
+      "pattern": "^LOOP-[A-Z0-9][A-Z0-9-]*$",
+      "description": "Optional canonical program-loop identity used for exact mission authority matching."
+    },
     "riskClass": {
       "$ref": "#/$defs/riskClass"
     },
