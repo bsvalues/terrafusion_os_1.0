@@ -2019,6 +2019,8 @@ public sealed class R1Week5CxR1ClosureTests
     json.Should().Contain("\"county\":\"benton\"");
     json.Should().Contain("\"total\":18");
     json.Should().Contain("\"deed\"");
+    json.Should().NotContain("EntersCustodyChain",
+        because: "custody classification is owned by the suite mutation decision contract");
 
     controller.Response.Headers["X-Dossier-Source"].ToString()
         .Should().Be("benton-real-document-types-fy2025");
