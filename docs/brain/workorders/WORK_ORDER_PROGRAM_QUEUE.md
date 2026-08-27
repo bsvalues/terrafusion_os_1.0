@@ -13,7 +13,7 @@
 
 ## Active Goal
 
-The Five-Suite Federated Repository Buildout is active under `OWNER-FIVE-SUITE-FEDERATED-COMPLETION-20260826`. Atlas runtime and ownership are complete. Dais staging PR #1466 merged as `5182742d756cea6a939bb12489e660d83b9593b6`; runtime PR #1467 merged as `54f9e4b411fb886bd592226067928f024b02285b`; protected main was verified. `WO-SR-010C` is active: freeze the minimal Dais-owned appeal creation-default and lifecycle-transition decision boundary before suite adoption and duplicate-judgment retirement. Continue to Dais ownership truth, then Dossier and GPT. The mission hard walls remain binding.
+The Five-Suite Federated Repository Buildout is active under `OWNER-FIVE-SUITE-FEDERATED-COMPLETION-20260826`. Atlas runtime and ownership are complete. Dais read staging/runtime are protected merges `5182742d756cea6a939bb12489e660d83b9593b6` and `54f9e4b411fb886bd592226067928f024b02285b`. The mutation contract froze on sovereign protected merge `52744220509a54b6544e0fa193b6d09e8d93c159`, and Dais protected merge `8a9cfc608bcda835126db2054bb7ba7ecf185275` established the canonical decision source. `WO-SR-010E` stages those exact bytes with observed rollback before runtime adoption. Continue to Dais ownership truth, then Dossier and GPT. The mission hard walls remain binding.
 
 The prior `WO-SR-009C` completed before this activation. PR #1424 merged exact assured head
 `e70548cb4938da92b2c0b254d71c5361aa10a6ed` as
@@ -188,7 +188,9 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | **Atlas Standalone Canonical Ownership Finalization** | **DONE / R2 / Atlas PR #4** | Exact head `8c2d4d870` merged as `708fc5c319`; protected suite main verified; module bytes unchanged |
 | **WO-SR-010A Dais Canonical Artifact Staging** | **DONE / R3 / PR #1466** | Exact head `88e7454b2` merged as `5182742d7`; all checks green, review resolved, protected main verified |
 | **WO-SR-010B Dais Persistent Exact Runtime Adoption** | **DONE / R4 / PR #1467** | Exact head `b24f263ac` merged as `54f9e4b41`; real controller consumer, exact runtime, persistent Development selection, observed rollback, 120/120 focused tests |
-| **WO-SR-010C Dais Appeal Mutation Contract Freeze** | **ACTIVE / R3** | Pure suite-owned create defaults and lifecycle transitions; typed fail-closed schema/fixtures; OS retains auth, persistence, audit, PII, values and notes |
+| **WO-SR-010C Dais Appeal Mutation Contract Freeze** | **DONE / R3 / PR #1468** | Exact head `377ed29b8` merged as `527442205`; protected main verified |
+| **WO-SR-010D Dais Appeal Mutation Canonical Source** | **DONE / R3 / Dais PR #6** | Protected Dais merge `8a9cfc608`; exact module/schema/source-manifest identities established |
+| **WO-SR-010E Dais Appeal Mutation Canonical Staging** | **ACTIVE / R3** | Fixed ignored slot, exact protected Git blobs and provenance, nonempty backup, failure rollback, physically observed rollback; no runtime activation |
 
 ### portfolio-operator (`GOAL-PORTFOLIO-OPERATOR-001` / `LOOP-PORTFOLIO-OPERATOR-001`)
 | WO | State | Notes |

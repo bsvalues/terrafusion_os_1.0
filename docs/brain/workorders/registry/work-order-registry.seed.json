@@ -1,8 +1,8 @@
 {
   "schemaVersion": "0.1.0",
-  "generatedBy": "WO-SR-010C Dais appeal mutation contract freeze activation",
+  "generatedBy": "WO-SR-010E Dais appeal mutation canonical staging activation",
   "generatedAt": "2026-08-26T00:00:00Z",
-  "description": "The owner-level Five-Suite completion mission is active. Atlas is complete; Dais staging and runtime merged on protected main; WO-SR-010C is the active appeal mutation contract-freeze child.",
+  "description": "The owner-level Five-Suite completion mission is active. Atlas is complete; Dais read staging/runtime and mutation contract/source are protected merges; WO-SR-010E stages the exact mutation artifact with rollback before runtime adoption.",
   "records": [
     {
       "id": "WO-WOE-000",
@@ -11136,7 +11136,7 @@
       "program": "Five-Suite Federated Repository Buildout",
       "goal": "Freeze the minimal governed boundary through which Dais owns appeal creation defaults and lifecycle-transition judgment without crossing sovereign authorization, persistence, audit, PII, monetary-value or notes boundaries.",
       "riskClass": "R3",
-      "status": "active",
+      "status": "complete",
       "dependencies": [
         { "id": "WO-SR-010B", "status": "satisfied", "evidence": ["PR #1467 exact head b24f263ac84fd5403d8fb1ed6e3ba18c511aafbb merged as 54f9e4b411fb886bd592226067928f024b02285b; protected main verified."] },
         { "id": "OWNER-FIVE-SUITE-FEDERATED-COMPLETION-20260826", "status": "satisfied", "evidence": ["Owner mission authority permits exact successor contracts, suite adoption, duplicate-judgment retirement, PR operation and merge without per-child owner relay."] }
@@ -11172,17 +11172,68 @@
       "validationGates": [
         { "name": "focused Dais mutation contract proof", "command": "node --test --test-name-pattern='Dais appeal mutation' scripts/contracts/verify-contract-freeze.test.mjs", "required": true, "result": "pass - 3/3" },
         { "name": "complete shared-contract freeze", "command": "node scripts/contracts/verify-contract-freeze.mjs and full node test file from canonical Git-blob checkout", "required": true, "result": "pass at a29f7a685 - 7 groups, 67 frozen files; 23/23 tests" },
-        { "name": "C# contract build", "command": "dotnet build TerraFusion.Abstractions", "required": true, "result": "pending CI-capable host" },
-        { "name": "governance and protected merge", "command": "JSON parse, diff check, required checks, exact-head merge and protected-main verification", "required": true, "result": "pending" }
+        { "name": "C# contract build", "command": "dotnet build TerraFusion.Abstractions", "required": true, "result": "pass through protected Backend Gate" },
+        { "name": "governance and protected merge", "command": "JSON parse, diff check, required checks, exact-head merge and protected-main verification", "required": true, "result": "pass - PR #1468 exact head 377ed29b84c4f46b623f61a64d7644f911f76db6 merged as 52744220509a54b6544e0fa193b6d09e8d93c159; protected main verified" }
       ],
       "stopConditions": [
         { "type": "authority_wall", "description": "Stop on any mission hard-wall crossing, contract identity failure, PII/value/notes leakage, runtime or suite mutation in this child, failed required check, force push or branch-protection bypass." }
       ],
       "nextCandidates": [
-        { "id": "DAIS_APPEAL_MUTATION_SUITE_ADOPTION", "reason": "After protected-main freeze, copy exact contract identities into Dais and implement the pure decision module.", "riskClass": "R3", "blocked": true }
+        { "id": "WO-SR-010D", "reason": "Copy exact contract identities into Dais and implement the pure decision module.", "riskClass": "R3", "blocked": false }
       ],
       "authority": { "mayWrite": true, "mayCommit": true, "mayPush": true, "mayOpenPr": true, "mayMarkReady": true, "mayMerge": true, "mayCleanup": true, "notes": "Exact child scope under OWNER-FIVE-SUITE-FEDERATED-COMPLETION-20260826 and standing protected-PR lifecycle authority." },
-      "provenance": { "createdAt": "2026-08-26T00:00:00Z", "source": "Owner mission directive; verified Dais runtime merge 54f9e4b411fb886bd592226067928f024b02285b; Dais mutable-ownership audit selected the smallest pure create-default and lifecycle-transition boundary.", "schemaVersion": "0.1.0" }
+      "provenance": { "createdAt": "2026-08-26T00:00:00Z", "source": "Owner mission directive; verified Dais runtime merge 54f9e4b411fb886bd592226067928f024b02285b; Dais mutable-ownership audit selected the smallest pure create-default and lifecycle-transition boundary; PR #1468 merged exact head 377ed29b84c4f46b623f61a64d7644f911f76db6 as 52744220509a54b6544e0fa193b6d09e8d93c159.", "schemaVersion": "0.1.0" }
+    },
+    {
+      "id": "WO-SR-010E",
+      "title": "Dais Appeal Mutation Canonical Staging",
+      "program": "Five-Suite Federated Repository Buildout",
+      "goal": "Stage the exact protected-main Dais appeal-mutation decision artifact in the fixed sovereign slot with exact provenance and physically observed rollback, without runtime activation.",
+      "riskClass": "R3",
+      "status": "active",
+      "dependencies": [
+        { "id": "WO-SR-010C", "status": "satisfied", "evidence": ["Sovereign PR #1468 exact head 377ed29b84c4f46b623f61a64d7644f911f76db6 merged as 52744220509a54b6544e0fa193b6d09e8d93c159."] },
+        { "id": "WO-SR-010D", "status": "satisfied", "evidence": ["Dais PR #6 merged as protected-main commit 8a9cfc608bcda835126db2054bb7ba7ecf185275 with exact module, schema and source-manifest Git blobs."] },
+        { "id": "OWNER-FIVE-SUITE-FEDERATED-COMPLETION-20260826", "status": "satisfied", "evidence": ["Owner mission authority permits staging, rollback proof, protected PR operation and merge."] }
+      ],
+      "allowedSystems": [
+        { "name": "Sovereign fixed Dais mutation artifact staging lane", "paths": [".gitignore", ".github/workflows/dais-canonical-staging.yml", "backend/src/TerraFusion.API/Configuration/DaisAppealMutationOptions.cs", "scripts/bootstrap/Stage-DaisAppealMutationModule.ps1", "tests/dais-appeal-mutation-staging-identity.ps1", "docs/brain/workorders/**"] }
+      ],
+      "blockedSystems": [
+        { "name": "Runtime consumer, process host, DI/Program registration, persistent selection, controller/service behavior, database/schema/migration, county/PACS/live data, secrets, deployment/production, topology, and unrelated CI/release work" }
+      ],
+      "allowedFiles": [
+        ".gitignore",
+        ".github/workflows/dais-canonical-staging.yml",
+        "backend/src/TerraFusion.API/Configuration/DaisAppealMutationOptions.cs",
+        "scripts/bootstrap/Stage-DaisAppealMutationModule.ps1",
+        "tests/dais-appeal-mutation-staging-identity.ps1",
+        "docs/brain/workorders/active/WO-SR-010E-dais-appeal-mutation-canonical-staging.md",
+        "docs/brain/workorders/evidence/WO-SR-010E-DAIS-APPEAL-MUTATION-CANONICAL-STAGING.md",
+        "docs/brain/workorders/registry/work-order-registry.seed.json",
+        "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
+        "docs/brain/workorders/programs/five-suite-federated-repository-buildout.md"
+      ],
+      "blockedFiles": ["backend/src/TerraFusion.API/Program.cs", "backend/src/TerraFusion.API/Controllers/**", "backend/src/TerraFusion.API/Services/**", "backend/src/TerraFusion.API/appsettings*.json", "backend/src/TerraFusion.Core/**", "backend/src/TerraFusion.Data/**", "frontend/**", "packages/**", "azure-pipelines/**"],
+      "evidenceRequired": [
+        { "kind": "other", "description": "Exact protected-source commit/blob/byte/contract/DTO provenance; exact three-file publication; strict manifest scalar types; nonempty whole-slot backup; injected failure restoration; physical rollback and adopted-slot restoration; no activation or protected data; independent review; required checks; exact-head merge and protected-main verification." }
+      ],
+      "evidenceProduced": [
+        { "kind": "file", "location": "docs/brain/workorders/evidence/WO-SR-010E-DAIS-APPEAL-MUTATION-CANONICAL-STAGING.md", "summary": "Authenticated exact-source publication, failure restoration, nonempty backup hashes, and physically observed rollback evidence." }
+      ],
+      "validationGates": [
+        { "name": "offline staging guards", "command": "pwsh -NoProfile -File tests/dais-appeal-mutation-staging-identity.ps1 -OfflineGuardsOnly", "required": true, "result": "pass" },
+        { "name": "authenticated full staging and rollback", "command": "pwsh -NoProfile -File tests/dais-appeal-mutation-staging-identity.ps1", "required": true, "result": "pass - DAIS_APPEAL_MUTATION_EXACT_STAGING_AND_ROLLBACK_PROVEN" },
+        { "name": "governance, independent review and protected merge", "command": "JSON parse, diff check, independent review, required checks, exact-head merge and protected-main verification", "required": true, "result": "pending" }
+      ],
+      "stopConditions": [
+        { "type": "authority_wall", "description": "Stop on any mission hard-wall crossing, source/manifest/blob/rollback failure, runtime activation in this child, protected resource, out-of-scope file, failed required check, force push or branch-protection bypass." }
+      ],
+      "nextCandidates": [
+        { "id": "WO-SR-010F", "reason": "Adopt only the exact staged mutation artifact as the fail-closed Dais decision boundary and retire duplicate OS judgment.", "riskClass": "R4", "blocked": true }
+      ],
+      "authority": { "mayWrite": true, "mayCommit": true, "mayPush": true, "mayOpenPr": true, "mayMarkReady": true, "mayMerge": true, "mayCleanup": true, "notes": "Exact staging-only child under OWNER-FIVE-SUITE-FEDERATED-COMPLETION-20260826 and standing protected-PR lifecycle authority." },
+      "provenance": { "createdAt": "2026-08-27T00:00:00Z", "source": "Owner mission directive; sovereign protected merge 52744220509a54b6544e0fa193b6d09e8d93c159; Dais protected merge 8a9cfc608bcda835126db2054bb7ba7ecf185275 and supplied exact Git-blob/SHA-256 identities.", "schemaVersion": "0.1.0" }
     }
   ]
 }
