@@ -651,6 +651,8 @@ describe('wo-wave-plan', () => {
       assert.equal(validate(item), true, `${item.id}: ${JSON.stringify(validate.errors)}`);
     }
     assert.equal(validate({ ...children[0], contractReservations: ['production'] }), false);
+    assert.equal(validate({ ...children[0], contractReservations: null }), false);
+    assert.equal(validate({ ...children[0], environmentReservations: null }), false);
     assert.equal(
       validate({
         ...children[0],
@@ -700,6 +702,42 @@ describe('wo-wave-plan', () => {
     }
 
     for (const child of children) {
+      for (const allowedFile of child.allowedFiles) {
+        assertDenied(
+          child,
+          claims =>
+            claims.splice(
+              claims.findIndex(claim => claim.kind === 'path' && claim.value === allowedFile),
+              1
+            ),
+          /missing path reservation/
+        );
+      }
+      assertDenied(
+        child,
+        claims => {
+          const pathClaim = claims.find(claim => claim.kind === 'path');
+          claims.push({ ...pathClaim, id: `${child.id}-DUPLICATE-PATH` });
+        },
+        /duplicate path reservation/
+      );
+      assertDenied(
+        child,
+        claims => {
+          claims.find(claim => claim.kind === 'path').scope = 'subtree';
+        },
+        /path scope mismatch/
+      );
+      assertDenied(
+        child,
+        claims =>
+          claims.push({
+            id: `${child.id}-EXTRA-PATH`,
+            kind: 'path',
+            value: 'docs/brain/workorders/active/WO-WAL-EXTRA.md',
+          }),
+        /extra path reservation/
+      );
       assertDenied(
         child,
         claims =>
@@ -789,11 +827,33 @@ describe('wo-wave-plan', () => {
       ).reasons[0],
       /must be a versioned contract identifier/
     );
+
+    for (const field of ['contractReservations', 'environmentReservations']) {
+      const nullTypedRecords = actualRecords.map(item =>
+        item.id === children[0].id ? { ...item, [field]: null } : item
+      );
+      const nullTypedOptions = optionsFor(nullTypedRecords, {
+        authority: 'R5',
+        maxWorkers: 4,
+        now: '2026-08-27T20:00:00Z',
+        ownerDecisions: actualOwnerDecisions,
+      });
+      assert.match(
+        planWaves(registry(nullTypedRecords), rules, nullTypedOptions).excludedWorkOrders.find(
+          item => item.workOrderId === children[0].id
+        ).reasons[0],
+        new RegExp(`${field} must be an array`)
+      );
+    }
   });
 
   it('preserves non-protected legacy contract and environment claims without typed fields', () => {
-    const legacy = record('WO-LEGACY-001');
+    const legacy = record('WO-LEGACY-001', {
+      allowedFiles: ['docs/legacy/**', 'scripts/legacy/**'],
+    });
     const admitted = optionsFor([legacy]);
+    admitted.reservations.candidateReservations[legacy.id].pop();
+    admitted.reservations.candidateReservations[legacy.id][0].value = 'docs/legacy/file.md';
     admitted.reservations.candidateReservations[legacy.id].push(
       { id: 'LEGACY-CONTRACT', kind: 'contract', value: 'wal.safe-parser.v1' },
       { id: 'LEGACY-ENVIRONMENT', kind: 'environment', value: 'local-only' }
