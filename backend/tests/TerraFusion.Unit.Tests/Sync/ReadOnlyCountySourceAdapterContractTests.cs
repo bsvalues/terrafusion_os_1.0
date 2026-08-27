@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using TerraFusion.Core.Sync.Profiles;
@@ -19,6 +20,9 @@ public sealed class ReadOnlyCountySourceAdapterContractTests
         methods.Should().ContainSingle();
         methods[0].Name.Should().Be(nameof(IReadOnlyCountySourceAdapter.ReadPageAsync));
         methods[0].ReturnType.Should().Be<Task<ReadOnlySourceReadPage>>();
+        methods[0].GetParameters().Select(parameter => parameter.ParameterType).Should().Equal(
+            typeof(ReadOnlySourceReadRequest),
+            typeof(CancellationToken));
         methods.Select(method => method.Name).Should().NotContain(name =>
             new[] { "write", "update", "delete", "execute", "connect", "sync" }
                 .Any(verb => name.Contains(verb, StringComparison.OrdinalIgnoreCase)));
@@ -70,21 +74,23 @@ public sealed class ReadOnlyCountySourceAdapterContractTests
     [Fact]
     public void Guarded_command_has_no_public_constructor()
     {
-        typeof(ReadOnlySourceCommand)
-            .GetConstructors(BindingFlags.Public | BindingFlags.Instance)
-            .Should()
-            .BeEmpty();
+        var constructors = typeof(ReadOnlySourceCommand)
+            .GetConstructors(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+
+        constructors.Should().NotBeEmpty();
+        constructors.Should().OnlyContain(constructor => constructor.IsPrivate);
     }
 
     [Theory]
     [InlineData("SELECT parcel_id, updated_at FROM parcels WHERE county_id = @countyId")]
-    [InlineData("  select COUNT(*) FROM source_rows WHERE changed_at > @checkpoint  ")]
+    [InlineData("  select parcel_id FROM source_rows WHERE changed_at > @checkpoint  ")]
     public void Guard_accepts_one_explicit_parameterized_select(string commandText)
     {
-        var guarded = ReadOnlySourceCommandGuard.RequireRead(commandText);
+        var guarded = ReadOnlySourceCommand.RequireRead(commandText);
 
         guarded.Text.Should().Be(commandText.Trim());
         var request = new ReadOnlySourceReadRequest(
+            CreateProfile(),
             guarded,
             new Dictionary<string, object?> { ["countyId"] = Guid.NewGuid() },
             maxRows: 500,
@@ -107,9 +113,17 @@ public sealed class ReadOnlyCountySourceAdapterContractTests
     [InlineData("SELECT * INTO parcel_copy FROM parcels")]
     [InlineData("SELECT next value for parcel_sequence")]
     [InlineData("SELECT * FROM parcels FOR UPDATE")]
+    [InlineData("SELECT * FROM parcels FOR SHARE")]
+    [InlineData("SELECT COUNT(*) FROM parcels")]
+    [InlineData("SELECT setval('parcel_sequence', 5)")]
+    [InlineData("SELECT public.county_writeback(@countyId)")]
+    [InlineData("SELECT pg_advisory_lock(42)")]
+    [InlineData("SELECT dbo.read_then_write(@countyId)")]
+    [InlineData("SELECT parcel_sequence.NEXTVAL FROM dual")]
+    [InlineData("SELECT parcel_sequence.CURRVAL FROM dual")]
     public void Guard_rejects_dml_ddl_execution_and_ambiguous_operations(string commandText)
     {
-        var act = () => ReadOnlySourceCommandGuard.RequireRead(commandText);
+        var act = () => ReadOnlySourceCommand.RequireRead(commandText);
 
         act.Should().Throw<ArgumentException>();
     }
@@ -126,7 +140,7 @@ public sealed class ReadOnlyCountySourceAdapterContractTests
     [InlineData("SEL\u200bECT * FROM parcels")]
     public void Guard_rejects_multiple_statements_comments_and_obfuscation(string commandText)
     {
-        var act = () => ReadOnlySourceCommandGuard.RequireRead(commandText);
+        var act = () => ReadOnlySourceCommand.RequireRead(commandText);
 
         act.Should().Throw<ArgumentException>();
     }
@@ -140,7 +154,7 @@ public sealed class ReadOnlyCountySourceAdapterContractTests
     [InlineData("VALUES (1)")]
     public void Guard_rejects_blank_or_ambiguous_commands(string commandText)
     {
-        var act = () => ReadOnlySourceCommandGuard.RequireRead(commandText);
+        var act = () => ReadOnlySourceCommand.RequireRead(commandText);
 
         act.Should().Throw<ArgumentException>();
     }
@@ -150,12 +164,54 @@ public sealed class ReadOnlyCountySourceAdapterContractTests
     [InlineData(10001)]
     public void Read_request_rejects_unbounded_page_sizes(int maxRows)
     {
-        var command = ReadOnlySourceCommandGuard.RequireRead("SELECT parcel_id FROM parcels");
+        var command = ReadOnlySourceCommand.RequireRead("SELECT parcel_id FROM parcels");
         var act = () => new ReadOnlySourceReadRequest(
+            CreateProfile(),
             command,
             new Dictionary<string, object?>(),
             maxRows);
 
         act.Should().Throw<ArgumentOutOfRangeException>();
+    }
+
+    [Fact]
+    public void Read_request_binds_profile_and_snapshots_parameters()
+    {
+        var profile = CreateProfile();
+        var originalCountyId = profile.CountyId;
+        var callerParameters = new Dictionary<string, object?>
+        {
+            ["countyId"] = originalCountyId,
+        };
+        var request = new ReadOnlySourceReadRequest(
+            profile,
+            ReadOnlySourceCommand.RequireRead(
+                "SELECT parcel_id FROM parcels WHERE county_id = @countyId"),
+            callerParameters,
+            maxRows: 500);
+
+        callerParameters["countyId"] = Guid.NewGuid();
+        callerParameters["lateParameter"] = "not admitted";
+
+        request.Profile.Should().BeSameAs(profile);
+        request.Parameters["countyId"].Should().Be(originalCountyId);
+        request.Parameters.Should().NotContainKey("lateParameter");
+        var mutateSnapshot = () =>
+            ((IDictionary<string, object?>)request.Parameters)["countyId"] = Guid.NewGuid();
+        mutateSnapshot.Should().Throw<NotSupportedException>();
+    }
+
+    private static ReadOnlyCountySourceProfile CreateProfile()
+    {
+        return new ReadOnlyCountySourceProfile(
+            Guid.NewGuid(),
+            "WA-005",
+            "mock-harris-export",
+            "sql-family",
+            "bounded-select",
+            "schema-v1",
+            "mapping-v1",
+            "watermark-v1",
+            TimeSpan.FromHours(24));
     }
 }

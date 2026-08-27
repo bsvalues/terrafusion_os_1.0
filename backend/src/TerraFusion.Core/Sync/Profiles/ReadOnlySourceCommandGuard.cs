@@ -6,14 +6,15 @@ using System.Text.RegularExpressions;
 namespace TerraFusion.Core.Sync.Profiles;
 
 /// <summary>
-/// Conservative syntax gate for later SQL-family read-only adapters.
-/// This is defense in depth, not a SQL parser and not evidence of live source-side no-DML.
+/// Conservative lexical command value for later SQL-family read-only adapters.
+/// This is defense in depth, not a SQL parser, a capability sandbox, or evidence of live
+/// source-side no-DML. Real adapters still require read-only credentials and observed source proof.
 /// </summary>
-public static partial class ReadOnlySourceCommandGuard
+public sealed partial record ReadOnlySourceCommand
 {
     /// <summary>
-    /// Validates one unambiguous <c>SELECT</c> statement and returns the guarded command value.
-    /// The gate intentionally rejects syntax it cannot classify safely.
+    /// Admits one command from a deliberately narrow lexical <c>SELECT</c> subset and returns the
+    /// guarded command value. The gate intentionally rejects syntax it cannot classify safely.
     /// </summary>
     public static ReadOnlySourceCommand RequireRead(string commandText)
     {
@@ -48,7 +49,16 @@ public static partial class ReadOnlySourceCommandGuard
             throw Rejected("Exactly one SELECT operation is allowed.", nameof(commandText));
         }
 
-        if (ForbiddenOperation().IsMatch(candidate) || SelectInto().IsMatch(candidate))
+        if (candidate.Contains('(') || candidate.Contains(')'))
+        {
+            throw Rejected(
+                "Parentheses and function-call syntax are not admitted by this lexical foundation.",
+                nameof(commandText));
+        }
+
+        if (ForbiddenOperation().IsMatch(candidate)
+            || SelectInto().IsMatch(candidate)
+            || SequenceAccess().IsMatch(candidate))
         {
             throw Rejected("The command contains a write, execution, or ambiguous operation.", nameof(commandText));
         }
@@ -80,6 +90,9 @@ public static partial class ReadOnlySourceCommandGuard
         RegexOptions.IgnoreCase | RegexOptions.CultureInvariant)]
     private static partial Regex ForbiddenOperation();
 
-    [GeneratedRegex(@"\bINTO\b|\bFOR\s+UPDATE\b|\bNEXT\s+VALUE\b", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant)]
+    [GeneratedRegex(@"\bINTO\b|\bFOR\b|\bNEXT\s+VALUE\b", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant)]
     private static partial Regex SelectInto();
+
+    [GeneratedRegex(@"\b(?:NEXTVAL|CURRVAL)\b", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant)]
+    private static partial Regex SequenceAccess();
 }

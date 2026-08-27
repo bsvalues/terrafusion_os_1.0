@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -75,12 +77,13 @@ public sealed record ReadOnlyCountySourceProfile
 }
 
 /// <summary>
-/// A command admitted by <see cref="ReadOnlySourceCommandGuard"/>.
-/// Construction is assembly-internal so external adapters cannot bypass the public guard.
+/// A command admitted by <see cref="ReadOnlySourceCommand.RequireRead"/>.
+/// The constructor is private so every caller, including other code in this assembly, must use the
+/// lexical guard.
 /// </summary>
-public sealed record ReadOnlySourceCommand
+public sealed partial record ReadOnlySourceCommand
 {
-    internal ReadOnlySourceCommand(string text)
+    private ReadOnlySourceCommand(string text)
     {
         Text = text;
     }
@@ -88,17 +91,19 @@ public sealed record ReadOnlySourceCommand
     public string Text { get; }
 }
 
-/// <summary>A bounded page request against one governed source profile.</summary>
+/// <summary>A page request structurally bound to one governed source profile.</summary>
 public sealed record ReadOnlySourceReadRequest
 {
     public const int MaximumRows = 10_000;
 
     public ReadOnlySourceReadRequest(
+        ReadOnlyCountySourceProfile profile,
         ReadOnlySourceCommand command,
         IReadOnlyDictionary<string, object?> parameters,
         int maxRows,
         string? checkpoint = null)
     {
+        ArgumentNullException.ThrowIfNull(profile);
         ArgumentNullException.ThrowIfNull(command);
         ArgumentNullException.ThrowIfNull(parameters);
 
@@ -109,11 +114,18 @@ public sealed record ReadOnlySourceReadRequest
                 $"Page size must be between 1 and {MaximumRows} rows.");
         }
 
+        Profile = profile;
         Command = command;
-        Parameters = parameters;
+        Parameters = new ReadOnlyDictionary<string, object?>(
+            parameters.ToDictionary(
+                pair => pair.Key,
+                pair => pair.Value,
+                StringComparer.Ordinal));
         MaxRows = maxRows;
         Checkpoint = checkpoint;
     }
+
+    public ReadOnlyCountySourceProfile Profile { get; }
 
     public ReadOnlySourceCommand Command { get; }
 
@@ -131,13 +143,13 @@ public sealed record ReadOnlySourceReadPage(
     DateTimeOffset ObservedAtUtc);
 
 /// <summary>
-/// Read-only county source adapter boundary. It intentionally exposes no write, schema mutation,
-/// connection lifecycle, or synchronization-back operation.
+/// Read-shaped mock adapter contract. It intentionally exposes no write, schema mutation,
+/// connection lifecycle, or synchronization-back operation. A later sealed executor must enforce
+/// this request against a real read-only source credential before live use.
 /// </summary>
 public interface IReadOnlyCountySourceAdapter
 {
     Task<ReadOnlySourceReadPage> ReadPageAsync(
-        ReadOnlyCountySourceProfile profile,
         ReadOnlySourceReadRequest request,
         CancellationToken cancellationToken = default);
 }
