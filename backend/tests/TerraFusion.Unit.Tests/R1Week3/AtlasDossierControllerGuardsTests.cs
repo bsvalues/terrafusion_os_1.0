@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
+using TerraFusion.Abstractions.DTOs;
 using TerraFusion.API.Controllers;
 using TerraFusion.Core.Entities;
 using TerraFusion.Core.Services;
@@ -280,7 +281,27 @@ public class AtlasDossierControllerGuardsTests
         });
         await db.SaveChangesAsync();
 
-        var controller = new DossierController(db, new Mock<ICostForgeService>().Object, NullLogger<DossierController>.Instance, Mock.Of<IHostEnvironment>(e => e.EnvironmentName == "Development"), mutationPort: new ExplicitDossierMutationDecisionPort());
+        var mutationPort = new ExplicitDossierMutationDecisionPort
+        {
+            CreateNote = request =>
+            {
+                Assert.Equal(DossierMutationOperation.createNote, request.Operation);
+                Assert.Equal("PARCEL-400", request.ParcelId);
+                Assert.Equal("note from string county claim", request.Command.Content);
+                Assert.Equal("case_note", request.Command.NoteType);
+                Assert.Equal(0, request.Command.ExpectedVersion);
+                return ExplicitDossierMutationDecisionPort.Accepted(new DossierCreateNoteMutation
+                {
+                    Version = 1,
+                    NoteId = request.Command.NoteId,
+                    Content = "note from string county claim",
+                    NoteType = "case_note",
+                    CreatedBy = request.ActorId,
+                    CreatedAt = request.EffectiveAt,
+                });
+            },
+        };
+        var controller = new DossierController(db, new Mock<ICostForgeService>().Object, NullLogger<DossierController>.Instance, Mock.Of<IHostEnvironment>(e => e.EnvironmentName == "Development"), mutationPort: mutationPort);
         AttachPrincipal(controller, CreatePrincipal("BENTON"));
 
         var result = await controller.CreateNote(

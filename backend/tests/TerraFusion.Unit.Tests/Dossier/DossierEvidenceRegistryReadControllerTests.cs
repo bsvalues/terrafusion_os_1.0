@@ -255,7 +255,7 @@ public sealed class DossierEvidenceRegistryReadControllerTests
           "CountyId" TEXT NOT NULL,
           "CreatedBy" TEXT NOT NULL,
           "CreatedAt" TEXT NOT NULL,
-          "Version" INTEGER NOT NULL DEFAULT 0,
+          "Version" INTEGER NOT NULL DEFAULT 1,
           FOREIGN KEY ("CountyId") REFERENCES "Counties" ("Id") ON DELETE CASCADE
         );
         """);

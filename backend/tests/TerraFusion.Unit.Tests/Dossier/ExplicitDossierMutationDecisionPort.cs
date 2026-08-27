@@ -4,190 +4,79 @@ using TerraFusion.Core.Services;
 namespace TerraFusion.Unit.Tests.Dossier;
 
 /// <summary>
-/// Explicit suite-boundary fixture for legacy controller tests. It returns typed accepted or
-/// rejected decisions so those tests exercise persistence and HTTP mapping without bypassing the
-/// canonical mutation port.
+/// Strict scripted suite-boundary fixture for legacy controller tests. Every configured callback
+/// supplies one typed outcome and validates the exact request observed by that test. An unexpected
+/// operation fails the test instead of recreating Dossier's mutable rules in sovereign fixtures.
 /// </summary>
 internal sealed class ExplicitDossierMutationDecisionPort : IDossierMutationDecisionPort
 {
+    public Func<DossierCreateNoteDecisionRequest, DossierMutationPortResult<DossierCreateNoteMutation>>? CreateNote { get; init; }
+    public Func<DossierRegisterDocumentDecisionRequest, DossierMutationPortResult<DossierRegisterDocumentMutation>>? RegisterDocument { get; init; }
+    public Queue<Func<DossierTransitionDocumentStatusDecisionRequest, DossierMutationPortResult<DossierTransitionDocumentStatusMutation>>> TransitionDocumentStatus { get; } = new();
+    public Func<DossierRegisterEvidenceDecisionRequest, DossierMutationPortResult<DossierRegisterEvidenceMutation>>? RegisterEvidence { get; init; }
+    public Func<DossierAppendCustodyEventDecisionRequest, DossierMutationPortResult<DossierAppendCustodyEventMutation>>? AppendCustodyEvent { get; init; }
+    public Func<DossierCreatePacketDecisionRequest, DossierMutationPortResult<DossierCreatePacketMutation>>? CreatePacket { get; init; }
+
     public Task<DossierMutationPortResult<DossierCreateNoteMutation>> DecideCreateNoteAsync(
         DossierCreateNoteDecisionRequest request,
         CancellationToken cancellationToken = default) =>
-        Accepted(new DossierCreateNoteMutation
-        {
-            Version = request.Command.ExpectedVersion + 1,
-            NoteId = request.Command.NoteId,
-            Content = request.Command.Content.Trim(),
-            NoteType = string.IsNullOrWhiteSpace(request.Command.NoteType)
-                ? "case_note"
-                : request.Command.NoteType.Trim(),
-            CreatedBy = request.ActorId,
-            CreatedAt = request.EffectiveAt,
-        });
+        Completed(CreateNote, request, DossierMutationOperation.createNote);
 
     public Task<DossierMutationPortResult<DossierRegisterDocumentMutation>> DecideRegisterDocumentAsync(
         DossierRegisterDocumentDecisionRequest request,
         CancellationToken cancellationToken = default) =>
-        Accepted(new DossierRegisterDocumentMutation
-        {
-            Version = request.Command.ExpectedVersion + 1,
-            DocumentId = request.Command.DocumentId,
-            Name = request.Command.Name.Trim(),
-            DocumentType = request.Command.DocumentType.Trim().ToLowerInvariant(),
-            Status = DossierDocumentStatus.active,
-            MimeType = request.Command.MimeType.Trim(),
-            SizeBytes = request.Command.SizeBytes,
-            ContentHash = request.Command.ContentHash,
-            Description = request.Command.Description?.Trim(),
-            RetentionClass = request.Command.RetentionClass?.Trim(),
-            StoragePath = request.Command.StoragePath?.Trim(),
-            EntersCustodyChain = true,
-            UploadedBy = request.ActorId,
-            UploadedAt = request.EffectiveAt,
-        });
+        Completed(RegisterDocument, request, DossierMutationOperation.registerDocument);
 
     public Task<DossierMutationPortResult<DossierTransitionDocumentStatusMutation>> DecideTransitionDocumentStatusAsync(
         DossierTransitionDocumentStatusDecisionRequest request,
         CancellationToken cancellationToken = default)
     {
-        var requested = request.Command.RequestedStatus.Trim().ToLowerInvariant();
-        if (!Enum.TryParse<DossierDocumentStatus>(requested, out var status))
-            return Rejected<DossierTransitionDocumentStatusMutation>(
-                DossierMutationViolationCode.INVALID_STATUS,
-                "The requested document status is invalid.");
+        if (TransitionDocumentStatus.Count == 0)
+            return Unexpected<DossierTransitionDocumentStatusMutation>(DossierMutationOperation.transitionDocumentStatus);
 
-        var current = request.Command.Current.Status.Trim().ToLowerInvariant();
-        var allowed = (current, requested) is ("active", "sealed") or ("sealed", "archived");
-        if (!allowed)
-            return Rejected<DossierTransitionDocumentStatusMutation>(
-                DossierMutationViolationCode.INVALID_TRANSITION,
-                "The requested document transition is invalid.");
-
-        return Accepted(new DossierTransitionDocumentStatusMutation
-        {
-            Version = request.Command.ExpectedVersion + 1,
-            DocumentId = request.Command.DocumentId,
-            Status = status,
-            UpdatedAt = request.EffectiveAt,
-        });
+        return Task.FromResult(TransitionDocumentStatus.Dequeue()(request));
     }
 
     public Task<DossierMutationPortResult<DossierRegisterEvidenceMutation>> DecideRegisterEvidenceAsync(
         DossierRegisterEvidenceDecisionRequest request,
         CancellationToken cancellationToken = default) =>
-        Accepted(new DossierRegisterEvidenceMutation
-        {
-            Version = request.Command.ExpectedVersion + 1,
-            EvidenceId = request.Command.EvidenceId,
-            Title = request.Command.Title.Trim(),
-            EvidenceType = request.Command.EvidenceType.Trim(),
-            DocumentId = request.Command.DocumentId,
-            Integrity = DossierEvidenceIntegrity.pending,
-            CreatedBy = request.ActorId,
-            CreatedAt = request.EffectiveAt,
-            GenesisEvent = new DossierCustodyEventMutation
-            {
-                EventId = request.Command.GenesisEventId,
-                Action = "created",
-                Actor = request.ActorId,
-                PreviousEventHash = string.Empty,
-                EventHash = request.Command.GenesisHash,
-                Timestamp = request.EffectiveAt,
-            },
-            ChainLength = 1,
-        });
+        Completed(RegisterEvidence, request, DossierMutationOperation.registerEvidence);
 
     public Task<DossierMutationPortResult<DossierAppendCustodyEventMutation>> DecideAppendCustodyEventAsync(
         DossierAppendCustodyEventDecisionRequest request,
-        CancellationToken cancellationToken = default)
-    {
-        var action = request.Command.Action.Trim().ToLowerInvariant();
-        var integrity = action switch
-        {
-            "verified" or "hash-verified" => DossierEvidenceIntegrity.verified,
-            "disputed" => DossierEvidenceIntegrity.disputed,
-            "created" or "transferred" or "reviewed" or "released" =>
-                Enum.Parse<DossierEvidenceIntegrity>(request.Command.Current.Integrity, ignoreCase: true),
-            _ => (DossierEvidenceIntegrity?)null,
-        };
-        if (integrity is null)
-            return Rejected<DossierAppendCustodyEventMutation>(
-                DossierMutationViolationCode.INVALID_INPUT,
-                "The custody action is invalid.");
-
-        return Accepted(new DossierAppendCustodyEventMutation
-        {
-            Version = request.Command.ExpectedVersion + 1,
-            EvidenceId = request.Command.EvidenceId,
-            Integrity = integrity.Value,
-            Event = new DossierCustodyEventMutation
-            {
-                EventId = request.Command.EventId,
-                Action = action,
-                Actor = request.ActorId,
-                Notes = request.Command.Notes,
-                PreviousEventHash = request.Command.PreviousEventHash,
-                EventHash = request.Command.EventHash,
-                Timestamp = request.EffectiveAt,
-            },
-            ChainLength = request.Command.Current.ChainLength + 1,
-        });
-    }
+        CancellationToken cancellationToken = default) =>
+        Completed(AppendCustodyEvent, request, DossierMutationOperation.appendCustodyEvent);
 
     public Task<DossierMutationPortResult<DossierCreatePacketMutation>> DecideCreatePacketAsync(
         DossierCreatePacketDecisionRequest request,
-        CancellationToken cancellationToken = default)
-    {
-        var items = request.Command.Template.RequiredDocumentTypes.Select(type =>
-        {
-            var selected = request.Command.CurrentDocuments
-                .Where(document => string.Equals(document.DocumentType, type, StringComparison.OrdinalIgnoreCase)
-                    && string.Equals(document.Status, "active", StringComparison.OrdinalIgnoreCase))
-                .OrderByDescending(document => document.UploadedAt)
-                .ThenBy(document => document.DocumentId, StringComparer.Ordinal)
-                .FirstOrDefault();
-            return new DossierPacketItemMutation
-            {
-                DocumentType = type,
-                Required = true,
-                Satisfied = selected is not null,
-                DocumentId = selected?.DocumentId,
-                SatisfiedAt = selected?.UploadedAt,
-            };
-        }).ToArray();
-        var satisfied = items.Count(item => item.Satisfied);
-        var total = items.Length;
-        return Accepted(new DossierCreatePacketMutation
-        {
-            Version = request.Command.ExpectedVersion + 1,
-            PacketId = request.Command.PacketId,
-            PacketType = request.Command.Template.PacketType.Trim(),
-            Name = request.Command.Template.Name.Trim(),
-            Status = total > 0 && satisfied == total
-                ? DossierPacketStatus.complete
-                : DossierPacketStatus.draft,
-            CompletenessPercent = total == 0 ? 100m : decimal.Divide(satisfied * 100m, total),
-            SatisfiedCount = satisfied,
-            TotalRequired = total,
-            CreatedBy = request.ActorId,
-            CreatedAt = request.EffectiveAt,
-            Items = items,
-        });
-    }
+        CancellationToken cancellationToken = default) =>
+        Completed(CreatePacket, request, DossierMutationOperation.createPacket);
 
-    private static Task<DossierMutationPortResult<TMutation>> Accepted<TMutation>(TMutation mutation)
+    internal static DossierMutationPortResult<TMutation> Accepted<TMutation>(TMutation mutation)
         where TMutation : DossierAcceptedMutation =>
-        Task.FromResult(new DossierMutationPortResult<TMutation>(
-            DossierMutationDecision.accepted,
-            mutation,
-            Array.Empty<DossierMutationViolation>()));
+        new(DossierMutationDecision.accepted, mutation, Array.Empty<DossierMutationViolation>());
 
-    private static Task<DossierMutationPortResult<TMutation>> Rejected<TMutation>(
+    internal static DossierMutationPortResult<TMutation> Rejected<TMutation>(
         DossierMutationViolationCode code,
         string message)
         where TMutation : DossierAcceptedMutation =>
-        Task.FromResult(new DossierMutationPortResult<TMutation>(
+        new(
             DossierMutationDecision.rejected,
             null,
-            [new DossierMutationViolation { Code = code, Message = message }]));
+            [new DossierMutationViolation { Code = code, Message = message }]);
+
+    private static Task<DossierMutationPortResult<TMutation>> Completed<TRequest, TMutation>(
+        Func<TRequest, DossierMutationPortResult<TMutation>>? script,
+        TRequest request,
+        DossierMutationOperation operation)
+        where TMutation : DossierAcceptedMutation =>
+        script is null
+            ? Unexpected<TMutation>(operation)
+            : Task.FromResult(script(request));
+
+    private static Task<DossierMutationPortResult<TMutation>> Unexpected<TMutation>(
+        DossierMutationOperation operation)
+        where TMutation : DossierAcceptedMutation =>
+        Task.FromException<DossierMutationPortResult<TMutation>>(
+            new InvalidOperationException($"Unexpected Dossier mutation operation: {operation}."));
 }
