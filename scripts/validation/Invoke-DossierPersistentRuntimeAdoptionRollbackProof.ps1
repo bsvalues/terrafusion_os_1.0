@@ -8,7 +8,7 @@ param(
 
 $ErrorActionPreference = 'Stop'
 $sovereignRepository = (Resolve-Path (Join-Path $PSScriptRoot '..\..')).Path
-$expectedSovereignBase = '5182742d756cea6a939bb12489e660d83b9593b6'
+$expectedSovereignBase = 'aec4f1e18b619730842c828e4f1c93ecd18d64b2'
 $expectedDossierCommit = '7558cfebfeea0c7b536251769b1d779c4558a763'
 $expectedModuleSha256 = 'bb0427d6634412d86be92a2ef5f6f0bfcdf97ee054887a42d59c2a0bc0127a8b'
 $expectedSchemaSha256 = 'f658bc2bda718f58bd0353e9635524d5dbd376be515b543da3442b0094e52270'
