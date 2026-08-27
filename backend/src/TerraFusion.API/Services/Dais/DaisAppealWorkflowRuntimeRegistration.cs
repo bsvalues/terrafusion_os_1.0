@@ -277,7 +277,7 @@ internal sealed class DaisAppealWorkflowArtifactVerifier
         _sovereignRoot = canonicalRoot;
         _artifactSlot = Path.GetFullPath(Path.Combine(
             canonicalRoot,
-            DaisAppealWorkflowOptions.ArtifactSlotRelativePath.Replace(
+            expected.ArtifactSlotRelativePath.Replace(
                 '/',
                 Path.DirectorySeparatorChar)));
         _expected = expected;
@@ -567,7 +567,8 @@ internal sealed record DaisAppealWorkflowArtifactExpectation(
     long PublishedManifestLength,
     string ContractSourceSha,
     string SourceDtoSha256,
-    string Transport)
+    string Transport,
+    string ArtifactSlotRelativePath)
 {
     internal static DaisAppealWorkflowArtifactExpectation Canonical { get; } = new(
         DaisAppealWorkflowOptions.ExpectedArtifactType,
@@ -589,7 +590,8 @@ internal sealed record DaisAppealWorkflowArtifactExpectation(
         DaisAppealWorkflowOptions.ExpectedPublishedManifestLength,
         DaisAppealWorkflowOptions.ExpectedContractSourceSha,
         DaisAppealWorkflowOptions.ExpectedSourceDtoSha256,
-        DaisAppealWorkflowOptions.ExpectedTransport);
+        DaisAppealWorkflowOptions.ExpectedTransport,
+        DaisAppealWorkflowOptions.ArtifactSlotRelativePath);
 }
 
 internal sealed record DaisAppealWorkflowVerifiedArtifact(
