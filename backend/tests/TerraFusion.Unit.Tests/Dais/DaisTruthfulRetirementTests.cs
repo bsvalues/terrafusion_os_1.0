@@ -11,8 +11,9 @@ using TerraFusion.API.Services;
 using TerraFusion.Core.Auth;
 using TerraFusion.Core.Entities;
 using TerraFusion.Core.Services;
-using TerraFusion.Data;
 using Xunit;
+using DataDbContext = TerraFusion.Data.TerraFusionDbContext;
+using Task = System.Threading.Tasks.Task;
 
 namespace TerraFusion.Unit.Tests.Dais;
 
@@ -110,13 +111,13 @@ public sealed class DaisTruthfulRetirementTests
     internal Harness(string databaseName)
     {
       CountyId = Guid.NewGuid();
-      var options = new DbContextOptionsBuilder<TerraFusionDbContext>()
+      var options = new DbContextOptionsBuilder<DataDbContext>()
         .UseInMemoryDatabase($"{databaseName}-{Guid.NewGuid():N}")
         .Options;
       var configuration = new ConfigurationBuilder()
         .AddInMemoryCollection(new Dictionary<string, string?>())
         .Build();
-      Db = new TerraFusionDbContext(options, configuration);
+      Db = new DataDbContext(options, configuration);
 
       Exemptions = new Mock<IExemptionService>(MockBehavior.Strict);
       Appeals = new Mock<IAppealService>(MockBehavior.Strict);
@@ -151,7 +152,7 @@ public sealed class DaisTruthfulRetirementTests
     }
 
     internal Guid CountyId { get; }
-    internal TerraFusionDbContext Db { get; }
+    internal DataDbContext Db { get; }
     internal DaisController Controller { get; }
     private Mock<IExemptionService> Exemptions { get; }
     private Mock<IAppealService> Appeals { get; }
