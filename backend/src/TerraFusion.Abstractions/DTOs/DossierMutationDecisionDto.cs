@@ -308,7 +308,7 @@ public enum DossierMutationDecision
 }
 
 [JsonConverter(typeof(JsonStringEnumConverter<DossierDocumentStatus>))]
-public enum DossierDocumentStatus { active, sealed, archived }
+public enum DossierDocumentStatus { active, @sealed, archived }
 
 [JsonConverter(typeof(JsonStringEnumConverter<DossierEvidenceIntegrity>))]
 public enum DossierEvidenceIntegrity { pending, verified, disputed }

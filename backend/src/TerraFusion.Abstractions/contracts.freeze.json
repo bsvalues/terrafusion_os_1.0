@@ -310,7 +310,7 @@
       "class": "SUITE",
       "consumers": ["dossier"],
       "files": [
-        { "path": "DTOs/DossierMutationDecisionDto.cs", "sha256": "6d47ec6f3d56bcc4501b6dd745847af16794d796ae6a7cefcecb88cc292d9d8a" },
+        { "path": "DTOs/DossierMutationDecisionDto.cs", "sha256": "58919613fb6da88763cfa12113c3950790c6daa8526ac7151c569320f3258f9a" },
         { "path": "contracts/dossier.mutation-decision.v1.schema.json", "sha256": "c0fd2ddebba936ebcfeed02884d65d43caea705710df9bf69dc55e769da53d43" },
         { "path": "contracts/fixtures/dossier.mutation-decision.v1.append-custody.synthetic.json", "sha256": "b58a0027d4b781ce47e7adad3ddd8167ea023af10f44195d31bc8bb184bbaf91" },
         { "path": "contracts/fixtures/dossier.mutation-decision.v1.create-note.synthetic.json", "sha256": "bfb43560904227285a86164a0e477a48d533c734e69109b41f053e111d28730e" },
