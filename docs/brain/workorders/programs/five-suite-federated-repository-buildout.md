@@ -4,7 +4,7 @@
 
 **Loop:** `LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES`
 
-**Status:** Active execution; mission authority `OWNER-FIVE-SUITE-FEDERATED-COMPLETION-20260826`; WO-SR-010C Dais appeal mutation contract freeze
+**Status:** Active execution; mission authority `OWNER-FIVE-SUITE-FEDERATED-COMPLETION-20260826`; WO-SR-010E Dais appeal mutation canonical staging
 
 ## Ratified topology
 
@@ -96,7 +96,9 @@ county contexts, audit spines, deployment control planes, or contract authoritie
 | WO-SR-007D | Persist and prove the exact Atlas local runtime with rollback | Complete R4; sovereign PR #1465 merged as `4fcbfbd05`; Atlas ownership PR #4 merged as `708fc5c31`; both protected mains verified |
 | WO-SR-010A | Stage the exact Dais canonical module and frozen schema with provenance and rollback | Complete R3; PR #1466 exact head `88e7454b2` merged as `5182742d7`, protected main verified |
 | WO-SR-010B | Adopt the exact Dais module/schema as the persistent real Development runtime gate and execute rollback | Complete R4; PR #1467 exact head `b24f263ac` merged as `54f9e4b41`; protected main verified |
-| WO-SR-010C | Freeze the minimal Dais-owned appeal creation-default and lifecycle-transition decision boundary | Active R3; focused contract proof passes; remote assurance pending |
+| WO-SR-010C | Freeze the minimal Dais-owned appeal creation-default and lifecycle-transition decision boundary | Complete R3; sovereign PR #1468 merged as `527442205` |
+| WO-SR-010D | Establish the exact Dais-owned appeal-mutation canonical source | Complete R3; Dais PR #6 merged as `8a9cfc608` |
+| WO-SR-010E | Stage the exact Dais mutation module/schema with provenance and observed rollback | Active R3; local terminal proof passes; protected assurance pending |
 
 ## Extraction and provenance policy
 
@@ -333,6 +335,8 @@ preserving the recorded hard walls. `WO-SR-007C` completed as protected-main mer
 then passed exact-head assurance in PR #1466 and merged as
 `5182742d756cea6a939bb12489e660d83b9593b6`. `WO-SR-010B` then passed its exact protected checks
 and merged reviewed head `b24f263ac84fd5403d8fb1ed6e3ba18c511aafbb` as
-`54f9e4b411fb886bd592226067928f024b02285b`. `WO-SR-010C` is the dependency-cleared continuation:
-freeze and transfer the remaining appeal creation-default and lifecycle-transition judgment, retire
-only its duplicate OS implementation, then complete Dais ownership truth, Dossier, and GPT.
+`54f9e4b411fb886bd592226067928f024b02285b`. Sovereign mutation-contract PR #1468 merged as
+`52744220509a54b6544e0fa193b6d09e8d93c159`, and Dais PR #6 established the exact canonical
+decision source as `8a9cfc608bcda835126db2054bb7ba7ecf185275`. `WO-SR-010E` stages those exact
+bytes and observes rollback without runtime activation. The successor adopts the staged boundary,
+retires only duplicate OS judgment, then continues to Dossier and GPT.
