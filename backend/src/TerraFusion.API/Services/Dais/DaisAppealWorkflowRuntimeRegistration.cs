@@ -277,7 +277,7 @@ internal sealed class DaisAppealWorkflowArtifactVerifier
         _sovereignRoot = canonicalRoot;
         _artifactSlot = Path.GetFullPath(Path.Combine(
             canonicalRoot,
-            DaisAppealWorkflowOptions.ArtifactSlotRelativePath.Replace(
+            expected.ArtifactSlotRelativePath.Replace(
                 '/',
                 Path.DirectorySeparatorChar)));
         _expected = expected;
@@ -437,9 +437,21 @@ internal sealed class DaisAppealWorkflowArtifactVerifier
         var distinct = properties.Select(property => property.Name)
             .Distinct(StringComparer.Ordinal)
             .ToArray();
-        if (properties.Length != ManifestFields.Count
-            || distinct.Length != ManifestFields.Count
-            || distinct.Any(field => !ManifestFields.Contains(field)))
+        var expectedFields = new HashSet<string>(ManifestFields, StringComparer.Ordinal);
+        if (_expected.ModuleGitBlob is not null)
+        {
+            expectedFields.UnionWith(
+                [
+                    "moduleGitBlob",
+                    "schemaGitBlob",
+                    "sourceManifestLength",
+                    "sourceManifestGitBlob",
+                    "contractReviewedHeadSha",
+                ]);
+        }
+        if (properties.Length != expectedFields.Count
+            || distinct.Length != expectedFields.Count
+            || distinct.Any(field => !expectedFields.Contains(field)))
         {
             throw Fail("Dais provenance manifest fields did not match the exact schema.");
         }
@@ -463,6 +475,23 @@ internal sealed class DaisAppealWorkflowArtifactVerifier
         RequireManifestString(root, "contractSourceSha", _expected.ContractSourceSha);
         RequireManifestString(root, "sourceDtoSha256", _expected.SourceDtoSha256);
         RequireManifestString(root, "transport", _expected.Transport);
+        if (_expected.ModuleGitBlob is not null)
+        {
+            RequireManifestString(root, "moduleGitBlob", _expected.ModuleGitBlob);
+            RequireManifestString(root, "schemaGitBlob", _expected.SchemaGitBlob!);
+            RequireManifestInteger(
+                root,
+                "sourceManifestLength",
+                _expected.SourceManifestLength!.Value);
+            RequireManifestString(
+                root,
+                "sourceManifestGitBlob",
+                _expected.SourceManifestGitBlob!);
+            RequireManifestString(
+                root,
+                "contractReviewedHeadSha",
+                _expected.ContractReviewedHeadSha!);
+        }
     }
 
     private static void RequireManifestString(JsonElement root, string name, string expected)
@@ -567,7 +596,13 @@ internal sealed record DaisAppealWorkflowArtifactExpectation(
     long PublishedManifestLength,
     string ContractSourceSha,
     string SourceDtoSha256,
-    string Transport)
+    string Transport,
+    string ArtifactSlotRelativePath,
+    string? ModuleGitBlob = null,
+    string? SchemaGitBlob = null,
+    long? SourceManifestLength = null,
+    string? SourceManifestGitBlob = null,
+    string? ContractReviewedHeadSha = null)
 {
     internal static DaisAppealWorkflowArtifactExpectation Canonical { get; } = new(
         DaisAppealWorkflowOptions.ExpectedArtifactType,
@@ -589,7 +624,8 @@ internal sealed record DaisAppealWorkflowArtifactExpectation(
         DaisAppealWorkflowOptions.ExpectedPublishedManifestLength,
         DaisAppealWorkflowOptions.ExpectedContractSourceSha,
         DaisAppealWorkflowOptions.ExpectedSourceDtoSha256,
-        DaisAppealWorkflowOptions.ExpectedTransport);
+        DaisAppealWorkflowOptions.ExpectedTransport,
+        DaisAppealWorkflowOptions.ArtifactSlotRelativePath);
 }
 
 internal sealed record DaisAppealWorkflowVerifiedArtifact(

@@ -2,7 +2,7 @@
 
 | Field | Value |
 | --- | --- |
-| Status | ACTIVE - implementation and focused availability proof pass |
+| Status | COMPLETE - PR #1473 merged as protected main `6291e58b11626ad04bdc89e736be89b2a574261c` |
 | Program | Five-Suite Federated Repository Buildout |
 | Goal | `GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES` |
 | Risk | R3 bounded user/runtime surface retirement |

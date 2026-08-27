@@ -99,8 +99,8 @@ automatically.
 | Loop | `LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES` |
 | Program slug | `five-suite-federated-repository-buildout` |
 | Status | Active under mission authority `OWNER-FIVE-SUITE-FEDERATED-COMPLETION-20260826` |
-| Current | `WO-SR-010B` Dais persistent exact runtime adoption |
-| Next | Dais protected-main ownership truth, then Dossier and GPT canonical cutover children |
+| Current | `WO-SR-010G` Dais mutation runtime final protected assurance |
+| Next | Dossier canonical staging immediately after the runtime merge, then GPT |
 
 The sovereign base remains `terrafusion_os_1.0`. The five ratified suite repositories are
 `terrafusion-forge`, `terrafusion-atlas`, `terrafusion-dais`, `terrafusion-dossier`, and
@@ -208,7 +208,7 @@ transfer, or cutover follows.
 
 Program definition: [five-suite-federated-repository-buildout.md](five-suite-federated-repository-buildout.md).
 
-Current Five-Suite routing is `WO-SR-010B`. Atlas runtime and standalone ownership are complete on verified protected mains. Dais staging PR #1466 merged as `5182742d756cea6a939bb12489e660d83b9593b6`; the active child adopts that exact module/schema/manifest slot as the real persistent Development runtime gate and executes rollback before suite ownership finalization. The bounded owner mission decision `OWNER-FIVE-SUITE-FEDERATED-COMPLETION-20260826` authorizes dependency-cleared child Work Orders through Dais, Dossier, and GPT canonical runtime adoption without a new objective or per-child owner return. All mission hard walls remain controlling.
+Current Five-Suite routing is `WO-SR-010G`. Atlas runtime and standalone ownership are complete on verified protected mains. Dais read staging/runtime, mutation staging, truthful sovereign retirement, and frontend availability retirement are protected merges through `6291e58b11626ad04bdc89e736be89b2a574261c`. WO-SR-010G has exact persistent Development runtime, concurrency, tamper, recovery-custody, Disabled rollback, and adopted-restoration proof and is in final protected assurance. The bounded owner mission decision `OWNER-FIVE-SUITE-FEDERATED-COMPLETION-20260826` authorizes dependency-cleared children through Dais, Dossier, and GPT without a new objective or per-child owner return. All mission hard walls remain controlling.
 
 ---
 
@@ -659,8 +659,8 @@ from program evidence.
 | Portfolio loop | `LOOP-PORTFOLIO-OPERATOR-001` |
 | Selected program | Five-Suite Federated Repository Buildout |
 | Last completed interlock | `WO-SR-009D` Dossier Workbench canonical evidence read adoption |
-| Current WO | `WO-SR-010B` Dais persistent exact runtime adoption |
-| Next interlock | On verified merge, finalize Dais standalone ownership truth, then begin Dossier |
+| Current WO | `WO-SR-010G` Dais mutation runtime final protected assurance |
+| Next interlock | After the runtime protected merge, begin Dossier exact canonical staging |
 
 Issue #1417 and `OWNER-SR-009B-R3-DAIS-WORKBENCH-APPEAL-READ-20260805` authorized the exact bounded
 read-only Dais adoption sequence. PR #1419 merged exact assured head

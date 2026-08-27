@@ -1,8 +1,7 @@
 namespace TerraFusion.API.Configuration;
 
 /// <summary>
-/// Exact identity of the Dais-owned appeal-mutation decision artifact.
-/// This staging child does not register or activate the runtime.
+/// Exact identity and governed local selection for the Dais-owned appeal-mutation artifact.
 /// </summary>
 public sealed class DaisAppealMutationOptions
 {
@@ -44,4 +43,16 @@ public sealed class DaisAppealMutationOptions
         "3c32db475a04cd08dd380b13cfeb9cdd6f793445f67981a009992845727cf843";
     public const string ExpectedTransport = "local-os-managed-artifact-slot";
     public const string ArtifactSlotRelativePath = ".terrafusion/runtime/dais/appeal-mutation";
+
+    public DaisAppealMutationMode Mode { get; set; } = DaisAppealMutationMode.Disabled;
+    public string NodeExecutablePath { get; internal set; } = string.Empty;
+    public string ModulePath { get; internal set; } = string.Empty;
+    public string SchemaPath { get; internal set; } = string.Empty;
+    public int TimeoutSeconds { get; set; } = 30;
+}
+
+public enum DaisAppealMutationMode
+{
+    Disabled = 0,
+    LocalExact = 1,
 }

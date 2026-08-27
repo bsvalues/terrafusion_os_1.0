@@ -2,7 +2,7 @@
 
 | Field | Value |
 | --- | --- |
-| Status | ACTIVE - local terminal proof passed; protected assurance pending |
+| Status | COMPLETE - PR #1470 merged as protected main `153103c4f5356219c142ccfe88174c2c6477e54d` |
 | Program | Five-Suite Federated Repository Buildout |
 | Goal | `GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES` |
 | Risk | R3 exact artifact staging with recoverable slot replacement |
@@ -55,4 +55,4 @@ state. The published slot is exactly `.terrafusion/runtime/dais/appeal-mutation`
 
 ## Continuation
 
-Only after protected-main verification may the runtime-adoption child consume this fixed slot.
+Protected-main verification passed. WO-SR-010G consumes this fixed slot as the exact runtime boundary.

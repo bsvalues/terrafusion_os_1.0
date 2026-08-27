@@ -4,7 +4,7 @@
 
 **Loop:** `LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES`
 
-**Status:** Active execution; mission authority `OWNER-FIVE-SUITE-FEDERATED-COMPLETION-20260826`; WO-SR-010E Dais appeal mutation canonical staging
+**Status:** Active execution; mission authority `OWNER-FIVE-SUITE-FEDERATED-COMPLETION-20260826`; WO-SR-010G Dais mutation runtime final protected assurance
 
 ## Ratified topology
 
@@ -98,7 +98,10 @@ county contexts, audit spines, deployment control planes, or contract authoritie
 | WO-SR-010B | Adopt the exact Dais module/schema as the persistent real Development runtime gate and execute rollback | Complete R4; PR #1467 exact head `b24f263ac` merged as `54f9e4b41`; protected main verified |
 | WO-SR-010C | Freeze the minimal Dais-owned appeal creation-default and lifecycle-transition decision boundary | Complete R3; sovereign PR #1468 merged as `527442205` |
 | WO-SR-010D | Establish the exact Dais-owned appeal-mutation canonical source | Complete R3; Dais PR #6 merged as `8a9cfc608` |
-| WO-SR-010E | Stage the exact Dais mutation module/schema with provenance and observed rollback | Active R3; local terminal proof passes; protected assurance pending |
+| WO-SR-010E | Stage the exact Dais mutation module/schema with provenance and observed rollback | Complete R3; PR #1470 exact head `dfce1f5f1` merged as `153103c4f`; protected main verified |
+| WO-SR-010F | Retire fabricated sovereign appeal grounds, timeline, evidence-checklist, and hearing-schedule behavior | Complete R3; PR #1469 exact head `17f2f3fa1` merged as `acf4abc59`; protected main verified |
+| WO-SR-010G | Adopt the exact Dais mutation decision as the persistent real Development runtime, enforce stale-write conflict, and execute rollback | Active R4; 61/61 focused and 2/2 concurrency tests pass; exact Disabled rollback/restoration observed; protected assurance pending |
+| WO-SR-010H | Retire the unsupported PropertyDais hearing-scheduling offer and prove no offered frontend write path | Complete R3; PR #1473 exact head `b6a011620` merged as `6291e58b1`; protected main verified |
 
 ## Extraction and provenance policy
 
@@ -337,6 +340,12 @@ then passed exact-head assurance in PR #1466 and merged as
 and merged reviewed head `b24f263ac84fd5403d8fb1ed6e3ba18c511aafbb` as
 `54f9e4b411fb886bd592226067928f024b02285b`. Sovereign mutation-contract PR #1468 merged as
 `52744220509a54b6544e0fa193b6d09e8d93c159`, and Dais PR #6 established the exact canonical
-decision source as `8a9cfc608bcda835126db2054bb7ba7ecf185275`. `WO-SR-010E` stages those exact
-bytes and observes rollback without runtime activation. The successor adopts the staged boundary,
-retires only duplicate OS judgment, then continues to Dossier and GPT.
+decision source as `8a9cfc608bcda835126db2054bb7ba7ecf185275`. `WO-SR-010E` staged those exact
+bytes in PR #1470, merged as `153103c4f5356219c142ccfe88174c2c6477e54d`. `WO-SR-010F` then
+truthfully retired four fabricated or unsupported sovereign behaviors in PR #1469, merged as
+`acf4abc5959f468c6a43a00b09cead5d55679795`. `WO-SR-010G` now adopts the staged mutation boundary,
+retires duplicate OS lifecycle judgment, proves stale-write conflict and exact Disabled rollback,
+and leaves only sovereign integration/persistence responsibilities. `WO-SR-010H` removed the
+unsupported frontend scheduling offer in protected merge
+`6291e58b11626ad04bdc89e736be89b2a574261c`. Dossier begins after the WO-SR-010G protected merge,
+then GPT follows without a per-child owner relay.

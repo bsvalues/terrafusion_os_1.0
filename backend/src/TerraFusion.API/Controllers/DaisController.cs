@@ -952,16 +952,36 @@ public class DaisController : ControllerBase
     if (countyAccess.ErrorResult is not null)
       return countyAccess.ErrorResult;
 
-    var created = await _appealService.CreateAsync(
-      countyAccess.CountyId!.Value,
-      new CreateAppealCommand(
-        request.ParcelId,
-        request.AppealGround,
-        request.PetitionerName,
-        request.CurrentValue,
-        request.RequestedValue,
-        request.TaxYear),
-      User.Identity?.Name);
+    Appeal created;
+    try
+    {
+      created = await _appealService.CreateAsync(
+        countyAccess.CountyId!.Value,
+        new CreateAppealCommand(
+          request.ParcelId,
+          request.AppealGround,
+          request.PetitionerName,
+          request.CurrentValue,
+          request.RequestedValue,
+          request.TaxYear),
+        User.Identity?.Name,
+        cancellationToken: HttpContext.RequestAborted);
+    }
+    catch (DaisAppealMutationRejectedException exception)
+    {
+      return DaisMutationRejectedProblem(exception);
+    }
+    catch (DaisAppealMutationUnavailableException exception)
+    {
+      _logger.LogWarning(
+        exception,
+        "Dais appeal creation failed closed for county {CountyId} and trace {TraceId}.",
+        countyAccess.CountyId,
+        HttpContext.TraceIdentifier);
+      return Problem(
+        statusCode: StatusCodes.Status503ServiceUnavailable,
+        title: "Canonical Dais appeal mutation runtime is unavailable.");
+    }
 
     await _audit.LogInvocationAsync("file_appeal", request.ParcelId!,
       User.Identity?.Name ?? "anonymous", "filed", HttpContext.RequestAborted);
@@ -1120,13 +1140,71 @@ public class DaisController : ControllerBase
     try
     {
       var updated = await _appealService.UpdateStatusAsync(
-        id, request.Status, effectiveCountyId, request.DecisionNotes, request.DecidedValue);
+        id,
+        request.Status,
+        effectiveCountyId,
+        request.DecisionNotes,
+        request.DecidedValue,
+        HttpContext.RequestAborted);
+      await _audit.LogInvocationAsync(
+        "update_appeal_status",
+        id.ToString("D"),
+        User.Identity?.Name ?? "anonymous",
+        updated.Status,
+        HttpContext.RequestAborted);
       return Ok(updated);
     }
     catch (KeyNotFoundException)
     {
       return NotFound(new { error = $"Appeal {id} not found." });
     }
+    catch (DaisAppealMutationRejectedException exception)
+    {
+      return DaisMutationRejectedProblem(exception);
+    }
+    catch (DaisAppealMutationConflictException exception)
+    {
+      _logger.LogWarning(
+        exception,
+        "Refused stale Dais appeal transition for appeal {AppealId}, county {CountyId}, and trace {TraceId}.",
+        id,
+        effectiveCountyId,
+        HttpContext.TraceIdentifier);
+      return Problem(
+        statusCode: StatusCodes.Status409Conflict,
+        title: "Appeal lifecycle changed before the Dais transition could commit.",
+        type: "https://terrafusion.gov/problems/dais-appeal-mutation-conflict");
+    }
+    catch (DaisAppealMutationUnavailableException exception)
+    {
+      _logger.LogWarning(
+        exception,
+        "Dais appeal transition failed closed for appeal {AppealId}, county {CountyId}, and trace {TraceId}.",
+        id,
+        effectiveCountyId,
+        HttpContext.TraceIdentifier);
+      return Problem(
+        statusCode: StatusCodes.Status503ServiceUnavailable,
+        title: "Canonical Dais appeal mutation runtime is unavailable.");
+    }
+  }
+
+  private ObjectResult DaisMutationRejectedProblem(
+    DaisAppealMutationRejectedException exception)
+  {
+    var problem = new ProblemDetails
+    {
+      Status = StatusCodes.Status422UnprocessableEntity,
+      Title = "Dais rejected the appeal mutation.",
+      Type = "https://terrafusion.gov/problems/dais-appeal-mutation-rejected",
+    };
+    problem.Extensions["operation"] = exception.Operation.ToString();
+    problem.Extensions["violations"] = exception.Violations.Select(violation => new
+    {
+      code = violation.Code.ToString(),
+      violation.Message,
+    }).ToArray();
+    return StatusCode(problem.Status.Value, problem);
   }
 
   // ── Exemptions CRUD ────────────────────────────────────────────────

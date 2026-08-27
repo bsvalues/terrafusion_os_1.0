@@ -1744,6 +1744,7 @@ builder.Services.AddScoped<
 // and bytes at startup, and wraps every invocation with the same verifier.
 builder.Services.AddAtlasProjectionRuntime(builder.Configuration, builder.Environment);
 builder.Services.AddDaisAppealWorkflowRuntime(builder.Configuration, builder.Environment);
+builder.Services.AddDaisAppealMutationRuntime(builder.Configuration, builder.Environment);
 
 // Slice S1: PACS sale raw landing — drains an IPacsSaleSource into
 // legacy_pacs_raw.sale with provenance and writes the four S1
