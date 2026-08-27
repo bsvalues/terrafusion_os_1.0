@@ -25,8 +25,8 @@ public sealed class DaisAppealMutationOptions
         "8f4b6ae6bd445b6a4f563f549e6ffb7d04f65e3d3c981e0556e9436744e61ef8";
 
     public const string ExpectedPublishedManifestSha256 =
-        "679e221efc8842c613b5a83783726fcc5ba117a7442867b746af0911b8f44447";
-    public const int ExpectedPublishedManifestLength = 1467;
+        "c858e7cd390502bf1461cf7af6302916a7c437f5f4f47b17d379f49af114b825";
+    public const int ExpectedPublishedManifestLength = 1465;
 
     public const string ExpectedContractSourceSha =
         "52744220509a54b6544e0fa193b6d09e8d93c159";
