@@ -48,13 +48,17 @@ Execute at least:
 
 Bind the candidate to exact sovereign/suite commits, build artifacts/images, schema/migration set, frontend bundle, configuration class, county source/profile versions and test/proof run identities. Re-running proof against a different build is not acceptance.
 
+## Required release controls
+
+The exact candidate must pass every required protected merge/release control, including the repaired Gate C from PR #1484. Gate C's protected baseline is `3651e2fb6c440f66aaa9326328484c1b5bd9201f`; its frontend selector must remain fail-closed (`terrafusion-frontend...` plus `--fail-if-no-match`) and the regression contract must remain passing.
+
 ## Launch-blocking rule
 
-Any P0/P1 product/security/isolation/data-integrity/rollback finding is blocking until repaired and re-proven at exact head. A non-launch-related pre-existing CI defect may remain separately recorded only when deterministic evidence proves it predates the candidate and does not weaken required launch controls.
+Any P0/P1 product/security/isolation/data-integrity/rollback finding or failure of a required launch control is blocking until repaired and re-proven at exact head. There is no WAL exception for Gate C or any other required protected check.
 
 ## Output
 
-One machine-readable WAL acceptance receipt and human-readable matrix, exact-head independent review, zero unresolved substantive review threads, and `GO` only if every terminal requirement above is satisfied.
+One machine-readable WAL acceptance receipt and human-readable matrix, exact-head independent review, zero unresolved substantive review threads, all required launch controls green, and `GO` only if every terminal requirement above is satisfied.
 
 ## Denials
 

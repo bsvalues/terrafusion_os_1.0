@@ -36,9 +36,12 @@ Until explicit future county adoption, every external county source is read-only
 
 ## Protected activation truth
 
-Activation base: `a1f6fd66d2cff6e3dc7f62ebc00311974951dc90`.
+Original deep-review base: `a1f6fd66d2cff6e3dc7f62ebc00311974951dc90`.
+
+Current protected launch baseline after Gate C repair PR #1484: `3651e2fb6c440f66aaa9326328484c1b5bd9201f` (tree `ba477519d8610b17693800ec1d15522e84a41af7`).
 
 - Five-Suite Federated Repository Buildout is complete and remains closed.
+- Gate C is repaired on protected main. PR #1484 replaced the working-directory-dependent relative pnpm filter with canonical `terrafusion-frontend...` plus `--fail-if-no-match`; its regression contract passed 2/2 and protected-main Gate C passed clean with frontend/backend builds, zero errors and zero warnings. Gate C is therefore a required passing launch control, not tolerated pre-existing debt.
 - 39/39 source-registry coverage exists; current evidence reports 35 adapter-ready and 4 researched, with official assessor URL, primary sales source, statewide parcel backbone, and acquisition family for every county.
 - That registry evidence explicitly does **not** prove statewide ingestion, normalization, geometry, or runtime coverage.
 - Current `CountiesHub.tsx` is an unavailable guardrail; protected Router has no `/counties` route.
@@ -79,9 +82,10 @@ The program closes only when:
 7. HUB exposes the real `PUBLIC → COUNTY_PROVIDED → CONNECTED` progression and actions for all 39;
 8. TerraForge selected launch workflows are county-aware, disclose trust/source level, never fall back silently, and do not advertise modules whose required inputs are absent;
 9. browser/API acceptance covers all 39 contexts, plus deep upload/Sync/runtime journeys over representative source families and adversarial cross-county attempts;
-10. the exact proven release is in production with real auth, HTTPS, monitoring, backup/rollback and release identity;
-11. an external non-development-network assessor journey succeeds end-to-end;
-12. protected governance records `COMPLETED_AND_CONSUMED`, exact URL/release/rollback/proof identities, and no launch-blocking gaps.
+10. all required merge/release controls, including Gate C, pass for the exact accepted release;
+11. the exact proven release is in production with real auth, HTTPS, monitoring, backup/rollback and release identity;
+12. an external non-development-network assessor journey succeeds end-to-end;
+13. protected governance records `COMPLETED_AND_CONSUMED`, exact URL/release/rollback/proof identities, and no launch-blocking gaps.
 
 ## Hard walls
 
