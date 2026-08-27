@@ -1,0 +1,116 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://terrafusion.gov/contracts/gpt.grounded-context.v1.schema.json",
+  "title": "GPT Grounded Context Exchange",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["request", "result"],
+  "properties": {
+    "request": { "$ref": "#/definitions/request" },
+    "result": { "$ref": "#/definitions/result" }
+  },
+  "definitions": {
+    "id": { "type": "string", "minLength": 1 },
+    "citation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sourceId", "chunkId", "chunkIndex", "excerpt", "score"],
+      "properties": {
+        "sourceId": { "$ref": "#/definitions/id" },
+        "chunkId": { "$ref": "#/definitions/id" },
+        "chunkIndex": { "type": "integer", "minimum": 0 },
+        "excerpt": { "type": "string", "minLength": 1, "maxLength": 500 },
+        "score": { "type": "number", "minimum": 0, "maximum": 1 },
+        "sourceTitle": { "type": "string", "minLength": 1 }
+      }
+    },
+    "request": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "countyId",
+        "datasetKey",
+        "queryText",
+        "topK",
+        "scoreThreshold",
+        "traceId"
+      ],
+      "properties": {
+        "schemaVersion": { "const": "1.0.0" },
+        "countyId": { "$ref": "#/definitions/id" },
+        "datasetKey": { "$ref": "#/definitions/id" },
+        "queryText": { "type": "string", "minLength": 1, "maxLength": 4096 },
+        "topK": { "type": "integer", "minimum": 1, "maximum": 20 },
+        "scoreThreshold": { "type": "number", "minimum": 0, "maximum": 1 },
+        "traceId": { "$ref": "#/definitions/id" }
+      }
+    },
+    "result": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "countyId",
+        "datasetKey",
+        "status",
+        "citations",
+        "traceId"
+      ],
+      "properties": {
+        "schemaVersion": { "const": "1.0.0" },
+        "countyId": { "$ref": "#/definitions/id" },
+        "datasetKey": { "$ref": "#/definitions/id" },
+        "status": {
+          "type": "string",
+          "enum": ["GROUNDED", "NO_RELEVANT_CONTEXT", "DENIED"]
+        },
+        "citations": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/citation" }
+        },
+        "traceId": { "$ref": "#/definitions/id" },
+        "denialCode": {
+          "type": "string",
+          "enum": [
+            "COUNTY_CONTEXT_MISSING",
+            "COUNTY_MISMATCH",
+            "DATASET_NOT_ALLOWED",
+            "QUERY_REJECTED",
+            "SOURCE_NOT_AUTHORIZED"
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "status": { "const": "GROUNDED" } } },
+          "then": {
+            "properties": { "citations": { "minItems": 1 } }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": { "enum": ["NO_RELEVANT_CONTEXT", "DENIED"] }
+            }
+          },
+          "then": {
+            "properties": { "citations": { "maxItems": 0 } }
+          }
+        },
+        {
+          "if": { "properties": { "status": { "const": "DENIED" } } },
+          "then": { "required": ["denialCode"] }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": { "enum": ["GROUNDED", "NO_RELEVANT_CONTEXT"] }
+            }
+          },
+          "then": { "not": { "required": ["denialCode"] } }
+        }
+      ]
+    }
+  }
+}
