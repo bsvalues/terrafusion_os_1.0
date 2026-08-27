@@ -25,7 +25,6 @@ Representative tools by risk:
 - write_high
   - `run_valuation_model` — Execute valuation model and persist results (requires confirmation + reason)
   - `assemble_boe_packet` — Build BOE packet from dossier
-  - `schedule_boe_hearing` — Schedule BOE hearing (requires confirmation)
 
 - irreversible
   - `request_trace_redaction` — Request PII redaction (supervisor approval required)

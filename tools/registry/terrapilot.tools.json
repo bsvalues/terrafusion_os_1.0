@@ -1713,57 +1713,6 @@
       "officeScope": "assessor"
     },
     {
-      "toolId": "schedule_boe_hearing",
-      "displayName": "Schedule BOE Hearing",
-      "suite": "dais",
-      "mode": "pilot",
-      "risk": "write_high",
-      "writeLane": "dais",
-      "touches": [
-        "workflow"
-      ],
-      "description": "Schedule a Board of Equalization hearing with panel assignment",
-      "requiresConfirmation": true,
-      "reasonCodeRequired": true,
-      "reasonCodes": [
-        "scheduled_hearing",
-        "rescheduled_hearing"
-      ],
-      "piiHandling": "sanitize",
-      "tracePolicy": "payload_ref",
-      "payloadStore": "dossier",
-      "paramsSchema": {
-        "type": "object",
-        "properties": {
-          "county": {
-            "type": "string",
-            "description": "County code"
-          },
-          "appealId": {
-            "type": "string",
-            "description": "Appeal ID to schedule hearing for"
-          },
-          "requestedDate": {
-            "type": "string",
-            "description": "Requested hearing date (ISO 8601)"
-          },
-          "panelMembers": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "description": "Panel member names"
-          }
-        },
-        "required": [
-          "county",
-          "appealId",
-          "requestedDate"
-        ]
-      },
-      "officeScope": "assessor"
-    },
-    {
       "toolId": "get_certification_progress",
       "displayName": "Get Certification Progress",
       "suite": "dais",
