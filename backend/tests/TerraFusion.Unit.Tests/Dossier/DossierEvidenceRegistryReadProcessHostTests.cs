@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using FluentAssertions;
 using TerraFusion.API.Services.Dossier;
 using Xunit;
@@ -86,10 +87,9 @@ public sealed class DossierEvidenceRegistryReadProcessHostTests
     public async Task ExactModuleAndSchema_RejectCountyMismatchWithTypedViolation()
     {
         using var scope = new TestScope();
-        var exchange = EmptyEvidenceExchange().Replace(
-            $"\"countyId\":\"{CountyId}\",\"parcelId\"",
-            "\"countyId\":\"22222222-3333-4444-5555-666666666666\",\"parcelId\"",
-            StringComparison.Ordinal);
+        var exchangeNode = JsonNode.Parse(EmptyEvidenceExchange())!;
+        exchangeNode["result"]!["countyId"] = "22222222-3333-4444-5555-666666666666";
+        var exchange = exchangeNode.ToJsonString();
         var result = await scope.Host.ValidateAsync(
             RequireExactModule(),
             ExpectedModuleSha256,
