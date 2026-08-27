@@ -2114,7 +2114,7 @@ public class DossierController : ControllerBase
     // Get previous hash for chain integrity
     var previousEvent = await _db.DossierCustodyEvents
         .AsNoTracking()
-        .Where(c => c.EvidenceId == evidenceId)
+        .Where(c => c.EvidenceId == evidenceId && c.CountyId == countyId.Value)
         .OrderByDescending(c => c.Timestamp)
         .FirstOrDefaultAsync();
     if(previousEvent is null || string.IsNullOrWhiteSpace(previousEvent.Hash))

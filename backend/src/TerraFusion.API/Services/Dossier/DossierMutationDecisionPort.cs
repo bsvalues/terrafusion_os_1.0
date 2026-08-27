@@ -28,10 +28,20 @@ public sealed class DossierMutationDecisionPort(
         if (options.Value.Mode != DossierMutationMode.LocalExact)
             throw new DossierMutationUnavailableException("Canonical Dossier mutation runtime is disabled.");
         RequireRequest(request);
-        var invocation = await processHost.DecideAsync(
-            options.Value.ModulePath, DossierMutationOptions.ExpectedModuleSha256,
-            options.Value.SchemaPath, DossierMutationOptions.ExpectedSchemaSha256,
-            JsonSerializer.Serialize(request, JsonOptions), cancellationToken).ConfigureAwait(false);
+        DossierMutationProcessResult invocation;
+        try
+        {
+            invocation = await processHost.DecideAsync(
+                options.Value.ModulePath, DossierMutationOptions.ExpectedModuleSha256,
+                options.Value.SchemaPath, DossierMutationOptions.ExpectedSchemaSha256,
+                JsonSerializer.Serialize(request, JsonOptions), cancellationToken).ConfigureAwait(false);
+        }
+        catch (OperationCanceledException) { throw; }
+        catch (Exception exception)
+        {
+            throw new DossierMutationUnavailableException(
+                "Canonical Dossier mutation invocation failed closed.", exception);
+        }
         if (invocation.Failure == DossierMutationProcessFailure.Cancelled && cancellationToken.IsCancellationRequested)
             cancellationToken.ThrowIfCancellationRequested();
         if (!invocation.Success || string.IsNullOrWhiteSpace(invocation.ResultJson) ||
