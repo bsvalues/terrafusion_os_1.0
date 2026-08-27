@@ -2,13 +2,13 @@
 
 ## Current verdict
 
-`PASS_ON_CURRENT_PROTECTED_BASE_PENDING_PROTECTED_MERGE`
+`PASS_ON_D82A2D363_PROTECTED_BASE_PENDING_PROTECTED_MERGE`
 
 ## Exact identities
 
 | Surface | Identity |
 | --- | --- |
-| Integrated sovereign base | `aec4f1e18b619730842c828e4f1c93ecd18d64b2` |
+| Integrated sovereign base | `d82a2d3638a722fa541836abbd5c4ab45f8e060d` |
 | GPT protected merge | `bsvalues/terrafusion-gpt@550b50f27af6f0911f16c973cbb6fc57a20eb15a` |
 | Protected source ref | `refs/heads/main`; pinned merge must be reachable from fetched `origin/main` |
 | Execution manifest | 1618 bytes; blob `7a9ca7bf114f34f2562102efa8817fd37506b614`; SHA-256 `6d04e14674e4e91a1a5d12ba12f53684cbad0bcec17e4e53ec01d8287618794b` |
@@ -21,7 +21,8 @@
 
 ## Observed proof
 
-The full Windows transaction proof completed against a canonical mirror fetched from GitHub. It
+After integrating protected Dossier runtime merge `d82a2d3638a722fa541836abbd5c4ab45f8e060d`,
+the full Windows transaction proof completed again against a canonical mirror fetched from GitHub. It
 proved protected-main ancestry and rejected a pinned but unreachable commit without slot mutation.
 It separately tampered the module, schema, suite source manifest, suite execution manifest, numeric
 manifest property, and singleton-array string property; all failed before publication. It proved

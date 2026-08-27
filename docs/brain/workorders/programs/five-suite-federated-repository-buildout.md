@@ -103,8 +103,9 @@ county contexts, audit spines, deployment control planes, or contract authoritie
 | WO-SR-010G | Adopt the exact Dais mutation decision as the persistent real Development runtime, enforce stale-write conflict, and execute rollback | Active R4; 61/61 focused and 2/2 concurrency tests pass; exact Disabled rollback/restoration observed; protected assurance pending |
 | WO-SR-010H | Retire the unsupported PropertyDais hearing-scheduling offer and prove no offered frontend write path | Complete R3; PR #1473 exact head `b6a011620` merged as `6291e58b1`; protected main verified |
 | WO-SR-011A | Stage the exact Dossier evidence-registry read artifact with provenance and rollback | Complete R3; PR #1474 merged as `aec4f1e18`; protected main verified; runtime remains Disabled |
+| WO-SR-011B | Adopt the exact Dossier read decision on the persistent authenticated, county-scoped sovereign path | Complete R4; PR #1477 merged as `d82a2d363`; protected main verified |
 | WO-SR-012A | Make GPT execution artifacts LF-portable and publish an exact execution manifest | Complete R3; GPT PR #5 merged as `550b50f27`; protected main verified |
-| WO-SR-012B | Stage the exact GPT grounded-context artifact with provenance and rollback | Active R3; inert implementation and proof prepared; protected merge gated behind WO-SR-011B |
+| WO-SR-012B | Stage the exact GPT grounded-context artifact with provenance and rollback | Active R3; exact Dossier runtime protected merge integrated; inert proof rerun required before protected merge |
 
 ## Extraction and provenance policy
 
