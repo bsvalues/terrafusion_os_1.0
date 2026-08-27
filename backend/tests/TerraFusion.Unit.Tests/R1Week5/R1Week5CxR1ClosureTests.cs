@@ -9,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
+using TerraFusion.Abstractions.DTOs;
 using TerraFusion.API.Controllers;
 using IExemptionService = TerraFusion.Core.Services.IExemptionService;
 using IAppealService = TerraFusion.Core.Services.IAppealService;
@@ -21,10 +22,12 @@ using TerraFusion.Core.Interfaces;
 using IGovernedToolAuditService = TerraFusion.API.Services.IGovernedToolAuditService;
 using TerraFusion.Core.Models;
 using TerraFusion.Core.PACS;
+using TerraFusion.Unit.Tests.Dossier;
 using Xunit;
 using AuditLogger = TerraFusion.Abstractions.Interfaces.IAuditLogger;
 using CostForgeAIService = TerraFusion.Core.Services.ICostForgeAIService;
 using CostForgeService = TerraFusion.Core.Services.ICostForgeService;
+using DossierMutationDecisionPort = TerraFusion.Core.Services.IDossierMutationDecisionPort;
 using DataDbContext = TerraFusion.Data.TerraFusionDbContext;
 using Task = System.Threading.Tasks.Task;
 
@@ -1990,7 +1993,8 @@ public sealed class R1Week5CxR1ClosureTests
     var controller = new DossierController(
         db, costForgeService.Object,
         NullLogger<DossierController>.Instance,
-        hostEnvironment.Object);
+        hostEnvironment.Object,
+        mutationPort: new ExplicitDossierMutationDecisionPort());
 
     if (countyId.HasValue)
       AttachPrincipal(controller, CreatePrincipal(countyId.Value, "BENTON"));
@@ -5008,17 +5012,29 @@ public sealed class R1Week5CxR1ClosureTests
   // WAVE 24 — Dossier Document Management + Evidence Chain Tests
   // ══════════════════════════════════════════════════════════════
 
-  private static DossierController MakeDossierController(DataDbContext db, string env = "Production")
+  private static DossierController MakeDossierController(
+      DataDbContext db,
+      string env = "Production",
+      DossierMutationDecisionPort? mutationPort = null)
   {
     var costForge = new Mock<CostForgeService>(MockBehavior.Strict);
     var host = new Mock<IHostEnvironment>();
     host.SetupGet(h => h.EnvironmentName).Returns(env);
-    return new DossierController(db, costForge.Object, NullLogger<DossierController>.Instance, host.Object);
+    return new DossierController(
+        db,
+        costForge.Object,
+        NullLogger<DossierController>.Instance,
+        host.Object,
+        mutationPort: mutationPort ?? new ExplicitDossierMutationDecisionPort());
   }
 
-  private static DossierController MakeAuthedDossierController(DataDbContext db, Guid countyId, string env = "Production")
+  private static DossierController MakeAuthedDossierController(
+      DataDbContext db,
+      Guid countyId,
+      string env = "Production",
+      DossierMutationDecisionPort? mutationPort = null)
   {
-    var ctrl = MakeDossierController(db, env);
+    var ctrl = MakeDossierController(db, env, mutationPort);
     AttachPrincipal(ctrl, CreatePrincipal(countyId, "BENTON"));
     return ctrl;
   }
@@ -5042,7 +5058,37 @@ public sealed class R1Week5CxR1ClosureTests
   {
     using var db = CreateDbContext(nameof(RegisterDocument_ValidRequest_Returns201));
     var countyId = await SeedDocMgmtDataAsync(db);
-    var ctrl = MakeAuthedDossierController(db, countyId);
+    var mutationPort = new ExplicitDossierMutationDecisionPort
+    {
+      RegisterDocument = request =>
+      {
+        request.Operation.Should().Be(DossierMutationOperation.registerDocument);
+        request.CountyId.Should().Be(countyId.ToString("D"));
+        request.ParcelId.Should().Be("DOC-PARCEL-1");
+        request.Command.ExpectedVersion.Should().Be(0);
+        request.Command.Name.Should().Be("Warranty Deed 2026");
+        request.Command.DocumentType.Should().Be("deed");
+        request.Command.ContentHash.Should().Be(new string('a', 64));
+        return ExplicitDossierMutationDecisionPort.Accepted(new DossierRegisterDocumentMutation
+        {
+          Version = 1,
+          DocumentId = request.Command.DocumentId,
+          Name = "Warranty Deed 2026",
+          DocumentType = "deed",
+          Status = DossierDocumentStatus.active,
+          MimeType = "application/pdf",
+          SizeBytes = 52430,
+          ContentHash = new string('a', 64),
+          Description = "Transfer deed for parcel",
+          RetentionClass = "permanent",
+          StoragePath = null,
+          EntersCustodyChain = true,
+          UploadedBy = request.ActorId,
+          UploadedAt = request.EffectiveAt,
+        });
+      },
+    };
+    var ctrl = MakeAuthedDossierController(db, countyId, mutationPort: mutationPort);
 
     var result = await ctrl.RegisterDocument(new DossierController.RegisterDocumentRequest(
         ParcelId: "DOC-PARCEL-1",
@@ -5050,7 +5096,7 @@ public sealed class R1Week5CxR1ClosureTests
         DocumentType: "deed",
         MimeType: "application/pdf",
         SizeBytes: 52430,
-        ContentHash: "abc123def456",
+        ContentHash: new string('a', 64),
         Description: "Transfer deed for parcel",
         RetentionClass: "permanent",
         StoragePath: null));
@@ -5221,13 +5267,33 @@ public sealed class R1Week5CxR1ClosureTests
       DocumentType = "deed",
       MimeType = "application/pdf",
       Status = "active",
+      Version = 1,
       CountyId = countyId,
       UploadedBy = "test",
     };
     db.DossierDocuments.Add(doc);
     await db.SaveChangesAsync();
 
-    var ctrl = MakeAuthedDossierController(db, countyId);
+    var mutationPort = new ExplicitDossierMutationDecisionPort();
+    mutationPort.TransitionDocumentStatus.Enqueue(request =>
+    {
+      request.Operation.Should().Be(DossierMutationOperation.transitionDocumentStatus);
+      request.CountyId.Should().Be(countyId.ToString("D"));
+      request.ParcelId.Should().Be("DOC-PARCEL-1");
+      request.Command.DocumentId.Should().Be(doc.Id.ToString("D"));
+      request.Command.ExpectedVersion.Should().Be(1);
+      request.Command.Current.Version.Should().Be(1);
+      request.Command.Current.Status.Should().Be("active");
+      request.Command.RequestedStatus.Should().Be("sealed");
+      return ExplicitDossierMutationDecisionPort.Accepted(new DossierTransitionDocumentStatusMutation
+      {
+        Version = 2,
+        DocumentId = request.Command.DocumentId,
+        Status = DossierDocumentStatus.@sealed,
+        UpdatedAt = request.EffectiveAt,
+      });
+    });
+    var ctrl = MakeAuthedDossierController(db, countyId, mutationPort: mutationPort);
     var result = await ctrl.UpdateDocumentStatus(doc.Id.ToString(),
         new DossierController.UpdateDocumentStatusRequest("sealed", "Certified by assessor"));
 
@@ -5253,13 +5319,26 @@ public sealed class R1Week5CxR1ClosureTests
       DocumentType = "deed",
       MimeType = "application/pdf",
       Status = "archived",
+      Version = 1,
       CountyId = countyId,
       UploadedBy = "test",
     };
     db.DossierDocuments.Add(doc);
     await db.SaveChangesAsync();
 
-    var ctrl = MakeAuthedDossierController(db, countyId);
+    var mutationPort = new ExplicitDossierMutationDecisionPort();
+    mutationPort.TransitionDocumentStatus.Enqueue(request =>
+    {
+      request.Operation.Should().Be(DossierMutationOperation.transitionDocumentStatus);
+      request.Command.DocumentId.Should().Be(doc.Id.ToString("D"));
+      request.Command.ExpectedVersion.Should().Be(1);
+      request.Command.Current.Status.Should().Be("archived");
+      request.Command.RequestedStatus.Should().Be("active");
+      return ExplicitDossierMutationDecisionPort.Rejected<DossierTransitionDocumentStatusMutation>(
+          DossierMutationViolationCode.INVALID_TRANSITION,
+          "archived cannot transition to active");
+    });
+    var ctrl = MakeAuthedDossierController(db, countyId, mutationPort: mutationPort);
     var result = await ctrl.UpdateDocumentStatus(doc.Id.ToString(),
         new DossierController.UpdateDocumentStatusRequest("active", null));
 
@@ -5279,13 +5358,26 @@ public sealed class R1Week5CxR1ClosureTests
       Name = "Test",
       DocumentType = "deed",
       MimeType = "application/pdf",
+      Version = 1,
       CountyId = countyId,
       UploadedBy = "test",
     };
     db.DossierDocuments.Add(doc);
     await db.SaveChangesAsync();
 
-    var ctrl = MakeAuthedDossierController(db, countyId);
+    var mutationPort = new ExplicitDossierMutationDecisionPort();
+    mutationPort.TransitionDocumentStatus.Enqueue(request =>
+    {
+      request.Operation.Should().Be(DossierMutationOperation.transitionDocumentStatus);
+      request.Command.DocumentId.Should().Be(doc.Id.ToString("D"));
+      request.Command.ExpectedVersion.Should().Be(1);
+      request.Command.Current.Status.Should().Be("active");
+      request.Command.RequestedStatus.Should().Be("destroyed");
+      return ExplicitDossierMutationDecisionPort.Rejected<DossierTransitionDocumentStatusMutation>(
+          DossierMutationViolationCode.INVALID_STATUS,
+          "requested status is outside the closed Dossier vocabulary");
+    });
+    var ctrl = MakeAuthedDossierController(db, countyId, mutationPort: mutationPort);
     var result = await ctrl.UpdateDocumentStatus(doc.Id.ToString(),
         new DossierController.UpdateDocumentStatusRequest("destroyed", null));
 
@@ -5326,7 +5418,43 @@ public sealed class R1Week5CxR1ClosureTests
   {
     using var db = CreateDbContext(nameof(RegisterEvidence_ValidRequest_Returns201));
     var countyId = await SeedDocMgmtDataAsync(db);
-    var ctrl = MakeAuthedDossierController(db, countyId);
+    var mutationPort = new ExplicitDossierMutationDecisionPort
+    {
+      RegisterEvidence = request =>
+      {
+        request.Operation.Should().Be(DossierMutationOperation.registerEvidence);
+        request.CountyId.Should().Be(countyId.ToString("D"));
+        request.ParcelId.Should().Be("DOC-PARCEL-1");
+        request.Command.ExpectedVersion.Should().Be(0);
+        request.Command.Title.Should().Be("Field inspection photograph");
+        request.Command.EvidenceType.Should().Be("field-inspection");
+        request.Command.DocumentId.Should().BeNull();
+        request.Command.Document.Should().BeNull();
+        request.Command.GenesisHash.Should().MatchRegex("^[0-9a-f]{64}$");
+        return ExplicitDossierMutationDecisionPort.Accepted(new DossierRegisterEvidenceMutation
+        {
+          Version = 1,
+          EvidenceId = request.Command.EvidenceId,
+          Title = "Field inspection photograph",
+          EvidenceType = "field-inspection",
+          DocumentId = null,
+          Integrity = DossierEvidenceIntegrity.pending,
+          CreatedBy = request.ActorId,
+          CreatedAt = request.EffectiveAt,
+          GenesisEvent = new DossierCustodyEventMutation
+          {
+            EventId = request.Command.GenesisEventId,
+            Action = "created",
+            Actor = request.ActorId,
+            PreviousEventHash = "genesis",
+            EventHash = request.Command.GenesisHash,
+            Timestamp = request.EffectiveAt,
+          },
+          ChainLength = 1,
+        });
+      },
+    };
+    var ctrl = MakeAuthedDossierController(db, countyId, mutationPort: mutationPort);
 
     var result = await ctrl.RegisterEvidence(new DossierController.RegisterEvidenceRequest(
         ParcelId: "DOC-PARCEL-1",
@@ -5370,13 +5498,51 @@ public sealed class R1Week5CxR1ClosureTests
       Name = "Deed",
       DocumentType = "deed",
       MimeType = "application/pdf",
+      Version = 1,
       CountyId = countyId,
       UploadedBy = "test",
     };
     db.DossierDocuments.Add(doc);
     await db.SaveChangesAsync();
 
-    var ctrl = MakeAuthedDossierController(db, countyId);
+    var mutationPort = new ExplicitDossierMutationDecisionPort
+    {
+      RegisterEvidence = request =>
+      {
+        request.Operation.Should().Be(DossierMutationOperation.registerEvidence);
+        request.CountyId.Should().Be(countyId.ToString("D"));
+        request.ParcelId.Should().Be("DOC-PARCEL-1");
+        request.Command.ExpectedVersion.Should().Be(0);
+        request.Command.DocumentId.Should().Be(doc.Id.ToString("D"));
+        request.Command.Document.Should().NotBeNull();
+        request.Command.Document!.DocumentId.Should().Be(doc.Id.ToString("D"));
+        request.Command.Document.Version.Should().Be(1);
+        request.Command.Document.Status.Should().Be("active");
+        request.Command.GenesisHash.Should().MatchRegex("^[0-9a-f]{64}$");
+        return ExplicitDossierMutationDecisionPort.Accepted(new DossierRegisterEvidenceMutation
+        {
+          Version = 1,
+          EvidenceId = request.Command.EvidenceId,
+          Title = "Deed evidence",
+          EvidenceType = "legal-document",
+          DocumentId = doc.Id.ToString("D"),
+          Integrity = DossierEvidenceIntegrity.pending,
+          CreatedBy = request.ActorId,
+          CreatedAt = request.EffectiveAt,
+          GenesisEvent = new DossierCustodyEventMutation
+          {
+            EventId = request.Command.GenesisEventId,
+            Action = "created",
+            Actor = request.ActorId,
+            PreviousEventHash = "genesis",
+            EventHash = request.Command.GenesisHash,
+            Timestamp = request.EffectiveAt,
+          },
+          ChainLength = 1,
+        });
+      },
+    };
+    var ctrl = MakeAuthedDossierController(db, countyId, mutationPort: mutationPort);
     var result = await ctrl.RegisterEvidence(new DossierController.RegisterEvidenceRequest(
         ParcelId: "DOC-PARCEL-1",
         Title: "Deed evidence",
@@ -5483,6 +5649,7 @@ public sealed class R1Week5CxR1ClosureTests
       Title = "Custody Test",
       EvidenceType = "field-inspection",
       Integrity = "pending",
+      Version = 1,
       CountyId = countyId,
       CreatedBy = "test",
     };
@@ -5492,12 +5659,52 @@ public sealed class R1Week5CxR1ClosureTests
       EvidenceId = evidence.Id,
       Action = "created",
       Actor = "test",
-      Hash = "genesis",
+      Hash = new string('a', 64),
       CountyId = countyId,
     });
     await db.SaveChangesAsync();
 
-    var ctrl = MakeAuthedDossierController(db, countyId);
+    var mutationPort = new ExplicitDossierMutationDecisionPort
+    {
+      AppendCustodyEvent = request =>
+      {
+        request.Operation.Should().Be(DossierMutationOperation.appendCustodyEvent);
+        request.CountyId.Should().Be(countyId.ToString("D"));
+        request.ParcelId.Should().Be("DOC-PARCEL-1");
+        request.Command.EvidenceId.Should().Be(evidence.Id.ToString("D"));
+        request.Command.Current.EvidenceId.Should().Be(evidence.Id.ToString("D"));
+        request.Command.Current.CountyId.Should().Be(countyId.ToString("D"));
+        request.Command.Current.ParcelId.Should().Be("DOC-PARCEL-1");
+        request.Command.ExpectedVersion.Should().Be(1);
+        request.Command.Current.Version.Should().Be(1);
+        request.Command.Current.Integrity.Should().Be("pending");
+        request.Command.Current.ChainLength.Should().Be(1);
+        request.Command.Current.LastEventHash.Should().Be(new string('a', 64));
+        request.Command.Current.LastEventAt.Should().BeOnOrBefore(request.EffectiveAt);
+        request.Command.PreviousEventHash.Should().Be(new string('a', 64));
+        request.Command.EventHash.Should().MatchRegex("^[0-9a-f]{64}$");
+        request.Command.Action.Should().Be("verified");
+        request.Command.Notes.Should().Be("Field verification complete");
+        return ExplicitDossierMutationDecisionPort.Accepted(new DossierAppendCustodyEventMutation
+        {
+          Version = 2,
+          EvidenceId = request.Command.EvidenceId,
+          Integrity = DossierEvidenceIntegrity.verified,
+          Event = new DossierCustodyEventMutation
+          {
+            EventId = request.Command.EventId,
+            Action = "verified",
+            Actor = request.ActorId,
+            Notes = "Field verification complete",
+            PreviousEventHash = new string('a', 64),
+            EventHash = request.Command.EventHash,
+            Timestamp = request.EffectiveAt,
+          },
+          ChainLength = 2,
+        });
+      },
+    };
+    var ctrl = MakeAuthedDossierController(db, countyId, mutationPort: mutationPort);
     var result = await ctrl.AddCustodyEvent(evidence.Id.ToString(),
         new DossierController.AddCustodyEventRequest("verified", "Field verification complete"));
 
@@ -5523,13 +5730,62 @@ public sealed class R1Week5CxR1ClosureTests
       Title = "Dispute Test",
       EvidenceType = "legal-document",
       Integrity = "verified",
+      Version = 1,
       CountyId = countyId,
       CreatedBy = "test",
     };
     db.DossierEvidenceItems.Add(evidence);
+    db.DossierCustodyEvents.Add(new DossierCustodyEvent
+    {
+      EvidenceId = evidence.Id,
+      Action = "created",
+      Actor = "test",
+      Hash = new string('b', 64),
+      CountyId = countyId,
+    });
     await db.SaveChangesAsync();
 
-    var ctrl = MakeAuthedDossierController(db, countyId);
+    var mutationPort = new ExplicitDossierMutationDecisionPort
+    {
+      AppendCustodyEvent = request =>
+      {
+        request.Operation.Should().Be(DossierMutationOperation.appendCustodyEvent);
+        request.CountyId.Should().Be(countyId.ToString("D"));
+        request.ParcelId.Should().Be("DOC-PARCEL-1");
+        request.Command.EvidenceId.Should().Be(evidence.Id.ToString("D"));
+        request.Command.Current.EvidenceId.Should().Be(evidence.Id.ToString("D"));
+        request.Command.Current.CountyId.Should().Be(countyId.ToString("D"));
+        request.Command.Current.ParcelId.Should().Be("DOC-PARCEL-1");
+        request.Command.ExpectedVersion.Should().Be(1);
+        request.Command.Current.Version.Should().Be(1);
+        request.Command.Current.Integrity.Should().Be("verified");
+        request.Command.Current.ChainLength.Should().Be(1);
+        request.Command.Current.LastEventHash.Should().Be(new string('b', 64));
+        request.Command.Current.LastEventAt.Should().BeOnOrBefore(request.EffectiveAt);
+        request.Command.PreviousEventHash.Should().Be(new string('b', 64));
+        request.Command.EventHash.Should().MatchRegex("^[0-9a-f]{64}$");
+        request.Command.Action.Should().Be("disputed");
+        request.Command.Notes.Should().Be("Hash mismatch detected");
+        return ExplicitDossierMutationDecisionPort.Accepted(new DossierAppendCustodyEventMutation
+        {
+          Version = 2,
+          EvidenceId = request.Command.EvidenceId,
+          Integrity = DossierEvidenceIntegrity.disputed,
+          Event = new DossierCustodyEventMutation
+          {
+            EventId = request.Command.EventId,
+            Action = "disputed",
+            Actor = request.ActorId,
+            Notes = "Hash mismatch detected",
+            PreviousEventHash = new string('b', 64),
+            EventHash = request.Command.EventHash,
+            Timestamp = request.EffectiveAt,
+          },
+          ChainLength = 2,
+        });
+      },
+    };
+    var ctrl = MakeAuthedDossierController(db, countyId, mutationPort: mutationPort);
     var result = await ctrl.AddCustodyEvent(evidence.Id.ToString(),
         new DossierController.AddCustodyEventRequest("disputed", "Hash mismatch detected"));
 
@@ -5550,13 +5806,46 @@ public sealed class R1Week5CxR1ClosureTests
       ParcelId = "DOC-PARCEL-1",
       Title = "Test",
       EvidenceType = "field-inspection",
+      Version = 1,
       CountyId = countyId,
       CreatedBy = "test",
     };
     db.DossierEvidenceItems.Add(evidence);
+    db.DossierCustodyEvents.Add(new DossierCustodyEvent
+    {
+      EvidenceId = evidence.Id,
+      Action = "created",
+      Actor = "test",
+      Hash = new string('c', 64),
+      CountyId = countyId,
+    });
     await db.SaveChangesAsync();
 
-    var ctrl = MakeAuthedDossierController(db, countyId);
+    var mutationPort = new ExplicitDossierMutationDecisionPort
+    {
+      AppendCustodyEvent = request =>
+      {
+        request.Operation.Should().Be(DossierMutationOperation.appendCustodyEvent);
+        request.CountyId.Should().Be(countyId.ToString("D"));
+        request.ParcelId.Should().Be("DOC-PARCEL-1");
+        request.Command.EvidenceId.Should().Be(evidence.Id.ToString("D"));
+        request.Command.Current.EvidenceId.Should().Be(evidence.Id.ToString("D"));
+        request.Command.Current.CountyId.Should().Be(countyId.ToString("D"));
+        request.Command.Current.ParcelId.Should().Be("DOC-PARCEL-1");
+        request.Command.ExpectedVersion.Should().Be(1);
+        request.Command.Current.Version.Should().Be(1);
+        request.Command.Current.ChainLength.Should().Be(1);
+        request.Command.Current.LastEventHash.Should().Be(new string('c', 64));
+        request.Command.Current.LastEventAt.Should().BeOnOrBefore(request.EffectiveAt);
+        request.Command.PreviousEventHash.Should().Be(new string('c', 64));
+        request.Command.EventHash.Should().MatchRegex("^[0-9a-f]{64}$");
+        request.Command.Action.Should().Be("destroyed");
+        return ExplicitDossierMutationDecisionPort.Rejected<DossierAppendCustodyEventMutation>(
+            DossierMutationViolationCode.INVALID_INPUT,
+            "custody action is outside the closed Dossier vocabulary");
+      },
+    };
+    var ctrl = MakeAuthedDossierController(db, countyId, mutationPort: mutationPort);
     var result = await ctrl.AddCustodyEvent(evidence.Id.ToString(),
         new DossierController.AddCustodyEventRequest("destroyed", null));
 
@@ -5635,12 +5924,51 @@ public sealed class R1Week5CxR1ClosureTests
       Name = "Deed",
       DocumentType = "deed",
       MimeType = "application/pdf",
+      Version = 1,
       CountyId = countyId,
       UploadedBy = "test",
     });
     await db.SaveChangesAsync();
 
-    var ctrl = MakeAuthedDossierController(db, countyId);
+    var mutationPort = new ExplicitDossierMutationDecisionPort
+    {
+      CreatePacket = request =>
+      {
+        request.Operation.Should().Be(DossierMutationOperation.createPacket);
+        request.CountyId.Should().Be(countyId.ToString("D"));
+        request.ParcelId.Should().Be("DOC-PARCEL-1");
+        request.Command.ExpectedVersion.Should().Be(0);
+        request.Command.Template.PacketType.Should().Be("annual-assessment");
+        request.Command.Template.Name.Should().Be("Annual Assessment Packet");
+        request.Command.Template.RequiredDocumentTypes.Should().Equal(
+            "appraisal", "inspection_report", "photo", "comparable_analysis");
+        request.Command.CurrentDocuments.Should().ContainSingle();
+        request.Command.CurrentDocuments[0].DocumentType.Should().Be("deed");
+        request.Command.CurrentDocuments[0].Status.Should().Be("active");
+        request.Command.CurrentDocuments[0].Version.Should().Be(1);
+        return ExplicitDossierMutationDecisionPort.Accepted(new DossierCreatePacketMutation
+        {
+          Version = 1,
+          PacketId = request.Command.PacketId,
+          PacketType = "annual-assessment",
+          Name = "Annual Assessment Packet - DOC-PARCEL-1",
+          Status = DossierPacketStatus.draft,
+          CompletenessPercent = 0m,
+          SatisfiedCount = 0,
+          TotalRequired = 4,
+          CreatedBy = request.ActorId,
+          CreatedAt = request.EffectiveAt,
+          Items =
+          [
+            new DossierPacketItemMutation { DocumentType = "appraisal", Required = true, Satisfied = false },
+            new DossierPacketItemMutation { DocumentType = "inspection_report", Required = true, Satisfied = false },
+            new DossierPacketItemMutation { DocumentType = "photo", Required = true, Satisfied = false },
+            new DossierPacketItemMutation { DocumentType = "comparable_analysis", Required = true, Satisfied = false },
+          ],
+        });
+      },
+    };
+    var ctrl = MakeAuthedDossierController(db, countyId, mutationPort: mutationPort);
     var result = await ctrl.CreatePacket(new DossierController.CreatePacketRequest(
         ParcelId: "DOC-PARCEL-1",
         PacketType: "annual-assessment"));
@@ -5851,13 +6179,47 @@ public sealed class R1Week5CxR1ClosureTests
       DocumentType = "deed",
       MimeType = "application/pdf",
       Status = "active",
+      Version = 1,
       CountyId = countyId,
       UploadedBy = "test",
     };
     db.DossierDocuments.Add(doc);
     await db.SaveChangesAsync();
 
-    var ctrl = MakeAuthedDossierController(db, countyId);
+    var mutationPort = new ExplicitDossierMutationDecisionPort();
+    mutationPort.TransitionDocumentStatus.Enqueue(request =>
+    {
+      request.Operation.Should().Be(DossierMutationOperation.transitionDocumentStatus);
+      request.Command.DocumentId.Should().Be(doc.Id.ToString("D"));
+      request.Command.ExpectedVersion.Should().Be(1);
+      request.Command.Current.Version.Should().Be(1);
+      request.Command.Current.Status.Should().Be("active");
+      request.Command.RequestedStatus.Should().Be("sealed");
+      return ExplicitDossierMutationDecisionPort.Accepted(new DossierTransitionDocumentStatusMutation
+      {
+        Version = 2,
+        DocumentId = request.Command.DocumentId,
+        Status = DossierDocumentStatus.@sealed,
+        UpdatedAt = request.EffectiveAt,
+      });
+    });
+    mutationPort.TransitionDocumentStatus.Enqueue(request =>
+    {
+      request.Operation.Should().Be(DossierMutationOperation.transitionDocumentStatus);
+      request.Command.DocumentId.Should().Be(doc.Id.ToString("D"));
+      request.Command.ExpectedVersion.Should().Be(2);
+      request.Command.Current.Version.Should().Be(2);
+      request.Command.Current.Status.Should().Be("sealed");
+      request.Command.RequestedStatus.Should().Be("archived");
+      return ExplicitDossierMutationDecisionPort.Accepted(new DossierTransitionDocumentStatusMutation
+      {
+        Version = 3,
+        DocumentId = request.Command.DocumentId,
+        Status = DossierDocumentStatus.archived,
+        UpdatedAt = request.EffectiveAt,
+      });
+    });
+    var ctrl = MakeAuthedDossierController(db, countyId, mutationPort: mutationPort);
 
     // active → sealed
     var r1 = await ctrl.UpdateDocumentStatus(doc.Id.ToString(),
