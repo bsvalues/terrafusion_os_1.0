@@ -8,9 +8,9 @@
 
 **Deadline:** production terminal proof before the WACO Annual Conference begins September 29, 2026; target no later than September 28, 2026 Pacific time.
 
-**Status:** ACTIVE ON PROTECTED MERGE OF PR #1486 — Issue #1485 is recorded as
-`OWNER-WAL-V1-MISSION-AUTHORITY-20260827`; the initial construction wave begins only after the
-governance activation reaches protected main.
+**Status:** ACTIVE — PR #1486 completed the governance activation on protected main and Issue #1485
+is recorded as `OWNER-WAL-V1-MISSION-AUTHORITY-20260827`. The initial construction wave routes
+through the exact children registered below; broad parents remain open.
 
 ## Mission
 
@@ -57,17 +57,40 @@ Current protected launch baseline after Gate C repair PR #1484: `3651e2fb6c440f6
 | WO | Outcome | Dependency |
 | --- | --- | --- |
 | `WO-WAL-000` | Canonicalize Issue #1485 mission authority and register this finite program | owner directive |
+| `WO-WAL-000A` | Register and mechanically enforce the four initial exact child reservation sets | satisfied 000; complete only on protected merge |
 | `WO-WAL-001` | 39-county public-baseline acquisition → normalization → landed runtime truth | 000 |
+| `WO-WAL-001A` | Deterministic 39-county source-registry ledger contract; no runtime inference | satisfied 000; bounded child of open 001 |
 | `WO-WAL-002` | Real governed county upload intake | 000 |
+| `WO-WAL-002A` | Strict bounded in-memory CSV stream parser harness; no upload path | satisfied 000; bounded child of open 002 |
 | `WO-WAL-003` | Read-only multi-county TerraFusion Sync with explicit source profiles | 000 |
+| `WO-WAL-003A` | Mock-only source-profile/read-adapter contract and static command guard | satisfied 000; bounded child of open 003 |
 | `WO-WAL-004` | County identity, isolation, trust states, activation boundary, no Benton fallback | 000; overlaps 001-003 |
+| `WO-WAL-004A` | Canonical 39-county identity and conflicting authenticated-claim denial foundation | satisfied 000; bounded child of open 004 |
 | `WO-WAL-005` | Real `/counties` Counties HUB driven by control-plane truth | 001-004 contracts stable |
 | `WO-WAL-006` | TerraForge statewide launch runtime with data-capability truth | 001-004 contracts stable; overlaps 005 |
 | `WO-WAL-007` | 39-county browser/API/adversarial launch proof | 001-006 |
 | `WO-WAL-008` | Exact production release + external assessor acceptance | 007 |
 | `WO-WAL-009` | Terminal closeout, exact identities, `COMPLETED_AND_CONSUMED` | 008 |
 
-After `WO-WAL-000`, 001/002/003 and bounded parts of 004 may run in parallel in isolated lanes.
+After `WO-WAL-000` and protected completion of `WO-WAL-000A`, the exact initial executable set is
+001A/002A/003A/004A. The broad
+001/002/003/004 parents remain open and route through exact children rather than being dispatched as
+monoliths. Completion of any A child does not complete its parent or satisfy the stable-contract
+dependencies of 005/006.
+
+## Initial exact construction wave
+
+| Child | Risk | Exact contracts | Local deterministic environment | Key denial |
+| --- | --- | --- | --- | --- |
+| `WO-WAL-001A` | R2 | `wal.public-baseline-ledger.v1` | `local-temp-only`; OS temp only, no network/database | Registry/source readiness cannot imply landed rows, runtime, provenance/freshness completeness, capability or no fallback |
+| `WO-WAL-002A` | R2 | `wal.county-upload.csv-parser.v1` | `local-memory-stream-only`; disposable streams | No upload/auth/county binding, persistence, provenance, quarantine, promotion, rollback or unsupported formats |
+| `WO-WAL-003A` | R3 | `wal.source-profile.v1`; `wal.external-readonly.v1` | `mock-source-only`; strings/reflection only | No connection, credentials, DML/DDL/write-back, production registration or live no-DML claim |
+| `WO-WAL-004A` | R5 | `wal.county-identity.v1`; `wal.county-authority.v1` | `wal004a-local-in-memory`; synthetic rows/claims | No schema/migration, route/controller integration, trust/activation state, frontend authority or default county |
+
+The exact path allowlists, machine-readable contract/environment reservations, and validation gates are canonical in
+`docs/brain/workorders/registry/work-order-registry.seed.json` and the corresponding child Work Order
+documents. Contract/environment reservations do not create credential, protected-data, external-
+system or production authority.
 
 ## Launch terminal condition
 

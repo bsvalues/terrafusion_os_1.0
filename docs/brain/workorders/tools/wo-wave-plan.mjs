@@ -31,6 +31,7 @@ const BLOCKING_RESERVATION_STATUSES = new Set(['active']);
 const NONBLOCKING_RESERVATION_STATUSES = new Set(['released', 'handed_off']);
 const PATH_META = /[*?[\]]/;
 const WORK_ORDER_ID = /^WO-[A-Z0-9]+-[A-Z0-9-]+$/;
+const VERSIONED_CONTRACT = /^[a-z0-9][a-z0-9-]*(\.[a-z0-9][a-z0-9-]*)+\.v[1-9][0-9]*$/;
 const PROTECTED_PATH_RESERVATIONS = [
   { kind: 'path', value: '.github', scope: 'subtree' },
   { kind: 'path', value: 'applications', scope: 'subtree' },
@@ -226,7 +227,7 @@ function reservationsOverlap(left, right) {
   return reservationCovers(left, right.value) || reservationCovers(right, left.value);
 }
 
-function protectedReservationReason(reservation) {
+function protectedReservationReason(reservation, declaredContracts = new Set()) {
   if (
     reservation.kind === 'path' &&
     PROTECTED_PATH_RESERVATIONS.some(protectedPath =>
@@ -235,7 +236,14 @@ function protectedReservationReason(reservation) {
   ) {
     return `protected-path-reservation:${reservation.value}`;
   }
-  if (reservation.kind !== 'path' && PROTECTED_RESOURCE.test(reservation.value)) {
+  if (reservation.kind === 'environment' && PROTECTED_RESOURCE.test(reservation.value)) {
+    return `protected-resource-reservation:${reservation.kind}:${reservation.value}`;
+  }
+  if (
+    reservation.kind === 'contract' &&
+    PROTECTED_RESOURCE.test(reservation.value) &&
+    !declaredContracts.has(reservation.value)
+  ) {
     return `protected-resource-reservation:${reservation.kind}:${reservation.value}`;
   }
   return null;
@@ -414,6 +422,46 @@ function allowedPathReservations(record) {
   });
 }
 
+function typedReservationExpectations(record) {
+  const hasContracts = Object.hasOwn(record, 'contractReservations');
+  const hasEnvironments = Object.hasOwn(record, 'environmentReservations');
+  if (!hasContracts && !hasEnvironments) return null;
+
+  function normalizeExpected(values, field, kind) {
+    if (!Object.hasOwn(record, field)) return [];
+    if (!Array.isArray(values)) throw new Error(`${record.id}.${field} must be an array`);
+    const normalized = values.map((value, index) => {
+      const exact = normalizeIdentifier(value, `${record.id}.${field}[${index}]`);
+      if (value !== exact) {
+        throw new Error(`${record.id}.${field}[${index}] must already be normalized`);
+      }
+      if (kind === 'contract' && !VERSIONED_CONTRACT.test(exact)) {
+        throw new Error(`${record.id}.${field}[${index}] must be a versioned contract identifier`);
+      }
+      return exact;
+    });
+    if (new Set(normalized).size !== normalized.length) {
+      throw new Error(`${record.id}.${field} must contain unique ${kind} identifiers`);
+    }
+    return normalized;
+  }
+
+  const contracts = normalizeExpected(
+    record.contractReservations,
+    'contractReservations',
+    'contract'
+  );
+  const environments = normalizeExpected(
+    record.environmentReservations,
+    'environmentReservations',
+    'environment'
+  );
+  return {
+    contracts: new Set(contracts),
+    environments: new Set(environments),
+  };
+}
+
 function reservationWithinAllowedPath(reservation, allowedPath) {
   if (reservation.kind !== 'path') return true;
   if (allowedPath.scope === 'exact') {
@@ -434,6 +482,13 @@ function reservationKey(reservation) {
 
 function candidateReservations(record, reservationInput, allowedPaths) {
   const repository = normalizeIdentifier(reservationInput?.repository, 'reservations.repository');
+  const expected = typedReservationExpectations(record);
+  const expectedPaths = expected
+    ? new Map(allowedPaths.map(allowedPath => [allowedPath.value, allowedPath]))
+    : null;
+  if (expectedPaths && expectedPaths.size !== allowedPaths.length) {
+    throw new Error(`${record.id}.allowedFiles must contain unique normalized paths`);
+  }
   const declared = reservationInput?.candidateReservations?.[record.id] ?? [];
   if (!Array.isArray(declared) || declared.length === 0) {
     throw new Error(
@@ -446,6 +501,8 @@ function candidateReservations(record, reservationInput, allowedPaths) {
       repository,
     })
   );
+  const seenTypedClaims = new Set();
+  const seenPathClaims = new Set();
   for (const reservation of normalized) {
     if (reservation.status !== 'active') {
       throw new Error(`${record.id} candidate reservation ${reservation.id} must be active`);
@@ -463,13 +520,69 @@ function candidateReservations(record, reservationInput, allowedPaths) {
         `${record.id} candidate reservation ${reservation.id} is bound to ${reservation.workOrderId}`
       );
     }
-    if (
-      reservation.kind === 'path' &&
-      !allowedPaths.some(allowedPath => reservationWithinAllowedPath(reservation, allowedPath))
-    ) {
-      throw new Error(
-        `${record.id} candidate reservation ${reservation.id} is outside declared allowedFiles`
-      );
+    if (reservation.kind === 'path') {
+      if (expectedPaths) {
+        const expectedPath = expectedPaths.get(reservation.value);
+        if (!expectedPath) {
+          throw new Error(`${record.id} extra path reservation ${reservation.value}`);
+        }
+        if (reservation.scope !== expectedPath.scope) {
+          throw new Error(
+            `${record.id} path scope mismatch for ${reservation.value}: expected ${expectedPath.scope}, received ${reservation.scope}`
+          );
+        }
+        const key = `${reservation.value}:${reservation.scope}`;
+        if (seenPathClaims.has(key)) {
+          throw new Error(`${record.id} duplicate path reservation ${reservation.value}`);
+        }
+        seenPathClaims.add(key);
+      } else if (
+        !allowedPaths.some(allowedPath => reservationWithinAllowedPath(reservation, allowedPath))
+      ) {
+        throw new Error(
+          `${record.id} candidate reservation ${reservation.id} is outside declared allowedFiles`
+        );
+      }
+    }
+    if (reservation.kind === 'contract' || reservation.kind === 'environment') {
+      const expectedKind =
+        reservation.kind === 'contract' ? expected?.contracts : expected?.environments;
+      const oppositeKind =
+        reservation.kind === 'contract' ? expected?.environments : expected?.contracts;
+      if (oppositeKind?.has(reservation.value)) {
+        throw new Error(
+          `${record.id} cross-kind reservation ${reservation.value} claimed as ${reservation.kind}`
+        );
+      }
+      const protectedReason = protectedReservationReason(reservation, expected?.contracts);
+      if (protectedReason) throw new Error(protectedReason);
+      if (expected && !expectedKind.has(reservation.value)) {
+        throw new Error(`${record.id} extra ${reservation.kind} reservation ${reservation.value}`);
+      }
+      const key = `${reservation.kind}:${reservation.value}`;
+      if (seenTypedClaims.has(key)) {
+        throw new Error(
+          `${record.id} duplicate ${reservation.kind} reservation ${reservation.value}`
+        );
+      }
+      seenTypedClaims.add(key);
+    }
+  }
+  if (expected) {
+    for (const allowedPath of allowedPaths) {
+      if (!seenPathClaims.has(`${allowedPath.value}:${allowedPath.scope}`)) {
+        throw new Error(`${record.id} missing path reservation ${allowedPath.value}`);
+      }
+    }
+    for (const [kind, values] of [
+      ['contract', expected.contracts],
+      ['environment', expected.environments],
+    ]) {
+      for (const value of values) {
+        if (!seenTypedClaims.has(`${kind}:${value}`)) {
+          throw new Error(`${record.id} missing ${kind} reservation ${value}`);
+        }
+      }
     }
   }
   const unique = new Map(normalized.map(reservation => [reservationKey(reservation), reservation]));
@@ -731,9 +844,10 @@ function planWaves(registry, rules, options = {}) {
       });
       continue;
     }
+    const declaredContracts = typedReservationExpectations(record)?.contracts;
     const protectedReason = reservations
       .map(reservation => {
-        const reason = protectedReservationReason(reservation);
+        const reason = protectedReservationReason(reservation, declaredContracts);
         if (!reason) return null;
         if (
           reservation.kind === 'path' &&
