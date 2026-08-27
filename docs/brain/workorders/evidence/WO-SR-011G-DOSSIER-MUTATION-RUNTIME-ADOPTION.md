@@ -10,5 +10,16 @@
 
 ## Observed proof
 
-Pending exact local/CI receipts, reviewed head, protected merge, and rollback receipt. This record is
-updated only from observed commands and protected GitHub state.
+- Exact staging receipt in the dedicated runtime worktree verified protected Dossier main and the
+  three-file ignored slot at the identities above.
+- `tests/dossier-mutation-staging-identity.ps1` returned
+  `DOSSIER_MUTATION_EXACT_STAGING_AND_ROLLBACK_PROVEN`: candidate-manifest tamper rejected before
+  publication, fresh failure removed the slot, backup-verification and post-publication failures
+  restored it, nonempty backup contents and hashes matched, physical rollback executed, and the
+  adopted slot was restored. County/protected data, Production, and deployment were false.
+- Direct execution from the exact staged module validated the frozen schema and byte-equivalent
+  accepted result for all six synthetic operations, ending
+  `DOSSIER_LOCAL_EXACT_SIX_OPERATION_PROOF`.
+- PR #1481 first compile head exposed three exact C# errors; head `601527a34b49cd54e2b751f317de94a3a26b1947`
+  contains their repair plus focused provenance/identity/tamper tests. Final CI, reviewed head,
+  protected merge and protected-main identities remain pending.
