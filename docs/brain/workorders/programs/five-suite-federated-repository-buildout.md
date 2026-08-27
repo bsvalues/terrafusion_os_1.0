@@ -106,7 +106,7 @@ county contexts, audit spines, deployment control planes, or contract authoritie
 | WO-SR-011B | Adopt the exact Dossier read decision on the persistent authenticated, county-scoped sovereign path | Complete R4; PR #1477 merged as `d82a2d363`; protected main verified |
 | WO-SR-011D | Freeze the provider-neutral Dossier note/document/evidence/custody/packet mutation-decision boundary | Complete R3; PR #1475 merged as `7cb96bf2e`; protected main verified; no mutation performed |
 | WO-SR-012A | Make GPT execution artifacts LF-portable and publish an exact execution manifest | Complete R3; GPT PR #5 merged as `550b50f27`; protected main verified |
-| WO-SR-012B | Stage the exact GPT grounded-context artifact with provenance and rollback | Active R3; latest protected main `7cb96bf2e` integrated; inert proof rerun required before protected merge |
+| WO-SR-012B | Stage the exact GPT grounded-context artifact with provenance and rollback | Active R3; latest protected main `142a105a0` integrated; inert proof rerun required before protected merge |
 
 ## Extraction and provenance policy
 

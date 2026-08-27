@@ -198,7 +198,7 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | **WO-SR-011B Dossier Persistent Exact Read Runtime Adoption** | **DONE / R4 / PR #1477** | Protected merge `d82a2d363`; exact suite-owned read semantics execute on the real authenticated county-scoped sovereign path; persistent Development LocalExact, production refusal, tamper fail-closed, and physical rollback proven |
 | **WO-SR-011D Dossier Mutation Decision Contract Freeze** | **DONE / R3 / PR #1475** | Protected merge `7cb96bf2e`; provider-neutral note/document/evidence/custody/packet decision boundary frozen with synthetic proof; no mutation performed |
 | **WO-SR-012A GPT Portability and Provenance** | **DONE / R3 / GPT PR #5** | Protected GPT merge `550b50f27`; exact LF-stable execution manifest pins module/schema/source-manifest blob, length, and SHA identities |
-| **WO-SR-012B GPT Canonical Artifact Staging** | **ACTIVE / R3** | Latest protected main `7cb96bf2e` integrated; rerun inert exact staging and rollback proof before protected merge |
+| **WO-SR-012B GPT Canonical Artifact Staging** | **ACTIVE / R3** | Latest protected main `142a105a0` integrated; rerun inert exact staging and rollback proof before protected merge |
 
 ### portfolio-operator (`GOAL-PORTFOLIO-OPERATOR-001` / `LOOP-PORTFOLIO-OPERATOR-001`)
 | WO | State | Notes |
