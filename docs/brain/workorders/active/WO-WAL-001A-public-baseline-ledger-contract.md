@@ -43,7 +43,12 @@ The output is canonical UTF-8 JSON with one trailing newline and exactly one row
 expected Washington counties, in canonical county order. Without `--output`, the tool writes to
 stdout. An explicit `--output` must resolve strictly inside the operating system's temporary
 directory; the temporary-directory root itself and every sibling, prefix-similar, repository, or
-other path fail closed. Each row keeps these state families separate:
+other path fail closed. The output parent must already exist, its real filesystem path must remain
+inside the canonical temporary root, and the final path must be new and must not be a symbolic link
+or junction. Creation is exclusive and uses no-follow protection when the platform exposes it; the
+opened file is identity-checked before and after content is written, and failed validation truncates
+the opened descriptor before identity-checked cleanup. Windows alternate-data-stream targets are
+denied explicitly. Each row keeps these state families separate:
 
 1. source inventory and acquisition readiness copied from the existing proof;
 2. landed parcel/sales row evidence;
@@ -65,9 +70,11 @@ otherwise.
 - Source inventory/acquisition readiness never implies landed rows, runtime registration, freshness,
   provenance completeness, or launch capability.
 - A non-Benton county can never inherit Benton source or runtime evidence.
+- A non-Benton county cannot emit Benton-bearing source-inventory or acquisition-readiness metadata,
+  including registry status, acquisition family, or priority.
 - Missing observations are explicit gaps, not fabricated zero-risk readiness.
 - The tool performs no network or database access and writes only to stdout or an explicitly selected
-  path strictly inside the operating system's temporary directory.
+  new file strictly inside the operating system's real temporary-directory boundary.
 
 ## Denials
 
@@ -90,6 +97,10 @@ otherwise.
   fallback tests;
 - adversarial output-containment tests proving repository/generated, temporary-root, and
   prefix-similar sibling paths are rejected without creating the requested file;
+- real-filesystem containment tests proving escaping directory symlinks or Windows junctions, final
+  links/reparse points, existing targets, and Windows alternate data streams fail closed while
+  ordinary nested-temp output succeeds;
+- adversarial Benton-contamination tests covering emitted source inventory and acquisition readiness;
 - `git diff --check`;
 - changed-path audit proving only the three exact reservations changed.
 

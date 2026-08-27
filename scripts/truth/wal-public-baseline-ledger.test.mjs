@@ -33,6 +33,27 @@ function clone(value) {
   return JSON.parse(JSON.stringify(value));
 }
 
+function childTempEnvironment(tempRoot) {
+  return {
+    ...process.env,
+    TEMP: tempRoot,
+    TMP: tempRoot,
+    TMPDIR: tempRoot,
+  };
+}
+
+function runCliWithOutput(outputPath, options = {}) {
+  return spawnSync(
+    'node',
+    [scriptPath, '--input', coverageProofPath, '--output', outputPath],
+    {
+      cwd: repoRoot,
+      encoding: 'utf8',
+      env: options.env ?? process.env,
+    }
+  );
+}
+
 test('emits one canonical row for every Washington county', () => {
   const ledger = buildLedger(readCoverageProof());
 
@@ -138,8 +159,10 @@ test('CLI accepts absolute and relative output paths strictly inside the OS temp
   const expected = serializeLedger(buildLedger(readCoverageProof()));
 
   try {
-    const absoluteOutputPath = path.join(tempDir, 'absolute-ledger.json');
-    const relativeOutputPath = path.join(tempDir, 'relative-ledger.json');
+    const nestedTempDir = path.join(tempDir, 'nested', 'output');
+    fs.mkdirSync(nestedTempDir, { recursive: true });
+    const absoluteOutputPath = path.join(nestedTempDir, 'absolute-ledger.json');
+    const relativeOutputPath = path.join(nestedTempDir, 'relative-ledger.json');
 
     execFileSync(
       'node',
@@ -164,6 +187,123 @@ test('CLI accepts absolute and relative output paths strictly inside the OS temp
     fs.rmSync(tempDir, { recursive: true, force: true });
   }
 });
+
+test('CLI rejects a symlink or junction parent that escapes its effective temp root', t => {
+  const testRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'tf-wal-public-ledger-link-parent-'));
+  const effectiveTempRoot = path.join(testRoot, 'effective-temp');
+  const outsideEffectiveTemp = path.join(testRoot, 'outside-effective-temp');
+  const linkedParent = path.join(effectiveTempRoot, 'linked-parent');
+  const escapedOutput = path.join(outsideEffectiveTemp, 'escaped-ledger.json');
+
+  try {
+    fs.mkdirSync(effectiveTempRoot);
+    fs.mkdirSync(outsideEffectiveTemp);
+    try {
+      fs.symlinkSync(
+        outsideEffectiveTemp,
+        linkedParent,
+        process.platform === 'win32' ? 'junction' : 'dir'
+      );
+    } catch (error) {
+      if (error && typeof error === 'object' && 'code' in error && error.code === 'EPERM') {
+        t.skip('This host does not permit creating a directory symlink or junction.');
+        return;
+      }
+      throw error;
+    }
+
+    const result = runCliWithOutput(path.join(linkedParent, 'escaped-ledger.json'), {
+      env: childTempEnvironment(effectiveTempRoot),
+    });
+
+    assert.notEqual(result.status, 0);
+    assert.match(
+      result.stderr,
+      /must resolve strictly inside the operating system temporary directory/i
+    );
+    assert.equal(fs.existsSync(escapedOutput), false);
+  } finally {
+    fs.rmSync(testRoot, { recursive: true, force: true });
+  }
+});
+
+test('CLI rejects an existing final symlink or junction without changing its target', t => {
+  const testRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'tf-wal-public-ledger-final-link-'));
+  const effectiveTempRoot = path.join(testRoot, 'effective-temp');
+  const outsideEffectiveTemp = path.join(testRoot, 'outside-effective-temp');
+  const finalLink = path.join(effectiveTempRoot, 'ledger.json');
+  const sentinelPath = path.join(outsideEffectiveTemp, 'sentinel.txt');
+
+  try {
+    fs.mkdirSync(effectiveTempRoot);
+    fs.mkdirSync(outsideEffectiveTemp);
+    fs.writeFileSync(sentinelPath, 'unchanged', 'utf8');
+    try {
+      fs.symlinkSync(
+        process.platform === 'win32' ? outsideEffectiveTemp : sentinelPath,
+        finalLink,
+        process.platform === 'win32' ? 'junction' : 'file'
+      );
+    } catch (error) {
+      if (error && typeof error === 'object' && 'code' in error && error.code === 'EPERM') {
+        t.skip('This host does not permit creating a final symlink or junction.');
+        return;
+      }
+      throw error;
+    }
+
+    const result = runCliWithOutput(finalLink, {
+      env: childTempEnvironment(effectiveTempRoot),
+    });
+
+    assert.notEqual(result.status, 0);
+    assert.match(result.stderr, /must not be an existing symbolic link or junction/i);
+    assert.equal(fs.readFileSync(sentinelPath, 'utf8'), 'unchanged');
+  } finally {
+    fs.rmSync(testRoot, { recursive: true, force: true });
+  }
+});
+
+test('CLI creates output exclusively and does not overwrite an existing regular file', () => {
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'tf-wal-public-ledger-exclusive-'));
+  const outputPath = path.join(tempDir, 'ledger.json');
+
+  try {
+    fs.writeFileSync(outputPath, 'sentinel', 'utf8');
+    const result = runCliWithOutput(outputPath);
+
+    assert.notEqual(result.status, 0);
+    assert.match(result.stderr, /existing targets are not overwritten/i);
+    assert.equal(fs.readFileSync(outputPath, 'utf8'), 'sentinel');
+  } finally {
+    fs.rmSync(tempDir, { recursive: true, force: true });
+  }
+});
+
+test(
+  'CLI rejects Windows alternate data streams on existing files and directories',
+  { skip: process.platform !== 'win32' },
+  () => {
+    const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'tf-wal-public-ledger-ads-'));
+    const regularFile = path.join(tempDir, 'existing.txt');
+    const existingDirectory = path.join(tempDir, 'existing-directory');
+
+    try {
+      fs.writeFileSync(regularFile, 'unchanged', 'utf8');
+      fs.mkdirSync(existingDirectory);
+
+      for (const outputPath of [`${regularFile}:ledger`, `${existingDirectory}:ledger`]) {
+        const result = runCliWithOutput(outputPath);
+        assert.notEqual(result.status, 0);
+        assert.match(result.stderr, /must not use a Windows alternate data stream/i);
+      }
+
+      assert.equal(fs.readFileSync(regularFile, 'utf8'), 'unchanged');
+    } finally {
+      fs.rmSync(tempDir, { recursive: true, force: true });
+    }
+  }
+);
 
 test('CLI rejects output paths outside or equal to the OS temp directory without creating files', () => {
   const uniqueToken = `${process.pid}-${Date.now()}`;
@@ -218,6 +358,24 @@ test('rejects Benton source contamination for a non-Benton county', () => {
   );
 });
 
+test('rejects Benton contamination in every emitted acquisition readiness input', () => {
+  for (const [field, value] of [
+    ['status', 'BentonCounty adapter-ready'],
+    ['acquisitionFamily', 'https://benton_county.example/PACS'],
+    ['priority', 'fallback to Ben\u200bton County'],
+  ]) {
+    const proof = readCoverageProof();
+    const yakima = proof.counties.find(row => row.county === 'Yakima');
+    yakima[field] = value;
+
+    assert.throws(
+      () => buildLedger(proof),
+      /contains Benton source evidence or acquisition readiness metadata/i,
+      field
+    );
+  }
+});
+
 test('does not materialize a Benton runtime fallback for any non-Benton row', () => {
   const ledger = buildLedger(readCoverageProof());
 
@@ -227,6 +385,9 @@ test('does not materialize a Benton runtime fallback for any non-Benton row', ()
     assert.equal(row.fallbackEvidence.fallbackCounty, null);
     assert.equal(row.runtimeRegistrationEvidence.parcels.endpoint, null);
     assert.equal(row.runtimeRegistrationEvidence.sales.endpoint, null);
-    assert.equal(/benton/i.test(JSON.stringify(row.sourceInventory)), false);
+    assert.equal(
+      /benton/i.test(JSON.stringify([row.sourceInventory, row.acquisitionReadiness])),
+      false
+    );
   }
 });

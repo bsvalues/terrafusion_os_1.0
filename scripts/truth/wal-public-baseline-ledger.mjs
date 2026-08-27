@@ -84,7 +84,13 @@ function nullableString(value) {
 }
 
 function containsBentonReference(value) {
-  if (typeof value === 'string') return /\bbenton(?:\s+county)?\b/i.test(value);
+  if (typeof value === 'string') {
+    const compact = value
+      .normalize('NFKC')
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '');
+    return compact.includes('benton');
+  }
   if (Array.isArray(value)) return value.some(containsBentonReference);
   if (value && typeof value === 'object') {
     return Object.values(value).some(containsBentonReference);
@@ -151,12 +157,6 @@ function buildRow(county, inputRow) {
     gisMapSurfaceDescription: nullableString(inputRow.gisMapSurface),
   };
 
-  if (county !== 'Benton' && containsBentonReference(sourceInventory)) {
-    throw new Error(
-      `Non-Benton county ${county} contains Benton source evidence; silent fallback is prohibited.`
-    );
-  }
-
   const registryStatus = nullableString(inputRow.status) ?? 'unknown';
   const acquisitionReadiness = {
     observationStatus: 'observed_from_coverage_proof',
@@ -166,6 +166,15 @@ function buildRow(county, inputRow) {
     priority: nullableString(inputRow.priority),
     adapterExecutionStatus: 'not_observed',
   };
+
+  if (
+    county !== 'Benton' &&
+    containsBentonReference({ sourceInventory, acquisitionReadiness })
+  ) {
+    throw new Error(
+      `Non-Benton county ${county} contains Benton source evidence or acquisition readiness metadata; silent fallback is prohibited.`
+    );
+  }
 
   const explicitGaps = {
     sourceInventory: sourceInventoryGaps(inputRow),
@@ -284,22 +293,139 @@ export function serializeLedger(ledger) {
   return `${JSON.stringify(ledger, null, 2)}\n`;
 }
 
-export function resolveTempOutputPath(outputPath, cwd = process.cwd()) {
+function pathIsWithin(rootPath, candidatePath, allowRoot) {
+  const relativePath = path.relative(rootPath, candidatePath);
+  if (relativePath === '') return allowRoot;
+
+  return (
+    relativePath !== '..' &&
+    !relativePath.startsWith(`..${path.sep}`) &&
+    !path.isAbsolute(relativePath)
+  );
+}
+
+function tempContainmentError(tempRoot) {
+  return new Error(
+    `--output must resolve strictly inside the operating system temporary directory: ${tempRoot}`
+  );
+}
+
+function resolveTempOutputTarget(outputPath, cwd) {
   const tempRoot = path.resolve(os.tmpdir());
   const resolvedOutputPath = path.resolve(cwd, outputPath);
-  const relativeOutputPath = path.relative(tempRoot, resolvedOutputPath);
-  const escapesTempRoot =
-    relativeOutputPath === '..' ||
-    relativeOutputPath.startsWith(`..${path.sep}`) ||
-    path.isAbsolute(relativeOutputPath);
 
-  if (relativeOutputPath === '' || escapesTempRoot) {
+  if (!pathIsWithin(tempRoot, resolvedOutputPath, false)) {
+    throw tempContainmentError(tempRoot);
+  }
+
+  const canonicalTempRoot = fs.realpathSync.native(tempRoot);
+  let canonicalOutputParent;
+  try {
+    canonicalOutputParent = fs.realpathSync.native(path.dirname(resolvedOutputPath));
+  } catch (error) {
     throw new Error(
-      `--output must resolve strictly inside the operating system temporary directory: ${tempRoot}`
+      `--output parent must already exist inside the operating system temporary directory: ${error instanceof Error ? error.message : String(error)}`
     );
   }
 
-  return resolvedOutputPath;
+  if (!pathIsWithin(canonicalTempRoot, canonicalOutputParent, true)) {
+    throw tempContainmentError(canonicalTempRoot);
+  }
+
+  const canonicalOutputPath = path.join(canonicalOutputParent, path.basename(resolvedOutputPath));
+  if (process.platform === 'win32' && path.basename(canonicalOutputPath).includes(':')) {
+    throw new Error('--output must not use a Windows alternate data stream.');
+  }
+  const existingTarget = fs.lstatSync(canonicalOutputPath, { throwIfNoEntry: false });
+  if (existingTarget?.isSymbolicLink()) {
+    throw new Error('--output must not be an existing symbolic link or junction.');
+  }
+  if (existingTarget) {
+    throw new Error('--output must name a new file; existing targets are not overwritten.');
+  }
+
+  return { canonicalTempRoot, canonicalOutputPath };
+}
+
+export function resolveTempOutputPath(outputPath, cwd = process.cwd()) {
+  return resolveTempOutputTarget(outputPath, cwd).canonicalOutputPath;
+}
+
+function sameFileIdentity(left, right) {
+  return left.dev === right.dev && left.ino === right.ino;
+}
+
+function validateOpenedTempFile(descriptor, target) {
+  const openedRealPath = fs.realpathSync.native(target.canonicalOutputPath);
+  const descriptorStat = fs.fstatSync(descriptor);
+  const pathStat = fs.statSync(openedRealPath);
+  if (
+    !pathIsWithin(target.canonicalTempRoot, openedRealPath, false) ||
+    !descriptorStat.isFile() ||
+    !sameFileIdentity(descriptorStat, pathStat)
+  ) {
+    throw tempContainmentError(target.canonicalTempRoot);
+  }
+
+  return openedRealPath;
+}
+
+function removeOpenedFileIfStillSame(descriptor, candidatePaths) {
+  const descriptorStat = fs.fstatSync(descriptor);
+  for (const candidatePath of new Set(candidatePaths.filter(Boolean))) {
+    try {
+      const candidateStat = fs.statSync(candidatePath);
+      if (sameFileIdentity(descriptorStat, candidateStat)) {
+        fs.rmSync(candidatePath, { force: true });
+        return;
+      }
+    } catch {
+      // A missing, moved, or non-removable path is safer than deleting an unverified replacement.
+    }
+  }
+}
+
+export function writeTempOutputFile(outputPath, output, cwd = process.cwd()) {
+  const target = resolveTempOutputTarget(outputPath, cwd);
+  const noFollowFlag = fs.constants.O_NOFOLLOW ?? 0;
+  const openFlags =
+    fs.constants.O_WRONLY | fs.constants.O_CREAT | fs.constants.O_EXCL | noFollowFlag;
+  let descriptor;
+  let openedRealPath;
+  let removeOnFailure = false;
+
+  try {
+    descriptor = fs.openSync(target.canonicalOutputPath, openFlags, 0o600);
+    removeOnFailure = true;
+
+    openedRealPath = validateOpenedTempFile(descriptor, target);
+    fs.writeFileSync(descriptor, output, { encoding: 'utf8' });
+    fs.fsyncSync(descriptor);
+    openedRealPath = validateOpenedTempFile(descriptor, target);
+    removeOnFailure = false;
+  } catch (error) {
+    if (descriptor !== undefined && removeOnFailure) {
+      try {
+        fs.ftruncateSync(descriptor, 0);
+        fs.fsyncSync(descriptor);
+      } catch {
+        // Preserve the original failure; cleanup below remains identity-checked.
+      }
+    }
+    if (error && typeof error === 'object' && 'code' in error) {
+      if (error.code === 'EEXIST' || error.code === 'ELOOP') {
+        throw new Error('--output must name a new non-link file; existing targets are not overwritten.');
+      }
+    }
+    throw error;
+  } finally {
+    if (descriptor !== undefined && removeOnFailure) {
+      removeOpenedFileIfStillSame(descriptor, [openedRealPath, target.canonicalOutputPath]);
+    }
+    if (descriptor !== undefined) {
+      fs.closeSync(descriptor);
+    }
+  }
 }
 
 function parseArguments(args) {
@@ -355,7 +481,7 @@ export function runCli(args, io = {}) {
   const output = serializeLedger(buildLedger(coverageProof));
 
   if (options.outputPath) {
-    fs.writeFileSync(resolveTempOutputPath(options.outputPath, cwd), output, 'utf8');
+    writeTempOutputFile(options.outputPath, output, cwd);
   } else {
     stdout.write(output);
   }
