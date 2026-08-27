@@ -28,7 +28,7 @@ public sealed class HttpContextRequestUserContextAccessorTests
 
         Assert.True(sut.Current.IsAuthenticated);
         Assert.Equal("user-1", sut.Current.UserId);
-        Assert.Equal("wa-benton", sut.Current.CountyId);
+        Assert.Equal("Benton", sut.Current.CountyId);
         Assert.Equal(new[] { "Assessor" }, sut.Current.Roles);
     }
 
@@ -40,7 +40,7 @@ public sealed class HttpContextRequestUserContextAccessorTests
             new Claim("county_id", "wa-benton"),
             new Claim("countyCode", "  Wa-Benton  "));
 
-        Assert.Equal("wa-benton", sut.Current.CountyId);
+        Assert.Equal("Benton", sut.Current.CountyId);
     }
 
     [Fact]
@@ -51,7 +51,7 @@ public sealed class HttpContextRequestUserContextAccessorTests
             new Claim("county_id", "benton-wa"),
             new Claim("countyCode", "53005"));
 
-        Assert.Equal("wa-benton", sut.Current.CountyId);
+        Assert.Equal("Benton", sut.Current.CountyId);
     }
 
     [Fact]
@@ -86,8 +86,63 @@ public sealed class HttpContextRequestUserContextAccessorTests
             new Claim("countyId", " "),
             new Claim("countyCode", ""));
 
-        Assert.Equal("wa-benton", withOneValue.Current.CountyId);
+        Assert.Equal("Benton", withOneValue.Current.CountyId);
         Assert.Null(blanksOnly.Current.CountyId);
+    }
+
+    [Theory]
+    [InlineData("countyId", "Benton County")]
+    [InlineData("countyCode", "53005")]
+    public void Current_ReturnsCanonicalCountyNameForOneNonGuidAlias(string claimType, string claimValue)
+    {
+        var sut = CreateSut(
+            new Claim(ClaimTypes.NameIdentifier, "user-1"),
+            new Claim(claimType, claimValue));
+
+        Assert.Equal("Benton", sut.Current.CountyId);
+    }
+
+    [Fact]
+    public void Current_PreservesSoleCountyGuidWhenIssuedTokenAlsoContainsCountyCode()
+    {
+        var countyId = Guid.Parse("19190019-1919-1919-1919-191919191919");
+        var sut = CreateSut(
+            new Claim(ClaimTypes.NameIdentifier, "user-1"),
+            new Claim("countyId", countyId.ToString("D").ToUpperInvariant()),
+            new Claim("countyCode", "benton"));
+
+        Assert.Equal(countyId.ToString("D"), sut.Current.CountyId);
+    }
+
+    [Fact]
+    public void Current_DeniesMultipleDistinctCountyGuids()
+    {
+        var sut = CreateSut(
+            new Claim("countyId", "11111111-2222-3333-4444-555555555555"),
+            new Claim("county_id", "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"));
+
+        Assert.Null(sut.Current.CountyId);
+    }
+
+    [Fact]
+    public void Current_DeniesConflictingSupplementalAliasesEvenWithOneCountyGuid()
+    {
+        var sut = CreateSut(
+            new Claim("countyId", "11111111-2222-3333-4444-555555555555"),
+            new Claim("countyCode", "53005"),
+            new Claim("countyCode", "53033"));
+
+        Assert.Null(sut.Current.CountyId);
+    }
+
+    [Fact]
+    public void Current_DeniesUnknownSupplementalAliasEvenWithOneCountyGuid()
+    {
+        var sut = CreateSut(
+            new Claim("countyId", "11111111-2222-3333-4444-555555555555"),
+            new Claim("countyCode", "not-a-county"));
+
+        Assert.Null(sut.Current.CountyId);
     }
 
     private static HttpContextRequestUserContextAccessor CreateSut(params Claim[] claims)

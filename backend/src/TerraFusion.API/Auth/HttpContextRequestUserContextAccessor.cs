@@ -54,22 +54,40 @@ public sealed class HttpContextRequestUserContextAccessor : IRequestUserContextA
             .SelectMany(user.FindAll)
             .Select(claim => claim.Value.Trim())
             .Where(value => value.Length > 0)
-            .Select(NormalizeCountyClaim)
-            .Distinct(StringComparer.OrdinalIgnoreCase)
             .ToArray();
 
-        // Claim order is not authority. Repeated equivalent values are safe,
-        // but competing values must fail closed for downstream authorization.
-        return values.Length == 1 ? values[0] : null;
-    }
+        var countyIds = new HashSet<Guid>();
+        var countyAliases = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
-    private static string NormalizeCountyClaim(string value)
-    {
-        if (WashingtonCountyRegistry.TryResolve(value, out var county))
-            return county.Key;
+        foreach (var value in values)
+        {
+            if (Guid.TryParse(value, out var countyId))
+            {
+                countyIds.Add(countyId);
+                continue;
+            }
 
-        return Guid.TryParse(value, out var countyId)
-            ? countyId.ToString("D")
-            : value;
+            if (!WashingtonCountyRegistry.TryResolve(value, out var county))
+            {
+                return null;
+            }
+
+            countyAliases.Add(county.Name);
+        }
+
+        if (countyIds.Count > 1 || countyAliases.Count > 1)
+        {
+            return null;
+        }
+
+        // This persistence-free boundary cannot prove that a supplemental alias belongs
+        // to an opaque county GUID. One distinct GUID is therefore authoritative while
+        // all supplemental aliases must still resolve unambiguously among themselves.
+        if (countyIds.Count == 1)
+        {
+            return countyIds.Single().ToString("D");
+        }
+
+        return countyAliases.Count == 1 ? countyAliases.Single() : null;
     }
 }

@@ -107,13 +107,23 @@ public class CountyResolver : ICountyResolver
 
     private static WashingtonCountyIdentity? ResolveConsistentIdentity(string name, string? fipsCode)
     {
-        WashingtonCountyRegistry.TryResolve(name, out var byName);
-        WashingtonCountyRegistry.TryResolve(fipsCode, out var byFips);
-
-        if (byName is not null && byFips is not null && byName != byFips)
+        if (string.IsNullOrWhiteSpace(name) ||
+            !WashingtonCountyRegistry.TryResolve(name, out var byName))
+        {
             return null;
+        }
 
-        return byName ?? byFips;
+        if (string.IsNullOrWhiteSpace(fipsCode))
+        {
+            return byName;
+        }
+
+        if (!WashingtonCountyRegistry.TryResolve(fipsCode, out var byFips))
+        {
+            return null;
+        }
+
+        return byName == byFips ? byName : null;
     }
 
     private sealed class CountyLookup

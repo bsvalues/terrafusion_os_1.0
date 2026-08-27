@@ -52,13 +52,19 @@ county system, credential, secret, production resource or external assessor inte
    Washington FIPS or canonical name. It never fabricates a GUID.
 4. Duplicate or conflicting persisted identity rows are excluded from resolution instead of being
    selected by ordering.
-5. A known, unambiguous Washington persisted GUID remains accepted; an unknown, non-Washington,
-   conflicting or duplicate-identity GUID fails closed.
-6. Authenticated request context canonicalizes equivalent Washington aliases, accepts one normalized
-   county claim (including repeated equal values) and returns no county authority when `countyId`,
-   `county_id` or `countyCode` claims conflict.
-7. Focused tests prove all 39 identities, alias behavior, no Benton fallback, ambiguity denial,
-   claim conflict denial and deterministic case-insensitive normalization.
+5. A known, unambiguous persisted county GUID remains accepted only when its row is Washington-scoped
+   and both every present nonblank name/FIPS component resolves and those components identify the same
+   canonical county.
+6. With no GUID claim, authenticated request context requires every nonblank county alias to resolve
+   to one canonical Washington county and returns that county's canonical name for compatibility with
+   existing consumers; unknown or conflicting aliases return no county authority.
+7. With exactly one distinct GUID claim, request context returns its normalized GUID while requiring
+   any supplemental non-GUID aliases to be internally canonical and unambiguous. This persistence-free
+   accessor does not prove GUID-to-alias equivalence; persisted resolution remains the boundary that
+   validates the GUID's county mapping. Multiple distinct GUIDs return no county authority.
+8. Focused tests lock the authoritative 39 county name/FIPS pairs and prove alias consistency,
+   persisted-row unknown/conflicting-component denial including direct-GUID lookup, issued
+   GUID-plus-code handling, and claim ambiguity denial.
 
 ## Denials
 
@@ -67,6 +73,8 @@ county system, credential, secret, production resource or external assessor inte
 - no frontend header or local-storage authority;
 - no public/private trust-mode or activation-state implementation;
 - no adoption, write-back, source-system DML/DDL or external call;
+- no claim that request-context inspection proves an opaque GUID and a supplemental alias identify
+  the same persisted county; downstream persisted resolution must validate the preserved GUID;
 - no default county, including Benton, for missing, unknown or ambiguous input.
 
 ## Validation
