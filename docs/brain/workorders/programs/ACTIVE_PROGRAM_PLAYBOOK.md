@@ -3,7 +3,7 @@
 **Work Order:** `WO-GOAL-LOOP-MASTER-PLAYBOOK-001`
 **Status:** Active execution graph
 **Authority:** TerraFusion Brain / Work Order Operator
-**Last Updated:** 2026-08-07
+**Last Updated:** 2026-08-27
 **Base:** `origin/main` at `b5a02db1758deda45d84c0ec99adb8f31d328c7b` or later
 
 ---
@@ -88,6 +88,54 @@ Codex must stop for owner decision when any are true:
 Local hook failures are authority walls only when no bounded standing exception applies. After a hook
 bypass is authorized and the current WO merges, Codex returns to the active `/goal` plus `/loop` chain
 automatically.
+
+---
+
+## Active Program - Washington Assessor Launch V1
+
+| Field | Value |
+| --- | --- |
+| Goal | `GOAL-WASHINGTON-ASSESSOR-LAUNCH-V1` |
+| Loop | `LOOP-WASHINGTON-ASSESSOR-LAUNCH-V1` |
+| Program slug | `washington-assessor-launch-v1` |
+| Authority | Issue #1485 / `OWNER-WAL-V1-MISSION-AUTHORITY-20260827` |
+| Status | ACTIVE; `WO-WAL-000` completes on protected merge of PR #1486 |
+| Current | Canonical activation and exact initial-wave reservation |
+| Next | Parallel `WO-WAL-001`, `WO-WAL-002`, `WO-WAL-003`, and bounded reservation-safe portions of `WO-WAL-004` |
+| Terminal | `WO-WAL-009` records `WASHINGTON_ASSESSOR_LAUNCH_V1_COMPLETED_AND_CONSUMED` |
+
+This is the current mission-level program. It covers all 39 Washington counties and continues
+without routine owner relay through truthful public baseline runtime, real governed county upload,
+explicitly read-only multi-county TerraFusion Sync, county identity/isolation/trust, the real
+Counties HUB, county-aware TerraForge, exact-candidate integrated acceptance, production release,
+an observed external non-development-network assessor journey, and terminal closeout.
+
+Initial dependency graph:
+
+```text
+WO-WAL-000
+  -> WO-WAL-001 public baseline -----------------+
+  -> WO-WAL-002 governed upload -----------------+--> WO-WAL-005 Counties HUB --+
+  -> WO-WAL-003 read-only Sync ------------------+                               |
+  -> WO-WAL-004 bounded identity/isolation/trust +--> WO-WAL-006 TerraForge -----+
+                                                                                |
+                                                                                v
+WO-WAL-007 exact 39-county acceptance -> WO-WAL-008 production + assessor -> WO-WAL-009 closeout
+```
+
+`WO-WAL-004` may overlap 001-003 only through exact children with non-colliding path, contract, and
+environment reservations. 005 and 006 begin when the 001-004 contracts they consume are stable;
+007 gates production; 008 may deploy only the exact 007-accepted candidate; 009 creates no automatic
+successor.
+
+The external-source boundary is absolute inside this mission: PUBLIC, COUNTY_PROVIDED, and
+CONNECTED are read/import modes into TerraFusion-controlled county-scoped storage. No county PACS,
+CAMA, GIS, database, API, feed, or other external source may be mutated or written back to before a
+later explicit official-adoption decision. Stop on protected data or credentials, cross-county
+disclosure, silent Benton fallback, unsupported capability claims, failed exact-release/rollback
+proof, conflicting higher canon, or a consequential objective outside Issue #1485.
+
+Program definition: [washington-assessor-launch-v1.md](washington-assessor-launch-v1.md).
 
 ---
 

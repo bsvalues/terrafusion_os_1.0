@@ -4,7 +4,7 @@
 | --- | --- |
 | Status | `BLOCKED_ON_WAL_008` |
 | Program | Washington Assessor Launch V1 |
-| Risk | R2 terminal evidence/governance closeout |
+| Risk | R3 terminal evidence/governance closeout |
 | Terminal condition | `WASHINGTON_ASSESSOR_LAUNCH_V1_COMPLETED_AND_CONSUMED` |
 
 ## Objective

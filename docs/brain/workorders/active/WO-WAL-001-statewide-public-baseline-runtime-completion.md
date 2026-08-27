@@ -4,7 +4,7 @@
 | --- | --- |
 | Status | `BLOCKED_ON_WAL_000` |
 | Program | Washington Assessor Launch V1 |
-| Risk | R3 bounded public-data acquisition/runtime implementation |
+| Risk | R4 bounded public-data acquisition/runtime implementation |
 | Terminal condition | `ALL_39_COUNTIES_HAVE_TRUTHFUL_RUNTIME_PUBLIC_BASELINE_OR_EXPLICIT_SOURCE_GAP_WITH_NO_BENTON_FALLBACK` |
 
 ## Objective

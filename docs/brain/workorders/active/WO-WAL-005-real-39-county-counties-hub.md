@@ -4,7 +4,7 @@
 | --- | --- |
 | Status | `BLOCKED_ON_WAL_001_004_CONTRACTS` |
 | Program | Washington Assessor Launch V1 |
-| Risk | R3 assessor-facing control-plane product |
+| Risk | R4 assessor-facing control-plane runtime product |
 | Terminal condition | `COUNTIES_HUB_ALL_39_REAL_CONTROL_PLANE_PUBLIC_UPLOAD_CONNECTED` |
 
 ## Objective

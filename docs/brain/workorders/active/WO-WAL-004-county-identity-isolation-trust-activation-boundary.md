@@ -4,7 +4,7 @@
 | --- | --- |
 | Status | `BLOCKED_ON_WAL_000` |
 | Program | Washington Assessor Launch V1 |
-| Risk | R4 security/identity boundary |
+| Risk | R5 security/identity and county-data boundary |
 | Terminal condition | `COUNTY_AUTHORITY_TRUST_STATE_AND_CROSS_COUNTY_DENIAL_PROVEN_NO_SILENT_DEFAULT` |
 
 ## Objective

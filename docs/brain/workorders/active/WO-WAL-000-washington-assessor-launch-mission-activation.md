@@ -2,7 +2,7 @@
 
 | Field | Value |
 | --- | --- |
-| Status | `READY` |
+| Status | `COMPLETE_ON_PROTECTED_MERGE_OF_PR_1486` |
 | Program | Washington Assessor Launch V1 |
 | Goal | `GOAL-WASHINGTON-ASSESSOR-LAUNCH-V1` |
 | Loop | `LOOP-WASHINGTON-ASSESSOR-LAUNCH-V1` |

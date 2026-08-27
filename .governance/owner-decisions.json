@@ -3,6 +3,105 @@
   "register": "TerraFusion canonical owner decision register",
   "decisions": [
     {
+      "id": "OWNER-WAL-V1-MISSION-AUTHORITY-20260827",
+      "program": "Washington Assessor Launch V1",
+      "goal": "GOAL-WASHINGTON-ASSESSOR-LAUNCH-V1",
+      "loop": "LOOP-WASHINGTON-ASSESSOR-LAUNCH-V1",
+      "work_order": "WO-WAL-000",
+      "status": "active",
+      "authority_class": "R5-bounded-washington-assessor-production-launch-mission",
+      "effective_base_sha": "a1f6fd66d2cff6e3dc7f62ebc00311974951dc90",
+      "scope_source": "GitHub Issue #1485, issued directly by the owner on 2026-08-27. The directive authorizes continuous decomposition and execution of Washington Assessor Launch V1 through exact child Work Orders, isolated worktrees, branches, PRs, validation, protected merges, production release, external assessor acceptance, and terminal closeout without a fresh owner relay for each mechanical child, provided every child only executes the recorded mission and remains inside its hard walls.",
+      "terminal_condition": "WASHINGTON_ASSESSOR_LAUNCH_V1_COMPLETED_AND_CONSUMED",
+      "deadline": "2026-09-28T23:59:59-07:00",
+      "authorized_repositories": [
+        "bsvalues/terrafusion_os_1.0",
+        "bsvalues/terrafusion-forge"
+      ],
+      "conditional_repositories": [
+        "bsvalues/terrafusion-atlas",
+        "bsvalues/terrafusion-dais",
+        "bsvalues/terrafusion-dossier",
+        "bsvalues/terrafusion-gpt"
+      ],
+      "conditional_repository_rule": "Completed canonical suite repositories may be modified only when an exact WAL child proves that the launched TerraFusion OS plus TerraForge runtime requires the change; Five-Suite terminal ownership remains closed and no suite redesign, new suite objective, or unrelated suite work is authorized.",
+      "authorized_actions": [
+        "create or refine exact child Work Orders that only decompose Issue #1485 and record their repository, path, contract, environment, evidence, test, review, rollback, and merge reservations",
+        "acquire and normalize legally and publicly accessible county data already identified by the 39-county acquisition registry into TerraFusion-controlled county-scoped storage with exact provenance and freshness",
+        "implement authenticated county upload intake with validation, mapping, quarantine, lineage, idempotency, atomic promotion, and rollback inside TerraFusion-controlled county-scoped storage",
+        "implement explicitly read-only TerraFusion Sync county and source profiles that copy and normalize authorized external data without external DML, write-back, or mutation",
+        "implement county identity, isolation, trust and capability state, fail-closed authorization, and observed no-Benton-fallback behavior across API, Sync, Counties HUB, TerraForge, and relevant Workbench paths",
+        "build the real 39-county Counties HUB and county-aware TerraForge launch workflows while withholding unsupported capability claims",
+        "run browser, API, source-family, upload, Sync, rollback, external-write-refusal, and adversarial cross-county acceptance over the exact release candidate",
+        "operate isolated branches and worktrees, tests, reviews, remediations, pushes, PRs, required checks, eligible exact-head protected merges, post-merge verification, and automatic continuation between dependency-cleared children",
+        "after WO-WAL-007 acceptance, deploy the exact accepted release to production with real authentication, HTTPS, monitoring, backup and rollback, then obtain an observed external non-development-network assessor journey",
+        "record exact production URL, release, rollback, proof and acceptance identities and mark the program COMPLETED_AND_CONSUMED only when every Issue #1485 terminal condition is observed"
+      ],
+      "data_trust_modes": {
+        "PUBLIC": "TerraFusion-acquired public baseline with observed provenance and freshness",
+        "COUNTY_PROVIDED": "County export or upload promoted only after validation, mapping, quarantine and lineage into TerraFusion-controlled county-scoped storage",
+        "CONNECTED": "Authorized external source read by TerraFusion Sync into TerraFusion-controlled county-scoped storage",
+        "OFFICIAL_TERRAFUSION_ADOPTION": "Reserved for a later county-specific owner decision; external-system write-back is outside this mission"
+      },
+      "child_work_order_policy": {
+        "fresh_owner_decision_required": false,
+        "exact_child_scope_required": true,
+        "one_work_order_per_pr": true,
+        "isolated_worktree_required": true,
+        "independent_assurance_required": true,
+        "protected_main_and_required_checks_required": true,
+        "rollback_provenance_and_observed_evidence_required": true,
+        "initial_dependency_cleared_wave": [
+          "WO-WAL-001",
+          "WO-WAL-002",
+          "WO-WAL-003",
+          "bounded reservation-safe portions of WO-WAL-004"
+        ],
+        "sequence_after_initial_wave": [
+          "WO-WAL-005 and WO-WAL-006 after the 001-004 contracts stabilize",
+          "WO-WAL-007 integrated acceptance",
+          "WO-WAL-008 production release and external assessor acceptance",
+          "WO-WAL-009 terminal closeout"
+        ]
+      },
+      "explicitly_denied": [
+        "any mutation, update, delete, synchronization back to, DML against, or other write-back into a county PACS, CAMA, GIS, database, API, feed, file source, or other external county system before a later explicit county adoption decision",
+        "unauthorized acquisition or use of non-public county, PACS, CAMA, GIS, database, credential, secret, or protected data",
+        "cross-county disclosure, authorization derived from a UI selector or request field, stale county context, privilege escalation, or silent/default Benton fallback",
+        "fabricated readiness, completeness, capability, Sync, production, runtime, source, rollback, test, acceptance, or terminal evidence",
+        "constitutional suite-topology change, a sixth suite, unrelated WilliamOS work, or unrelated CI and release-engineering cleanup",
+        "force push, branch-protection or required-check bypass, unresolved substantive review, or destructive irreversible action without a proven rollback path"
+      ],
+      "merge_mode": "B-standing-bounded-child-work-orders-with-R5-production-gate",
+      "production_gate": {
+        "required_predecessor": "WO-WAL-007",
+        "accepted_candidate_identity_required": true,
+        "real_auth_https_monitoring_backup_rollback_required": true,
+        "external_non_development_assessor_acceptance_required": true
+      },
+      "revocation_triggers": [
+        "any action crosses an explicit denial, external read-only boundary, county isolation boundary, or requires a constitutional topology, protected-data, credential, legal, financial, or new-objective decision outside Issue #1485",
+        "a child lane lacks exact repository, path, contract and environment reservations, clean isolation, rollback, provenance, deterministic proof, independent review, or an eligible exact-head merge path",
+        "WO-WAL-007 has not accepted the exact candidate proposed for production, or production authentication, HTTPS, monitoring, backup, rollback or release identity cannot be proved",
+        "false or missing runtime, source, county, capability, isolation, rollback, production, external assessor or terminal evidence; unresolved substantive review; required-check bypass; force push; destructive cleanup; or conflicting higher canon"
+      ],
+      "decision_basis": "The owner selected a 39-county Washington launch rather than another Benton pilot, explicitly resolved the per-child authority loop, required truthful PUBLIC, COUNTY_PROVIDED and CONNECTED read/import modes, reserved external write-back for later official county adoption, and defined production plus external assessor acceptance as part of the finite mission.",
+      "current_execution": {
+        "state": "ACTIVE",
+        "owner_action_required": false,
+        "current_child_work_order": "WO-WAL-000",
+        "current_pr": 1486,
+        "publication_state": "canonical_on_protected_merge",
+        "next_dependency_cleared_wave": [
+          "WO-WAL-001",
+          "WO-WAL-002",
+          "WO-WAL-003",
+          "bounded reservation-safe portions of WO-WAL-004"
+        ],
+        "terminal_successor": "none"
+      }
+    },
+    {
       "id": "OWNER-FIVE-SUITE-FEDERATED-COMPLETION-20260826",
       "program": "Five-Suite Federated Repository Buildout",
       "goal": "GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES",

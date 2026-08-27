@@ -1,7 +1,7 @@
 # Command-to-Program Map
 
 **Authority:** WO-WOE-010
-**Last Updated:** 2026-08-26
+**Last Updated:** 2026-08-27
 **Classification:** Operator Doctrine — current state snapshot
 
 This file maps every `/goal` command or command alias to its program, current next WO, blockers,
@@ -14,6 +14,7 @@ resolves.
 
 | Command / alias | Program | Next state | Blocked? | Allowed /loop modes |
 |-----------------|---------|---------|----------|---------------------|
+| `washington-assessor-launch-v1` | Washington Assessor Launch V1 | 000 completes on protected merge; 001/002/003 plus bounded 004 clear next | NO - owner mission authority recorded; exact reservations still required | `once`, `program`, `merge-watch`, `evidence`, `recovery`, `discovery` |
 | `codex-operator-autonomy` | Codex Operator Autonomy | CLOSED at WO-OP-AUTO-012 | YES - governing autonomy baseline merged | `once`, `evidence` |
 | `codex-operator-playbook` | Codex Operator Work Order Playbook | CLOSED at WO-CODEX-OP-009 | YES - governance capability merged | `once`, `evidence` |
 | `goal-loop-master-playbook` | Master Goal/Loop Playbook Governance | CLOSED at WO-GOAL-LOOP-MASTER-PLAYBOOK-001 | YES - governing baseline merged | `once`, `evidence` |
@@ -49,6 +50,41 @@ resolves.
 ---
 
 ## Detailed Map
+
+### /goal washington-assessor-launch-v1 → Washington Assessor Launch V1
+
+**File:** [programs/washington-assessor-launch-v1.md](../programs/washington-assessor-launch-v1.md)
+
+**Authority:** Issue #1485 / `OWNER-WAL-V1-MISSION-AUTHORITY-20260827`
+
+**Success condition:** All 39 counties have truthful runtime/control-plane state; upload and Sync
+remain external-read-only; Counties HUB and supported TerraForge workflows pass exact-candidate
+acceptance; the exact release reaches production with rollback proof and an external assessor
+journey; `WO-WAL-009` records `COMPLETED_AND_CONSUMED`.
+
+| WO | Title | Status | Notes |
+| --- | --- | --- | --- |
+| WO-WAL-000 | Mission activation | COMPLETE ON PROTECTED MERGE | PR #1486 canonizes owner authority and routing |
+| WO-WAL-001 | Statewide public baseline runtime | READY AFTER 000 | Isolated R4 lane |
+| WO-WAL-002 | Governed county upload intake | READY AFTER 000 | Isolated R5 lane; TerraFusion storage only |
+| WO-WAL-003 | Read-only multi-county Sync | READY AFTER 000 | Isolated R5 lane; no external DML |
+| WO-WAL-004 | County identity/isolation/trust | BOUNDED CHILDREN READY AFTER 000 | Only reservation-safe portions overlap 001-003 |
+| WO-WAL-005 | Real Counties HUB | DEPENDENCY BLOCKED | Stable 001-004 contracts required |
+| WO-WAL-006 | TerraForge statewide runtime | DEPENDENCY BLOCKED | Stable 001-004 contracts required |
+| WO-WAL-007 | 39-county acceptance | DEPENDENCY BLOCKED | Exact candidate after 001-006 |
+| WO-WAL-008 | Production and external assessor acceptance | PRODUCTION GATED | Exact WAL-007 GO required |
+| WO-WAL-009 | Terminal closeout | DEPENDENCY BLOCKED | After exact production and assessor proof |
+
+**Active stop walls in path:** external county-system write-back; unauthorized non-public or
+credentialed data; cross-county disclosure; silent Benton fallback; fabricated capability or
+readiness; production before exact WAL-007 acceptance; missing auth/HTTPS/monitoring/backup/rollback;
+conflicting higher canon; or a consequential new objective outside Issue #1485.
+
+**Recommended first move:** Merge the validated governance-only activation, then dispatch exact
+isolated children for 001, 002, 003 and non-colliding portions of 004. Do not serialize the entire
+initial wave and do not treat an individual child PR as the mission boundary.
+
+---
 
 ### /goal benton-demo → P1
 

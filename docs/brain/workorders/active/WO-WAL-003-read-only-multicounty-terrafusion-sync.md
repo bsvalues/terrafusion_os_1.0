@@ -4,7 +4,7 @@
 | --- | --- |
 | Status | `BLOCKED_ON_WAL_000` |
 | Program | Washington Assessor Launch V1 |
-| Risk | R4 protected read-only external integration; no external writes |
+| Risk | R5 protected read-only external integration and county credentials/data; no external writes |
 | Terminal condition | `MULTICOUNTY_SYNC_SOURCE_PROFILES_READ_ONLY_LINEAGE_PROVEN_NO_EXTERNAL_DML` |
 
 ## Objective

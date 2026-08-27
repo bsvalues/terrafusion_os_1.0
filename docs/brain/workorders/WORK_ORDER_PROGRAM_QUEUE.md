@@ -1,13 +1,30 @@
 # Work Order Program Queue (Current State)
 
 **Version:** 1.0
-**Date:** 2026-08-26
-**Authority:** OWNER-TF-STANDING-OPERATOR-AUTHORITY
+**Date:** 2026-08-27
+**Authority:** `OWNER-WAL-V1-MISSION-AUTHORITY-20260827` plus `OWNER-TF-STANDING-OPERATOR-AUTHORITY`
 **Classification:** Operator Doctrine — live cross-program queue snapshot
 
 > This file is the **current-state** view. Structural program definitions live in
 > [PROGRAM_PLAYBOOK_REGISTER.md](PROGRAM_PLAYBOOK_REGISTER.md) and `programs/*.md`. Update this file
 > as WOs complete.
+
+---
+
+## Active Washington Assessor Launch V1 Goal
+
+Washington Assessor Launch V1 is active under Issue #1485 and
+`OWNER-WAL-V1-MISSION-AUTHORITY-20260827`. `WO-WAL-000` becomes complete when PR #1486 merges
+through protected main. That protected merge clears `WO-WAL-001`, `WO-WAL-002`, and `WO-WAL-003`
+for isolated parallel execution. `WO-WAL-004` may join the initial wave only through exact bounded
+children whose path, contract, and environment reservations do not collide with 001-003.
+
+The program continues through 39-county runtime truth, governed county upload, read-only
+multi-county Sync, county identity/isolation/trust, the real Counties HUB, county-aware TerraForge,
+integrated 39-county release-candidate acceptance, exact production release, an observed external
+assessor journey, and terminal closeout. External county sources remain read-only; production is
+blocked until `WO-WAL-007` accepts the exact release candidate; no individual PR or child WO is the
+mission boundary.
 
 ---
 
@@ -125,6 +142,21 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 ---
 
 ## Program Queues
+
+### washington-assessor-launch-v1 (`GOAL-WASHINGTON-ASSESSOR-LAUNCH-V1` / `LOOP-WASHINGTON-ASSESSOR-LAUNCH-V1`)
+
+| WO | State | Notes |
+| --- | --- | --- |
+| **WO-WAL-000 Mission Activation** | **COMPLETE ON PROTECTED MERGE / PR #1486** | Canonize Issue #1485, register the finite mission, validate governance, and clear the initial construction wave |
+| **WO-WAL-001 Statewide Public Baseline Runtime Completion** | **READY AFTER 000 MERGE / R4** | Prove truthful source-to-rows-to-runtime state for all 39 counties with provenance, freshness, capability truth, and no Benton fallback |
+| **WO-WAL-002 Governed County Upload Intake** | **READY AFTER 000 MERGE / R5** | Implement authenticated county-bound upload, validation, quarantine, lineage, idempotency, atomic promotion, and rollback in TerraFusion storage only |
+| **WO-WAL-003 Read-Only Multi-County TerraFusion Sync** | **READY AFTER 000 MERGE / R5** | Parameterize explicit county/source profiles and prove external read-only behavior, checkpoints, lineage, drift handling, and zero external DML |
+| **WO-WAL-004 County Identity, Isolation, Trust and Activation Boundary** | **BOUNDED CHILDREN READY AFTER 000 MERGE / R5** | Admit only exact reservation-safe portions alongside 001-003; derive authority from authenticated context and prove cross-county denial and no default Benton behavior |
+| **WO-WAL-005 Real 39-County Counties HUB** | **BLOCKED ON STABLE 001-004 CONTRACTS / R4** | Build `/counties` from real control-plane truth for PUBLIC, COUNTY_PROVIDED, CONNECTED, provenance, freshness and capability state |
+| **WO-WAL-006 TerraForge Statewide Launch Runtime** | **BLOCKED ON STABLE 001-004 CONTRACTS / R4** | Run county-aware supported workflows, disclose trust/source state, and withhold unsupported modules without silent fallback |
+| **WO-WAL-007 39-County End-to-End Launch Proof** | **BLOCKED ON 001-006 / R4** | Accept one exact candidate through all-county API/browser coverage, representative source-family journeys, rollback and adversarial isolation proof |
+| **WO-WAL-008 Production Release and External Assessor Acceptance** | **BLOCKED ON WAL-007 GO / R5** | Deploy only the exact accepted candidate with auth, HTTPS, monitoring, backup/rollback, release identity and a non-development-network assessor journey |
+| **WO-WAL-009 Terminal Launch Closeout** | **BLOCKED ON 008 / R3** | Record exact URL/release/rollback/proof/acceptance identities and consume the mission as `COMPLETED_AND_CONSUMED`; no automatic successor |
 
 ### five-suite-federated-repository-buildout (`GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES` / `LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES`)
 | WO | State | Notes |

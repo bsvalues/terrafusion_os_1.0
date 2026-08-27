@@ -8,7 +8,9 @@
 
 **Deadline:** production terminal proof before the WACO Annual Conference begins September 29, 2026; target no later than September 28, 2026 Pacific time.
 
-**Status:** OWNER DIRECTIVE RECORDED — canonical activation is `WO-WAL-000`; product work begins only after that authority is recorded in the canonical owner-decision register.
+**Status:** ACTIVE ON PROTECTED MERGE OF PR #1486 — Issue #1485 is recorded as
+`OWNER-WAL-V1-MISSION-AUTHORITY-20260827`; the initial construction wave begins only after the
+governance activation reaches protected main.
 
 ## Mission
 

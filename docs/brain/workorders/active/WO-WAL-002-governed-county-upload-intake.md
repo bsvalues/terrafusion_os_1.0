@@ -4,7 +4,7 @@
 | --- | --- |
 | Status | `BLOCKED_ON_WAL_000` |
 | Program | Washington Assessor Launch V1 |
-| Risk | R3 authenticated county-data ingestion into TerraFusion-controlled storage |
+| Risk | R5 authenticated county-data ingestion into TerraFusion-controlled storage |
 | Terminal condition | `COUNTY_UPLOAD_OBSERVED_VALIDATED_LINEAGE_BOUND_COUNTY_SCOPED_AND_NO_EXTERNAL_WRITE` |
 
 ## Objective
