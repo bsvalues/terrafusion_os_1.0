@@ -11790,7 +11790,7 @@
       "contractReservations": ["wal.county-identity.v1", "wal.county-authority.v1"],
       "environmentReservations": ["wal004a-local-in-memory"],
       "evidenceRequired": [{ "kind": "command", "description": "Focused tests prove all 39 identities, canonical aliases, no Benton fallback, ambiguity denial and conflicting authenticated-claim denial." }],
-      "validationGates": [{ "name": "WAL canonical county authority contract", "command": "dotnet test backend/TerraFusion.API.Tests/TerraFusion.API.Tests.csproj --filter FullyQualifiedName~CountyResolverTests|FullyQualifiedName~HttpContextRequestUserContextAccessorTests && git diff --check && exact changed-path audit", "required": true, "result": "not_run" }],
+      "validationGates": [{ "name": "WAL canonical county authority contract", "command": "dotnet test backend/TerraFusion.API.Tests/TerraFusion.API.Tests.csproj --filter \"FullyQualifiedName~CountyResolverTests|FullyQualifiedName~HttpContextRequestUserContextAccessorTests\" && git diff --check && exact changed-path audit", "required": true, "result": "not_run" }],
       "stopConditions": [
         { "type": "scope_boundary", "description": "Stop before any integration, trust/activation behavior, file, contract or environment outside the exact reservations." },
         { "type": "protected_data", "description": "No live identity provider, database migration, county system, credential or protected-data access is authorized." }

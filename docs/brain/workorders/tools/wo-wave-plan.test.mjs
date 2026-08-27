@@ -639,6 +639,10 @@ describe('wo-wave-plan', () => {
     const actualRecords = actualRegistry.records.filter(item => selectedIds.has(item.id));
     const children = childIds.map(id => actualRecords.find(item => item.id === id));
     assert.ok(children.every(Boolean));
+    assert.equal(
+      children.find(item => item.id === 'WO-WAL-004A').validationGates[0].command,
+      'dotnet test backend/TerraFusion.API.Tests/TerraFusion.API.Tests.csproj --filter "FullyQualifiedName~CountyResolverTests|FullyQualifiedName~HttpContextRequestUserContextAccessorTests" && git diff --check && exact changed-path audit'
+    );
 
     const schema = JSON.parse(
       fs.readFileSync(
