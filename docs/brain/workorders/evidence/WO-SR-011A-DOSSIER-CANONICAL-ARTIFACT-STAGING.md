@@ -2,7 +2,7 @@
 
 ## Current verdict
 
-`PASS_ON_CURRENT_PROTECTED_BASE_PENDING_PROTECTED_MERGE`
+`DOSSIER_STAGING_PROVENANCE_AND_ROLLBACK_PROVEN`
 
 ## Exact identities
 
@@ -57,3 +57,6 @@ CRLF conversion changes the frozen JSON hashes; the canonical Git-blob form is t
 
 This evidence claims staging only. It does not claim a runtime consumer, persistent selection,
 custody mutation, source-ownership transfer, source retirement, deployment, or production use.
+PR #1474 merged as protected OS main `aec4f1e18b619730842c828e4f1c93ecd18d64b2`
+with tree `4366886e5fdc1333334bbd92dd840cbbcb5f7933`; required checks and protected-main
+verification passed.

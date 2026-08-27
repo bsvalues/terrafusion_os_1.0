@@ -1,11 +1,20 @@
 # WO-SR-012C - GPT Grounded-Context Runtime Adoption Evidence
 
-## Evidence under construction
+## Protected terminal evidence
 
-This record is finalized only from an exact protected-base candidate and a protected-main rerun.
-The candidate must record the protected WO-SR-012B merge, exact runtime head/merge, focused test
-counts, process-host identity hashes, persistent selection observations, tamper refusals, whole-slot
-rollback inventory, and adopted-artifact restoration.
+Reviewed OS head `3bd87411966a7d2c61439f4f60a11f0cb498968f`, tree
+`e6797a83c2c47f3a62bcbfd19e544cd0ae6e5bf8`, is based on protected OS main
+`65ddfe9948b02c0cd6089fc95c83e48885cc92ab`. Manual proof workflow run
+`33071051037` completed successfully, and independent review reported no actionable P0/P1.
+
+Protected OS main `9ef50aa1cc608fa3aa8075f30cf349b757a31902`, parent
+`65ddfe9948b02c0cd6089fc95c83e48885cc92ab`, has tree
+`e6797a83c2c47f3a62bcbfd19e544cd0ae6e5bf8`, exactly equal to the reviewed tree.
+All eight required contexts plus broader backend, security, evidence, seal, frontend, and
+build-package first-party checks passed with zero review threads.
+
+Protected-main proof run `33073723122` completed successfully on exact protected head
+`9ef50aa1cc608fa3aa8075f30cf349b757a31902`.
 
 ## Invariants already fixed by source identity
 

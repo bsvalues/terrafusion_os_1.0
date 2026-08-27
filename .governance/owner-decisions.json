@@ -8,7 +8,7 @@
       "goal": "GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES",
       "loop": "LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES",
       "work_order": "WO-SR-MISSION-COMPLETION",
-      "status": "active",
+      "status": "complete",
       "authority_class": "R4-bounded-five-suite-federated-repository-completion",
       "effective_base_sha": "6fa8a420c1b875255bf612802a0d9c93a0e2ea15",
       "scope_source": "Owner directive issued directly in the Codex mission thread on 2026-08-26. It explicitly authorizes decomposition and execution of the already-ratified Five-Suite program across the sovereign OS and the five named suite repositories without a fresh owner decision for each mechanical successor, file allowlist, worktree, PR, runtime-adoption step, rollback proof, or canonical-ownership step inside the recorded boundaries.",
@@ -52,29 +52,46 @@
       ],
       "decision_basis": "Forge is the completed canonical-cutover pattern. Atlas, Dais, Dossier, and GPT have standalone foundations but incomplete canonical ownership/runtime adoption. The owner resolved the earlier per-WO authority objection and ordered continuous execution to the program terminal condition while preserving the stated hard walls.",
       "current_execution": {
-        "state": "ACTIVE",
+        "state": "COMPLETED_AND_CONSUMED",
         "owner_action_required": false,
-        "current_child_work_order": "WO-SR-010B",
+        "current_child_work_order": null,
         "current_pr": null,
-        "completed_child": {
-          "id": "ATLAS_CANONICAL_RUNTIME_AND_OWNERSHIP",
-          "sovereign_pr": 1465,
-          "sovereign_exact_head": "feb69f85999039db03ef95f52f8a8d4e4c0d2f8f",
-          "sovereign_merge": "4fcbfbd0585122f67f640b1b76786b7629f28e1f",
-          "suite_pr": 4,
-          "suite_exact_head": "8c2d4d8704ac59779ab67ce30ec5b9094350a5ae",
-          "suite_merge": "708fc5c31988405f9ca2cba7ebea7bb9d1fec3a6",
-          "protected_main_verified": true
+        "publication_state": "terminal_protected_complete_on_merge",
+        "gpt_reviewed_candidate": {
+          "base": "65ddfe9948b02c0cd6089fc95c83e48885cc92ab",
+          "head": "3bd87411966a7d2c61439f4f60a11f0cb498968f",
+          "tree": "e6797a83c2c47f3a62bcbfd19e544cd0ae6e5bf8",
+          "manual_proof_run": 33071051037,
+          "manual_proof_result": "success",
+          "independent_review": "no actionable P0/P1",
+          "protected_os_merge": "9ef50aa1cc608fa3aa8075f30cf349b757a31902",
+          "protected_os_tree": "e6797a83c2c47f3a62bcbfd19e544cd0ae6e5bf8",
+          "protected_tree_equals_reviewed_tree": true,
+          "required_first_party_contexts": "8/8 success plus backend/security/evidence/seal/frontend/build-package success; zero threads",
+          "protected_main_proof_run": 33073723122,
+          "protected_main_proof_result": "success",
+          "protected_suite_base": "550b50f27af6f0911f16c973cbb6fc57a20eb15a",
+          "protected_suite_reviewed_head": "c17c4136a6d6819b687df597943dae667273b7e2",
+          "protected_suite_merge": "cbcbc518d25b000724712b029fed8cc4e05d8ca6",
+          "protected_suite_tree": "8f4cae82e19cf1ced8a397c2f392ab7dc13c0c85",
+          "protected_suite_tree_equals_reviewed_tree": true,
+          "protected_suite_required_first_party_contexts": "suite-ci, contract-compat and governance-gate success; zero threads",
+          "protected_suite_terminal_receipt": "operations/evidence/receipts/WO-SR-012D-gpt-runtime-adoption.json",
+          "protected_suite_terminal_receipt_bytes": 8737,
+          "protected_suite_terminal_receipt_sha256": "4aa0b8ca01e0d89d327457e75ade323fe1c28651373361c42baa85a2e84ecb40"
         },
-        "completed_dais_staging": {
-          "work_order": "WO-SR-010A",
-          "sovereign_pr": 1466,
-          "sovereign_exact_head": "88e7454b2a64a99d3a917914e486fff410df756c",
-          "sovereign_merge": "5182742d756cea6a939bb12489e660d83b9593b6",
-          "protected_main_verified": true
+        "terminal_suite_mains": {
+          "forge": { "merge": "d7aff95257f29e0d1a7d301703d1cdc744f7690e", "tree": "dac66c3bd0bf0cc6822e010b71801a9b8b1b9482" },
+          "atlas": { "merge": "708fc5c31988405f9ca2cba7ebea7bb9d1fec3a6", "tree": "d986cc31da0077adb3a133bd1fa6d44bb2a79acc" },
+          "dais": { "merge": "ad5d1a36534ac8ce94024b3bc66ecf976d5c55bb", "tree": "37c97cf6d723d4d673b5c4ae2ee495f3bd086959" },
+          "dossier": {
+            "merge": "4a109acef12804f89c894f8f139034bf975c0811",
+            "tree": "eedad9c4e8b5c3f30d33f5e58a2856b896f7ae86",
+            "runtime_receipt": "operations/evidence/receipts/WO-SR-011G-dossier-mutation-runtime-adoption.json",
+            "runtime_receipt_sha256": "65c4ea5f638b44fe0df26b3fc6280d9b01f8a2f0b810670c58f2f01edce9faf7"
+          }
         },
-        "current_child_result": "WO-SR-010A proved exact Dais module, frozen schema and source-manifest identity, typed full-manifest enforcement, protected-main reachability and negative refusal, byte-identical publication, concurrency exclusion and executed whole-slot rollback; PR #1466 passed all exact-head checks, merged and was verified on protected main.",
-        "next_after_current_child": "Dais protected-main standalone ownership finalization, then Dossier and GPT"
+        "successor_state": "none_inside_completed_mission; Forge WO-SR-007 remains pending outside mission"
       }
     },
     {

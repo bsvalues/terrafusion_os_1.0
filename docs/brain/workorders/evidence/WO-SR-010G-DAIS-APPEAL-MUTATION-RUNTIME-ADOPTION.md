@@ -2,7 +2,7 @@
 
 ## Current verdict
 
-`LOCAL_TERMINAL_PROOF_PASS_PROTECTED_ASSURANCE_PENDING`
+`DAIS_APPEAL_MUTATION_LOCAL_EXACT_RUNTIME_ADOPTED_ROLLBACK_EXECUTED_AND_DUPLICATE_JUDGMENT_RETIRED`
 
 The terminal local proof passed at sovereign feature head
 `f3f8f675573b21203aad7bbf6a7abc9cd2651806`, which contains protected sovereign dependency
@@ -43,3 +43,11 @@ pwsh -NoProfile -File scripts/validation/Invoke-DaisAppealMutationRuntimeAdoptio
 pwsh -NoProfile -File scripts/validation/Invoke-DaisAppealMutationRuntimeAdoptionRollbackProof.ps1 -DaisRepository https://github.com/bsvalues/terrafusion-dais -DotNetExecutable <dotnet> -NuGetPackagesPath <packages>
 git diff --check
 ```
+
+## Protected completion
+
+PR #1471 merged as protected OS main `f14fc4999f650ed4bbff2633813be6b57ec4bfbc`
+with tree `1956fac36402d8ec54a6d0aa16fc762e57094464`. Required first-party assurance,
+exact-head merge, and protected-main verification passed. Dais terminal governance is protected at
+`ad5d1a36534ac8ce94024b3bc66ecf976d5c55bb`, tree
+`37c97cf6d723d4d673b5c4ae2ee495f3bd086959`.

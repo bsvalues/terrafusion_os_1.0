@@ -2,7 +2,7 @@
 
 ## Current verdict
 
-`PASS_ON_EXACT_PROTECTED_SOURCE_PENDING_SOVEREIGN_PROTECTED_MERGE`
+`DOSSIER_MUTATION_EXACT_STAGING_AND_ROLLBACK_PROVEN`
 
 The sovereign staging implementation and full observed proof ran after integrating exact protected OS
 base `1f0889a72497b283140fb0d0a57eed79775f9a34`, which contains protected mutation-contract merge
@@ -61,10 +61,11 @@ Observed full terminal condition:
 DOSSIER_MUTATION_EXACT_STAGING_AND_ROLLBACK_PROVEN
 ```
 
-## Remaining protected-sovereign evidence
+## Protected sovereign completion
 
-Exact-head review, required first-party checks, protected merge, and protected-main verification remain
-for this sovereign child. No COMPLETE claim is permitted until those outcomes are observed.
+PR #1479 merged as protected OS main `807a46aad94e5bc8a36d7974130d482e49a73d2b`
+with tree `1e516f6fe07d321db707be932068eb27bda0764f`. Exact-head review, required
+first-party checks, protected merge, and protected-main verification passed.
 
 This record claims no runtime adoption, persistence or custody mutation, county data use, deployment,
 Production use, source ownership completion, or Dossier terminal completion.

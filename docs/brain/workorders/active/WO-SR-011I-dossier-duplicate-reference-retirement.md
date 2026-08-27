@@ -2,7 +2,7 @@
 
 | Field | Value |
 | --- | --- |
-| Status | ACTIVE - implementation and protected proof |
+| Status | COMPLETE - duplicate reference custody classification retired |
 | Program | Five-Suite Federated Repository Buildout |
 | Goal | `GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES` |
 | Authority | `OWNER-FIVE-SUITE-FEDERATED-COMPLETION-20260826` |
@@ -32,3 +32,13 @@ in the suite-owned `dossier.mutation-decision@1.0.0` contract consumed by persis
 - Dossier mutation and legacy endpoint tests compile and pass.
 - Required protected checks pass, review threads are resolved, and protected-main tree identity is
   verified before the Dossier suite terminal record is repaired.
+
+## Protected completion
+
+PR #1482 reviewed exact head `b173b8d16c434373064341e51c6a1b3b1f61dedc`, tree
+`b9860d533d91fc0ac930bc0787d545b2151a4184`, and squash-merged as protected OS
+main `65ddfe9948b02c0cd6089fc95c83e48885cc92ab` with exact tree equality. Zero
+review threads and all eight required contexts plus backend, security, seal, frontend, and package
+first-party checks passed. Dossier terminal governance is protected at suite main
+`4a109acef12804f89c894f8f139034bf975c0811`, tree
+`eedad9c4e8b5c3f30d33f5e58a2856b896f7ae86`.

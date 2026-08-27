@@ -2,7 +2,7 @@
 
 ## Current verdict
 
-`PASS_ON_142A105A0_PROTECTED_BASE_PENDING_PROTECTED_MERGE`
+`GPT_STAGING_PROVENANCE_AND_ROLLBACK_PROVEN`
 
 ## Exact identities
 
@@ -51,3 +51,7 @@ It uses no private sibling-repository credentials.
 This evidence claims inert staging only. It does not claim a runtime consumer, provider access,
 persistent `LocalExact` selection, ownership retirement, persistence mutation, deployment,
 production use, or county data.
+
+Protected OS main `1f0889a72497b283140fb0d0a57eed79775f9a34`, tree
+`4e24afd3c3818715713b4ac8326b99405fda5960`, contains this exact staging child.
+Required first-party checks, protected merge, and protected-main verification passed.

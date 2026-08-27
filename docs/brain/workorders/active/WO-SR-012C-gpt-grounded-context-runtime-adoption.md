@@ -2,12 +2,18 @@
 
 | Field | Value |
 | --- | --- |
-| Status | IMPLEMENTING ON EXACT WO-SR-012B HEAD |
+| Status | COMPLETE - protected runtime and exact tree equality verified |
 | Program | Five-Suite Federated Repository Buildout |
 | Goal | `GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES` |
 | Risk | R4 bounded Development runtime adoption and duplicate retirement |
 | Authority | `OWNER-FIVE-SUITE-FEDERATED-COMPLETION-20260826` |
 | GPT protected source | `bsvalues/terrafusion-gpt@550b50f27af6f0911f16c973cbb6fc57a20eb15a` |
+| Reviewed OS head | `3bd87411966a7d2c61439f4f60a11f0cb498968f` |
+| Reviewed OS tree | `e6797a83c2c47f3a62bcbfd19e544cd0ae6e5bf8` |
+| Reviewed OS base | `65ddfe9948b02c0cd6089fc95c83e48885cc92ab` |
+| Protected OS merge | `9ef50aa1cc608fa3aa8075f30cf349b757a31902` |
+| Protected OS tree | `e6797a83c2c47f3a62bcbfd19e544cd0ae6e5bf8`, equal to reviewed tree |
+| Protected-main proof run | `33073723122`, success on protected head |
 | Terminal condition | `GPT_GROUNDED_CONTEXT_CANONICAL_RUNTIME_ADOPTION_AND_ROLLBACK_PROVEN` |
 
 ## Objective
@@ -66,3 +72,17 @@ Select `GptGroundedContextRuntime:Mode=Disabled`, restart, and observe no host o
 registration. Restore the byte-identical prior three-file artifact slot from the staging rollback
 inventory when artifact rollback is required. Revert this Work Order's protected merge to retire the
 route and registration while retaining the frozen sovereign contract.
+
+## Terminal candidate assurance
+
+Manual proof workflow run `33071051037` completed successfully on reviewed head
+`3bd87411966a7d2c61439f4f60a11f0cb498968f`, tree
+`e6797a83c2c47f3a62bcbfd19e544cd0ae6e5bf8`, based on protected Dossier-retirement
+main `65ddfe9948b02c0cd6089fc95c83e48885cc92ab`. Independent review reported no
+actionable P0/P1. The reviewed head squash-merged as protected main
+`9ef50aa1cc608fa3aa8075f30cf349b757a31902` with exact tree equality. All eight
+required contexts plus broader backend, security, evidence, seal, frontend, and build-package
+first-party checks passed with zero review threads.
+
+Protected-main proof workflow run `33073723122` then completed successfully on exact protected head
+`9ef50aa1cc608fa3aa8075f30cf349b757a31902`.

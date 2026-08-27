@@ -2,7 +2,7 @@
 
 | Field | Value |
 | --- | --- |
-| Status | PROVEN ON INTEGRATED `142a105a0` PROTECTED BASE - protected PR pending |
+| Status | COMPLETE - protected exact GPT staging and rollback verified |
 | Program | Five-Suite Federated Repository Buildout |
 | Goal | `GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES` |
 | Risk | R3 bounded non-production local artifact staging |
@@ -35,7 +35,8 @@ also byte pinned. The slot remains inert and reports `runtimeAdopted=false`.
 
 Latest protected main `142a105a0a9a1aef425a434b962c7d9e3326e50b`, including the
 `WO-SR-011D` contract freeze and Dossier runtime-proof repair, is integrated. Both proof tiers must
-pass again on this exact latest base before protected merge.
+pass again on this exact latest base before protected merge. Both tiers passed before the protected
+merge recorded below.
 
 ## Required proof
 
@@ -67,3 +68,11 @@ For an existing slot, move the whole slot to a same-volume rollback directory, v
 against the pre-move inventory, publish only after verification, and restore the directory on any
 failure. For an originally absent slot, remove any failed partial publication and restore absence.
 For an existing empty slot, restore the empty directory itself.
+
+## Protected completion
+
+The exact staging change merged as protected OS main
+`1f0889a72497b283140fb0d0a57eed79775f9a34`, tree
+`4e24afd3c3818715713b4ac8326b99405fda5960`. The complete inert staging and
+rollback proof, required first-party assurance, and protected-main verification passed. WO-SR-012C
+is the separately governed runtime-adoption child.

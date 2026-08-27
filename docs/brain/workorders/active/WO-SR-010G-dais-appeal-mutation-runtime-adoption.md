@@ -2,7 +2,7 @@
 
 | Field | Value |
 | --- | --- |
-| Status | ACTIVE - local terminal proof passed; protected assurance pending |
+| Status | COMPLETE - protected runtime adoption and rollback verified |
 | Program | Five-Suite Federated Repository Buildout |
 | Goal | `GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES` |
 | Risk | R4 canonical runtime adoption and recoverable ownership cutover |
@@ -46,5 +46,9 @@ authorization, audit, and HTTP mapping responsibilities.
 
 ## Continuation
 
-WO-SR-010H separately retires the frontend scheduling offer. Dossier begins only after both Dais
-children are protected-main complete.
+WO-SR-010H separately retired the frontend scheduling offer. PR #1471 merged as protected OS main
+`f14fc4999f650ed4bbff2633813be6b57ec4bfbc` with tree
+`1956fac36402d8ec54a6d0aa16fc762e57094464`; the runtime receipt, rollback,
+restoration, and protected-main verification passed. Dais later finalized its suite governance at
+protected main `ad5d1a36534ac8ce94024b3bc66ecf976d5c55bb`, tree
+`37c97cf6d723d4d673b5c4ae2ee495f3bd086959`.
