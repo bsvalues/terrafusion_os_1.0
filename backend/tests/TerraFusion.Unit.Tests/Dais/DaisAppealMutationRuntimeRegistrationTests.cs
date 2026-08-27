@@ -14,6 +14,38 @@ namespace TerraFusion.Unit.Tests.Dais;
 
 public sealed class DaisAppealMutationRuntimeRegistrationTests
 {
+    [ExactDaisAppealMutationHostFact]
+    public async Task DevelopmentLocalExact_FreshStartAndRestart_ResolvesAndExecutesExactStagedPort()
+    {
+        var modulePath = Path.GetFullPath(System.Environment.GetEnvironmentVariable(
+            "TERRAFUSION_DAIS_MUTATION_HOST_MODULE_PATH")!);
+        var schemaPath = Path.GetFullPath(System.Environment.GetEnvironmentVariable(
+            "TERRAFUSION_DAIS_MUTATION_HOST_SCHEMA_PATH")!);
+        var artifactSlot = Directory.GetParent(modulePath)!.FullName;
+        var sovereignRoot = Directory.GetParent(Directory.GetParent(Directory.GetParent(
+            Directory.GetParent(artifactSlot)!.FullName)!.FullName)!.FullName)!.FullName;
+
+        for (var start = 1; start <= 2; start++)
+        {
+            var services = new ServiceCollection();
+            services.AddDaisAppealMutationRuntime(
+                Configuration(("Mode", "LocalExact"), ("TimeoutSeconds", "30")),
+                Environment("Development", sovereignRoot));
+            await using var provider = services.BuildServiceProvider();
+            using var scope = provider.CreateScope();
+            var options = scope.ServiceProvider
+                .GetRequiredService<IOptions<DaisAppealMutationOptions>>().Value;
+            var port = scope.ServiceProvider.GetRequiredService<IDaisAppealMutationDecisionPort>();
+
+            var result = await port.DecideCreateAsync(Request());
+
+            result.Decision.Should().Be(DaisAppealMutationDecision.accepted, $"start {start}");
+            options.Mode.Should().Be(DaisAppealMutationMode.LocalExact);
+            options.ModulePath.Should().Be(modulePath);
+            options.SchemaPath.Should().Be(schemaPath);
+        }
+    }
+
     [Fact]
     public async Task Disabled_RegistersFailClosedDecisionPortAndOptions()
     {
