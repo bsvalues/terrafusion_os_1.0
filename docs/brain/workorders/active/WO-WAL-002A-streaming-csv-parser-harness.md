@@ -5,7 +5,7 @@
 | Status | `IMPLEMENTED_PENDING_REMOTE_DOTNET_VALIDATION` |
 | Program | Washington Assessor Launch V1 |
 | Parent | `WO-WAL-002` |
-| Base | `0aba8ff60d09f526b6aa0a8aaf85fd4fc7957778` |
+| Base | `b57411aef09bae3074d99999f08e4210a20a3208` |
 | Risk | R2 bounded in-memory parsing foundation |
 | Contract reservation | `wal.county-upload.csv-parser.v1` |
 | Environment reservation | `local-memory-stream-only` |
