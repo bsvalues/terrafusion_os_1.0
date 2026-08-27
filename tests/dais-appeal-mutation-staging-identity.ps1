@@ -163,6 +163,7 @@ try {
     throw "candidate manifest tamper was not refused: $manifestTamperFailure"
   }
   if (Test-Path -LiteralPath $artifactSlot) { throw 'manifest tamper reached live mutation slot' }
+  if (@(Get-ChildItem -LiteralPath $stagerBuildRoot -Force).Count -ne 0) { throw 'manifest tamper retained an ephemeral proof root' }
 
   $freshPublishFailure = $null
   try { $null = Invoke-Stager -InjectPublishFailure }
@@ -172,6 +173,7 @@ try {
     throw "fresh publication failure did not remove partial slot: $freshPublishFailure"
   }
   if (Test-Path -LiteralPath $artifactSlot) { throw 'fresh failure left a partial mutation slot' }
+  if (@(Get-ChildItem -LiteralPath $stagerBuildRoot -Force).Count -ne 0) { throw 'fresh failure retained an ephemeral proof root' }
 
   $first = Invoke-Stager
   Assert-Equal $first.suiteRepository 'bsvalues/terrafusion-dais' 'repository'
@@ -184,6 +186,7 @@ try {
   Assert-Equal $first.publishedManifestSha256 $publishedManifestHash 'published manifest hash'
   Assert-Equal $first.publishedManifestLength $publishedManifestLength 'published manifest length'
   Assert-Equal $first.rollbackSlot $null 'fresh rollback slot'
+  if (@(Get-ChildItem -LiteralPath $stagerBuildRoot -Force).Count -ne 0) { throw 'fresh publication retained an ephemeral proof root' }
 
   $published = Get-Inventory $artifactSlot
   Assert-Equal (@($published.Keys | Sort-Object) -join '|') 'dais.appeal-mutation.v1.schema.json|decide-dais-appeal-mutation.mjs|manifest.json' 'published inventory'
@@ -208,6 +211,7 @@ try {
     throw "backup verification failure did not restore: $backupFailure"
   }
   Assert-InventoryEqual (Get-Inventory $artifactSlot) $priorInventory 'backup failure restoration'
+  if (@(Get-ChildItem -LiteralPath $stagerBuildRoot -Force).Count -ne 0) { throw 'backup failure retained an ephemeral proof root' }
 
   $publishFailure = $null
   try { $null = Invoke-Stager -InjectPublishFailure }
@@ -217,6 +221,7 @@ try {
     throw "publish failure did not restore prior slot: $publishFailure"
   }
   Assert-InventoryEqual (Get-Inventory $artifactSlot) $priorInventory 'publication failure restoration'
+  if (@(Get-ChildItem -LiteralPath $stagerBuildRoot -Force).Count -ne 0) { throw 'publication failure retained an ephemeral proof root' }
 
   $second = Invoke-Stager
   if (-not (Test-Path -LiteralPath $second.rollbackSlot -PathType Container)) {
@@ -226,6 +231,9 @@ try {
   if ($receiptRollback.Count -lt 4) { throw 'rollback receipt hashes are empty or incomplete' }
   Assert-InventoryEqual (Get-Inventory $second.rollbackSlot) $priorInventory 'backup contents'
   Assert-InventoryEqual $receiptRollback $priorInventory 'receipt rollback hashes'
+  $retainedRootEntries = @(Get-ChildItem -LiteralPath (Split-Path -Parent $second.rollbackSlot) -Force)
+  Assert-Equal $retainedRootEntries.Count 1 'managed rollback root entry count'
+  Assert-Equal $retainedRootEntries[0].Name 'previous-artifact' 'managed rollback root entry'
 
   $adoptedInventory = Get-Inventory $artifactSlot
   Move-Item -LiteralPath $artifactSlot -Destination $adoptedSlot
@@ -248,6 +256,7 @@ try {
     candidateManifestTamperRejectedBeforePublication=$true;freshFailureSlotRemovalVerified=$true;
     backupVerificationFailureRollbackVerified=$true;publicationFailureRollbackVerified=$true;
     nonemptyBackupContentsVerified=$true;rollbackHashesVerified=$true;rollbackExecutedAndObserved=$true;
+    ephemeralProofRootsRemoved=$true;managedRollbackOnlyRetentionVerified=$true;
     runtimeActivated=$false;countyOrProtectedDataUsed=$false;deploymentOrProductionUsed=$false
   } | ConvertTo-Json -Depth 5
 } finally {

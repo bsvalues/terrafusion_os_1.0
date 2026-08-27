@@ -230,6 +230,7 @@ $candidate = Join-Path $proofRoot 'candidate-artifact'
 $backupSlot = Join-Path $proofRoot 'previous-artifact'
 New-Item -ItemType Directory -Path $proofRoot,$candidate -Force | Out-Null
 
+try {
 $fetchRepository = $DaisRepository
 $declaredOrigin = if (Test-Path -LiteralPath $DaisRepository -PathType Container) {
   $fetchRepository = (Resolve-Path -LiteralPath $DaisRepository).Path
@@ -379,4 +380,17 @@ try {
 } finally {
   if ($transactionLockHeld) { $transactionMutex.ReleaseMutex() }
   $transactionMutex.Dispose()
+}
+} finally {
+  # Source and candidate data are always ephemeral. A previous-artifact directory is deliberately
+  # retained when present because it is the rollback slot returned to the operator.
+  foreach ($ephemeralPath in @($suiteSource,$candidate)) {
+    if (Test-Path -LiteralPath $ephemeralPath) {
+      Remove-Item -LiteralPath $ephemeralPath -Recurse -Force -ErrorAction Stop
+    }
+  }
+  if ((Test-Path -LiteralPath $proofRoot -PathType Container) -and
+      @(Get-ChildItem -LiteralPath $proofRoot -Force).Count -eq 0) {
+    Remove-Item -LiteralPath $proofRoot -Force -ErrorAction Stop
+  }
 }

@@ -21,6 +21,8 @@ The full authenticated protected-source proof passed against Dais protected `mai
 - injected backup-verification failure restored that prior inventory byte-for-byte;
 - injected post-publication failure restored that prior inventory byte-for-byte;
 - successful replacement produced a real backup directory and complete nonempty receipt hashes;
+- every source clone and candidate proof root was removed on success and injected failure, while a
+  successful replacement retained only its deliberately managed `previous-artifact` rollback slot;
 - the prior slot was physically moved back into service, hash-observed, then the adopted slot was
   restored and hash-observed;
 - the test cleaned its ignored artifact and temporary proof roots;
