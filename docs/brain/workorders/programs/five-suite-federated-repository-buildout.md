@@ -4,7 +4,7 @@
 
 **Loop:** `LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES`
 
-**Status:** Active execution; mission authority `OWNER-FIVE-SUITE-FEDERATED-COMPLETION-20260826`; WO-SR-010G Dais mutation runtime and concurrent WO-SR-010H frontend availability retirement
+**Status:** Active execution; mission authority `OWNER-FIVE-SUITE-FEDERATED-COMPLETION-20260826`; WO-SR-010G Dais mutation runtime final protected assurance
 
 ## Ratified topology
 
@@ -101,7 +101,7 @@ county contexts, audit spines, deployment control planes, or contract authoritie
 | WO-SR-010E | Stage the exact Dais mutation module/schema with provenance and observed rollback | Complete R3; PR #1470 exact head `dfce1f5f1` merged as `153103c4f`; protected main verified |
 | WO-SR-010F | Retire fabricated sovereign appeal grounds, timeline, evidence-checklist, and hearing-schedule behavior | Complete R3; PR #1469 exact head `17f2f3fa1` merged as `acf4abc59`; protected main verified |
 | WO-SR-010G | Adopt the exact Dais mutation decision as the persistent real Development runtime, enforce stale-write conflict, and execute rollback | Active R4; 61/61 focused and 2/2 concurrency tests pass; exact Disabled rollback/restoration observed; protected assurance pending |
-| WO-SR-010H | Retire the unsupported PropertyDais hearing-scheduling offer and prove no offered frontend write path | Active bounded successor; separately isolated implementation and assurance in progress |
+| WO-SR-010H | Retire the unsupported PropertyDais hearing-scheduling offer and prove no offered frontend write path | Complete R3; PR #1473 exact head `b6a011620` merged as `6291e58b1`; protected main verified |
 
 ## Extraction and provenance policy
 
@@ -345,6 +345,7 @@ bytes in PR #1470, merged as `153103c4f5356219c142ccfe88174c2c6477e54d`. `WO-SR-
 truthfully retired four fabricated or unsupported sovereign behaviors in PR #1469, merged as
 `acf4abc5959f468c6a43a00b09cead5d55679795`. `WO-SR-010G` now adopts the staged mutation boundary,
 retires duplicate OS lifecycle judgment, proves stale-write conflict and exact Disabled rollback,
-and leaves only sovereign integration/persistence responsibilities. Concurrent `WO-SR-010H`
-removes the unsupported frontend scheduling offer. Dossier begins after both protected-main merges,
+and leaves only sovereign integration/persistence responsibilities. `WO-SR-010H` removed the
+unsupported frontend scheduling offer in protected merge
+`6291e58b11626ad04bdc89e736be89b2a574261c`. Dossier begins after the WO-SR-010G protected merge,
 then GPT follows without a per-child owner relay.

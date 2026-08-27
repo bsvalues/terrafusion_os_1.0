@@ -2,7 +2,7 @@
   "schemaVersion": "0.1.0",
   "generatedBy": "WO-SR-010G Dais appeal mutation runtime adoption",
   "generatedAt": "2026-08-26T00:00:00Z",
-  "description": "The owner-level Five-Suite completion mission is active. Atlas is complete; Dais read staging/runtime, mutation contract/source/staging, and truthful sovereign retirement are protected merges. WO-SR-010G adopts the exact mutation runtime while WO-SR-010H retires the unsupported frontend scheduling offer.",
+  "description": "The owner-level Five-Suite completion mission is active. Atlas is complete; Dais read staging/runtime, mutation contract/source/staging, truthful sovereign retirement, and frontend availability retirement are protected merges. WO-SR-010G is in final exact mutation-runtime assurance before Dossier begins.",
   "records": [
     {
       "id": "WO-WOE-000",
@@ -11308,6 +11308,38 @@
       "nextCandidates": [{ "id": "WO-SR-011A", "reason": "Begin exact Dossier canonical artifact staging after WO-SR-010G and WO-SR-010H are protected-main complete.", "riskClass": "R3", "blocked": true }],
       "authority": { "mayWrite": true, "mayCommit": true, "mayPush": true, "mayOpenPr": true, "mayMarkReady": true, "mayMerge": true, "mayCleanup": true, "notes": "Exact mutation-runtime child under owner mission authority and standing protected-PR lifecycle authority." },
       "provenance": { "createdAt": "2026-08-27T00:00:00Z", "source": "Owner mission directive; protected staging merge 153103c4f5356219c142ccfe88174c2c6477e54d; protected truthful-retirement merge acf4abc5959f468c6a43a00b09cead5d55679795; exact Dais source 8a9cfc608bcda835126db2054bb7ba7ecf185275.", "schemaVersion": "0.1.0" }
+    },
+    {
+      "id": "WO-SR-010H",
+      "title": "Dais Hearing Scheduling Availability Retirement",
+      "program": "Five-Suite Federated Repository Buildout",
+      "goal": "Stop offering the unsupported Dais hearing-scheduling write from PropertyDais and governed Pilot surfaces while preserving hearing reads.",
+      "riskClass": "R3",
+      "status": "complete",
+      "dependencies": [
+        { "id": "WO-SR-010F", "status": "satisfied", "evidence": ["PR #1469 merged as acf4abc5959f468c6a43a00b09cead5d55679795."] },
+        { "id": "OWNER-FIVE-SUITE-FEDERATED-COMPLETION-20260826", "status": "satisfied" }
+      ],
+      "allowedSystems": [{ "name": "PropertyDais scheduling-offer removal, governed Pilot capability/handler/maturity retirement, focused availability proof and governance" }],
+      "blockedSystems": [{ "name": "Replacement scheduling capability, hearing reads, persistence, database/schema/migrations, county/PACS/live data, Production/deployment, Azure, secrets, topology and unrelated CI/release work" }],
+      "allowedFiles": [
+        "frontend/apps/os-shell/src/pages/workbench/tabs/PropertyDais.tsx",
+        "frontend/apps/os-shell/src/__tests__/workbench/PropertyDais*.test.tsx",
+        "os-platform/core/pilot/**",
+        "os-platform/core/tests/dais-hearing-scheduling-unavailable.test.mjs",
+        "os-platform/core/tests/phase83-tools.test.mjs",
+        "tools/registry/terrapilot.tools.json",
+        "tools/registry/tool-maturity.json",
+        "docs/brain/workorders/active/WO-SR-010H-dais-hearing-scheduling-availability-retirement.md"
+      ],
+      "blockedFiles": ["backend/src/**", "backend/tests/**", "azure-pipelines/**", ".github/workflows/**"],
+      "evidenceRequired": [{ "kind": "other", "description": "No PropertyDais scheduling control or invocation; no manifest/maturity/office/handler capability; reads preserved; generated JS current; focused tests; required checks; resolved first-party threads; exact-head merge and protected-main verification." }],
+      "evidenceProduced": [{ "kind": "file", "location": "docs/brain/workorders/active/WO-SR-010H-dais-hearing-scheduling-availability-retirement.md", "summary": "Exact availability-retirement scope and proof." }],
+      "validationGates": [{ "name": "protected assurance", "command": "focused absence, maturity, Phase 8.3, generated JS, eight required contexts, first-party threads, exact-head merge and protected-main verification", "required": true, "result": "pass - PR #1473 exact head b6a01162097bd3664ff4f3c6e81d5bd4ce3f9740 merged as 6291e58b11626ad04bdc89e736be89b2a574261c" }],
+      "stopConditions": [{ "type": "authority_wall", "description": "Stop on replacement capability, hearing-read mutation, protected data, Production/deployment, schema, secrets or mission hard-wall crossing." }],
+      "nextCandidates": [{ "id": "WO-SR-011A", "reason": "Begin Dossier staging after WO-SR-010G runtime protected assurance completes.", "riskClass": "R3", "blocked": true }],
+      "authority": { "mayWrite": true, "mayCommit": true, "mayPush": true, "mayOpenPr": true, "mayMarkReady": true, "mayMerge": true, "mayCleanup": true, "notes": "Completed exact availability-retirement child under owner mission authority." },
+      "provenance": { "createdAt": "2026-08-27T00:00:00Z", "source": "Owner mission directive; PR #1473 exact head b6a01162097bd3664ff4f3c6e81d5bd4ce3f9740; protected merge 6291e58b11626ad04bdc89e736be89b2a574261c.", "schemaVersion": "0.1.0" }
     }
   ]
 }
