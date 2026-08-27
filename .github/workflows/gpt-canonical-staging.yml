@@ -81,8 +81,11 @@ jobs:
       - name: Stage exact protected GPT artifact
         shell: pwsh
         run: |
+          $runnerWorkRoot = Split-Path -Parent (Split-Path -Parent $env:GITHUB_WORKSPACE)
+          $buildRoot = Join-Path $runnerWorkRoot "tf-gpt-runtime-$env:GITHUB_RUN_ID-$env:GITHUB_RUN_ATTEMPT"
           ./scripts/bootstrap/Stage-GptGroundedContextModule.ps1 `
             -GptRepository 'https://github.com/bsvalues/terrafusion-gpt.git' `
+            -BuildRootBase $buildRoot `
             -EnvironmentName CI
 
       - name: Prove exact runtime, adoption, rollback, tamper refusal, and consumer boundary
