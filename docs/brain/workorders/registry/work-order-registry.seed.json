@@ -1,8 +1,8 @@
 {
   "schemaVersion": "0.1.0",
-  "generatedBy": "WO-SR-010G Dais appeal mutation runtime adoption",
+  "generatedBy": "WO-SR-011D Dossier mutation decision contract freeze",
   "generatedAt": "2026-08-26T00:00:00Z",
-  "description": "The owner-level Five-Suite completion mission is active. Atlas is complete; Dais read staging/runtime, mutation contract/source/staging, truthful sovereign retirement, and frontend availability retirement are protected merges. WO-SR-010G is in final exact mutation-runtime assurance before Dossier begins.",
+  "description": "The owner-level Five-Suite completion mission is active. Atlas and Dais runtime/ownership are protected-main complete. Dossier read staging and exact persistent runtime adoption are protected-main complete. WO-SR-011D freezes the provider-neutral Dossier mutation-decision boundary before mutation source, staging, runtime adoption and ownership retirement.",
   "records": [
     {
       "id": "WO-WOE-000",
@@ -11269,7 +11269,7 @@
       "program": "Five-Suite Federated Repository Buildout",
       "goal": "Adopt the exact Dais appeal-mutation artifact as the persistent Development decision boundary, retire duplicate sovereign judgment, and execute observed rollback.",
       "riskClass": "R4",
-      "status": "active",
+      "status": "complete",
       "dependencies": [
         { "id": "WO-SR-010E", "status": "satisfied", "evidence": ["PR #1470 merged as 153103c4f5356219c142ccfe88174c2c6477e54d."] },
         { "id": "WO-SR-010F", "status": "satisfied", "evidence": ["PR #1469 merged as acf4abc5959f468c6a43a00b09cead5d55679795."] },
@@ -11303,10 +11303,10 @@
       "validationGates": [
         { "name": "recovery custody self-test", "command": "pwsh -NoProfile -File scripts/validation/Invoke-DaisAppealMutationRuntimeAdoptionRollbackProof.ps1 -RecoverySelfTest", "required": true, "result": "pass" },
         { "name": "terminal runtime adoption and rollback", "command": "pwsh -NoProfile -File scripts/validation/Invoke-DaisAppealMutationRuntimeAdoptionRollbackProof.ps1", "required": true, "result": "pass - 61/61 focused, 2/2 concurrency, exact Disabled rollback and adopted restoration" },
-        { "name": "protected assurance", "command": "required checks, first-party thread resolution, exact-head merge and protected-main verification", "required": true, "result": "pending" }
+        { "name": "protected assurance", "command": "required checks, first-party thread resolution, exact-head merge and protected-main verification", "required": true, "result": "pass - PR #1471 merged as f14fc4999f650ed4bbff2633813be6b57ec4bfbc; protected main supplied as the exact next-child base" }
       ],
       "stopConditions": [{ "type": "authority_wall", "description": "Stop on identity/rollback/recovery failure, protected data, Production/deployment, schema, secrets, topology, unrelated CI, force push or branch-protection bypass." }],
-      "nextCandidates": [{ "id": "WO-SR-011A", "reason": "Begin exact Dossier canonical artifact staging after WO-SR-010G and WO-SR-010H are protected-main complete.", "riskClass": "R3", "blocked": true }],
+      "nextCandidates": [{ "id": "WO-SR-011A", "reason": "Begin exact Dossier canonical artifact staging after WO-SR-010G and WO-SR-010H are protected-main complete.", "riskClass": "R3", "blocked": false }],
       "authority": { "mayWrite": true, "mayCommit": true, "mayPush": true, "mayOpenPr": true, "mayMarkReady": true, "mayMerge": true, "mayCleanup": true, "notes": "Exact mutation-runtime child under owner mission authority and standing protected-PR lifecycle authority." },
       "provenance": { "createdAt": "2026-08-27T00:00:00Z", "source": "Owner mission directive; protected staging merge 153103c4f5356219c142ccfe88174c2c6477e54d; protected truthful-retirement merge acf4abc5959f468c6a43a00b09cead5d55679795; protected frontend-retirement merge 6291e58b11626ad04bdc89e736be89b2a574261c; exact Dais source 8a9cfc608bcda835126db2054bb7ba7ecf185275.", "schemaVersion": "0.1.0" }
     },
@@ -11338,9 +11338,51 @@
       "evidenceProduced": [{ "kind": "file", "location": "docs/brain/workorders/active/WO-SR-010H-dais-hearing-scheduling-availability-retirement.md", "summary": "Exact availability-retirement scope and proof." }],
       "validationGates": [{ "name": "protected assurance", "command": "focused absence, maturity, Phase 8.3, generated JS, eight required contexts, first-party threads, exact-head merge and protected-main verification", "required": true, "result": "pass - PR #1473 exact head b6a01162097bd3664ff4f3c6e81d5bd4ce3f9740 merged as 6291e58b11626ad04bdc89e736be89b2a574261c" }],
       "stopConditions": [{ "type": "authority_wall", "description": "Stop on replacement capability, hearing-read mutation, protected data, Production/deployment, schema, secrets or mission hard-wall crossing." }],
-      "nextCandidates": [{ "id": "WO-SR-011A", "reason": "Begin Dossier staging after WO-SR-010G runtime protected assurance completes.", "riskClass": "R3", "blocked": true }],
+      "nextCandidates": [{ "id": "WO-SR-011A", "reason": "Begin Dossier staging after WO-SR-010G runtime protected assurance completes.", "riskClass": "R3", "blocked": false }],
       "authority": { "mayWrite": true, "mayCommit": true, "mayPush": true, "mayOpenPr": true, "mayMarkReady": true, "mayMerge": true, "mayCleanup": true, "notes": "Completed exact availability-retirement child under owner mission authority." },
       "provenance": { "createdAt": "2026-08-27T00:00:00Z", "source": "Owner mission directive; PR #1473 exact head b6a01162097bd3664ff4f3c6e81d5bd4ce3f9740; protected merge 6291e58b11626ad04bdc89e736be89b2a574261c.", "schemaVersion": "0.1.0" }
+    },
+    {
+      "id": "WO-SR-011D",
+      "title": "Dossier Mutation Decision Contract Freeze",
+      "program": "Five-Suite Federated Repository Buildout",
+      "goal": "Freeze the provider-neutral county/parcel-scoped decision boundary for Dossier note, document, evidence/custody and explicit-snapshot packet mutations without moving sovereign integration responsibilities.",
+      "riskClass": "R3",
+      "status": "active",
+      "dependencies": [
+        { "id": "WO-SR-010G", "status": "satisfied", "evidence": ["PR #1471 merged as f14fc4999f650ed4bbff2633813be6b57ec4bfbc; protected main supplied as the exact child base."] },
+        { "id": "WO-SR-011A", "status": "satisfied", "evidence": ["PR #1474 merged as aec4f1e18b619730842c828e4f1c93ecd18d64b2; this contract branch integrates that exact protected staging merge."] },
+        { "id": "WO-SR-011B", "status": "satisfied", "evidence": ["PR #1477 merged reviewed head 85387bdc6088eb82fc8bcd16cfd1424e95804597 as d82a2d3638a722fa541836abbd5c4ab45f8e060d after 8/8 required successes and zero unresolved threads; this contract branch integrates that exact protected merge."] },
+        { "id": "OWNER-FIVE-SUITE-FEDERATED-COMPLETION-20260826", "status": "satisfied", "evidence": ["Owner mission authority permits exact successor contracts, suite adoption, rollback proof, duplicate-judgment retirement, PR operation and merge without per-child relay."] }
+      ],
+      "allowedSystems": [{ "name": "Sovereign shared Dossier mutation contract, synthetic proof and mission governance" }],
+      "blockedSystems": [{ "name": "Runtime adoption, suite mutation, database/schema/migration, PACS/county SQL/live data, credentials, deployment/production, topology, sixth suite, handler-alignment fake capabilities and unrelated CI/release work" }],
+      "allowedFiles": [
+        "backend/src/TerraFusion.Abstractions/DTOs/DossierMutationDecisionDto.cs",
+        "backend/src/TerraFusion.Abstractions/contracts/dossier.mutation-decision.v1.schema.json",
+        "backend/src/TerraFusion.Abstractions/contracts/fixtures/dossier.mutation-decision.v1.*.synthetic.json",
+        "backend/src/TerraFusion.Abstractions/contracts.freeze.json",
+        "backend/src/TerraFusion.Abstractions/CONTRACTS.md",
+        "scripts/contracts/verify-contract-freeze.test.mjs",
+        "docs/brain/workorders/active/WO-SR-011D-dossier-mutation-decision-contract-freeze.md",
+        "docs/brain/workorders/evidence/WO-SR-011D-DOSSIER-MUTATION-DECISION-CONTRACT-FREEZE.md",
+        "docs/brain/workorders/registry/work-order-registry.seed.json",
+        "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
+        "docs/brain/workorders/programs/five-suite-federated-repository-buildout.md"
+      ],
+      "blockedFiles": ["backend/src/TerraFusion.API/**", "backend/src/TerraFusion.Core/**", "backend/src/TerraFusion.Data/**", "frontend/**", ".github/workflows/**", "packages/**", "azure-pipelines/**"],
+      "evidenceRequired": [{ "kind": "other", "description": "Hash-pinned DTO/schema/fixtures; deterministic six-operation decisions; exact suite-owned document custody classification; typed host/version/transition/hash/scope/template rejection; identity and cross-lane failure; complete freeze/build/governance proof; independent review; protected checks; exact-head merge and protected-main verification." }],
+      "evidenceProduced": [{ "kind": "file", "location": "docs/brain/workorders/evidence/WO-SR-011D-DOSSIER-MUTATION-DECISION-CONTRACT-FREEZE.md", "summary": "Focused accepted, typed-rejected, custody integrity, identity and cross-lane synthetic contract proof." }],
+      "validationGates": [
+        { "name": "focused Dossier mutation contract proof", "command": "node --test --test-name-pattern='Dossier mutation' scripts/contracts/verify-contract-freeze.test.mjs", "required": true, "result": "pass - 3/3" },
+        { "name": "complete shared-contract freeze", "command": "canonical Git-blob freeze verifier and full Node test file", "required": true, "result": "pass at 5744c63ea1e4018d595c482d971af7f102df9ab6 atop aec4f1e18b619730842c828e4f1c93ecd18d64b2 - 8 groups, 85 frozen files; 26/26 tests" },
+        { "name": "C# contract build", "command": "dotnet build TerraFusion.Abstractions", "required": true, "result": "pending protected Backend Gate; local host lacks dotnet" },
+        { "name": "governance and protected merge", "command": "JSON parse, diff check, independent review, required checks, exact-head merge and protected-main verification", "required": true, "result": "pending" }
+      ],
+      "stopConditions": [{ "type": "authority_wall", "description": "Stop on mission hard-wall crossing, custody-meaning change, identity/hash failure, runtime or suite mutation in this child, protected data, failed required check, force push or branch-protection bypass." }],
+      "nextCandidates": [{ "id": "WO-SR-011E", "reason": "After WO-SR-011B protects the staged read runtime and this contract merges, copy exact contract identities into Dossier and implement the pure decision module before mutation staging and runtime adoption.", "riskClass": "R3", "blocked": true }],
+      "authority": { "mayWrite": true, "mayCommit": true, "mayPush": true, "mayOpenPr": true, "mayMarkReady": true, "mayMerge": true, "mayCleanup": true, "notes": "Exact additive contract child under owner mission authority and standing protected-PR lifecycle authority." },
+      "provenance": { "createdAt": "2026-08-27T00:00:00Z", "source": "Owner mission directive; protected Dais runtime merge f14fc4999f650ed4bbff2633813be6b57ec4bfbc; protected Dossier read staging merge aec4f1e18b619730842c828e4f1c93ecd18d64b2; protected Dossier read runtime merge d82a2d3638a722fa541836abbd5c4ab45f8e060d; audit of current DossierController and persistent Dossier entities selected the smallest pure decision boundary.", "schemaVersion": "0.1.0" }
     }
   ]
 }

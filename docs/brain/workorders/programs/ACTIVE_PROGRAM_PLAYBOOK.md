@@ -100,7 +100,7 @@ automatically.
 | Program slug | `five-suite-federated-repository-buildout` |
 | Status | Active under mission authority `OWNER-FIVE-SUITE-FEDERATED-COMPLETION-20260826` |
 | Current | `WO-SR-012B` exact GPT canonical artifact staging |
-| Next | Dossier ownership terminalization; then GPT persistent runtime adoption |
+| Next | Dossier mutation staging/runtime adoption and terminalization; then GPT persistent runtime adoption |
 
 The sovereign base remains `terrafusion_os_1.0`. The five ratified suite repositories are
 `terrafusion-forge`, `terrafusion-atlas`, `terrafusion-dais`, `terrafusion-dossier`, and
@@ -208,7 +208,7 @@ transfer, or cutover follows.
 
 Program definition: [five-suite-federated-repository-buildout.md](five-suite-federated-repository-buildout.md).
 
-Current Five-Suite routing is `WO-SR-012B`. Atlas runtime and standalone ownership are complete on verified protected mains, Dais is terminal, and Dossier exact staging plus persistent exact read runtime adoption completed in protected merges `aec4f1e18b619730842c828e4f1c93ecd18d64b2` and `d82a2d3638a722fa541836abbd5c4ab45f8e060d`. Dossier ownership-governance truth and duplicate-adapter judgment plus terminal proof remain before GPT runtime adoption. GPT portability/provenance completed in suite protected merge `550b50f27af6f0911f16c973cbb6fc57a20eb15a`. WO-SR-012B has integrated the exact protected Dossier runtime merge and must rerun inert staging/rollback proof before protected merge. Sovereign authentication, county isolation, persistence, authorization, provider orchestration, API, Workbench, TerraPilot, and TerraTrace remain OS responsibilities. All mission hard walls remain controlling.
+Current Five-Suite routing is `WO-SR-012B`. Atlas runtime and standalone ownership are complete on verified protected mains, Dais is terminal, and Dossier exact read staging plus persistent read runtime adoption completed in protected merges `aec4f1e18b619730842c828e4f1c93ecd18d64b2` and `d82a2d3638a722fa541836abbd5c4ab45f8e060d`. Dossier's provider-neutral mutation-decision contract froze in protected merge `7cb96bf2ea5efea7caccae6d6e8c9f81f672412e`; mutation staging/runtime adoption, ownership-governance truth, rollback, and duplicate-judgment terminal proof remain before GPT runtime adoption. GPT portability/provenance completed in suite protected merge `550b50f27af6f0911f16c973cbb6fc57a20eb15a`. WO-SR-012B has integrated exact latest protected main and must rerun inert staging/rollback proof before protected merge. Sovereign authentication, county isolation, persistence, authorization, provider orchestration, API, Workbench, TerraPilot, and TerraTrace remain OS responsibilities. All mission hard walls remain controlling.
 
 ---
 
@@ -658,9 +658,9 @@ from program evidence.
 | Portfolio goal | `GOAL-PORTFOLIO-OPERATOR-001` |
 | Portfolio loop | `LOOP-PORTFOLIO-OPERATOR-001` |
 | Selected program | Five-Suite Federated Repository Buildout |
-| Last completed interlock | `WO-SR-011B` persistent exact Dossier read runtime adoption; protected merge `d82a2d3638a722fa541836abbd5c4ab45f8e060d` |
+| Last completed interlock | `WO-SR-011D` Dossier mutation-decision contract freeze; protected merge `7cb96bf2ea5efea7caccae6d6e8c9f81f672412e` |
 | Current WO | `WO-SR-012B` exact GPT canonical artifact staging |
-| Next interlock | Dossier ownership terminalization; then GPT persistent runtime adoption |
+| Next interlock | Dossier mutation staging/runtime adoption and terminalization; then GPT persistent runtime adoption |
 
 Issue #1417 and `OWNER-SR-009B-R3-DAIS-WORKBENCH-APPEAL-READ-20260805` authorized the exact bounded
 read-only Dais adoption sequence. PR #1419 merged exact assured head

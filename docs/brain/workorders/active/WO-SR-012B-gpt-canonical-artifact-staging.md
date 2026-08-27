@@ -2,12 +2,12 @@
 
 | Field | Value |
 | --- | --- |
-| Status | PROVEN ON INTEGRATED `d82a2d363` PROTECTED BASE - protected PR pending |
+| Status | PROVEN ON INTEGRATED `7cb96bf2e` PROTECTED BASE - protected PR pending |
 | Program | Five-Suite Federated Repository Buildout |
 | Goal | `GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES` |
 | Risk | R3 bounded non-production local artifact staging |
 | Authority | `OWNER-FIVE-SUITE-FEDERATED-COMPLETION-20260826` |
-| Integrated sovereign base | `d82a2d3638a722fa541836abbd5c4ab45f8e060d` |
+| Integrated sovereign base | `7cb96bf2ea5efea7caccae6d6e8c9f81f672412e` |
 | GPT protected source | `bsvalues/terrafusion-gpt@550b50f27af6f0911f16c973cbb6fc57a20eb15a` |
 | Execution manifest | 1618 bytes; Git blob `7a9ca7bf114f34f2562102efa8817fd37506b614`; SHA-256 `6d04e14674e4e91a1a5d12ba12f53684cbad0bcec17e4e53ec01d8287618794b` |
 | Module | 8578 bytes; Git blob `d81a8135caea1685ce02efd5acfdf1f9dfdd930a`; SHA-256 `cd2c6111ab0843d321bea8da5eff77cee89eaa1c721d93489d1985c6820f1beb` |
@@ -33,8 +33,8 @@ also byte pinned. The slot remains inert and reports `runtimeAdopted=false`.
 6. this Work Order and its evidence record
 7. Five-Suite program routing and canonical workflow inventory
 
-The protected `WO-SR-011B` runtime merge `d82a2d3638a722fa541836abbd5c4ab45f8e060d`
-is integrated. Both proof tiers must pass again on this exact base before protected merge.
+The protected `WO-SR-011D` contract-freeze merge `7cb96bf2ea5efea7caccae6d6e8c9f81f672412e`
+is integrated. Both proof tiers must pass again on this exact latest base before protected merge.
 
 ## Required proof
 

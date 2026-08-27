@@ -1,0 +1,14 @@
+{
+  "request": {
+    "schemaVersion": "1.0.0", "operation": "appendCustodyEvent", "commandId": "22222222-2222-4222-8222-222222222205",
+    "countyId": "11111111-1111-4111-8111-111111111111", "parcelId": "P-100", "actorId": "actor-7", "effectiveAt": "2026-08-26T10:04:00Z",
+    "hostAssertions": { "actorAuthorized": true, "countyExists": true, "parcelExists": true, "piiApproved": true },
+    "command": { "evidenceId": "33333333-3333-4333-8333-333333333304", "eventId": "44444444-4444-4444-8444-444444444405", "expectedVersion": 3, "current": { "evidenceId": "33333333-3333-4333-8333-333333333304", "countyId": "11111111-1111-4111-8111-111111111111", "parcelId": "P-100", "integrity": "pending", "version": 3, "chainLength": 3, "lastEventHash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", "lastEventAt": "2026-08-26T10:03:00Z" }, "action": " HASH-VERIFIED ", "notes": " Recomputed by sovereign host ", "previousEventHash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", "eventHash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc" }
+  },
+  "result": {
+    "schemaVersion": "1.0.0", "operation": "appendCustodyEvent", "commandId": "22222222-2222-4222-8222-222222222205",
+    "countyId": "11111111-1111-4111-8111-111111111111", "parcelId": "P-100", "decision": "accepted",
+    "mutation": { "version": 4, "evidenceId": "33333333-3333-4333-8333-333333333304", "integrity": "verified", "event": { "eventId": "44444444-4444-4444-8444-444444444405", "action": "hash-verified", "actor": "actor-7", "notes": "Recomputed by sovereign host", "previousEventHash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", "eventHash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc", "timestamp": "2026-08-26T10:04:00Z" }, "chainLength": 4 },
+    "violations": []
+  }
+}

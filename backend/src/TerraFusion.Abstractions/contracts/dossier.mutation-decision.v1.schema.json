@@ -1,0 +1,335 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://terrafusion.gov/contracts/dossier.mutation-decision.v1.schema.json",
+  "title": "Dossier Mutation Decision Exchange",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["request", "result"],
+  "properties": {
+    "request": { "$ref": "#/definitions/request" },
+    "result": { "$ref": "#/definitions/result" }
+  },
+  "definitions": {
+    "identifier": { "type": "string", "minLength": 1 },
+    "parcelId": { "type": "string", "minLength": 1, "maxLength": 50 },
+    "guid": { "type": "string", "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$" },
+    "hash": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "timestamp": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$" },
+    "version": { "type": "integer", "minimum": 0 },
+    "operation": { "enum": ["createNote", "registerDocument", "transitionDocumentStatus", "registerEvidence", "appendCustodyEvent", "createPacket"] },
+    "documentStatus": { "enum": ["active", "sealed", "archived"] },
+    "integrity": { "enum": ["pending", "verified", "disputed"] },
+    "hostAssertions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["actorAuthorized", "countyExists", "parcelExists", "piiApproved"],
+      "properties": {
+        "actorAuthorized": { "type": "boolean" },
+        "countyExists": { "type": "boolean" },
+        "parcelExists": { "type": "boolean" },
+        "piiApproved": { "type": "boolean" }
+      }
+    },
+    "createNoteCommand": {
+      "type": "object", "additionalProperties": false,
+      "required": ["noteId", "expectedVersion", "content"],
+      "properties": {
+        "noteId": { "$ref": "#/definitions/guid" },
+        "expectedVersion": { "$ref": "#/definitions/version" },
+        "content": { "type": "string", "minLength": 1, "maxLength": 2000 },
+        "noteType": { "type": "string", "minLength": 1, "maxLength": 50 }
+      }
+    },
+    "registerDocumentCommand": {
+      "type": "object", "additionalProperties": false,
+      "required": ["documentId", "expectedVersion", "name", "documentType", "mimeType", "sizeBytes", "contentHash"],
+      "properties": {
+        "documentId": { "$ref": "#/definitions/guid" },
+        "expectedVersion": { "$ref": "#/definitions/version" },
+        "name": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "documentType": { "type": "string", "minLength": 1, "maxLength": 50 },
+        "mimeType": { "type": "string", "minLength": 1, "maxLength": 100 },
+        "sizeBytes": { "type": "integer", "minimum": 0 },
+        "contentHash": { "$ref": "#/definitions/hash" },
+        "description": { "type": "string", "minLength": 1, "maxLength": 500 },
+        "retentionClass": { "type": "string", "minLength": 1, "maxLength": 50 },
+        "storagePath": { "type": "string", "minLength": 1, "maxLength": 500 }
+      }
+    },
+    "documentState": {
+      "type": "object", "additionalProperties": false,
+      "required": ["documentId", "countyId", "parcelId", "status", "version", "updatedAt"],
+      "properties": {
+        "documentId": { "$ref": "#/definitions/guid" },
+        "countyId": { "$ref": "#/definitions/guid" },
+        "parcelId": { "$ref": "#/definitions/parcelId" },
+        "status": { "$ref": "#/definitions/documentStatus" },
+        "version": { "$ref": "#/definitions/version" },
+        "updatedAt": { "$ref": "#/definitions/timestamp" }
+      }
+    },
+    "transitionDocumentCommand": {
+      "type": "object", "additionalProperties": false,
+      "required": ["documentId", "expectedVersion", "current", "requestedStatus"],
+      "properties": {
+        "documentId": { "$ref": "#/definitions/guid" },
+        "expectedVersion": { "$ref": "#/definitions/version" },
+        "current": { "$ref": "#/definitions/documentState" },
+        "requestedStatus": { "type": "string", "minLength": 1, "maxLength": 20 },
+        "reason": { "type": "string", "minLength": 1, "maxLength": 500 }
+      }
+    },
+    "documentSnapshot": {
+      "type": "object", "additionalProperties": false,
+      "required": ["documentId", "countyId", "parcelId", "status", "version"],
+      "properties": {
+        "documentId": { "$ref": "#/definitions/guid" },
+        "countyId": { "$ref": "#/definitions/guid" },
+        "parcelId": { "$ref": "#/definitions/parcelId" },
+        "status": { "$ref": "#/definitions/documentStatus" },
+        "version": { "$ref": "#/definitions/version" }
+      }
+    },
+    "registerEvidenceCommand": {
+      "type": "object", "additionalProperties": false,
+      "required": ["evidenceId", "genesisEventId", "expectedVersion", "title", "evidenceType", "genesisHash"],
+      "properties": {
+        "evidenceId": { "$ref": "#/definitions/guid" },
+        "genesisEventId": { "$ref": "#/definitions/guid" },
+        "expectedVersion": { "$ref": "#/definitions/version" },
+        "title": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "evidenceType": { "type": "string", "minLength": 1, "maxLength": 50 },
+        "documentId": { "$ref": "#/definitions/guid" },
+        "document": { "$ref": "#/definitions/documentSnapshot" },
+        "genesisHash": { "$ref": "#/definitions/hash" }
+      }
+    },
+    "custodyState": {
+      "type": "object", "additionalProperties": false,
+      "required": ["evidenceId", "countyId", "parcelId", "integrity", "version", "chainLength", "lastEventHash", "lastEventAt"],
+      "properties": {
+        "evidenceId": { "$ref": "#/definitions/guid" },
+        "countyId": { "$ref": "#/definitions/guid" },
+        "parcelId": { "$ref": "#/definitions/parcelId" },
+        "integrity": { "$ref": "#/definitions/integrity" },
+        "version": { "$ref": "#/definitions/version" },
+        "chainLength": { "type": "integer", "minimum": 1 },
+        "lastEventHash": { "$ref": "#/definitions/hash" },
+        "lastEventAt": { "$ref": "#/definitions/timestamp" }
+      }
+    },
+    "appendCustodyCommand": {
+      "type": "object", "additionalProperties": false,
+      "required": ["evidenceId", "eventId", "expectedVersion", "current", "action", "previousEventHash", "eventHash"],
+      "properties": {
+        "evidenceId": { "$ref": "#/definitions/guid" },
+        "eventId": { "$ref": "#/definitions/guid" },
+        "expectedVersion": { "$ref": "#/definitions/version" },
+        "current": { "$ref": "#/definitions/custodyState" },
+        "action": { "type": "string", "minLength": 1, "maxLength": 50 },
+        "notes": { "type": "string", "minLength": 1, "maxLength": 500, "pattern": "\\S" },
+        "previousEventHash": { "$ref": "#/definitions/hash" },
+        "eventHash": { "$ref": "#/definitions/hash" }
+      }
+    },
+    "packetTemplate": {
+      "type": "object", "additionalProperties": false,
+      "required": ["packetType", "name", "requiredDocumentTypes"],
+      "properties": {
+        "packetType": { "type": "string", "minLength": 1, "maxLength": 50 },
+        "name": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "requiredDocumentTypes": { "type": "array", "maxItems": 100, "items": { "type": "string", "minLength": 1, "maxLength": 50 } }
+      }
+    },
+    "packetDocument": {
+      "type": "object", "additionalProperties": false,
+      "required": ["documentId", "countyId", "parcelId", "documentType", "status", "version", "uploadedAt"],
+      "properties": {
+        "documentId": { "$ref": "#/definitions/guid" },
+        "countyId": { "$ref": "#/definitions/guid" },
+        "parcelId": { "$ref": "#/definitions/parcelId" },
+        "documentType": { "type": "string", "minLength": 1, "maxLength": 50 },
+        "status": { "$ref": "#/definitions/documentStatus" },
+        "version": { "$ref": "#/definitions/version" },
+        "uploadedAt": { "$ref": "#/definitions/timestamp" }
+      }
+    },
+    "createPacketCommand": {
+      "type": "object", "additionalProperties": false,
+      "required": ["packetId", "expectedVersion", "template", "currentDocuments"],
+      "properties": {
+        "packetId": { "$ref": "#/definitions/guid" },
+        "expectedVersion": { "$ref": "#/definitions/version" },
+        "template": { "$ref": "#/definitions/packetTemplate" },
+        "currentDocuments": { "type": "array", "maxItems": 1000, "items": { "$ref": "#/definitions/packetDocument" } }
+      }
+    },
+    "request": {
+      "type": "object", "additionalProperties": false,
+      "required": ["schemaVersion", "operation", "commandId", "countyId", "parcelId", "actorId", "effectiveAt", "hostAssertions", "command"],
+      "properties": {
+        "schemaVersion": { "const": "1.0.0" },
+        "operation": { "$ref": "#/definitions/operation" },
+        "commandId": { "$ref": "#/definitions/guid" },
+        "countyId": { "$ref": "#/definitions/guid" },
+        "parcelId": { "$ref": "#/definitions/parcelId" },
+        "actorId": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "effectiveAt": { "$ref": "#/definitions/timestamp" },
+        "traceId": { "$ref": "#/definitions/identifier" },
+        "hostAssertions": { "$ref": "#/definitions/hostAssertions" },
+        "command": { "anyOf": [
+          { "$ref": "#/definitions/createNoteCommand" },
+          { "$ref": "#/definitions/registerDocumentCommand" },
+          { "$ref": "#/definitions/transitionDocumentCommand" },
+          { "$ref": "#/definitions/registerEvidenceCommand" },
+          { "$ref": "#/definitions/appendCustodyCommand" },
+          { "$ref": "#/definitions/createPacketCommand" }
+        ] }
+      }
+    },
+    "custodyEventMutation": {
+      "type": "object", "additionalProperties": false,
+      "required": ["eventId", "action", "actor", "previousEventHash", "eventHash", "timestamp"],
+      "properties": {
+        "eventId": { "$ref": "#/definitions/guid" },
+        "action": { "type": "string", "minLength": 1, "maxLength": 50 },
+        "actor": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "notes": { "type": "string", "minLength": 1, "maxLength": 500, "pattern": "\\S" },
+        "previousEventHash": { "anyOf": [{ "$ref": "#/definitions/hash" }, { "const": "genesis" }] },
+        "eventHash": { "$ref": "#/definitions/hash" },
+        "timestamp": { "$ref": "#/definitions/timestamp" }
+      }
+    },
+    "packetItemMutation": {
+      "type": "object", "additionalProperties": false,
+      "required": ["documentType", "required", "satisfied"],
+      "properties": {
+        "documentType": { "type": "string", "minLength": 1, "maxLength": 50 },
+        "required": { "const": true },
+        "satisfied": { "type": "boolean" },
+        "documentId": { "$ref": "#/definitions/guid" },
+        "satisfiedAt": { "$ref": "#/definitions/timestamp" }
+      }
+    },
+    "createNoteMutation": {
+      "type": "object", "additionalProperties": false,
+      "required": ["version", "noteId", "content", "noteType", "createdBy", "createdAt"],
+      "properties": {
+        "version": { "type": "integer", "minimum": 1 }, "noteId": { "$ref": "#/definitions/guid" },
+        "content": { "type": "string", "minLength": 1, "maxLength": 2000 },
+        "noteType": { "type": "string", "minLength": 1, "maxLength": 50 },
+        "createdBy": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "createdAt": { "$ref": "#/definitions/timestamp" }
+      }
+    },
+    "registerDocumentMutation": {
+      "type": "object", "additionalProperties": false,
+      "required": ["version", "documentId", "name", "documentType", "status", "mimeType", "sizeBytes", "contentHash", "entersCustodyChain", "uploadedBy", "uploadedAt"],
+      "properties": {
+        "version": { "type": "integer", "minimum": 1 }, "documentId": { "$ref": "#/definitions/guid" },
+        "name": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "documentType": { "type": "string", "minLength": 1, "maxLength": 50 },
+        "status": { "const": "active" }, "mimeType": { "type": "string", "minLength": 1, "maxLength": 100 },
+        "sizeBytes": { "type": "integer", "minimum": 0 }, "contentHash": { "$ref": "#/definitions/hash" },
+        "description": { "type": "string", "minLength": 1, "maxLength": 500 },
+        "retentionClass": { "type": "string", "minLength": 1, "maxLength": 50 },
+        "storagePath": { "type": "string", "minLength": 1, "maxLength": 500 },
+        "entersCustodyChain": { "type": "boolean" },
+        "uploadedBy": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "uploadedAt": { "$ref": "#/definitions/timestamp" }
+      }
+    },
+    "transitionDocumentMutation": {
+      "type": "object", "additionalProperties": false,
+      "required": ["version", "documentId", "status", "updatedAt"],
+      "properties": {
+        "version": { "type": "integer", "minimum": 1 }, "documentId": { "$ref": "#/definitions/guid" },
+        "status": { "$ref": "#/definitions/documentStatus" }, "updatedAt": { "$ref": "#/definitions/timestamp" }
+      }
+    },
+    "registerEvidenceMutation": {
+      "type": "object", "additionalProperties": false,
+      "required": ["version", "evidenceId", "title", "evidenceType", "integrity", "createdBy", "createdAt", "genesisEvent", "chainLength"],
+      "properties": {
+        "version": { "type": "integer", "minimum": 1 }, "evidenceId": { "$ref": "#/definitions/guid" },
+        "title": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "evidenceType": { "type": "string", "minLength": 1, "maxLength": 50 },
+        "documentId": { "$ref": "#/definitions/guid" }, "integrity": { "const": "pending" },
+        "createdBy": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "createdAt": { "$ref": "#/definitions/timestamp" },
+        "genesisEvent": { "$ref": "#/definitions/custodyEventMutation" }, "chainLength": { "const": 1 }
+      }
+    },
+    "appendCustodyMutation": {
+      "type": "object", "additionalProperties": false,
+      "required": ["version", "evidenceId", "integrity", "event", "chainLength"],
+      "properties": {
+        "version": { "type": "integer", "minimum": 1 }, "evidenceId": { "$ref": "#/definitions/guid" },
+        "integrity": { "$ref": "#/definitions/integrity" }, "event": { "$ref": "#/definitions/custodyEventMutation" },
+        "chainLength": { "type": "integer", "minimum": 2 }
+      }
+    },
+    "createPacketMutation": {
+      "type": "object", "additionalProperties": false,
+      "required": ["version", "packetId", "packetType", "name", "status", "completenessPercent", "satisfiedCount", "totalRequired", "createdBy", "createdAt", "items"],
+      "properties": {
+        "version": { "type": "integer", "minimum": 1 }, "packetId": { "$ref": "#/definitions/guid" },
+        "packetType": { "type": "string", "minLength": 1, "maxLength": 50 },
+        "name": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "status": { "enum": ["draft", "complete"] },
+        "completenessPercent": { "type": "number", "minimum": 0, "maximum": 100 },
+        "satisfiedCount": { "type": "integer", "minimum": 0 }, "totalRequired": { "type": "integer", "minimum": 0 },
+        "createdBy": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "createdAt": { "$ref": "#/definitions/timestamp" },
+        "items": { "type": "array", "maxItems": 100, "items": { "$ref": "#/definitions/packetItemMutation" } }
+      }
+    },
+    "mutation": { "anyOf": [
+      { "$ref": "#/definitions/createNoteMutation" }, { "$ref": "#/definitions/registerDocumentMutation" },
+      { "$ref": "#/definitions/transitionDocumentMutation" }, { "$ref": "#/definitions/registerEvidenceMutation" },
+      { "$ref": "#/definitions/appendCustodyMutation" }, { "$ref": "#/definitions/createPacketMutation" }
+    ] },
+    "violation": {
+      "type": "object", "additionalProperties": false,
+      "required": ["code", "message"],
+      "properties": {
+        "code": { "enum": ["HOST_ASSERTION_FAILED", "INVALID_INPUT", "INVALID_STATUS", "INVALID_TRANSITION", "INVALID_CURRENT_STATE", "IDENTITY_MISMATCH", "VERSION_CONFLICT", "HASH_CHAIN_CONFLICT", "DUPLICATE_TEMPLATE_REQUIREMENT"] },
+        "message": { "$ref": "#/definitions/identifier" }
+      }
+    },
+    "resultBaseProperties": {
+      "type": "object"
+    },
+    "acceptedResult": {
+      "type": "object", "additionalProperties": false,
+      "required": ["schemaVersion", "operation", "commandId", "countyId", "parcelId", "decision", "mutation", "violations"],
+      "properties": {
+        "schemaVersion": { "const": "1.0.0" }, "operation": { "$ref": "#/definitions/operation" },
+        "commandId": { "$ref": "#/definitions/guid" }, "countyId": { "$ref": "#/definitions/guid" },
+        "parcelId": { "$ref": "#/definitions/parcelId" }, "traceId": { "$ref": "#/definitions/identifier" },
+        "decision": { "const": "accepted" }, "mutation": { "$ref": "#/definitions/mutation" },
+        "violations": { "type": "array", "maxItems": 0 }
+      },
+      "allOf": [{ "anyOf": [
+        { "properties": { "operation": { "const": "createNote" }, "mutation": { "$ref": "#/definitions/createNoteMutation" } } },
+        { "properties": { "operation": { "const": "registerDocument" }, "mutation": { "$ref": "#/definitions/registerDocumentMutation" } } },
+        { "properties": { "operation": { "const": "transitionDocumentStatus" }, "mutation": { "$ref": "#/definitions/transitionDocumentMutation" } } },
+        { "properties": { "operation": { "const": "registerEvidence" }, "mutation": { "$ref": "#/definitions/registerEvidenceMutation" } } },
+        { "properties": { "operation": { "const": "appendCustodyEvent" }, "mutation": { "$ref": "#/definitions/appendCustodyMutation" } } },
+        { "properties": { "operation": { "const": "createPacket" }, "mutation": { "$ref": "#/definitions/createPacketMutation" } } }
+      ] }]
+    },
+    "rejectedResult": {
+      "type": "object", "additionalProperties": false,
+      "required": ["schemaVersion", "operation", "commandId", "countyId", "parcelId", "decision", "violations"],
+      "properties": {
+        "schemaVersion": { "const": "1.0.0" }, "operation": { "$ref": "#/definitions/operation" },
+        "commandId": { "$ref": "#/definitions/guid" }, "countyId": { "$ref": "#/definitions/guid" },
+        "parcelId": { "$ref": "#/definitions/parcelId" }, "traceId": { "$ref": "#/definitions/identifier" },
+        "decision": { "const": "rejected" },
+        "violations": { "type": "array", "minItems": 1, "items": { "$ref": "#/definitions/violation" } }
+      }
+    },
+    "result": { "anyOf": [{ "$ref": "#/definitions/acceptedResult" }, { "$ref": "#/definitions/rejectedResult" }] }
+  }
+}
