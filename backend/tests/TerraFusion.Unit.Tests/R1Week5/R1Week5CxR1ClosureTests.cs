@@ -22,12 +22,12 @@ using TerraFusion.Core.Interfaces;
 using IGovernedToolAuditService = TerraFusion.API.Services.IGovernedToolAuditService;
 using TerraFusion.Core.Models;
 using TerraFusion.Core.PACS;
-using TerraFusion.Core.Services;
 using TerraFusion.Unit.Tests.Dossier;
 using Xunit;
 using AuditLogger = TerraFusion.Abstractions.Interfaces.IAuditLogger;
 using CostForgeAIService = TerraFusion.Core.Services.ICostForgeAIService;
 using CostForgeService = TerraFusion.Core.Services.ICostForgeService;
+using DossierMutationDecisionPort = TerraFusion.Core.Services.IDossierMutationDecisionPort;
 using DataDbContext = TerraFusion.Data.TerraFusionDbContext;
 using Task = System.Threading.Tasks.Task;
 
@@ -5015,7 +5015,7 @@ public sealed class R1Week5CxR1ClosureTests
   private static DossierController MakeDossierController(
       DataDbContext db,
       string env = "Production",
-      IDossierMutationDecisionPort? mutationPort = null)
+      DossierMutationDecisionPort? mutationPort = null)
   {
     var costForge = new Mock<CostForgeService>(MockBehavior.Strict);
     var host = new Mock<IHostEnvironment>();
@@ -5032,7 +5032,7 @@ public sealed class R1Week5CxR1ClosureTests
       DataDbContext db,
       Guid countyId,
       string env = "Production",
-      IDossierMutationDecisionPort? mutationPort = null)
+      DossierMutationDecisionPort? mutationPort = null)
   {
     var ctrl = MakeDossierController(db, env, mutationPort);
     AttachPrincipal(ctrl, CreatePrincipal(countyId, "BENTON"));
