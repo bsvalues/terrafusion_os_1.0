@@ -9,6 +9,20 @@ namespace TerraFusion.Unit.Tests.Gpt;
 public sealed class GptGroundedContextEmbeddingLoggingTests
 {
     [Fact]
+    public async Task MissingProviderConfigurationFailsClosedInsteadOfSimulating()
+    {
+        using var client = new HttpClient(new UnexpectedRequestHandler());
+        var logger = new CapturingLogger<OpenAIEmbeddingService>();
+        var configuration = new ConfigurationBuilder().Build();
+        var service = new OpenAIEmbeddingService(client, configuration, logger);
+
+        var action = () => service.GenerateProviderEmbeddingAsync("bounded query");
+
+        await action.Should().ThrowAsync<InvalidOperationException>()
+            .WithMessage("*provider-backed embedding is unavailable*");
+    }
+
+    [Fact]
     public async Task ProviderErrorBodyCannotEchoQueryIntoLogs()
     {
         const string sensitiveQuery = "private-query-marker-4b957b5c";
@@ -40,6 +54,14 @@ public sealed class GptGroundedContextEmbeddingLoggingTests
             {
                 Content = new StringContent($"provider echoed: {query}"),
             });
+    }
+
+    private sealed class UnexpectedRequestHandler : HttpMessageHandler
+    {
+        protected override Task<HttpResponseMessage> SendAsync(
+            HttpRequestMessage request,
+            CancellationToken cancellationToken) =>
+            throw new InvalidOperationException("Missing-provider proof must not call the network.");
     }
 
     private sealed class CapturingLogger<T> : ILogger<T>

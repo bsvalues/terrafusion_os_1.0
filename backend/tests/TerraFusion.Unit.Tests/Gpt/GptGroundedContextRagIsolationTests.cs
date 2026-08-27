@@ -64,6 +64,32 @@ public sealed class GptGroundedContextRagIsolationTests
     }
 
     [Fact]
+    public async Task ProviderEmbeddingFailureStopsBeforeSimilaritySearch()
+    {
+        await using var context = Context();
+        context.Set<RAGDataset>().Add(Dataset(7, 42, "Active"));
+        await context.SaveChangesAsync();
+        var repository = new Mock<IRAGEmbeddingRepository>(MockBehavior.Strict);
+        var embeddingService = new Mock<IEmbeddingService>(MockBehavior.Strict);
+        embeddingService.Setup(candidate => candidate.GenerateProviderEmbeddingAsync(
+                "bounded query",
+                "test-model"))
+            .ThrowsAsync(new InvalidOperationException("provider unavailable"));
+        var service = Service(context, repository.Object, embeddingService.Object);
+
+        var action = () => service.GetRelevantContextForCountyAsync(
+            7,
+            42,
+            "bounded query",
+            2,
+            0.7m);
+
+        await action.Should().ThrowAsync<InvalidOperationException>()
+            .WithMessage("provider unavailable");
+        repository.VerifyNoOtherCalls();
+    }
+
+    [Fact]
     public async Task TrueEmptyStrictSearchReturnsNoRelevantContext()
     {
         await using var context = Context();
@@ -171,17 +197,18 @@ public sealed class GptGroundedContextRagIsolationTests
 
     private static RAGService Service(
         TerraFusionDbContext context,
-        IRAGEmbeddingRepository repository)
+        IRAGEmbeddingRepository repository,
+        IEmbeddingService? embeddingService = null)
     {
-        var embeddingService = new Mock<IEmbeddingService>(MockBehavior.Strict);
-        embeddingService.Setup(candidate => candidate.GenerateEmbeddingAsync(
+        var defaultEmbeddingService = new Mock<IEmbeddingService>(MockBehavior.Strict);
+        defaultEmbeddingService.Setup(candidate => candidate.GenerateProviderEmbeddingAsync(
                 It.IsAny<string>(),
                 It.IsAny<string>()))
             .ReturnsAsync([0.1f, 0.2f]);
         return new RAGService(
             context,
             repository,
-            embeddingService.Object,
+            embeddingService ?? defaultEmbeddingService.Object,
             NullLogger<RAGService>.Instance);
     }
 

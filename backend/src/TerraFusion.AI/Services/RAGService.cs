@@ -263,10 +263,15 @@ namespace TerraFusion.AI.Services
                     throw new InvalidOperationException($"Dataset {datasetId} not found");
                 }
 
-                // Generate query embedding using the embedding service
-                var queryEmbedding = await _embeddingService.GenerateEmbeddingAsync(
-                    query,
-                    dataset.EmbeddingModel);
+                // The governed county path must never turn a simulated legacy fallback into
+                // apparently grounded evidence. It requires a configured provider embedding.
+                var queryEmbedding = strictSearch
+                    ? await _embeddingService.GenerateProviderEmbeddingAsync(
+                        query,
+                        dataset.EmbeddingModel)
+                    : await _embeddingService.GenerateEmbeddingAsync(
+                        query,
+                        dataset.EmbeddingModel);
 
                 // Search for similar embeddings using the repository
                 var searchResults = strictSearch

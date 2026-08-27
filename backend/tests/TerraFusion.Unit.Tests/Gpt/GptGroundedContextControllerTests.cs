@@ -62,6 +62,34 @@ public sealed class GptGroundedContextControllerTests
     }
 
     [Fact]
+    public async Task ProviderBackedRetrievalFailureReturnsServiceUnavailable()
+    {
+        var request = Request();
+        var consumer = new Mock<IGptGroundedContextConsumer>(MockBehavior.Strict);
+        consumer.Setup(candidate => candidate.ConsumeAsync(
+                request,
+                42,
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new GptGroundedContextConsumption(
+                false,
+                GptGroundedContextConsumerFailure.RetrievalFailed,
+                null,
+                Array.Empty<GptGroundedContextViolation>(),
+                "module",
+                "module",
+                "schema",
+                "schema",
+                "Grounded-context retrieval failed closed."));
+        var controller = Controller(consumer.Object);
+
+        var response = await controller.GetGroundedContext(request);
+
+        response.Result.Should().BeOfType<ObjectResult>()
+            .Which.StatusCode.Should().Be(StatusCodes.Status503ServiceUnavailable);
+        consumer.VerifyAll();
+    }
+
+    [Fact]
     public async Task MissingCountyClaimReturnsCanonicalCountyContextDenial()
     {
         var request = Request();

@@ -55,10 +55,29 @@ namespace TerraFusion.AI.Services
             }
         }
 
-        public async Task<float[]> GenerateEmbeddingAsync(string text, string model = "text-embedding-3-small")
+        public Task<float[]> GenerateEmbeddingAsync(string text, string model = "text-embedding-3-small") =>
+            GenerateEmbeddingCoreAsync(text, model, allowSimulatedFallback: true);
+
+        public Task<float[]> GenerateProviderEmbeddingAsync(
+            string text,
+            string model = "text-embedding-3-small") =>
+            GenerateEmbeddingCoreAsync(text, model, allowSimulatedFallback: false);
+
+        private async Task<float[]> GenerateEmbeddingCoreAsync(
+            string text,
+            string model,
+            bool allowSimulatedFallback)
         {
             if (string.IsNullOrEmpty(_apiKey))
             {
+                if (!allowSimulatedFallback)
+                {
+                    _logger.LogWarning(
+                        "OpenAI API key not configured; provider-backed embedding unavailable");
+                    throw new InvalidOperationException(
+                        "A provider-backed embedding is unavailable.");
+                }
+
                 _logger.LogWarning("OpenAI API key not configured, returning simulated embedding");
                 return GenerateSimulatedEmbedding(text, GetVectorDimension(model));
             }

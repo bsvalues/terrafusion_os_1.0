@@ -98,6 +98,38 @@ public sealed class GptGroundedContextConsumerTests
     }
 
     [Fact]
+    public async Task ConsumeAsync_ProviderFailureReturnsUnavailableWithoutPostflightClaim()
+    {
+        var host = EchoHost();
+        host.Setup(candidate => candidate.ValidateAsync(
+                It.IsAny<string>(),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync((string json, CancellationToken _) => Accepted(json));
+        var rag = new Mock<IRAGService>(MockBehavior.Strict);
+        rag.Setup(candidate => candidate.GetRelevantContextForCountyAsync(
+                7,
+                42,
+                "How is this classified?",
+                2,
+                0.7m))
+            .ThrowsAsync(new InvalidOperationException("provider unavailable"));
+        var consumer = new GptGroundedContextConsumer(
+            host.Object,
+            rag.Object,
+            NullLogger<GptGroundedContextConsumer>.Instance);
+
+        var consumption = await consumer.ConsumeAsync(Request(), 42);
+
+        consumption.Success.Should().BeFalse();
+        consumption.Failure.Should().Be(GptGroundedContextConsumerFailure.RetrievalFailed);
+        consumption.Result.Should().BeNull();
+        host.Verify(candidate => candidate.ValidateAsync(
+            It.IsAny<string>(),
+            It.IsAny<CancellationToken>()), Times.Once);
+        rag.VerifyAll();
+    }
+
+    [Fact]
     public async Task ConsumeAsync_RawPiiSuiteRejectionNeverTouchesDatasetOrRetrieval()
     {
         var host = new Mock<IGptGroundedContextProcessHost>(MockBehavior.Strict);
