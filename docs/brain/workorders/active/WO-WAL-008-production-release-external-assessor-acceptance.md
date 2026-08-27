@@ -35,7 +35,9 @@ Existing Azure/Benton demo resources may be reused only if they satisfy the acce
 5. representative PUBLIC, COUNTY_PROVIDED and CONNECTED paths function using production-safe data/sources;
 6. TerraForge launch workflow(s) execute in correct county context with trust/provenance shown;
 7. observe monitoring/log/trace records for the journey without leaking protected data/secrets;
-8. execute or safely rehearse rollback to the previous known-good production release, verify restoration, then restore the accepted release if rollback rehearsal is non-destructive;
+8. execute or safely rehearse rollback to the previous known-good production release, verify
+   restoration, restore the accepted release after either path, and re-verify release identity,
+   health, and rollback state before completion;
 9. prove backup/restore procedure for TerraFusion-controlled launch data/configuration;
 10. run the external assessor journey from a non-development network/device: authenticate → correct county context → HUB → data state/path → TerraForge workflow → sign out/re-enter/session continuity.
 

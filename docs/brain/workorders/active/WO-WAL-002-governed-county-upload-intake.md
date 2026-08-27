@@ -41,4 +41,5 @@ No PACS/CAMA/GIS/database write-back, no emailed/shared credentials, no county-c
 
 ## Continuation
 
-May execute in parallel with WAL-001/003/004 after WAL-000. Merge/verify and continue without owner relay.
+May execute in parallel with WAL-001/003 and bounded, reservation-safe portions of WAL-004 after
+WAL-000. Merge/verify and continue without owner relay.

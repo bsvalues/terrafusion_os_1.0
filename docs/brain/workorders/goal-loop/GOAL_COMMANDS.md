@@ -49,8 +49,9 @@ Success:  Truthful 39-county runtime and control-plane state, real governed uplo
 ```
 
 **Current state:** Issue #1485 is ratified as
-`OWNER-WAL-V1-MISSION-AUTHORITY-20260827`. `WO-WAL-000` completes on protected merge of PR #1486;
-then `WO-WAL-001`, `WO-WAL-002`, `WO-WAL-003`, and bounded reservation-safe portions of
+`OWNER-WAL-V1-MISSION-AUTHORITY-20260827`. `WO-WAL-000` implementation is complete on the PR head
+and becomes canonical/effective on protected merge of PR #1486; then `WO-WAL-001`, `WO-WAL-002`,
+`WO-WAL-003`, and bounded reservation-safe portions of
 `WO-WAL-004` form the initial parallel wave. 005/006 integrate those contracts, 007 gates the exact
 release candidate, 008 performs production plus external assessor acceptance, and 009 records
 `COMPLETED_AND_CONSUMED` with no automatic successor.

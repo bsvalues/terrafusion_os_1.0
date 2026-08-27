@@ -46,4 +46,6 @@ For every representative connected source, capture observed source-side command/
 
 ## Continuation
 
-May execute in parallel with WAL-001/002/004 after WAL-000. Routine source-profile decomposition stays inside Issue #1485 and does not require fresh owner relay.
+May execute in parallel with WAL-001/002 and bounded, reservation-safe portions of WAL-004 after
+WAL-000. Routine source-profile decomposition stays inside Issue #1485 and does not require fresh
+owner relay.
