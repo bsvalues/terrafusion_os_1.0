@@ -100,8 +100,48 @@ public sealed class DossierMutationDecisionPort(
     private static JsonSerializerOptions CreateOptions()
     {
         var o = new JsonSerializerOptions(JsonSerializerDefaults.Web) { DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull, UnmappedMemberHandling = JsonUnmappedMemberHandling.Disallow };
+        o.Converters.Add(new UtcDateTimeOffsetJsonConverter());
         o.Converters.Add(new JsonStringEnumConverter());
         return o;
+    }
+
+    private sealed class UtcDateTimeOffsetJsonConverter : JsonConverter<DateTimeOffset>
+    {
+        public override DateTimeOffset Read(
+            ref Utf8JsonReader reader,
+            Type typeToConvert,
+            JsonSerializerOptions serializerOptions)
+        {
+            if (reader.TokenType != JsonTokenType.String)
+                throw new JsonException("Dossier timestamps must be UTC strings ending in Z.");
+
+            var text = reader.GetString();
+            if (string.IsNullOrWhiteSpace(text)
+                || !text.EndsWith('Z')
+                || !DateTimeOffset.TryParse(
+                    text,
+                    CultureInfo.InvariantCulture,
+                    DateTimeStyles.None,
+                    out var value)
+                || value.Offset != TimeSpan.Zero)
+            {
+                throw new JsonException("Dossier timestamps must be UTC strings ending in Z.");
+            }
+
+            return value;
+        }
+
+        public override void Write(
+            Utf8JsonWriter writer,
+            DateTimeOffset value,
+            JsonSerializerOptions serializerOptions)
+        {
+            if (value.Offset != TimeSpan.Zero)
+                throw new JsonException("Dossier timestamps must be UTC values.");
+
+            writer.WriteStringValue(
+                value.UtcDateTime.ToString("yyyy-MM-dd'T'HH:mm:ss.fffffff'Z'", CultureInfo.InvariantCulture));
+        }
     }
 }
 
