@@ -635,7 +635,7 @@ public class DossierController : ControllerBase
     };
 
     _db.DossierNotes.Add(note);
-    await _db.SaveChangesAsync();
+    await _db.SaveChangesAsync(HttpContext.RequestAborted);
 
     _logger.LogInformation(
         "DossierNote created: {NoteId} for parcel {ParcelId} in county {CountyId}",
@@ -1726,7 +1726,7 @@ public class DossierController : ControllerBase
     };
 
     _db.DossierDocuments.Add(document);
-    await _db.SaveChangesAsync();
+    await _db.SaveChangesAsync(HttpContext.RequestAborted);
 
     _logger.LogInformation("Document {DocumentId} registered for parcel {ParcelId}", document.Id, parcelId);
 
@@ -1829,7 +1829,15 @@ public class DossierController : ControllerBase
     if(decision.Decision==DossierMutationDecision.rejected)return DossierRejected(DossierMutationOperation.transitionDocumentStatus,decision.Violations);
     var mutation=decision.Mutation!;
     document.Status=mutation.Status.ToString(); document.Version=mutation.Version; document.UpdatedAt=mutation.UpdatedAt.UtcDateTime;
-    await _db.SaveChangesAsync();
+    try
+    {
+      await _db.SaveChangesAsync(HttpContext.RequestAborted);
+    }
+    catch (DbUpdateConcurrencyException exception)
+    {
+      _logger.LogWarning(exception, "Refused stale Dossier document mutation {DocumentId} in county {CountyId}", document.Id, countyId.Value);
+      return Conflict(new { error = "Document changed after the governed Dossier snapshot was read", correlationId = GetOrCreateCorrelationId() });
+    }
 
     _logger.LogInformation("Document {DocumentId} status updated to {Status}", document.Id, newStatus);
 
@@ -2149,8 +2157,15 @@ public class DossierController : ControllerBase
     _db.DossierCustodyEvents.Add(custodyEvent);
 
     evidence.Integrity=mutation.Integrity.ToString(); evidence.Version=mutation.Version;
-
-    await _db.SaveChangesAsync();
+    try
+    {
+      await _db.SaveChangesAsync(HttpContext.RequestAborted);
+    }
+    catch (DbUpdateConcurrencyException exception)
+    {
+      _logger.LogWarning(exception, "Refused stale Dossier custody mutation {EvidenceId} in county {CountyId}", evidenceId, countyId.Value);
+      return Conflict(new { error = "Evidence changed after the governed Dossier snapshot was read", correlationId = GetOrCreateCorrelationId() });
+    }
 
     _logger.LogInformation("Custody event '{Action}' added to evidence {EvidenceId}", action, evidenceId);
 
