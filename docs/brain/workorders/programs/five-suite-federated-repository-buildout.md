@@ -102,7 +102,11 @@ county contexts, audit spines, deployment control planes, or contract authoritie
 | WO-SR-010F | Retire fabricated sovereign appeal grounds, timeline, evidence-checklist, and hearing-schedule behavior | Complete R3; PR #1469 exact head `17f2f3fa1` merged as `acf4abc59`; protected main verified |
 | WO-SR-010G | Adopt the exact Dais mutation decision as the persistent real Development runtime, enforce stale-write conflict, and execute rollback | Complete R4; PR #1471 merged as `f14fc4999`; protected main verified |
 | WO-SR-010H | Retire the unsupported PropertyDais hearing-scheduling offer and prove no offered frontend write path | Complete R3; PR #1473 exact head `b6a011620` merged as `6291e58b1`; protected main verified |
-| WO-SR-011D | Freeze the provider-neutral Dossier note/document/evidence/custody/packet mutation-decision boundary | Active R3; focused 3/3 synthetic contract proof passes; protected assurance pending |
+| WO-SR-011A | Stage the exact Dossier evidence-registry read artifact with provenance and rollback | Complete R3; PR #1474 merged as `aec4f1e18`; protected main verified; runtime remains Disabled |
+| WO-SR-011B | Adopt the exact Dossier read decision on the persistent authenticated, county-scoped sovereign path | Complete R4; PR #1477 merged as `d82a2d363`; protected main verified |
+| WO-SR-011D | Freeze the provider-neutral Dossier note/document/evidence/custody/packet mutation-decision boundary | Complete R3; PR #1475 merged as `7cb96bf2e`; protected main verified; no mutation performed |
+| WO-SR-012A | Make GPT execution artifacts LF-portable and publish an exact execution manifest | Complete R3; GPT PR #5 merged as `550b50f27`; protected main verified |
+| WO-SR-012B | Stage the exact GPT grounded-context artifact with provenance and rollback | Active R3; latest protected main `142a105a0` integrated; inert proof rerun required before protected merge |
 
 ## Extraction and provenance policy
 
@@ -354,8 +358,8 @@ protected Dossier evidence-registry read artifact with provenance, production re
 whole-slot rollback in protected merge `aec4f1e18b619730842c828e4f1c93ecd18d64b2` while runtime
 remains Disabled. `WO-SR-011B` persistently adopted that exact read runtime in protected merge
 `d82a2d3638a722fa541836abbd5c4ab45f8e060d`. `WO-SR-011D`
-freezes the additive provider-neutral mutation-decision boundary for real note, document,
+froze the additive provider-neutral mutation-decision boundary for real note, document,
 evidence/custody, and explicit-snapshot packet semantics; it performs no mutation and integrates the
-exact protected `WO-SR-011B` merge. Mutation staging/runtime adoption, suite ownership-governance truth, rollback,
+exact protected `WO-SR-011B` merge as protected main `7cb96bf2ea5efea7caccae6d6e8c9f81f672412e`. Mutation staging/runtime adoption, suite ownership-governance truth, rollback,
 and duplicate-judgment retirement remain successor work; GPT then follows without a per-child owner
 relay.

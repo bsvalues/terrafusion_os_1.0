@@ -691,3 +691,4 @@ backend/TerraFusion.API.Tests/Services/ModuleRuntimeHealthTest.txt
 .terrafusion/runtime/dossier/evidence-registry-read/
 .terrafusion/runtime/dossier/mutation-decision/
 .terrafusion/runtime/dossier/adoption-receipts/
+.terrafusion/runtime/gpt/grounded-context/
