@@ -90,6 +90,11 @@ if ($OfflineGuardsOnly) {
         $optionsSource -match 'Mode\s*\{\s*get;\s*set;\s*\}\s*=\s*GptGroundedContextRuntimeMode\.LocalExact') {
       throw 'Default-disabled runtime selection was not preserved'
     }
+    $stagerSource = Get-Content -LiteralPath $stager -Raw
+    if ($stagerSource -notmatch "'Global\\TerraFusion\.GptGroundedContextRuntime\.ArtifactSlot'" -or
+        $stagerSource -match "'Local\\TerraFusion\.GptGroundedContextRuntime\.ArtifactSlot'") {
+      throw 'Machine-wide transaction mutex was not preserved'
+    }
 
     $createdProductionSlot = $false
     if (-not (Test-Path -LiteralPath $artifactSlot -PathType Container)) {
@@ -152,7 +157,8 @@ if ($OfflineGuardsOnly) {
       powerShellParse=$true; runtimePinsVerified=$true; defaultRuntimeDisabled=$true;
       productionRefusedWithoutMutation=$true; untrustedOriginRejectedBeforeFetch=$true;
       crossVolumeBackupRejected=$true; buildRootReparsePointRejected=$true;
-      buildRootSlotOverlapRejectedWithoutMutation=$true; privateSuiteCredentialRequired=$false
+      buildRootSlotOverlapRejectedWithoutMutation=$true; machineWideTransactionMutex=$true;
+      privateSuiteCredentialRequired=$false
     } | ConvertTo-Json -Depth 4
   } finally {
     if ($createdProductionSlot -and (Test-Path -LiteralPath $artifactSlot)) {
@@ -309,7 +315,7 @@ try {
     $mutexObservedHeld = $false
     $deadline = [DateTime]::UtcNow.AddSeconds(20)
     while ([DateTime]::UtcNow -lt $deadline -and $concurrentJob.State -eq 'Running') {
-      $probe = [Threading.Mutex]::new($false,'Local\TerraFusion.GptGroundedContextRuntime.ArtifactSlot')
+      $probe = [Threading.Mutex]::new($false,'Global\TerraFusion.GptGroundedContextRuntime.ArtifactSlot')
       $probeHeld = $false
       try {
         $probeHeld = $probe.WaitOne(0)
@@ -398,7 +404,8 @@ try {
     candidateStringArrayTamperRejectedBeforePublication=$true;
     sourceModuleTamperRejectedBeforePublication=$true; sourceSchemaTamperRejectedBeforePublication=$true;
     sourceManifestTamperRejectedBeforePublication=$true; executionManifestTamperRejectedBeforePublication=$true;
-    concurrentInvocationRejectedWithoutMutation=$true; backupContentsVerified=$true;
+    machineWideTransactionMutex=$true; concurrentInvocationRejectedWithoutMutation=$true;
+    backupContentsVerified=$true;
     rollbackExecuted=$true; rollbackHashesVerified=$true; automaticFailureRollbackVerified=$true;
     cleanParentBootstrapVerified=$true; freshFailureSlotRemovalVerified=$true;
     originallyAbsentRestorationVerified=$true; existingEmptyRestorationVerified=$true;

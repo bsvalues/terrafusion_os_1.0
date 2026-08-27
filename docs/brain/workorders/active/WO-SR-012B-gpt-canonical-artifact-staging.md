@@ -44,7 +44,7 @@ is integrated. Both proof tiers must pass again on this exact base before protec
   source manifest, plus structural provenance agreement between them;
 - exact three-file candidate/published inventories and byte-pinned generated manifest;
 - canonical/no-link path checks, same-volume backup, disjoint build/live/source paths, and a named
-  inter-process transaction mutex;
+  machine-wide inter-process transaction mutex;
 - verified whole-slot move backup with complete relative-path/hash inventory; no wildcard-copy
   semantics;
 - injected artifact tamper, manifest type tamper, backup-verification failure, post-publication

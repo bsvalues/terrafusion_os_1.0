@@ -20,4 +20,7 @@ jobs:
 
       - name: Prove parser and fail-closed guards without sibling-repository credentials
         shell: pwsh
-        run: ./tests/gpt-staging-identity.ps1 -OfflineGuardsOnly
+        run: |
+          $runnerWorkRoot = Split-Path -Parent (Split-Path -Parent $env:GITHUB_WORKSPACE)
+          $proofRoot = Join-Path $runnerWorkRoot "tf-gpt-staging-$env:GITHUB_RUN_ID-$env:GITHUB_RUN_ATTEMPT"
+          ./tests/gpt-staging-identity.ps1 -ProofRootBase $proofRoot -OfflineGuardsOnly

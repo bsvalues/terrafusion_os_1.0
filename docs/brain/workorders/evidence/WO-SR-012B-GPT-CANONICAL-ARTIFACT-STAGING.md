@@ -26,7 +26,7 @@ the full Windows transaction proof completed again against a canonical mirror fe
 proved protected-main ancestry and rejected a pinned but unreachable commit without slot mutation.
 It separately tampered the module, schema, suite source manifest, suite execution manifest, numeric
 manifest property, and singleton-array string property; all failed before publication. It proved
-candidate/published inventory equality, transaction-lock exclusion, verified nonempty whole-slot
+candidate/published inventory equality, machine-wide transaction-lock exclusion, verified nonempty whole-slot
 backup contents and receipt hashes, backup-verification restoration, post-publication rollback,
 originally-absent cleanup, and exact restoration of an existing empty directory.
 

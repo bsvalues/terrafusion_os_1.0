@@ -408,7 +408,7 @@ if ((Get-FileHash (Join-Path $candidate $ModuleFilename) -Algorithm SHA256).Hash
   throw "GPT_CANDIDATE_IDENTITY_MISMATCH"
 }
 
-$transactionMutexName = 'Local\TerraFusion.GptGroundedContextRuntime.ArtifactSlot'
+$transactionMutexName = 'Global\TerraFusion.GptGroundedContextRuntime.ArtifactSlot'
 $transactionMutex = [Threading.Mutex]::new($false, $transactionMutexName)
 $transactionLockHeld = $false
 try {
