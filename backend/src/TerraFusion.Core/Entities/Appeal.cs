@@ -22,7 +22,7 @@ public class Appeal
     /// <summary>filed | scheduled | heard | decided | withdrawn</summary>
     [Required]
     [StringLength(20)]
-    public string Status { get; set; } = "filed";
+    public string Status { get; set; } = string.Empty;
 
     [StringLength(200)]
     public string? PetitionerName { get; set; }

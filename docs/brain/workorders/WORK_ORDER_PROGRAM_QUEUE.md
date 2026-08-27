@@ -13,7 +13,7 @@
 
 ## Active Goal
 
-The Five-Suite Federated Repository Buildout is active under `OWNER-FIVE-SUITE-FEDERATED-COMPLETION-20260826`. Atlas runtime and ownership are complete. Dais staging PR #1466 merged as `5182742d756cea6a939bb12489e660d83b9593b6` and protected main was verified. `WO-SR-010B` is active: adopt the exact three-file Dais artifact as the real persistent Development runtime gate, execute rollback, and retire legacy semantic fallback. Continue to Dais ownership truth, then Dossier and GPT. The mission hard walls remain binding.
+The Five-Suite Federated Repository Buildout is active under `OWNER-FIVE-SUITE-FEDERATED-COMPLETION-20260826`. Atlas runtime and ownership are complete. Dais read staging/runtime, mutation staging, truthful sovereign retirement, and frontend availability retirement are protected merges through `6291e58b11626ad04bdc89e736be89b2a574261c`. `WO-SR-010G` has exact local runtime, concurrency, tamper, Disabled rollback, and restoration proof and is in final protected assurance. Begin Dossier immediately after that merge, then GPT. The mission hard walls remain binding.
 
 The prior `WO-SR-009C` completed before this activation. PR #1424 merged exact assured head
 `e70548cb4938da92b2c0b254d71c5361aa10a6ed` as
@@ -187,7 +187,10 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | **WO-SR-007D Atlas Persistent Local Runtime Adoption** | **DONE / R4 / PR #1465** | Merge `4fcbfbd05`; source-tree Development `LocalExact`; published Development disabled; exact startup/per-invocation provenance; real A/B/restored starts; Disabled rollback; 89/89 focused tests |
 | **Atlas Standalone Canonical Ownership Finalization** | **DONE / R2 / Atlas PR #4** | Exact head `8c2d4d870` merged as `708fc5c319`; protected suite main verified; module bytes unchanged |
 | **WO-SR-010A Dais Canonical Artifact Staging** | **DONE / R3 / PR #1466** | Exact head `88e7454b2` merged as `5182742d7`; all checks green, review resolved, protected main verified |
-| **WO-SR-010B Dais Persistent Exact Runtime Adoption** | **ACTIVE / R4** | Real controller consumer, exact startup/per-invocation verifier, constrained Node host, persistent Development selection and observed rollback |
+| **WO-SR-010B Dais Persistent Exact Runtime Adoption** | **DONE / R4 / PR #1467** | Exact head `b24f263ac` merged as `54f9e4b41`; real controller consumer, exact runtime, persistent Development selection, observed rollback, 120/120 focused tests |
+| **WO-SR-010C Dais Appeal Mutation Contract Freeze** | **DONE / R3 / PR #1468** | Exact head `377ed29b8` merged as `527442205`; protected main verified |
+| **WO-SR-010D Dais Appeal Mutation Canonical Source** | **DONE / R3 / Dais PR #6** | Protected Dais merge `8a9cfc608`; exact module/schema/source-manifest identities established |
+| **WO-SR-010E Dais Appeal Mutation Canonical Staging** | **ACTIVE / R3** | Fixed ignored slot, exact protected Git blobs and provenance, nonempty backup, failure rollback, physically observed rollback; no runtime activation |
 
 ### portfolio-operator (`GOAL-PORTFOLIO-OPERATOR-001` / `LOOP-PORTFOLIO-OPERATOR-001`)
 | WO | State | Notes |

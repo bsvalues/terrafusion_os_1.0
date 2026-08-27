@@ -1,8 +1,8 @@
 {
   "schemaVersion": "0.1.0",
-  "generatedBy": "WO-SR-010B Dais persistent exact runtime adoption activation",
+  "generatedBy": "WO-SR-010G Dais appeal mutation runtime adoption",
   "generatedAt": "2026-08-26T00:00:00Z",
-  "description": "The owner-level Five-Suite completion mission is active. Atlas is complete; Dais staging merged and protected main was verified; WO-SR-010B is the active persistent exact Dais runtime and rollback child.",
+  "description": "The owner-level Five-Suite completion mission is active. Atlas is complete; Dais read staging/runtime, mutation contract/source/staging, truthful sovereign retirement, and frontend availability retirement are protected merges. WO-SR-010G is in final exact mutation-runtime assurance before Dossier begins.",
   "records": [
     {
       "id": "WO-WOE-000",
@@ -11087,7 +11087,7 @@
       "program": "Five-Suite Federated Repository Buildout",
       "goal": "Adopt the exact Dais appeal-workflow module and schema as the real persistent Development semantic gate with executed rollback and no legacy semantic fallback.",
       "riskClass": "R4",
-      "status": "active",
+      "status": "complete",
       "dependencies": [
         { "id": "WO-SR-010A", "status": "satisfied", "evidence": ["PR #1466 exact head 88e7454b2a64a99d3a917914e486fff410df756c merged as 5182742d756cea6a939bb12489e660d83b9593b6; protected main verified."] },
         { "id": "OWNER-FIVE-SUITE-FEDERATED-COMPLETION-20260826", "status": "satisfied", "evidence": ["Owner mission authority explicitly permits real local runtime adoption, persistent selection, rollback proof, canonical ownership and duplicate retirement without per-child owner relay."] }
@@ -11119,16 +11119,228 @@
         { "name": "Dais focused runtime tests", "command": "dotnet test filtered to Dais process host, runtime registration, consumer and endpoint contracts", "required": true, "result": "pass - 120/120, zero skips" },
         { "name": "persistent selection and rollback proof", "command": "Invoke-DaisPersistentRuntimeAdoptionRollbackProof.ps1", "required": true, "result": "pass - clean revision ddbb36349132503eb3c6c1ad7aff45d819465cd9; run 20260826T230745207Z-26c3bc6694634f4488523ae42f2794d7" },
         { "name": "registry, decision, scope and diff checks", "command": "JSON parse, exact allowlist, git diff --check", "required": true, "result": "pass locally; exact-head rerun required after commit" },
-        { "name": "independent assurance and protected merge", "command": "independent review, required checks, resolved threads, exact-head merge and protected-main verification", "required": true, "result": "pending" }
+        { "name": "independent assurance and protected merge", "command": "independent review, required checks, resolved threads, exact-head merge and protected-main verification", "required": true, "result": "pass - PR #1467 exact head b24f263ac84fd5403d8fb1ed6e3ba18c511aafbb merged as 54f9e4b411fb886bd592226067928f024b02285b; protected main verified" }
       ],
       "stopConditions": [
         { "type": "authority_wall", "description": "Stop on any mission hard-wall crossing, configurable artifact redirect, non-Development activation, identity/rollback failure, silent legacy fallback, protected resource, out-of-scope file, failed required check, unresolved substantive review, force push or branch-protection bypass." }
       ],
       "nextCandidates": [
-        { "id": "DAIS_STANDALONE_OWNERSHIP_FINALIZATION", "reason": "After protected-main runtime verification, record exact sovereign adoption and finalize Dais suite ownership truth without changing module bytes.", "riskClass": "R2", "blocked": true }
+        { "id": "WO-SR-010C", "reason": "Freeze the minimal Dais-owned appeal creation-default and lifecycle-transition boundary before standalone adoption and duplicate judgment retirement.", "riskClass": "R3", "blocked": false }
       ],
       "authority": { "mayWrite": true, "mayCommit": true, "mayPush": true, "mayOpenPr": true, "mayMarkReady": true, "mayMerge": true, "mayCleanup": true, "notes": "Exact child scope under OWNER-FIVE-SUITE-FEDERATED-COMPLETION-20260826 and standing protected-PR lifecycle authority." },
-      "provenance": { "createdAt": "2026-08-26T00:00:00Z", "source": "Owner mission directive; verified WO-SR-010A protected merge 5182742d756cea6a939bb12489e660d83b9593b6; exact Dais artifact identities recorded in staging evidence.", "schemaVersion": "0.1.0" }
+      "provenance": { "createdAt": "2026-08-26T00:00:00Z", "source": "Owner mission directive; verified WO-SR-010A protected merge 5182742d756cea6a939bb12489e660d83b9593b6; exact Dais runtime proof; PR #1467 reviewed head b24f263ac84fd5403d8fb1ed6e3ba18c511aafbb merged as 54f9e4b411fb886bd592226067928f024b02285b and protected main verified.", "schemaVersion": "0.1.0" }
+    },
+    {
+      "id": "WO-SR-010C",
+      "title": "Dais Appeal Mutation Contract Freeze",
+      "program": "Five-Suite Federated Repository Buildout",
+      "goal": "Freeze the minimal governed boundary through which Dais owns appeal creation defaults and lifecycle-transition judgment without crossing sovereign authorization, persistence, audit, PII, monetary-value or notes boundaries.",
+      "riskClass": "R3",
+      "status": "complete",
+      "dependencies": [
+        { "id": "WO-SR-010B", "status": "satisfied", "evidence": ["PR #1467 exact head b24f263ac84fd5403d8fb1ed6e3ba18c511aafbb merged as 54f9e4b411fb886bd592226067928f024b02285b; protected main verified."] },
+        { "id": "OWNER-FIVE-SUITE-FEDERATED-COMPLETION-20260826", "status": "satisfied", "evidence": ["Owner mission authority permits exact successor contracts, suite adoption, duplicate-judgment retirement, PR operation and merge without per-child owner relay."] }
+      ],
+      "allowedSystems": [
+        { "name": "Sovereign shared Dais mutation contract and mission governance", "paths": ["backend/src/TerraFusion.Abstractions/DTOs/DaisAppealMutationDto.cs", "backend/src/TerraFusion.Abstractions/contracts/dais.appeal-mutation.v1.schema.json", "backend/src/TerraFusion.Abstractions/contracts/fixtures/dais.appeal-mutation.v1.*.synthetic.json", "backend/src/TerraFusion.Abstractions/contracts.freeze.json", "backend/src/TerraFusion.Abstractions/CONTRACTS.md", "scripts/contracts/verify-contract-freeze.test.mjs", "docs/brain/workorders/**"] }
+      ],
+      "blockedSystems": [
+        { "name": "Runtime adoption, suite mutation, database/schema/migration, PACS/county SQL/live data, PII, monetary values, notes, credentials, deployment/production, topology and unrelated CI/release work" }
+      ],
+      "allowedFiles": [
+        "backend/src/TerraFusion.Abstractions/DTOs/DaisAppealMutationDto.cs",
+        "backend/src/TerraFusion.Abstractions/contracts/dais.appeal-mutation.v1.schema.json",
+        "backend/src/TerraFusion.Abstractions/contracts/fixtures/dais.appeal-mutation.v1.*.synthetic.json",
+        "backend/src/TerraFusion.Abstractions/contracts.freeze.json",
+        "backend/src/TerraFusion.Abstractions/CONTRACTS.md",
+        "scripts/contracts/verify-contract-freeze.test.mjs",
+        "docs/brain/workorders/active/WO-SR-010B-dais-persistent-runtime-adoption.md",
+        "docs/brain/workorders/evidence/WO-SR-010B-DAIS-PERSISTENT-RUNTIME-ADOPTION.md",
+        "docs/brain/workorders/active/WO-SR-010C-dais-appeal-mutation-contract-freeze.md",
+        "docs/brain/workorders/evidence/WO-SR-010C-DAIS-APPEAL-MUTATION-CONTRACT-FREEZE.md",
+        "docs/brain/workorders/registry/work-order-registry.seed.json",
+        "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
+        "docs/brain/workorders/programs/five-suite-federated-repository-buildout.md"
+      ],
+      "blockedFiles": ["backend/src/TerraFusion.API/**", "backend/src/TerraFusion.Data/**", "frontend/**", ".github/workflows/**", "packages/**", "azure-pipelines/**"],
+      "evidenceRequired": [
+        { "kind": "other", "description": "Hash-pinned schema/DTO/fixtures; deterministic create defaults and transition graph; typed invalid ground/year/status/transition/lifecycle refusal; county/identity and cross-lane failure; full freeze and build proof; protected checks; exact-head merge and protected-main verification." }
+      ],
+      "evidenceProduced": [
+        { "kind": "file", "location": "docs/brain/workorders/evidence/WO-SR-010C-DAIS-APPEAL-MUTATION-CONTRACT-FREEZE.md", "summary": "Focused accepted, typed-rejected, identity and cross-lane synthetic contract proof." }
+      ],
+      "validationGates": [
+        { "name": "focused Dais mutation contract proof", "command": "node --test --test-name-pattern='Dais appeal mutation' scripts/contracts/verify-contract-freeze.test.mjs", "required": true, "result": "pass - 3/3" },
+        { "name": "complete shared-contract freeze", "command": "node scripts/contracts/verify-contract-freeze.mjs and full node test file from canonical Git-blob checkout", "required": true, "result": "pass at a29f7a685 - 7 groups, 67 frozen files; 23/23 tests" },
+        { "name": "C# contract build", "command": "dotnet build TerraFusion.Abstractions", "required": true, "result": "pass through protected Backend Gate" },
+        { "name": "governance and protected merge", "command": "JSON parse, diff check, required checks, exact-head merge and protected-main verification", "required": true, "result": "pass - PR #1468 exact head 377ed29b84c4f46b623f61a64d7644f911f76db6 merged as 52744220509a54b6544e0fa193b6d09e8d93c159; protected main verified" }
+      ],
+      "stopConditions": [
+        { "type": "authority_wall", "description": "Stop on any mission hard-wall crossing, contract identity failure, PII/value/notes leakage, runtime or suite mutation in this child, failed required check, force push or branch-protection bypass." }
+      ],
+      "nextCandidates": [
+        { "id": "WO-SR-010D", "reason": "Copy exact contract identities into Dais and implement the pure decision module.", "riskClass": "R3", "blocked": false }
+      ],
+      "authority": { "mayWrite": true, "mayCommit": true, "mayPush": true, "mayOpenPr": true, "mayMarkReady": true, "mayMerge": true, "mayCleanup": true, "notes": "Exact child scope under OWNER-FIVE-SUITE-FEDERATED-COMPLETION-20260826 and standing protected-PR lifecycle authority." },
+      "provenance": { "createdAt": "2026-08-26T00:00:00Z", "source": "Owner mission directive; verified Dais runtime merge 54f9e4b411fb886bd592226067928f024b02285b; Dais mutable-ownership audit selected the smallest pure create-default and lifecycle-transition boundary; PR #1468 merged exact head 377ed29b84c4f46b623f61a64d7644f911f76db6 as 52744220509a54b6544e0fa193b6d09e8d93c159.", "schemaVersion": "0.1.0" }
+    },
+    {
+      "id": "WO-SR-010E",
+      "title": "Dais Appeal Mutation Canonical Staging",
+      "program": "Five-Suite Federated Repository Buildout",
+      "goal": "Stage the exact protected-main Dais appeal-mutation decision artifact in the fixed sovereign slot with exact provenance and physically observed rollback, without runtime activation.",
+      "riskClass": "R3",
+      "status": "complete",
+      "dependencies": [
+        { "id": "WO-SR-010C", "status": "satisfied", "evidence": ["Sovereign PR #1468 exact head 377ed29b84c4f46b623f61a64d7644f911f76db6 merged as 52744220509a54b6544e0fa193b6d09e8d93c159."] },
+        { "id": "WO-SR-010D", "status": "satisfied", "evidence": ["Dais PR #6 merged as protected-main commit 8a9cfc608bcda835126db2054bb7ba7ecf185275 with exact module, schema and source-manifest Git blobs."] },
+        { "id": "OWNER-FIVE-SUITE-FEDERATED-COMPLETION-20260826", "status": "satisfied", "evidence": ["Owner mission authority permits staging, rollback proof, protected PR operation and merge."] }
+      ],
+      "allowedSystems": [
+        { "name": "Sovereign fixed Dais mutation artifact staging lane", "paths": [".gitignore", ".github/workflows/dais-canonical-staging.yml", "backend/src/TerraFusion.API/Configuration/DaisAppealMutationOptions.cs", "scripts/bootstrap/Stage-DaisAppealMutationModule.ps1", "tests/dais-appeal-mutation-staging-identity.ps1", "docs/brain/workorders/**"] }
+      ],
+      "blockedSystems": [
+        { "name": "Runtime consumer, process host, DI/Program registration, persistent selection, controller/service behavior, database/schema/migration, county/PACS/live data, secrets, deployment/production, topology, and unrelated CI/release work" }
+      ],
+      "allowedFiles": [
+        ".gitignore",
+        ".github/workflows/dais-canonical-staging.yml",
+        "backend/src/TerraFusion.API/Configuration/DaisAppealMutationOptions.cs",
+        "scripts/bootstrap/Stage-DaisAppealMutationModule.ps1",
+        "tests/dais-appeal-mutation-staging-identity.ps1",
+        "docs/brain/workorders/active/WO-SR-010E-dais-appeal-mutation-canonical-staging.md",
+        "docs/brain/workorders/evidence/WO-SR-010E-DAIS-APPEAL-MUTATION-CANONICAL-STAGING.md",
+        "docs/brain/workorders/registry/work-order-registry.seed.json",
+        "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
+        "docs/brain/workorders/programs/five-suite-federated-repository-buildout.md"
+      ],
+      "blockedFiles": ["backend/src/TerraFusion.API/Program.cs", "backend/src/TerraFusion.API/Controllers/**", "backend/src/TerraFusion.API/Services/**", "backend/src/TerraFusion.API/appsettings*.json", "backend/src/TerraFusion.Core/**", "backend/src/TerraFusion.Data/**", "frontend/**", "packages/**", "azure-pipelines/**"],
+      "evidenceRequired": [
+        { "kind": "other", "description": "Exact protected-source commit/blob/byte/contract/DTO provenance; exact three-file publication; strict manifest scalar types; nonempty whole-slot backup; injected failure restoration; physical rollback and adopted-slot restoration; no activation or protected data; independent review; required checks; exact-head merge and protected-main verification." }
+      ],
+      "evidenceProduced": [
+        { "kind": "file", "location": "docs/brain/workorders/evidence/WO-SR-010E-DAIS-APPEAL-MUTATION-CANONICAL-STAGING.md", "summary": "Authenticated exact-source publication, failure restoration, nonempty backup hashes, and physically observed rollback evidence." }
+      ],
+      "validationGates": [
+        { "name": "offline staging guards", "command": "pwsh -NoProfile -File tests/dais-appeal-mutation-staging-identity.ps1 -OfflineGuardsOnly", "required": true, "result": "pass" },
+        { "name": "authenticated full staging and rollback", "command": "pwsh -NoProfile -File tests/dais-appeal-mutation-staging-identity.ps1", "required": true, "result": "pass - DAIS_APPEAL_MUTATION_EXACT_STAGING_AND_ROLLBACK_PROVEN" },
+        { "name": "governance, independent review and protected merge", "command": "JSON parse, diff check, independent review, required checks, exact-head merge and protected-main verification", "required": true, "result": "pass - PR #1470 exact head dfce1f5f1502665391b6c23ef820cfe1df72535c merged as 153103c4f5356219c142ccfe88174c2c6477e54d" }
+      ],
+      "stopConditions": [
+        { "type": "authority_wall", "description": "Stop on any mission hard-wall crossing, source/manifest/blob/rollback failure, runtime activation in this child, protected resource, out-of-scope file, failed required check, force push or branch-protection bypass." }
+      ],
+      "nextCandidates": [
+        { "id": "WO-SR-010G", "reason": "Adopt only the exact staged mutation artifact as the fail-closed Dais decision boundary and retire duplicate OS judgment.", "riskClass": "R4", "blocked": false }
+      ],
+      "authority": { "mayWrite": true, "mayCommit": true, "mayPush": true, "mayOpenPr": true, "mayMarkReady": true, "mayMerge": true, "mayCleanup": true, "notes": "Exact staging-only child under OWNER-FIVE-SUITE-FEDERATED-COMPLETION-20260826 and standing protected-PR lifecycle authority." },
+      "provenance": { "createdAt": "2026-08-27T00:00:00Z", "source": "Owner mission directive; sovereign protected merge 52744220509a54b6544e0fa193b6d09e8d93c159; Dais protected merge 8a9cfc608bcda835126db2054bb7ba7ecf185275 and supplied exact Git-blob/SHA-256 identities.", "schemaVersion": "0.1.0" }
+    },
+    {
+      "id": "WO-SR-010F",
+      "title": "Dais Truthful Appeal Route Retirement",
+      "program": "Five-Suite Federated Repository Buildout",
+      "goal": "Retire four fabricated or unsupported sovereign appeal behaviors without offering replacement mutation capability.",
+      "riskClass": "R3",
+      "status": "complete",
+      "dependencies": [
+        { "id": "WO-SR-010C", "status": "satisfied" },
+        { "id": "OWNER-FIVE-SUITE-FEDERATED-COMPLETION-20260826", "status": "satisfied" }
+      ],
+      "allowedSystems": [{ "name": "Bounded sovereign Dais endpoint retirement and focused no-mutation proof" }],
+      "blockedSystems": [{ "name": "Replacement scheduling, frontend, database/schema/migration, county/PACS/live data, deployment/production, secrets, topology, and unrelated CI/release work" }],
+      "allowedFiles": [
+        "backend/src/TerraFusion.API/Controllers/DaisController.cs",
+        "backend/tests/TerraFusion.Unit.Tests/Dais/DaisTruthfulRetirementTests.cs",
+        "backend/tests/TerraFusion.Unit.Tests/R2FullPlan/R2FullPlanHandlerAlignmentTests.cs",
+        "docs/brain/workorders/active/WO-SR-010F-dais-truthful-appeal-route-retirement.md"
+      ],
+      "blockedFiles": ["frontend/**", "backend/src/TerraFusion.Data/**", "backend/src/TerraFusion.Core/Entities/**", "azure-pipelines/**"],
+      "evidenceRequired": [{ "kind": "other", "description": "Exact HTTP 501 refusals, no service/audit/database mutation, required checks, resolved first-party threads, exact-head merge and protected-main verification." }],
+      "evidenceProduced": [{ "kind": "file", "location": "docs/brain/workorders/active/WO-SR-010F-dais-truthful-appeal-route-retirement.md", "summary": "Truthful bounded retirement record." }],
+      "validationGates": [{ "name": "protected assurance", "command": "required checks, thread resolution, exact-head merge and protected-main verification", "required": true, "result": "pass - PR #1469 exact head 17f2f3fa1b676b8a008ab0ebe913b5856e6c7733 merged as acf4abc5959f468c6a43a00b09cead5d55679795" }],
+      "stopConditions": [{ "type": "authority_wall", "description": "Stop on replacement capability, frontend expansion, protected data, deployment, schema or mission hard-wall crossing." }],
+      "nextCandidates": [{ "id": "WO-SR-010H", "reason": "Retire the unsupported frontend scheduling offer separately.", "riskClass": "R3", "blocked": false }],
+      "authority": { "mayWrite": true, "mayCommit": true, "mayPush": true, "mayOpenPr": true, "mayMarkReady": true, "mayMerge": true, "mayCleanup": true, "notes": "Completed exact child under the owner Five-Suite mission authority." },
+      "provenance": { "createdAt": "2026-08-27T00:00:00Z", "source": "Owner mission directive; exact reviewed head 17f2f3fa1b676b8a008ab0ebe913b5856e6c7733; protected merge acf4abc5959f468c6a43a00b09cead5d55679795.", "schemaVersion": "0.1.0" }
+    },
+    {
+      "id": "WO-SR-010G",
+      "title": "Dais Appeal Mutation Runtime Adoption",
+      "program": "Five-Suite Federated Repository Buildout",
+      "goal": "Adopt the exact Dais appeal-mutation artifact as the persistent Development decision boundary, retire duplicate sovereign judgment, and execute observed rollback.",
+      "riskClass": "R4",
+      "status": "active",
+      "dependencies": [
+        { "id": "WO-SR-010E", "status": "satisfied", "evidence": ["PR #1470 merged as 153103c4f5356219c142ccfe88174c2c6477e54d."] },
+        { "id": "WO-SR-010F", "status": "satisfied", "evidence": ["PR #1469 merged as acf4abc5959f468c6a43a00b09cead5d55679795."] },
+        { "id": "WO-SR-010H", "status": "satisfied", "evidence": ["PR #1473 merged as 6291e58b11626ad04bdc89e736be89b2a574261c."] },
+        { "id": "OWNER-FIVE-SUITE-FEDERATED-COMPLETION-20260826", "status": "satisfied" }
+      ],
+      "allowedSystems": [{ "name": "Exact Dais mutation process host, verified decision port, persistent Development selection, bounded appeal service/controller integration, concurrency conflict, tests, proof and governance" }],
+      "blockedSystems": [{ "name": "Production/deployment, county/PACS/live data, schema migration, secrets, frontend, topology, sixth suite, and unrelated CI/release work" }],
+      "allowedFiles": [
+        "backend/src/TerraFusion.API/Configuration/DaisAppealMutationOptions.cs",
+        "backend/src/TerraFusion.API/Controllers/DaisController.cs",
+        "backend/src/TerraFusion.API/Program.cs",
+        "backend/src/TerraFusion.API/Services/Dais/DaisAppealMutation*.cs",
+        "backend/src/TerraFusion.API/Services/Dais/DaisAppealWorkflowRuntimeRegistration.cs",
+        "backend/src/TerraFusion.API/appsettings.Development.json",
+        "backend/src/TerraFusion.API/appsettings.json",
+        "backend/src/TerraFusion.Core/Services/AppealService.cs",
+        "backend/src/TerraFusion.Core/Services/IDaisAppealMutationDecisionPort.cs",
+        "backend/src/TerraFusion.Data/Configurations/AppealConfiguration.cs",
+        "backend/tests/TerraFusion.Unit.Tests/**/Dais*.cs",
+        "backend/tests/TerraFusion.Integration.Tests/Phase40/DaisMutationSqliteLifecycleTests.cs",
+        "scripts/validation/Invoke-DaisAppealMutationRuntimeAdoptionRollbackProof.ps1",
+        "docs/brain/workorders/**"
+      ],
+      "blockedFiles": ["frontend/**", "backend/src/TerraFusion.Data/Migrations/**", "azure-pipelines/**", ".github/workflows/**"],
+      "evidenceRequired": [{ "kind": "other", "description": "Exact 24-field artifact provenance, fresh start/restart, real controller lifecycle, tamper refusal before save, stale-write conflict, persistent non-Production selection, Disabled rollback and adopted restoration, recovery-custody self-tests, independent review, required checks, exact-head merge and protected-main verification." }],
+      "evidenceProduced": [
+        { "kind": "file", "location": "docs/brain/workorders/evidence/WO-SR-010G-DAIS-APPEAL-MUTATION-RUNTIME-ADOPTION.md", "summary": "Observed runtime, concurrency, tamper, rollback and recovery evidence." },
+        { "kind": "file", "location": "docs/brain/workorders/evidence/WO-SR-010G-runtime-adoption-receipt.json", "summary": "Portable terminal proof receipt." }
+      ],
+      "validationGates": [
+        { "name": "recovery custody self-test", "command": "pwsh -NoProfile -File scripts/validation/Invoke-DaisAppealMutationRuntimeAdoptionRollbackProof.ps1 -RecoverySelfTest", "required": true, "result": "pass" },
+        { "name": "terminal runtime adoption and rollback", "command": "pwsh -NoProfile -File scripts/validation/Invoke-DaisAppealMutationRuntimeAdoptionRollbackProof.ps1", "required": true, "result": "pass - 61/61 focused, 2/2 concurrency, exact Disabled rollback and adopted restoration" },
+        { "name": "protected assurance", "command": "required checks, first-party thread resolution, exact-head merge and protected-main verification", "required": true, "result": "pending" }
+      ],
+      "stopConditions": [{ "type": "authority_wall", "description": "Stop on identity/rollback/recovery failure, protected data, Production/deployment, schema, secrets, topology, unrelated CI, force push or branch-protection bypass." }],
+      "nextCandidates": [{ "id": "WO-SR-011A", "reason": "Begin exact Dossier canonical artifact staging after WO-SR-010G and WO-SR-010H are protected-main complete.", "riskClass": "R3", "blocked": true }],
+      "authority": { "mayWrite": true, "mayCommit": true, "mayPush": true, "mayOpenPr": true, "mayMarkReady": true, "mayMerge": true, "mayCleanup": true, "notes": "Exact mutation-runtime child under owner mission authority and standing protected-PR lifecycle authority." },
+      "provenance": { "createdAt": "2026-08-27T00:00:00Z", "source": "Owner mission directive; protected staging merge 153103c4f5356219c142ccfe88174c2c6477e54d; protected truthful-retirement merge acf4abc5959f468c6a43a00b09cead5d55679795; protected frontend-retirement merge 6291e58b11626ad04bdc89e736be89b2a574261c; exact Dais source 8a9cfc608bcda835126db2054bb7ba7ecf185275.", "schemaVersion": "0.1.0" }
+    },
+    {
+      "id": "WO-SR-010H",
+      "title": "Dais Hearing Scheduling Availability Retirement",
+      "program": "Five-Suite Federated Repository Buildout",
+      "goal": "Stop offering the unsupported Dais hearing-scheduling write from PropertyDais and governed Pilot surfaces while preserving hearing reads.",
+      "riskClass": "R3",
+      "status": "complete",
+      "dependencies": [
+        { "id": "WO-SR-010F", "status": "satisfied", "evidence": ["PR #1469 merged as acf4abc5959f468c6a43a00b09cead5d55679795."] },
+        { "id": "OWNER-FIVE-SUITE-FEDERATED-COMPLETION-20260826", "status": "satisfied" }
+      ],
+      "allowedSystems": [{ "name": "PropertyDais scheduling-offer removal, governed Pilot capability/handler/maturity retirement, focused availability proof and governance" }],
+      "blockedSystems": [{ "name": "Replacement scheduling capability, hearing reads, persistence, database/schema/migrations, county/PACS/live data, Production/deployment, Azure, secrets, topology and unrelated CI/release work" }],
+      "allowedFiles": [
+        "frontend/apps/os-shell/src/pages/workbench/tabs/PropertyDais.tsx",
+        "frontend/apps/os-shell/src/__tests__/workbench/PropertyDais*.test.tsx",
+        "os-platform/core/pilot/**",
+        "os-platform/core/tests/dais-hearing-scheduling-unavailable.test.mjs",
+        "os-platform/core/tests/phase83-tools.test.mjs",
+        "tools/registry/terrapilot.tools.json",
+        "tools/registry/tool-maturity.json",
+        "docs/brain/workorders/active/WO-SR-010H-dais-hearing-scheduling-availability-retirement.md"
+      ],
+      "blockedFiles": ["backend/src/**", "backend/tests/**", "azure-pipelines/**", ".github/workflows/**"],
+      "evidenceRequired": [{ "kind": "other", "description": "No PropertyDais scheduling control or invocation; no manifest/maturity/office/handler capability; reads preserved; generated JS current; focused tests; required checks; resolved first-party threads; exact-head merge and protected-main verification." }],
+      "evidenceProduced": [{ "kind": "file", "location": "docs/brain/workorders/active/WO-SR-010H-dais-hearing-scheduling-availability-retirement.md", "summary": "Exact availability-retirement scope and proof." }],
+      "validationGates": [{ "name": "protected assurance", "command": "focused absence, maturity, Phase 8.3, generated JS, eight required contexts, first-party threads, exact-head merge and protected-main verification", "required": true, "result": "pass - PR #1473 exact head b6a01162097bd3664ff4f3c6e81d5bd4ce3f9740 merged as 6291e58b11626ad04bdc89e736be89b2a574261c" }],
+      "stopConditions": [{ "type": "authority_wall", "description": "Stop on replacement capability, hearing-read mutation, protected data, Production/deployment, schema, secrets or mission hard-wall crossing." }],
+      "nextCandidates": [{ "id": "WO-SR-011A", "reason": "Begin Dossier staging after WO-SR-010G runtime protected assurance completes.", "riskClass": "R3", "blocked": true }],
+      "authority": { "mayWrite": true, "mayCommit": true, "mayPush": true, "mayOpenPr": true, "mayMarkReady": true, "mayMerge": true, "mayCleanup": true, "notes": "Completed exact availability-retirement child under owner mission authority." },
+      "provenance": { "createdAt": "2026-08-27T00:00:00Z", "source": "Owner mission directive; PR #1473 exact head b6a01162097bd3664ff4f3c6e81d5bd4ce3f9740; protected merge 6291e58b11626ad04bdc89e736be89b2a574261c.", "schemaVersion": "0.1.0" }
     }
   ]
 }

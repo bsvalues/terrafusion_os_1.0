@@ -22,7 +22,10 @@ public sealed class AppealConfiguration : IEntityTypeConfiguration<Appeal>
         builder.Property(e => e.CreatedBy).HasMaxLength(200);
         builder.Property(e => e.UpdatedBy).HasMaxLength(200);
         builder.Property(e => e.CreatedAt).IsRequired();
-        builder.Property(e => e.UpdatedAt).IsRequired();
+        // Existing timestamp column doubles as an optimistic concurrency token so two
+        // suite-approved transitions cannot both commit from the same lifecycle snapshot.
+        // This changes EF update predicates only; it requires no schema or migration change.
+        builder.Property(e => e.UpdatedAt).IsRequired().IsConcurrencyToken();
 
         builder.HasOne(e => e.County)
             .WithMany()

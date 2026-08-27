@@ -2,8 +2,10 @@ using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging.Abstractions;
+using TerraFusion.Abstractions.DTOs;
 using TerraFusion.Core.Entities;
 using TerraFusion.Core.Services;
+using TerraFusion.Unit.Tests.Dais;
 using Xunit;
 using DataDbContext = TerraFusion.Data.TerraFusionDbContext;
 using Task = System.Threading.Tasks.Task;
@@ -14,7 +16,8 @@ namespace TerraFusion.Unit.Tests.Stage2;
 public sealed class AppealServiceTests
 {
     private static readonly Guid BentonCountyId = new("11111111-1111-1111-1111-111111111111");
-    private static readonly Guid OtherCountyId  = new("22222222-2222-2222-2222-222222222222");
+    private static readonly Guid OtherCountyId = new("22222222-2222-2222-2222-222222222222");
+    private static readonly DateTime EffectiveAt = new(2026, 2, 3, 4, 5, 6, DateTimeKind.Utc);
 
     private static DataDbContext CreateDbContext(string name)
     {
@@ -27,6 +30,11 @@ public sealed class AppealServiceTests
         return new DataDbContext(options, config);
     }
 
+    private static AppealService CreateService(
+        DataDbContext db,
+        FakeDaisAppealMutationDecisionPort? port = null) =>
+        new(db, NullLogger<AppealService>.Instance, port ?? new());
+
     private static async Task SeedCounty(DataDbContext db, Guid countyId)
     {
         if (!await db.Counties.AnyAsync(c => c.Id == countyId))
@@ -34,13 +42,19 @@ public sealed class AppealServiceTests
             db.Counties.Add(new County
             {
                 Id = countyId,
-                Name = "Benton",
+                Name = countyId == BentonCountyId ? "Benton" : "Other",
                 State = "WA",
-                FipsCode = "003",
+                FipsCode = countyId == BentonCountyId ? "003" : "021",
             });
             await db.SaveChangesAsync();
         }
     }
+
+    private static CreateAppealCommand Command(
+        string parcelId = "PARCEL-001",
+        string? ground = "MARKET_VALUE",
+        int taxYear = 2026) =>
+        new(parcelId, ground, "Synthetic Petitioner", 450_000m, 400_000m, taxYear);
 
     [Fact]
     public void AppealEntity_ConformsToAuditableCountyPattern()
@@ -55,205 +69,238 @@ public sealed class AppealServiceTests
     }
 
     [Fact]
-    public async Task AppealService_CreateAsync_PersistsAppealForResolvedCounty()
+    public async Task CreateAsync_UsesExactSuiteMutation_AndKeepsPiiValuesAndParcelOutOfDecision()
     {
-        await using var db = CreateDbContext(nameof(AppealService_CreateAsync_PersistsAppealForResolvedCounty));
+        await using var db = CreateDbContext(nameof(CreateAsync_UsesExactSuiteMutation_AndKeepsPiiValuesAndParcelOutOfDecision));
         await SeedCounty(db, BentonCountyId);
-        var svc = new AppealService(db, NullLogger<AppealService>.Instance);
+        var decidedAt = new DateTimeOffset(2026, 7, 8, 9, 10, 11, TimeSpan.Zero);
+        var port = new FakeDaisAppealMutationDecisionPort(create: (request, _) =>
+            Task.FromResult(new DaisAppealCreateDecisionResult
+            {
+                SchemaVersion = request.SchemaVersion,
+                Operation = request.Operation,
+                CommandId = request.CommandId,
+                CountyId = request.CountyId,
+                Decision = DaisAppealMutationDecision.accepted,
+                Mutation = new DaisAppealCreateMutation
+                {
+                    Ground = DaisAppealGround.UNIFORMITY,
+                    Status = DaisAppealStatus.filed,
+                    TaxYear = 2031,
+                    FiledAt = decidedAt,
+                    UpdatedAt = decidedAt,
+                },
+                Violations = [],
+            }));
+        var service = CreateService(db, port);
 
-        var entity = new Appeal
+        var created = await service.CreateAsync(
+            BentonCountyId,
+            Command("PRIVATE-PARCEL", "MARKET_VALUE", 2028),
+            "synthetic-user",
+            EffectiveAt);
+
+        created.Should().BeEquivalentTo(new
         {
-            ParcelId = "12345-000-000",
-            AppealGround = "MARKET_VALUE",
-            FiledDate = DateTime.UtcNow,
+            ParcelId = "PRIVATE-PARCEL",
+            PetitionerName = "Synthetic Petitioner",
             CurrentValue = 450_000m,
             RequestedValue = 400_000m,
-            TaxYear = 2026,
-            CountyId = BentonCountyId,
-        };
-
-        var result = await svc.CreateAsync(entity);
-
-        result.Id.Should().NotBe(Guid.Empty);
-        db.Appeals.Should().ContainSingle(a => a.Id == result.Id);
-    }
-
-    [Fact]
-    public async Task AppealService_GetByIdAsync_ReturnsOnlyWhenCountyMatches()
-    {
-        await using var db = CreateDbContext(nameof(AppealService_GetByIdAsync_ReturnsOnlyWhenCountyMatches));
-        await SeedCounty(db, BentonCountyId);
-        await SeedCounty(db, OtherCountyId);
-        var svc = new AppealService(db, NullLogger<AppealService>.Instance);
-
-        var entity = new Appeal
-        {
-            ParcelId = "99999-001-001",
             AppealGround = "UNIFORMITY",
-            FiledDate = DateTime.UtcNow,
-            CurrentValue = 300_000m,
-            RequestedValue = 270_000m,
-            TaxYear = 2026,
+            Status = "filed",
+            TaxYear = 2031,
             CountyId = BentonCountyId,
-        };
+            CreatedBy = "synthetic-user",
+            UpdatedBy = "synthetic-user",
+            CreatedAt = EffectiveAt,
+            FiledDate = decidedAt.UtcDateTime,
+            UpdatedAt = decidedAt.UtcDateTime,
+        });
+        db.Appeals.Should().ContainSingle(a => a.Id == created.Id);
+        var sent = port.CreateRequests.Should().ContainSingle().Subject;
+        sent.SchemaVersion.Should().Be("1.0.0");
+        sent.Operation.Should().Be(DaisAppealMutationOperation.create);
+        sent.CountyId.Should().Be(BentonCountyId.ToString("D"));
+        sent.EffectiveAt.Should().Be(new DateTimeOffset(EffectiveAt));
+        sent.Command.Should().BeEquivalentTo(new { Ground = "MARKET_VALUE", TaxYear = (int?)2028 });
+        var serialized = System.Text.Json.JsonSerializer.Serialize(sent);
+        serialized.Should().NotContain("PRIVATE-PARCEL").And.NotContain("Synthetic Petitioner")
+            .And.NotContain("450000").And.NotContain("400000").And.NotContain("note");
+    }
 
-        var created = await svc.CreateAsync(entity);
-        var sameCounty = await svc.GetByIdAsync(created.Id, BentonCountyId);
-        var otherCounty = await svc.GetByIdAsync(created.Id, OtherCountyId);
+    [Theory]
+    [InlineData(0, null)]
+    [InlineData(-2026, -2026)]
+    public async Task CreateAsync_OnlyZeroIsOmittedFromSuiteTaxYear(int input, int? expected)
+    {
+        await using var db = CreateDbContext($"{nameof(CreateAsync_OnlyZeroIsOmittedFromSuiteTaxYear)}-{input}");
+        await SeedCounty(db, BentonCountyId);
+        var port = new FakeDaisAppealMutationDecisionPort();
+        var service = CreateService(db, port);
 
-        sameCounty.Should().NotBeNull();
-        sameCounty!.ParcelId.Should().Be("99999-001-001");
-        sameCounty.AppealGround.Should().Be("UNIFORMITY");
-        otherCounty.Should().BeNull();
+        await service.CreateAsync(BentonCountyId, Command(taxYear: input), utcNow: EffectiveAt);
+
+        port.CreateRequests.Single().Command.TaxYear.Should().Be(expected);
     }
 
     [Fact]
-    public async Task Appeal_GetByParcelAsync_OnlyReturnsSameCounty()
+    public async Task CreateAsync_RejectionDoesNotSaveOrTrackAppeal()
     {
-        await using var db = CreateDbContext(nameof(Appeal_GetByParcelAsync_OnlyReturnsSameCounty));
+        await using var db = CreateDbContext(nameof(CreateAsync_RejectionDoesNotSaveOrTrackAppeal));
         await SeedCounty(db, BentonCountyId);
-        await SeedCounty(db, OtherCountyId);
-        var svc = new AppealService(db, NullLogger<AppealService>.Instance);
+        var port = new FakeDaisAppealMutationDecisionPort(create: (request, _) =>
+            Task.FromResult(new DaisAppealCreateDecisionResult
+            {
+                SchemaVersion = request.SchemaVersion,
+                Operation = request.Operation,
+                CommandId = request.CommandId,
+                CountyId = request.CountyId,
+                Decision = DaisAppealMutationDecision.rejected,
+                Mutation = null,
+                Violations =
+                [
+                    new DaisAppealMutationViolation
+                    {
+                        Code = DaisAppealMutationViolationCode.INVALID_TAX_YEAR,
+                        Message = "Synthetic rejection",
+                    },
+                ],
+            }));
+        var service = CreateService(db, port);
 
-        const string sharedParcelId = "77777-000-000";
+        var act = () => service.CreateAsync(BentonCountyId, Command(taxYear: -1), utcNow: EffectiveAt);
 
-        await svc.CreateAsync(new Appeal
-        {
-            ParcelId = sharedParcelId,
-            AppealGround = "MARKET_VALUE",
-            FiledDate = DateTime.UtcNow,
-            CurrentValue = 100_000m,
-            RequestedValue = 90_000m,
-            TaxYear = 2026,
-            CountyId = BentonCountyId,
-        });
-
-        await svc.CreateAsync(new Appeal
-        {
-            ParcelId = sharedParcelId,
-            AppealGround = "MARKET_VALUE",
-            FiledDate = DateTime.UtcNow,
-            CurrentValue = 100_000m,
-            RequestedValue = 90_000m,
-            TaxYear = 2026,
-            CountyId = OtherCountyId,
-        });
-
-        var results = await svc.GetByParcelAsync(sharedParcelId, BentonCountyId);
-
-        results.Should().HaveCount(1);
-        results.All(a => a.CountyId == BentonCountyId).Should().BeTrue();
+        await act.Should().ThrowAsync<DaisAppealMutationRejectedException>();
+        db.ChangeTracker.Entries<Appeal>().Should().BeEmpty();
+        (await db.Appeals.ToListAsync()).Should().BeEmpty();
     }
 
     [Fact]
-    public async Task Appeal_UpdateStatusAsync_ChangesStatus()
+    public async Task CreateAsync_UnavailableDoesNotSaveOrTrackAppeal()
     {
-        await using var db = CreateDbContext(nameof(Appeal_UpdateStatusAsync_ChangesStatus));
+        await using var db = CreateDbContext(nameof(CreateAsync_UnavailableDoesNotSaveOrTrackAppeal));
         await SeedCounty(db, BentonCountyId);
-        var svc = new AppealService(db, NullLogger<AppealService>.Instance);
+        var port = new FakeDaisAppealMutationDecisionPort(create: (_, _) =>
+            Task.FromException<DaisAppealCreateDecisionResult>(
+                new DaisAppealMutationUnavailableException("Synthetic unavailable")));
+        var service = CreateService(db, port);
 
-        var created = await svc.CreateAsync(new Appeal
-        {
-            ParcelId = "33333-000-000",
-            AppealGround = "CLERICAL_ERROR",
-            FiledDate = DateTime.UtcNow,
-            CurrentValue = 500_000m,
-            RequestedValue = 480_000m,
-            TaxYear = 2026,
-            CountyId = BentonCountyId,
-        });
+        var act = () => service.CreateAsync(BentonCountyId, Command(), utcNow: EffectiveAt);
 
-        var updated = await svc.UpdateStatusAsync(
-            created.Id,
-            "decided",
-            BentonCountyId,
-            decisionNotes: "Clerical error confirmed.",
-            decidedValue: 480_000m);
+        await act.Should().ThrowAsync<DaisAppealMutationUnavailableException>();
+        db.ChangeTracker.Entries<Appeal>().Should().BeEmpty();
+        (await db.Appeals.ToListAsync()).Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task UpdateStatusAsync_AppliesOnlySuiteLifecyclePatch_AndExcludesNotesAndValues()
+    {
+        await using var db = CreateDbContext(nameof(UpdateStatusAsync_AppliesOnlySuiteLifecyclePatch_AndExcludesNotesAndValues));
+        await SeedCounty(db, BentonCountyId);
+        var service = CreateService(db);
+        var created = await service.CreateAsync(BentonCountyId, Command(), utcNow: EffectiveAt);
+        var decisionAt = new DateTimeOffset(2026, 8, 9, 10, 11, 12, TimeSpan.Zero);
+        var port = new FakeDaisAppealMutationDecisionPort(transition: (request, _) =>
+            Task.FromResult(new DaisAppealTransitionDecisionResult
+            {
+                SchemaVersion = request.SchemaVersion,
+                Operation = request.Operation,
+                CommandId = request.CommandId,
+                CountyId = request.CountyId,
+                Decision = DaisAppealMutationDecision.accepted,
+                Mutation = new DaisAppealTransitionMutation
+                {
+                    Status = DaisAppealStatus.decided,
+                    UpdatedAt = decisionAt,
+                    DecisionAt = decisionAt,
+                },
+                Violations = [],
+            }));
+        service = CreateService(db, port);
+
+        var updated = await service.UpdateStatusAsync(
+            created.Id, "decided", BentonCountyId, "Synthetic private note", 390_000m);
 
         updated.Status.Should().Be("decided");
-        updated.DecisionNotes.Should().Be("Clerical error confirmed.");
-        updated.DecidedValue.Should().Be(480_000m);
-        updated.DecisionDate.Should().NotBeNull();
+        updated.UpdatedAt.Should().Be(decisionAt.UtcDateTime);
+        updated.DecisionDate.Should().Be(decisionAt.UtcDateTime);
+        updated.DecisionNotes.Should().Be("Synthetic private note");
+        updated.DecidedValue.Should().Be(390_000m);
+        updated.ParcelId.Should().Be("PARCEL-001");
+        updated.PetitionerName.Should().Be("Synthetic Petitioner");
+        var sent = port.TransitionRequests.Should().ContainSingle().Subject;
+        sent.CountyId.Should().Be(BentonCountyId.ToString("D"));
+        sent.Command.Current.Status.Should().Be("filed");
+        sent.Command.Requested.Should().BeEquivalentTo(new { Status = "decided", HasDecidedValue = true });
+        var serialized = System.Text.Json.JsonSerializer.Serialize(sent);
+        serialized.Should().NotContain("Synthetic private note").And.NotContain("390000")
+            .And.NotContain("PARCEL-001").And.NotContain("Synthetic Petitioner");
+    }
+
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public async Task UpdateStatusAsync_RejectedOrUnavailable_DoesNotMutatePersistedAppeal(bool rejected)
+    {
+        await using var db = CreateDbContext($"{nameof(UpdateStatusAsync_RejectedOrUnavailable_DoesNotMutatePersistedAppeal)}-{rejected}");
+        await SeedCounty(db, BentonCountyId);
+        var accepted = CreateService(db);
+        var created = await accepted.CreateAsync(BentonCountyId, Command(), utcNow: EffectiveAt);
+        db.ChangeTracker.Clear();
+        var port = new FakeDaisAppealMutationDecisionPort(transition: (request, _) =>
+            rejected
+                ? Task.FromResult(new DaisAppealTransitionDecisionResult
+                {
+                    SchemaVersion = request.SchemaVersion,
+                    Operation = request.Operation,
+                    CommandId = request.CommandId,
+                    CountyId = request.CountyId,
+                    Decision = DaisAppealMutationDecision.rejected,
+                    Mutation = null,
+                    Violations =
+                    [
+                        new DaisAppealMutationViolation
+                        {
+                            Code = DaisAppealMutationViolationCode.INVALID_TRANSITION,
+                            Message = "Synthetic rejection",
+                        },
+                    ],
+                })
+                : Task.FromException<DaisAppealTransitionDecisionResult>(
+                    new DaisAppealMutationUnavailableException("Synthetic unavailable")));
+        var service = CreateService(db, port);
+
+        var act = () => service.UpdateStatusAsync(
+            created.Id, "decided", BentonCountyId, "must not persist", 1m);
+
+        if (rejected)
+            await act.Should().ThrowAsync<DaisAppealMutationRejectedException>();
+        else
+            await act.Should().ThrowAsync<DaisAppealMutationUnavailableException>();
+        db.ChangeTracker.Clear();
+        var persisted = await db.Appeals.SingleAsync(a => a.Id == created.Id);
+        persisted.Status.Should().Be("filed");
+        persisted.DecisionDate.Should().BeNull();
+        persisted.DecisionNotes.Should().BeNull();
+        persisted.DecidedValue.Should().BeNull();
     }
 
     [Fact]
-    public async Task AppealService_ListAsync_FiltersAllRowsByCountyId()
+    public async Task CountyScopedReadsAndMutation_DoNotCrossCountyBoundary()
     {
-        await using var db = CreateDbContext(nameof(AppealService_ListAsync_FiltersAllRowsByCountyId));
+        await using var db = CreateDbContext(nameof(CountyScopedReadsAndMutation_DoNotCrossCountyBoundary));
         await SeedCounty(db, BentonCountyId);
         await SeedCounty(db, OtherCountyId);
-        var svc = new AppealService(db, NullLogger<AppealService>.Instance);
+        var service = CreateService(db);
+        var benton = await service.CreateAsync(BentonCountyId, Command("SHARED"), utcNow: EffectiveAt);
+        await service.CreateAsync(OtherCountyId, Command("SHARED", "UNIFORMITY"), utcNow: EffectiveAt);
 
-        await svc.CreateAsync(new Appeal
-        {
-            ParcelId = "BENTON-2026",
-            AppealGround = "MARKET_VALUE",
-            FiledDate = DateTime.UtcNow,
-            CurrentValue = 200_000m,
-            RequestedValue = 180_000m,
-            TaxYear = 2026,
-            CountyId = BentonCountyId,
-        });
-
-        await svc.CreateAsync(new Appeal
-        {
-            ParcelId = "A-OTHER-2026",
-            AppealGround = "MARKET_VALUE",
-            FiledDate = DateTime.UtcNow,
-            CurrentValue = 220_000m,
-            RequestedValue = 200_000m,
-            TaxYear = 2026,
-            CountyId = OtherCountyId,
-        });
-
-        var results2026 = await svc.GetByTaxYearAsync(2026, BentonCountyId);
-
-        results2026.Should().HaveCount(1);
-        results2026[0].ParcelId.Should().Be("BENTON-2026");
-        results2026[0].CountyId.Should().Be(BentonCountyId);
-    }
-
-    [Fact]
-    public async Task Appeal_CreateAsync_Command_EnforcesCountyAndDefaults()
-    {
-        await using var db = CreateDbContext(nameof(Appeal_CreateAsync_Command_EnforcesCountyAndDefaults));
-        await SeedCounty(db, BentonCountyId);
-        var svc = new AppealService(db, NullLogger<AppealService>.Instance);
-
-        var created = await svc.CreateAsync(
-            BentonCountyId,
-            new CreateAppealCommand("PARCEL-101", null, "Jane Smith", 450_000m, 400_000m, 0),
-            "appeals@test");
-
-        created.CountyId.Should().Be(BentonCountyId);
-        created.AppealGround.Should().Be("MARKET_VALUE");
-        created.Status.Should().Be("filed");
-        created.PetitionerName.Should().Be("Jane Smith");
-        created.CreatedBy.Should().Be("appeals@test");
-        created.TaxYear.Should().BeGreaterThan(2000);
-    }
-
-    [Fact]
-    public async Task AppealService_UpdateAsync_RejectsCrossCountyMutation()
-    {
-        await using var db = CreateDbContext(nameof(AppealService_UpdateAsync_RejectsCrossCountyMutation));
-        await SeedCounty(db, BentonCountyId);
-        await SeedCounty(db, OtherCountyId);
-        var svc = new AppealService(db, NullLogger<AppealService>.Instance);
-
-        var created = await svc.CreateAsync(new Appeal
-        {
-            ParcelId = "CROSS-COUNTY-001",
-            AppealGround = "MARKET_VALUE",
-            FiledDate = DateTime.UtcNow,
-            CurrentValue = 325_000m,
-            RequestedValue = 300_000m,
-            TaxYear = 2026,
-            CountyId = BentonCountyId,
-        });
-
-        var act = () => svc.UpdateStatusAsync(created.Id, "decided", OtherCountyId, "not allowed", 300_000m);
-
+        (await service.GetByParcelAsync("SHARED", BentonCountyId)).Should().ContainSingle()
+            .Which.CountyId.Should().Be(BentonCountyId);
+        (await service.GetByTaxYearAsync(2026, BentonCountyId)).Should().ContainSingle()
+            .Which.CountyId.Should().Be(BentonCountyId);
+        (await service.GetByIdAsync(benton.Id, OtherCountyId)).Should().BeNull();
+        var act = () => service.UpdateStatusAsync(benton.Id, "heard", OtherCountyId);
         await act.Should().ThrowAsync<KeyNotFoundException>();
     }
 }
