@@ -13,6 +13,7 @@ using TerraFusion.Core.Entities;
 using TerraFusion.Core.Services;
 using TerraFusion.API.DTOs;
 using TerraFusion.API.Security;
+using TerraFusion.API.Services.Dossier;
 using DataDbContext = TerraFusion.Data.TerraFusionDbContext;
 
 namespace TerraFusion.API.Controllers;
@@ -32,18 +33,21 @@ public class DossierController : ControllerBase
   private readonly ICostForgeService _costForge;
   private readonly ILogger<DossierController> _logger;
   private readonly bool _isDevelopment;
+  private readonly IDossierEvidenceRegistryReadConsumer? _evidenceRegistryReadConsumer;
   private static readonly Regex ParcelIdPattern = new("^[A-Za-z0-9._-]{1,50}$", RegexOptions.Compiled);
 
   public DossierController(
       DataDbContext db,
       ICostForgeService costForge,
       ILogger<DossierController> logger,
-      IHostEnvironment hostEnvironment)
+      IHostEnvironment hostEnvironment,
+      IDossierEvidenceRegistryReadConsumer? evidenceRegistryReadConsumer = null)
   {
     _db = db;
     _costForge = costForge;
     _logger = logger;
     _isDevelopment = hostEnvironment.IsDevelopment();
+    _evidenceRegistryReadConsumer = evidenceRegistryReadConsumer;
   }
 
   // ── County Isolation Helper ──────────────────────────────────────
@@ -390,6 +394,7 @@ public class DossierController : ControllerBase
   [ProducesResponseType(typeof(DossierEvidenceRegistryReadResult), StatusCodes.Status200OK)]
   [ProducesResponseType(StatusCodes.Status400BadRequest)]
   [ProducesResponseType(StatusCodes.Status403Forbidden)]
+  [ProducesResponseType(StatusCodes.Status503ServiceUnavailable)]
   [ProducesResponseType(StatusCodes.Status500InternalServerError)]
   public async Task<ActionResult<DossierEvidenceRegistryReadResult>> GetEvidenceRegistryRead(
       string parcelId,
@@ -409,6 +414,13 @@ public class DossierController : ControllerBase
     var countyId = ResolveStrictAuthenticatedCountyId();
     if (countyId is null)
       return Forbid();
+
+    if (_evidenceRegistryReadConsumer is null || !_evidenceRegistryReadConsumer.IsAvailable)
+    {
+      return Problem(
+          statusCode: StatusCodes.Status503ServiceUnavailable,
+          title: "Canonical Dossier evidence registry runtime is unavailable or disabled.");
+    }
 
     var scopedQuery = _db.DossierEvidenceItems
         .AsNoTracking()
@@ -440,22 +452,30 @@ public class DossierController : ControllerBase
       TraceId = GetValidInboundCorrelationId(),
     };
 
-    try
+    var consumption = await _evidenceRegistryReadConsumer
+        .ConsumeAsync(request, total, sourcePage, HttpContext.RequestAborted)
+        .ConfigureAwait(false);
+    if (consumption.Success && !string.IsNullOrWhiteSpace(consumption.NormalizedResultJson))
     {
-      var contractJson = DossierEvidenceRegistryReadAdapter.Serialize(request, total, sourcePage);
-      return Content(contractJson, "application/json");
+      return Content(consumption.NormalizedResultJson, "application/json");
     }
-    catch (Exception exception) when (exception is ArgumentException or InvalidOperationException)
+
+    if (consumption.Failure == DossierEvidenceRegistryReadConsumerFailure.Disabled)
     {
-      _logger.LogWarning(
-          exception,
-          "Canonical Dossier evidence registry projection rejected parcel {ParcelId} for county {CountyId}",
-          parcelId,
-          countyId.Value);
       return Problem(
-          statusCode: StatusCodes.Status500InternalServerError,
-          title: "Canonical Dossier evidence registry projection failed");
+          statusCode: StatusCodes.Status503ServiceUnavailable,
+          title: "Canonical Dossier evidence registry runtime is disabled.");
     }
+
+    _logger.LogWarning(
+        "Dossier evidence registry runtime failed closed with {Failure} for parcel {ParcelId}, county {CountyId}, and trace {TraceId}.",
+        consumption.Failure,
+        parcelId,
+        countyId.Value,
+        HttpContext.TraceIdentifier);
+    return Problem(
+        statusCode: StatusCodes.Status500InternalServerError,
+        title: "Dossier evidence registry read failed contract validation.");
   }
 
   [HttpGet("evidence/{evidenceId}/chain")]
