@@ -1,9 +1,12 @@
 using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 
 #nullable disable
 
 namespace TerraFusion.Data.Migrations;
 
+[DbContext(typeof(TerraFusionDbContext))]
+[Migration("20260827090000_WOSR011G_DossierMutationVersions")]
 public partial class WOSR011G_DossierMutationVersions : Migration
 {
     protected override void Up(MigrationBuilder migrationBuilder)

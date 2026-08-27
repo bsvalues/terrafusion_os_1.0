@@ -277,7 +277,7 @@ internal sealed class DossierEvidenceRegistryReadArtifactVerifier
         _sovereignRoot = canonicalRoot;
         _artifactSlot = Path.GetFullPath(Path.Combine(
             canonicalRoot,
-            DossierEvidenceRegistryReadOptions.ArtifactSlotRelativePath.Replace(
+            expected.ArtifactSlotRelativePath.Replace(
                 '/',
                 Path.DirectorySeparatorChar)));
         _expected = expected;
@@ -567,7 +567,8 @@ internal sealed record DossierEvidenceRegistryReadArtifactExpectation(
     long PublishedManifestLength,
     string ContractSourceSha,
     string SourceDtoSha256,
-    string Transport)
+    string Transport,
+    string ArtifactSlotRelativePath)
 {
     internal static DossierEvidenceRegistryReadArtifactExpectation Canonical { get; } = new(
         DossierEvidenceRegistryReadOptions.ExpectedArtifactType,
@@ -589,7 +590,8 @@ internal sealed record DossierEvidenceRegistryReadArtifactExpectation(
         DossierEvidenceRegistryReadOptions.ExpectedPublishedManifestLength,
         DossierEvidenceRegistryReadOptions.ExpectedContractSourceSha,
         DossierEvidenceRegistryReadOptions.ExpectedSourceDtoSha256,
-        DossierEvidenceRegistryReadOptions.ExpectedTransport);
+        DossierEvidenceRegistryReadOptions.ExpectedTransport,
+        DossierEvidenceRegistryReadOptions.ArtifactSlotRelativePath);
 }
 
 internal sealed record DossierEvidenceRegistryReadVerifiedArtifact(

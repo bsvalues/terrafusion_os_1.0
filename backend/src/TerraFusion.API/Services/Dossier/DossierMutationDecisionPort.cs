@@ -97,7 +97,8 @@ public sealed class DossierMutationDecisionPort(
 
 internal sealed class UnavailableDossierMutationDecisionPort(string message) : IDossierMutationDecisionPort
 {
-    private static Task<DossierMutationPortResult<T>> Fail<T>() where T:DossierAcceptedMutation => Task.FromException<DossierMutationPortResult<T>>(new DossierMutationUnavailableException(message));
+    private readonly string _message = message;
+    private Task<DossierMutationPortResult<T>> Fail<T>() where T:DossierAcceptedMutation => Task.FromException<DossierMutationPortResult<T>>(new DossierMutationUnavailableException(_message));
     public Task<DossierMutationPortResult<DossierCreateNoteMutation>> DecideCreateNoteAsync(DossierCreateNoteDecisionRequest r,CancellationToken c=default)=>Fail<DossierCreateNoteMutation>();
     public Task<DossierMutationPortResult<DossierRegisterDocumentMutation>> DecideRegisterDocumentAsync(DossierRegisterDocumentDecisionRequest r,CancellationToken c=default)=>Fail<DossierRegisterDocumentMutation>();
     public Task<DossierMutationPortResult<DossierTransitionDocumentStatusMutation>> DecideTransitionDocumentStatusAsync(DossierTransitionDocumentStatusDecisionRequest r,CancellationToken c=default)=>Fail<DossierTransitionDocumentStatusMutation>();

@@ -628,7 +628,8 @@ public sealed class DossierEvidenceRegistryReadRuntimeRegistrationTests
                 0,
                 new string('c', 40),
                 new string('d', 64),
-                "local-os-managed-artifact-slot");
+                "local-os-managed-artifact-slot",
+                ".terrafusion/runtime/dossier/evidence-registry-read");
             WriteManifest();
             var manifestBytes = File.ReadAllBytes(ManifestPath);
             Expectation = Expectation with
