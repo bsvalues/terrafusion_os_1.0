@@ -194,7 +194,19 @@ public class AppealService : IAppealService
             entity.DecidedValue = decidedValue.Value;
         }
 
-        await _context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+        try
+        {
+            await _context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+        }
+        catch (DbUpdateConcurrencyException exception)
+        {
+            _logger.LogWarning(
+                exception,
+                "Refused stale Dais transition for appeal {AppealId} in county {CountyId}",
+                id,
+                countyId);
+            throw new DaisAppealMutationConflictException(id, countyId, exception);
+        }
 
         _logger.LogInformation(
             "Updated appeal {AppealId} status to {Status} in county {CountyId}",

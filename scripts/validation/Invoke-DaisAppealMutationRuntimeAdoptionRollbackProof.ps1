@@ -8,7 +8,7 @@ param(
 
 $ErrorActionPreference = 'Stop'
 $sovereignRepository = (Resolve-Path (Join-Path $PSScriptRoot '..\..')).Path
-$expectedSovereignBase = '52744220509a54b6544e0fa193b6d09e8d93c159'
+$expectedSovereignBase = '153103c4f5356219c142ccfe88174c2c6477e54d'
 $expectedDaisCommit = '8a9cfc608bcda835126db2054bb7ba7ecf185275'
 $expectedModuleSha256 = '779ef37435e2deb8f181b3c34e0712c35829b7a123f047752fc5bf09de331ff2'
 $expectedSchemaSha256 = 'db8f1c93a598da7f9c454d5a43c275b849f2de8fc036e9be28c5c1da44432ce2'
@@ -19,9 +19,9 @@ $workflowSlot = [IO.Path]::GetFullPath((Join-Path $sovereignRepository '.terrafu
 $receiptsBase = [IO.Path]::GetFullPath((Join-Path $sovereignRepository '.terrafusion\runtime\dais\adoption-receipts'))
 $durableProofBase = if ([string]::IsNullOrWhiteSpace($ProofRootBase)) { $receiptsBase } else { [IO.Path]::GetFullPath($ProofRootBase) }
 $runId = [DateTimeOffset]::UtcNow.ToString('yyyyMMddTHHmmssfffZ') + '-' + [Guid]::NewGuid().ToString('N')
-$testRoot = Join-Path ([IO.Path]::GetTempPath()) "tf-dais-010f-$runId"
-$mutationStageRoot = Join-Path ([IO.Path]::GetTempPath()) "tfd010f-mutation-$runId"
-$workflowStageRoot = Join-Path ([IO.Path]::GetTempPath()) "tfd010f-workflow-$runId"
+$testRoot = Join-Path ([IO.Path]::GetTempPath()) "tf-dais-010g-$runId"
+$mutationStageRoot = Join-Path ([IO.Path]::GetTempPath()) "tfd010g-mutation-$runId"
+$workflowStageRoot = Join-Path ([IO.Path]::GetTempPath()) "tfd010g-workflow-$runId"
 $durableRunRoot = Join-Path $durableProofBase "mutation-$runId"
 $durableMutationRollbackSlot = Join-Path $durableRunRoot 'previous-mutation-artifact'
 $durableWorkflowRollbackSlot = Join-Path $durableRunRoot 'previous-workflow-artifact'
@@ -30,6 +30,12 @@ $mutationStageReceipt = $null
 $workflowStageReceipt = $null
 $mutationStagePublished = $false
 $workflowStagePublished = $false
+$mutationStageRootSafeToDelete = $false
+$workflowStageRootSafeToDelete = $false
+$mutationMutex = $null
+$workflowMutex = $null
+$mutationMutexHeld = $false
+$workflowMutexHeld = $false
 $result = $null
 
 function Invoke-Checked {
@@ -76,6 +82,12 @@ function Assert-Inventory {
     }
 }
 
+function Test-Inventory {
+    param([Parameter(Mandatory)][string]$Directory,[Parameter(Mandatory)]$Expected)
+    try { Assert-Inventory $Directory $Expected 'Inventory probe'; return $true }
+    catch { return $false }
+}
+
 function Get-ReceiptFromOutput {
     param([Parameter(Mandatory)]$Output)
     $lines = @($Output)
@@ -83,6 +95,56 @@ function Get-ReceiptFromOutput {
     while ($start -lt $lines.Count -and -not $lines[$start].TrimStart().StartsWith('{',[StringComparison]::Ordinal)) { $start++ }
     if ($start -ge $lines.Count) { throw 'Dais staging did not emit a JSON receipt.' }
     return ($lines[$start..($lines.Count-1)] -join "`n") | ConvertFrom-Json
+}
+
+function Get-UniqueRollbackSlot {
+    param([Parameter(Mandatory)][string]$StageRoot)
+    if (-not (Test-Path -LiteralPath $StageRoot -PathType Container)) { return $null }
+    $candidates = @(Get-ChildItem -LiteralPath $StageRoot -Directory -Recurse -Force |
+        Where-Object { $_.Name -ceq 'previous-artifact' })
+    if ($candidates.Count -gt 1) { throw "Multiple rollback slots found under $StageRoot." }
+    return if ($candidates.Count -eq 1) { $candidates[0].FullName } else { $null }
+}
+
+function Restore-StagedSlot {
+    param(
+        [Parameter(Mandatory)][string]$LiveSlot,
+        [Parameter(Mandatory)][string]$DurableRollbackSlot,
+        [Parameter(Mandatory)][string]$StageRoot,
+        $Receipt,
+        [Parameter(Mandatory)][string]$Label)
+    New-Item -ItemType Directory -Path $durableRunRoot -Force | Out-Null
+    $originalRollback = if ($null -ne $Receipt -and
+        -not [string]::IsNullOrWhiteSpace([string]$Receipt.rollbackSlot)) {
+        [IO.Path]::GetFullPath([string]$Receipt.rollbackSlot)
+    } else { Get-UniqueRollbackSlot $StageRoot }
+    $backup = if (Test-Path -LiteralPath $DurableRollbackSlot -PathType Container) {
+        $DurableRollbackSlot
+    } elseif ($null -ne $originalRollback -and
+        (Test-Path -LiteralPath $originalRollback -PathType Container)) {
+        $originalRollback
+    } else { $null }
+    $expected = if ($null -ne $Receipt -and $null -ne $Receipt.rollbackHashes) {
+        $Receipt.rollbackHashes
+    } elseif ($null -ne $backup) { Get-Inventory $backup } else { $null }
+
+    if ($null -ne $expected -and (Test-Inventory $LiveSlot $expected)) {
+        return 'PREVIOUS_SLOT_ALREADY_LIVE_AND_HASH_VERIFIED'
+    }
+    if ($null -eq $backup -and $null -ne $expected) {
+        throw "$Label rollback custody was lost before recovery."
+    }
+    if (Test-Path -LiteralPath $LiveSlot) {
+        $failed = Join-Path $durableRunRoot (
+            'failed-'+$Label.ToLowerInvariant().Replace(' ','-')+'-'+[Guid]::NewGuid().ToString('N'))
+        Move-Item -LiteralPath $LiveSlot -Destination $failed
+    }
+    if ($null -eq $backup) {
+        return 'PREVIOUS_SLOT_WAS_ABSENT_AND_PUBLISHED_SLOT_WAS_REMOVED'
+    }
+    Move-Item -LiteralPath $backup -Destination $LiveSlot
+    Assert-Inventory $LiveSlot $expected "$Label restored rollback slot"
+    return 'PREVIOUS_SLOT_RESTORED_AND_HASH_VERIFIED'
 }
 
 function Read-TrxCounters {
@@ -148,13 +210,29 @@ try {
     }
 
     New-Item -ItemType Directory -Path $durableRunRoot,$testRoot,$mutationStageRoot,$workflowStageRoot -Force | Out-Null
+    # Fixed acquisition order prevents cross-proof deadlocks. Both stagers run in this
+    # PowerShell process/thread, so their same-name mutex acquisition is recursive and the
+    # outer ownership remains held through tests, observed rollback, restoration, and cleanup.
+    $mutationMutex = [Threading.Mutex]::new(
+        $false,
+        'Local\TerraFusion.DaisAppealMutation.ArtifactSlot')
+    $workflowMutex = [Threading.Mutex]::new(
+        $false,
+        'Local\TerraFusion.DaisAppealWorkflow.ArtifactSlot')
+    try { $mutationMutexHeld = $mutationMutex.WaitOne([TimeSpan]::FromSeconds(30)) }
+    catch [Threading.AbandonedMutexException] { $mutationMutexHeld = $true }
+    if (-not $mutationMutexHeld) { throw 'Timed out acquiring the mutation artifact custody lock.' }
+    try { $workflowMutexHeld = $workflowMutex.WaitOne([TimeSpan]::FromSeconds(30)) }
+    catch [Threading.AbandonedMutexException] { $workflowMutexHeld = $true }
+    if (-not $workflowMutexHeld) { throw 'Timed out acquiring the workflow artifact custody lock.' }
+
     if (-not (Test-Path -LiteralPath $mutationSlot -PathType Container)) {
         New-Item -ItemType Directory -Path $mutationSlot -Force | Out-Null
         [ordered]@{mode='Disabled';reason='pre-adoption rollback sentinel';schemaVersion=1} |
             ConvertTo-Json | Set-Content -LiteralPath (Join-Path $mutationSlot 'disabled-marker.json') -Encoding utf8
     }
 
-    $mutationOutput = & pwsh -NoProfile -File (Join-Path $sovereignRepository 'scripts\bootstrap\Stage-DaisAppealMutationModule.ps1') -DaisRepository $DaisRepository -BuildRootBase $mutationStageRoot
+    $mutationOutput = & (Join-Path $sovereignRepository 'scripts\bootstrap\Stage-DaisAppealMutationModule.ps1') -DaisRepository $DaisRepository -BuildRootBase $mutationStageRoot
     if ($LASTEXITCODE -ne 0) { throw 'Dais mutation canonical staging failed.' }
     $mutationStagePublished = $true
     $mutationStageReceipt = Get-ReceiptFromOutput $mutationOutput
@@ -168,21 +246,23 @@ try {
     Assert-Inventory ([IO.Path]::GetFullPath($mutationStageReceipt.rollbackSlot)) $mutationStageReceipt.rollbackHashes 'Original mutation rollback slot'
     Move-Item -LiteralPath ([IO.Path]::GetFullPath($mutationStageReceipt.rollbackSlot)) -Destination $durableMutationRollbackSlot
     Assert-Inventory $durableMutationRollbackSlot $mutationStageReceipt.rollbackHashes 'Durable mutation rollback slot'
+    $mutationStageRootSafeToDelete = $true
     $publishedMutationInventory = Get-Inventory $mutationSlot
     if ((@($publishedMutationInventory.Keys | Sort-Object) -join '|') -cne
         'dais.appeal-mutation.v1.schema.json|decide-dais-appeal-mutation.mjs|manifest.json') {
         throw 'Published mutation slot does not contain the exact three-file inventory.'
     }
 
-    $workflowOutput = & pwsh -NoProfile -File (Join-Path $sovereignRepository 'scripts\bootstrap\Stage-DaisAppealWorkflowModule.ps1') -DaisRepository $DaisRepository -BuildRootBase $workflowStageRoot
+    $workflowOutput = & (Join-Path $sovereignRepository 'scripts\bootstrap\Stage-DaisAppealWorkflowModule.ps1') -DaisRepository $DaisRepository -BuildRootBase $workflowStageRoot
     if ($LASTEXITCODE -ne 0) { throw 'Dais workflow canonical staging failed.' }
-    $workflowStageReceipt = Get-ReceiptFromOutput $workflowOutput
     $workflowStagePublished = $true
+    $workflowStageReceipt = Get-ReceiptFromOutput $workflowOutput
     if ($null -ne $workflowStageReceipt.rollbackSlot) {
         Assert-Inventory ([IO.Path]::GetFullPath($workflowStageReceipt.rollbackSlot)) $workflowStageReceipt.rollbackHashes 'Original workflow rollback slot'
         Move-Item -LiteralPath ([IO.Path]::GetFullPath($workflowStageReceipt.rollbackSlot)) -Destination $durableWorkflowRollbackSlot
         Assert-Inventory $durableWorkflowRollbackSlot $workflowStageReceipt.rollbackHashes 'Durable workflow rollback slot'
     }
+    $workflowStageRootSafeToDelete = $true
 
     if ([string]::IsNullOrWhiteSpace($DotNetExecutable)) { $DotNetExecutable = (Get-Command dotnet -ErrorAction Stop).Source }
     $DotNetExecutable = [IO.Path]::GetFullPath($DotNetExecutable)
@@ -196,6 +276,7 @@ try {
     $env:TERRAFUSION_DAIS_HOST_MODULE_PATH = Join-Path $workflowSlot 'project-dais-appeal-workflow.mjs'
     $env:TERRAFUSION_DAIS_HOST_SCHEMA_PATH = Join-Path $workflowSlot 'dais.appeal-workflow.v1.schema.json'
     $testProject = Join-Path $sovereignRepository 'backend\tests\TerraFusion.Unit.Tests\TerraFusion.Unit.Tests.csproj'
+    $integrationTestProject = Join-Path $sovereignRepository 'backend\tests\TerraFusion.Integration.Tests\TerraFusion.Integration.Tests.csproj'
     $resultsDirectory = Join-Path $testRoot 'test-results'
     $artifacts = Join-Path $testRoot 'artifacts'
 
@@ -206,8 +287,19 @@ try {
         '/warnaserror','-p:UseSharedCompilation=false','-nodeReuse:false','-p:NuGetAudit=false'
     )
     $focused = Read-TrxCounters (Join-Path $resultsDirectory 'dais-mutation-adoption.trx')
-    if ($focused.Total -lt 55 -or $focused.Executed -ne $focused.Total -or $focused.Passed -ne $focused.Total -or $focused.Failed -ne 0 -or $focused.Skipped -ne 0) {
+    if ($focused.Total -lt 56 -or $focused.Executed -ne $focused.Total -or $focused.Passed -ne $focused.Total -or $focused.Failed -ne 0 -or $focused.Skipped -ne 0) {
         throw "Mutation runtime tests were $($focused.Total)/$($focused.Executed)/$($focused.Passed)/$($focused.Failed)/$($focused.Skipped)."
+    }
+
+    Invoke-Checked $DotNetExecutable @(
+        'test',$integrationTestProject,'-c','Release','--artifacts-path',$artifacts,
+        '--results-directory',$resultsDirectory,'--logger','trx;LogFileName=dais-mutation-concurrency.trx',
+        '--filter','FullyQualifiedName~DaisMutationSqliteLifecycleTests','/warnaserror',
+        '-p:UseSharedCompilation=false','-nodeReuse:false','-p:NuGetAudit=false'
+    )
+    $concurrency = Read-TrxCounters (Join-Path $resultsDirectory 'dais-mutation-concurrency.trx')
+    if ($concurrency.Total -ne 2 -or $concurrency.Executed -ne 2 -or $concurrency.Passed -ne 2 -or $concurrency.Failed -ne 0 -or $concurrency.Skipped -ne 0) {
+        throw "Mutation concurrency tests were $($concurrency.Total)/$($concurrency.Executed)/$($concurrency.Passed)/$($concurrency.Failed)/$($concurrency.Skipped); expected 2/2/2/0/0."
     }
 
     $registrationStart = Invoke-ObservedTest 'configured-fresh-start-restart' 'TerraFusion.Unit.Tests.Dais.DaisAppealMutationRuntimeRegistrationTests.DevelopmentLocalExact_FreshStartAndRestart_ResolvesAndExecutesExactStagedPort'
@@ -238,7 +330,9 @@ try {
         productionSelectionRefusal=$productionRefusal;artifactRollbackExecution=$rollbackExecution;
         adoptedArtifactRestoration=$adoptionRestoration;focusedTestsTotal=$focused.Total;
         focusedTestsExecuted=$focused.Executed;focusedTestsPassed=$focused.Passed;focusedTestsFailed=$focused.Failed;
-        focusedTestsSkipped=$focused.Skipped;durableReceipt=$receiptPath;
+        focusedTestsSkipped=$focused.Skipped;concurrencyTestsTotal=$concurrency.Total;
+        concurrencyTestsExecuted=$concurrency.Executed;concurrencyTestsPassed=$concurrency.Passed;
+        concurrencyTestsFailed=$concurrency.Failed;concurrencyTestsSkipped=$concurrency.Skipped;durableReceipt=$receiptPath;
         durableMutationRollbackSlot=$durableMutationRollbackSlot;rollbackInventory=$mutationStageReceipt.rollbackHashes;
         countyOrProtectedDataUsed=$false;deploymentOrProductionUsed=$false
     }
@@ -248,38 +342,49 @@ try {
 }
 catch {
     $proofFailure = $_
+    $recoveryFailure = $null
+    $workflowRecovery = 'NOT_REQUIRED'
+    $mutationRecovery = 'NOT_REQUIRED'
     try {
-        if ($workflowStagePublished -and $null -ne $workflowStageReceipt) {
-            if (Test-Path -LiteralPath $workflowSlot) {
-                $failedWorkflow = Join-Path $durableRunRoot ('failed-workflow-artifact-'+[Guid]::NewGuid().ToString('N'))
-                Move-Item -LiteralPath $workflowSlot -Destination $failedWorkflow
-            }
-            if (Test-Path -LiteralPath $durableWorkflowRollbackSlot -PathType Container) {
-                Move-Item -LiteralPath $durableWorkflowRollbackSlot -Destination $workflowSlot
-                Assert-Inventory $workflowSlot $workflowStageReceipt.rollbackHashes 'Failure-path restored workflow slot'
-            }
+        if ($workflowStagePublished) {
+            $workflowRecovery = Restore-StagedSlot $workflowSlot $durableWorkflowRollbackSlot $workflowStageRoot $workflowStageReceipt 'workflow artifact'
+            $workflowStageRootSafeToDelete = $true
         }
-        if ($mutationStagePublished -and $null -ne $mutationStageReceipt -and (Test-Path -LiteralPath $durableMutationRollbackSlot -PathType Container)) {
-            if (Test-Path -LiteralPath $mutationSlot) {
-                $failedArtifact = Join-Path $durableRunRoot ('failed-mutation-artifact-'+[Guid]::NewGuid().ToString('N'))
-                Move-Item -LiteralPath $mutationSlot -Destination $failedArtifact
-            }
-            Move-Item -LiteralPath $durableMutationRollbackSlot -Destination $mutationSlot
-            Assert-Inventory $mutationSlot $mutationStageReceipt.rollbackHashes 'Failure-path restored mutation slot'
+        if ($mutationStagePublished) {
+            $mutationRecovery = Restore-StagedSlot $mutationSlot $durableMutationRollbackSlot $mutationStageRoot $mutationStageReceipt 'mutation artifact'
+            $mutationStageRootSafeToDelete = $true
         }
+    } catch { $recoveryFailure = $_ }
+    try {
         New-Item -ItemType Directory -Path $durableRunRoot -Force | Out-Null
-        [ordered]@{result='FAIL';receiptState='TERMINAL_FAILURE';terminalCondition=$terminalCondition;failure=$proofFailure.Exception.Message;countyOrProtectedDataUsed=$false;deploymentOrProductionUsed=$false} |
+        [ordered]@{result='FAIL';receiptState='TERMINAL_FAILURE';terminalCondition=$terminalCondition;
+            failure=$proofFailure.Exception.Message;recoveryFailure=if($null -ne $recoveryFailure){$recoveryFailure.Exception.Message}else{$null};
+            workflowRecovery=$workflowRecovery;mutationRecovery=$mutationRecovery;
+            mutationStageRootPreserved=-not $mutationStageRootSafeToDelete;
+            workflowStageRootPreserved=-not $workflowStageRootSafeToDelete;
+            countyOrProtectedDataUsed=$false;deploymentOrProductionUsed=$false} |
             ConvertTo-Json -Depth 8 | Set-Content -LiteralPath (Join-Path $durableRunRoot 'runtime-adoption-failure.json') -Encoding utf8
-    } catch { }
+    } catch {
+        if ($null -eq $recoveryFailure) { $recoveryFailure = $_ }
+    }
+    if ($null -ne $recoveryFailure) {
+        throw [AggregateException]::new(
+            'Dais mutation proof failed and rollback recovery did not complete.',
+            [Exception[]]@($proofFailure.Exception,$recoveryFailure.Exception))
+    }
     throw $proofFailure
 }
 finally {
     foreach ($name in @('DOTNET_CLI_HOME','DOTNET_CLI_TELEMETRY_OPTOUT','DOTNET_NOLOGO','DOTNET_CLI_USE_MSBUILD_SERVER','NUGET_PACKAGES','NUGET_HTTP_CACHE_PATH','TERRAFUSION_DAIS_MUTATION_HOST_MODULE_PATH','TERRAFUSION_DAIS_MUTATION_HOST_SCHEMA_PATH','TERRAFUSION_DAIS_HOST_MODULE_PATH','TERRAFUSION_DAIS_HOST_SCHEMA_PATH')) {
         [Environment]::SetEnvironmentVariable($name,$null,'Process')
     }
-    foreach ($path in @($testRoot,$mutationStageRoot,$workflowStageRoot)) {
-        try { if (Test-Path -LiteralPath $path) { Remove-Item -LiteralPath $path -Recurse -Force } } catch { }
-    }
+    try { if (Test-Path -LiteralPath $testRoot) { Remove-Item -LiteralPath $testRoot -Recurse -Force } } catch { }
+    try { if ($mutationStageRootSafeToDelete -and (Test-Path -LiteralPath $mutationStageRoot)) { Remove-Item -LiteralPath $mutationStageRoot -Recurse -Force } } catch { }
+    try { if ($workflowStageRootSafeToDelete -and (Test-Path -LiteralPath $workflowStageRoot)) { Remove-Item -LiteralPath $workflowStageRoot -Recurse -Force } } catch { }
+    if ($workflowMutexHeld) { $workflowMutex.ReleaseMutex() }
+    if ($mutationMutexHeld) { $mutationMutex.ReleaseMutex() }
+    if ($null -ne $workflowMutex) { $workflowMutex.Dispose() }
+    if ($null -ne $mutationMutex) { $mutationMutex.Dispose() }
 }
 
 if ($null -ne $result) { $result | ConvertTo-Json -Depth 8 }

@@ -41,3 +41,22 @@ public sealed class DaisAppealMutationRejectedException : Exception
 
     public IReadOnlyList<DaisAppealMutationViolation> Violations { get; }
 }
+
+public sealed class DaisAppealMutationConflictException : Exception
+{
+    public DaisAppealMutationConflictException(
+        Guid appealId,
+        Guid countyId,
+        Exception innerException)
+        : base(
+            $"Appeal {appealId} in county {countyId} changed after the Dais lifecycle snapshot was read.",
+            innerException)
+    {
+        AppealId = appealId;
+        CountyId = countyId;
+    }
+
+    public Guid AppealId { get; }
+
+    public Guid CountyId { get; }
+}

@@ -185,5 +185,10 @@ internal static class DaisAppealMutationArtifactExpectation
         DaisAppealMutationOptions.ExpectedContractSourceSha,
         DaisAppealMutationOptions.ExpectedSourceDtoSha256,
         DaisAppealMutationOptions.ExpectedTransport,
-        DaisAppealMutationOptions.ArtifactSlotRelativePath);
+        DaisAppealMutationOptions.ArtifactSlotRelativePath,
+        DaisAppealMutationOptions.ExpectedModuleGitBlob,
+        DaisAppealMutationOptions.ExpectedSchemaGitBlob,
+        DaisAppealMutationOptions.ExpectedSourceManifestLength,
+        DaisAppealMutationOptions.ExpectedSourceManifestGitBlob,
+        DaisAppealMutationOptions.ExpectedContractReviewedHeadSha);
 }

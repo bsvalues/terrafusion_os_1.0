@@ -426,6 +426,40 @@ public sealed class DaisEndpointContractTests
             .Should().Be(455_000m);
     }
 
+    [Fact]
+    public async Task DaisController_UpdateAppealStatus_ConcurrentMutationReturns409()
+    {
+        await using var db = CreateDbContext(
+            nameof(DaisController_UpdateAppealStatus_ConcurrentMutationReturns409));
+        var appealId = Guid.NewGuid();
+        var appealMock = new Mock<IAppealService>();
+        appealMock.Setup(service => service.UpdateStatusAsync(
+                appealId,
+                "decided",
+                BentonCountyId,
+                "Synthetic decision",
+                455_000m,
+                It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new DaisAppealMutationConflictException(
+                appealId,
+                BentonCountyId,
+                new DbUpdateConcurrencyException("Synthetic stale lifecycle snapshot.")));
+        var controller = CreateDaisController(db, appealMock.Object);
+
+        var result = await controller.UpdateAppealStatus(
+            appealId,
+            new DaisController.UpdateAppealStatusRequest(
+                "decided",
+                "Synthetic decision",
+                455_000m));
+
+        var problem = result.Should().BeOfType<ObjectResult>().Subject;
+        problem.StatusCode.Should().Be(StatusCodes.Status409Conflict);
+        problem.Value.Should().BeOfType<ProblemDetails>()
+            .Which.Type.Should().Be(
+                "https://terrafusion.gov/problems/dais-appeal-mutation-conflict");
+    }
+
     [TerraFusion.Unit.Tests.Dais.ExactDaisAppealMutationAndWorkflowHostFact]
     public async Task DaisMutation_ManifestModuleOrSchemaTamper_FailsBeforeAppealSave()
     {

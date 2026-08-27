@@ -1193,6 +1193,19 @@ public class DaisController : ControllerBase
     {
       return DaisMutationRejectedProblem(exception);
     }
+    catch (DaisAppealMutationConflictException exception)
+    {
+      _logger.LogWarning(
+        exception,
+        "Refused stale Dais appeal transition for appeal {AppealId}, county {CountyId}, and trace {TraceId}.",
+        id,
+        effectiveCountyId,
+        HttpContext.TraceIdentifier);
+      return Problem(
+        statusCode: StatusCodes.Status409Conflict,
+        title: "Appeal lifecycle changed before the Dais transition could commit.",
+        type: "https://terrafusion.gov/problems/dais-appeal-mutation-conflict");
+    }
     catch (DaisAppealMutationUnavailableException exception)
     {
       _logger.LogWarning(
