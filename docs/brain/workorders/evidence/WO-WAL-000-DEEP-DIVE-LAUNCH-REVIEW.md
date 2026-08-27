@@ -2,7 +2,11 @@
 
 **Date:** 2026-08-27
 
-**Base:** `a1f6fd66d2cff6e3dc7f62ebc00311974951dc90`
+**Original review base:** `a1f6fd66d2cff6e3dc7f62ebc00311974951dc90`
+
+**Current protected launch baseline:** `3651e2fb6c440f66aaa9326328484c1b5bd9201f`
+
+**Current protected tree:** `ba477519d8610b17693800ec1d15522e84a41af7`
 
 **Owner directive:** Issue #1485
 
@@ -19,6 +23,7 @@ The intended first official launch is not a Benton pilot. It is a 39-county Wash
 3. **Runtime Sync primitives are substantial.** `terrafusion_os_1.0` contains Benton/Harris-PACS-proven raw→truth→canonical ingestion, source lineage/xref, quarantine, county isolation, parcel/sale/owner/WSDOR/improvement/land/geometry lanes, full-corpus drain infrastructure, operator status and scaling proof.
 4. **TerraForge has real runtime surfaces.** `/forge` reads actual TerraFusion API paths for sale qualification, comps, cost matrices, income data, county stats and tools.
 5. **Five-Suite ownership is terminal.** This launch builds on the completed canonical suite architecture rather than reopening migration work.
+6. **Gate C is repaired and protected.** PR #1484 merged as `3651e2fb6c440f66aaa9326328484c1b5bd9201f`. The root cause was pnpm's relative `./frontend...` selector matching nothing after Gate C changed directories. The protected fix uses canonical `terrafusion-frontend...` plus `--fail-if-no-match`; the regression contract passed 2/2, all eight required merge checks passed, and the protected-main Gate C run succeeded with frontend/backend builds, zero errors and zero warnings. This removes the prior CI exception from the WAL launch posture.
 
 ## Verified launch gaps
 
@@ -67,5 +72,7 @@ Previous Benton Azure/demo infrastructure is not the product. Production deploym
 No further architecture/reconciliation program is needed. The finite WAL chain is sufficient:
 
 `000 authority → (001 public || 002 upload || 003 Sync || 004 isolation) → (005 HUB || 006 Forge) → 007 acceptance → 008 production → 009 terminal closeout`.
+
+Gate C is no longer a parked exception. The exact WAL release must pass the repaired Gate C and every other required launch control.
 
 The program ends at production assessor acceptance; it does not generate an automatic successor.
