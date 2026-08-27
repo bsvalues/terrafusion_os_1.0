@@ -531,27 +531,49 @@ public sealed class GptGroundedContextProcessHost : IGptGroundedContextProcessHo
         ReplaceWithMinimalEnvironment(startInfo.Environment);
         using var process = Process.Start(startInfo)
             ?? throw new InvalidOperationException("Unable to inspect the Node permission model.");
-        var stdoutTask = process.StandardOutput.ReadToEndAsync();
-        var stderrTask = process.StandardError.ReadToEndAsync();
+        var stdout = new StringBuilder();
+        var stderr = new StringBuilder();
+        process.OutputDataReceived += (_, args) => AppendBoundedLine(stdout, args.Data, 64 * 1024);
+        process.ErrorDataReceived += (_, args) => AppendBoundedLine(stderr, args.Data, 64 * 1024);
+        process.BeginOutputReadLine();
+        process.BeginErrorReadLine();
         if (!process.WaitForExit(milliseconds: 5_000))
         {
             TryKill(process);
             throw new InvalidOperationException(
                 "Timed out while inspecting the Node permission model.");
         }
-        var stdout = stdoutTask.GetAwaiter().GetResult();
-        var stderr = stderrTask.GetAwaiter().GetResult();
+        // The unbounded overload waits for asynchronous output event handlers to drain after
+        // the process has exited; it does not introduce a second execution timeout.
+        process.WaitForExit();
         if (process.ExitCode != 0)
         {
             throw new InvalidOperationException(
-                $"Unable to inspect the Node permission model: {Bound(stderr, 1024)}");
+                $"Unable to inspect the Node permission model: {Bound(stderr.ToString(), 1024)}");
         }
-        if (stdout.Contains("--permission", StringComparison.Ordinal)) return "--permission";
-        if (stdout.Contains("--experimental-permission", StringComparison.Ordinal))
+        var helpText = stdout.ToString();
+        if (helpText.Contains("--permission", StringComparison.Ordinal)) return "--permission";
+        if (helpText.Contains("--experimental-permission", StringComparison.Ordinal))
         {
             return "--experimental-permission";
         }
         throw new InvalidOperationException("Node does not expose a supported permission model.");
+    }
+
+    private static void AppendBoundedLine(StringBuilder builder, string? line, int maximumCharacters)
+    {
+        if (line is null || builder.Length >= maximumCharacters) return;
+
+        var remaining = maximumCharacters - builder.Length;
+        if (builder.Length > 0 && remaining > 0)
+        {
+            builder.Append('\n');
+            remaining--;
+        }
+        if (remaining > 0)
+        {
+            builder.Append(line, 0, Math.Min(line.Length, remaining));
+        }
     }
 
     private void RequireBoundNodeIdentity(Stream executableStream)
