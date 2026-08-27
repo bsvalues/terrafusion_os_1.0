@@ -6,7 +6,7 @@
 | Parent | `WO-WAL-001` |
 | Program | Washington Assessor Launch V1 |
 | Base | `0aba8ff60d09f526b6aa0a8aaf85fd4fc7957778` |
-| Risk | R4 bounded public-data truth tooling |
+| Risk | R2 bounded public-data truth tooling |
 | Contract reservation | `wal.public-baseline-ledger.v1` |
 | Environment reservation | `local-temp-only` |
 
@@ -40,8 +40,10 @@ The default input is
 an explicit local JSON input path for fixture-driven validation.
 
 The output is canonical UTF-8 JSON with one trailing newline and exactly one row for each of the 39
-expected Washington counties, in canonical county order. Each row keeps these state families
-separate:
+expected Washington counties, in canonical county order. Without `--output`, the tool writes to
+stdout. An explicit `--output` must resolve strictly inside the operating system's temporary
+directory; the temporary-directory root itself and every sibling, prefix-similar, repository, or
+other path fail closed. Each row keeps these state families separate:
 
 1. source inventory and acquisition readiness copied from the existing proof;
 2. landed parcel/sales row evidence;
@@ -65,7 +67,7 @@ otherwise.
 - A non-Benton county can never inherit Benton source or runtime evidence.
 - Missing observations are explicit gaps, not fabricated zero-risk readiness.
 - The tool performs no network or database access and writes only to stdout or an explicitly selected
-  local output path.
+  path strictly inside the operating system's temporary directory.
 
 ## Denials
 
@@ -82,10 +84,12 @@ otherwise.
 ## Validation
 
 - `node --test scripts/truth/wal-public-baseline-ledger.test.mjs`
-- `node scripts/truth/wal-public-baseline-ledger.mjs > <temporary-output>`
+- `node scripts/truth/wal-public-baseline-ledger.mjs --output <path-strictly-inside-os-temp>`
 - verify exactly 39 rows and deterministic bytes across repeated executions;
 - adversarial duplicate-county, missing-county, unexpected-county, readiness-inference, and Benton-
   fallback tests;
+- adversarial output-containment tests proving repository/generated, temporary-root, and
+  prefix-similar sibling paths are rejected without creating the requested file;
 - `git diff --check`;
 - changed-path audit proving only the three exact reservations changed.
 

@@ -9,6 +9,7 @@
  */
 
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import process from 'node:process';
 import { pathToFileURL } from 'node:url';
@@ -283,6 +284,24 @@ export function serializeLedger(ledger) {
   return `${JSON.stringify(ledger, null, 2)}\n`;
 }
 
+export function resolveTempOutputPath(outputPath, cwd = process.cwd()) {
+  const tempRoot = path.resolve(os.tmpdir());
+  const resolvedOutputPath = path.resolve(cwd, outputPath);
+  const relativeOutputPath = path.relative(tempRoot, resolvedOutputPath);
+  const escapesTempRoot =
+    relativeOutputPath === '..' ||
+    relativeOutputPath.startsWith(`..${path.sep}`) ||
+    path.isAbsolute(relativeOutputPath);
+
+  if (relativeOutputPath === '' || escapesTempRoot) {
+    throw new Error(
+      `--output must resolve strictly inside the operating system temporary directory: ${tempRoot}`
+    );
+  }
+
+  return resolvedOutputPath;
+}
+
 function parseArguments(args) {
   let inputPath = DEFAULT_INPUT;
   let outputPath = null;
@@ -316,7 +335,7 @@ function usage() {
     '',
     'Options:',
     '  --input <path>   Coverage proof JSON (defaults to the repository proof)',
-    '  --output <path>  Write canonical JSON to a local path instead of stdout',
+    '  --output <path>  Write canonical JSON strictly inside the OS temp directory',
     '  --help           Show this help',
   ].join('\n');
 }
@@ -336,7 +355,7 @@ export function runCli(args, io = {}) {
   const output = serializeLedger(buildLedger(coverageProof));
 
   if (options.outputPath) {
-    fs.writeFileSync(path.resolve(cwd, options.outputPath), output, 'utf8');
+    fs.writeFileSync(resolveTempOutputPath(options.outputPath, cwd), output, 'utf8');
   } else {
     stdout.write(output);
   }

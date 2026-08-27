@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import assert from 'node:assert/strict';
-import { execFileSync } from 'node:child_process';
+import { execFileSync, spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
@@ -133,17 +133,78 @@ test('CLI output is byte-stable across repeated default executions', () => {
   assert.equal(JSON.parse(first).rows.length, 39);
 });
 
-test('CLI writes only to an explicitly selected local output path', () => {
+test('CLI accepts absolute and relative output paths strictly inside the OS temp directory', () => {
   const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'tf-wal-public-ledger-'));
-  const outputPath = path.join(tempDir, 'ledger.json');
+  const expected = serializeLedger(buildLedger(readCoverageProof()));
 
-  execFileSync('node', [scriptPath, '--input', coverageProofPath, '--output', outputPath], {
-    cwd: repoRoot,
-    stdio: 'pipe',
-  });
+  try {
+    const absoluteOutputPath = path.join(tempDir, 'absolute-ledger.json');
+    const relativeOutputPath = path.join(tempDir, 'relative-ledger.json');
 
-  const output = fs.readFileSync(outputPath, 'utf8');
-  assert.equal(output, serializeLedger(buildLedger(readCoverageProof())));
+    execFileSync(
+      'node',
+      [scriptPath, '--input', coverageProofPath, '--output', absoluteOutputPath],
+      { cwd: repoRoot, stdio: 'pipe' }
+    );
+    execFileSync(
+      'node',
+      [
+        scriptPath,
+        '--input',
+        coverageProofPath,
+        '--output',
+        path.relative(repoRoot, relativeOutputPath),
+      ],
+      { cwd: repoRoot, stdio: 'pipe' }
+    );
+
+    assert.equal(fs.readFileSync(absoluteOutputPath, 'utf8'), expected);
+    assert.equal(fs.readFileSync(relativeOutputPath, 'utf8'), expected);
+  } finally {
+    fs.rmSync(tempDir, { recursive: true, force: true });
+  }
+});
+
+test('CLI rejects output paths outside or equal to the OS temp directory without creating files', () => {
+  const uniqueToken = `${process.pid}-${Date.now()}`;
+  const repositoryOutputPath = path.join(
+    repoRoot,
+    'generated',
+    `wal-public-baseline-ledger-${uniqueToken}.json`
+  );
+  const tempRootOutputPath = os.tmpdir();
+  const tempSiblingOutputPath = path.join(
+    path.dirname(os.tmpdir()),
+    `${path.basename(os.tmpdir())}-sibling`,
+    `wal-public-baseline-ledger-${uniqueToken}.json`
+  );
+  const rejectedPaths = [
+    path.relative(repoRoot, repositoryOutputPath),
+    tempRootOutputPath,
+    tempSiblingOutputPath,
+  ];
+
+  try {
+    for (const outputPath of rejectedPaths) {
+      const result = spawnSync(
+        'node',
+        [scriptPath, '--input', coverageProofPath, '--output', outputPath],
+        { cwd: repoRoot, encoding: 'utf8' }
+      );
+
+      assert.notEqual(result.status, 0, `expected rejection for ${outputPath}`);
+      assert.match(
+        result.stderr,
+        /must resolve strictly inside the operating system temporary directory/i
+      );
+    }
+
+    assert.equal(fs.existsSync(repositoryOutputPath), false);
+    assert.equal(fs.existsSync(tempSiblingOutputPath), false);
+  } finally {
+    fs.rmSync(repositoryOutputPath, { force: true });
+    fs.rmSync(tempSiblingOutputPath, { force: true });
+  }
 });
 
 test('rejects Benton source contamination for a non-Benton county', () => {
