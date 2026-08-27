@@ -119,7 +119,7 @@ public sealed record ReadOnlySourceReadRequest
         Parameters = new ReadOnlyDictionary<string, object?>(
             parameters.ToDictionary(
                 pair => pair.Key,
-                pair => pair.Value,
+                pair => SnapshotParameterValue(pair.Key, pair.Value),
                 StringComparer.Ordinal));
         MaxRows = maxRows;
         Checkpoint = checkpoint;
@@ -134,6 +134,42 @@ public sealed record ReadOnlySourceReadRequest
     public int MaxRows { get; }
 
     public string? Checkpoint { get; }
+
+    private static object? SnapshotParameterValue(string parameterName, object? value)
+    {
+        if (value is null || value.GetType().IsEnum)
+        {
+            return value;
+        }
+
+        if (value is string
+            or bool
+            or byte
+            or sbyte
+            or short
+            or ushort
+            or int
+            or uint
+            or long
+            or ulong
+            or float
+            or double
+            or decimal
+            or char
+            or Guid
+            or DateTime
+            or DateTimeOffset
+            or TimeSpan
+            or DateOnly
+            or TimeOnly)
+        {
+            return value;
+        }
+
+        throw new ArgumentException(
+            $"Parameter '{parameterName}' must be a supported immutable scalar value.",
+            nameof(value));
+    }
 }
 
 /// <summary>One bounded read result with the source observation time and next checkpoint.</summary>

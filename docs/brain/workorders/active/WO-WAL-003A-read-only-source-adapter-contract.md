@@ -45,8 +45,9 @@ county data is reserved or authorized.
 
 1. Add an immutable source-profile shape with explicit county, source, family, extraction, schema,
    mapping, checkpoint, and freshness identities.
-2. Bind every read request structurally to its source profile, defensively snapshot its parameters,
-   and expose only the bound request through the adapter interface.
+2. Bind every read request structurally to its source profile, admit only immutable scalar
+   parameter values into its defensive snapshot, and expose only the bound request through the
+   adapter interface.
 3. Add a conservative SQL-family command guard that accepts only one explicit `SELECT` command and
    rejects DML, DDL, execution/transaction commands, `SELECT INTO`, comments, statement separators,
    control/format characters, parentheses/function-call syntax, sequence `NEXTVAL`/`CURRVAL` access,
@@ -72,7 +73,8 @@ county data is reserved or authorized.
 - the source-profile contract carries the exact governed identities needed by later adapters;
 - reflection shows guarded command constructors are private and the adapter accepts only one
   profile-bound request plus cancellation;
-- caller mutation after request construction cannot alter the request's parameter snapshot;
+- caller mutation after request construction cannot alter the request's parameter snapshot, and
+  mutable parameter values are rejected before an adapter can observe them;
 - a simple parameterized `SELECT` is accepted;
 - DML, DDL, `SELECT INTO`, execution/transaction commands, multiple statements, comments,
   zero-width/control obfuscation, parentheses/function calls, sequence access, blank input, and

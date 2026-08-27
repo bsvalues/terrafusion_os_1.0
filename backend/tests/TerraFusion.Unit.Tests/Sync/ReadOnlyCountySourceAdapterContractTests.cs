@@ -201,6 +201,28 @@ public sealed class ReadOnlyCountySourceAdapterContractTests
         mutateSnapshot.Should().Throw<NotSupportedException>();
     }
 
+    [Theory]
+    [MemberData(nameof(MutableParameterValues))]
+    public void Read_request_rejects_mutable_parameter_values(object mutableValue)
+    {
+        var act = () => new ReadOnlySourceReadRequest(
+            CreateProfile(),
+            ReadOnlySourceCommand.RequireRead(
+                "SELECT parcel_id FROM parcels WHERE source_value = @sourceValue"),
+            new Dictionary<string, object?> { ["sourceValue"] = mutableValue },
+            maxRows: 500);
+
+        act.Should().Throw<ArgumentException>()
+            .WithMessage("*supported immutable scalar value*");
+    }
+
+    public static IEnumerable<object[]> MutableParameterValues()
+    {
+        yield return new object[] { new byte[] { 1, 2, 3 } };
+        yield return new object[] { new List<int> { 1, 2, 3 } };
+        yield return new object[] { new Dictionary<string, string> { ["key"] = "value" } };
+    }
+
     private static ReadOnlyCountySourceProfile CreateProfile()
     {
         return new ReadOnlyCountySourceProfile(
