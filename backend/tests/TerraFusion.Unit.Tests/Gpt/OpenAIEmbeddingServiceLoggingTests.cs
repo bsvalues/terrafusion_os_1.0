@@ -6,7 +6,7 @@ using TerraFusion.AI.Services;
 
 namespace TerraFusion.Unit.Tests.Gpt;
 
-public sealed class OpenAIEmbeddingServiceLoggingTests
+public sealed class GptGroundedContextEmbeddingLoggingTests
 {
     [Fact]
     public async Task ProviderErrorBodyCannotEchoQueryIntoLogs()
