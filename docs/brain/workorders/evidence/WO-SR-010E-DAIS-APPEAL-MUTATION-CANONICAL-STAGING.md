@@ -2,10 +2,13 @@
 
 ## Current verdict
 
-`LOCAL_TERMINAL_PROOF_PASS_PROTECTED_ASSURANCE_PENDING`
+`COMPLETE_PROTECTED_MAIN_VERIFIED`
 
 The full authenticated protected-source proof passed against Dais protected `main` commit
-`8a9cfc608bcda835126db2054bb7ba7ecf185275`.
+`8a9cfc608bcda835126db2054bb7ba7ecf185275`. Sovereign PR #1470 merged exact reviewed head
+`dfce1f5f1502665391b6c23ef820cfe1df72535c` as protected-main commit
+`153103c4f5356219c142ccfe88174c2c6477e54d` after all required first-party contexts passed and all
+first-party review threads were resolved.
 
 ## Observed outcome
 

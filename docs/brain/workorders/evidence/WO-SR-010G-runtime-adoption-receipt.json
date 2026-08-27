@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "workOrder": "WO-SR-010G",
+  "runId": "20260827T032840851Z-3b3ac37778fb46fc8064c5de935084bc",
+  "result": "PASS",
+  "receiptState": "LOCAL_TERMINAL_PROOF_SUCCESS",
+  "terminalCondition": "DAIS_APPEAL_MUTATION_LOCAL_EXACT_RUNTIME_ADOPTED_ROLLBACK_EXECUTED_AND_DUPLICATE_JUDGMENT_RETIRED",
+  "localReceiptSha256": "30106224c231fdfcf03bf3958cbc5fcdf52edecedeeb40126af4d4eb7ea0d5da",
+  "sovereignHead": "1c8a174c25e9ba1d3bcdb0c7f2e0c4d58eeea55f",
+  "protectedSovereignDependency": "acf4abc5959f468c6a43a00b09cead5d55679795",
+  "daisCommit": "8a9cfc608bcda835126db2054bb7ba7ecf185275",
+  "artifactIdentity": {
+    "moduleSha256": "779ef37435e2deb8f181b3c34e0712c35829b7a123f047752fc5bf09de331ff2",
+    "schemaSha256": "db8f1c93a598da7f9c454d5a43c275b849f2de8fc036e9be28c5c1da44432ce2",
+    "manifestSha256": "c858e7cd390502bf1461cf7af6302916a7c437f5f4f47b17d379f49af114b825"
+  },
+  "observations": {
+    "persistentDevelopmentSelection": "PASS",
+    "configuredFreshStartAndRestart": "PASS",
+    "exactControllerLifecycle": "PASS",
+    "manifestModuleSchemaTamperBeforeSave": "PASS",
+    "disabledSelectionRollback": "PASS",
+    "productionSelectionRefusal": "PASS",
+    "artifactRollbackExecution": "PASS - prior Disabled slot restored and hash verified",
+    "adoptedArtifactRestoration": "PASS - adopted exact slot restored and hash verified",
+    "independentRecoverySelfTest": "PASS"
+  },
+  "focusedTests": { "total": 61, "executed": 61, "passed": 61, "failed": 0, "skipped": 0 },
+  "concurrencyTests": { "total": 2, "executed": 2, "passed": 2, "failed": 0, "skipped": 0 },
+  "rollbackInventory": {
+    "disabled-marker.json": "44d57d55fe7a6c433cf28b10bb63da7ab400703909f62d601e1c9ee5907d60a1"
+  },
+  "countyOrProtectedDataUsed": false,
+  "deploymentOrProductionUsed": false
+}

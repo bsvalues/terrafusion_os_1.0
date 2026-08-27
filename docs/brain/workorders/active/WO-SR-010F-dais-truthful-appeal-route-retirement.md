@@ -2,12 +2,12 @@
 
 | Field | Value |
 | --- | --- |
-| Status | ACTIVE - implementation and focused no-mutation proof pass |
+| Status | COMPLETE - PR #1469 merged as protected main `acf4abc5959f468c6a43a00b09cead5d55679795` |
 | Program | Five-Suite Federated Repository Buildout |
 | Goal | `GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES` |
 | Risk | R3 bounded sovereign behavior retirement |
 | Authority | `OWNER-FIVE-SUITE-FEDERATED-COMPLETION-20260826` |
-| Sovereign base | `52744220509a54b6544e0fa193b6d09e8d93c159` |
+| Sovereign base | `153103c4f5356219c142ccfe88174c2c6477e54d` |
 | Terminal condition | `DAIS_FABRICATED_APPEAL_ROUTES_TRUTHFULLY_RETIRED` |
 
 ## Objective
@@ -45,5 +45,6 @@ county-data, PACS/SQL, secret-policy, schema, migration, topology, or CI-program
 
 ## Continuation
 
-User-surface availability and replacement scheduling are separate capability-adoption work. This
-child truthfully refuses the unsupported backend operations without claiming those broader changes.
+User-surface availability is the separately isolated WO-SR-010H. Replacement scheduling remains
+unimplemented. This child truthfully refuses the unsupported backend operations without claiming
+that broader capability.

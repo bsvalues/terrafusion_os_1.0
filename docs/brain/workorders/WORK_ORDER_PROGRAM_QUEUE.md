@@ -13,7 +13,7 @@
 
 ## Active Goal
 
-The Five-Suite Federated Repository Buildout is active under `OWNER-FIVE-SUITE-FEDERATED-COMPLETION-20260826`. Atlas runtime and ownership are complete. Dais read staging/runtime are protected merges `5182742d756cea6a939bb12489e660d83b9593b6` and `54f9e4b411fb886bd592226067928f024b02285b`. The mutation contract froze on sovereign protected merge `52744220509a54b6544e0fa193b6d09e8d93c159`, and Dais protected merge `8a9cfc608bcda835126db2054bb7ba7ecf185275` established the canonical decision source. `WO-SR-010E` stages those exact bytes with observed rollback before runtime adoption. Continue to Dais ownership truth, then Dossier and GPT. The mission hard walls remain binding.
+The Five-Suite Federated Repository Buildout is active under `OWNER-FIVE-SUITE-FEDERATED-COMPLETION-20260826`. Atlas runtime and ownership are complete. Dais read staging/runtime are protected merges `5182742d756cea6a939bb12489e660d83b9593b6` and `54f9e4b411fb886bd592226067928f024b02285b`; mutation staging merged as `153103c4f5356219c142ccfe88174c2c6477e54d`; truthful sovereign retirement merged as `acf4abc5959f468c6a43a00b09cead5d55679795`. `WO-SR-010G` has exact local runtime, concurrency, tamper, Disabled rollback, and restoration proof pending protected assurance. Concurrent `WO-SR-010H` retires the unsupported frontend scheduling offer. Begin Dossier after both merge, then GPT. The mission hard walls remain binding.
 
 The prior `WO-SR-009C` completed before this activation. PR #1424 merged exact assured head
 `e70548cb4938da92b2c0b254d71c5361aa10a6ed` as
