@@ -1,0 +1,215 @@
+{
+  "status": {
+    "schemaVersion": "terrafusion.washington.county-status.v1",
+    "generatedAt": "2026-08-28T00:00:00.000Z",
+    "sourcePosture": "repository_reference_demo",
+    "counties": [
+      {
+        "county": "Spokane",
+        "countyCode": "063",
+        "priority": "reference_demo",
+        "prometheusStatus": "reference_demo",
+        "primarySourceMode": "repository_reference_demo",
+        "latestSaleDate": "2025-11-06",
+        "candidateSales": 3,
+        "stagedSales": 3,
+        "needsReview": 2,
+        "confidence": {
+          "averageQualityScore": 0.8533,
+          "parserStatus": "repository_fixture",
+          "rawStatus": "synthetic_reference",
+          "rawDriftDetected": false
+        },
+        "staticRoutes": {
+          "detail": "/launch-data/washington/counties/063.json",
+          "salesShard": "/launch-data/washington/sales/by-county/063.json"
+        }
+      }
+    ]
+  },
+  "countyDetails": {
+    "063": {
+      "schemaVersion": "terrafusion.washington.county-detail.v1",
+      "generatedAt": "2026-08-28T00:00:00.000Z",
+      "county": "Spokane",
+      "countyCode": "063",
+      "operationalState": {
+        "primarySourceMode": "repository_reference_demo",
+        "prometheusStatus": "reference_demo"
+      },
+      "summary": {
+        "records": 3,
+        "latestSaleDate": "2025-11-06"
+      },
+      "salesRoute": "/launch-data/washington/sales/by-county/063.json"
+    }
+  },
+  "salesShards": {
+    "063": {
+      "schemaVersion": "terrafusion.washington.sales-shard.v1",
+      "generatedAt": "2026-08-28T00:00:00.000Z",
+      "county": "Spokane",
+      "countyCode": "063",
+      "summary": {
+        "records": 3,
+        "latestSaleDate": "2025-11-06",
+        "reviewRecords": 2,
+        "recordsWithNeighborhoodCode": 3,
+        "topNeighborhoodCodes": {
+          "DEMO-NORTH": 2,
+          "DEMO-SOUTH": 1
+        }
+      },
+      "records": [
+        {
+          "saleId": "WA-REFERENCE-063-001",
+          "county": "Spokane",
+          "countyCode": "063",
+          "parcelNumber": "REFERENCE-063-001",
+          "saleDate": "2025-11-06",
+          "saleYear": 2025,
+          "salePrice": 425000,
+          "adjustedSalePrice": null,
+          "documentNumber": null,
+          "deedType": "REFERENCE_DEMO",
+          "situsAddress": "REFERENCE RECORD 1 - NOT A SITUS ADDRESS",
+          "situsCity": "Spokane",
+          "situsZip": null,
+          "useCode": "residential_reference",
+          "acres": 0.18,
+          "grantor": null,
+          "grantee": null,
+          "saleNote": "Synthetic repository reference for workflow validation; not a county record.",
+          "neighborhoodCode": "DEMO-NORTH",
+          "currentNeighborhoodCode": "DEMO-NORTH",
+          "sourceMode": "repository_reference_demo",
+          "candidateSource": "repository_reference_demo",
+          "confidenceScore": 0.82,
+          "qualityScore": 0.82,
+          "qualityBand": "reference_review",
+          "reviewStatus": "review_required",
+          "provenance": {
+            "sourceUrl": null,
+            "sourceFinalUrl": null,
+            "sourcePayloadPath": null,
+            "sourcePayloadSha256": null,
+            "candidateIndexSource": "repository_fixture",
+            "candidateRecordType": "synthetic_reference",
+            "candidateSourceOrdinal": 1
+          },
+          "flags": {
+            "duplicateRisk": false,
+            "needsReview": true,
+            "futureSaleDate": false,
+            "manualException": false
+          }
+        },
+        {
+          "saleId": "WA-REFERENCE-063-002",
+          "county": "Spokane",
+          "countyCode": "063",
+          "parcelNumber": "REFERENCE-063-002",
+          "saleDate": "2025-09-18",
+          "saleYear": 2025,
+          "salePrice": 389500,
+          "adjustedSalePrice": null,
+          "documentNumber": null,
+          "deedType": "REFERENCE_DEMO",
+          "situsAddress": "REFERENCE RECORD 2 - NOT A SITUS ADDRESS",
+          "situsCity": "Spokane",
+          "situsZip": null,
+          "useCode": "residential_reference",
+          "acres": 0.22,
+          "grantor": null,
+          "grantee": null,
+          "saleNote": "Synthetic repository reference for workflow validation; not a county record.",
+          "neighborhoodCode": "DEMO-NORTH",
+          "currentNeighborhoodCode": "DEMO-NORTH",
+          "sourceMode": "repository_reference_demo",
+          "candidateSource": "repository_reference_demo",
+          "confidenceScore": 0.96,
+          "qualityScore": 0.96,
+          "qualityBand": "reference_ready",
+          "reviewStatus": "candidate_ready",
+          "provenance": {
+            "sourceUrl": null,
+            "sourceFinalUrl": null,
+            "sourcePayloadPath": null,
+            "sourcePayloadSha256": null,
+            "candidateIndexSource": "repository_fixture",
+            "candidateRecordType": "synthetic_reference",
+            "candidateSourceOrdinal": 2
+          },
+          "flags": {
+            "duplicateRisk": false,
+            "needsReview": false,
+            "futureSaleDate": false,
+            "manualException": false
+          }
+        },
+        {
+          "saleId": "WA-REFERENCE-063-003",
+          "county": "Spokane",
+          "countyCode": "063",
+          "parcelNumber": "REFERENCE-063-003",
+          "saleDate": "2025-06-27",
+          "saleYear": 2025,
+          "salePrice": 510000,
+          "adjustedSalePrice": null,
+          "documentNumber": null,
+          "deedType": "REFERENCE_DEMO",
+          "situsAddress": "REFERENCE RECORD 3 - NOT A SITUS ADDRESS",
+          "situsCity": "Spokane",
+          "situsZip": null,
+          "useCode": "residential_reference",
+          "acres": 0.31,
+          "grantor": null,
+          "grantee": null,
+          "saleNote": "Synthetic repository reference for workflow validation; not a county record.",
+          "neighborhoodCode": "DEMO-SOUTH",
+          "currentNeighborhoodCode": "DEMO-SOUTH",
+          "sourceMode": "repository_reference_demo",
+          "candidateSource": "repository_reference_demo",
+          "confidenceScore": 0.78,
+          "qualityScore": 0.78,
+          "qualityBand": "reference_review",
+          "reviewStatus": "review_required",
+          "provenance": {
+            "sourceUrl": null,
+            "sourceFinalUrl": null,
+            "sourcePayloadPath": null,
+            "sourcePayloadSha256": null,
+            "candidateIndexSource": "repository_fixture",
+            "candidateRecordType": "synthetic_reference",
+            "candidateSourceOrdinal": 3
+          },
+          "flags": {
+            "duplicateRisk": false,
+            "needsReview": true,
+            "futureSaleDate": false,
+            "manualException": false
+          }
+        }
+      ]
+    }
+  },
+  "manifest": {
+    "schemaVersion": "terrafusion.washington.launch-manifest.v1",
+    "generatedAt": "2026-08-28T00:00:00.000Z",
+    "sourcePosture": "repository_reference_demo",
+    "summary": {
+      "counties": 1,
+      "rawLanded": 0,
+      "parserReady": 1,
+      "candidateSales": 3,
+      "stagedSales": 3,
+      "needsReview": 2,
+      "prometheusNeedsReview": 2,
+      "recordsWithNeighborhoodCode": 3,
+      "futureSaleDateRecords": 0,
+      "criticalContradictions": 0,
+      "garfieldExceptions": 0,
+      "bentonCityAsNeighborhoodRecords": 0
+    }
+  }
+}

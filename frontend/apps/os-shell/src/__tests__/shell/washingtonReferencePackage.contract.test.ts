@@ -1,8 +1,10 @@
-import { readFileSync } from 'node:fs';
-import { resolve } from 'node:path';
-import { describe, expect, it } from 'vitest';
-
-const PUBLIC_ROOT = resolve(import.meta.dirname, '../../../public');
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import {
+  resolveWashingtonAssessorReferenceRoute,
+  WASHINGTON_ASSESSOR_REFERENCE_PACKAGE,
+  WASHINGTON_REFERENCE_ROUTES,
+} from '../../data/washingtonAssessorReferencePackage';
+import { fetchWashingtonCountyStatus } from '../../services/washingtonCountyLaunch';
 
 interface ReferenceRoutes {
   detail: string;
@@ -67,15 +69,31 @@ interface ReferenceManifest {
   };
 }
 
-function readPublicJson<T>(route: string): T {
-  const path = resolve(PUBLIC_ROOT, route.replace(/^\//, ''));
-  return JSON.parse(readFileSync(path, 'utf8')) as T;
+function readBundledReferenceRoute<T>(route: string): T {
+  const payload = resolveWashingtonAssessorReferenceRoute(route);
+  expect(payload, `Missing tracked Washington reference route: ${route}`).toBeDefined();
+  return payload as T;
 }
 
 describe('Washington assessor reference package', () => {
-  it('ships a resolvable county status -> detail -> sales-shard chain', () => {
-    const status = readPublicJson<ReferenceStatusPayload>(
-      '/launch-data/washington/counties/status.json',
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it('loads Counties Hub status from tracked source without HTTP', async () => {
+    const fetchMock = vi.fn();
+    vi.stubGlobal('fetch', fetchMock);
+
+    const counties = await fetchWashingtonCountyStatus();
+
+    expect(counties).toHaveLength(1);
+    expect(counties[0]).toMatchObject({ county: 'Spokane', countyCode: '063' });
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it('ships a tracked county status -> detail -> sales-shard chain', () => {
+    const status = readBundledReferenceRoute<ReferenceStatusPayload>(
+      WASHINGTON_REFERENCE_ROUTES.status,
     );
     const spokane = status.counties.find(
       (county) => county.countyCode === '063',
@@ -92,10 +110,11 @@ describe('Washington assessor reference package', () => {
       primarySourceMode: 'repository_reference_demo',
     });
 
-    const detail = readPublicJson<ReferenceCountyDetail>(spokane.staticRoutes.detail);
-    const shard = readPublicJson<ReferenceSalesShard>(spokane.staticRoutes.salesShard);
-    const manifest = readPublicJson<ReferenceManifest>(
-      '/launch-data/washington/manifest.json',
+    expect(status).toBe(WASHINGTON_ASSESSOR_REFERENCE_PACKAGE.status);
+    const detail = readBundledReferenceRoute<ReferenceCountyDetail>(spokane.staticRoutes.detail);
+    const shard = readBundledReferenceRoute<ReferenceSalesShard>(spokane.staticRoutes.salesShard);
+    const manifest = readBundledReferenceRoute<ReferenceManifest>(
+      WASHINGTON_REFERENCE_ROUTES.manifest,
     );
 
     expect(detail).toMatchObject({
@@ -134,8 +153,8 @@ describe('Washington assessor reference package', () => {
   });
 
   it('contains synthetic workflow evidence only, with no county party or document identity', () => {
-    const shard = readPublicJson<ReferenceSalesShard>(
-      '/launch-data/washington/sales/by-county/063.json',
+    const shard = readBundledReferenceRoute<ReferenceSalesShard>(
+      WASHINGTON_REFERENCE_ROUTES.spokaneSales,
     );
 
     expect(shard.records).toHaveLength(3);

@@ -21,6 +21,11 @@ const SPOKANE_FILTERS: CommittedFilters = {
   maxPrice: null,
 };
 
+const YAKIMA_FILTERS: CommittedFilters = {
+  ...SPOKANE_FILTERS,
+  countyCode: '077',
+};
+
 function summary(records: number) {
   return {
     records,
@@ -93,6 +98,27 @@ describe('Washington launch shard county isolation', () => {
     window.sessionStorage.clear();
   });
 
+  it('loads the tracked Spokane reference shard without an HTTP request', async () => {
+    const fetchMock = vi.fn();
+    vi.stubGlobal('fetch', fetchMock);
+
+    const queue = await fetchWashingtonLaunchQueue(
+      2025,
+      'all',
+      1,
+      25,
+      SPOKANE_FILTERS,
+    );
+
+    expect(queue.total).toBe(3);
+    expect(queue.items[0]).toMatchObject({
+      county: 'Spokane',
+      countyCode: '063',
+      dataTrustTier: 'public-reference-not-county-certified',
+    });
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
   it('rejects a shard whose declared county does not match the requested county', async () => {
     vi.stubGlobal('fetch', vi.fn(async () => Response.json({
       schemaVersion: '1.0.0',
@@ -104,20 +130,20 @@ describe('Washington launch shard county isolation', () => {
     })));
 
     await expect(
-      fetchWashingtonLaunchQueue(2025, 'all', 1, 25, SPOKANE_FILTERS),
-    ).rejects.toThrow(/shard county mismatch: expected Spokane \(063\)/i);
+      fetchWashingtonLaunchQueue(2025, 'all', 1, 25, YAKIMA_FILTERS),
+    ).rejects.toThrow(/shard county mismatch: expected Yakima \(077\)/i);
   });
 
-  it('rejects a mismatched record inside an otherwise Spokane-declared shard', async () => {
+  it('rejects a mismatched record inside an otherwise Yakima-declared shard', async () => {
     vi.stubGlobal('fetch', vi.fn(async () => Response.json({
       schemaVersion: '1.0.0',
       generatedAt: '2026-08-28T00:00:00.000Z',
-      county: 'Spokane',
-      countyCode: '063',
+      county: 'Yakima',
+      countyCode: '077',
       summary: summary(1),
       records: [
         {
-          saleId: 'benton-record-in-spokane-shard',
+          saleId: 'benton-record-in-yakima-shard',
           county: 'Benton',
           countyCode: '005',
         },
@@ -125,8 +151,8 @@ describe('Washington launch shard county isolation', () => {
     })));
 
     await expect(
-      fetchWashingtonLaunchQueue(2025, 'all', 1, 25, SPOKANE_FILTERS),
-    ).rejects.toThrow(/county mismatch at record 0: expected 063/i);
+      fetchWashingtonLaunchQueue(2025, 'all', 1, 25, YAKIMA_FILTERS),
+    ).rejects.toThrow(/county mismatch at record 0: expected 077/i);
   });
 
   it('rejects invalid county context before issuing a shard request', async () => {
@@ -144,52 +170,52 @@ describe('Washington launch shard county isolation', () => {
 
   it('rejects duplicate sale identifiers within a county shard', async () => {
     vi.stubGlobal('fetch', vi.fn(async () => Response.json(
-      countyShard('Spokane', '063', ['duplicate-sale', 'duplicate-sale']),
+      countyShard('Yakima', '077', ['duplicate-sale', 'duplicate-sale']),
     )));
 
     await expect(
-      fetchWashingtonLaunchQueue(2025, 'all', 1, 25, SPOKANE_FILTERS),
+      fetchWashingtonLaunchQueue(2025, 'all', 1, 25, YAKIMA_FILTERS),
     ).rejects.toThrow(/duplicate saleId duplicate-sale/i);
   });
 
   it('keeps browser-local decisions isolated when counties share a sale identifier', async () => {
     await patchWashingtonLaunchDecision(
-      '063',
+      '077',
       'shared-sale',
       'qualified',
-      'Spokane reference review',
+      'Yakima reference review',
       'Test reviewer',
     );
     vi.stubGlobal('fetch', vi.fn(async (input: RequestInfo | URL) => {
       const url = String(input);
       return Response.json(
-        url.endsWith('/063.json')
-          ? countyShard('Spokane', '063', ['shared-sale'])
+        url.endsWith('/077.json')
+          ? countyShard('Yakima', '077', ['shared-sale'])
           : countyShard('Benton', '005', ['shared-sale']),
       );
     }));
 
-    const [spokane, benton] = await Promise.all([
-      fetchWashingtonLaunchQueue(2025, 'all', 1, 25, SPOKANE_FILTERS),
+    const [yakima, benton] = await Promise.all([
+      fetchWashingtonLaunchQueue(2025, 'all', 1, 25, YAKIMA_FILTERS),
       fetchWashingtonLaunchQueue(2025, 'all', 1, 25, {
         ...SPOKANE_FILTERS,
         countyCode: '005',
       }),
     ]);
 
-    expect(spokane.items[0]?.qualificationDecision).toBe('qualified');
+    expect(yakima.items[0]?.qualificationDecision).toBe('qualified');
     expect(benton.items[0]?.qualificationDecision).toBeNull();
 
-    const stats = await fetchWashingtonLaunchRunningStats(2025, SPOKANE_FILTERS);
+    const stats = await fetchWashingtonLaunchRunningStats(2025, YAKIMA_FILTERS);
     expect(stats.counts.withRatio).toBe(0);
     expect(stats.iaaoCompliant).toBeNull();
   });
 
   it('preserves public source and quality evidence for an assessor review', async () => {
     const record = {
-      ...saleRecord('Yakima', '077', 'yakima-evidence-sale'),
+      ...saleRecord('Whatcom', '073', 'whatcom-evidence-sale'),
       sourceMode: 'public_recorder_export',
-      candidateSource: 'spokane_sales_candidate_index',
+      candidateSource: 'whatcom_sales_candidate_index',
       confidenceScore: 0.91,
       qualityScore: 0.78,
       qualityBand: 'review_required',
@@ -197,9 +223,9 @@ describe('Washington launch shard county isolation', () => {
       provenance: {
         sourceUrl: 'https://example.wa.gov/sales',
         sourceFinalUrl: 'https://example.wa.gov/sales/record-1',
-        sourcePayloadPath: 'washington/spokane/record-1.json',
+        sourcePayloadPath: 'washington/whatcom/record-1.json',
         sourcePayloadSha256: 'abc123',
-        candidateIndexSource: 'spokane-public-sales-index',
+        candidateIndexSource: 'whatcom-public-sales-index',
         candidateRecordType: 'public_sale_candidate',
         candidateSourceOrdinal: 7,
       },
@@ -207,31 +233,31 @@ describe('Washington launch shard county isolation', () => {
     vi.stubGlobal('fetch', vi.fn(async () => Response.json({
       schemaVersion: '1.0.0',
       generatedAt: '2026-08-28T00:00:00.000Z',
-      county: 'Yakima',
-      countyCode: '077',
+      county: 'Whatcom',
+      countyCode: '073',
       summary: summary(1),
       records: [record],
     })));
 
     const detail = await fetchWashingtonLaunchSaleDetail(
-      'yakima-evidence-sale',
-      { ...SPOKANE_FILTERS, countyCode: '077' },
+      'whatcom-evidence-sale',
+      { ...SPOKANE_FILTERS, countyCode: '073' },
     );
 
     expect(detail).toMatchObject({
-      countyCode: '077',
+      countyCode: '073',
       dataTrustTier: 'public-reference-not-county-certified',
       sourceMode: 'public_recorder_export',
-      candidateSource: 'spokane_sales_candidate_index',
+      candidateSource: 'whatcom_sales_candidate_index',
       confidenceScore: 0.91,
       qualityScore: 0.78,
       qualityBand: 'review_required',
       reviewStatus: 'needs_source_confirmation',
       sourceUrl: 'https://example.wa.gov/sales',
       sourceFinalUrl: 'https://example.wa.gov/sales/record-1',
-      sourcePayloadPath: 'washington/spokane/record-1.json',
+      sourcePayloadPath: 'washington/whatcom/record-1.json',
       sourcePayloadSha256: 'abc123',
-      candidateIndexSource: 'spokane-public-sales-index',
+      candidateIndexSource: 'whatcom-public-sales-index',
       candidateRecordType: 'public_sale_candidate',
       candidateSourceOrdinal: 7,
     });

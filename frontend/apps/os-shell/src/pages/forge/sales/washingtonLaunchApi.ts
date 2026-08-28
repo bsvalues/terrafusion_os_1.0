@@ -1,3 +1,4 @@
+import { resolveWashingtonAssessorReferenceRoute } from '@/data/washingtonAssessorReferencePackage';
 import { getViteEnv } from '@/env/getViteEnv';
 import type {
   CodeAudit,
@@ -125,6 +126,7 @@ interface LaunchCountySalesShard {
 export interface WashingtonLaunchManifest {
   schemaVersion: string;
   generatedAt: string;
+  sourcePosture: string;
   summary: {
     counties: number;
     rawLanded: number;
@@ -178,6 +180,9 @@ function normalizeCountyCode(raw: string | null | undefined): string {
 }
 
 async function fetchJson<T>(url: string): Promise<T> {
+  const bundledPayload = resolveWashingtonAssessorReferenceRoute(url);
+  if (bundledPayload !== undefined) return bundledPayload as T;
+
   const response = await fetch(url, { cache: 'no-store' });
   if (!response.ok) {
     throw new Error(`HTTP ${response.status}: ${url}`);
