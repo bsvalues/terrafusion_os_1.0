@@ -17,8 +17,10 @@
  *   resetValuationScope: true — keep only county context and clear stale
  *                               neighborhood/stratum/segment state.
  *   launchContext: 'washington-counties-hub' with the public-reference trust
- *                  tier — use the bundled read-only Washington package for
- *                  this exact handoff without changing live-suite defaults.
+ *                  tier — preserve the handoff's explicit hosted or bundled
+ *                  package posture without changing live-suite defaults.
+ *   referencePackageSource: 'hosted' | 'repository-reference' — keep package
+ *                           selection separate from the data-content posture.
  * When stratumKey is present we also switch the active tab to "ai-audit"
  * (that panel is where stratum selection becomes visible).
  */
@@ -141,10 +143,20 @@ export default function SalesForge({ metadata }: SalesForgeProps = {}) {
   const contextSegmentLabel = useSalesForgeStore((s) => s.contextSegmentLabel);
   const committedFilters = useSalesForgeStore((s) => s.committedFilters);
   const countiesHubReferenceHandoff = isWashingtonCountiesHubHandoff(metadata);
-  const syntheticReferenceHandoff = countiesHubReferenceHandoff
+  const referencePackageSource = metadata?.referencePackageSource;
+  const repositoryReferenceHandoff = countiesHubReferenceHandoff && (
+    referencePackageSource === 'repository-reference'
+    || (
+      referencePackageSource === undefined
+      && metadata?.referenceDataPosture === 'repository_reference_demo'
+    )
+  );
+  const hostedReferenceHandoff = countiesHubReferenceHandoff
+    && referencePackageSource === 'hosted';
+  const syntheticReferenceData = countiesHubReferenceHandoff
     && metadata?.referenceDataPosture === 'repository_reference_demo';
-  const launchDataMode = isWashingtonLaunchDataEnabled()
-    || countiesHubReferenceHandoff;
+  const hostedLaunchDataMode = isWashingtonLaunchDataEnabled() || hostedReferenceHandoff;
+  const launchDataMode = hostedLaunchDataMode || repositoryReferenceHandoff;
   const handoff = parseRollupHandoff(metadata);
   const selectedCounty = WASHINGTON_COUNTIES.find((county) => county.code === committedFilters.countyCode);
   const availableTabs = launchDataMode
@@ -156,8 +168,14 @@ export default function SalesForge({ metadata }: SalesForgeProps = {}) {
     : activeTab;
 
   useLayoutEffect(() => {
-    setDataSource(launchDataMode ? 'washington-reference' : 'live-api');
-  }, [launchDataMode, setDataSource]);
+    setDataSource(
+      repositoryReferenceHandoff
+        ? 'washington-reference'
+        : hostedLaunchDataMode
+          ? 'washington-hosted'
+          : 'live-api',
+    );
+  }, [hostedLaunchDataMode, repositoryReferenceHandoff, setDataSource]);
 
   useLayoutEffect(() => {
     if (launchDataMode && activeTab !== renderedActiveTab) {
@@ -296,7 +314,7 @@ export default function SalesForge({ metadata }: SalesForgeProps = {}) {
         {launchDataMode && (
           <p className="sf-header__source-note">
             Public/reference package only — not county-certified valuation truth.
-            {syntheticReferenceHandoff
+            {syntheticReferenceData
               ? ' This workspace contains invented synthetic sales for workflow validation, not observed public sales or county records.'
               : ''}{' '}
             Review decisions stay browser-local and nonofficial; nothing is written back to a

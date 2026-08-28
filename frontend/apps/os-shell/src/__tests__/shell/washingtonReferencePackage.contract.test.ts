@@ -3,7 +3,7 @@ import {
   resolveWashingtonAssessorReferenceRoute,
   WASHINGTON_ASSESSOR_REFERENCE_PACKAGE,
   WASHINGTON_REFERENCE_ROUTES,
-} from '../../data/washingtonAssessorReferencePackage';
+} from '../../lib/washingtonAssessorReferencePackage';
 import { fetchWashingtonCountyStatus } from '../../services/washingtonCountyLaunch';
 
 interface ReferenceRoutes {
@@ -84,7 +84,10 @@ describe('Washington assessor reference package', () => {
     const fetchMock = vi.fn();
     vi.stubGlobal('fetch', fetchMock);
 
-    const counties = await fetchWashingtonCountyStatus();
+    const counties = await fetchWashingtonCountyStatus(
+      undefined,
+      'repository-reference',
+    );
 
     expect(counties).toHaveLength(1);
     expect(counties[0]).toMatchObject({ county: 'Spokane', countyCode: '063' });

@@ -53,6 +53,24 @@ describe('SalesForge request isolation', () => {
     useSalesForgeStore.getState().applyCountyStudioScope('063', null);
   });
 
+  it('keeps hosted and repository-reference launch providers explicit', async () => {
+    launchApiMocks.isEnabled.mockReturnValue(false);
+    launchApiMocks.fetchQueue.mockResolvedValue({
+      total: 0,
+      page: 1,
+      pageSize: 50,
+      items: [],
+    });
+
+    useSalesForgeStore.getState().setDataSource('washington-hosted');
+    await useSalesForgeStore.getState().fetchQueue();
+    expect(launchApiMocks.fetchQueue.mock.calls[0]?.[5]).toBe('hosted');
+
+    useSalesForgeStore.getState().setDataSource('washington-reference');
+    await useSalesForgeStore.getState().fetchQueue();
+    expect(launchApiMocks.fetchQueue.mock.calls[1]?.[5]).toBe('repository-reference');
+  });
+
   it('lets only the latest same-county queue request own data and loading state', async () => {
     const first = deferred<SaleQueuePage>();
     const second = deferred<SaleQueuePage>();

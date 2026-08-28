@@ -1,9 +1,12 @@
 import referencePackage from './washingtonAssessorReferencePackage.json';
 
+export type WashingtonReferencePackageSource = 'hosted' | 'repository-reference';
+
 /**
  * Logical route identifiers retained for compatibility with the governed
- * Washington package contract. They resolve from this tracked source module;
- * the assessor journey does not depend on ignored Vite public files or HTTP.
+ * Washington package contract. They resolve from this tracked library module;
+ * the explicit repository-reference journey does not depend on ignored Vite
+ * public files or HTTP.
  */
 export const WASHINGTON_REFERENCE_ROUTES = {
   status: '/launch-data/washington/counties/status.json',

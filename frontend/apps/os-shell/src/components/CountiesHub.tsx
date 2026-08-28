@@ -31,6 +31,7 @@ import {
   getWashingtonSalesReviewCapability,
   isWashingtonSalesReviewLaunchEnabled,
 } from '../pages/forge/sales/washingtonSalesReviewCapability';
+import { isWashingtonLaunchDataEnabled } from '../pages/forge/sales/washingtonLaunchApi';
 import {
   fetchWashingtonCountyStatus,
   type WashingtonCountyStatusEntry,
@@ -54,12 +55,15 @@ const CountiesHub = () => {
   const launchDataEnabled = isWashingtonSalesReviewLaunchEnabled({
     explicitReferenceHandoff: true,
   });
+  const countyStatusSource = isWashingtonLaunchDataEnabled()
+    ? 'hosted'
+    : 'repository-reference';
 
   const loadCounties = useCallback(async (signal?: AbortSignal) => {
     setLoading(true);
     setLoadError(null);
     try {
-      const observedCounties = await fetchWashingtonCountyStatus(signal);
+      const observedCounties = await fetchWashingtonCountyStatus(signal, countyStatusSource);
       if (signal?.aborted) return;
       setCounties(observedCounties);
       setSelectedCountyCode((current) =>
@@ -79,7 +83,7 @@ const CountiesHub = () => {
     } finally {
       if (!signal?.aborted) setLoading(false);
     }
-  }, []);
+  }, [countyStatusSource]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -126,6 +130,7 @@ const CountiesHub = () => {
           resetValuationScope: true,
           launchContext: 'washington-counties-hub',
           dataTrustTier: 'public-reference-not-county-certified',
+          referencePackageSource: countyStatusSource,
           referenceDataPosture: selectedCounty.primarySourceMode,
         },
       });
@@ -136,7 +141,7 @@ const CountiesHub = () => {
     } finally {
       setLaunching(false);
     }
-  }, [launchDataEnabled, selectedCapability, selectedCounty]);
+  }, [countyStatusSource, launchDataEnabled, selectedCapability, selectedCounty]);
 
   return (
     <Box

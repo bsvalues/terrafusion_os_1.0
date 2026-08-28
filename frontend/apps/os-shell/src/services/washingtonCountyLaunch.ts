@@ -7,8 +7,9 @@
 
 import {
   resolveWashingtonAssessorReferenceRoute,
+  type WashingtonReferencePackageSource,
   WASHINGTON_REFERENCE_ROUTES,
-} from '@/data/washingtonAssessorReferencePackage';
+} from '@/lib/washingtonAssessorReferencePackage';
 
 export const WASHINGTON_COUNTY_STATUS_PATH = WASHINGTON_REFERENCE_ROUTES.status;
 
@@ -70,9 +71,24 @@ function isWashingtonCountyStatusEntry(
 
 export async function fetchWashingtonCountyStatus(
   signal?: AbortSignal,
+  packageSource: WashingtonReferencePackageSource = 'hosted',
 ): Promise<WashingtonCountyStatusEntry[]> {
   if (signal?.aborted) return [];
-  const payload = resolveWashingtonAssessorReferenceRoute(WASHINGTON_COUNTY_STATUS_PATH);
+  let payload: unknown;
+  if (packageSource === 'repository-reference') {
+    payload = resolveWashingtonAssessorReferenceRoute(WASHINGTON_COUNTY_STATUS_PATH);
+  } else {
+    const response = await fetch(WASHINGTON_COUNTY_STATUS_PATH, {
+      cache: 'no-store',
+      signal,
+    });
+    if (!response.ok) {
+      throw new Error(
+        `Washington county status is unavailable (HTTP ${response.status}).`,
+      );
+    }
+    payload = await response.json() as unknown;
+  }
   if (
     !isRecord(payload)
     || !Array.isArray(payload.counties)

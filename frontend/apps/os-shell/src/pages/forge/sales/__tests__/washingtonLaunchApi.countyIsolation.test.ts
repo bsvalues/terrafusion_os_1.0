@@ -108,6 +108,7 @@ describe('Washington launch shard county isolation', () => {
       1,
       25,
       SPOKANE_FILTERS,
+      'repository-reference',
     );
 
     expect(queue.total).toBe(3);
@@ -117,6 +118,28 @@ describe('Washington launch shard county isolation', () => {
       dataTrustTier: 'public-reference-not-county-certified',
     });
     expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it('prefers the hosted Spokane shard when no repository source is requested', async () => {
+    const fetchMock = vi.fn(async () => Response.json(
+      countyShard('Spokane', '063', ['hosted-spokane-sale']),
+    ));
+    vi.stubGlobal('fetch', fetchMock);
+
+    const queue = await fetchWashingtonLaunchQueue(
+      2025,
+      'all',
+      1,
+      25,
+      SPOKANE_FILTERS,
+    );
+
+    expect(queue.total).toBe(1);
+    expect(queue.items[0]?.saleId).toBe('hosted-spokane-sale');
+    expect(fetchMock).toHaveBeenCalledWith(
+      '/launch-data/washington/sales/by-county/063.json',
+      { cache: 'no-store' },
+    );
   });
 
   it('rejects a shard whose declared county does not match the requested county', async () => {

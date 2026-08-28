@@ -6,6 +6,7 @@
 
 import { create } from 'zustand';
 import { getSession } from '@/auth/session';
+import type { WashingtonReferencePackageSource } from '@/lib/washingtonAssessorReferencePackage';
 import { buildCountyScopedSessionHeaders } from '@/services/countyIsolation';
 import { apiFetch } from '../../../lib/apiBase';
 import type {
@@ -53,7 +54,10 @@ function addCountyScopeParam(params: URLSearchParams, countyId: string | null): 
 
 type RequestLane = 'queue' | 'detail' | 'stats' | 'hoodStats' | 'codeAudit' | 'decision';
 
-export type SalesForgeDataSource = 'live-api' | 'washington-reference';
+export type SalesForgeDataSource =
+  | 'live-api'
+  | 'washington-hosted'
+  | 'washington-reference';
 
 const ALL_REQUEST_LANES: RequestLane[] = [
   'queue',
@@ -88,8 +92,16 @@ function requestIsStale(lane: RequestLane, generation: number): boolean {
   return requestGeneration[lane] !== generation;
 }
 
+function washingtonReferencePackageSource(
+  dataSource: SalesForgeDataSource,
+): WashingtonReferencePackageSource | null {
+  if (dataSource === 'washington-reference') return 'repository-reference';
+  if (dataSource === 'washington-hosted' || isWashingtonLaunchDataEnabled()) return 'hosted';
+  return null;
+}
+
 function usesWashingtonReferenceData(dataSource: SalesForgeDataSource): boolean {
-  return dataSource === 'washington-reference' || isWashingtonLaunchDataEnabled();
+  return washingtonReferencePackageSource(dataSource) !== null;
 }
 
 function clearedDerivedData() {
@@ -417,8 +429,16 @@ export const useSalesForgeStore = create<SalesForgeState>((set, get) => ({
     addCountyScopeParam(params, countyScope.countyId);
 
     try {
-      const data = usesWashingtonReferenceData(get().dataSource)
-        ? await fetchWashingtonLaunchQueue(taxYear, queueTab, queuePage, QUEUE_PAGE_SIZE, committedFilters)
+      const packageSource = washingtonReferencePackageSource(get().dataSource);
+      const data = packageSource
+        ? await fetchWashingtonLaunchQueue(
+            taxYear,
+            queueTab,
+            queuePage,
+            QUEUE_PAGE_SIZE,
+            committedFilters,
+            packageSource,
+          )
         : await (async () => {
             const res = await apiFetch(`/terraforge/sale-qualification?${params}`, { headers: countyScope.headers });
             if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -450,8 +470,9 @@ export const useSalesForgeStore = create<SalesForgeState>((set, get) => ({
     const countyScope = getSalesForgeCountyScope();
     set({ detailLoading: true, detailError: null });
     try {
-      const detail = usesWashingtonReferenceData(get().dataSource)
-        ? await fetchWashingtonLaunchSaleDetail(saleId, committedFilters)
+      const packageSource = washingtonReferencePackageSource(get().dataSource);
+      const detail = packageSource
+        ? await fetchWashingtonLaunchSaleDetail(saleId, committedFilters, packageSource)
         : await (async () => {
             const params = new URLSearchParams();
             addCountyScopeParam(params, countyScope.countyId);
@@ -482,8 +503,9 @@ export const useSalesForgeStore = create<SalesForgeState>((set, get) => ({
     if (committedFilters.hood)         params.set('hood',         committedFilters.hood);
     if (committedFilters.propertyType) params.set('propertyType', committedFilters.propertyType);
     try {
-      const stats = usesWashingtonReferenceData(get().dataSource)
-        ? await fetchWashingtonLaunchRunningStats(taxYear, committedFilters)
+      const packageSource = washingtonReferencePackageSource(get().dataSource);
+      const stats = packageSource
+        ? await fetchWashingtonLaunchRunningStats(taxYear, committedFilters, packageSource)
         : await (async () => {
             const res = await apiFetch(`/terraforge/sale-qualification/running-stats?${params}`, { headers: countyScope.headers });
             if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -511,8 +533,9 @@ export const useSalesForgeStore = create<SalesForgeState>((set, get) => ({
     if (committedFilters.hood)         params.set('hood',         committedFilters.hood);
     if (committedFilters.propertyType) params.set('propertyType', committedFilters.propertyType);
     try {
-      const stats = usesWashingtonReferenceData(get().dataSource)
-        ? await fetchWashingtonLaunchNeighborhoodStats(taxYear, committedFilters)
+      const packageSource = washingtonReferencePackageSource(get().dataSource);
+      const stats = packageSource
+        ? await fetchWashingtonLaunchNeighborhoodStats(taxYear, committedFilters, packageSource)
         : await (async () => {
             const res = await apiFetch(`/terraforge/sale-qualification/neighborhood-stats?${params}`, { headers: countyScope.headers });
             if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -540,8 +563,9 @@ export const useSalesForgeStore = create<SalesForgeState>((set, get) => ({
     if (committedFilters.hood) params.set('hood', committedFilters.hood);
     if (committedFilters.propertyType) params.set('propertyType', committedFilters.propertyType);
     try {
-      const audit = usesWashingtonReferenceData(get().dataSource)
-        ? await fetchWashingtonLaunchCodeAudit(taxYear, committedFilters)
+      const packageSource = washingtonReferencePackageSource(get().dataSource);
+      const audit = packageSource
+        ? await fetchWashingtonLaunchCodeAudit(taxYear, committedFilters, packageSource)
         : await (async () => {
             const res = await apiFetch(`/terraforge/sale-qualification/code-audit?${params}`, { headers: countyScope.headers });
             if (!res.ok) throw new Error(`HTTP ${res.status}`);

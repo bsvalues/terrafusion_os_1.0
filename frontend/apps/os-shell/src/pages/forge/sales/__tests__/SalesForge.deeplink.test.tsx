@@ -104,10 +104,38 @@ describe('SalesForge — County Studio deeplink consumption (Task D2)', () => {
     expect(screen.getByText(/Public\/reference package only/i)).toHaveTextContent(
       /browser-local and nonofficial/i,
     );
+    expect(screen.getByText(/Public\/reference package only/i)).not.toHaveTextContent(
+      /invented synthetic sales/i,
+    );
 
     await waitFor(() => {
       expect(useSalesForgeStore.getState().activeTab).toBe('queue');
+      expect(useSalesForgeStore.getState().dataSource).toBe('washington-hosted');
     });
+  });
+
+  it('keeps the hosted provider when a hosted feed labels its content synthetic', async () => {
+    render(
+      <SalesForge
+        metadata={{
+          countyCode: '063',
+          countyName: 'Spokane',
+          resetValuationScope: true,
+          launchContext: 'washington-counties-hub',
+          dataTrustTier: 'public-reference-not-county-certified',
+          referencePackageSource: 'hosted',
+          referenceDataPosture: 'repository_reference_demo',
+        }}
+      />
+    );
+
+    await waitFor(() => {
+      expect(useSalesForgeStore.getState().committedFilters.countyCode).toBe('063');
+      expect(useSalesForgeStore.getState().dataSource).toBe('washington-hosted');
+    });
+    expect(screen.getByText(/Public\/reference package only/i)).toHaveTextContent(
+      /invented synthetic sales/i,
+    );
   });
 
   it('consumes pre-split metadata (stratumKey / taxYear / segmentId) on mount', async () => {
@@ -200,6 +228,7 @@ describe('SalesForge — County Studio deeplink consumption (Task D2)', () => {
           resetValuationScope: true,
           launchContext: 'washington-counties-hub',
           dataTrustTier: 'public-reference-not-county-certified',
+          referencePackageSource: 'repository-reference',
           referenceDataPosture: 'repository_reference_demo',
           // Even a conflicting mixed payload must not retain valuation scope
           // when the reset contract is present.

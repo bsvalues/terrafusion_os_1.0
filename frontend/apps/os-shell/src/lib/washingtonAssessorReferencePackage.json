@@ -1,4 +1,5 @@
 {
+  "packageId": "washington-assessor-reference-demo",
   "status": {
     "schemaVersion": "terrafusion.washington.county-status.v1",
     "generatedAt": "2026-08-28T00:00:00.000Z",

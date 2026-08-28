@@ -1,4 +1,7 @@
-import { resolveWashingtonAssessorReferenceRoute } from '@/data/washingtonAssessorReferencePackage';
+import {
+  resolveWashingtonAssessorReferenceRoute,
+  type WashingtonReferencePackageSource,
+} from '@/lib/washingtonAssessorReferencePackage';
 import { getViteEnv } from '@/env/getViteEnv';
 import type {
   CodeAudit,
@@ -179,9 +182,17 @@ function normalizeCountyCode(raw: string | null | undefined): string {
   return registeredCounty.code;
 }
 
-async function fetchJson<T>(url: string): Promise<T> {
-  const bundledPayload = resolveWashingtonAssessorReferenceRoute(url);
-  if (bundledPayload !== undefined) return bundledPayload as T;
+async function fetchJson<T>(
+  url: string,
+  packageSource: WashingtonReferencePackageSource = 'hosted',
+): Promise<T> {
+  if (packageSource === 'repository-reference') {
+    const bundledPayload = resolveWashingtonAssessorReferenceRoute(url);
+    if (bundledPayload === undefined) {
+      throw new Error(`Tracked Washington reference route is unavailable: ${url}`);
+    }
+    return bundledPayload as T;
+  }
 
   const response = await fetch(url, { cache: 'no-store' });
   if (!response.ok) {
@@ -328,27 +339,39 @@ function assertCountyShard(
   });
 }
 
-async function loadCountyShard(countyCode: string): Promise<LaunchCountySalesShard> {
+async function loadCountyShard(
+  countyCode: string,
+  packageSource: WashingtonReferencePackageSource = 'hosted',
+): Promise<LaunchCountySalesShard> {
   const normalized = normalizeCountyCode(countyCode);
-  const existing = shardCache.get(normalized);
+  const cacheKey = `${packageSource}:${normalized}`;
+  const existing = shardCache.get(cacheKey);
   if (existing) return existing;
-  const promise = fetchJson<unknown>(`${BASE}/sales/by-county/${normalized}.json`).then(
+  const promise = fetchJson<unknown>(
+    `${BASE}/sales/by-county/${normalized}.json`,
+    packageSource,
+  ).then(
     (payload) => {
       assertCountyShard(payload, normalized);
       return payload;
     },
   );
-  shardCache.set(normalized, promise);
+  shardCache.set(cacheKey, promise);
   try {
     return await promise;
   } catch (error) {
-    shardCache.delete(normalized);
+    shardCache.delete(cacheKey);
     throw error;
   }
 }
 
-export async function fetchWashingtonLaunchManifest(): Promise<WashingtonLaunchManifest> {
-  manifestCache ??= fetchJson<WashingtonLaunchManifest>(`${BASE}/manifest.json`);
+export async function fetchWashingtonLaunchManifest(
+  packageSource: WashingtonReferencePackageSource = 'hosted',
+): Promise<WashingtonLaunchManifest> {
+  if (packageSource === 'repository-reference') {
+    return fetchJson<WashingtonLaunchManifest>(`${BASE}/manifest.json`, packageSource);
+  }
+  manifestCache ??= fetchJson<WashingtonLaunchManifest>(`${BASE}/manifest.json`, packageSource);
   return manifestCache;
 }
 
@@ -537,9 +560,10 @@ export async function fetchWashingtonLaunchQueue(
   page: number,
   pageSize: number,
   filters: CommittedFilters,
+  packageSource: WashingtonReferencePackageSource = 'hosted',
 ): Promise<SaleQueuePage> {
   void taxYear;
-  const shard = await loadCountyShard(filters.countyCode);
+  const shard = await loadCountyShard(filters.countyCode, packageSource);
   const filtered = shard.records.filter((sale) => matchesFilters(sale, filters)).map(toQueueItem);
   const tabbed = filterByTab(filtered, tab);
   const start = (page - 1) * pageSize;
@@ -554,8 +578,9 @@ export async function fetchWashingtonLaunchQueue(
 export async function fetchWashingtonLaunchSaleDetail(
   saleId: string,
   filters: CommittedFilters,
+  packageSource: WashingtonReferencePackageSource = 'hosted',
 ): Promise<SaleDetail> {
-  const shard = await loadCountyShard(filters.countyCode);
+  const shard = await loadCountyShard(filters.countyCode, packageSource);
   const sale = shard.records.find((record) => record.saleId === saleId);
   if (!sale) {
     throw new Error(`Sale ${saleId} not found in county ${filters.countyCode ?? '005'}`);
@@ -566,9 +591,10 @@ export async function fetchWashingtonLaunchSaleDetail(
 export async function fetchWashingtonLaunchRunningStats(
   taxYear: number,
   filters: CommittedFilters,
+  packageSource: WashingtonReferencePackageSource = 'hosted',
 ): Promise<RunningStats> {
   void taxYear;
-  const shard = await loadCountyShard(filters.countyCode);
+  const shard = await loadCountyShard(filters.countyCode, packageSource);
   const filtered = shard.records.filter((sale) => matchesFilters(sale, filters));
   const decided = getDecisionMap();
   const qualified = filtered.filter(
@@ -606,9 +632,10 @@ export async function fetchWashingtonLaunchRunningStats(
 export async function fetchWashingtonLaunchNeighborhoodStats(
   taxYear: number,
   filters: CommittedFilters,
+  packageSource: WashingtonReferencePackageSource = 'hosted',
 ): Promise<NeighborhoodStats> {
   void taxYear;
-  const shard = await loadCountyShard(filters.countyCode);
+  const shard = await loadCountyShard(filters.countyCode, packageSource);
   const groups = new Map<string, HoodStat>();
   for (const sale of shard.records.filter((record) => matchesFilters(record, filters))) {
     const hood = sale.neighborhoodCode;
@@ -641,9 +668,10 @@ export async function fetchWashingtonLaunchNeighborhoodStats(
 export async function fetchWashingtonLaunchCodeAudit(
   taxYear: number,
   filters: CommittedFilters,
+  packageSource: WashingtonReferencePackageSource = 'hosted',
 ): Promise<CodeAudit> {
   void taxYear;
-  const shard = await loadCountyShard(filters.countyCode);
+  const shard = await loadCountyShard(filters.countyCode, packageSource);
   const filtered = shard.records.filter((sale) => matchesFilters(sale, filters));
   const deedCounts = new Map<string, number>();
   const useCounts = new Map<string, number>();
@@ -670,13 +698,16 @@ export async function fetchWashingtonLaunchCodeAudit(
   };
 }
 
-export async function fetchWashingtonLaunchCompsPool(params: {
-  countyCode: string;
-  hood?: string | null;
-  propertyType?: string | null;
-  page: number;
-  pageSize: number;
-}): Promise<{
+export async function fetchWashingtonLaunchCompsPool(
+  params: {
+    countyCode: string;
+    hood?: string | null;
+    propertyType?: string | null;
+    page: number;
+    pageSize: number;
+  },
+  packageSource: WashingtonReferencePackageSource = 'hosted',
+): Promise<{
   total: number;
   page: number;
   pageSize: number;
@@ -710,7 +741,7 @@ export async function fetchWashingtonLaunchCompsPool(params: {
     minPrice: null,
     maxPrice: null,
   };
-  const shard = await loadCountyShard(filters.countyCode);
+  const shard = await loadCountyShard(filters.countyCode, packageSource);
   const filtered = shard.records
     .filter((sale) => matchesFilters(sale, filters))
     .filter((sale) => (sale.salePrice ?? 0) > 0);
