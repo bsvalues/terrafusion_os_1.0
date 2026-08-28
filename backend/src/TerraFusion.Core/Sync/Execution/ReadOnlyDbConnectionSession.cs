@@ -16,13 +16,15 @@ public sealed class ReadOnlyDbConnectionSession
 {
     public const string ContractId = "wal.external-readonly.db-connection-session.v1";
 
+    private static readonly object ExecutionDispatched = new();
+
     private readonly DbConnection _connection;
     private readonly int _resultFieldLimit;
     private readonly ReadOnlyCountySourceProfile _profile;
     private readonly ReadOnlyCountySourceExecutionProvenance _provenance;
     private readonly int _resultRowLimit;
     private readonly TimeProvider _timeProvider;
-    private int _executionStarted;
+    private object? _executionOwner;
 
     public ReadOnlyDbConnectionSession(
         DbConnection connection,
@@ -61,8 +63,9 @@ public sealed class ReadOnlyDbConnectionSession
 
     /// <summary>
     /// Creates, executes through, and disposes one command. Pre-dispatch cancellation, connection
-    /// state drift, profile drift, and request-bound failure do not consume the session. Once the
-    /// atomic execution transition succeeds, every outcome consumes it and no retry is available.
+    /// state drift, profile drift, and request-bound failure do not consume the session. A
+    /// cancellation callback and the final dispatch transition compete on the same atomic state;
+    /// once dispatch wins that transition, every outcome consumes it and no retry is available.
     /// </summary>
     public async Task<ReadOnlyCountySourceExecutionResult> ExecuteAsync(
         ReadOnlySourceReadRequest request,
@@ -84,11 +87,42 @@ public sealed class ReadOnlyDbConnectionSession
                 "The request row bound exceeds the session's configured result row limit.");
         }
 
-        cancellationToken.ThrowIfCancellationRequested();
-
-        if (Interlocked.CompareExchange(ref _executionStarted, 1, 0) != 0)
+        var claim = new DispatchClaim(this);
+        if (Interlocked.CompareExchange(ref _executionOwner, claim, null) is not null)
         {
             throw new InvalidOperationException("The supplied connection session is single-use.");
+        }
+
+        CancellationTokenRegistration cancellationRegistration;
+        try
+        {
+            cancellationRegistration = cancellationToken.UnsafeRegister(
+                static state =>
+                {
+                    var ownedClaim = (DispatchClaim)state!;
+                    ownedClaim.Session.ReleaseClaimForCancellation(ownedClaim);
+                },
+                claim);
+        }
+        catch
+        {
+            ReleaseClaimForCancellation(claim);
+            throw;
+        }
+
+        using (cancellationRegistration)
+        {
+            if (cancellationToken.IsCancellationRequested)
+            {
+                ReleaseClaimForCancellation(claim);
+                cancellationToken.ThrowIfCancellationRequested();
+            }
+
+            if (!TryFinalizeDispatch(claim))
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                throw new InvalidOperationException("The dispatch claim could not be finalized.");
+            }
         }
 
         var command = _connection.CreateCommand();
@@ -127,5 +161,33 @@ public sealed class ReadOnlyDbConnectionSession
             throw new InvalidOperationException(
                 "The supplied connection must already be exactly open before session execution.");
         }
+    }
+
+    private void ReleaseClaimForCancellation(DispatchClaim claim)
+    {
+        Interlocked.CompareExchange(
+            ref _executionOwner,
+            null,
+            claim);
+    }
+
+    private bool TryFinalizeDispatch(DispatchClaim claim)
+    {
+        return ReferenceEquals(
+            Interlocked.CompareExchange(
+                ref _executionOwner,
+                ExecutionDispatched,
+                claim),
+            claim);
+    }
+
+    private sealed class DispatchClaim
+    {
+        public DispatchClaim(ReadOnlyDbConnectionSession session)
+        {
+            Session = session;
+        }
+
+        public ReadOnlyDbConnectionSession Session { get; }
     }
 }

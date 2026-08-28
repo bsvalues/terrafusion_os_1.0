@@ -60,11 +60,13 @@ protected data is forbidden even if the local contract tests pass.
    profile, positive row and field limits within the protected ceilings, and an explicit time
    provider. It exposes only one asynchronous execution operation.
 2. Before dispatch, the session requires exact protected profile provenance, a request within its
-   configured row bound, an exactly open connection, and a non-cancelled token. Those failures do
-   not create a command or consume the session.
-3. Once dispatch begins, an atomic transition consumes the session on success, exception, or
-   cancellation. A second or concurrent call cannot create another command, and there is no retry,
-   fallback, discovery, or alternate execution path.
+   configured row bound, an exactly open connection, and a non-cancelled token. It then takes a
+   provisional atomic claim. A registered cancellation callback and final dispatch transition
+   compete on that same state: cancellation that wins releases the claim, creates no command, and
+   does not consume the session.
+3. Once the final atomic dispatch transition wins, the session is consumed on success, exception,
+   or later cancellation. A second or concurrent call cannot create another command, and there is
+   no retry, fallback, discovery, or alternate execution path.
 4. The session calls `CreateCommand` exactly once and fails closed if the returned command is null or
    is not reference-bound to the supplied connection. It never assigns a connection or attaches a
    transaction.
@@ -98,8 +100,8 @@ protected data is forbidden even if the local contract tests pass.
   ID;
 - constructor tests reject null dependencies, invalid bounds, and every connection state other than
   exactly open;
-- pre-dispatch cancellation, state drift, profile drift, and request-bound failure create no command
-  and do not consume the session;
+- pre-dispatch cancellation, including cancellation racing the provisional dispatch claim, state
+  drift, profile drift, and request-bound failure create no command and do not consume the session;
 - protected-executor composition proves exact provenance, guarded command and parameters, one
   command creation, one reader execution, bounded enumeration, deterministic observation time, and
   immutable output;

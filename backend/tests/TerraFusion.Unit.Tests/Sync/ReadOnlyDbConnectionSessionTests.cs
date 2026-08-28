@@ -196,6 +196,48 @@ public sealed class ReadOnlyDbConnectionSessionTests
     }
 
     [Fact]
+    public void Dispatch_claim_identity_blocks_foreign_release_and_stale_aba_finalization()
+    {
+        var session = CreateSession(
+            CreateConnection(CreateOrdinaryReader()),
+            CreateProfile(),
+            rowLimit: 1,
+            fieldLimit: 1);
+        var sessionType = typeof(ReadOnlyDbConnectionSession);
+        var claimType = sessionType.GetNestedType("DispatchClaim", BindingFlags.NonPublic)!;
+        var claimConstructor = claimType.GetConstructor(
+            BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
+            binder: null,
+            types: new[] { sessionType },
+            modifiers: null)!;
+        var ownerField = sessionType.GetField(
+            "_executionOwner",
+            BindingFlags.Instance | BindingFlags.NonPublic)!;
+        var release = sessionType.GetMethod(
+            "ReleaseClaimForCancellation",
+            BindingFlags.Instance | BindingFlags.NonPublic)!;
+        var finalize = sessionType.GetMethod(
+            "TryFinalizeDispatch",
+            BindingFlags.Instance | BindingFlags.NonPublic)!;
+        var claimA = claimConstructor.Invoke(new object[] { session });
+        var claimB = claimConstructor.Invoke(new object[] { session });
+
+        ownerField.SetValue(session, claimA);
+        release.Invoke(session, new[] { claimB });
+        ownerField.GetValue(session).Should().BeSameAs(claimA);
+        ((bool)finalize.Invoke(session, new[] { claimB })!).Should().BeFalse();
+        ownerField.GetValue(session).Should().BeSameAs(claimA);
+
+        release.Invoke(session, new[] { claimA });
+        ownerField.GetValue(session).Should().BeNull();
+        ownerField.SetValue(session, claimB);
+        ((bool)finalize.Invoke(session, new[] { claimA })!).Should().BeFalse();
+        ownerField.GetValue(session).Should().BeSameAs(claimB);
+        ((bool)finalize.Invoke(session, new[] { claimB })!).Should().BeTrue();
+        ownerField.GetValue(session).Should().NotBeSameAs(claimB);
+    }
+
+    [Fact]
     public async Task Session_is_single_use_after_success()
     {
         var profile = CreateProfile();
