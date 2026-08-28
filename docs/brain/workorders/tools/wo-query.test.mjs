@@ -1,6 +1,17 @@
 import assert from "node:assert/strict";
+import { execFileSync } from "node:child_process";
+import fs from "node:fs";
+import os from "node:os";
+import path from "node:path";
 import { describe, it } from "node:test";
-import { hardExclusions, parseArgs, scoreRecord, summarize, verdictFor } from "./wo-query.mjs";
+import {
+  hardExclusions,
+  parseArgs,
+  scoreRecord,
+  summarize,
+  verifiedDispatchRefs,
+  verdictFor,
+} from "./wo-query.mjs";
 
 const rules = {
   policyId: "test-policy",
@@ -176,6 +187,102 @@ describe("wo-query scoring", () => {
     const result = scoreRecord(record, rules, "R3");
     assert.equal(result.verdict, "blocked");
     assert.ok(result.hardExclusions.includes("protected-system-required"));
+  });
+
+  it("fails closed on protected-ref dispatch until the exact ref head is verified", () => {
+    const guarded = {
+      id: "WO-TEST-009-GUARDED",
+      title: "Protected-main gated work",
+      program: "Test",
+      status: "ready",
+      riskClass: "R1",
+      dependencies: [],
+      allowedSystems: [{ name: "Local fixture" }],
+      dispatchGuard: { type: "protected_ref_head", ref: "refs/remotes/origin/main" },
+    };
+    const blocked = scoreRecord(guarded, rules, "R3");
+    assert.ok(
+      blocked.hardExclusions.includes("dispatch-source-unverified:refs/remotes/origin/main"),
+    );
+    const verified = scoreRecord(guarded, rules, "R3", {
+      verifiedDispatchRefs: ["refs/remotes/origin/main"],
+    });
+    assert.equal(
+      verified.hardExclusions.includes("dispatch-source-unverified:refs/remotes/origin/main"),
+      false,
+    );
+    for (const dispatchGuard of [
+      { type: "unknown", ref: "refs/remotes/origin/main" },
+      { type: "protected_ref_head" },
+      { type: "protected_ref_head", ref: "refs/remotes/origin/dev" },
+    ]) {
+      const malformed = scoreRecord({ ...guarded, dispatchGuard }, rules, "R3", {
+        verifiedDispatchRefs: [dispatchGuard.ref],
+      });
+      assert.ok(malformed.hardExclusions.includes("invalid-dispatch-guard"));
+    }
+  });
+
+  it("verifies only a clean canonical registry at the exact protected origin/main head", () => {
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), "wo-query-dispatch-"));
+    const registryPath = "docs/brain/workorders/registry/work-order-registry.seed.json";
+    const fullRegistryPath = path.join(root, ...registryPath.split("/"));
+    const registry = {
+      records: [
+        {
+          dispatchGuard: { type: "protected_ref_head", ref: "refs/remotes/origin/main" },
+        },
+      ],
+    };
+    const runGit = (...args) =>
+      execFileSync("git", args, { cwd: root, encoding: "utf8", stdio: "pipe" });
+
+    try {
+      runGit("init", "--quiet");
+      runGit("config", "user.email", "dispatch-test@example.invalid");
+      runGit("config", "user.name", "Dispatch Test");
+      fs.mkdirSync(path.dirname(fullRegistryPath), { recursive: true });
+      fs.writeFileSync(fullRegistryPath, JSON.stringify(registry));
+      fs.writeFileSync(path.join(root, "tracked.txt"), "clean\n");
+      runGit("add", ".");
+      runGit("commit", "--quiet", "-m", "initial");
+      runGit("remote", "add", "origin", "https://github.com/bsvalues/terrafusion_os_1.0.git");
+      runGit("update-ref", "refs/remotes/origin/main", "HEAD");
+
+      assert.deepEqual(verifiedDispatchRefs(root, registry, registryPath), [
+        "refs/remotes/origin/main",
+      ]);
+      assert.deepEqual(verifiedDispatchRefs(root, registry, "untracked-registry.json"), []);
+      runGit(
+        "remote",
+        "set-url",
+        "origin",
+        "https://evilgithub.com/bsvalues/terrafusion_os_1.0.git",
+      );
+      assert.deepEqual(verifiedDispatchRefs(root, registry, registryPath), []);
+      runGit(
+        "remote",
+        "set-url",
+        "origin",
+        "https://github.com/bsvalues/terrafusion_os_1.0.git",
+      );
+
+      fs.writeFileSync(path.join(root, "untracked.txt"), "not clean\n");
+      assert.deepEqual(verifiedDispatchRefs(root, registry, registryPath), []);
+      fs.rmSync(path.join(root, "untracked.txt"));
+
+      fs.writeFileSync(path.join(root, "tracked.txt"), "dirty\n");
+      assert.deepEqual(verifiedDispatchRefs(root, registry, registryPath), []);
+      fs.writeFileSync(path.join(root, "tracked.txt"), "clean\n");
+
+      runGit("commit", "--quiet", "--allow-empty", "-m", "pr head");
+      assert.deepEqual(verifiedDispatchRefs(root, registry, registryPath), []);
+      runGit("update-ref", "-d", "refs/remotes/origin/main");
+      assert.deepEqual(verifiedDispatchRefs(root, registry, registryPath), []);
+      assert.deepEqual(verifiedDispatchRefs(path.join(root, "missing"), registry, registryPath), []);
+    } finally {
+      fs.rmSync(root, { recursive: true, force: true });
+    }
   });
 
   it("reports blocked work orders without counting terminal or active records", () => {

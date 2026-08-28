@@ -2,7 +2,8 @@
 
 | Field | Value |
 | --- | --- |
-| Status | `IMPLEMENTED_PENDING_DOTNET_VALIDATION` |
+| Status | `COMPLETE_ON_PROTECTED_MAIN` |
+| Protected merge | PR `#1491`, merge `81d7c16b0e0e6539a5ac8b6c1b5871897c596c62` |
 | Parent | `WO-WAL-003` |
 | Program | Washington Assessor Launch V1 |
 | Goal | `GOAL-WASHINGTON-ASSESSOR-LAUNCH-V1` |
@@ -91,6 +92,6 @@ read-only source credential/role where supported, and capture observed source-si
 evidence. Only that later evidence can satisfy WO-WAL-003's live no-DML requirement. This mock-only
 foundation is not authorized for live use.
 
-The implementation is complete, but the authoring environment does not expose a `dotnet` executable.
-The focused test command must pass in an SDK-equipped integration environment before this child can
-leave `IMPLEMENTED_PENDING_DOTNET_VALIDATION`.
+The implementation and focused harness are complete. The focused test command passed in the
+protected PR check suite, and PR `#1491` reached protected main as merge
+`81d7c16b0e0e6539a5ac8b6c1b5871897c596c62`.

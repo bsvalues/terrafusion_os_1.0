@@ -2,7 +2,8 @@
 
 | Field | Value |
 | --- | --- |
-| Status | `IMPLEMENTED_PENDING_REMOTE_DOTNET_VALIDATION` |
+| Status | `COMPLETE_ON_PROTECTED_MAIN` |
+| Protected merge | PR `#1490`, merge `b98bc2ccd626eb94469b07fd2a9fffdd4802590a` |
 | Program | Washington Assessor Launch V1 |
 | Parent | `WO-WAL-002` |
 | Base | `b57411aef09bae3074d99999f08e4210a20a3208` |
@@ -81,9 +82,9 @@ git status --short
 ```
 
 The implementation and focused harness are complete, including static review remediation for deeply
-read-only output and explicit boundary cases. The authoring environment does not expose a `dotnet`
-executable, so the focused test command must be rerun remotely by the integration owner before this
-child's terminal condition can be marked complete. Static diff checks remain mandatory here.
+read-only output and explicit boundary cases. The focused test command passed in the protected PR
+check suite, and PR `#1490` reached protected main as merge
+`b98bc2ccd626eb94469b07fd2a9fffdd4802590a`. Static diff checks remain mandatory for later changes.
 
 ## Continuation
 

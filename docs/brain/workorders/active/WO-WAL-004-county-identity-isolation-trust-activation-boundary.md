@@ -2,7 +2,7 @@
 
 | Field | Value |
 | --- | --- |
-| Status | `BLOCKED_ON_WAL_000` |
+| Status | `ACTIVE_EXACT_CHILD_ROUTING` |
 | Program | Washington Assessor Launch V1 |
 | Risk | R5 security/identity and county-data boundary |
 | Terminal condition | `COUNTY_AUTHORITY_TRUST_STATE_AND_CROSS_COUNTY_DENIAL_PROVEN_NO_SILENT_DEFAULT` |

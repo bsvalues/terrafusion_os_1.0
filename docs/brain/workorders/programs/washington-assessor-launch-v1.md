@@ -58,27 +58,32 @@ Current protected launch baseline after Gate C repair PR #1484: `3651e2fb6c440f6
 | --- | --- | --- |
 | `WO-WAL-000` | Canonicalize Issue #1485 mission authority and register this finite program | owner directive |
 | `WO-WAL-000A` | Register and mechanically enforce the four initial exact child reservation sets | satisfied 000; complete only on protected merge |
+| `WO-WAL-000B` | Reconcile protected A-wave completion and register the four next exact reservation sets | protected-complete 001A-004A; complete only on protected merge |
 | `WO-WAL-001` | 39-county public-baseline acquisition → normalization → landed runtime truth | 000 |
-| `WO-WAL-001A` | Deterministic 39-county source-registry ledger contract; no runtime inference | satisfied 000; bounded child of open 001 |
+| `WO-WAL-001A` | Deterministic 39-county source-registry ledger contract; no runtime inference | protected complete in PR #1489; bounded child of open 001 |
+| `WO-WAL-001B` | Deterministic public acquisition artifact receipt evidence; no landing/runtime inference | protected 001A plus protected 000B; bounded child of open 001 |
 | `WO-WAL-002` | Real governed county upload intake | 000 |
-| `WO-WAL-002A` | Strict bounded in-memory CSV stream parser harness; no upload path | satisfied 000; bounded child of open 002 |
+| `WO-WAL-002A` | Strict bounded in-memory CSV stream parser harness; no upload path | protected complete in PR #1490; bounded child of open 002 |
+| `WO-WAL-002B` | Declared CSV intake envelope and deterministic content evidence; no authority/persistence | protected 002A plus protected 000B; bounded child of open 002 |
 | `WO-WAL-003` | Read-only multi-county TerraFusion Sync with explicit source profiles | 000 |
-| `WO-WAL-003A` | Mock-only source-profile/read-adapter contract and static command guard | satisfied 000; bounded child of open 003 |
+| `WO-WAL-003A` | Mock-only source-profile/read-adapter contract and static command guard | protected complete in PR #1491; bounded child of open 003 |
+| `WO-WAL-003B` | Bounded mock-adapter read execution and immutable result envelope | protected 003A plus protected 000B; bounded child of open 003 |
 | `WO-WAL-004` | County identity, isolation, trust states, activation boundary, no Benton fallback | 000; overlaps 001-003 |
-| `WO-WAL-004A` | Canonical 39-county identity and conflicting authenticated-claim denial foundation | satisfied 000; bounded child of open 004 |
+| `WO-WAL-004A` | Canonical 39-county identity and conflicting authenticated-claim denial foundation | protected complete in PR #1488; bounded child of open 004 |
+| `WO-WAL-004B` | Pure county data-mode visibility and same-county authority boundary | protected 004A plus protected 000B; bounded child of open 004 |
 | `WO-WAL-005` | Real `/counties` Counties HUB driven by control-plane truth | 001-004 contracts stable |
 | `WO-WAL-006` | TerraForge statewide launch runtime with data-capability truth | 001-004 contracts stable; overlaps 005 |
 | `WO-WAL-007` | 39-county browser/API/adversarial launch proof | 001-006 |
 | `WO-WAL-008` | Exact production release + external assessor acceptance | 007 |
 | `WO-WAL-009` | Terminal closeout, exact identities, `COMPLETED_AND_CONSUMED` | 008 |
 
-After `WO-WAL-000` and protected completion of `WO-WAL-000A`, the exact initial executable set is
-001A/002A/003A/004A. The broad
-001/002/003/004 parents remain open and route through exact children rather than being dispatched as
-monoliths. Completion of any A child does not complete its parent or satisfy the stable-contract
+The exact A wave 001A/002A/003A/004A is protected-complete. After protected completion of
+`WO-WAL-000B`, the exact next executable set is 001B/002B/003B/004B. The broad 001/002/003/004
+parents remain open and route through exact children rather than being dispatched as monoliths.
+Completion of an A or B child does not complete its parent or satisfy the stable-contract
 dependencies of 005/006.
 
-## Initial exact construction wave
+## Exact construction waves
 
 | Child | Risk | Exact contracts | Local deterministic environment | Key denial |
 | --- | --- | --- | --- | --- |
@@ -86,6 +91,10 @@ dependencies of 005/006.
 | `WO-WAL-002A` | R2 | `wal.county-upload.csv-parser.v1` | `local-memory-stream-only`; disposable streams | No upload/auth/county binding, persistence, provenance, quarantine, promotion, rollback or unsupported formats |
 | `WO-WAL-003A` | R3 | `wal.source-profile.v1`; `wal.external-readonly.v1` | `mock-source-only`; strings/reflection only | No connection, credentials, DML/DDL/write-back, production registration or live no-DML claim |
 | `WO-WAL-004A` | R5 | `wal.county-identity.v1`; `wal.county-authority.v1` | `wal004a-local-in-memory`; synthetic rows/claims | No schema/migration, route/controller integration, trust/activation state, frontend authority or default county |
+| `WO-WAL-001B` | R2 | `wal.public-acquisition-artifact-receipt.v1` | `local-memory-artifact-fixture-only` | No network, filesystem output, persistence, landed/runtime inference or activation |
+| `WO-WAL-002B` | R3 | `wal.county-upload.csv-envelope.v1` | `local-memory-csv-envelope-only` | No authentication, county binding, API, persistence, quarantine, promotion, rollback or UI |
+| `WO-WAL-003B` | R3 | `wal.external-readonly.execution-envelope.v1` | `mock-read-executor-only` | No live source, credential, DI registration, persistence or source-side no-DML claim |
+| `WO-WAL-004B` | R5 | `wal.county-data-authority-boundary.v1` | `local-memory-authority-predicate-only` | No raw claims, integration, persistence, activation inference, adoption or default county |
 
 The exact path allowlists, machine-readable contract/environment reservations, and validation gates are canonical in
 `docs/brain/workorders/registry/work-order-registry.seed.json` and the corresponding child Work Order

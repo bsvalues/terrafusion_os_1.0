@@ -2,7 +2,7 @@
 
 | Field | Value |
 | --- | --- |
-| Status | `BLOCKED_ON_WAL_000` |
+| Status | `ACTIVE_EXACT_CHILD_ROUTING` |
 | Program | Washington Assessor Launch V1 |
 | Risk | R4 bounded public-data acquisition/runtime implementation |
 | Terminal condition | `ALL_39_COUNTIES_HAVE_TRUTHFUL_RUNTIME_PUBLIC_BASELINE_OR_EXPLICIT_SOURCE_GAP_WITH_NO_BENTON_FALLBACK` |

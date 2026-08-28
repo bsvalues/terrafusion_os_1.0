@@ -2,7 +2,8 @@
 
 | Field | Value |
 | --- | --- |
-| Status | `ACTIVE` |
+| Status | `COMPLETE_ON_PROTECTED_MAIN` |
+| Protected merge | PR `#1489`, merge `b4b57e7c318fe9beb3c7b37eafafa4d84fbd199e` |
 | Parent | `WO-WAL-001` |
 | Program | Washington Assessor Launch V1 |
 | Base | `0aba8ff60d09f526b6aa0a8aaf85fd4fc7957778` |

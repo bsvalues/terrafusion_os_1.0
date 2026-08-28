@@ -2,7 +2,7 @@
 
 | Field | Value |
 | --- | --- |
-| Status | `BLOCKED_ON_WAL_000` |
+| Status | `ACTIVE_EXACT_CHILD_ROUTING` |
 | Program | Washington Assessor Launch V1 |
 | Risk | R5 protected read-only external integration and county credentials/data; no external writes |
 | Terminal condition | `MULTICOUNTY_SYNC_SOURCE_PROFILES_READ_ONLY_LINEAGE_PROVEN_NO_EXTERNAL_DML` |
