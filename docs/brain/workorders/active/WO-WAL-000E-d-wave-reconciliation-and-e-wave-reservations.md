@@ -63,8 +63,10 @@ Order's merge commit. Until then every E child remains non-executable.
 - Dependency: protected-complete `WO-WAL-002D` plus the protected `WO-WAL-000E` barrier.
 - Terminal: `CSV_IDEMPOTENCY_FIRST_SEEN_DUPLICATE_DECISION_FAIL_CLOSED_PROVEN`.
 - Boundary: decide first-seen versus duplicate from bounded caller-supplied in-memory idempotency
-  evidence; no durable store, reservation, lock, upload transport, authentication, persistence,
-  quarantine, promotion, rollback, protected data, or production.
+  evidence. Only a private bounded in-process synchronization primitive necessary for linearizable
+  local-memory classification is permitted. Durable or external reservations, distributed or
+  external locks, durable state, upload transport, authentication, persistence, quarantine,
+  promotion, rollback, protected data, and production remain denied.
 
 ### WO-WAL-004E — Authenticated Canonical County Context
 
