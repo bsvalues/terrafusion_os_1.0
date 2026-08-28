@@ -176,11 +176,12 @@ public sealed class CountyCsvIntakeEnvelope
 
     private static void RejectForbiddenSignature(ReadOnlySpan<byte> content)
     {
-        var signatureView = content.StartsWith([0xEF, 0xBB, 0xBF])
+        var signatureView = content.StartsWith(new byte[] { 0xEF, 0xBB, 0xBF })
             ? content[3..]
             : content;
 
-        if (signatureView.StartsWith([0xFF, 0xFE]) || signatureView.StartsWith([0xFE, 0xFF]))
+        if (signatureView.StartsWith(new byte[] { 0xFF, 0xFE })
+            || signatureView.StartsWith(new byte[] { 0xFE, 0xFF }))
         {
             throw new CountyCsvIntakeException(
                 CountyCsvIntakeErrorCode.ContainerSignatureMismatch,
