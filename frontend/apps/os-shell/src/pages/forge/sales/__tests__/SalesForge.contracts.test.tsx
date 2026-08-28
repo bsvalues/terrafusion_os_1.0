@@ -170,9 +170,9 @@ describe('SalesForge contract posture', () => {
     expect(evidence.querySelectorAll('.sf-null-flag')).not.toHaveLength(0);
     expect(screen.getByText(/Reference evidence only/i)).toBeInTheDocument();
 
-    const decisionButton = screen.getByRole('button', { name: /^Qualified$/i });
+    const decisionControl = screen.getByRole('textbox', { name: 'Research notes' });
     expect(
-      evidence.compareDocumentPosition(decisionButton) & Node.DOCUMENT_POSITION_FOLLOWING,
+      evidence.compareDocumentPosition(decisionControl) & Node.DOCUMENT_POSITION_FOLLOWING,
     ).toBeTruthy();
     expect(evidence.querySelector('a')).toBeNull();
   });
