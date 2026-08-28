@@ -586,12 +586,9 @@ export async function fetchWashingtonLaunchRunningStats(
       prd: null,
       prb: null,
     },
-    iaaoCompliant: {
-      median: false,
-      cod: false,
-      prd: false,
-      prb: false,
-    },
+    // The public package has no ratio observations, so compliance was not
+    // calculated. Null preserves "unknown" instead of reporting four failures.
+    iaaoCompliant: null,
   };
 }
 

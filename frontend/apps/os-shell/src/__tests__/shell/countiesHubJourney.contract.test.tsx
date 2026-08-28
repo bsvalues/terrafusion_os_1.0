@@ -10,11 +10,13 @@ import type { WashingtonCountyStatusEntry } from '../../services/washingtonCount
 const {
   activateModuleMock,
   fetchWashingtonCountyStatusMock,
-  isWashingtonLaunchDataEnabledMock,
+  getWashingtonSalesReviewCapabilityMock,
+  isWashingtonSalesReviewLaunchEnabledMock,
 } = vi.hoisted(() => ({
   activateModuleMock: vi.fn(),
   fetchWashingtonCountyStatusMock: vi.fn(),
-  isWashingtonLaunchDataEnabledMock: vi.fn(),
+  getWashingtonSalesReviewCapabilityMock: vi.fn(),
+  isWashingtonSalesReviewLaunchEnabledMock: vi.fn(),
 }));
 
 vi.mock('../../orchestration/moduleActivation', () => ({
@@ -25,12 +27,9 @@ vi.mock('../../services/washingtonCountyLaunch', () => ({
   fetchWashingtonCountyStatus: fetchWashingtonCountyStatusMock,
 }));
 
-vi.mock('../../pages/forge/sales/washingtonLaunchApi', () => ({
-  isWashingtonLaunchDataEnabled: isWashingtonLaunchDataEnabledMock,
-  WASHINGTON_COUNTIES: [
-    { code: '001', name: 'Adams' },
-    { code: '063', name: 'Spokane' },
-  ],
+vi.mock('../../pages/forge/sales/washingtonSalesReviewCapability', () => ({
+  getWashingtonSalesReviewCapability: getWashingtonSalesReviewCapabilityMock,
+  isWashingtonSalesReviewLaunchEnabled: isWashingtonSalesReviewLaunchEnabledMock,
 }));
 
 import CountiesHub from '../../components/CountiesHub';
@@ -66,7 +65,13 @@ describe('Washington Counties Hub assessor journey', () => {
   beforeEach(() => {
     activateModuleMock.mockReset().mockResolvedValue(undefined);
     fetchWashingtonCountyStatusMock.mockReset().mockResolvedValue([countyStatus()]);
-    isWashingtonLaunchDataEnabledMock.mockReset().mockReturnValue(true);
+    getWashingtonSalesReviewCapabilityMock.mockReset().mockReturnValue({
+      eligible: true,
+      status: 'available',
+      statusLabel: 'Sales review available',
+      unavailableMessage: null,
+    });
+    isWashingtonSalesReviewLaunchEnabledMock.mockReset().mockReturnValue(true);
   });
 
   it('selects an observed county and opens TerraForge with an exact county-only handoff', async () => {
@@ -85,6 +90,9 @@ describe('Washington Counties Hub assessor journey', () => {
     fireEvent.click(spokaneOption);
 
     expect(spokaneOption).toHaveAttribute('aria-selected', 'true');
+    expect(getWashingtonSalesReviewCapabilityMock).toHaveBeenCalledWith(
+      expect.objectContaining({ county: 'Spokane', countyCode: '063' }),
+    );
     expect(screen.getByTestId('selected-county-context')).toHaveTextContent(
       'Selected navigation context',
     );
@@ -109,6 +117,14 @@ describe('Washington Counties Hub assessor journey', () => {
   });
 
   it('keeps TerraForge disabled when the selected county has no governed sales shard', async () => {
+    getWashingtonSalesReviewCapabilityMock.mockReturnValue({
+      eligible: false,
+      status: 'no-staged-sales',
+      statusLabel: 'Source gap',
+      unavailableMessage:
+        'No governed staged sales are available for this county. '
+        + 'TerraForge remains disabled instead of falling back to another county.',
+    });
     fetchWashingtonCountyStatusMock.mockResolvedValue([
       countyStatus({
         county: 'Adams',
@@ -132,6 +148,14 @@ describe('Washington Counties Hub assessor journey', () => {
   });
 
   it('rejects a mismatched observed county name and code instead of guessing scope', async () => {
+    getWashingtonSalesReviewCapabilityMock.mockReturnValue({
+      eligible: false,
+      status: 'county-context-invalid',
+      statusLabel: 'Registry mismatch',
+      unavailableMessage:
+        'The observed county name and code do not match the Washington registry. '
+        + 'TerraForge remains disabled instead of guessing a county context.',
+    });
     fetchWashingtonCountyStatusMock.mockResolvedValue([
       countyStatus({ county: 'Adams', countyCode: '063' }),
     ]);
@@ -148,7 +172,7 @@ describe('Washington Counties Hub assessor journey', () => {
   });
 
   it('keeps the launch disabled outside the hosted public-package mode', async () => {
-    isWashingtonLaunchDataEnabledMock.mockReturnValue(false);
+    isWashingtonSalesReviewLaunchEnabledMock.mockReturnValue(false);
 
     render(<CountiesHub />);
     fireEvent.click(await screen.findByRole('option', { name: 'Select Spokane County' }));

@@ -6,6 +6,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { CommittedFilters } from '../salesForgeTypes';
 import {
   fetchWashingtonLaunchQueue,
+  fetchWashingtonLaunchRunningStats,
   patchWashingtonLaunchDecision,
 } from '../washingtonLaunchApi';
 
@@ -177,5 +178,9 @@ describe('Washington launch shard county isolation', () => {
 
     expect(spokane.items[0]?.qualificationDecision).toBe('qualified');
     expect(benton.items[0]?.qualificationDecision).toBeNull();
+
+    const stats = await fetchWashingtonLaunchRunningStats(2025, SPOKANE_FILTERS);
+    expect(stats.counts.withRatio).toBe(0);
+    expect(stats.iaaoCompliant).toBeNull();
   });
 });

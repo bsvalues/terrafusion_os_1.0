@@ -28,9 +28,9 @@ import {
 } from '@mui/icons-material';
 import activateModule from '../orchestration/moduleActivation';
 import {
-  isWashingtonLaunchDataEnabled,
-  WASHINGTON_COUNTIES,
-} from '../pages/forge/sales/washingtonLaunchApi';
+  getWashingtonSalesReviewCapability,
+  isWashingtonSalesReviewLaunchEnabled,
+} from '../pages/forge/sales/washingtonSalesReviewCapability';
 import {
   fetchWashingtonCountyStatus,
   type WashingtonCountyStatusEntry,
@@ -43,19 +43,6 @@ function formatStatus(value: string | null | undefined): string {
   return value.replaceAll('_', ' ');
 }
 
-function isRegisteredWashingtonCounty(county: WashingtonCountyStatusEntry): boolean {
-  const observedName = county.county.replace(/\s+county$/i, '').trim().toLowerCase();
-  return WASHINGTON_COUNTIES.some(
-    (entry) => entry.code === county.countyCode && entry.name.toLowerCase() === observedName,
-  );
-}
-
-function hasSalesReviewCapability(county: WashingtonCountyStatusEntry): boolean {
-  return isRegisteredWashingtonCounty(county)
-    && county.stagedSales > 0
-    && Boolean(county.staticRoutes.salesShard);
-}
-
 const CountiesHub = () => {
   const [counties, setCounties] = useState<WashingtonCountyStatusEntry[]>([]);
   const [selectedCountyCode, setSelectedCountyCode] = useState<string | null>(null);
@@ -64,7 +51,7 @@ const CountiesHub = () => {
   const [loadError, setLoadError] = useState<string | null>(null);
   const [launching, setLaunching] = useState(false);
   const [launchError, setLaunchError] = useState<string | null>(null);
-  const launchDataEnabled = isWashingtonLaunchDataEnabled();
+  const launchDataEnabled = isWashingtonSalesReviewLaunchEnabled();
 
   const loadCounties = useCallback(async (signal?: AbortSignal) => {
     setLoading(true);
@@ -102,6 +89,10 @@ const CountiesHub = () => {
     () => counties.find((county) => county.countyCode === selectedCountyCode) ?? null,
     [counties, selectedCountyCode],
   );
+  const selectedCapability = useMemo(
+    () => selectedCounty ? getWashingtonSalesReviewCapability(selectedCounty) : null,
+    [selectedCounty],
+  );
 
   const filteredCounties = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase();
@@ -114,7 +105,7 @@ const CountiesHub = () => {
   }, [counties, query]);
 
   const launchSelectedCounty = useCallback(async () => {
-    if (!selectedCounty || !hasSalesReviewCapability(selectedCounty) || !launchDataEnabled) {
+    if (!selectedCounty || !selectedCapability?.eligible || !launchDataEnabled) {
       return;
     }
 
@@ -138,7 +129,7 @@ const CountiesHub = () => {
     } finally {
       setLaunching(false);
     }
-  }, [launchDataEnabled, selectedCounty]);
+  }, [launchDataEnabled, selectedCapability, selectedCounty]);
 
   return (
     <Box
@@ -260,7 +251,7 @@ const CountiesHub = () => {
                         disabled={
                           launching
                           || !launchDataEnabled
-                          || !hasSalesReviewCapability(selectedCounty)
+                          || !selectedCapability?.eligible
                         }
                         onClick={() => void launchSelectedCounty()}
                       >
@@ -295,17 +286,9 @@ const CountiesHub = () => {
                         TerraForge cannot safely use this navigation context here.
                       </Alert>
                     )}
-                    {!isRegisteredWashingtonCounty(selectedCounty) && (
+                    {!selectedCapability?.eligible && selectedCapability?.unavailableMessage && (
                       <Alert severity='warning'>
-                        The observed county name and code do not match the Washington registry.
-                        TerraForge remains disabled instead of guessing a county context.
-                      </Alert>
-                    )}
-                    {isRegisteredWashingtonCounty(selectedCounty)
-                      && !hasSalesReviewCapability(selectedCounty) && (
-                      <Alert severity='warning'>
-                        No governed staged sales are available for this county. TerraForge remains
-                        disabled instead of falling back to another county.
+                        {selectedCapability.unavailableMessage}
                       </Alert>
                     )}
                     {launchError && <Alert severity='error'>{launchError}</Alert>}
@@ -324,8 +307,7 @@ const CountiesHub = () => {
             >
               {filteredCounties.map((county) => {
                 const selected = county.countyCode === selectedCountyCode;
-                const registryMatched = isRegisteredWashingtonCounty(county);
-                const salesAvailable = hasSalesReviewCapability(county);
+                const capability = getWashingtonSalesReviewCapability(county);
                 return (
                   <Grid item xs={12} sm={6} lg={4} key={county.countyCode}>
                     <Card
@@ -357,14 +339,8 @@ const CountiesHub = () => {
                               </Box>
                               <Chip
                                 size='small'
-                                color={salesAvailable ? 'success' : 'default'}
-                                label={
-                                  salesAvailable
-                                    ? 'Sales review available'
-                                    : registryMatched
-                                      ? 'Source gap'
-                                      : 'Registry mismatch'
-                                }
+                                color={capability.eligible ? 'success' : 'default'}
+                                label={capability.statusLabel}
                               />
                             </Stack>
                             <Typography variant='body2' color='text.secondary'>
