@@ -126,6 +126,7 @@ export interface DesktopState {
   maximizeWindow: (windowId: string) => void;
   restoreWindow: (windowId: string) => void;
   focusWindow: (windowId: string) => void;
+  replaceWindowMetadata: (windowId: string, metadata: Record<string, any>) => void;
   updateWindowPosition: (windowId: string, position: Position) => void;
   updateWindowSize: (windowId: string, size: Size) => void;
 
@@ -789,6 +790,23 @@ export const useDesktopStore = create<DesktopState>()(
         });
       },
 
+      replaceWindowMetadata: (windowId: string, metadata: Record<string, any>) => {
+        const { windows } = get();
+        set({
+          windows: windows.map((window) =>
+            window.id === windowId
+              ? {
+                  ...window,
+                  // Activation metadata is a complete navigation-context
+                  // snapshot. Retaining omitted fields can mix county scopes
+                  // when a singleton window is launched again.
+                  metadata: { ...metadata },
+                }
+              : window,
+          ),
+        });
+      },
+
       updateWindowPosition: (windowId: string, position: Position) => {
         const { windows } = get();
 
@@ -1061,6 +1079,7 @@ export const useWindowActions = () =>
     maximizeWindow: state.maximizeWindow,
     restoreWindow: state.restoreWindow,
     focusWindow: state.focusWindow,
+    replaceWindowMetadata: state.replaceWindowMetadata,
     updateWindowPosition: state.updateWindowPosition,
     updateWindowSize: state.updateWindowSize,
   }));

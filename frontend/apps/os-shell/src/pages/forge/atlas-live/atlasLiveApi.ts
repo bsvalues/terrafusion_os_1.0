@@ -4,6 +4,13 @@ import {
   type NbhdOutlineCollection,
   type ParcelTileCollection,
 } from '../geo/v2/v2Api';
+import {
+  fetchWashingtonCountyStatus,
+  type WashingtonCountyStatusEntry,
+} from '@/services/washingtonCountyLaunch';
+
+export { fetchWashingtonCountyStatus } from '@/services/washingtonCountyLaunch';
+export type { WashingtonCountyStatusEntry } from '@/services/washingtonCountyLaunch';
 
 const BENTON_COUNTY_ID = '19190019-1919-1919-1919-191919191919';
 export const ATLAS_COUNTY_LAUNCH_CONTEXT_CONTRACT_ID = 'county_data_trust_launch_context_v1';
@@ -15,32 +22,6 @@ export type CountyDataTrustTier =
   | 'converted_legacy_sensitive'
   | 'reference_demo'
   | 'unknown';
-
-export interface WashingtonCountyStatusEntry {
-  county: string;
-  countyCode: string;
-  priority: string;
-  prometheusStatus: string;
-  primarySourceMode: string;
-  latestSaleDate: string | null;
-  candidateSales: number;
-  stagedSales: number;
-  needsReview: number;
-  confidence: {
-    averageQualityScore: number;
-    parserStatus: string;
-    rawStatus: string;
-    rawDriftDetected: boolean;
-  };
-  staticRoutes: {
-    detail: string;
-    salesShard: string;
-  };
-}
-
-interface WashingtonCountyStatusFile {
-  counties: WashingtonCountyStatusEntry[];
-}
 
 interface WashingtonCountyDetailFile {
   county: string;
@@ -156,14 +137,6 @@ async function fetchLaunchJson<T>(path: string, signal?: AbortSignal): Promise<T
     throw new Error(`[AtlasLive] ${response.status} ${response.statusText} for ${path}`);
   }
   return response.json() as Promise<T>;
-}
-
-export async function fetchWashingtonCountyStatus(signal?: AbortSignal): Promise<WashingtonCountyStatusEntry[]> {
-  const status = await fetchLaunchJson<WashingtonCountyStatusFile>(
-    '/launch-data/washington/counties/status.json',
-    signal,
-  );
-  return status.counties;
 }
 
 export async function fetchAtlasCountyContext(

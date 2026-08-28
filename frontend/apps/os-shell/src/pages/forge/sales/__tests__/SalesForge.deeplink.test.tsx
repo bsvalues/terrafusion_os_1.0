@@ -11,9 +11,10 @@
 
 import React from 'react';
 import { render, screen, fireEvent, act, waitFor } from '@testing-library/react';
-import { vi } from 'vitest';
+import { afterEach, vi } from 'vitest';
 import SalesForge from '../SalesForge';
 import { useSalesForgeStore } from '../salesForgeStore';
+import { SALESFORGE_TAX_YEAR } from '../salesForgeTypes';
 
 // Mock activateModule so chip-click is observable without the full shell.
 const activateModuleMock = vi.hoisted(() => vi.fn());
@@ -56,14 +57,20 @@ function resetStore() {
     s.setSelectedStratumKey(null);
     s.setTaxYear(2026);
     s.setContextSegment(null);
+    s.applyCountyStudioScope('005', null);
     s.clearFilters();
   });
 }
 
 describe('SalesForge — County Studio deeplink consumption (Task D2)', () => {
   beforeEach(() => {
+    window.history.replaceState({}, '', '/');
     activateModuleMock.mockReset();
     resetStore();
+  });
+
+  afterEach(() => {
+    window.history.replaceState({}, '', '/');
   });
 
   it('does not touch store state when no metadata is provided', () => {
@@ -75,6 +82,31 @@ describe('SalesForge — County Studio deeplink consumption (Task D2)', () => {
     expect(s.activeTab).toBe('queue');
     // No scoped-from chip when there's no segment context.
     expect(screen.queryByTestId('sf-scoped-from-chip')).not.toBeInTheDocument();
+  });
+
+  it('keeps public-package mode on package-backed tabs and forces stale live state to Queue', async () => {
+    window.history.replaceState({}, '', '/?wa-launch-data=1');
+    act(() => {
+      useSalesForgeStore.getState().setActiveTab('ai-audit');
+    });
+
+    render(<SalesForge />);
+
+    expect(screen.getByRole('tab', { name: 'Queue' })).toHaveAttribute('aria-selected', 'true');
+    expect(screen.getByRole('tab', { name: 'Neighborhoods' })).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: 'Code Audit' })).toBeInTheDocument();
+    expect(screen.queryByRole('tab', { name: 'AI Audit' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('tab', { name: 'Ratio Audit' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('tab', { name: 'DOR Export' })).not.toBeInTheDocument();
+    expect(await screen.findByTestId('stub-queue')).toBeInTheDocument();
+    expect(screen.queryByTestId('stub-ai-audit')).not.toBeInTheDocument();
+    expect(screen.getByText(/Public\/reference package only/i)).toHaveTextContent(
+      /browser-local and nonofficial/i,
+    );
+
+    await waitFor(() => {
+      expect(useSalesForgeStore.getState().activeTab).toBe('queue');
+    });
   });
 
   it('consumes pre-split metadata (stratumKey / taxYear / segmentId) on mount', async () => {
@@ -147,6 +179,52 @@ describe('SalesForge — County Studio deeplink consumption (Task D2)', () => {
     expect(
       screen.getByText(/counties track reval area and neighborhood before parcel-level action/i),
     ).toBeInTheDocument();
+  });
+
+  it('resets prior valuation scope when the Counties Hub selects a different county', async () => {
+    act(() => {
+      const s = useSalesForgeStore.getState();
+      s.applyCountyStudioScope('005', 'OLD-BENTON-HOOD');
+      s.setSelectedStratumKey('R1');
+      s.setContextSegment('old-benton-segment', 'Old Benton segment');
+      s.setActiveTab('ai-audit');
+      s.setTaxYear(2022);
+    });
+
+    render(
+      <SalesForge
+        metadata={{
+          countyCode: '063',
+          countyName: 'Spokane',
+          resetValuationScope: true,
+          // Even a conflicting mixed payload must not retain valuation scope
+          // when the reset contract is present.
+          rollupScope: 'neighborhood',
+          neighborhoodCode: 'OLD-BENTON-HOOD',
+          neighborhoodName: 'Old Benton neighborhood',
+          stratumKey: 'R1',
+          segmentId: 'old-benton-segment',
+          segmentLabel: 'Old Benton segment',
+          taxYear: null,
+        }}
+      />
+    );
+
+    await waitFor(() => {
+      const s = useSalesForgeStore.getState();
+      expect(s.committedFilters.countyCode).toBe('063');
+      expect(s.committedFilters.hood).toBeNull();
+      expect(s.filterForm.hood).toBe('');
+      expect(s.selectedStratumKey).toBeNull();
+      expect(s.contextSegmentId).toBeNull();
+      expect(s.contextSegmentLabel).toBeNull();
+      expect(s.activeTab).toBe('queue');
+      expect(s.taxYear).toBe(SALESFORGE_TAX_YEAR);
+    });
+
+    expect(screen.getByText('Spokane County')).toBeInTheDocument();
+    expect(screen.queryByTestId('sf-scoped-from-chip')).not.toBeInTheDocument();
+    expect(screen.queryByText(/Old Benton neighborhood/)).not.toBeInTheDocument();
   });
 
   it('keeps city overview handoffs honest and county-scoped', async () => {

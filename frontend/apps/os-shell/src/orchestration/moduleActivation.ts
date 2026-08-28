@@ -78,9 +78,10 @@ export interface ActivateModuleOptions {
  */
 function findExistingWindow(moduleId: string): string | null {
   const { windows } = useDesktopStore.getState();
-  const existingWindow = windows.find(
-    (w) => w.moduleId === moduleId && w.state !== 'minimized'
-  );
+  // Minimized windows are still live singletons. Returning them lets the
+  // activation path refresh navigation metadata before focusWindow restores
+  // the window, rather than falling through to openWindow's dedupe path.
+  const existingWindow = windows.find((w) => w.moduleId === moduleId);
   return existingWindow?.id ?? null;
 }
 
@@ -123,6 +124,7 @@ function getModuleDisplayName(moduleId: string): string {
     'os-trace': 'TerraTrace',
     'os-canon': 'TerraCanon',
     'os-localops': 'TerraFusion LocalOps',
+    'sales-forge': 'SalesForge',
     // Application Constellation (Gen2 catalog)
     'income-valuation': 'Income Valuation',
     'income-forge': 'IncomeForge',
@@ -241,6 +243,7 @@ function getModuleIcon(moduleId: string): string {
     'atlas-live-view': '🗺',
     // CUForge — Current Use Program
     'cuforge': '🌾',
+    'sales-forge': '📊',
   };
 
   return icons[moduleId] ?? '📦';
@@ -340,6 +343,11 @@ export async function activateModule(
 
   if (existingWindowId) {
     // Window already open
+    if (metadata) {
+      // Deep-link/context launches must replace the singleton's navigation
+      // snapshot before focus. Merging can silently retain stale county scope.
+      useDesktopStore.getState().replaceWindowMetadata(existingWindowId, metadata);
+    }
     if (focusIfOpen) {
       // Focus existing window
       useDesktopStore.getState().focusWindow(existingWindowId);
@@ -349,6 +357,7 @@ export async function activateModule(
         moduleId: canonicalId,
         source,
         windowId: existingWindowId,
+        metadata,
       });
     }
     
