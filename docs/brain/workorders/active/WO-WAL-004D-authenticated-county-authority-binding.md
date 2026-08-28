@@ -2,7 +2,7 @@
 
 | Field | Value |
 | --- | --- |
-| Status | `IMPLEMENTED_PENDING_PROTECTED_MERGE` |
+| Status | `PROTECTED_COMPLETE` |
 | Parent | `WO-WAL-004` |
 | Program | Washington Assessor Launch V1 |
 | Base | `f21cfa6f61db0bac7d5da643c948991a14f459fd` |
@@ -10,6 +10,7 @@
 | Contract | `wal.authenticated-county-authority-binding.v1` |
 | Environment | `local-auth-context-resolver-fixture-only` |
 | Terminal condition | `AUTHENTICATED_CONTEXT_CANONICAL_COUNTY_BINDING_FAIL_CLOSED_PROVEN` |
+| Protected completion | PR `#1503`, merge `d7f22442e95d91effea79c14667a9b2b00094f8d`; reviewed/integrated head `a4fd7d86594bd597f9839fe108051bbdabb09e3c` |
 
 ## Objective
 
@@ -68,7 +69,11 @@ dependencies, and absence of grant/integration operations.
 
 ## Completion boundary
 
-Completion requires the exact reviewed implementation head to reach protected `main` through a PR
-with every required check green and no unresolved review thread. Even then only this binding child
-is complete. `WO-WAL-004` remains open for trust/activation integration and adversarial cross-surface
-isolation; `WO-WAL-005` and `WO-WAL-006` remain blocked on stable completed parent contracts.
+Protected PR `#1503` completed this child as merge
+`d7f22442e95d91effea79c14667a9b2b00094f8d` from reviewed and integrated head
+`a4fd7d86594bd597f9839fe108051bbdabb09e3c`. Only this binding child is complete. `WO-WAL-004`
+remains open for trust/activation integration and adversarial cross-surface isolation;
+`WO-WAL-005` and `WO-WAL-006` remain blocked. The next exact child is registered only through
+protected [`WO-WAL-000E`](WO-WAL-000E-d-wave-reconciliation-and-e-wave-reservations.md).
+Its `local-auth-context-canonical-registry-fixture-only` identifier deliberately reserves only the
+canonical registry fixture, never live county data or a county resource.

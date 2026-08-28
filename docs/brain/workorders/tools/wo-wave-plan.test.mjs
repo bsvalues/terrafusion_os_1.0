@@ -618,7 +618,7 @@ describe('wo-wave-plan', () => {
     }
   });
 
-  it('reconciles protected WAL C children, admits exact D reservations, and rejects every typed drift', () => {
+  it('reconciles protected WAL D children, admits the exact bounded E set, and retains the Sync authority wall', () => {
     const actualRegistry = JSON.parse(
       fs.readFileSync(
         path.join(root, 'docs/brain/workorders/registry/work-order-registry.seed.json'),
@@ -628,14 +628,15 @@ describe('wo-wave-plan', () => {
     const actualOwnerDecisions = JSON.parse(
       fs.readFileSync(path.join(root, '.governance/owner-decisions.json'), 'utf8')
     );
-    const predecessorIds = ['WO-WAL-001C', 'WO-WAL-002C', 'WO-WAL-003C', 'WO-WAL-004C'];
-    const childIds = ['WO-WAL-001D', 'WO-WAL-002D', 'WO-WAL-003D', 'WO-WAL-004D'];
+    const predecessorIds = ['WO-WAL-001D', 'WO-WAL-002D', 'WO-WAL-003D', 'WO-WAL-004D'];
+    const childIds = ['WO-WAL-001E', 'WO-WAL-002E', 'WO-WAL-004E'];
     const selectedIds = new Set([
       'WO-WAL-000',
       'WO-WAL-000A',
       'WO-WAL-000B',
       'WO-WAL-000C',
       'WO-WAL-000D',
+      'WO-WAL-000E',
       'WO-WAL-001A',
       'WO-WAL-002A',
       'WO-WAL-003A',
@@ -644,6 +645,10 @@ describe('wo-wave-plan', () => {
       'WO-WAL-002B',
       'WO-WAL-003B',
       'WO-WAL-004B',
+      'WO-WAL-001C',
+      'WO-WAL-002C',
+      'WO-WAL-003C',
+      'WO-WAL-004C',
       ...predecessorIds,
       ...childIds,
       'WO-WAL-005',
@@ -653,8 +658,8 @@ describe('wo-wave-plan', () => {
     const children = childIds.map(id => actualRecords.find(item => item.id === id));
     assert.ok(children.every(Boolean));
     assert.equal(
-      children.find(item => item.id === 'WO-WAL-004D').validationGates[0].command,
-      'dotnet test backend/tests/TerraFusion.Unit.Tests/TerraFusion.Unit.Tests.csproj --filter FullyQualifiedName~AuthenticatedCountyAuthorityBindingTests && git diff --check && exact changed-path audit'
+      children.find(item => item.id === 'WO-WAL-004E').validationGates[0].command,
+      'dotnet test backend/tests/TerraFusion.Unit.Tests/TerraFusion.Unit.Tests.csproj --filter FullyQualifiedName~AuthenticatedCanonicalCountyContextTests && git diff --check && exact changed-path audit'
     );
 
     const schema = JSON.parse(
@@ -665,7 +670,7 @@ describe('wo-wave-plan', () => {
     );
     const validate = new Ajv2020({ allErrors: true, strict: false }).compile(schema);
     for (const item of [
-      actualRecords.find(record => record.id === 'WO-WAL-000D'),
+      actualRecords.find(record => record.id === 'WO-WAL-000E'),
       ...predecessorIds.map(id => actualRecords.find(record => record.id === id)),
       ...children,
     ]) {
@@ -697,7 +702,7 @@ describe('wo-wave-plan', () => {
 
     const baseOptions = optionsFor(actualRecords, {
       authority: 'R5',
-      maxWorkers: 4,
+      maxWorkers: 3,
       now: '2026-08-28T20:00:00Z',
       ownerDecisions: actualOwnerDecisions,
       verifiedDispatchRefs: ['refs/remotes/origin/main'],
@@ -736,25 +741,45 @@ describe('wo-wave-plan', () => {
       assert.equal(new Set(reservations).size, reservations.length, `${field} must not collide`);
     }
     assert.deepEqual(
-      actualRegistry.records
-        .find(item => item.id === 'WO-WAL-000')
-        .nextCandidates.map(item => item.id),
+      actualRegistry.records.find(item => item.id === 'WO-WAL-000').nextCandidates.map(item => item.id),
       childIds
     );
-    for (const parentId of ['WO-WAL-001', 'WO-WAL-002', 'WO-WAL-003', 'WO-WAL-004']) {
+    for (const parentId of ['WO-WAL-001', 'WO-WAL-002', 'WO-WAL-004']) {
       assert.equal(actualRegistry.records.find(item => item.id === parentId).status, 'ready');
       assert.equal(
         actualRegistry.records.find(item => item.id === parentId).nextCandidates[0].id,
-        `${parentId}D`
+        `${parentId}E`
       );
     }
-    assert.match(
-      actualRecords.find(item => item.id === 'WO-WAL-001C').validationGates[0].evidence[0],
-      /cfbb64713d21970407c856856dd40671891d15d1.*3a128deb21e48a5e9c29bb3e6cb2b0c9963c40e4.*ad4f2f1c234a17ffb475153f332ebba104a6f344/
+    const syncParent = actualRegistry.records.find(item => item.id === 'WO-WAL-003');
+    assert.equal(syncParent.status, 'ready');
+    assert.ok(syncParent.nextCandidates.every(item => item.id !== 'WO-WAL-003E'));
+    assert.equal(actualRegistry.records.some(item => item.id === 'WO-WAL-003E'), false);
+    assert.deepEqual(
+      actualRecords.find(item => item.id === 'WO-WAL-003D').nextCandidates,
+      []
     );
     assert.match(
-      actualRecords.find(item => item.id === 'WO-WAL-003C').validationGates[0].evidence[0],
-      /0374caafdc943b9f4dd53189542d4cc2b2e8fc67.*307db297f9e8d037f1ba80c5d039c98da1ed37ec.*d2a3cb746b4109d47bafea5b5033f041763d81df/
+      actualRecords
+        .find(item => item.id === 'WO-WAL-000E')
+        .stopConditions.find(item => item.type === 'authority_wall').description,
+      /named county\/source\/system.*read-only credential or role.*secret-store reference.*execution\/network environment.*data classification\/handling.*source-side no-DML evidence method/
+    );
+    assert.match(
+      actualRecords.find(item => item.id === 'WO-WAL-001D').validationGates[0].evidence[0],
+      /9b1379a5dc1112bba3d836fd4f38dcba254c132b.*07d5737cf49be7010d8a94e31a20572987c2ffa3.*d1dcc7f2c1ed8bd0104890d2081b550b040c34b1/
+    );
+    assert.match(
+      actualRecords.find(item => item.id === 'WO-WAL-002D').validationGates[0].evidence[0],
+      /f4480bdb5213a406a77bc40b3f1c3d2be799e6e3.*6cb27bb3d202cc1ab8a334694ee7410826a18da0.*ea45e5b03135252e34cfc2cf5ec705b3f331951e/
+    );
+    assert.match(
+      actualRecords.find(item => item.id === 'WO-WAL-003D').validationGates[0].evidence[0],
+      /9155856c2d970f3d772c3f7790f91e017fb47dd8.*d006d3567a4a7e9da43e014e021b5cf81f976e39.*cc8a3fd1a9c648b07a0f7516df1f51b398433c10/
+    );
+    assert.match(
+      actualRecords.find(item => item.id === 'WO-WAL-004D').validationGates[0].evidence[0],
+      /d7f22442e95d91effea79c14667a9b2b00094f8d.*a4fd7d86594bd597f9839fe108051bbdabb09e3c/
     );
     for (const blockedId of ['WO-WAL-005', 'WO-WAL-006']) {
       assert.equal(actualRecords.find(item => item.id === blockedId).status, 'blocked');
@@ -891,7 +916,7 @@ describe('wo-wave-plan', () => {
     );
     const registryRelabelOptions = optionsFor(registryRelabel, {
       authority: 'R5',
-      maxWorkers: 4,
+      maxWorkers: 3,
       now: '2026-08-28T20:00:00Z',
       ownerDecisions: actualOwnerDecisions,
       verifiedDispatchRefs: ['refs/remotes/origin/main'],
@@ -909,7 +934,7 @@ describe('wo-wave-plan', () => {
       );
       const nullTypedOptions = optionsFor(nullTypedRecords, {
         authority: 'R5',
-        maxWorkers: 4,
+        maxWorkers: 3,
         now: '2026-08-28T20:00:00Z',
         ownerDecisions: actualOwnerDecisions,
         verifiedDispatchRefs: ['refs/remotes/origin/main'],

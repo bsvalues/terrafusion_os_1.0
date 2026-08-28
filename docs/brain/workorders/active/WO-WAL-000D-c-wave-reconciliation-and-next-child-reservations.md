@@ -2,12 +2,13 @@
 
 | Field | Value |
 | --- | --- |
-| Status | `ACTIVE_GOVERNANCE_ONLY` |
+| Status | `PROTECTED_COMPLETE` |
 | Parent | `WO-WAL-000` |
 | Program | Washington Assessor Launch V1 |
 | Base | `0374caafdc943b9f4dd53189542d4cc2b2e8fc67` |
 | Risk | R3 governance-only routing reconciliation |
 | Terminal condition | `C_WAVE_PROTECTED_COMPLETE_AND_D_WAVE_EXACT_RESERVATIONS_REGISTERED` |
+| Protected completion | PR `#1502`, merge `f21cfa6f61db0bac7d5da643c948991a14f459fd` |
 
 ## Objective
 
@@ -131,6 +132,8 @@ Only these repository-relative paths may change in this governance Work Order:
 
 ## Completion
 
-This Work Order is complete only when its validated governance-only commit reaches protected main.
-That merge clears the four D children for isolated implementation and does not complete any broad
-parent Work Order.
+This Work Order completed when its validated governance-only commit reached protected main in PR
+`#1502` as `f21cfa6f61db0bac7d5da643c948991a14f459fd`. That merge cleared the four D children for isolated
+implementation and did not complete any broad parent Work Order. Protected D-wave reconciliation
+and the next exact reservations are governed by
+[`WO-WAL-000E`](WO-WAL-000E-d-wave-reconciliation-and-e-wave-reservations.md).
