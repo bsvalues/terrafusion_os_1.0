@@ -473,6 +473,18 @@
   padding: 0 16px 12px;
 }
 
+.sf-detail-evidence-note {
+  margin: 0;
+  padding: 2px 16px 10px;
+  color: var(--sf-muted);
+  font-size: 0.75rem;
+  line-height: 1.45;
+}
+
+.sf-detail-evidence-grid .sf-detail-field__value {
+  overflow-wrap: anywhere;
+}
+
 .sf-detail-field {
   padding: 4px 8px 4px 0;
 }

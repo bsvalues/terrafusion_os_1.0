@@ -2,9 +2,10 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { vi } from 'vitest';
 import { RunningStatsPanel } from '../components/RunningStatsPanel';
+import { SaleDetailPanel } from '../components/SaleDetailPanel';
 import { RatioAuditPanel } from '../panels/RatioAuditPanel';
 import { useSalesForgeStore } from '../salesForgeStore';
-import { SALESFORGE_STATISTICS_CONTRACT } from '../salesForgeTypes';
+import { SALESFORGE_STATISTICS_CONTRACT, type SaleDetail } from '../salesForgeTypes';
 import { statisticsAPI, statisticsApiContractMetadata } from '../../../../services/forge/statisticsAPI';
 
 vi.mock('@/auth/session', () => ({
@@ -125,6 +126,55 @@ describe('SalesForge contract posture', () => {
         headers: expect.objectContaining({ 'X-TerraFusion-County': 'benton' }),
       }),
     );
+  });
+
+  it('shows public source and quality evidence before assessor decision controls', () => {
+    useSalesForgeStore.setState({
+      saleDetail: {
+        saleId: 'spokane-evidence-sale',
+        parcelId: '063-reference-parcel',
+        address: 'Reference address',
+        saleDate: '2025-01-15',
+        salePrice: 300_000,
+        dataTrustTier: 'public-reference-not-county-certified',
+        sourceMode: 'public_recorder_export',
+        candidateSource: 'spokane_sales_candidate_index',
+        confidenceScore: 0.91,
+        qualityScore: 0.78,
+        qualityBand: 'review_required',
+        reviewStatus: 'needs_source_confirmation',
+        sourceUrl: 'https://example.wa.gov/sales',
+        sourceFinalUrl: 'https://example.wa.gov/sales/record-1',
+        sourcePayloadPath: 'washington/spokane/record-1.json',
+        sourcePayloadSha256: 'abc123',
+        candidateIndexSource: null,
+        candidateRecordType: 'public_sale_candidate',
+        candidateSourceOrdinal: 7,
+      } as SaleDetail,
+      detailLoading: false,
+      detailError: null,
+    });
+
+    render(<SaleDetailPanel />);
+
+    const evidence = screen.getByTestId('salesforge-source-evidence');
+    expect(evidence).toHaveTextContent('public reference not county certified');
+    expect(evidence).toHaveTextContent('public recorder export');
+    expect(evidence).toHaveTextContent('spokane sales candidate index');
+    expect(evidence).toHaveTextContent('needs source confirmation');
+    expect(evidence).toHaveTextContent('review required');
+    expect(evidence).toHaveTextContent('91.0%');
+    expect(evidence).toHaveTextContent('78.0%');
+    expect(evidence).toHaveTextContent('https://example.wa.gov/sales/record-1');
+    expect(evidence).toHaveTextContent('abc123');
+    expect(evidence.querySelectorAll('.sf-null-flag')).not.toHaveLength(0);
+    expect(screen.getByText(/Reference evidence only/i)).toBeInTheDocument();
+
+    const decisionButton = screen.getByRole('button', { name: /^Qualified$/i });
+    expect(
+      evidence.compareDocumentPosition(decisionButton) & Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
+    expect(evidence.querySelector('a')).toBeNull();
   });
 
   it('keeps the legacy statistics client contract-declared without changing method shapes', () => {
