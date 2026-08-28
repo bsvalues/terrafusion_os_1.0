@@ -2,7 +2,7 @@
 
 | Field | Value |
 | --- | --- |
-| Status | `ACTIVE_GOVERNANCE_ONLY` |
+| Status | `PROTECTED_COMPLETE` |
 | Parent | `WO-WAL-000` |
 | Program | Washington Assessor Launch V1 |
 | Base | `81d7c16b0e0e6539a5ac8b6c1b5871897c596c62` |
@@ -123,6 +123,7 @@ Only these repository-relative paths may change in this governance Work Order:
 
 ## Completion
 
-This Work Order is complete only when its validated governance-only commit reaches protected main.
-That merge clears the four B children for isolated implementation and does not complete any broad
-parent Work Order.
+This Work Order reached protected main in PR #1492 as merge
+`b740c3dadf069c0e7bfacf7a3e2c4e53dd5a388e`. That protected merge cleared the four B children for
+isolated implementation and did not complete any broad parent Work Order. Their later protected
+completion is reconciled separately by `WO-WAL-000C`.

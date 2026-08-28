@@ -2,7 +2,7 @@
 
 | Field | Value |
 | --- | --- |
-| Status | `IMPLEMENTED_PENDING_REMOTE_DOTNET_VALIDATION` |
+| Status | `PROTECTED_COMPLETE` |
 | Program | Washington Assessor Launch V1 |
 | Goal | `GOAL-WASHINGTON-ASSESSOR-LAUNCH-V1` |
 | Loop | `LOOP-WASHINGTON-ASSESSOR-LAUNCH-V1` |
@@ -78,3 +78,12 @@ production resource is allowed.
 
 Revert this exact child commit. The contract is pure and introduces no registration, persisted state
 or external side effect, so no data repair or environment cleanup is required.
+
+## Protected completion and continuation
+
+This child reached protected main in PR #1496 as merge
+`4fde39015c71fea20193207bfb7bf8878f870e0e` from exact integrated head
+`e2dd95338f54a18f1aa6986699fc0a4c0699229e`. `WO-WAL-004C` separately owns the next data-free
+activation-prerequisite contract. The broad `WO-WAL-004` parent remains open; no activation,
+official adoption, identity-provider integration, persistence, protected-data access, or production
+authority is implied by this completion.

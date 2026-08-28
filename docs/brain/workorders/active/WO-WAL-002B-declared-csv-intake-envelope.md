@@ -2,7 +2,7 @@
 
 | Field | Value |
 | --- | --- |
-| Status | `IMPLEMENTED_PENDING_PROTECTED_MERGE` |
+| Status | `PROTECTED_COMPLETE` |
 | Program | Washington Assessor Launch V1 |
 | Parent | `WO-WAL-002` |
 | Base | `b740c3dadf069c0e7bfacf7a3e2c4e53dd5a388e` |
@@ -78,6 +78,9 @@ git status --short
 
 ## Continuation
 
-Completion returns to open parent `WO-WAL-002`. Later exact children must separately own
-authenticated county binding, upload transport, provenance/lineage storage, quarantine, atomic
+This child reached protected main in PR #1494 as merge
+`43fb4e239d12fcd264b56c3cf0918e862cb0fbdd` from exact integrated head
+`bc7ec0956b2ad4072490897b6b5ea5ccca0005fc`. Completion returns to open parent `WO-WAL-002`.
+`WO-WAL-002C` separately owns the next canonical same-county authority binding. Later exact children
+must still own authentication, upload transport, provenance/lineage storage, quarantine, atomic
 promotion, rollback, API, and UI behavior.
