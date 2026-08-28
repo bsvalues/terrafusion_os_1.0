@@ -46,7 +46,9 @@ The builder accepts:
    `artifactKind` is `parcels` or `sales` and `bytes` is a non-empty `Uint8Array` view no larger than
    16 MiB.
 
-The output is a deeply frozen receipt containing the county binding, artifact kind, exact byte
+Artifact byte length and copying use typed-array internal slots, so caller-defined iterators,
+species, or shadow properties cannot substitute bytes or evade the fixture bound. The output is a
+deeply frozen receipt containing the county binding, artifact kind, exact byte
 length, lowercase SHA-256 digest, a deeply immutable snapshot of the selected baseline row, explicit
 artifact and downstream gaps, and negative assertions that prevent receipt evidence from being
 misread as product capability. Caller mutations after construction cannot alter the receipt.
@@ -61,14 +63,19 @@ declaration and canonical baseline row.
 - The hash covers the exact supplied bytes and byte length is measured in bytes, not characters.
 - Only canonical Washington county names are accepted; aliases and unexpected declarations fail
   closed.
-- The baseline ledger must contain all and only the canonical 39 rows in canonical order, with the
-  expected county token for every row.
+- The baseline ledger must contain a dense, data-property-only array of all and only the canonical
+  39 rows in canonical order, with the expected county token for every row.
+- Every protected baseline row is reconciled against the exact nested `wal.public-baseline-ledger.v1`
+  evidence states; contradictory landed, runtime, freshness, fallback, capability, or gap values
+  fail closed before any row is embedded in a receipt. Protected nullable strings must retain the
+  ledger's trimmed canonical form, and arrays may contain only their exact dense index properties.
 - Artifact declarations with missing, extra, inherited, or ambiguous fields fail closed.
 - A non-Benton artifact cannot use Benton county identity or Benton-bearing selected-row metadata.
 - A receipt proves only that bytes were supplied to this in-memory contract; all unobserved
   downstream states remain explicit gaps.
-- Inputs and all nested output values are defensively snapshotted; the returned graph is deeply
-  frozen.
+- Artifact validation occurs before baseline processing. Only the selected, exact-schema baseline
+  row is defensively snapshotted under explicit structure/depth/string bounds; the returned graph
+  is deeply frozen.
 
 ## Denials
 
@@ -88,10 +95,12 @@ declaration and canonical baseline row.
 - `node --check scripts/truth/wal-public-acquisition-artifact-receipt.test.mjs`
 - `node --test scripts/truth/wal-public-acquisition-artifact-receipt.test.mjs`
 - exact hash and byte-length tests, including non-ASCII and sliced typed-array views;
+- typed-array iterator and shadowed-byte-length bypass regressions;
 - deterministic receipt and baseline-overlay tests;
 - deep immutability and caller-mutation tests for bytes, artifact declarations, and baseline rows;
 - explicit-gap and no landing/runtime/freshness/capability-inference tests;
-- malformed baseline, extra-field, county-alias, cross-county, and Benton-contamination refusals;
+- malformed, sparse, accessor-backed, structurally expanded, or contradictory baseline refusals,
+  plus county-alias, cross-county, and Benton-contamination refusals;
 - source review proving the implementation imports only the cryptographic primitive and exposes no
   filesystem, network, persistence, or CLI surface;
 - `git diff --check`;

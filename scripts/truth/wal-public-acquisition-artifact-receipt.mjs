@@ -76,6 +76,66 @@ const BASELINE_ROW_KEYS = Object.freeze([
   'runtimeRegistrationEvidence',
   'sourceInventory',
 ]);
+const SOURCE_INVENTORY_KEYS = Object.freeze([
+  'alternatePublicSourceDescription',
+  'gisMapSurfaceDescription',
+  'observationStatus',
+  'officialAssessorBaseUrl',
+  'primarySalesSourceDescription',
+]);
+const ACQUISITION_READINESS_KEYS = Object.freeze([
+  'acquisitionFamily',
+  'adapterExecutionStatus',
+  'observationStatus',
+  'priority',
+  'registryStatus',
+  'registryStatusMeaning',
+]);
+const LANDED_EVIDENCE_KEYS = Object.freeze([
+  'observationStatus',
+  'parcelRows',
+  'quarantinedRows',
+  'salesRows',
+]);
+const RUNTIME_EVIDENCE_KEYS = Object.freeze([
+  'observationStatus',
+  'parcels',
+  'sales',
+  'selectedCountyEchoed',
+]);
+const RUNTIME_DATASET_KEYS = Object.freeze(['endpoint', 'registrationStatus', 'rows']);
+const FRESHNESS_EVIDENCE_KEYS = Object.freeze([
+  'acquiredAtUtc',
+  'contentHash',
+  'observationStatus',
+  'sourceRevision',
+  'transformVersion',
+  'trustTier',
+]);
+const FALLBACK_EVIDENCE_KEYS = Object.freeze([
+  'fallbackCounty',
+  'observationStatus',
+  'silentBentonFallbackDetected',
+]);
+const CAPABILITY_EVIDENCE_KEYS = Object.freeze([
+  'observationStatus',
+  'supportedCapabilities',
+]);
+const EXPLICIT_GAP_KEYS = Object.freeze([
+  'acquisition',
+  'freshnessProvenance',
+  'landedData',
+  'runtime',
+  'sourceInventory',
+]);
+const TYPED_ARRAY_PROTOTYPE = Object.getPrototypeOf(Uint8Array.prototype);
+const TYPED_ARRAY_BYTE_LENGTH_GETTER = Object.getOwnPropertyDescriptor(
+  TYPED_ARRAY_PROTOTYPE,
+  'byteLength'
+).get;
+const MAX_SNAPSHOT_DEPTH = 12;
+const MAX_SNAPSHOT_NODES = 512;
+const MAX_STRING_CHARACTERS = 8192;
 
 function countyToken(county) {
   return county.toLowerCase().replace(/[^a-z0-9]+/g, '-');
@@ -114,19 +174,77 @@ function assertExactOwnDataKeys(value, expectedKeys, label) {
   }
 }
 
-function snapshotJsonValue(value, label, ancestors = new WeakSet()) {
-  if (value === null || typeof value === 'string' || typeof value === 'boolean') return value;
+function assertDensePlainArray(value, label) {
+  if (!Array.isArray(value) || Object.getPrototypeOf(value) !== Array.prototype) {
+    throw new TypeError(`${label} must be a plain array.`);
+  }
+  for (let index = 0; index < value.length; index += 1) {
+    const descriptor = Object.getOwnPropertyDescriptor(value, String(index));
+    if (!descriptor || !('value' in descriptor) || !descriptor.enumerable) {
+      throw new TypeError(`${label} must contain dense enumerable data elements.`);
+    }
+  }
+  const expectedKeys = new Set(['length']);
+  for (let index = 0; index < value.length; index += 1) expectedKeys.add(String(index));
+  const unexpectedKeys = Reflect.ownKeys(value).filter(key => !expectedKeys.has(key));
+  if (unexpectedKeys.length) {
+    throw new TypeError(`${label} must not contain custom properties.`);
+  }
+}
+
+function assertExactStringArray(value, expected, label) {
+  assertDensePlainArray(value, label);
+  if (
+    value.length !== expected.length ||
+    value.some((entry, index) => entry !== expected[index])
+  ) {
+    throw new Error(`${label} must contain the canonical protected baseline values.`);
+  }
+}
+
+function assertNullableBoundedString(value, label) {
+  if (value === null) return;
+  if (
+    typeof value !== 'string' ||
+    value.length === 0 ||
+    value.length > MAX_STRING_CHARACTERS ||
+    value !== value.trim()
+  ) {
+    throw new TypeError(`${label} must be null or a bounded non-empty string.`);
+  }
+}
+
+function snapshotJsonValue(
+  value,
+  label,
+  ancestors = new WeakSet(),
+  budget = { nodes: 0 },
+  depth = 0
+) {
+  if (typeof value === 'string') {
+    if (value.length > MAX_STRING_CHARACTERS) {
+      throw new TypeError(`${label} exceeds the bounded string limit.`);
+    }
+    return value;
+  }
+  if (value === null || typeof value === 'boolean') return value;
   if (typeof value === 'number' && Number.isFinite(value)) return value;
 
   if (!value || typeof value !== 'object') {
     throw new TypeError(`${label} must contain only finite JSON data.`);
   }
   if (ancestors.has(value)) throw new TypeError(`${label} must not contain cycles.`);
+  if (depth >= MAX_SNAPSHOT_DEPTH || ++budget.nodes > MAX_SNAPSHOT_NODES) {
+    throw new TypeError(`${label} exceeds the bounded snapshot structure.`);
+  }
   ancestors.add(value);
 
   let snapshot;
   if (Array.isArray(value)) {
-    snapshot = value.map((entry, index) => snapshotJsonValue(entry, `${label}[${index}]`, ancestors));
+    assertDensePlainArray(value, label);
+    snapshot = value.map((entry, index) =>
+      snapshotJsonValue(entry, `${label}[${index}]`, ancestors, budget, depth + 1)
+    );
   } else {
     assertPlainRecord(value, label);
     snapshot = {};
@@ -139,7 +257,13 @@ function snapshotJsonValue(value, label, ancestors = new WeakSet()) {
         throw new TypeError(`${label}.${key} must be an enumerable data property.`);
       }
       Object.defineProperty(snapshot, key, {
-        value: snapshotJsonValue(descriptor.value, `${label}.${key}`, ancestors),
+        value: snapshotJsonValue(
+          descriptor.value,
+          `${label}.${key}`,
+          ancestors,
+          budget,
+          depth + 1
+        ),
         enumerable: true,
         configurable: true,
         writable: true,
@@ -166,59 +290,153 @@ function containsBentonReference(value) {
   return false;
 }
 
-function assertBaselineNonInference(row, county) {
-  const requiredStates = [
-    [row.landedRowsEvidence?.observationStatus, 'not_observed', 'landedRowsEvidence'],
-    [row.runtimeRegistrationEvidence?.observationStatus, 'not_observed', 'runtimeRegistrationEvidence'],
-    [row.freshnessProvenanceEvidence?.observationStatus, 'not_observed', 'freshnessProvenanceEvidence'],
-    [row.fallbackEvidence?.observationStatus, 'not_observed', 'fallbackEvidence'],
-    [row.capabilityEvidence?.observationStatus, 'not_assessed', 'capabilityEvidence'],
-  ];
-  for (const [actual, expected, field] of requiredStates) {
-    if (actual !== expected) {
-      throw new Error(`Baseline row ${county} has non-canonical ${field} state.`);
+function validateBaselineRow(row, county, index) {
+  const label = `baselineLedger.rows[${index}]`;
+  assertExactOwnDataKeys(row, BASELINE_ROW_KEYS, label);
+  if (row.county !== county || row.countyToken !== countyToken(county)) {
+    throw new Error(`${label} must be canonical county ${county}.`);
+  }
+
+  assertExactOwnDataKeys(row.sourceInventory, SOURCE_INVENTORY_KEYS, `${label}.sourceInventory`);
+  if (row.sourceInventory.observationStatus !== 'observed_from_coverage_proof') {
+    throw new Error(`${label}.sourceInventory has a non-canonical observation state.`);
+  }
+  for (const field of SOURCE_INVENTORY_KEYS.filter(field => field !== 'observationStatus')) {
+    assertNullableBoundedString(row.sourceInventory[field], `${label}.sourceInventory.${field}`);
+  }
+
+  assertExactOwnDataKeys(
+    row.acquisitionReadiness,
+    ACQUISITION_READINESS_KEYS,
+    `${label}.acquisitionReadiness`
+  );
+  if (
+    row.acquisitionReadiness.observationStatus !== 'observed_from_coverage_proof' ||
+    row.acquisitionReadiness.registryStatusMeaning !== 'source_decision_only' ||
+    row.acquisitionReadiness.adapterExecutionStatus !== 'not_observed'
+  ) {
+    throw new Error(`${label}.acquisitionReadiness has non-canonical protected state.`);
+  }
+  for (const field of ['registryStatus', 'acquisitionFamily', 'priority']) {
+    assertNullableBoundedString(row.acquisitionReadiness[field], `${label}.acquisitionReadiness.${field}`);
+  }
+  if (row.acquisitionReadiness.registryStatus === null) {
+    throw new Error(`${label}.acquisitionReadiness.registryStatus must be present.`);
+  }
+
+  assertExactOwnDataKeys(row.landedRowsEvidence, LANDED_EVIDENCE_KEYS, `${label}.landedRowsEvidence`);
+  if (
+    row.landedRowsEvidence.observationStatus !== 'not_observed' ||
+    row.landedRowsEvidence.parcelRows !== null ||
+    row.landedRowsEvidence.salesRows !== null ||
+    row.landedRowsEvidence.quarantinedRows !== null
+  ) {
+    throw new Error(`${label}.landedRowsEvidence must remain entirely unobserved.`);
+  }
+
+  assertExactOwnDataKeys(
+    row.runtimeRegistrationEvidence,
+    RUNTIME_EVIDENCE_KEYS,
+    `${label}.runtimeRegistrationEvidence`
+  );
+  if (
+    row.runtimeRegistrationEvidence.observationStatus !== 'not_observed' ||
+    row.runtimeRegistrationEvidence.selectedCountyEchoed !== null
+  ) {
+    throw new Error(`${label} has non-canonical runtime evidence; it must remain entirely unobserved.`);
+  }
+  for (const dataset of ['parcels', 'sales']) {
+    const value = row.runtimeRegistrationEvidence[dataset];
+    assertExactOwnDataKeys(value, RUNTIME_DATASET_KEYS, `${label}.runtimeRegistrationEvidence.${dataset}`);
+    if (value.registrationStatus !== 'not_observed' || value.endpoint !== null || value.rows !== null) {
+      throw new Error(`${label}.runtimeRegistrationEvidence.${dataset} must remain unobserved.`);
     }
+  }
+
+  assertExactOwnDataKeys(
+    row.freshnessProvenanceEvidence,
+    FRESHNESS_EVIDENCE_KEYS,
+    `${label}.freshnessProvenanceEvidence`
+  );
+  if (
+    row.freshnessProvenanceEvidence.observationStatus !== 'not_observed' ||
+    FRESHNESS_EVIDENCE_KEYS.some(
+      field => field !== 'observationStatus' && row.freshnessProvenanceEvidence[field] !== null
+    )
+  ) {
+    throw new Error(`${label}.freshnessProvenanceEvidence must remain entirely unobserved.`);
+  }
+
+  assertExactOwnDataKeys(row.fallbackEvidence, FALLBACK_EVIDENCE_KEYS, `${label}.fallbackEvidence`);
+  if (
+    row.fallbackEvidence.observationStatus !== 'not_observed' ||
+    row.fallbackEvidence.silentBentonFallbackDetected !== null ||
+    row.fallbackEvidence.fallbackCounty !== null
+  ) {
+    throw new Error(`${label}.fallbackEvidence must remain entirely unobserved.`);
+  }
+
+  assertExactOwnDataKeys(
+    row.capabilityEvidence,
+    CAPABILITY_EVIDENCE_KEYS,
+    `${label}.capabilityEvidence`
+  );
+  if (row.capabilityEvidence.observationStatus !== 'not_assessed') {
+    throw new Error(`${label}.capabilityEvidence must remain unassessed.`);
+  }
+  assertExactStringArray(
+    row.capabilityEvidence.supportedCapabilities,
+    [],
+    `${label}.capabilityEvidence.supportedCapabilities`
+  );
+
+  assertExactOwnDataKeys(row.explicitGaps, EXPLICIT_GAP_KEYS, `${label}.explicitGaps`);
+  const expectedSourceInventoryGaps = [];
+  if (row.sourceInventory.officialAssessorBaseUrl === null) {
+    expectedSourceInventoryGaps.push('official_assessor_url_missing');
+  }
+  if (row.sourceInventory.primarySalesSourceDescription === null) {
+    expectedSourceInventoryGaps.push('primary_sales_source_missing');
+  }
+  if (row.acquisitionReadiness.acquisitionFamily === null) {
+    expectedSourceInventoryGaps.push('acquisition_family_missing');
+  }
+  const expectedAcquisitionGaps =
+    row.acquisitionReadiness.registryStatus === 'adapter-ready'
+      ? []
+      : ['acquisition_not_adapter_ready_in_registry'];
+  assertExactStringArray(row.explicitGaps.sourceInventory, expectedSourceInventoryGaps, `${label}.explicitGaps.sourceInventory`);
+  assertExactStringArray(row.explicitGaps.acquisition, expectedAcquisitionGaps, `${label}.explicitGaps.acquisition`);
+  assertExactStringArray(row.explicitGaps.landedData, ['parcel_rows_not_observed', 'sales_rows_not_observed'], `${label}.explicitGaps.landedData`);
+  assertExactStringArray(row.explicitGaps.runtime, ['parcel_runtime_registration_not_observed', 'sales_runtime_registration_not_observed'], `${label}.explicitGaps.runtime`);
+  assertExactStringArray(row.explicitGaps.freshnessProvenance, ['acquisition_freshness_not_observed', 'row_provenance_not_observed', 'transform_version_not_observed'], `${label}.explicitGaps.freshnessProvenance`);
+
+  if (county !== 'Benton' && containsBentonReference(row)) {
+    throw new Error(`Non-Benton baseline row ${county} contains Benton source metadata.`);
   }
 }
 
-function validateAndSnapshotBaseline(baselineLedger) {
+function validateAndSnapshotBaseline(baselineLedger, selectedCounty) {
   assertExactOwnDataKeys(baselineLedger, BASELINE_TOP_LEVEL_KEYS, 'baselineLedger');
-  const baselineSnapshot = snapshotJsonValue(baselineLedger, 'baselineLedger');
-  if (baselineSnapshot.contract !== BASELINE_CONTRACT_ID) {
+  if (baselineLedger.contract !== BASELINE_CONTRACT_ID) {
     throw new Error(`baselineLedger.contract must be ${BASELINE_CONTRACT_ID}.`);
   }
-  if (baselineSnapshot.evidenceScope !== 'source_registry_only') {
+  if (baselineLedger.evidenceScope !== 'source_registry_only') {
     throw new Error('baselineLedger.evidenceScope must be source_registry_only.');
   }
-  if (
-    !Array.isArray(baselineSnapshot.rows) ||
-    baselineSnapshot.rows.length !== EXPECTED_COUNTIES.length
-  ) {
+  assertDensePlainArray(baselineLedger.rows, 'baselineLedger.rows');
+  if (baselineLedger.rows.length !== EXPECTED_COUNTIES.length) {
     throw new Error(`baselineLedger must contain exactly ${EXPECTED_COUNTIES.length} county rows.`);
   }
 
-  baselineSnapshot.rows.forEach((row, index) => {
+  let selectedRow;
+  baselineLedger.rows.forEach((row, index) => {
     const county = EXPECTED_COUNTIES[index];
-    assertExactOwnDataKeys(row, BASELINE_ROW_KEYS, `baselineLedger.rows[${index}]`);
-    if (row.county !== county) {
-      throw new Error(`baselineLedger row ${index} must be canonical county ${county}.`);
-    }
-    if (row.countyToken !== countyToken(county)) {
-      throw new Error(`Baseline row ${county} has a non-canonical countyToken.`);
-    }
-    assertBaselineNonInference(row, county);
-    if (
-      county !== 'Benton' &&
-      containsBentonReference({
-        sourceInventory: row.sourceInventory,
-        acquisitionReadiness: row.acquisitionReadiness,
-      })
-    ) {
-      throw new Error(`Non-Benton baseline row ${county} contains Benton source metadata.`);
-    }
+    validateBaselineRow(row, county, index);
+    if (county === selectedCounty) selectedRow = snapshotJsonValue(row, `${county} baseline row`);
   });
 
-  return baselineSnapshot;
+  return selectedRow;
 }
 
 function validateArtifactAndSnapshotBytes(artifact) {
@@ -229,17 +447,29 @@ function validateArtifactAndSnapshotBytes(artifact) {
   if (!ARTIFACT_KINDS.includes(artifact.artifactKind)) {
     throw new Error('artifact.artifactKind must be parcels or sales.');
   }
-  if (!(artifact.bytes instanceof Uint8Array)) {
+  if (!Reflect.apply(Object.prototype.isPrototypeOf, Uint8Array.prototype, [artifact.bytes])) {
     throw new TypeError('artifact.bytes must be a Uint8Array view.');
   }
-  if (artifact.bytes.byteLength === 0) {
+  let byteLength;
+  try {
+    byteLength = Reflect.apply(TYPED_ARRAY_BYTE_LENGTH_GETTER, artifact.bytes, []);
+  } catch {
+    throw new TypeError('artifact.bytes must be a Uint8Array view.');
+  }
+  if (byteLength === 0) {
     throw new Error('artifact.bytes must not be empty.');
   }
-  if (artifact.bytes.byteLength > MAX_ARTIFACT_BYTES) {
+  if (byteLength > MAX_ARTIFACT_BYTES) {
     throw new Error(`artifact.bytes exceeds the ${MAX_ARTIFACT_BYTES}-byte fixture limit.`);
   }
 
-  return Uint8Array.from(artifact.bytes);
+  const bytesSnapshot = new Uint8Array(byteLength);
+  Reflect.apply(Uint8Array.prototype.set, bytesSnapshot, [artifact.bytes]);
+  return {
+    artifactKind: artifact.artifactKind,
+    bytesSnapshot,
+    county: artifact.county,
+  };
 }
 
 function deepFreeze(value, seen = new WeakSet()) {
@@ -252,14 +482,12 @@ function deepFreeze(value, seen = new WeakSet()) {
 export function buildPublicAcquisitionArtifactReceipt(options) {
   assertExactOwnDataKeys(options, ['artifact', 'baselineLedger'], 'options');
   const { baselineLedger, artifact } = options;
-  const baselineSnapshot = validateAndSnapshotBaseline(baselineLedger);
-  const bytesSnapshot = validateArtifactAndSnapshotBytes(artifact);
-  const selectedRowIndex = EXPECTED_COUNTIES.indexOf(artifact.county);
-  const baselineRowSnapshot = baselineSnapshot.rows[selectedRowIndex];
+  const { artifactKind, bytesSnapshot, county } = validateArtifactAndSnapshotBytes(artifact);
+  const baselineRowSnapshot = validateAndSnapshotBaseline(baselineLedger, county);
   const sha256 = createHash('sha256').update(bytesSnapshot).digest('hex');
   const artifactEvidence = {
     observationStatus: 'exact_supplied_bytes_observed',
-    artifactKind: artifact.artifactKind,
+    artifactKind,
     byteLength: bytesSnapshot.byteLength,
     hashAlgorithm: 'sha256',
     sha256,
@@ -270,16 +498,16 @@ export function buildPublicAcquisitionArtifactReceipt(options) {
     environment: ENVIRONMENT_ID,
     evidenceScope: 'supplied_in_memory_public_artifact_bytes_only',
     countyBinding: {
-      county: artifact.county,
-      countyToken: countyToken(artifact.county),
-      artifactKind: artifact.artifactKind,
+      county,
+      countyToken: countyToken(county),
+      artifactKind,
       baselineContract: BASELINE_CONTRACT_ID,
     },
     artifactReceipt: artifactEvidence,
     baselineLedgerOverlay: {
       baselineContract: BASELINE_CONTRACT_ID,
-      baselineEvidenceScope: baselineSnapshot.evidenceScope,
-      county: artifact.county,
+      baselineEvidenceScope: 'source_registry_only',
+      county,
       baselineRowSnapshot,
       acquisitionArtifactEvidence: { ...artifactEvidence },
     },

@@ -152,6 +152,36 @@ test('hashes only the visible portion of a sliced Uint8Array view', () => {
   );
 });
 
+test('uses typed-array internal slots instead of iterator or byteLength overrides', () => {
+  const bytes = new Uint8Array([7]);
+  Object.defineProperty(bytes, 'byteLength', { value: 1_000_000_000 });
+  Object.defineProperty(bytes, Symbol.iterator, {
+    value: function* maliciousIterator() {
+      while (true) yield 255;
+    },
+  });
+
+  const receipt = buildReceipt({
+    artifact: { county: 'Yakima', artifactKind: 'parcels', bytes },
+  });
+
+  assert.equal(receipt.artifactReceipt.byteLength, 1);
+  assert.equal(
+    receipt.artifactReceipt.sha256,
+    createHash('sha256').update(new Uint8Array([7])).digest('hex')
+  );
+
+  const oversized = new Uint8Array(MAX_ARTIFACT_BYTES + 1);
+  Object.defineProperty(oversized, 'byteLength', { value: 1 });
+  assert.throws(
+    () =>
+      buildReceipt({
+        artifact: { county: 'Yakima', artifactKind: 'parcels', bytes: oversized },
+      }),
+    /fixture limit/i
+  );
+});
+
 test('builds a deterministic county-bound baseline overlay', () => {
   const ledger = baselineLedger();
   const reorderedLedger = baselineLedger();
@@ -304,6 +334,93 @@ test('rejects malformed or non-canonical baseline ledgers', () => {
   const runtimeClaim = baselineLedger();
   runtimeClaim.rows[0].runtimeRegistrationEvidence.observationStatus = 'observed';
   assert.throws(() => buildReceipt({ baselineLedger: runtimeClaim }), /non-canonical runtime/i);
+});
+
+test('rejects every contradictory protected baseline evidence category', () => {
+  const mutations = [
+    row => {
+      row.landedRowsEvidence.parcelRows = 123;
+    },
+    row => {
+      row.runtimeRegistrationEvidence.parcels.registrationStatus = 'observed';
+      row.runtimeRegistrationEvidence.parcels.endpoint = 'https://benton.example';
+    },
+    row => {
+      row.freshnessProvenanceEvidence.contentHash = 'fabricated';
+    },
+    row => {
+      row.capabilityEvidence.supportedCapabilities.push('writeback');
+    },
+    row => {
+      row.fallbackEvidence.silentBentonFallbackDetected = true;
+      row.fallbackEvidence.fallbackCounty = 'Benton';
+    },
+    row => {
+      row.explicitGaps.runtime = [];
+    },
+  ];
+
+  for (const mutate of mutations) {
+    const ledger = baselineLedger();
+    mutate(ledger.rows.at(-1));
+    assert.throws(() => buildReceipt({ baselineLedger: ledger }));
+  }
+});
+
+test('rejects sparse, accessor-backed and structurally expanded baseline rows', () => {
+  for (const index of [0, EXPECTED_COUNTIES.length - 1]) {
+    const ledger = baselineLedger();
+    delete ledger.rows[index];
+    assert.throws(() => buildReceipt({ baselineLedger: ledger }), /dense enumerable data/i);
+  }
+
+  const accessorLedger = baselineLedger();
+  const firstRow = accessorLedger.rows[0];
+  Object.defineProperty(accessorLedger.rows, '0', {
+    enumerable: true,
+    get: () => firstRow,
+  });
+  assert.throws(() => buildReceipt({ baselineLedger: accessorLedger }), /dense enumerable data/i);
+
+  const expandedLedger = baselineLedger();
+  expandedLedger.rows.at(-1).sourceInventory.officialAssessorBaseUrl = {
+    nested: { without: { a: { bound: true } } },
+  };
+  assert.throws(() => buildReceipt({ baselineLedger: expandedLedger }), /bounded non-empty string/i);
+});
+
+test('requires protected trimmed strings and exact array own keys', () => {
+  for (const value of [' ', ' https://adams.public.example ']) {
+    const ledger = baselineLedger();
+    ledger.rows[0].sourceInventory.officialAssessorBaseUrl = value;
+    if (value.trim() === '') {
+      ledger.rows[0].explicitGaps.sourceInventory = [
+        'official_assessor_url_missing',
+      ];
+    }
+    assert.throws(() => buildReceipt({ baselineLedger: ledger }), /bounded non-empty string/i);
+  }
+
+  const rowsWithCustomNumericKey = baselineLedger();
+  Object.defineProperty(rowsWithCustomNumericKey.rows, '4294967295', {
+    enumerable: true,
+    get: () => rowsWithCustomNumericKey.rows[0],
+  });
+  assert.throws(
+    () => buildReceipt({ baselineLedger: rowsWithCustomNumericKey }),
+    /custom properties/i
+  );
+
+  const nestedArrayWithCustomNumericKey = baselineLedger();
+  Object.defineProperty(
+    nestedArrayWithCustomNumericKey.rows[0].capabilityEvidence.supportedCapabilities,
+    '4294967295',
+    { enumerable: true, value: 'hidden-capability' }
+  );
+  assert.throws(
+    () => buildReceipt({ baselineLedger: nestedArrayWithCustomNumericKey }),
+    /custom properties/i
+  );
 });
 
 test('rejects Benton metadata contamination in any non-Benton baseline row', () => {
