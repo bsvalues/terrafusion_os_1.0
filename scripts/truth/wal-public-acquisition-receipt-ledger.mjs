@@ -45,12 +45,17 @@ const ACQUISITION_GAPS = Object.freeze([
   'acquired_at_utc_not_observed',
   'freshness_not_observed',
 ]);
-const INTERPRETATION_GAPS = Object.freeze([
+const SOURCE_INTERPRETATION_GAPS = Object.freeze([
   'format_not_validated',
   'schema_not_validated',
   'content_not_parsed',
   'row_counts_not_observed',
   'data_quality_not_assessed',
+]);
+const LEDGER_INTERPRETATION_GAPS = Object.freeze([
+  'receipt_issuance_not_authenticated',
+  'artifact_digest_not_recomputed',
+  ...SOURCE_INTERPRETATION_GAPS,
 ]);
 const DOWNSTREAM_GAPS = Object.freeze([
   'normalization_not_performed',
@@ -470,7 +475,7 @@ function validateReceipt(receipt, index) {
   assertExactArray(receipt.explicitGaps.acquisition, ACQUISITION_GAPS, `${label}.explicitGaps.acquisition`);
   assertExactArray(
     receipt.explicitGaps.artifactInterpretation,
-    INTERPRETATION_GAPS,
+    SOURCE_INTERPRETATION_GAPS,
     `${label}.explicitGaps.artifactInterpretation`
   );
   assertExactArray(receipt.explicitGaps.downstream, DOWNSTREAM_GAPS, `${label}.explicitGaps.downstream`);
@@ -479,11 +484,12 @@ function validateReceipt(receipt, index) {
     county,
     artifactKind,
     evidence: {
-      observationStatus: receipt.artifactReceipt.observationStatus,
-      byteLength: receipt.artifactReceipt.byteLength,
-      hashAlgorithm: receipt.artifactReceipt.hashAlgorithm,
-      sha256: receipt.artifactReceipt.sha256,
+      sourceReceiptObservationStatus: receipt.artifactReceipt.observationStatus,
+      receiptDeclaredByteLength: receipt.artifactReceipt.byteLength,
+      receiptDeclaredHashAlgorithm: receipt.artifactReceipt.hashAlgorithm,
+      receiptDeclaredSha256: receipt.artifactReceipt.sha256,
       sourceContract: ARTIFACT_RECEIPT_CONTRACT_ID,
+      validationScope: 'structure_and_internal_consistency_only',
     },
   };
 }
@@ -522,7 +528,7 @@ export function buildPublicAcquisitionReceiptLedger(options) {
       explicitGaps: {
         parcels: parcels ? [] : ['parcel_artifact_receipt_missing'],
         sales: sales ? [] : ['sales_artifact_receipt_missing'],
-        interpretation: [...INTERPRETATION_GAPS],
+        interpretation: [...LEDGER_INTERPRETATION_GAPS],
         downstream: [...DOWNSTREAM_GAPS],
       },
     };
@@ -533,7 +539,7 @@ export function buildPublicAcquisitionReceiptLedger(options) {
   return deepFreeze({
     contract: CONTRACT_ID,
     environment: ENVIRONMENT_ID,
-    evidenceScope: 'validated_in_memory_artifact_receipts_only',
+    evidenceScope: 'structurally_validated_in_memory_receipt_claims_only',
     sourceContracts: {
       baseline: BASELINE_CONTRACT_ID,
       artifactReceipt: ARTIFACT_RECEIPT_CONTRACT_ID,
@@ -543,6 +549,8 @@ export function buildPublicAcquisitionReceiptLedger(options) {
       exactlyOneRowPerCounty: true,
       deterministicCanonicalOrder: true,
       duplicateCountyArtifactReceiptsAccepted: false,
+      receiptIssuanceAuthenticated: false,
+      artifactDigestRecomputed: false,
       acquisitionPerformed: false,
       artifactContentParsed: false,
       landedRowsObserved: false,
@@ -561,7 +569,7 @@ export function buildPublicAcquisitionReceiptLedger(options) {
       countiesWithAnyReceipt: rows.filter(
         row => row.artifacts.parcels !== null || row.artifacts.sales !== null
       ).length,
-      countiesWithExplicitGaps: rows.filter(
+      countiesWithMissingReceiptSlots: rows.filter(
         row => row.explicitGaps.parcels.length || row.explicitGaps.sales.length
       ).length,
     },

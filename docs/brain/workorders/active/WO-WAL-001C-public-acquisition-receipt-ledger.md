@@ -16,7 +16,8 @@
 Aggregate protected `wal.public-acquisition-artifact-receipt.v1` values into one deterministic,
 deeply immutable ledger containing exactly one canonical row for each of Washington's 39 counties.
 Each row has separate `parcels` and `sales` receipt slots. Missing slots remain explicit gaps; a
-present receipt preserves its exact byte length and lowercase SHA-256 digest.
+present receipt preserves its source-declared byte length and lowercase SHA-256 digest without
+claiming that this layer authenticated issuance or recomputed the digest from unavailable bytes.
 
 This child does not acquire or parse artifacts and does not complete `WO-WAL-001`. It is a bounded
 in-memory evidence ledger for later, separately reserved acquisition, landing, and runtime work.
@@ -38,13 +39,17 @@ directly in memory. No filesystem, network, database, credential, or live-county
 - The constructor accepts exactly one dense plain `receipts` array with at most 78 entries.
 - Each entry must retain the exact protected 001B contract, environment, county binding, baseline
   overlay, SHA-256 evidence, truth assertions, explicit gaps, and deep immutability.
+- The ledger validates receipt structure and internal consistency only. Because 001C receives neither
+  artifact bytes nor an unforgeable 001B issuance token, copied lengths and digests are explicitly
+  named source-receipt claims; issuance authentication and digest recomputation remain false.
 - Only exact canonical county names and the closed artifact kinds `parcels` and `sales` are admitted.
 - Duplicate receipts for the same county and artifact kind fail closed, including byte-identical
   duplicates.
 - Input ordering never affects output ordering or serialization. Rows always follow the protected
   canonical 39-county order.
-- Each missing parcel or sales receipt is represented by a distinct explicit gap. Even a complete
-  78-receipt matrix retains interpretation and downstream gaps.
+- Each missing parcel or sales receipt is represented by a distinct explicit gap, and the summary
+  field is narrowly named `countiesWithMissingReceiptSlots`. Even a complete 78-receipt matrix
+  retains issuance-authentication, digest-recomputation, interpretation, and downstream gaps.
 - The output snapshots only receipt evidence required by this contract and is deeply frozen.
 
 ## Denials

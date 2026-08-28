@@ -69,11 +69,18 @@ test('builds exactly 39 canonical immutable rows with exact receipt hashes and v
     salesReceiptCount: 1,
     countiesWithBothReceipts: 0,
     countiesWithAnyReceipt: 2,
-    countiesWithExplicitGaps: 39,
+    countiesWithMissingReceiptSlots: 39,
   });
   const yakima = ledger.rows.at(-1);
-  assert.equal(yakima.artifacts.parcels.sha256, yakimaParcels.artifactReceipt.sha256);
-  assert.equal(yakima.artifacts.parcels.byteLength, 3);
+  assert.equal(
+    yakima.artifacts.parcels.receiptDeclaredSha256,
+    yakimaParcels.artifactReceipt.sha256
+  );
+  assert.equal(yakima.artifacts.parcels.receiptDeclaredByteLength, 3);
+  assert.equal(
+    yakima.artifacts.parcels.validationScope,
+    'structure_and_internal_consistency_only'
+  );
   assert.deepEqual(yakima.explicitGaps.parcels, []);
   assert.deepEqual(yakima.explicitGaps.sales, ['sales_artifact_receipt_missing']);
   assert.equal(Object.isFrozen(ledger), true);
@@ -103,12 +110,19 @@ test('represents a complete 39-county parcel and sales receipt matrix without er
 
   assert.equal(ledger.summary.receiptCount, 78);
   assert.equal(ledger.summary.countiesWithBothReceipts, 39);
-  assert.equal(ledger.summary.countiesWithExplicitGaps, 0);
+  assert.equal(ledger.summary.countiesWithMissingReceiptSlots, 0);
+  assert.equal(ledger.assertions.receiptIssuanceAuthenticated, false);
+  assert.equal(ledger.assertions.artifactDigestRecomputed, false);
   assert.equal(ledger.assertions.acquisitionPerformed, false);
   assert.equal(ledger.assertions.artifactContentParsed, false);
   assert.equal(ledger.assertions.landedRowsObserved, false);
   assert.equal(ledger.assertions.runtimeRegistrationObserved, false);
   assert.ok(ledger.rows.every(row => row.explicitGaps.interpretation.includes('content_not_parsed')));
+  assert.ok(
+    ledger.rows.every(row =>
+      row.explicitGaps.interpretation.includes('receipt_issuance_not_authenticated')
+    )
+  );
   assert.ok(ledger.rows.every(row => row.explicitGaps.downstream.includes('landing_not_performed')));
 });
 
@@ -185,6 +199,20 @@ test('rejects malformed hashes, bounds, contracts and contradictory truth claims
   }
 });
 
+test('labels internally consistent receipt digest values as unauthenticated claims', () => {
+  const forged = JSON.parse(JSON.stringify(receipt('Yakima', 'parcels')));
+  forged.artifactReceipt.sha256 = 'a'.repeat(64);
+  forged.baselineLedgerOverlay.acquisitionArtifactEvidence.sha256 = 'a'.repeat(64);
+  deepFreeze(forged);
+
+  const ledger = buildPublicAcquisitionReceiptLedger({ receipts: [forged] });
+  const evidence = ledger.rows.at(-1).artifacts.parcels;
+  assert.equal(evidence.receiptDeclaredSha256, 'a'.repeat(64));
+  assert.equal(evidence.validationScope, 'structure_and_internal_consistency_only');
+  assert.equal(ledger.assertions.receiptIssuanceAuthenticated, false);
+  assert.equal(ledger.assertions.artifactDigestRecomputed, false);
+});
+
 test('requires protected receipts to remain deeply immutable', () => {
   const mutable = JSON.parse(JSON.stringify(receipt('Adams', 'sales')));
   assert.throws(
@@ -222,7 +250,7 @@ test('rejects sparse, accessor-backed, oversized and structurally expanded input
 test('accepts an empty receipt set as 39 explicit parcel and sales gaps', () => {
   const ledger = buildPublicAcquisitionReceiptLedger({ receipts: [] });
   assert.equal(ledger.summary.receiptCount, 0);
-  assert.equal(ledger.summary.countiesWithExplicitGaps, 39);
+  assert.equal(ledger.summary.countiesWithMissingReceiptSlots, 39);
   assert.ok(ledger.rows.every(row => row.artifacts.parcels === null && row.artifacts.sales === null));
 });
 
