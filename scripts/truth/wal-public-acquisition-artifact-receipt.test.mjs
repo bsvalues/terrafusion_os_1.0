@@ -423,6 +423,59 @@ test('requires protected trimmed strings and exact array own keys', () => {
   );
 });
 
+test('reconciles protected top-level proof blocks before issuing a receipt', () => {
+  const mutations = [
+    ledger => {
+      ledger.assertions.noBentonFallbackMaterialized = false;
+    },
+    ledger => {
+      ledger.summary.runtimeRegistrationObservedCountyCount = 39;
+    },
+    ledger => {
+      ledger.summary.registryStatusCounts['adapter-ready'] = 38;
+    },
+    ledger => {
+      ledger.summary.sourceInventoryGapCount = 1;
+    },
+    ledger => {
+      ledger.sourceEvidence.status = ' fixture ';
+    },
+    ledger => {
+      ledger.sourceEvidence.unreserved = 'extra';
+    },
+  ];
+
+  for (const mutate of mutations) {
+    const ledger = baselineLedger();
+    mutate(ledger);
+    assert.throws(() => buildReceipt({ baselineLedger: ledger }));
+  }
+});
+
+test('reconciles registry counts for prototype-named statuses without coercion or omission', () => {
+  for (const status of ['__proto__', 'constructor', 'toString']) {
+    const ledger = baselineLedger();
+    ledger.rows[0].acquisitionReadiness.registryStatus = status;
+    ledger.rows[0].explicitGaps.acquisition = [
+      'acquisition_not_adapter_ready_in_registry',
+    ];
+    const counts = { 'adapter-ready': 38 };
+    Object.defineProperty(counts, status, {
+      configurable: true,
+      enumerable: true,
+      value: 1,
+      writable: true,
+    });
+    ledger.summary.registryStatusCounts = counts;
+
+    const receipt = buildReceipt({ baselineLedger: ledger });
+    assert.equal(receipt.countyBinding.county, 'Yakima');
+
+    delete ledger.summary.registryStatusCounts[status];
+    assert.throws(() => buildReceipt({ baselineLedger: ledger }));
+  }
+});
+
 test('rejects Benton metadata contamination in any non-Benton baseline row', () => {
   for (const [field, value] of [
     ['officialAssessorBaseUrl', 'https://benton.example/fallback'],

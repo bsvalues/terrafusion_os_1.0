@@ -69,6 +69,8 @@ declaration and canonical baseline row.
   evidence states; contradictory landed, runtime, freshness, fallback, capability, or gap values
   fail closed before any row is embedded in a receipt. Protected nullable strings must retain the
   ledger's trimmed canonical form, and arrays may contain only their exact dense index properties.
+- The protected ledger's source-evidence shape, truth assertions, and computed summary counts must
+  reconcile exactly with its canonical rows before the baseline contract tag is propagated.
 - Artifact declarations with missing, extra, inherited, or ambiguous fields fail closed.
 - A non-Benton artifact cannot use Benton county identity or Benton-bearing selected-row metadata.
 - A receipt proves only that bytes were supplied to this in-memory contract; all unobserved
@@ -96,6 +98,7 @@ declaration and canonical baseline row.
 - `node --test scripts/truth/wal-public-acquisition-artifact-receipt.test.mjs`
 - exact hash and byte-length tests, including non-ASCII and sliced typed-array views;
 - typed-array iterator and shadowed-byte-length bypass regressions;
+- supported Node 18 syntax/runtime compatibility and top-level proof-block contradiction regressions;
 - deterministic receipt and baseline-overlay tests;
 - deep immutability and caller-mutation tests for bytes, artifact declarations, and baseline rows;
 - explicit-gap and no landing/runtime/freshness/capability-inference tests;

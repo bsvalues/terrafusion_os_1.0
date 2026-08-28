@@ -64,6 +64,32 @@ const BASELINE_TOP_LEVEL_KEYS = Object.freeze([
   'sourceEvidence',
   'summary',
 ]);
+const SOURCE_EVIDENCE_KEYS = Object.freeze([
+  'generatedAtUtc',
+  'slice',
+  'status',
+  'supplementalResearchAtUtc',
+  'workbook',
+  'workbookSha256',
+]);
+const BASELINE_ASSERTION_KEYS = Object.freeze([
+  'deterministicCanonicalOrder',
+  'exactCanonicalCountySet',
+  'exactlyOneRowPerCounty',
+  'noBentonFallbackMaterialized',
+  'registryReadinessDoesNotImplyLandedRows',
+  'registryReadinessDoesNotImplyRuntimeRegistration',
+]);
+const BASELINE_SUMMARY_KEYS = Object.freeze([
+  'capabilityAssessedCountyCount',
+  'countyRowCount',
+  'expectedCountyCount',
+  'freshnessProvenanceObservedCountyCount',
+  'landedRowsObservedCountyCount',
+  'registryStatusCounts',
+  'runtimeRegistrationObservedCountyCount',
+  'sourceInventoryGapCount',
+]);
 const BASELINE_ROW_KEYS = Object.freeze([
   'acquisitionReadiness',
   'capabilityEvidence',
@@ -157,8 +183,8 @@ function assertExactOwnDataKeys(value, expectedKeys, label) {
     throw new TypeError(`${label} must not contain symbol properties.`);
   }
 
-  const actualKeys = ownKeys.toSorted();
-  const sortedExpectedKeys = [...expectedKeys].toSorted();
+  const actualKeys = ownKeys.sort();
+  const sortedExpectedKeys = [...expectedKeys].sort();
   if (
     actualKeys.length !== sortedExpectedKeys.length ||
     actualKeys.some((key, index) => key !== sortedExpectedKeys[index])
@@ -248,10 +274,12 @@ function snapshotJsonValue(
   } else {
     assertPlainRecord(value, label);
     snapshot = {};
-    for (const key of Reflect.ownKeys(value).toSorted()) {
-      if (typeof key !== 'string') {
-        throw new TypeError(`${label} must not contain symbol properties.`);
-      }
+    const keys = Reflect.ownKeys(value);
+    if (keys.some(key => typeof key !== 'string')) {
+      throw new TypeError(`${label} must not contain symbol properties.`);
+    }
+    keys.sort();
+    for (const key of keys) {
       const descriptor = Object.getOwnPropertyDescriptor(value, key);
       if (!descriptor || !('value' in descriptor) || !descriptor.enumerable) {
         throw new TypeError(`${label}.${key} must be an enumerable data property.`);
@@ -424,17 +452,82 @@ function validateAndSnapshotBaseline(baselineLedger, selectedCounty) {
   if (baselineLedger.evidenceScope !== 'source_registry_only') {
     throw new Error('baselineLedger.evidenceScope must be source_registry_only.');
   }
+  assertExactOwnDataKeys(
+    baselineLedger.sourceEvidence,
+    SOURCE_EVIDENCE_KEYS,
+    'baselineLedger.sourceEvidence'
+  );
+  for (const field of SOURCE_EVIDENCE_KEYS) {
+    assertNullableBoundedString(
+      baselineLedger.sourceEvidence[field],
+      `baselineLedger.sourceEvidence.${field}`
+    );
+  }
+  assertExactOwnDataKeys(
+    baselineLedger.assertions,
+    BASELINE_ASSERTION_KEYS,
+    'baselineLedger.assertions'
+  );
+  for (const field of BASELINE_ASSERTION_KEYS) {
+    if (baselineLedger.assertions[field] !== true) {
+      throw new Error(`baselineLedger.assertions.${field} must be true.`);
+    }
+  }
   assertDensePlainArray(baselineLedger.rows, 'baselineLedger.rows');
   if (baselineLedger.rows.length !== EXPECTED_COUNTIES.length) {
     throw new Error(`baselineLedger must contain exactly ${EXPECTED_COUNTIES.length} county rows.`);
   }
 
   let selectedRow;
+  const registryStatusCounts = new Map();
+  let sourceInventoryGapCount = 0;
   baselineLedger.rows.forEach((row, index) => {
     const county = EXPECTED_COUNTIES[index];
     validateBaselineRow(row, county, index);
+    const registryStatus = row.acquisitionReadiness.registryStatus;
+    registryStatusCounts.set(registryStatus, (registryStatusCounts.get(registryStatus) ?? 0) + 1);
+    if (row.explicitGaps.sourceInventory.length > 0) sourceInventoryGapCount += 1;
     if (county === selectedCounty) selectedRow = snapshotJsonValue(row, `${county} baseline row`);
   });
+
+  assertExactOwnDataKeys(
+    baselineLedger.summary,
+    BASELINE_SUMMARY_KEYS,
+    'baselineLedger.summary'
+  );
+  const exactSummaryValues = {
+    capabilityAssessedCountyCount: 0,
+    countyRowCount: EXPECTED_COUNTIES.length,
+    expectedCountyCount: EXPECTED_COUNTIES.length,
+    freshnessProvenanceObservedCountyCount: 0,
+    landedRowsObservedCountyCount: 0,
+    runtimeRegistrationObservedCountyCount: 0,
+    sourceInventoryGapCount,
+  };
+  for (const [field, expected] of Object.entries(exactSummaryValues)) {
+    if (baselineLedger.summary[field] !== expected) {
+      throw new Error(`baselineLedger.summary.${field} must equal ${expected}.`);
+    }
+  }
+  assertExactOwnDataKeys(
+    baselineLedger.summary.registryStatusCounts,
+    [...registryStatusCounts.keys()],
+    'baselineLedger.summary.registryStatusCounts'
+  );
+  const derivedRegistryStatusTotal = [...registryStatusCounts.values()].reduce(
+    (total, count) => total + count,
+    0
+  );
+  if (derivedRegistryStatusTotal !== EXPECTED_COUNTIES.length) {
+    throw new Error('Derived registry status counts must cover all canonical counties.');
+  }
+  for (const [status, expected] of registryStatusCounts) {
+    if (baselineLedger.summary.registryStatusCounts[status] !== expected) {
+      throw new Error(
+        `baselineLedger.summary.registryStatusCounts.${status} must equal ${expected}.`
+      );
+    }
+  }
 
   return selectedRow;
 }
