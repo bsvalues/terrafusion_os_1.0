@@ -11,6 +11,7 @@ import {
   TERMINAL_STATUSES,
   compareCandidates,
   scoreRecord,
+  verifiedDispatchRefs,
 } from './wo-query.mjs';
 
 const DEFAULT_REGISTRY = 'docs/brain/workorders/registry/work-order-registry.seed.json';
@@ -686,8 +687,8 @@ function chooseMaximumConflictFree(candidates, maxWorkers, searchNodeLimit) {
   return { selected: best, searchNodes: visited };
 }
 
-function staticExclusions(record, rules, authority) {
-  return scoreRecord(record, rules, authority).hardExclusions.filter(
+function staticExclusions(record, rules, authority, options) {
+  return scoreRecord(record, rules, authority, options).hardExclusions.filter(
     reason => reason !== 'dependency-not-cleared'
   );
 }
@@ -781,7 +782,9 @@ function planWaves(registry, rules, options = {}) {
   const plannable = [];
 
   for (const record of records) {
-    const scoredExclusions = staticExclusions(record, rules, authority);
+    const scoredExclusions = staticExclusions(record, rules, authority, {
+      verifiedDispatchRefs: options.verifiedDispatchRefs,
+    });
     const protectedSystemRequired = scoredExclusions.includes('protected-system-required');
     const reasons = [
       ...scoredExclusions.filter(reason => reason !== 'protected-system-required'),
@@ -1052,6 +1055,7 @@ if (path.resolve(fileURLToPath(import.meta.url)) === path.resolve(process.argv[1
       searchNodeLimit: args.searchNodeLimit,
       reservations,
       ownerDecisions,
+      verifiedDispatchRefs: verifiedDispatchRefs(root, registry, args.registry),
     });
     console.log(args.json ? JSON.stringify(plan, null, 2) : printText(plan));
   } catch (error) {

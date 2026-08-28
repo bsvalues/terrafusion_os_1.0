@@ -688,7 +688,20 @@ describe('wo-wave-plan', () => {
       maxWorkers: 4,
       now: '2026-08-27T20:00:00Z',
       ownerDecisions: actualOwnerDecisions,
+      verifiedDispatchRefs: ['refs/remotes/origin/main'],
     });
+    const unverifiedPlan = planWaves(registry(actualRecords), rules, {
+      ...baseOptions,
+      verifiedDispatchRefs: [],
+    });
+    assert.deepEqual(unverifiedPlan.initialExecutableSet, []);
+    for (const childId of childIds) {
+      assert.ok(
+        unverifiedPlan.excludedWorkOrders
+          .find(item => item.workOrderId === childId)
+          ?.reasons.includes('dispatch-source-unverified:refs/remotes/origin/main')
+      );
+    }
     const exactPlan = planWaves(registry(actualRecords), rules, baseOptions);
     assert.deepEqual(
       exactPlan.initialExecutableSet,
@@ -835,6 +848,7 @@ describe('wo-wave-plan', () => {
       maxWorkers: 4,
       now: '2026-08-27T20:00:00Z',
       ownerDecisions: actualOwnerDecisions,
+      verifiedDispatchRefs: ['refs/remotes/origin/main'],
     });
     assert.match(
       planWaves(registry(registryRelabel), rules, registryRelabelOptions).excludedWorkOrders.find(
@@ -852,6 +866,7 @@ describe('wo-wave-plan', () => {
         maxWorkers: 4,
         now: '2026-08-27T20:00:00Z',
         ownerDecisions: actualOwnerDecisions,
+        verifiedDispatchRefs: ['refs/remotes/origin/main'],
       });
       assert.match(
         planWaves(registry(nullTypedRecords), rules, nullTypedOptions).excludedWorkOrders.find(

@@ -104,6 +104,10 @@ Only these repository-relative paths may change in this governance Work Order:
 - `docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md`
 - `docs/brain/workorders/programs/washington-assessor-launch-v1.md`
 - `docs/brain/workorders/registry/work-order-registry.seed.json`
+- `docs/brain/workorders/schema/work-order.schema.json`
+- `docs/brain/workorders/tools/wo-query.mjs`
+- `docs/brain/workorders/tools/wo-query.test.mjs`
+- `docs/brain/workorders/tools/wo-wave-plan.mjs`
 - `docs/brain/workorders/tools/wo-wave-plan.test.mjs`
 
 ## Validation
@@ -112,8 +116,10 @@ Only these repository-relative paths may change in this governance Work Order:
 - run the focused work-order query, report, wave-planner, phase-83, and governance tests;
 - prove the exact four-child wave is accepted and overlapping path, contract, or environment
   reservations fail closed;
+- prove query and planner output excludes every B child unless the clean checkout head exactly equals
+  its declared protected remote-tracking ref;
 - `git diff --check`;
-- exact thirteen-path changed-file audit.
+- exact seventeen-path changed-file audit.
 
 ## Completion
 

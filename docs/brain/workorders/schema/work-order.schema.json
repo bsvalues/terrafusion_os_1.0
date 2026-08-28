@@ -96,6 +96,9 @@
       "uniqueItems": true,
       "description": "Optional exact machine-readable environment reservations. When present, planners must reconcile candidate environment claims exactly."
     },
+    "dispatchGuard": {
+      "$ref": "#/$defs/dispatchGuard"
+    },
     "blockedFiles": {
       "type": "array",
       "items": {
@@ -210,6 +213,20 @@
         },
         "notes": {
           "type": "string"
+        }
+      }
+    },
+    "dispatchGuard": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "ref"],
+      "properties": {
+        "type": {
+          "const": "protected_ref_head"
+        },
+        "ref": {
+          "type": "string",
+          "const": "refs/remotes/origin/main"
         }
       }
     },

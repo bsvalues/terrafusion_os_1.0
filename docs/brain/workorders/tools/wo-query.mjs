@@ -2,6 +2,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import process from "node:process";
+import { execFileSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 
 const DEFAULT_REGISTRY = "docs/brain/workorders/registry/work-order-registry.seed.json";
@@ -138,7 +139,7 @@ function blockerPressure(record) {
   return 0.25;
 }
 
-function hardExclusions(record, authority) {
+function hardExclusions(record, authority, options = {}) {
   const exclusions = [];
   if (TERMINAL_STATUSES.has(record.status)) exclusions.push("terminal-status");
   if (ACTIVE_STATUSES.has(record.status)) exclusions.push("active-work-order");
@@ -153,6 +154,16 @@ function hardExclusions(record, authority) {
   }
   if (riskRank(record.riskClass) > riskRank(authority)) exclusions.push("risk-exceeds-authority");
   if (dependencyReadiness(record) < 1) exclusions.push("dependency-not-cleared");
+  if (record.dispatchGuard != null) {
+    if (
+      record.dispatchGuard.type !== "protected_ref_head" ||
+      record.dispatchGuard.ref !== "refs/remotes/origin/main"
+    ) {
+      exclusions.push("invalid-dispatch-guard");
+    } else if (!new Set(options.verifiedDispatchRefs ?? []).has(record.dispatchGuard.ref)) {
+      exclusions.push(`dispatch-source-unverified:${record.dispatchGuard.ref}`);
+    }
+  }
 
   const allowedText = JSON.stringify(record.allowedSystems ?? []);
   if (
@@ -232,8 +243,8 @@ function verdictFor(score, bands) {
   return match.verdict;
 }
 
-function scoreRecord(record, rules, authority) {
-  const exclusions = hardExclusions(record, authority);
+function scoreRecord(record, rules, authority, options = {}) {
+  const exclusions = hardExclusions(record, authority, options);
   const values = factorValues(record, authority);
   const factorBreakdown = rules.factors.map((factor) => {
     const value = values[factor.id] ?? 0;
@@ -299,12 +310,12 @@ function compareCandidates(a, b, rules, recordById, activeLane) {
   return a.workOrderId.localeCompare(b.workOrderId);
 }
 
-function summarize(registry, rules, authority) {
+function summarize(registry, rules, authority, options = {}) {
   const records = registry.records ?? [];
   const recordById = new Map(records.map((record) => [record.id, record]));
   const activeLane = records.find((record) => ACTIVE_STATUSES.has(record.status))?.program ?? null;
   const scored = records.map((record) => {
-    const score = scoreRecord(record, rules, authority);
+    const score = scoreRecord(record, rules, authority, options);
     score.nextRecommendedAction = recommendationText(score, null, activeLane);
     return score;
   });
@@ -344,6 +355,64 @@ function summarize(registry, rules, authority) {
     nextRecommendedWorkOrder: next,
     rankedCandidates: ranked,
   };
+}
+
+function verifiedDispatchRefs(root, registry, registryPath = DEFAULT_REGISTRY) {
+  const requestedRefs = [
+    ...new Set(
+      (registry.records ?? [])
+        .map((record) => record.dispatchGuard?.ref)
+        .filter((ref) => typeof ref === "string"),
+    ),
+  ];
+  if (requestedRefs.length === 0) return [];
+  if (requestedRefs.some((ref) => ref !== "refs/remotes/origin/main")) return [];
+
+  try {
+    if (path.resolve(root, registryPath) !== path.resolve(root, DEFAULT_REGISTRY)) return [];
+    const originUrl = execFileSync("git", ["remote", "get-url", "origin"], {
+      cwd: root,
+      encoding: "utf8",
+      stdio: ["ignore", "pipe", "ignore"],
+    }).trim();
+    if (
+      !/^(?:https:\/\/github\.com\/|git@github\.com:|ssh:\/\/git@github\.com\/)bsvalues\/terrafusion_os_1\.0(?:\.git)?$/i.test(
+        originUrl,
+      )
+    ) {
+      return [];
+    }
+    execFileSync("git", ["ls-files", "--error-unmatch", "--", DEFAULT_REGISTRY], {
+      cwd: root,
+      stdio: "ignore",
+    });
+    const status = execFileSync("git", ["status", "--porcelain", "--untracked-files=all"], {
+      cwd: root,
+      encoding: "utf8",
+      stdio: ["ignore", "pipe", "ignore"],
+    }).trim();
+    if (status) return [];
+    const head = execFileSync("git", ["rev-parse", "HEAD^{commit}"], {
+      cwd: root,
+      encoding: "utf8",
+      stdio: ["ignore", "pipe", "ignore"],
+    }).trim();
+    return requestedRefs.filter((ref) => {
+      try {
+        return (
+          execFileSync("git", ["rev-parse", `${ref}^{commit}`], {
+            cwd: root,
+            encoding: "utf8",
+            stdio: ["ignore", "pipe", "ignore"],
+          }).trim() === head
+        );
+      } catch {
+        return false;
+      }
+    });
+  } catch {
+    return [];
+  }
 }
 
 function printText(summary) {
@@ -389,6 +458,7 @@ export {
   scoreRecord,
   verdictFor,
   hardExclusions,
+  verifiedDispatchRefs,
 };
 
 if (path.resolve(fileURLToPath(import.meta.url)) === path.resolve(process.argv[1] ?? "")) {
@@ -401,7 +471,9 @@ if (path.resolve(fileURLToPath(import.meta.url)) === path.resolve(process.argv[1
     const root = repoRoot();
     const registry = readJson(root, args.registry);
     const rules = readJson(root, args.rules);
-    const summary = summarize(registry, rules, args.authority);
+    const summary = summarize(registry, rules, args.authority, {
+      verifiedDispatchRefs: verifiedDispatchRefs(root, registry, args.registry),
+    });
     console.log(args.json ? JSON.stringify(summary, null, 2) : printText(summary));
   } catch (error) {
     console.error(error instanceof Error ? error.message : String(error));
