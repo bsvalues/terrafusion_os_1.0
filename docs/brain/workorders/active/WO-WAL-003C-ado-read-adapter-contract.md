@@ -2,7 +2,7 @@
 
 | Field | Value |
 | --- | --- |
-| Status | `IMPLEMENTED_PENDING_PROTECTED_PR` |
+| Status | `PROTECTED_COMPLETE` |
 | Parent | `WO-WAL-003` |
 | Program | Washington Assessor Launch V1 |
 | Goal | `GOAL-WASHINGTON-ASSESSOR-LAUNCH-V1` |
@@ -105,6 +105,12 @@ if this contract's local tests pass.
 - `git diff --check` passes and the diff contains only the three reserved paths.
 
 ## Proof boundary and continuation
+
+PR #1501 reached protected main as `0374caafdc943b9f4dd53189542d4cc2b2e8fc67` with updated
+integrated head `307db297f9e8d037f1ba80c5d039c98da1ed37ec`; independently reviewed head
+`d2a3cb746b4109d47bafea5b5033f041763d81df` remains separately identified and is contained in the
+protected result. Continuation routes through the exact 003D fake open-connection session child
+after `WO-WAL-000D` reaches protected main.
 
 This child proves only a fake ADO reader composition. It does not bind a real adapter to a read-only
 credential or role, collect observed external command evidence, implement durable checkpoints,

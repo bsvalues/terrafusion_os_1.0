@@ -15,20 +15,21 @@
 
 Washington Assessor Launch V1 is active under Issue #1485 and
 `OWNER-WAL-V1-MISSION-AUTHORITY-20260827`. `WO-WAL-000` completed through protected main in PR
-#1486. The initial exact A wave completed through protected PRs #1488-#1491, and the B wave completed
-through protected PRs #1493-#1496. After `WO-WAL-000C` reaches protected main, the next executable
-set is the exact, non-colliding child wave `WO-WAL-001C`, `WO-WAL-002C`, `WO-WAL-003C`, and
-`WO-WAL-004C`. The broad parents are active but not complete or directly dispatched by this routing.
+#1486. The exact A, B, and C waves are protected-complete through PRs #1488-#1491, #1493-#1496,
+and #1498-#1501. After `WO-WAL-000D` reaches protected main, the next executable set is the exact,
+non-colliding child wave `WO-WAL-001D`, `WO-WAL-002D`, `WO-WAL-003D`, and `WO-WAL-004D`. The broad
+parents are active but not complete or directly dispatched by this routing.
 
-The C reservations are deliberately local and deterministic: 001C owns only
-`wal.public-acquisition-receipt-ledger.v1` over in-memory receipts; 002C owns only
-`wal.county-upload.csv-county-bound-intake.v1` over canonical authority objects and in-memory CSV;
-003C owns only `wal.external-readonly.db-command-adapter.v1` over a fake ADO reader; and 004C owns
-only `wal.county-data-activation-prerequisite.v1` over data-free in-memory evidence facts.
+The D reservations are deliberately local and deterministic: 001D owns only
+`wal.public-acquisition-artifact-verification.v1` over supplied in-memory public bytes; 002D owns
+only `wal.county-upload.csv-idempotency.v1` over validated county/dataset/content evidence; 003D
+owns only `wal.external-readonly.db-connection-session.v1` over a caller-owned already-open fake ADO
+connection; and 004D owns only `wal.authenticated-county-authority-binding.v1` over local auth-context
+and canonical resolver fixtures.
 
 The candidate registry models the state that will exist after its protected merge. It is not itself
-dispatch authority while present only on a PR branch: C-child execution requires re-reading this
-state from protected main and verifying the WO-WAL-000C merge commit is in protected-main history.
+dispatch authority while present only on a PR branch: D-child execution requires re-reading this
+state from protected main and verifying the WO-WAL-000D merge commit is in protected-main history.
 
 The program continues through 39-county runtime truth, governed county upload, read-only
 multi-county Sync, county identity/isolation/trust, the real Counties HUB, county-aware TerraForge,
@@ -161,23 +162,28 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | **WO-WAL-000 Mission Activation** | **COMPLETE ON PROTECTED MERGE / PR #1486** | Canonize Issue #1485, register the finite mission, validate governance, and clear the initial construction wave |
 | **WO-WAL-000A Initial Exact Child Reservations** | **COMPLETE ON PROTECTED MERGE / R3** | Seven exact governance files; add typed reservation schema/registry truth and fail-closed planner reconciliation for the four initial children |
 | **WO-WAL-000B A-Wave Reconciliation and Next Exact Child Reservations** | **COMPLETE / PR #1492 / R3** | Protected merge `b740c3dad`; record A-wave completion and register the B children |
-| **WO-WAL-000C B-Wave Reconciliation and Next Exact Child Reservations** | **ACTIVE; COMPLETE ONLY ON PROTECTED MERGE / R3** | Ten exact governance files; record B-wave protected completion, register the four non-colliding C children, and retain protected-main dispatch binding |
+| **WO-WAL-000C B-Wave Reconciliation and Next Exact Child Reservations** | **COMPLETE / PROTECTED MERGE `474161f93` / R3** | Ten exact governance files; recorded B-wave protected completion and registered the four C children |
+| **WO-WAL-000D C-Wave Reconciliation and Next Exact Child Reservations** | **ACTIVE; COMPLETE ONLY ON PROTECTED MERGE / R3** | Ten exact governance files; record C-wave protected completion, register the four non-colliding D children, and retain protected-main dispatch binding |
 | **WO-WAL-001 Statewide Public Baseline Runtime Completion** | **OPEN; EXACT CHILD ROUTING / R4** | Parent remains open; prove truthful source-to-rows-to-runtime state for all 39 counties with provenance, freshness, capability truth, and no Benton fallback |
 | **WO-WAL-001A Public Baseline Ledger Contract** | **COMPLETE / PR #1489** | Three exact files; deterministic 39-county registry-only ledger under `wal.public-baseline-ledger.v1`; local temp only, no network/database and no runtime inference |
 | **WO-WAL-001B Public Acquisition Artifact Receipt Contract** | **COMPLETE / PR #1493 / R2** | Protected merge `d54d1722f`; immutable public-artifact receipt evidence with no runtime inference |
-| **WO-WAL-001C Public Acquisition Receipt Ledger** | **READY AFTER 000C MERGE / R2** | Three exact files; 39 canonical immutable receipt rows and explicit gaps under `wal.public-acquisition-receipt-ledger.v1` |
+| **WO-WAL-001C Public Acquisition Receipt Ledger** | **COMPLETE / PR #1498 / R2** | Protected merge `cfbb64713`; 39 canonical immutable receipt rows and explicit gaps under `wal.public-acquisition-receipt-ledger.v1` |
+| **WO-WAL-001D Public Artifact Byte Verification** | **READY AFTER 000D MERGE / R2** | Three exact files; recompute bounded public artifact byte hash/length and bind exact canonical county/artifact slot without source-authenticity or runtime inference |
 | **WO-WAL-002 Governed County Upload Intake** | **OPEN; EXACT CHILD ROUTING / R5** | Parent remains open; authenticated county-bound upload, validation, quarantine, lineage, idempotency, atomic promotion, and rollback are not completed by its parser child |
 | **WO-WAL-002A Streaming CSV Parser Harness** | **COMPLETE / PR #1490** | Three exact files; bounded strict UTF-8 in-memory parser under `wal.county-upload.csv-parser.v1`; no upload/auth/persistence behavior |
 | **WO-WAL-002B Declared CSV Intake Envelope** | **COMPLETE / PR #1494 / R3** | Protected merge `43fb4e239`; declared CSV/content evidence with no auth, county binding, API or persistence |
-| **WO-WAL-002C Canonical County-Bound CSV Intake** | **READY AFTER 000C MERGE / R5** | Three exact files; same-county `COUNTY_PROVIDED` protected-operation binding around one in-memory CSV envelope |
+| **WO-WAL-002C Canonical County-Bound CSV Intake** | **COMPLETE / PR #1500 / R5** | Protected merge `22d00eda8`; same-county `COUNTY_PROVIDED` protected-operation binding around one in-memory CSV envelope |
+| **WO-WAL-002D County CSV Idempotency Identity** | **READY AFTER 000D MERGE / R3** | Three exact files; deterministic bounded canonical county/dataset/content identity with no duplicate store or decision |
 | **WO-WAL-003 Read-Only Multi-County TerraFusion Sync** | **OPEN; EXACT CHILD ROUTING / R5** | Parent remains open; real source profiles, checkpoints, lineage, drift handling and observed zero external DML require later exact children |
 | **WO-WAL-003A Read-Only Source Adapter Contract** | **COMPLETE / PR #1491** | Four exact files; mock-only `wal.source-profile.v1` and `wal.external-readonly.v1`; no live source or observed no-DML claim |
 | **WO-WAL-003B Bounded Read Execution Envelope** | **COMPLETE / PR #1495 / R3** | Protected merge `3992e89f6`; one guarded mock-adapter execution with no live source or credential |
-| **WO-WAL-003C ADO Read Adapter Contract** | **READY AFTER 000C MERGE / R4** | Three exact files; fake-ADO reader-only single execution and bounded page composition; no live database or credential |
+| **WO-WAL-003C ADO Read Adapter Contract** | **COMPLETE / PR #1501 / R4** | Protected merge `0374caafd`; fake-ADO reader-only single execution and bounded page composition |
+| **WO-WAL-003D Profile-Bound Fake ADO Connection Session** | **READY AFTER 000D MERGE / R4** | Three exact files; caller-owned already-open fake connection, one command/session; no open/close, credential, live DB, or no-DML claim |
 | **WO-WAL-004 County Identity, Isolation, Trust and Activation Boundary** | **OPEN; EXACT CHILD ROUTING / R5** | Parent remains open; only the canonical identity/claim-authority foundation is admitted, not trust/activation or cross-surface integration |
 | **WO-WAL-004A Canonical Washington County Authority Contract** | **COMPLETE / PR #1488** | Six exact files; `wal.county-identity.v1` and `wal.county-authority.v1` over synthetic in-memory rows/claims with no default county |
 | **WO-WAL-004B County Data Mode and Authority Boundary Contract** | **COMPLETE / PR #1496 / R5** | Protected merge `4fde39015`; pure same-county visibility/operation predicate with no activation or integration |
-| **WO-WAL-004C County Data Activation Prerequisite Contract** | **READY AFTER 000C MERGE / R5** | Three exact files; data-free per-mode evidence eligibility with no activation, adoption, persistence or integration |
+| **WO-WAL-004C County Data Activation Prerequisite Contract** | **COMPLETE / PR #1499 / R5** | Protected merge `da2443068`; data-free per-mode evidence eligibility with no activation, adoption, persistence or integration |
+| **WO-WAL-004D Authenticated County Authority Binding** | **READY AFTER 000D MERGE / R5** | Three exact files; snapshot authenticated context and bind exact canonical county GUID equality; no authentication, grant, activation, persistence, or default county |
 | **WO-WAL-005 Real 39-County Counties HUB** | **BLOCKED ON STABLE 001-004 CONTRACTS / R4** | Build `/counties` from real control-plane truth for PUBLIC, COUNTY_PROVIDED, CONNECTED, provenance, freshness and capability state |
 | **WO-WAL-006 TerraForge Statewide Launch Runtime** | **BLOCKED ON STABLE 001-004 CONTRACTS / R4** | Run county-aware supported workflows, disclose trust/source state, and withhold unsupported modules without silent fallback |
 | **WO-WAL-007 39-County End-to-End Launch Proof** | **BLOCKED ON 001-006 / R4** | Accept one exact candidate through all-county API/browser coverage, representative source-family journeys, rollback and adversarial isolation proof |
