@@ -93,6 +93,37 @@ test('recomputes exact byte length and SHA-256 for one canonical receipt-ledger 
   assert.equal(Object.isFrozen(proof.verification), true);
 });
 
+test('snapshots validated own-data descriptors instead of proxy get-trap substitutions', () => {
+  const adamsBytes = new TextEncoder().encode('Adams parcel bytes');
+  const bentonBytes = new TextEncoder().encode('Benton sales bytes');
+  const ledger = receiptLedger([
+    { county: 'Adams', artifactKind: 'parcels', bytes: adamsBytes },
+    { county: 'Benton', artifactKind: 'sales', bytes: bentonBytes },
+  ]);
+  const target = { county: 'Adams', artifactKind: 'parcels', bytes: adamsBytes };
+  const artifact = new Proxy(target, {
+    get(object, key, receiver) {
+      if (key === 'county') return 'Benton';
+      if (key === 'artifactKind') return 'sales';
+      if (key === 'bytes') return bentonBytes;
+      return Reflect.get(object, key, receiver);
+    },
+  });
+
+  const proof = verify(ledger, artifact);
+
+  assert.deepEqual(proof.countyBinding, {
+    county: 'Adams',
+    countyToken: 'adams',
+    artifactKind: 'parcels',
+  });
+  assert.equal(proof.verification.recomputedByteLength, adamsBytes.byteLength);
+  assert.equal(
+    proof.verification.recomputedSha256,
+    createHash('sha256').update(adamsBytes).digest('hex')
+  );
+});
+
 test('hashes only the visible sliced view using typed-array internal slots', () => {
   const exact = new TextEncoder().encode('EXACT-BYTES');
   const backing = new TextEncoder().encode('prefix-EXACT-BYTES-suffix');

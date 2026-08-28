@@ -125,36 +125,51 @@ function assertExactOwnDataKeys(value, expectedKeys, label) {
   if (actual.length !== expected.length || actual.some((key, index) => key !== expected[index])) {
     throw new TypeError(`${label} must contain exactly: ${expected.join(', ')}.`);
   }
+  const snapshot = Object.create(null);
   for (const key of keys) {
     const descriptor = Object.getOwnPropertyDescriptor(value, key);
     if (!descriptor || !descriptor.enumerable || !('value' in descriptor)) {
       throw new TypeError(`${label}.${key} must be an enumerable data property.`);
     }
+    snapshot[key] = descriptor.value;
   }
+  return snapshot;
 }
 
 function assertDensePlainArray(value, label) {
   if (!Array.isArray(value) || Object.getPrototypeOf(value) !== Array.prototype) {
     throw new TypeError(`${label} must be a plain array.`);
   }
+  const lengthDescriptor = Object.getOwnPropertyDescriptor(value, 'length');
+  if (!lengthDescriptor || !('value' in lengthDescriptor)) {
+    throw new TypeError(`${label}.length must be a data property.`);
+  }
+  const length = lengthDescriptor.value;
   const expectedKeys = new Set(['length']);
-  for (let index = 0; index < value.length; index += 1) {
+  const snapshot = [];
+  for (let index = 0; index < length; index += 1) {
     expectedKeys.add(String(index));
     const descriptor = Object.getOwnPropertyDescriptor(value, String(index));
     if (!descriptor || !descriptor.enumerable || !('value' in descriptor)) {
       throw new TypeError(`${label} must contain dense enumerable data elements.`);
     }
+    snapshot.push(descriptor.value);
   }
   if (Reflect.ownKeys(value).some(key => !expectedKeys.has(key))) {
     throw new TypeError(`${label} must not contain custom properties.`);
   }
+  return snapshot;
 }
 
 function assertExactArray(value, expected, label) {
-  assertDensePlainArray(value, label);
-  if (value.length !== expected.length || value.some((entry, index) => entry !== expected[index])) {
+  const snapshot = assertDensePlainArray(value, label);
+  if (
+    snapshot.length !== expected.length ||
+    snapshot.some((entry, index) => entry !== expected[index])
+  ) {
     throw new Error(`${label} must retain the protected canonical values.`);
   }
+  return snapshot;
 }
 
 function assertDeepFrozen(value, label, seen = new WeakSet()) {
@@ -173,20 +188,24 @@ function assertDeepFrozen(value, label, seen = new WeakSet()) {
 }
 
 function validateArtifactAndSnapshotBytes(artifact) {
-  assertExactOwnDataKeys(artifact, ['artifactKind', 'bytes', 'county'], 'artifact');
-  if (!EXPECTED_COUNTIES.includes(artifact.county)) {
+  const declaration = assertExactOwnDataKeys(
+    artifact,
+    ['artifactKind', 'bytes', 'county'],
+    'artifact'
+  );
+  if (!EXPECTED_COUNTIES.includes(declaration.county)) {
     throw new Error('artifact.county must be an exact canonical Washington county name.');
   }
-  if (!ARTIFACT_KINDS.includes(artifact.artifactKind)) {
+  if (!ARTIFACT_KINDS.includes(declaration.artifactKind)) {
     throw new Error('artifact.artifactKind must be parcels or sales.');
   }
-  if (!Reflect.apply(Object.prototype.isPrototypeOf, Uint8Array.prototype, [artifact.bytes])) {
+  if (!Reflect.apply(Object.prototype.isPrototypeOf, Uint8Array.prototype, [declaration.bytes])) {
     throw new TypeError('artifact.bytes must be a Uint8Array view.');
   }
 
   let byteLength;
   try {
-    byteLength = Reflect.apply(TYPED_ARRAY_BYTE_LENGTH_GETTER, artifact.bytes, []);
+    byteLength = Reflect.apply(TYPED_ARRAY_BYTE_LENGTH_GETTER, declaration.bytes, []);
   } catch {
     throw new TypeError('artifact.bytes must be a Uint8Array view.');
   }
@@ -196,67 +215,68 @@ function validateArtifactAndSnapshotBytes(artifact) {
   }
 
   const bytesSnapshot = new Uint8Array(byteLength);
-  Reflect.apply(UINT8_ARRAY_SET, bytesSnapshot, [artifact.bytes]);
+  Reflect.apply(UINT8_ARRAY_SET, bytesSnapshot, [declaration.bytes]);
   return {
-    artifactKind: artifact.artifactKind,
+    artifactKind: declaration.artifactKind,
     bytesSnapshot,
-    county: artifact.county,
+    county: declaration.county,
   };
 }
 
 function validateReceiptEvidence(value, label) {
-  assertExactOwnDataKeys(value, RECEIPT_EVIDENCE_KEYS, label);
+  const evidence = assertExactOwnDataKeys(value, RECEIPT_EVIDENCE_KEYS, label);
   if (
-    value.sourceReceiptObservationStatus !== 'exact_supplied_bytes_observed' ||
-    !Number.isSafeInteger(value.receiptDeclaredByteLength) ||
-    value.receiptDeclaredByteLength < 1 ||
-    value.receiptDeclaredByteLength > MAX_ARTIFACT_BYTES ||
-    value.receiptDeclaredHashAlgorithm !== 'sha256' ||
-    typeof value.receiptDeclaredSha256 !== 'string' ||
-    !/^[a-f0-9]{64}$/.test(value.receiptDeclaredSha256) ||
-    value.sourceContract !== ARTIFACT_RECEIPT_CONTRACT_ID ||
-    value.validationScope !== 'structure_and_internal_consistency_only'
+    evidence.sourceReceiptObservationStatus !== 'exact_supplied_bytes_observed' ||
+    !Number.isSafeInteger(evidence.receiptDeclaredByteLength) ||
+    evidence.receiptDeclaredByteLength < 1 ||
+    evidence.receiptDeclaredByteLength > MAX_ARTIFACT_BYTES ||
+    evidence.receiptDeclaredHashAlgorithm !== 'sha256' ||
+    typeof evidence.receiptDeclaredSha256 !== 'string' ||
+    !/^[a-f0-9]{64}$/.test(evidence.receiptDeclaredSha256) ||
+    evidence.sourceContract !== ARTIFACT_RECEIPT_CONTRACT_ID ||
+    evidence.validationScope !== 'structure_and_internal_consistency_only'
   ) {
     throw new Error(`${label} must retain exact protected receipt-ledger evidence.`);
   }
+  return evidence;
 }
 
 function validateReceiptLedgerAndSelect(receiptLedger, selectedCounty, selectedKind) {
-  assertExactOwnDataKeys(receiptLedger, LEDGER_TOP_LEVEL_KEYS, 'receiptLedger');
+  const ledger = assertExactOwnDataKeys(receiptLedger, LEDGER_TOP_LEVEL_KEYS, 'receiptLedger');
   assertDeepFrozen(receiptLedger, 'receiptLedger');
   if (
-    receiptLedger.contract !== RECEIPT_LEDGER_CONTRACT_ID ||
-    receiptLedger.environment !== RECEIPT_LEDGER_ENVIRONMENT_ID ||
-    receiptLedger.evidenceScope !== 'structurally_validated_in_memory_receipt_claims_only'
+    ledger.contract !== RECEIPT_LEDGER_CONTRACT_ID ||
+    ledger.environment !== RECEIPT_LEDGER_ENVIRONMENT_ID ||
+    ledger.evidenceScope !== 'structurally_validated_in_memory_receipt_claims_only'
   ) {
     throw new Error(`receiptLedger must be a protected ${RECEIPT_LEDGER_CONTRACT_ID} value.`);
   }
 
-  assertExactOwnDataKeys(
-    receiptLedger.sourceContracts,
+  const sourceContracts = assertExactOwnDataKeys(
+    ledger.sourceContracts,
     ['artifactReceipt', 'baseline'],
     'receiptLedger.sourceContracts'
   );
   if (
-    receiptLedger.sourceContracts.baseline !== BASELINE_CONTRACT_ID ||
-    receiptLedger.sourceContracts.artifactReceipt !== ARTIFACT_RECEIPT_CONTRACT_ID
+    sourceContracts.baseline !== BASELINE_CONTRACT_ID ||
+    sourceContracts.artifactReceipt !== ARTIFACT_RECEIPT_CONTRACT_ID
   ) {
     throw new Error('receiptLedger.sourceContracts must retain the protected source contracts.');
   }
 
-  assertExactOwnDataKeys(
-    receiptLedger.assertions,
+  const assertions = assertExactOwnDataKeys(
+    ledger.assertions,
     Object.keys(LEDGER_ASSERTION_VALUES),
     'receiptLedger.assertions'
   );
   for (const [key, expected] of Object.entries(LEDGER_ASSERTION_VALUES)) {
-    if (receiptLedger.assertions[key] !== expected) {
+    if (assertions[key] !== expected) {
       throw new Error(`receiptLedger.assertions.${key} contradicts protected ledger truth.`);
     }
   }
 
-  assertDensePlainArray(receiptLedger.rows, 'receiptLedger.rows');
-  if (receiptLedger.rows.length !== EXPECTED_COUNTIES.length) {
+  const rows = assertDensePlainArray(ledger.rows, 'receiptLedger.rows');
+  if (rows.length !== EXPECTED_COUNTIES.length) {
     throw new Error(`receiptLedger.rows must contain exactly ${EXPECTED_COUNTIES.length} rows.`);
   }
 
@@ -269,69 +289,79 @@ function validateReceiptLedgerAndSelect(receiptLedger, selectedCounty, selectedK
   let countiesWithAnyReceipt = 0;
   let countiesWithMissingReceiptSlots = 0;
 
-  receiptLedger.rows.forEach((row, index) => {
+  rows.forEach((rowValue, index) => {
     const county = EXPECTED_COUNTIES[index];
     const label = `receiptLedger.rows[${index}]`;
-    assertExactOwnDataKeys(row, LEDGER_ROW_KEYS, label);
+    const row = assertExactOwnDataKeys(rowValue, LEDGER_ROW_KEYS, label);
     if (row.county !== county || row.countyToken !== countyToken(county)) {
       throw new Error(`${label} must be canonical county ${county}.`);
     }
 
-    assertExactOwnDataKeys(row.artifacts, ARTIFACT_KINDS, `${label}.artifacts`);
+    const artifacts = assertExactOwnDataKeys(row.artifacts, ARTIFACT_KINDS, `${label}.artifacts`);
+    const validatedArtifacts = Object.create(null);
     for (const kind of ARTIFACT_KINDS) {
-      const evidence = row.artifacts[kind];
+      const evidence = artifacts[kind];
       if (evidence !== null) {
-        validateReceiptEvidence(evidence, `${label}.artifacts.${kind}`);
+        validatedArtifacts[kind] = validateReceiptEvidence(
+          evidence,
+          `${label}.artifacts.${kind}`
+        );
         receiptCount += 1;
         if (kind === 'parcels') parcelReceiptCount += 1;
         else salesReceiptCount += 1;
+      } else {
+        validatedArtifacts[kind] = null;
       }
     }
 
-    assertExactOwnDataKeys(
+    const explicitGaps = assertExactOwnDataKeys(
       row.explicitGaps,
       ['downstream', 'interpretation', 'parcels', 'sales'],
       `${label}.explicitGaps`
     );
-    assertExactArray(
-      row.explicitGaps.parcels,
-      row.artifacts.parcels === null ? ['parcel_artifact_receipt_missing'] : [],
+    const parcelGaps = assertExactArray(
+      explicitGaps.parcels,
+      artifacts.parcels === null ? ['parcel_artifact_receipt_missing'] : [],
       `${label}.explicitGaps.parcels`
     );
-    assertExactArray(
-      row.explicitGaps.sales,
-      row.artifacts.sales === null ? ['sales_artifact_receipt_missing'] : [],
+    const salesGaps = assertExactArray(
+      explicitGaps.sales,
+      artifacts.sales === null ? ['sales_artifact_receipt_missing'] : [],
       `${label}.explicitGaps.sales`
     );
-    assertExactArray(
-      row.explicitGaps.interpretation,
+    const interpretationGaps = assertExactArray(
+      explicitGaps.interpretation,
       LEDGER_INTERPRETATION_GAPS,
       `${label}.explicitGaps.interpretation`
     );
-    assertExactArray(
-      row.explicitGaps.downstream,
+    const downstreamGaps = assertExactArray(
+      explicitGaps.downstream,
       DOWNSTREAM_GAPS,
       `${label}.explicitGaps.downstream`
     );
 
-    const hasParcels = row.artifacts.parcels !== null;
-    const hasSales = row.artifacts.sales !== null;
+    const hasParcels = artifacts.parcels !== null;
+    const hasSales = artifacts.sales !== null;
     if (hasParcels && hasSales) countiesWithBothReceipts += 1;
     if (hasParcels || hasSales) countiesWithAnyReceipt += 1;
     if (!hasParcels || !hasSales) countiesWithMissingReceiptSlots += 1;
 
     if (county === selectedCounty) {
-      selectedEvidence = row.artifacts[selectedKind];
+      selectedEvidence = validatedArtifacts[selectedKind];
       selectedGaps = {
-        parcels: [...row.explicitGaps.parcels],
-        sales: [...row.explicitGaps.sales],
-        interpretation: [...row.explicitGaps.interpretation],
-        downstream: [...row.explicitGaps.downstream],
+        parcels: [...parcelGaps],
+        sales: [...salesGaps],
+        interpretation: [...interpretationGaps],
+        downstream: [...downstreamGaps],
       };
     }
   });
 
-  assertExactOwnDataKeys(receiptLedger.summary, LEDGER_SUMMARY_KEYS, 'receiptLedger.summary');
+  const summary = assertExactOwnDataKeys(
+    ledger.summary,
+    LEDGER_SUMMARY_KEYS,
+    'receiptLedger.summary'
+  );
   const expectedSummary = {
     expectedCountyCount: EXPECTED_COUNTIES.length,
     countyRowCount: EXPECTED_COUNTIES.length,
@@ -343,7 +373,7 @@ function validateReceiptLedgerAndSelect(receiptLedger, selectedCounty, selectedK
     countiesWithMissingReceiptSlots,
   };
   for (const [key, expected] of Object.entries(expectedSummary)) {
-    if (receiptLedger.summary[key] !== expected) {
+    if (summary[key] !== expected) {
       throw new Error(`receiptLedger.summary.${key} must equal ${expected}.`);
     }
   }
@@ -362,10 +392,10 @@ function deepFreeze(value, seen = new WeakSet()) {
 }
 
 export function verifyPublicAcquisitionArtifactBytes(options) {
-  assertExactOwnDataKeys(options, ['artifact', 'receiptLedger'], 'options');
-  const { artifactKind, bytesSnapshot, county } = validateArtifactAndSnapshotBytes(options.artifact);
+  const input = assertExactOwnDataKeys(options, ['artifact', 'receiptLedger'], 'options');
+  const { artifactKind, bytesSnapshot, county } = validateArtifactAndSnapshotBytes(input.artifact);
   const { selectedEvidence, selectedGaps } = validateReceiptLedgerAndSelect(
-    options.receiptLedger,
+    input.receiptLedger,
     county,
     artifactKind
   );
