@@ -2,7 +2,7 @@
 
 | Field | Value |
 | --- | --- |
-| Status | `IMPLEMENTED_PENDING_PROTECTED_MERGE` |
+| Status | `PROTECTED_COMPLETE` |
 | Program | Washington Assessor Launch V1 |
 | Parent | `WO-WAL-002` |
 | Base | `474161f9309145e2341419563de7192dfbded11e` |
@@ -100,5 +100,8 @@ not protected completion or parent completion.
 
 ## Continuation
 
-Completion returns to open parent `WO-WAL-002`. Later exact children must still own authentication,
-upload transport, provenance/lineage storage, quarantine, atomic promotion, rollback, API, and UI.
+PR #1500 reached protected main as `22d00eda80a820c3a8f1541500cdec812216fc4a` from exact head
+`b3bd7ec00c2240ebae27a97f996dc3b118d8fa48`. Completion returns to open parent `WO-WAL-002`.
+Continuation routes through the exact 002D idempotency-identity child after `WO-WAL-000D` reaches
+protected main. Later exact children must still own authentication, upload transport,
+provenance/lineage storage, quarantine, atomic promotion, rollback, API, and UI.

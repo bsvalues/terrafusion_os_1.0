@@ -2,7 +2,7 @@
 
 | Field | Value |
 | --- | --- |
-| Status | `IMPLEMENTED; PROTECTED MERGE REQUIRED` |
+| Status | `PROTECTED_COMPLETE` |
 | Parent | `WO-WAL-001` |
 | Program | Washington Assessor Launch V1 |
 | Base | `474161f9309145e2341419563de7192dfbded11e` |
@@ -73,7 +73,10 @@ directly in memory. No filesystem, network, database, credential, or live-county
 
 ## Completion boundary
 
-Completion requires the exact reviewed implementation head to reach protected `main` through a PR
-with all required checks green and zero unresolved review threads. Even then, only the C child is
-complete: the broad `WO-WAL-001` parent remains open because lawful acquisition, artifact landing,
-freshness/provenance, normalized rows, runtime registration, and capability truth are unproven.
+PR #1498 reached protected main as `cfbb64713d21970407c856856dd40671891d15d1` with updated
+integrated head `3a128deb21e48a5e9c29bb3e6cb2b0c9963c40e4`; reviewed fix
+`ad4f2f1c234a17ffb475153f332ebba104a6f344` remains separately identified and is contained in the
+protected result. Only the C child is complete: the broad `WO-WAL-001` parent remains open because
+lawful acquisition, artifact landing, freshness/provenance, normalized rows, runtime registration,
+and capability truth are unproven. Continuation routes through the exact 001D byte-verification
+child after `WO-WAL-000D` reaches protected main.

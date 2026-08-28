@@ -9,8 +9,8 @@
 **Deadline:** production terminal proof before the WACO Annual Conference begins September 29, 2026; target no later than September 28, 2026 Pacific time.
 
 **Status:** ACTIVE — PR #1486 completed the governance activation on protected main and Issue #1485
-is recorded as `OWNER-WAL-V1-MISSION-AUTHORITY-20260827`. The A and B construction waves are
-protected-complete; the next exact C wave is registered below while broad parents remain open.
+is recorded as `OWNER-WAL-V1-MISSION-AUTHORITY-20260827`. The A, B, and C construction waves are
+protected-complete; the next exact D wave is registered below while broad parents remain open.
 
 ## Mission
 
@@ -60,32 +60,37 @@ Current protected launch baseline after Gate C repair PR #1484: `3651e2fb6c440f6
 | `WO-WAL-000A` | Register and mechanically enforce the four initial exact child reservation sets | satisfied 000; complete only on protected merge |
 | `WO-WAL-000B` | Reconcile protected A-wave completion and register the four next exact reservation sets | protected-complete 001A-004A; complete only on protected merge |
 | `WO-WAL-000C` | Reconcile protected B-wave completion and register the four next exact reservation sets | protected-complete 001B-004B; complete only on protected merge |
+| `WO-WAL-000D` | Reconcile protected C-wave completion and register the four next exact reservation sets | protected-complete 001C-004C; complete only on protected merge |
 | `WO-WAL-001` | 39-county public-baseline acquisition → normalization → landed runtime truth | 000 |
 | `WO-WAL-001A` | Deterministic 39-county source-registry ledger contract; no runtime inference | protected complete in PR #1489; bounded child of open 001 |
 | `WO-WAL-001B` | Deterministic public acquisition artifact receipt evidence; no landing/runtime inference | protected complete in PR #1493; bounded child of open 001 |
-| `WO-WAL-001C` | Canonical 39-county receipt ledger with explicit parcel/sales gaps | protected 001A/001B plus protected 000C; bounded child of open 001 |
+| `WO-WAL-001C` | Canonical 39-county receipt ledger with explicit parcel/sales gaps | protected complete in PR #1498; bounded child of open 001 |
+| `WO-WAL-001D` | Verify supplied artifact bytes against exact receipt-ledger county/kind/hash/length evidence | protected 001A/001B/001C plus protected 000D; bounded child of open 001 |
 | `WO-WAL-002` | Real governed county upload intake | 000 |
 | `WO-WAL-002A` | Strict bounded in-memory CSV stream parser harness; no upload path | protected complete in PR #1490; bounded child of open 002 |
 | `WO-WAL-002B` | Declared CSV intake envelope and deterministic content evidence; no authority/persistence | protected complete in PR #1494; bounded child of open 002 |
-| `WO-WAL-002C` | Canonical same-county operational binding around one protected CSV envelope | protected 002A/002B/004A/004B plus protected 000C; bounded child of open 002 |
+| `WO-WAL-002C` | Canonical same-county operational binding around one protected CSV envelope | protected complete in PR #1500; bounded child of open 002 |
+| `WO-WAL-002D` | Deterministic county/dataset/content CSV idempotency identity | protected 002A/002B/002C plus protected 000D; bounded child of open 002 |
 | `WO-WAL-003` | Read-only multi-county TerraFusion Sync with explicit source profiles | 000 |
 | `WO-WAL-003A` | Mock-only source-profile/read-adapter contract and static command guard | protected complete in PR #1491; bounded child of open 003 |
 | `WO-WAL-003B` | Bounded mock-adapter read execution and immutable result envelope | protected complete in PR #1495; bounded child of open 003 |
-| `WO-WAL-003C` | Fake-ADO single-reader adapter and bounded page composition | protected 003A/003B plus protected 000C; bounded child of open 003 |
+| `WO-WAL-003C` | Fake-ADO single-reader adapter and bounded page composition | protected complete in PR #1501; bounded child of open 003 |
+| `WO-WAL-003D` | One profile-bound read session over a caller-owned already-open fake ADO connection | protected 003A/003B/003C plus protected 000D; bounded child of open 003 |
 | `WO-WAL-004` | County identity, isolation, trust states, activation boundary, no Benton fallback | 000; overlaps 001-003 |
 | `WO-WAL-004A` | Canonical 39-county identity and conflicting authenticated-claim denial foundation | protected complete in PR #1488; bounded child of open 004 |
 | `WO-WAL-004B` | Pure county data-mode visibility and same-county authority boundary | protected complete in PR #1496; bounded child of open 004 |
-| `WO-WAL-004C` | Data-free activation-prerequisite eligibility contract | protected 004A/004B plus protected 000C; bounded child of open 004 |
+| `WO-WAL-004C` | Data-free activation-prerequisite eligibility contract | protected complete in PR #1499; bounded child of open 004 |
+| `WO-WAL-004D` | Fail-closed authenticated-context to canonical county GUID binding | protected 004A plus protected 000D; bounded child of open 004 |
 | `WO-WAL-005` | Real `/counties` Counties HUB driven by control-plane truth | 001-004 contracts stable |
 | `WO-WAL-006` | TerraForge statewide launch runtime with data-capability truth | 001-004 contracts stable; overlaps 005 |
 | `WO-WAL-007` | 39-county browser/API/adversarial launch proof | 001-006 |
 | `WO-WAL-008` | Exact production release + external assessor acceptance | 007 |
 | `WO-WAL-009` | Terminal closeout, exact identities, `COMPLETED_AND_CONSUMED` | 008 |
 
-The exact A and B waves are protected-complete. After protected completion of `WO-WAL-000C`, the
-exact next executable set is 001C/002C/003C/004C. The broad 001/002/003/004 parents remain open and
-route through exact children rather than being dispatched as monoliths. Completion of an A, B, or C
-child does not complete its parent or satisfy the stable-contract dependencies of 005/006.
+The exact A, B, and C waves are protected-complete. After protected completion of `WO-WAL-000D`,
+the exact next executable set is 001D/002D/003D/004D. The broad 001/002/003/004 parents remain open
+and route through exact children rather than being dispatched as monoliths. Completion of an A, B,
+C, or D child does not complete its parent or satisfy the stable-contract dependencies of 005/006.
 
 ## Exact construction waves
 
@@ -103,6 +108,10 @@ child does not complete its parent or satisfy the stable-contract dependencies o
 | `WO-WAL-002C` | R5 | `wal.county-upload.csv-county-bound-intake.v1` | `local-memory-authority-bound-csv-only` | No raw claims, authentication, API, persistence, quarantine, promotion, rollback or UI |
 | `WO-WAL-003C` | R4 | `wal.external-readonly.db-command-adapter.v1` | `fake-ado-reader-only` | No nonquery, transaction, credential, live database, DI registration, persistence or observed no-DML claim |
 | `WO-WAL-004C` | R5 | `wal.county-data-activation-prerequisite.v1` | `local-memory-activation-prerequisite-only` | No activation, adoption, role grant, UI, persistence, evidence fabrication or default county |
+| `WO-WAL-001D` | R2 | `wal.public-acquisition-artifact-verification.v1` | `local-memory-public-artifact-verification-only` | No network acquisition, filesystem landing, parsing, authenticity/freshness, normalization, runtime or capability inference |
+| `WO-WAL-002D` | R3 | `wal.county-upload.csv-idempotency.v1` | `local-memory-csv-idempotency-only` | No duplicate store/decision, authentication, uploader identity, API, persistence, quarantine, promotion or rollback |
+| `WO-WAL-003D` | R4 | `wal.external-readonly.db-connection-session.v1` | `fake-ado-open-connection-only` | No connection discovery/credentials/open/close, live DB, DI, retry, persistence, checkpoint or observed no-DML claim |
+| `WO-WAL-004D` | R5 | `wal.authenticated-county-authority-binding.v1` | `local-auth-context-resolver-fixture-only` | No token auth, role/capability grant, activation/public-private decision, route/body/header authority, integration, persistence or default county |
 
 The exact path allowlists, machine-readable contract/environment reservations, and validation gates are canonical in
 `docs/brain/workorders/registry/work-order-registry.seed.json` and the corresponding child Work Order

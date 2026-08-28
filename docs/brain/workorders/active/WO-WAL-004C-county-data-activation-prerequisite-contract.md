@@ -2,7 +2,7 @@
 
 | Field | Value |
 | --- | --- |
-| Status | `IMPLEMENTED_PENDING_PROTECTED_MERGE` |
+| Status | `PROTECTED_COMPLETE` |
 | Program | Washington Assessor Launch V1 |
 | Goal | `GOAL-WASHINGTON-ASSESSOR-LAUNCH-V1` |
 | Loop | `LOOP-WASHINGTON-ASSESSOR-LAUNCH-V1` |
@@ -96,7 +96,10 @@ git status --short
 
 ## Completion and Continuation
 
-This bounded child is complete only when its focused tests and exact-scope review pass on the
-protected base. Completion returns to open parent `WO-WAL-004`. Later exact children must separately
-own evidence production, integration, actual activation, UI, persistence, audit, and adversarial
-runtime isolation.
+PR #1499 reached protected main as `da2443068fc20187f1d65e1d3614881e9f7b06f0` with updated
+integrated head `2e70dd09599721c40af1085962e98b73c8ac8967`; independently reviewed head
+`6b2c590875d89f98d22e87bd2aa6c1aa0f6ad39e` remains separately identified and is contained in the
+protected result. Completion returns to open parent `WO-WAL-004`. Continuation routes through the
+exact 004D authenticated-context binding child after `WO-WAL-000D` reaches protected main. Later
+exact children must separately own evidence production, integration, actual activation, UI,
+persistence, audit, and adversarial runtime isolation.

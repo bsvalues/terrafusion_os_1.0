@@ -618,7 +618,7 @@ describe('wo-wave-plan', () => {
     }
   });
 
-  it('reconciles the four current WAL C-child records and rejects every typed reservation drift', () => {
+  it('reconciles protected WAL C children, admits exact D reservations, and rejects every typed drift', () => {
     const actualRegistry = JSON.parse(
       fs.readFileSync(
         path.join(root, 'docs/brain/workorders/registry/work-order-registry.seed.json'),
@@ -628,17 +628,22 @@ describe('wo-wave-plan', () => {
     const actualOwnerDecisions = JSON.parse(
       fs.readFileSync(path.join(root, '.governance/owner-decisions.json'), 'utf8')
     );
-    const predecessorIds = ['WO-WAL-001B', 'WO-WAL-002B', 'WO-WAL-003B', 'WO-WAL-004B'];
-    const childIds = ['WO-WAL-001C', 'WO-WAL-002C', 'WO-WAL-003C', 'WO-WAL-004C'];
+    const predecessorIds = ['WO-WAL-001C', 'WO-WAL-002C', 'WO-WAL-003C', 'WO-WAL-004C'];
+    const childIds = ['WO-WAL-001D', 'WO-WAL-002D', 'WO-WAL-003D', 'WO-WAL-004D'];
     const selectedIds = new Set([
       'WO-WAL-000',
       'WO-WAL-000A',
       'WO-WAL-000B',
       'WO-WAL-000C',
+      'WO-WAL-000D',
       'WO-WAL-001A',
       'WO-WAL-002A',
       'WO-WAL-003A',
       'WO-WAL-004A',
+      'WO-WAL-001B',
+      'WO-WAL-002B',
+      'WO-WAL-003B',
+      'WO-WAL-004B',
       ...predecessorIds,
       ...childIds,
       'WO-WAL-005',
@@ -648,8 +653,8 @@ describe('wo-wave-plan', () => {
     const children = childIds.map(id => actualRecords.find(item => item.id === id));
     assert.ok(children.every(Boolean));
     assert.equal(
-      children.find(item => item.id === 'WO-WAL-004C').validationGates[0].command,
-      'dotnet test backend/tests/TerraFusion.Unit.Tests/TerraFusion.Unit.Tests.csproj --filter FullyQualifiedName~CountyDataActivationPrerequisiteTests && git diff --check && exact changed-path audit'
+      children.find(item => item.id === 'WO-WAL-004D').validationGates[0].command,
+      'dotnet test backend/tests/TerraFusion.Unit.Tests/TerraFusion.Unit.Tests.csproj --filter FullyQualifiedName~AuthenticatedCountyAuthorityBindingTests && git diff --check && exact changed-path audit'
     );
 
     const schema = JSON.parse(
@@ -659,7 +664,11 @@ describe('wo-wave-plan', () => {
       )
     );
     const validate = new Ajv2020({ allErrors: true, strict: false }).compile(schema);
-    for (const item of [actualRecords.find(record => record.id === 'WO-WAL-000C'), ...children]) {
+    for (const item of [
+      actualRecords.find(record => record.id === 'WO-WAL-000D'),
+      ...predecessorIds.map(id => actualRecords.find(record => record.id === id)),
+      ...children,
+    ]) {
       assert.equal(validate(item), true, `${item.id}: ${JSON.stringify(validate.errors)}`);
     }
     assert.equal(validate({ ...children[0], contractReservations: ['production'] }), false);
@@ -689,7 +698,7 @@ describe('wo-wave-plan', () => {
     const baseOptions = optionsFor(actualRecords, {
       authority: 'R5',
       maxWorkers: 4,
-      now: '2026-08-27T20:00:00Z',
+      now: '2026-08-28T20:00:00Z',
       ownerDecisions: actualOwnerDecisions,
       verifiedDispatchRefs: ['refs/remotes/origin/main'],
     });
@@ -721,6 +730,26 @@ describe('wo-wave-plan', () => {
           .reasons.includes('terminal-status')
       );
     }
+    for (const field of ['allowedFiles', 'contractReservations', 'environmentReservations']) {
+      const reservations = [...predecessorIds.map(id => actualRecords.find(item => item.id === id)), ...children]
+        .flatMap(item => item[field]);
+      assert.equal(new Set(reservations).size, reservations.length, `${field} must not collide`);
+    }
+    for (const parentId of ['WO-WAL-001', 'WO-WAL-002', 'WO-WAL-003', 'WO-WAL-004']) {
+      assert.equal(actualRegistry.records.find(item => item.id === parentId).status, 'ready');
+      assert.equal(
+        actualRegistry.records.find(item => item.id === parentId).nextCandidates[0].id,
+        `${parentId}D`
+      );
+    }
+    assert.match(
+      actualRecords.find(item => item.id === 'WO-WAL-001C').validationGates[0].evidence[0],
+      /cfbb64713d21970407c856856dd40671891d15d1.*3a128deb21e48a5e9c29bb3e6cb2b0c9963c40e4.*ad4f2f1c234a17ffb475153f332ebba104a6f344/
+    );
+    assert.match(
+      actualRecords.find(item => item.id === 'WO-WAL-003C').validationGates[0].evidence[0],
+      /0374caafdc943b9f4dd53189542d4cc2b2e8fc67.*307db297f9e8d037f1ba80c5d039c98da1ed37ec.*d2a3cb746b4109d47bafea5b5033f041763d81df/
+    );
     for (const blockedId of ['WO-WAL-005', 'WO-WAL-006']) {
       assert.equal(actualRecords.find(item => item.id === blockedId).status, 'blocked');
       assert.ok(
@@ -857,7 +886,7 @@ describe('wo-wave-plan', () => {
     const registryRelabelOptions = optionsFor(registryRelabel, {
       authority: 'R5',
       maxWorkers: 4,
-      now: '2026-08-27T20:00:00Z',
+      now: '2026-08-28T20:00:00Z',
       ownerDecisions: actualOwnerDecisions,
       verifiedDispatchRefs: ['refs/remotes/origin/main'],
     });
@@ -875,7 +904,7 @@ describe('wo-wave-plan', () => {
       const nullTypedOptions = optionsFor(nullTypedRecords, {
         authority: 'R5',
         maxWorkers: 4,
-        now: '2026-08-27T20:00:00Z',
+        now: '2026-08-28T20:00:00Z',
         ownerDecisions: actualOwnerDecisions,
         verifiedDispatchRefs: ['refs/remotes/origin/main'],
       });
