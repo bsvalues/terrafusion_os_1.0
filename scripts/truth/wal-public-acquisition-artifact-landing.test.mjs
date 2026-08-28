@@ -4,6 +4,7 @@ import { createHash } from 'node:crypto';
 import { lstat, readFile, rmdir, stat, unlink } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import test from 'node:test';
+import { types as UTIL_TYPES } from 'node:util';
 
 import { buildLedger } from './wal-public-baseline-ledger.mjs';
 import {
@@ -643,6 +644,47 @@ test('uses captured byte-copy and byte-length intrinsics after prototype and vie
       delete Uint8Array.prototype.set;
     }
   }
+});
+
+test('uses a captured native Uint8Array brand instead of a spoofable prototype chain', async t => {
+  const expected = new Uint8Array([1, 0]);
+  const proof = verificationProof([
+    { county: 'Clark', artifactKind: 'parcels', bytes: expected },
+  ]);
+  const spoofed = new Uint16Array([0x0101]);
+  Object.setPrototypeOf(spoofed, Uint8Array.prototype);
+  const brandDescriptor = Object.getOwnPropertyDescriptor(UTIL_TYPES, 'isUint8Array');
+
+  try {
+    Object.defineProperty(UTIL_TYPES, 'isUint8Array', {
+      configurable: true,
+      enumerable: true,
+      writable: true,
+      value: () => true,
+    });
+    await assert.rejects(
+      landVerifiedPublicAcquisitionArtifactToTemp({
+        verificationProof: proof,
+        artifact: { county: 'Clark', artifactKind: 'parcels', bytes: spoofed },
+      }),
+      /Uint8Array view/i
+    );
+  } finally {
+    if (brandDescriptor) {
+      Object.defineProperty(UTIL_TYPES, 'isUint8Array', brandDescriptor);
+    } else {
+      delete UTIL_TYPES.isUint8Array;
+    }
+  }
+
+  const genuineWithAlteredPrototype = new Uint8Array(expected);
+  Object.setPrototypeOf(genuineWithAlteredPrototype, null);
+  const receipt = await landForTest(t, proof, {
+    county: 'Clark',
+    artifactKind: 'parcels',
+    bytes: genuineWithAlteredPrototype,
+  });
+  assert.deepEqual(new Uint8Array(await readFile(receipt.landing.artifactPath)), expected);
 });
 
 test('deterministically cleans failures after directory, staging, and final-link creation', async () => {

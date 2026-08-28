@@ -45,7 +45,10 @@ Before its first asynchronous filesystem operation, the implementation snapshots
 data descriptors, requires and validates the complete deeply frozen 001D proof, copies the exact
 visible byte view through captured typed-array intrinsics, and independently recomputes bounded
 byte length and SHA-256. County, kind, recomputed and ledger-declared length, and both proof hashes
-must all agree.
+must all agree. A captured native `node:util` brand check admits genuine `Uint8Array` views
+independently of their mutable JavaScript prototype chain and rejects other typed-array brands even
+when a caller grafts `Uint8Array.prototype` onto them. This prevents element coercion from changing
+the snapshotted byte sequence.
 
 Every proof gap array's own `length` data descriptor must match its exact protected cardinality (or
 the closed zero-or-one cardinality for the unselected receipt slot) before freezing checks, element
@@ -115,6 +118,8 @@ must later unlink that exact artifact path and remove that exact now-empty direc
   unique directories, atomic final publication, permissions where portable, and caller mutation;
 - fail-closed malformed/mutable/accessor/proxy-substituted proof, byte/hash/length/county/kind,
   unbounded input, caller path/adapter injection, and prototype-tampering regressions;
+- native-byte-brand regressions rejecting a prototype-spoofed `Uint16Array`, retaining genuine
+  altered-prototype `Uint8Array` behavior, and resisting post-import utility-brand monkeypatching;
 - dense frozen oversized parcel, sales, aggregation, and verification gap arrays rejected before
   caller-length-scaled reflection or iteration;
 - subprocess-isolated built-in failure probes after directory, staging, and final-link creation,
@@ -124,8 +129,8 @@ must later unlink that exact artifact path and remove that exact now-empty direc
   overwrite rename, caller path, runtime, and persistence surfaces;
 - `git diff --check` and exact three-path audit.
 
-The post-review hardening suite passes 15/15 focused tests. The combined protected 001A through
-001E compatibility run passes 75/75 with zero failures, skips, or cancellations. No directory
+The post-review hardening suite passes 16/16 focused tests. The combined protected 001A through
+001E compatibility run passes 76/76 with zero failures, skips, or cancellations. No directory
 remains under the WO-WAL-001E temp prefix after the run. Failure probes execute in separate Node
 processes so built-in substitution cannot overlap ordinary tests or create a production injection
 seam.

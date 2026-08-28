@@ -13,6 +13,7 @@ import { constants as FS_CONSTANTS } from 'node:fs';
 import { chmod, link, lstat, mkdtemp, open, realpath, rmdir, unlink } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { basename, dirname, isAbsolute, join } from 'node:path';
+import { types as UTIL_TYPES } from 'node:util';
 
 import { EXPECTED_COUNTIES, MAX_ARTIFACT_BYTES } from './wal-public-acquisition-artifact-receipt.mjs';
 import {
@@ -114,6 +115,7 @@ const TYPED_ARRAY_BYTE_LENGTH_GETTER = Object.getOwnPropertyDescriptor(
   'byteLength'
 ).get;
 const UINT8_ARRAY_SET = Uint8Array.prototype.set;
+const IS_UINT8_ARRAY = UTIL_TYPES.isUint8Array;
 
 function countyToken(county) {
   return county.toLowerCase().replace(/[^a-z0-9]+/g, '-');
@@ -224,7 +226,7 @@ function snapshotArtifact(artifact) {
   if (!ARTIFACT_KINDS.includes(input.artifactKind)) {
     throw new Error('artifact.artifactKind must be parcels or sales.');
   }
-  if (!Reflect.apply(Object.prototype.isPrototypeOf, Uint8Array.prototype, [input.bytes])) {
+  if (!Reflect.apply(IS_UINT8_ARRAY, undefined, [input.bytes])) {
     throw new TypeError('artifact.bytes must be a Uint8Array view.');
   }
   let byteLength;
