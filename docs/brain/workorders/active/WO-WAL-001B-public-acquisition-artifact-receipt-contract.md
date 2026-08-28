@@ -2,7 +2,7 @@
 
 | Field | Value |
 | --- | --- |
-| Status | `IMPLEMENTED_LOCAL_VALIDATED` |
+| Status | `PROTECTED_COMPLETE` |
 | Parent | `WO-WAL-001` |
 | Program | Washington Assessor Launch V1 |
 | Base | `b740c3dadf069c0e7bfacf7a3e2c4e53dd5a388e` |
@@ -111,7 +111,10 @@ declaration and canonical baseline row.
 
 ## Completion
 
-This child is complete when the bounded contract and focused tests pass and the exact three-path
-scope is clean. Its receipts are in-memory evidence primitives for a later authorized public-data
-acquisition lane. They are not acquisition, landing, runtime, production, or assessor-acceptance
-evidence, and they do not satisfy `WO-WAL-001`.
+This child reached protected main in PR #1493 as merge
+`d54d1722f776fd38ab58d734b0252c4ef78f2804` from exact reviewed head
+`a90e6f5ed5b947fb74313bb77fec1f5fa57bc7f3`. Its receipts are in-memory evidence primitives for a
+later authorized public-data acquisition lane. They are not acquisition, landing, runtime,
+production, or assessor-acceptance evidence, and they do not satisfy `WO-WAL-001`.
+
+Continuation is the separately reserved `WO-WAL-001C` statewide receipt-ledger child.

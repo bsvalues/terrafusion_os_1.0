@@ -2,7 +2,7 @@
 
 | Field | Value |
 | --- | --- |
-| Status | `IMPLEMENTED_PENDING_PROTECTED_PR` |
+| Status | `PROTECTED_COMPLETE` |
 | Parent | `WO-WAL-003` |
 | Program | Washington Assessor Launch V1 |
 | Goal | `GOAL-WASHINGTON-ASSESSOR-LAUNCH-V1` |
@@ -10,7 +10,7 @@
 | Risk | R3 bounded mock execution contract inside the R5 WAL mission |
 | Contract | `wal.external-readonly.execution-envelope.v1` |
 | Environment | `mock-read-executor-only` |
-| Terminal condition | `MOCK_BOUNDED_READ_EXECUTION_ENVELOPE_PROVEN_PENDING_PROTECTED_MERGE` |
+| Terminal condition | `MOCK_BOUNDED_READ_EXECUTION_ENVELOPE_PROVEN` |
 
 ## Objective
 
@@ -86,7 +86,11 @@ county data is reserved or authorized.
 
 ## Proof boundary and continuation
 
-This child strengthens the mock execution boundary only. It does not bind a real adapter to a
-read-only source credential or role, collect observed external command/method evidence, implement
-durable checkpointing, persist lineage, or promote county data. Those remain mandatory continuation
-work under `WO-WAL-003`; production connection remains denied before WAL-007 release acceptance.
+This child reached protected main in PR #1495 as merge
+`3992e89f689127313dcd9f877ee865c4a9ae2ba9` from exact integrated head
+`e62cb2367aa7393acad030f492cb181b5af1266b`. It strengthens the mock execution boundary only.
+`WO-WAL-003C` separately owns the next fake-ADO reader adapter contract. No child here binds a real
+adapter to a read-only source credential or role, collects observed external command/method evidence,
+implements durable checkpointing, persists lineage, or promotes county data. Those remain mandatory
+continuation work under `WO-WAL-003`; production connection remains denied before WAL-007 release
+acceptance.
