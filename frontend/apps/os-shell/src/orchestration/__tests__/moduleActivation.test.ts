@@ -19,6 +19,7 @@ import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 const {
   mockOpenWindow,
   mockFocusWindow,
+  mockReplaceWindowMetadata,
   mockGetWindows,
   mockLoadModule,
   mockGetLoadState,
@@ -28,6 +29,7 @@ const {
 } = vi.hoisted(() => ({
   mockOpenWindow: vi.fn().mockReturnValue('window-123'),
   mockFocusWindow: vi.fn(),
+  mockReplaceWindowMetadata: vi.fn(),
   mockGetWindows: vi.fn().mockReturnValue([]),
   mockLoadModule: vi.fn().mockResolvedValue(undefined),
   mockGetLoadState: vi.fn().mockReturnValue({ status: 'idle' }),
@@ -51,6 +53,7 @@ vi.mock('../../stores/desktopStore', () => ({
       windows: mockGetWindows(),
       openWindow: mockOpenWindow,
       focusWindow: mockFocusWindow,
+      replaceWindowMetadata: mockReplaceWindowMetadata,
     }),
   },
 }));
@@ -96,6 +99,7 @@ import {
 function resetAllMocks() {
   mockOpenWindow.mockClear().mockReturnValue('window-123');
   mockFocusWindow.mockClear();
+  mockReplaceWindowMetadata.mockClear();
   mockGetWindows.mockClear().mockReturnValue([]);
   mockLoadModule.mockClear().mockResolvedValue(undefined);
   mockGetLoadState.mockClear().mockReturnValue({ status: 'idle' });
@@ -115,9 +119,10 @@ function resetAllMocks() {
 
 function simulateExistingWindow(
   moduleId: string,
-  windowId: string = 'existing-window-456'
+  windowId: string = 'existing-window-456',
+  state: 'normal' | 'minimized' = 'normal',
 ) {
-  mockGetWindows.mockReturnValue([{ id: windowId, moduleId, state: 'normal' }]);
+  mockGetWindows.mockReturnValue([{ id: windowId, moduleId, state }]);
 }
 
 // ============================================================================
@@ -248,6 +253,46 @@ describe('moduleActivation', () => {
 
       // Should NOT trigger a new load
       expect(mockLoadModule).not.toHaveBeenCalled();
+    });
+
+    it('refreshes deep-link metadata before focusing an existing window', async () => {
+      simulateExistingWindow('costforge', 'existing-costforge-window');
+      const metadata = { countyCode: '063', countyName: 'Spokane' };
+
+      await activateModule('costforge', { source: 'system', metadata });
+
+      expect(mockReplaceWindowMetadata).toHaveBeenCalledWith(
+        'existing-costforge-window',
+        metadata,
+      );
+      expect(mockReplaceWindowMetadata.mock.invocationCallOrder[0]).toBeLessThan(
+        mockFocusWindow.mock.invocationCallOrder[0],
+      );
+    });
+
+    it('refreshes metadata before restoring a minimized singleton window', async () => {
+      simulateExistingWindow('costforge', 'minimized-costforge-window', 'minimized');
+      const metadata = { countyCode: '063', countyName: 'Spokane' };
+
+      await activateModule('costforge', { source: 'system', metadata });
+
+      expect(mockReplaceWindowMetadata).toHaveBeenCalledWith(
+        'minimized-costforge-window',
+        metadata,
+      );
+      expect(mockFocusWindow).toHaveBeenCalledWith('minimized-costforge-window');
+      expect(mockOpenWindow).not.toHaveBeenCalled();
+      expect(mockReplaceWindowMetadata.mock.invocationCallOrder[0]).toBeLessThan(
+        mockFocusWindow.mock.invocationCallOrder[0],
+      );
+    });
+
+    it('does not rewrite existing window metadata for a context-free activation', async () => {
+      simulateExistingWindow('costforge');
+
+      await activateModule('costforge', { source: 'start_menu' });
+
+      expect(mockReplaceWindowMetadata).not.toHaveBeenCalled();
     });
 
     it('emits module.focus telemetry when focusing existing window', async () => {

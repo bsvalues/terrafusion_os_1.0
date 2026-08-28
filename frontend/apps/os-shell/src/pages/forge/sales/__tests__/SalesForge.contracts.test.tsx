@@ -95,6 +95,18 @@ describe('SalesForge contract posture', () => {
     expect(fetchRunningStats).toHaveBeenCalledTimes(1);
   });
 
+  it('renders unavailable IAAO compliance as unknown instead of failed', () => {
+    const runningStats = useSalesForgeStore.getState().runningStats;
+    useSalesForgeStore.setState({
+      runningStats: runningStats ? { ...runningStats, iaaoCompliant: null } : null,
+    });
+
+    render(<RunningStatsPanel />);
+
+    expect(screen.getByText('No data yet')).toBeInTheDocument();
+    expect(document.querySelectorAll('.sf-iaao-badge--fail')).toHaveLength(0);
+  });
+
   it('surfaces Statistics Compat lineage on ratio audit', async () => {
     render(<RatioAuditPanel />);
 

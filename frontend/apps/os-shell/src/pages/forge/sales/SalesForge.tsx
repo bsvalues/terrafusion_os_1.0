@@ -14,6 +14,8 @@
  *   taxYear:       number  — pre-split tax year; swaps the study year filter.
  *   segmentId:     string  — drives the "Scoped From · Segment X" chip.
  *   segmentLabel:  string  — human label for the chip (optional).
+ *   resetValuationScope: true — keep only county context and clear stale
+ *                               neighborhood/stratum/segment state.
  * When stratumKey is present we also switch the active tab to "ai-audit"
  * (that panel is where stratum selection becomes visible).
  */
@@ -22,7 +24,7 @@ import { lazy, Suspense, useLayoutEffect } from 'react';
 import activateModule from '@/orchestration/moduleActivation';
 import { useSalesForgeStore } from './salesForgeStore';
 import { RunningStatsPanel } from './components/RunningStatsPanel';
-import type { SalesForgeTab } from './salesForgeTypes';
+import { SALESFORGE_TAX_YEAR, type SalesForgeTab } from './salesForgeTypes';
 import { isWashingtonLaunchDataEnabled, WASHINGTON_COUNTIES } from './washingtonLaunchApi';
 import { parseRollupHandoff } from '../shared/rollupHandoff';
 import './SalesForge.css';
@@ -54,6 +56,12 @@ const TABS: { id: SalesForgeTab; label: string; title: string }[] = [
   { id: 'code-audit',   label: 'Code Audit',      title: 'WAC code breakdown — qualifier, ratio type, exclude calc' },
   { id: 'dor-export',   label: 'DOR Export',      title: 'Preview and download DOR-certified CSV' },
 ];
+
+const WASHINGTON_LAUNCH_TABS = new Set<SalesForgeTab>([
+  'queue',
+  'neighborhoods',
+  'code-audit',
+]);
 
 function TabSpinner() {
   return <div className="sf-state" role="status">Loading…</div>;
@@ -111,6 +119,19 @@ export default function SalesForge({ metadata }: SalesForgeProps = {}) {
   const launchDataMode = isWashingtonLaunchDataEnabled();
   const handoff = parseRollupHandoff(metadata);
   const selectedCounty = WASHINGTON_COUNTIES.find((county) => county.code === committedFilters.countyCode);
+  const availableTabs = launchDataMode
+    ? TABS.filter((tab) => WASHINGTON_LAUNCH_TABS.has(tab.id))
+    : TABS;
+  // Never mount a live-only panel while the header claims public-package mode.
+  const renderedActiveTab = launchDataMode && !WASHINGTON_LAUNCH_TABS.has(activeTab)
+    ? 'queue'
+    : activeTab;
+
+  useLayoutEffect(() => {
+    if (launchDataMode && activeTab !== renderedActiveTab) {
+      setActiveTab(renderedActiveTab);
+    }
+  }, [activeTab, launchDataMode, renderedActiveTab, setActiveTab]);
 
   // ── Consume County Studio handoff metadata before child fetch effects ───
   useLayoutEffect(() => {
@@ -120,15 +141,23 @@ export default function SalesForge({ metadata }: SalesForgeProps = {}) {
     const year = handoff.taxYear ?? parsed.year ?? null;
     const segmentId = handoff.segmentId ?? parsed.segmentId ?? null;
     const label = handoff.segmentLabel;
+    const resetValuationScope = handoff.resetValuationScope;
 
     if (handoff.countyCode) {
       applyCountyStudioScope(
         handoff.countyCode,
-        handoff.rollupScope === 'neighborhood' ? handoff.neighborhoodCode : null,
+        !resetValuationScope && handoff.rollupScope === 'neighborhood'
+          ? handoff.neighborhoodCode
+          : null,
       );
     }
 
-    if (stratum) {
+    if (resetValuationScope) {
+      setSelectedStratum(null);
+      setContextSegment(null);
+      setActiveTab('queue');
+      setTaxYear(year ?? SALESFORGE_TAX_YEAR);
+    } else if (stratum) {
       setSelectedStratum(stratum);
       setActiveTab('ai-audit');
     } else if (handoff.rollupScope === 'neighborhood' && handoff.neighborhoodCode) {
@@ -136,16 +165,17 @@ export default function SalesForge({ metadata }: SalesForgeProps = {}) {
     } else if (handoff.rollupScope === 'city') {
       setActiveTab('queue');
     }
-    if (year !== null) {
+    if (!resetValuationScope && year !== null) {
       setTaxYear(year);
     }
-    if (segmentId) {
+    if (!resetValuationScope && segmentId) {
       setContextSegment(segmentId, label);
     }
   }, [
     applyCountyStudioScope,
     handoff.countyCode,
     handoff.neighborhoodCode,
+    handoff.resetValuationScope,
     handoff.rollupScope,
     handoff.segmentId,
     handoff.segmentLabel,
@@ -198,12 +228,14 @@ export default function SalesForge({ metadata }: SalesForgeProps = {}) {
                 ← From County Studio · Segment {contextSegmentLabel ?? contextSegmentId}
               </button>
             )}
-            {handoff.rollupScope === 'city' && handoff.city && (
+            {!handoff.resetValuationScope && handoff.rollupScope === 'city' && handoff.city && (
               <span className="forge-chip forge-chip--neutral">
                 City overview · {handoff.city}
               </span>
             )}
-            {handoff.rollupScope === 'neighborhood' && handoff.neighborhoodCode && (
+            {!handoff.resetValuationScope
+              && handoff.rollupScope === 'neighborhood'
+              && handoff.neighborhoodCode && (
               <span className="forge-chip forge-chip--neutral">
                 Neighborhood · {handoff.neighborhoodName ?? handoff.neighborhoodCode}
                 {handoff.revalArea !== null ? ` · Reval ${handoff.revalArea}` : ''}
@@ -216,12 +248,14 @@ export default function SalesForge({ metadata }: SalesForgeProps = {}) {
             </span>
           </div>
         </div>
-        {handoff.rollupScope === 'city' && handoff.city && (
+        {!handoff.resetValuationScope && handoff.rollupScope === 'city' && handoff.city && (
           <p className="sf-header__source-note">
             County Studio handed off a city overview for {handoff.city}. Counties actually qualify and defend sales by reval area and neighborhood, so city scope remains triage-only until you narrow below the city rollup.
           </p>
         )}
-        {handoff.rollupScope === 'neighborhood' && handoff.neighborhoodCode && (
+        {!handoff.resetValuationScope
+          && handoff.rollupScope === 'neighborhood'
+          && handoff.neighborhoodCode && (
           <p className="sf-header__source-note">
             County Studio handed off neighborhood {handoff.neighborhoodName ?? handoff.neighborhoodCode}
             {handoff.revalArea !== null ? ` in reval ${handoff.revalArea}` : ''}. SalesForge is pinned to that county and neighborhood because counties track reval area and neighborhood before parcel-level action.
@@ -229,20 +263,22 @@ export default function SalesForge({ metadata }: SalesForgeProps = {}) {
         )}
         {launchDataMode && (
           <p className="sf-header__source-note">
-            Hosted preview reads the Prometheus Washington data package: 39 counties, TerraFusion neighborhood codes, and provenance-bearing sale records.
+            Public/reference package only — not county-certified valuation truth. Review decisions
+            stay browser-local and nonofficial; nothing is written back to a county system. Live AI
+            Audit, Ratio Audit, and DOR Export are unavailable in this mode.
           </p>
         )}
       </header>
 
       {/* Tab bar */}
       <nav className="sf-tabbar" aria-label="SalesForge sections">
-        {TABS.map((tab) => (
+        {availableTabs.map((tab) => (
           <button
             key={tab.id}
             type="button"
             role="tab"
-            aria-selected={activeTab === tab.id}
-            className={`sf-tab ${activeTab === tab.id ? 'sf-tab--active' : ''}`}
+            aria-selected={renderedActiveTab === tab.id}
+            className={`sf-tab ${renderedActiveTab === tab.id ? 'sf-tab--active' : ''}`}
             onClick={() => setActiveTab(tab.id)}
             title={tab.title}
           >
@@ -255,12 +291,12 @@ export default function SalesForge({ metadata }: SalesForgeProps = {}) {
       <div className="sf-layout">
         {/* Left: panel content */}
         <Suspense fallback={<TabSpinner />}>
-          {activeTab === 'ai-audit'      && <AuditCommandCenter taxYear={taxYear} />}
-          {activeTab === 'queue'         && <QualificationQueuePanel />}
-          {activeTab === 'ratio-audit'   && <RatioAuditPanel />}
-          {activeTab === 'neighborhoods' && <NeighborhoodViewPanel />}
-          {activeTab === 'code-audit'    && <CodeAuditPanel />}
-          {activeTab === 'dor-export'    && <DorExportPanel />}
+          {renderedActiveTab === 'ai-audit'      && <AuditCommandCenter taxYear={taxYear} />}
+          {renderedActiveTab === 'queue'         && <QualificationQueuePanel />}
+          {renderedActiveTab === 'ratio-audit'   && <RatioAuditPanel />}
+          {renderedActiveTab === 'neighborhoods' && <NeighborhoodViewPanel />}
+          {renderedActiveTab === 'code-audit'    && <CodeAuditPanel />}
+          {renderedActiveTab === 'dor-export'    && <DorExportPanel />}
         </Suspense>
 
         {/* Right: live IAAO stats rail */}

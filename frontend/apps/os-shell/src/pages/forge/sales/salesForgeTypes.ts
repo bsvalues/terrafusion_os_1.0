@@ -105,7 +105,7 @@ export interface RunningStats {
     cod: boolean;
     prd: boolean;
     prb: boolean;
-  };
+  } | null;
 }
 
 // ── Neighborhood stats ────────────────────────────────────────────────────────

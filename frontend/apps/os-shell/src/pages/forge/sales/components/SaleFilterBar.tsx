@@ -14,7 +14,8 @@ export function SaleFilterBar() {
   const clearFilters     = useSalesForgeStore((s) => s.clearFilters);
 
   const hasFilters = Object.entries(committedFilters).some(([key, value]) => {
-    if (key === 'countyCode') return value !== '005';
+    // County is workspace scope. Clear only applies to subordinate filters.
+    if (key === 'countyCode') return false;
     return value != null;
   });
 

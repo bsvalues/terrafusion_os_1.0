@@ -108,6 +108,7 @@ const ResearchProviders = lazy(() => import('./context/ResearchContext'));
 const ExperimentsList = lazy(() => import('./pages/experiments/ExperimentsList'));
 const CreateExperiment = lazy(() => import('./pages/experiments/CreateExperiment'));
 const NotificationPreferences = lazy(() => import('./components/codex/NotificationPreferences'));
+const CountiesHub = lazy(() => import('./components/CountiesHub'));
 
 // TerraForge County Studio (Plan 2) + Atlas Live View (Plan 3)
 const CountyStudyPage = lazy(() =>
@@ -276,6 +277,7 @@ const Router: React.FC = () => {
                   />
 
                   <Route path='monitoring' element={<Monitoring />} />
+                  <Route path='counties' element={<CountiesHub />} />
                   <Route path='marketplace' element={<TerraFusionMarketplace />} />
                   <Route
                     path='elite-research'
