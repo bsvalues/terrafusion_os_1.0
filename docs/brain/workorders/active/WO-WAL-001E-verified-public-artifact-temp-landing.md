@@ -47,6 +47,15 @@ visible byte view through captured typed-array intrinsics, and independently rec
 byte length and SHA-256. County, kind, recomputed and ledger-declared length, and both proof hashes
 must all agree.
 
+Every proof gap array's own `length` data descriptor must match its exact protected cardinality (or
+the closed zero-or-one cardinality for the unselected receipt slot) before freezing checks, element
+descriptor reads, copying, or own-key enumeration. This makes a dense oversized array fail in
+constant validation work relative to its declared length. Exact structural rejection still requires
+`Object.isFrozen` and `Reflect.ownKeys` after that bound. JavaScript exposes no bounded incremental
+own-key API, so a malicious Proxy `ownKeys` trap—or a fixed-length array carrying an extreme number
+of custom non-index keys—can still spend work while the engine materializes that trap result. Such a
+value is rejected, but bounded execution against arbitrary Proxy reflection behavior is not claimed.
+
 The implementation resolves Node's configured temp directory to a real path, creates one unique
 direct child, requests directory mode `0700`, and exclusively creates an internal staging file with
 requested mode `0600`. It writes the byte snapshot, calls file-handle `sync`, and checks the staging
@@ -80,6 +89,9 @@ must later unlink that exact artifact path and remove that exact now-empty direc
   no ACL equivalence claim.
 - The receipt does not guarantee post-return file presence or immutability and automates cleanup
   only on failure.
+- Failure cleanup is lifecycle-tested after unique-directory creation, exclusive staging creation,
+  and final-link publication. Cleanup failure preserves the primary and cleanup errors together in
+  `AggregateError`; it never silently replaces the primary cause.
 
 ## Denials
 
@@ -103,9 +115,20 @@ must later unlink that exact artifact path and remove that exact now-empty direc
   unique directories, atomic final publication, permissions where portable, and caller mutation;
 - fail-closed malformed/mutable/accessor/proxy-substituted proof, byte/hash/length/county/kind,
   unbounded input, caller path/adapter injection, and prototype-tampering regressions;
+- dense frozen oversized parcel, sales, aggregation, and verification gap arrays rejected before
+  caller-length-scaled reflection or iteration;
+- subprocess-isolated built-in failure probes after directory, staging, and final-link creation,
+  proving exact no-residue cleanup, exact built-in restoration, and ordered primary-plus-cleanup
+  `AggregateError` retention without a production hook or filesystem injection API;
 - exact cleanup on successful test use and refusal-source review for network, recursive deletion,
   overwrite rename, caller path, runtime, and persistence surfaces;
 - `git diff --check` and exact three-path audit.
+
+The post-review hardening suite passes 15/15 focused tests. The combined protected 001A through
+001E compatibility run passes 75/75 with zero failures, skips, or cancellations. No directory
+remains under the WO-WAL-001E temp prefix after the run. Failure probes execute in separate Node
+processes so built-in substitution cannot overlap ordinary tests or create a production injection
+seam.
 
 ## Completion boundary
 

@@ -174,16 +174,23 @@ function inputRecordSnapshot(value, expectedKeys, label) {
   return snapshot;
 }
 
-function frozenArraySnapshot(value, label) {
+function frozenArraySnapshot(value, allowedLengths, label) {
   if (!Array.isArray(value) || Object.getPrototypeOf(value) !== Array.prototype) {
     throw new TypeError(`${label} must be a plain array.`);
   }
-  if (!Object.isFrozen(value)) throw new TypeError(`${label} must be deeply immutable.`);
   const lengthDescriptor = Object.getOwnPropertyDescriptor(value, 'length');
   if (!lengthDescriptor || !('value' in lengthDescriptor)) {
     throw new TypeError(`${label}.length must be a data property.`);
   }
   const length = lengthDescriptor.value;
+  if (!allowedLengths.includes(length)) {
+    throw new TypeError(
+      `${label} must contain exactly ${allowedLengths.join(' or ')} protected gap entries.`
+    );
+  }
+  // The protected cardinality check deliberately precedes Object.isFrozen and ownKeys: both
+  // reflective operations may enumerate a caller-controlled array or Proxy result internally.
+  if (!Object.isFrozen(value)) throw new TypeError(`${label} must be deeply immutable.`);
   const expectedKeys = new Set(['length']);
   const snapshot = [];
   for (let index = 0; index < length; index += 1) {
@@ -202,7 +209,7 @@ function frozenArraySnapshot(value, label) {
 }
 
 function requireExactArray(value, expected, label) {
-  const actual = frozenArraySnapshot(value, label);
+  const actual = frozenArraySnapshot(value, [expected.length], label);
   if (actual.length !== expected.length || actual.some((entry, index) => entry !== expected[index])) {
     throw new Error(`${label} must retain the exact protected values.`);
   }
@@ -305,29 +312,21 @@ function validateVerificationProof(verificationProof) {
     ['downstream', 'interpretation', 'parcels', 'sales'],
     'verificationProof.explicitGaps.sourceLedgerAtAggregation'
   );
-  const expectedParcelGaps = binding.artifactKind === 'parcels' ? [] : null;
-  const expectedSalesGaps = binding.artifactKind === 'sales' ? [] : null;
+  const allowedParcelGapLengths = binding.artifactKind === 'parcels' ? [0] : [0, 1];
+  const allowedSalesGapLengths = binding.artifactKind === 'sales' ? [0] : [0, 1];
   const parcelGaps = frozenArraySnapshot(
     sourceGaps.parcels,
+    allowedParcelGapLengths,
     'verificationProof.explicitGaps.sourceLedgerAtAggregation.parcels'
   );
   const salesGaps = frozenArraySnapshot(
     sourceGaps.sales,
+    allowedSalesGapLengths,
     'verificationProof.explicitGaps.sourceLedgerAtAggregation.sales'
   );
   if (
-    (expectedParcelGaps && parcelGaps.length !== 0) ||
-    (!expectedParcelGaps &&
-      !(
-        parcelGaps.length === 0 ||
-        (parcelGaps.length === 1 && parcelGaps[0] === 'parcel_artifact_receipt_missing')
-      )) ||
-    (expectedSalesGaps && salesGaps.length !== 0) ||
-    (!expectedSalesGaps &&
-      !(
-        salesGaps.length === 0 ||
-        (salesGaps.length === 1 && salesGaps[0] === 'sales_artifact_receipt_missing')
-      ))
+    (parcelGaps.length === 1 && parcelGaps[0] !== 'parcel_artifact_receipt_missing') ||
+    (salesGaps.length === 1 && salesGaps[0] !== 'sales_artifact_receipt_missing')
   ) {
     throw new Error('verificationProof source-ledger slot gaps contradict the selected artifact.');
   }
