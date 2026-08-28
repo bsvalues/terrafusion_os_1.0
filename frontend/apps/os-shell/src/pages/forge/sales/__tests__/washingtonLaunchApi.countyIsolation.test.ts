@@ -7,6 +7,7 @@ import type { CommittedFilters } from '../salesForgeTypes';
 import {
   fetchWashingtonLaunchQueue,
   fetchWashingtonLaunchRunningStats,
+  fetchWashingtonLaunchSaleDetail,
   patchWashingtonLaunchDecision,
 } from '../washingtonLaunchApi';
 
@@ -182,5 +183,57 @@ describe('Washington launch shard county isolation', () => {
     const stats = await fetchWashingtonLaunchRunningStats(2025, SPOKANE_FILTERS);
     expect(stats.counts.withRatio).toBe(0);
     expect(stats.iaaoCompliant).toBeNull();
+  });
+
+  it('preserves public source and quality evidence for an assessor review', async () => {
+    const record = {
+      ...saleRecord('Yakima', '077', 'yakima-evidence-sale'),
+      sourceMode: 'public_recorder_export',
+      candidateSource: 'spokane_sales_candidate_index',
+      confidenceScore: 0.91,
+      qualityScore: 0.78,
+      qualityBand: 'review_required',
+      reviewStatus: 'needs_source_confirmation',
+      provenance: {
+        sourceUrl: 'https://example.wa.gov/sales',
+        sourceFinalUrl: 'https://example.wa.gov/sales/record-1',
+        sourcePayloadPath: 'washington/spokane/record-1.json',
+        sourcePayloadSha256: 'abc123',
+        candidateIndexSource: 'spokane-public-sales-index',
+        candidateRecordType: 'public_sale_candidate',
+        candidateSourceOrdinal: 7,
+      },
+    };
+    vi.stubGlobal('fetch', vi.fn(async () => Response.json({
+      schemaVersion: '1.0.0',
+      generatedAt: '2026-08-28T00:00:00.000Z',
+      county: 'Yakima',
+      countyCode: '077',
+      summary: summary(1),
+      records: [record],
+    })));
+
+    const detail = await fetchWashingtonLaunchSaleDetail(
+      'yakima-evidence-sale',
+      { ...SPOKANE_FILTERS, countyCode: '077' },
+    );
+
+    expect(detail).toMatchObject({
+      countyCode: '077',
+      dataTrustTier: 'public-reference-not-county-certified',
+      sourceMode: 'public_recorder_export',
+      candidateSource: 'spokane_sales_candidate_index',
+      confidenceScore: 0.91,
+      qualityScore: 0.78,
+      qualityBand: 'review_required',
+      reviewStatus: 'needs_source_confirmation',
+      sourceUrl: 'https://example.wa.gov/sales',
+      sourceFinalUrl: 'https://example.wa.gov/sales/record-1',
+      sourcePayloadPath: 'washington/spokane/record-1.json',
+      sourcePayloadSha256: 'abc123',
+      candidateIndexSource: 'spokane-public-sales-index',
+      candidateRecordType: 'public_sale_candidate',
+      candidateSourceOrdinal: 7,
+    });
   });
 });

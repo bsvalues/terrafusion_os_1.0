@@ -447,9 +447,11 @@ function toQueueItem(sale: LaunchSaleRecord): SaleQueueItem {
     assessedValue: null,
     salesRatio: null,
     confidenceScore: sale.confidenceScore,
+    qualityScore: sale.qualityScore,
     qualityBand: sale.qualityBand,
     reviewStatus: sale.reviewStatus,
     sourceMode: sourceModeForDisplay(sale.sourceMode),
+    dataTrustTier: 'public-reference-not-county-certified',
   });
 }
 
@@ -490,7 +492,11 @@ function toDetail(sale: LaunchSaleRecord): SaleDetail {
     sourcePayloadPath: sale.provenance.sourcePayloadPath,
     sourceMode: sourceModeForDisplay(sale.sourceMode),
     candidateSource: candidateSourceForDisplay(sale.candidateSource),
+    candidateIndexSource: sale.provenance.candidateIndexSource,
+    candidateRecordType: sale.provenance.candidateRecordType,
+    candidateSourceOrdinal: sale.provenance.candidateSourceOrdinal,
     confidenceScore: sale.confidenceScore,
+    qualityScore: sale.qualityScore,
     qualityBand: sale.qualityBand,
     reviewStatus: sale.reviewStatus,
   });

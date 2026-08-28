@@ -38,6 +38,13 @@ export interface SaleQueueItem {
   decisionReason: string | null;
   assessedValue: number | null;
   salesRatio: number | null;
+  /** Public/reference launch quality signals. Optional on live API responses. */
+  confidenceScore?: number | null;
+  qualityScore?: number | null;
+  qualityBand?: string | null;
+  reviewStatus?: string | null;
+  sourceMode?: string | null;
+  dataTrustTier?: string | null;
 }
 
 export interface SaleQueuePage {
@@ -78,6 +85,15 @@ export interface SaleDetail extends SaleQueueItem {
   decisionAt: string | null;
   ingestedAt: string | null;
   ingestedBy: string | null;
+  /** Public/reference launch provenance. Optional on live API responses. */
+  candidateSource?: string | null;
+  sourceUrl?: string | null;
+  sourceFinalUrl?: string | null;
+  sourcePayloadPath?: string | null;
+  sourcePayloadSha256?: string | null;
+  candidateIndexSource?: string | null;
+  candidateRecordType?: string | null;
+  candidateSourceOrdinal?: number | null;
 }
 
 // ── Running stats (from GET /api/terraforge/sale-qualification/running-stats) ─
