@@ -2,7 +2,7 @@
 
 | Field | Value |
 | --- | --- |
-| Status | `ACTIVE_GOVERNANCE_ONLY` |
+| Status | `PROTECTED_COMPLETE` |
 | Parent | `WO-WAL-000` |
 | Program | Washington Assessor Launch V1 |
 | Base | `9155856c2d970f3d772c3f7790f91e017fb47dd8` |
@@ -139,6 +139,8 @@ Only these repository-relative paths may change in this governance Work Order:
 
 ## Completion
 
-This Work Order is complete only when its validated governance-only commit reaches protected main.
-That protected merge clears exactly the three registered E children and records the Sync authority
-wall; it does not complete any broad parent Work Order.
+This Work Order completed through protected main in PR #1507 at merge
+`984018696738e437c91e5d197899e29e3867a2fd`. That protected merge cleared exactly the three
+registered E children and recorded the Sync authority wall; it did not complete any broad parent
+Work Order. `WO-WAL-000F` reconciles their later protected completion and records the zero-child
+F-wave result without weakening that wall.
