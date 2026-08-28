@@ -11531,10 +11531,10 @@
       "validationGates": [{ "name": "WAL activation governance", "command": "JSON parse, work-order schema/query, canon, governance, formatting and exact changed-path checks", "required": true, "result": "not_run" }],
       "stopConditions": [{ "type": "authority_wall", "description": "Stop on any Issue #1485 hard wall, conflicting higher canon, failed required control or substantive unresolved review." }],
       "nextCandidates": [
-        { "id": "WO-WAL-001C", "reason": "Protected-complete B-wave clears the exact statewide receipt-ledger lane after WO-WAL-000C.", "riskClass": "R2", "blocked": false },
-        { "id": "WO-WAL-002C", "reason": "Protected-complete CSV and authority contracts clear the exact county-bound intake lane after WO-WAL-000C.", "riskClass": "R5", "blocked": false },
-        { "id": "WO-WAL-003C", "reason": "Protected-complete read contracts clear the exact fake-ADO adapter lane after WO-WAL-000C.", "riskClass": "R4", "blocked": false },
-        { "id": "WO-WAL-004C", "reason": "Protected-complete county authority contracts clear the exact activation-prerequisite lane after WO-WAL-000C.", "riskClass": "R5", "blocked": false }
+        { "id": "WO-WAL-001D", "reason": "Protected-complete C-wave clears exact public artifact byte verification after WO-WAL-000D.", "riskClass": "R2", "blocked": false },
+        { "id": "WO-WAL-002D", "reason": "Protected-complete C-wave clears exact county CSV idempotency identity after WO-WAL-000D.", "riskClass": "R3", "blocked": false },
+        { "id": "WO-WAL-003D", "reason": "Protected-complete C-wave clears one profile-bound fake ADO open-connection session after WO-WAL-000D.", "riskClass": "R4", "blocked": false },
+        { "id": "WO-WAL-004D", "reason": "Protected-complete C-wave clears exact authenticated-context canonical county binding after WO-WAL-000D.", "riskClass": "R5", "blocked": false }
       ],
       "authority": { "mayWrite": true, "mayCommit": true, "mayPush": true, "mayOpenPr": true, "mayMarkReady": true, "mayMerge": true, "mayCleanup": true, "notes": "Issue #1485 mission authority plus standing protected-PR lifecycle authority; activation is governance-only." },
       "provenance": { "createdAt": "2026-08-27T17:00:00Z", "source": "Issue #1485 and PR #1486 based on a1f6fd66d2cff6e3dc7f62ebc00311974951dc90.", "schemaVersion": "0.1.0" }

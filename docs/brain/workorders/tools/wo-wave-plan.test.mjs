@@ -735,6 +735,12 @@ describe('wo-wave-plan', () => {
         .flatMap(item => item[field]);
       assert.equal(new Set(reservations).size, reservations.length, `${field} must not collide`);
     }
+    assert.deepEqual(
+      actualRegistry.records
+        .find(item => item.id === 'WO-WAL-000')
+        .nextCandidates.map(item => item.id),
+      childIds
+    );
     for (const parentId of ['WO-WAL-001', 'WO-WAL-002', 'WO-WAL-003', 'WO-WAL-004']) {
       assert.equal(actualRegistry.records.find(item => item.id === parentId).status, 'ready');
       assert.equal(
