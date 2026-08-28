@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -39,7 +40,23 @@ public sealed class ReadOnlyCountySourceExecutorTests
         var act = () => new ReadOnlyCountySourceExecutor(
             new RecordingAdapter(),
             CreateProfile(),
-            resultRowLimit);
+            resultRowLimit,
+            resultFieldLimit: 10);
+
+        act.Should().Throw<ArgumentOutOfRangeException>();
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(-1)]
+    [InlineData(ReadOnlyCountySourceExecutor.MaximumFieldsPerRow + 1)]
+    public void Constructor_rejects_non_positive_or_oversized_field_bounds(int resultFieldLimit)
+    {
+        var act = () => new ReadOnlyCountySourceExecutor(
+            new RecordingAdapter(),
+            CreateProfile(),
+            resultRowLimit: 10,
+            resultFieldLimit: resultFieldLimit);
 
         act.Should().Throw<ArgumentOutOfRangeException>();
     }
@@ -58,7 +75,11 @@ public sealed class ReadOnlyCountySourceExecutorTests
         var observedAtUtc = new DateTimeOffset(2026, 8, 27, 12, 0, 0, TimeSpan.Zero);
         var adapter = new RecordingAdapter(
             new ReadOnlySourceReadPage(rows, "checkpoint-2", observedAtUtc));
-        var executor = new ReadOnlyCountySourceExecutor(adapter, profile, resultRowLimit: 2);
+        var executor = new ReadOnlyCountySourceExecutor(
+            adapter,
+            profile,
+            resultRowLimit: 2,
+            resultFieldLimit: 10);
 
         var result = await executor.ExecuteAsync(request, CancellationToken.None);
 
@@ -78,6 +99,7 @@ public sealed class ReadOnlyCountySourceExecutorTests
         result.CommandText.Should().Be(request.Command.Text);
         result.RequestMaxRows.Should().Be(2);
         result.ResultRowLimit.Should().Be(2);
+        result.ResultFieldLimit.Should().Be(10);
         result.RequestedCheckpoint.Should().Be("checkpoint-1");
         result.NextCheckpoint.Should().Be("checkpoint-2");
         result.ObservedAtUtc.Should().Be(observedAtUtc);
@@ -105,7 +127,7 @@ public sealed class ReadOnlyCountySourceExecutorTests
         var profile = CreateProfile();
         var request = CreateRequest(profile, maxRows: 1);
         var adapter = new RecordingAdapter(EmptyPage());
-        var executor = new ReadOnlyCountySourceExecutor(adapter, profile, resultRowLimit: 1);
+        var executor = new ReadOnlyCountySourceExecutor(adapter, profile, 1, 10);
 
         var result = await executor.ExecuteAsync(request, CancellationToken.None);
 
@@ -121,7 +143,7 @@ public sealed class ReadOnlyCountySourceExecutorTests
     {
         var profile = CreateProfile();
         var adapter = new RecordingAdapter(EmptyPage());
-        var executor = new ReadOnlyCountySourceExecutor(adapter, profile, resultRowLimit: 1);
+        var executor = new ReadOnlyCountySourceExecutor(adapter, profile, 1, 10);
         var request = CreateRequest(profile, maxRows: 2);
 
         var act = () => executor.ExecuteAsync(request, CancellationToken.None);
@@ -140,7 +162,8 @@ public sealed class ReadOnlyCountySourceExecutorTests
         var executor = new ReadOnlyCountySourceExecutor(
             adapter,
             configuredProfile,
-            resultRowLimit: 10);
+            resultRowLimit: 10,
+            resultFieldLimit: 10);
 
         var act = () => executor.ExecuteAsync(
             CreateRequest(requestProfile, maxRows: 10),
@@ -163,7 +186,7 @@ public sealed class ReadOnlyCountySourceExecutorTests
             .ToArray();
         var adapter = new RecordingAdapter(
             new ReadOnlySourceReadPage(rows, null, DateTimeOffset.UtcNow));
-        var executor = new ReadOnlyCountySourceExecutor(adapter, profile, resultRowLimit: 2);
+        var executor = new ReadOnlyCountySourceExecutor(adapter, profile, 2, 10);
 
         var act = () => executor.ExecuteAsync(
             CreateRequest(profile, maxRows: 2),
@@ -172,6 +195,70 @@ public sealed class ReadOnlyCountySourceExecutorTests
         await act.Should().ThrowAsync<InvalidOperationException>()
             .WithMessage("*more rows*");
         adapter.InvocationCount.Should().Be(1);
+    }
+
+    [Fact]
+    public async Task Execute_never_reuses_adapter_count_as_allocation_capacity()
+    {
+        var profile = CreateProfile();
+        var row = (IReadOnlyDictionary<string, object?>)new Dictionary<string, object?>
+        {
+            ["parcel_id"] = "P-1",
+        };
+        var rows = new SequencedCountReadOnlyList<IReadOnlyDictionary<string, object?>>(
+            new[] { row },
+            1,
+            int.MaxValue);
+        var adapter = new RecordingAdapter(
+            new ReadOnlySourceReadPage(rows, null, DateTimeOffset.UtcNow));
+        var executor = new ReadOnlyCountySourceExecutor(adapter, profile, 1, 10);
+
+        var result = await executor.ExecuteAsync(
+            CreateRequest(profile, maxRows: 1),
+            CancellationToken.None);
+
+        result.Rows.Should().ContainSingle();
+        rows.CountReadCount.Should().Be(1);
+    }
+
+    [Fact]
+    public async Task Execute_enforces_row_and_field_limits_while_enumerating_dishonest_collections()
+    {
+        var profile = CreateProfile();
+        var ordinaryRow = (IReadOnlyDictionary<string, object?>)new Dictionary<string, object?>
+        {
+            ["parcel_id"] = "P-1",
+        };
+        var underreportedRows = new SequencedCountReadOnlyList<IReadOnlyDictionary<string, object?>>(
+            new[] { ordinaryRow, ordinaryRow },
+            0);
+        var rowAdapter = new RecordingAdapter(
+            new ReadOnlySourceReadPage(underreportedRows, null, DateTimeOffset.UtcNow));
+        var rowExecutor = new ReadOnlyCountySourceExecutor(rowAdapter, profile, 1, 10);
+
+        var rowAct = () => rowExecutor.ExecuteAsync(
+            CreateRequest(profile, maxRows: 1),
+            CancellationToken.None);
+
+        await rowAct.Should().ThrowAsync<InvalidOperationException>()
+            .WithMessage("*more rows*");
+
+        var wideValues = Enumerable.Range(0, 11)
+            .ToDictionary(number => $"field_{number}", number => (object?)number);
+        var underreportedWideRow = new LyingCountReadOnlyDictionary(wideValues, declaredCount: 0);
+        var fieldAdapter = new RecordingAdapter(
+            new ReadOnlySourceReadPage(
+                new[] { (IReadOnlyDictionary<string, object?>)underreportedWideRow },
+                null,
+                DateTimeOffset.UtcNow));
+        var fieldExecutor = new ReadOnlyCountySourceExecutor(fieldAdapter, profile, 1, 10);
+
+        var fieldAct = () => fieldExecutor.ExecuteAsync(
+            CreateRequest(profile, maxRows: 1),
+            CancellationToken.None);
+
+        await fieldAct.Should().ThrowAsync<InvalidOperationException>()
+            .WithMessage("*10-value limit*");
     }
 
     [Fact]
@@ -190,7 +277,7 @@ public sealed class ReadOnlyCountySourceExecutorTests
                 },
                 null,
                 DateTimeOffset.UtcNow));
-        var executor = new ReadOnlyCountySourceExecutor(adapter, profile, resultRowLimit: 1);
+        var executor = new ReadOnlyCountySourceExecutor(adapter, profile, 1, 10);
 
         var act = () => executor.ExecuteAsync(
             CreateRequest(profile, maxRows: 1),
@@ -206,7 +293,7 @@ public sealed class ReadOnlyCountySourceExecutorTests
     {
         var profile = CreateProfile();
         var adapter = new RecordingAdapter((ReadOnlySourceReadPage)null!);
-        var executor = new ReadOnlyCountySourceExecutor(adapter, profile, resultRowLimit: 1);
+        var executor = new ReadOnlyCountySourceExecutor(adapter, profile, 1, 10);
 
         var act = () => executor.ExecuteAsync(
             CreateRequest(profile, maxRows: 1),
@@ -223,7 +310,7 @@ public sealed class ReadOnlyCountySourceExecutorTests
         var profile = CreateProfile();
         var adapter = new RecordingAdapter(
             new ReadOnlySourceReadPage(null!, null, DateTimeOffset.UtcNow));
-        var executor = new ReadOnlyCountySourceExecutor(adapter, profile, resultRowLimit: 1);
+        var executor = new ReadOnlyCountySourceExecutor(adapter, profile, 1, 10);
 
         var act = () => executor.ExecuteAsync(
             CreateRequest(profile, maxRows: 1),
@@ -240,7 +327,7 @@ public sealed class ReadOnlyCountySourceExecutorTests
         var profile = CreateProfile();
         var expected = new DeliberateAdapterException("adapter failure");
         var adapter = new RecordingAdapter(expected);
-        var executor = new ReadOnlyCountySourceExecutor(adapter, profile, resultRowLimit: 1);
+        var executor = new ReadOnlyCountySourceExecutor(adapter, profile, 1, 10);
 
         var act = () => executor.ExecuteAsync(
             CreateRequest(profile, maxRows: 1),
@@ -256,7 +343,7 @@ public sealed class ReadOnlyCountySourceExecutorTests
     {
         var profile = CreateProfile();
         var adapter = new RecordingAdapter(EmptyPage());
-        var executor = new ReadOnlyCountySourceExecutor(adapter, profile, resultRowLimit: 1);
+        var executor = new ReadOnlyCountySourceExecutor(adapter, profile, 1, 10);
         using var cancellationSource = new CancellationTokenSource();
         cancellationSource.Cancel();
 
@@ -275,7 +362,7 @@ public sealed class ReadOnlyCountySourceExecutorTests
         using var cancellationSource = new CancellationTokenSource();
         var expected = new OperationCanceledException(cancellationSource.Token);
         var adapter = new RecordingAdapter(expected);
-        var executor = new ReadOnlyCountySourceExecutor(adapter, profile, resultRowLimit: 1);
+        var executor = new ReadOnlyCountySourceExecutor(adapter, profile, 1, 10);
 
         var act = () => executor.ExecuteAsync(
             CreateRequest(profile, maxRows: 1),
@@ -371,5 +458,66 @@ public sealed class ReadOnlyCountySourceExecutorTests
             : base(message)
         {
         }
+    }
+
+    private sealed class SequencedCountReadOnlyList<T> : IReadOnlyList<T>
+    {
+        private readonly IReadOnlyList<T> _items;
+        private readonly int[] _counts;
+
+        public SequencedCountReadOnlyList(IReadOnlyList<T> items, params int[] counts)
+        {
+            _items = items;
+            _counts = counts;
+        }
+
+        public int Count
+        {
+            get
+            {
+                var index = Math.Min(CountReadCount, _counts.Length - 1);
+                CountReadCount++;
+                return _counts[index];
+            }
+        }
+
+        public int CountReadCount { get; private set; }
+
+        public T this[int index] => _items[index];
+
+        public IEnumerator<T> GetEnumerator() => _items.GetEnumerator();
+
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+    }
+
+    private sealed class LyingCountReadOnlyDictionary : IReadOnlyDictionary<string, object?>
+    {
+        private readonly IReadOnlyDictionary<string, object?> _values;
+
+        public LyingCountReadOnlyDictionary(
+            IReadOnlyDictionary<string, object?> values,
+            int declaredCount)
+        {
+            _values = values;
+            Count = declaredCount;
+        }
+
+        public int Count { get; }
+
+        public IEnumerable<string> Keys => _values.Keys;
+
+        public IEnumerable<object?> Values => _values.Values;
+
+        public object? this[string key] => _values[key];
+
+        public bool ContainsKey(string key) => _values.ContainsKey(key);
+
+        public IEnumerator<KeyValuePair<string, object?>> GetEnumerator() =>
+            _values.GetEnumerator();
+
+        public bool TryGetValue(string key, out object? value) =>
+            _values.TryGetValue(key, out value);
+
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }
 }

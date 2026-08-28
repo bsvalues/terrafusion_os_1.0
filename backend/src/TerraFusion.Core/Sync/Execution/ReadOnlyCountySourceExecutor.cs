@@ -15,15 +15,18 @@ namespace TerraFusion.Core.Sync.Execution;
 public sealed class ReadOnlyCountySourceExecutor
 {
     public const string ContractId = "wal.external-readonly.execution-envelope.v1";
+    public const int MaximumFieldsPerRow = 256;
 
     private readonly IReadOnlyCountySourceAdapter _adapter;
     private readonly ReadOnlyCountySourceExecutionProvenance _configuredProvenance;
+    private readonly int _resultFieldLimit;
     private readonly int _resultRowLimit;
 
     public ReadOnlyCountySourceExecutor(
         IReadOnlyCountySourceAdapter adapter,
         ReadOnlyCountySourceProfile profile,
-        int resultRowLimit)
+        int resultRowLimit,
+        int resultFieldLimit)
     {
         ArgumentNullException.ThrowIfNull(adapter);
         ArgumentNullException.ThrowIfNull(profile);
@@ -35,8 +38,16 @@ public sealed class ReadOnlyCountySourceExecutor
                 $"Result row limit must be between 1 and {ReadOnlySourceReadRequest.MaximumRows} rows.");
         }
 
+        if (resultFieldLimit is < 1 or > MaximumFieldsPerRow)
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof(resultFieldLimit),
+                $"Result field limit must be between 1 and {MaximumFieldsPerRow} fields per row.");
+        }
+
         _adapter = adapter;
         _configuredProvenance = ReadOnlyCountySourceExecutionProvenance.From(profile);
+        _resultFieldLimit = resultFieldLimit;
         _resultRowLimit = resultRowLimit;
     }
 
@@ -76,7 +87,8 @@ public sealed class ReadOnlyCountySourceExecutor
             _configuredProvenance,
             request,
             page,
-            _resultRowLimit);
+            _resultRowLimit,
+            _resultFieldLimit);
     }
 }
 
@@ -163,6 +175,7 @@ public sealed class ReadOnlyCountySourceExecutionResult
         IReadOnlyDictionary<string, object?> parameters,
         int requestMaxRows,
         int resultRowLimit,
+        int resultFieldLimit,
         string? requestedCheckpoint,
         IReadOnlyList<IReadOnlyDictionary<string, object?>> rows,
         string? nextCheckpoint,
@@ -173,6 +186,7 @@ public sealed class ReadOnlyCountySourceExecutionResult
         Parameters = parameters;
         RequestMaxRows = requestMaxRows;
         ResultRowLimit = resultRowLimit;
+        ResultFieldLimit = resultFieldLimit;
         RequestedCheckpoint = requestedCheckpoint;
         Rows = rows;
         NextCheckpoint = nextCheckpoint;
@@ -189,6 +203,8 @@ public sealed class ReadOnlyCountySourceExecutionResult
 
     public int ResultRowLimit { get; }
 
+    public int ResultFieldLimit { get; }
+
     public string? RequestedCheckpoint { get; }
 
     public IReadOnlyList<IReadOnlyDictionary<string, object?>> Rows { get; }
@@ -201,7 +217,8 @@ public sealed class ReadOnlyCountySourceExecutionResult
         ReadOnlyCountySourceExecutionProvenance provenance,
         ReadOnlySourceReadRequest request,
         ReadOnlySourceReadPage page,
-        int resultRowLimit)
+        int resultRowLimit,
+        int resultFieldLimit)
     {
         if (page.Rows is null)
         {
@@ -215,14 +232,18 @@ public sealed class ReadOnlyCountySourceExecutionResult
                 "The read adapter returned more rows than the request or execution envelope allows.");
         }
 
-        var rows = SnapshotRows(page.Rows, allowedRowCount);
+        var rows = SnapshotRows(page.Rows, allowedRowCount, resultFieldLimit);
 
         return new ReadOnlyCountySourceExecutionResult(
             provenance,
             request.Command.Text,
-            SnapshotValues(request.Parameters, "request parameter"),
+            SnapshotValues(
+                request.Parameters,
+                "request parameter",
+                ReadOnlyCountySourceExecutor.MaximumFieldsPerRow),
             request.MaxRows,
             resultRowLimit,
+            resultFieldLimit,
             request.Checkpoint,
             rows,
             page.NextCheckpoint,
@@ -231,9 +252,10 @@ public sealed class ReadOnlyCountySourceExecutionResult
 
     private static IReadOnlyList<IReadOnlyDictionary<string, object?>> SnapshotRows(
         IReadOnlyList<IReadOnlyDictionary<string, object?>> sourceRows,
-        int allowedRowCount)
+        int allowedRowCount,
+        int resultFieldLimit)
     {
-        var rows = new List<IReadOnlyDictionary<string, object?>>(sourceRows.Count);
+        var rows = new List<IReadOnlyDictionary<string, object?>>(allowedRowCount);
         foreach (var row in sourceRows)
         {
             if (rows.Count >= allowedRowCount)
@@ -247,7 +269,7 @@ public sealed class ReadOnlyCountySourceExecutionResult
                 throw new InvalidOperationException("The read adapter returned a null row.");
             }
 
-            rows.Add(SnapshotValues(row, "result value"));
+            rows.Add(SnapshotValues(row, "result value", resultFieldLimit));
         }
 
         return rows.AsReadOnly();
@@ -255,11 +277,18 @@ public sealed class ReadOnlyCountySourceExecutionResult
 
     private static IReadOnlyDictionary<string, object?> SnapshotValues(
         IReadOnlyDictionary<string, object?> source,
-        string valueKind)
+        string valueKind,
+        int maximumValues)
     {
-        var snapshot = new Dictionary<string, object?>(source.Count, StringComparer.Ordinal);
+        var snapshot = new Dictionary<string, object?>(StringComparer.Ordinal);
         foreach (var pair in source)
         {
+            if (snapshot.Count >= maximumValues)
+            {
+                throw new InvalidOperationException(
+                    $"The {valueKind} collection exceeds the {maximumValues}-value limit.");
+            }
+
             if (pair.Key is null)
             {
                 throw new InvalidOperationException($"A {valueKind} key must not be null.");

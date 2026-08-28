@@ -44,13 +44,16 @@ county data is reserved or authorized.
 ## Implemented contract
 
 1. The sealed executor is configured with one explicit `IReadOnlyCountySourceAdapter`, one immutable
-   snapshot of a governed `ReadOnlyCountySourceProfile`, and a positive result-row limit no larger
-   than the protected `ReadOnlySourceReadRequest.MaximumRows` ceiling.
+   snapshot of a governed `ReadOnlyCountySourceProfile`, a positive result-row limit no larger than
+   the protected `ReadOnlySourceReadRequest.MaximumRows` ceiling, and a positive result-field limit
+   no larger than the contract's 256-field ceiling.
 2. Before dispatch, the executor requires exact ordinal equality for every request/profile provenance
    field and requires the request row bound to fit inside its configured result bound.
 3. A valid request invokes `ReadPageAsync` exactly once. The envelope has no retry, fallback,
    discovery, connection lifecycle, or alternate adapter path.
-4. The result must fit both the request and configured row limits. Null pages, null row collections,
+4. The result must fit both the request and configured row limits and every row must fit the
+   configured field limit. Adapter-controlled collection counts are never used as allocation
+   capacities; enumeration independently enforces both ceilings. Null pages, null row collections,
    null rows, and mutable or unknown result values fail closed.
 5. Successful output independently snapshots the profile provenance, guarded command text,
    parameters, request and result bounds, checkpoints, observation time, rows, and row dictionaries.
@@ -73,7 +76,8 @@ county data is reserved or authorized.
 - constructor tests reject zero, negative, and above-ceiling configured result bounds;
 - profile drift and a request above the configured row bound fail before adapter invocation;
 - a valid request reaches the exact adapter once with the original request and cancellation token;
-- oversized, null, or mutable adapter results fail closed after only one invocation;
+- oversized, over-wide, changing-count, null, or mutable adapter results fail closed after only one
+  invocation without trusting adapter counts for allocation;
 - caller mutation after execution cannot alter the output row collection, row dictionaries, or
   parameter snapshot;
 - adapter exceptions and cancellation propagate without retry or translation;
