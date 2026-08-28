@@ -2,7 +2,7 @@
 
 | Field | Value |
 | --- | --- |
-| Status | `IMPLEMENTED_PENDING_PROTECTED_MAIN` |
+| Status | `PROTECTED_COMPLETE` |
 | Parent | `WO-WAL-003` |
 | Program | Washington Assessor Launch V1 |
 | Goal | `GOAL-WASHINGTON-ASSESSOR-LAUNCH-V1` |
@@ -12,6 +12,7 @@
 | Environment | `fake-ado-open-connection-only` |
 | Dispatch clearance | `WO-WAL-000D` protected merge `f21cfa6f61db0bac7d5da643c948991a14f459fd` |
 | Terminal condition | `FAKE_ADO_CALLER_OPEN_CONNECTION_SINGLE_COMMAND_READ_SESSION_PROVEN` |
+| Protected completion | PR `#1505`, merge `9155856c2d970f3d772c3f7790f91e017fb47dd8`; reviewed fix `cc8a3fd1a9c648b07a0f7516df1f51b398433c10`; integrated head `d006d3567a4a7e9da43e014e021b5cf81f976e39` |
 
 ## Objective
 
@@ -123,5 +124,11 @@ lineage, or promote county data. Those remain mandatory R5 continuation work und
 require separately authorized source and credential authority. Production connection remains denied
 before WAL-007 release acceptance.
 
-The implementation is not canonical completion until its validated exact head reaches protected
-main. Completion of this bounded child does not complete `WO-WAL-003`.
+Protected PR `#1505` completed this child as merge
+`9155856c2d970f3d772c3f7790f91e017fb47dd8`, containing reviewed fix
+`cc8a3fd1a9c648b07a0f7516df1f51b398433c10` and updated integrated head
+`d006d3567a4a7e9da43e014e021b5cf81f976e39`. Completion of this bounded child does not complete
+`WO-WAL-003`. No `WO-WAL-003E` is registered: the named source, read-only credential/role and
+secret-store reference, execution/network environment, data-handling classification, and source-side
+no-DML evidence method remain an explicit authority wall recorded by
+[`WO-WAL-000E`](WO-WAL-000E-d-wave-reconciliation-and-e-wave-reservations.md).

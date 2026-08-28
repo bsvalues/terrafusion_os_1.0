@@ -2,7 +2,7 @@
 
 | Field | Value |
 | --- | --- |
-| Status | `IMPLEMENTED_VALIDATED_LOCALLY` |
+| Status | `PROTECTED_COMPLETE` |
 | Program | Washington Assessor Launch V1 |
 | Parent | `WO-WAL-002` |
 | Base | `f21cfa6f61db0bac7d5da643c948991a14f459fd` |
@@ -10,6 +10,7 @@
 | Contract reservation | `wal.county-upload.csv-idempotency.v1` |
 | Environment reservation | `local-memory-csv-idempotency-only` |
 | Terminal condition | `CSV_COUNTY_DATASET_CONTENT_IDEMPOTENCY_KEY_DETERMINISTIC_AND_BOUNDED_PROVEN` |
+| Protected completion | PR `#1506`, merge `f4480bdb5213a406a77bc40b3f1c3d2be799e6e3`; reviewed head `ea45e5b03135252e34cfc2cf5ec705b3f331951e`; integrated head `6cb27bb3d202cc1ab8a334694ee7410826a18da0` |
 
 ## Objective
 
@@ -103,6 +104,9 @@ disposable container.
 
 ## Continuation
 
-Successful validation proves only the reserved deterministic identity contract. Completion returns
-to open parent `WO-WAL-002`; authentication, transport, duplicate storage/decision, lineage,
-quarantine, atomic promotion, rollback, API, and UI remain separately reserved future work.
+Protected PR `#1506` completed this child as merge
+`f4480bdb5213a406a77bc40b3f1c3d2be799e6e3`, containing reviewed head
+`ea45e5b03135252e34cfc2cf5ec705b3f331951e` and updated integrated head
+`6cb27bb3d202cc1ab8a334694ee7410826a18da0`. This proves only the reserved deterministic identity
+contract. The broad `WO-WAL-002` parent remains open, and the next exact child is registered only
+through protected [`WO-WAL-000E`](WO-WAL-000E-d-wave-reconciliation-and-e-wave-reservations.md).

@@ -2,7 +2,7 @@
 
 | Field | Value |
 | --- | --- |
-| Status | `ACTIVE` |
+| Status | `PROTECTED_COMPLETE` |
 | Parent | `WO-WAL-001` |
 | Program | Washington Assessor Launch V1 |
 | Base | `f21cfa6f61db0bac7d5da643c948991a14f459fd` |
@@ -10,6 +10,7 @@
 | Contract reservation | `wal.public-acquisition-artifact-verification.v1` |
 | Environment reservation | `local-memory-public-artifact-verification-only` |
 | Terminal condition | `PUBLIC_ARTIFACT_BYTES_MATCH_RECEIPT_LEDGER_HASH_LENGTH_COUNTY_KIND_PROVEN` |
+| Protected completion | PR `#1504`, merge `9b1379a5dc1112bba3d836fd4f38dcba254c132b`; reviewed fix `d1dcc7f2c1ed8bd0104890d2081b550b040c34b1`; integrated head `07d5737cf49be7010d8a94e31a20572987c2ffa3` |
 
 ## Objective
 
@@ -109,8 +110,9 @@ source.
 
 ## Completion boundary
 
-This child is complete only when its exact protected head reaches protected `main` with all required
-checks and conversations resolved. That proves the narrow terminal condition for supplied in-memory
-artifact bytes only. The broad `WO-WAL-001` parent remains open because lawful acquisition, artifact
-landing, source authenticity, provenance/freshness, normalized rows, runtime registration, and
-capability truth remain unproven.
+This child completed on protected `main` in PR `#1504` as
+`9b1379a5dc1112bba3d836fd4f38dcba254c132b`; the protected merge contains reviewed fix
+`d1dcc7f2c1ed8bd0104890d2081b550b040c34b1` and updated integrated head
+`07d5737cf49be7010d8a94e31a20572987c2ffa3`. That proves the narrow terminal condition for supplied
+in-memory artifact bytes only. The broad `WO-WAL-001` parent remains open. The next exact child is
+registered only through protected [`WO-WAL-000E`](WO-WAL-000E-d-wave-reconciliation-and-e-wave-reservations.md).
