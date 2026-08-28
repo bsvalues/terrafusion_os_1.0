@@ -33,8 +33,9 @@ No other repository path is writable under this child Work Order.
 1. requires the exact format token `csv`, a safe leaf filename with a non-empty `.csv` stem, and
    the parameter-free `text/csv` media type;
 2. rejects path-like names, whitespace ambiguity, known binary/archive/document/database signatures,
-   and UTF-16 BOMs before parsing;
-3. copies the supplied bytes before evidence or parsing so caller mutation cannot alter the admitted
+   and UTF-16 BOMs before parsing, including signatures immediately after one permitted UTF-8 BOM;
+3. rejects candidates above the protected parser byte limit before allocating a snapshot, then copies
+   the supplied bytes before evidence or parsing so caller mutation cannot alter the admitted
    snapshot;
 4. computes lowercase SHA-256 and exact byte length over the same copied bytes passed to the protected
    bounded parser;
@@ -61,7 +62,8 @@ that arbitrary bytes are CSV; the strict parser remains authoritative for CSV sy
 - caller-mutation isolation and deeply read-only parsed headers/rows;
 - path-like filename, extension, format, parameterized/wrong media type, container signature, and
   UTF-16 signature denial;
-- initial UTF-8 BOM acceptance through the protected parser;
+- initial UTF-8 BOM acceptance through the protected parser without allowing it to mask a forbidden signature;
+- pre-snapshot rejection above the protected parser byte limit;
 - parser-bound propagation and pre-cancelled token propagation;
 - exact three-path diff.
 

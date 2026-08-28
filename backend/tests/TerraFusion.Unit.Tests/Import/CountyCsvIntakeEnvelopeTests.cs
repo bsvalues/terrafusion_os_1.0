@@ -107,6 +107,31 @@ public sealed class CountyCsvIntakeEnvelopeTests
     }
 
     [Fact]
+    public async Task AdmitAsync_DoesNotAllowUtf8BomToMaskForbiddenSignature()
+    {
+        var bytes = new UTF8Encoding(encoderShouldEmitUTF8Identifier: true)
+            .GetPreamble()
+            .Concat(Encoding.ASCII.GetBytes("%PDF-1.7"))
+            .ToArray();
+
+        var exception = await Assert.ThrowsAsync<CountyCsvIntakeException>(
+            () => CreateEnvelope().AdmitAsync(Declaration(), bytes));
+
+        Assert.Equal(CountyCsvIntakeErrorCode.ContainerSignatureMismatch, exception.ErrorCode);
+    }
+
+    [Fact]
+    public async Task AdmitAsync_RejectsParserLimitBeforeSnapshottingCandidate()
+    {
+        var exception = await Assert.ThrowsAsync<CountyCsvParseException>(
+            () => CreateEnvelope(maxInputBytes: 8).AdmitAsync(
+                Declaration(),
+                new byte[9]));
+
+        Assert.Equal(CountyCsvErrorCode.InputTooLarge, exception.ErrorCode);
+    }
+
+    [Fact]
     public async Task AdmitAsync_PropagatesBoundedParserFailureWithoutReplacingIt()
     {
         var exception = await Assert.ThrowsAsync<CountyCsvParseException>(
@@ -148,12 +173,14 @@ public sealed class CountyCsvIntakeEnvelopeTests
             new byte[] { 0xFE, 0xFF, 0x00, 0x70 },
         };
 
-    private static CountyCsvIntakeEnvelope CreateEnvelope(int maxDataRows = 10) =>
+    private static CountyCsvIntakeEnvelope CreateEnvelope(
+        int maxDataRows = 10,
+        long maxInputBytes = 4096) =>
         new(
             new CountyCsvParserOptions
             {
                 Delimiter = ',',
-                MaxInputBytes = 4096,
+                MaxInputBytes = maxInputBytes,
                 MaxDataRows = maxDataRows,
                 MaxFieldsPerRow = 20,
                 MaxCharactersPerField = 256,

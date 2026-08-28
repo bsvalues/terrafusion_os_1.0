@@ -73,10 +73,12 @@ public sealed class CountyCsvIntakeEnvelope
     ];
 
     private readonly CountyCsvStreamParser _parser;
+    private readonly long _maxInputBytes;
 
     public CountyCsvIntakeEnvelope(CountyCsvParserOptions parserOptions)
     {
         _parser = new CountyCsvStreamParser(parserOptions);
+        _maxInputBytes = parserOptions.MaxInputBytes;
     }
 
     public async Task<CountyCsvIntakeReceipt> AdmitAsync(
@@ -103,6 +105,13 @@ public sealed class CountyCsvIntakeEnvelope
             throw new CountyCsvIntakeException(
                 CountyCsvIntakeErrorCode.MediaTypeMismatch,
                 "The declared media type must be text/csv without parameters.");
+        }
+
+        if (content.Length > _maxInputBytes)
+        {
+            throw new CountyCsvParseException(
+                CountyCsvErrorCode.InputTooLarge,
+                $"CSV input exceeds the {_maxInputBytes}-byte limit.");
         }
 
         var snapshot = content.ToArray();
@@ -167,7 +176,11 @@ public sealed class CountyCsvIntakeEnvelope
 
     private static void RejectForbiddenSignature(ReadOnlySpan<byte> content)
     {
-        if (content.StartsWith([0xFF, 0xFE]) || content.StartsWith([0xFE, 0xFF]))
+        var signatureView = content.StartsWith([0xEF, 0xBB, 0xBF])
+            ? content[3..]
+            : content;
+
+        if (signatureView.StartsWith([0xFF, 0xFE]) || signatureView.StartsWith([0xFE, 0xFF]))
         {
             throw new CountyCsvIntakeException(
                 CountyCsvIntakeErrorCode.ContainerSignatureMismatch,
@@ -176,7 +189,7 @@ public sealed class CountyCsvIntakeEnvelope
 
         foreach (var signature in ForbiddenSignatures)
         {
-            if (content.StartsWith(signature))
+            if (signatureView.StartsWith(signature))
             {
                 throw new CountyCsvIntakeException(
                     CountyCsvIntakeErrorCode.ContainerSignatureMismatch,
