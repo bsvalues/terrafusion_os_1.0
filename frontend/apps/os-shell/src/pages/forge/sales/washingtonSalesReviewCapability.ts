@@ -81,6 +81,8 @@ export function getWashingtonSalesReviewCapability(
   };
 }
 
-export function isWashingtonSalesReviewLaunchEnabled(): boolean {
-  return isWashingtonLaunchDataEnabled();
+export function isWashingtonSalesReviewLaunchEnabled(options?: {
+  explicitReferenceHandoff?: boolean;
+}): boolean {
+  return options?.explicitReferenceHandoff === true || isWashingtonLaunchDataEnabled();
 }

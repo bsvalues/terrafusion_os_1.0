@@ -53,6 +53,7 @@ function resetStore() {
   // Reset via store actions so the setter contracts are exercised too.
   act(() => {
     const s = useSalesForgeStore.getState();
+    s.setDataSource('live-api');
     s.setActiveTab('queue');
     s.setSelectedStratumKey(null);
     s.setTaxYear(2026);
@@ -197,6 +198,9 @@ describe('SalesForge — County Studio deeplink consumption (Task D2)', () => {
           countyCode: '063',
           countyName: 'Spokane',
           resetValuationScope: true,
+          launchContext: 'washington-counties-hub',
+          dataTrustTier: 'public-reference-not-county-certified',
+          referenceDataPosture: 'repository_reference_demo',
           // Even a conflicting mixed payload must not retain valuation scope
           // when the reset contract is present.
           rollupScope: 'neighborhood',
@@ -220,9 +224,15 @@ describe('SalesForge — County Studio deeplink consumption (Task D2)', () => {
       expect(s.contextSegmentLabel).toBeNull();
       expect(s.activeTab).toBe('queue');
       expect(s.taxYear).toBe(SALESFORGE_TAX_YEAR);
+      expect(s.dataSource).toBe('washington-reference');
     });
 
     expect(screen.getByText('Spokane County')).toBeInTheDocument();
+    expect(screen.getByText(/Public\/reference package only/i)).toBeInTheDocument();
+    expect(screen.getByText(/invented synthetic sales/i)).toHaveTextContent(
+      /not observed public sales or county records/i,
+    );
+    expect(screen.queryByRole('tab', { name: 'DOR Export' })).not.toBeInTheDocument();
     expect(screen.queryByTestId('sf-scoped-from-chip')).not.toBeInTheDocument();
     expect(screen.queryByText(/Old Benton neighborhood/)).not.toBeInTheDocument();
   });

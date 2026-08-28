@@ -42,7 +42,7 @@ function countyStatus(
     countyCode: '063',
     priority: 'statewide',
     prometheusStatus: 'reference_ready',
-    primarySourceMode: 'public_launch_package',
+    primarySourceMode: 'repository_reference_demo',
     latestSaleDate: '2025-12-31',
     candidateSales: 18,
     stagedSales: 12,
@@ -84,6 +84,12 @@ describe('Washington Counties Hub assessor journey', () => {
     const spokaneOption = await screen.findByRole('option', {
       name: 'Select Spokane County',
     });
+    expect(isWashingtonSalesReviewLaunchEnabledMock).toHaveBeenCalledWith({
+      explicitReferenceHandoff: true,
+    });
+    expect(screen.getByText(/invented synthetic sales/i)).toHaveTextContent(
+      /not observed public sales.*not county records/i,
+    );
     expect(spokaneOption).toHaveAttribute('aria-selected', 'false');
     expect(screen.queryByTestId('selected-county-context')).not.toBeInTheDocument();
 
@@ -111,6 +117,7 @@ describe('Washington Counties Hub assessor journey', () => {
           resetValuationScope: true,
           launchContext: 'washington-counties-hub',
           dataTrustTier: 'public-reference-not-county-certified',
+          referenceDataPosture: 'repository_reference_demo',
         },
       });
     });

@@ -51,7 +51,9 @@ const CountiesHub = () => {
   const [loadError, setLoadError] = useState<string | null>(null);
   const [launching, setLaunching] = useState(false);
   const [launchError, setLaunchError] = useState<string | null>(null);
-  const launchDataEnabled = isWashingtonSalesReviewLaunchEnabled();
+  const launchDataEnabled = isWashingtonSalesReviewLaunchEnabled({
+    explicitReferenceHandoff: true,
+  });
 
   const loadCounties = useCallback(async (signal?: AbortSignal) => {
     setLoading(true);
@@ -103,6 +105,10 @@ const CountiesHub = () => {
       || county.primarySourceMode.toLowerCase().includes(normalizedQuery),
     );
   }, [counties, query]);
+  const repositoryReferenceDemo = useMemo(
+    () => counties.some((county) => county.primarySourceMode === 'repository_reference_demo'),
+    [counties],
+  );
 
   const launchSelectedCounty = useCallback(async () => {
     if (!selectedCounty || !selectedCapability?.eligible || !launchDataEnabled) {
@@ -120,6 +126,7 @@ const CountiesHub = () => {
           resetValuationScope: true,
           launchContext: 'washington-counties-hub',
           dataTrustTier: 'public-reference-not-county-certified',
+          referenceDataPosture: selectedCounty.primarySourceMode,
         },
       });
     } catch (error) {
@@ -196,6 +203,13 @@ const CountiesHub = () => {
               </Alert>
             )}
 
+            {repositoryReferenceDemo && (
+              <Alert severity='warning'>
+                Repository reference mode uses invented synthetic sales to exercise the assessor
+                workflow. These are not observed public sales and are not county records.
+              </Alert>
+            )}
+
             <Stack
               direction={{ xs: 'column', md: 'row' }}
               spacing={2}
@@ -203,7 +217,7 @@ const CountiesHub = () => {
               justifyContent='space-between'
             >
               <Stack direction='row' spacing={1} flexWrap='wrap' useFlexGap>
-                <Chip label={`${counties.length} observed county contexts`} color='primary' />
+                <Chip label={`${counties.length} governed county contexts`} color='primary' />
                 <Chip label='Public/reference · not county-certified' variant='outlined' />
               </Stack>
               <TextField
@@ -263,11 +277,11 @@ const CountiesHub = () => {
 
                     <Grid container spacing={2}>
                       <Grid item xs={12} sm={6} md={3}>
-                        <Typography variant='caption' color='text.secondary'>Observed records</Typography>
+                        <Typography variant='caption' color='text.secondary'>Reference records</Typography>
                         <Typography variant='body1'>{selectedCounty.stagedSales.toLocaleString()}</Typography>
                       </Grid>
                       <Grid item xs={12} sm={6} md={3}>
-                        <Typography variant='caption' color='text.secondary'>Latest observed sale</Typography>
+                        <Typography variant='caption' color='text.secondary'>Latest reference sale</Typography>
                         <Typography variant='body1'>{selectedCounty.latestSaleDate ?? 'Not reported'}</Typography>
                       </Grid>
                       <Grid item xs={12} sm={6} md={3}>

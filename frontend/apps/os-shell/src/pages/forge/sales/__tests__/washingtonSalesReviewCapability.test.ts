@@ -1,5 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { getWashingtonSalesReviewCapability } from '../washingtonSalesReviewCapability';
+import {
+  getWashingtonSalesReviewCapability,
+  isWashingtonSalesReviewLaunchEnabled,
+} from '../washingtonSalesReviewCapability';
 
 const SPOKANE_CAPABILITY_INPUT = {
   county: 'Spokane',
@@ -11,6 +14,10 @@ const SPOKANE_CAPABILITY_INPUT = {
 };
 
 describe('Forge-owned Washington sales-review capability', () => {
+  it('allows an explicit read-only Counties Hub handoff without enabling live-suite fallback', () => {
+    expect(isWashingtonSalesReviewLaunchEnabled({ explicitReferenceHandoff: true })).toBe(true);
+  });
+
   it('exposes an eligible contract only for a registered county with staged sales and a shard', () => {
     expect(getWashingtonSalesReviewCapability(SPOKANE_CAPABILITY_INPUT)).toEqual({
       eligible: true,
