@@ -20,6 +20,7 @@ import {
   clearComparableSalesCacheForTests,
   filterComps,
   findCompsForSubject,
+  getComparableCountyCode,
   loadCountyComps,
   reconcileComps,
   type ComparableSale,
@@ -832,6 +833,91 @@ describe('Comparable Sales Forge host', () => {
     const ranked = findCompsForSubject(subject, comps);
     expect(ranked).toHaveLength(1);
     expect(ranked[0]?.parcelId).toBe('COMP-001');
+  });
+
+  it('rejects an unknown Washington county instead of falling back to Benton', async () => {
+    const fetchMock = vi.fn();
+    vi.stubGlobal('fetch', fetchMock);
+
+    expect(getComparableCountyCode('Spokane County')).toBe('063');
+    expect(getComparableCountyCode('not-a-washington-county')).toBeNull();
+    await expect(loadCountyComps('999')).rejects.toThrow(/county comp context is invalid/i);
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it('rejects cross-county shard records and evicts the rejected cache entry for retry', async () => {
+    const bentonShard = buildCountySalesShard();
+    const mismatchedSpokaneShard = {
+      ...bentonShard,
+      county: 'Spokane',
+      countyCode: '063',
+    };
+    const matchingSpokaneShard = {
+      ...mismatchedSpokaneShard,
+      records: bentonShard.records.map((record) => ({ ...record, countyCode: '063' })),
+    };
+    const fetchMock = vi.fn()
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => mismatchedSpokaneShard,
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => matchingSpokaneShard,
+      });
+    vi.stubGlobal('fetch', fetchMock);
+
+    await expect(loadCountyComps('063')).rejects.toThrow(/cross-county records/i);
+    const retry = await loadCountyComps('063');
+
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect(fetchMock).toHaveBeenLastCalledWith(
+      '/launch-data/washington/sales/by-county/063.json',
+      { cache: 'no-store' },
+    );
+    expect(retry).toHaveLength(3);
+    expect(retry.every((sale) => sale.countyCode === '063')).toBe(true);
+  });
+
+  it('rejects a county-name mismatch even when the shard code and records match', async () => {
+    const bentonShard = buildCountySalesShard();
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        ...bentonShard,
+        county: 'King',
+      }),
+    });
+    vi.stubGlobal('fetch', fetchMock);
+
+    await expect(loadCountyComps('005')).rejects.toThrow(/shard name does not match 005/i);
+  });
+
+  it('fails locally when a tracked reference package has no exact county shard', async () => {
+    const fetchMock = vi.fn();
+    vi.stubGlobal('fetch', fetchMock);
+
+    await expect(loadCountyComps('005', 'repository-reference')).rejects.toThrow(
+      /tracked county comp shard unavailable for 005/i,
+    );
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it('rejects malformed record flags before transforming a public shard', async () => {
+    const bentonShard = buildCountySalesShard();
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        ...bentonShard,
+        records: [
+          { ...bentonShard.records[0], flags: null },
+          ...bentonShard.records.slice(1),
+        ],
+      }),
+    });
+    vi.stubGlobal('fetch', fetchMock);
+
+    await expect(loadCountyComps('005')).rejects.toThrow(/malformed record flags/i);
   });
 
   it('passes through physical support fields when the county sales feed supplies them', async () => {
