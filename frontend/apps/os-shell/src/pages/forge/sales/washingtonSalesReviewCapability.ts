@@ -8,6 +8,7 @@
 import type { WashingtonReferencePackageSource } from '@/lib/washingtonAssessorReferencePackage';
 import {
   isWashingtonLaunchDataEnabled,
+  validateWashingtonLaunchCountyShard,
   WASHINGTON_COUNTIES,
 } from './washingtonLaunchApi';
 
@@ -58,6 +59,11 @@ export interface WashingtonSalesReviewReferenceData {
   isSyntheticReference: boolean;
   observed: WashingtonSalesReviewObservedReference | null;
 }
+
+export type WashingtonSalesReviewHostedShardVerification =
+  | 'not-required'
+  | 'verified'
+  | 'unavailable';
 
 export type WashingtonSalesReviewAvailability = 'available' | 'unavailable';
 
@@ -279,6 +285,34 @@ export function getWashingtonSalesReviewCapability(
     unavailableMessage: null,
     referenceData,
   };
+}
+
+/**
+ * Verify only a hosted shard that would otherwise enable an assessor workflow.
+ * A successful HTTP status is insufficient because the OS web server may
+ * return its HTML fallback for a missing JSON path; the response body must pass
+ * the same county-isolated schema used when SalesForge loads the shard.
+ */
+export async function verifyWashingtonSalesReviewHostedShard(
+  input: WashingtonSalesReviewCapabilityInput,
+  signal?: AbortSignal,
+): Promise<WashingtonSalesReviewHostedShardVerification> {
+  if (!getWashingtonSalesReviewCapability(input).eligible) return 'not-required';
+
+  try {
+    const response = await fetch(input.staticRoutes.salesShard, {
+      cache: 'no-store',
+      signal,
+    });
+    if (!response.ok) return 'unavailable';
+
+    const payload = await response.json() as unknown;
+    validateWashingtonLaunchCountyShard(payload, input.countyCode);
+    return 'verified';
+  } catch (error) {
+    if (signal?.aborted) throw error;
+    return 'unavailable';
+  }
 }
 
 export function isWashingtonSalesReviewLaunchEnabled(options?: {

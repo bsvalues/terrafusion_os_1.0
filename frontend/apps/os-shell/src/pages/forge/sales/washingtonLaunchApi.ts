@@ -350,6 +350,18 @@ function assertCountyShard(
   });
 }
 
+/**
+ * Apply the same county-isolated shard schema used by every SalesForge read.
+ * Callers that only need to establish availability can discard the validated
+ * body while retaining the exact runtime validation contract.
+ */
+export function validateWashingtonLaunchCountyShard(
+  value: unknown,
+  expectedCountyCode: string,
+): void {
+  assertCountyShard(value, normalizeCountyCode(expectedCountyCode));
+}
+
 async function loadCountyShard(
   countyCode: string,
   packageSource: WashingtonReferencePackageSource = 'hosted',
