@@ -1,11 +1,17 @@
 /**
- * Read-only projection of the governed Washington launch status package.
+ * Read-only projection of the tracked Washington assessor reference package.
  *
  * County selection from this feed is navigation context only. It does not
  * replace authenticated county authority for protected reads or writes.
  */
 
-export const WASHINGTON_COUNTY_STATUS_PATH = '/launch-data/washington/counties/status.json';
+import {
+  resolveWashingtonAssessorReferenceRoute,
+  type WashingtonReferencePackageSource,
+  WASHINGTON_REFERENCE_ROUTES,
+} from '@/lib/washingtonAssessorReferencePackage';
+
+export const WASHINGTON_COUNTY_STATUS_PATH = WASHINGTON_REFERENCE_ROUTES.status;
 
 export interface WashingtonCountyStatusEntry {
   county: string;
@@ -65,19 +71,24 @@ function isWashingtonCountyStatusEntry(
 
 export async function fetchWashingtonCountyStatus(
   signal?: AbortSignal,
+  packageSource: WashingtonReferencePackageSource = 'hosted',
 ): Promise<WashingtonCountyStatusEntry[]> {
-  const response = await fetch(WASHINGTON_COUNTY_STATUS_PATH, {
-    cache: 'no-store',
-    signal,
-  });
-
-  if (!response.ok) {
-    throw new Error(
-      `Washington county status is unavailable (HTTP ${response.status}).`,
-    );
+  if (signal?.aborted) return [];
+  let payload: unknown;
+  if (packageSource === 'repository-reference') {
+    payload = resolveWashingtonAssessorReferenceRoute(WASHINGTON_COUNTY_STATUS_PATH);
+  } else {
+    const response = await fetch(WASHINGTON_COUNTY_STATUS_PATH, {
+      cache: 'no-store',
+      signal,
+    });
+    if (!response.ok) {
+      throw new Error(
+        `Washington county status is unavailable (HTTP ${response.status}).`,
+      );
+    }
+    payload = await response.json() as unknown;
   }
-
-  const payload = await response.json() as unknown;
   if (
     !isRecord(payload)
     || !Array.isArray(payload.counties)
@@ -91,5 +102,9 @@ export async function fetchWashingtonCountyStatus(
     throw new Error('Washington county status returned duplicate county contexts.');
   }
 
-  return payload.counties;
+  return payload.counties.map((county) => ({
+    ...county,
+    confidence: { ...county.confidence },
+    staticRoutes: { ...county.staticRoutes },
+  }));
 }

@@ -16,6 +16,11 @@
  *   segmentLabel:  string  — human label for the chip (optional).
  *   resetValuationScope: true — keep only county context and clear stale
  *                               neighborhood/stratum/segment state.
+ *   launchContext: 'washington-counties-hub' with the public-reference trust
+ *                  tier — preserve the handoff's explicit hosted or bundled
+ *                  package posture without changing live-suite defaults.
+ *   referencePackageSource: 'hosted' | 'repository-reference' — keep package
+ *                           selection separate from the data-content posture.
  * When stratumKey is present we also switch the active tab to "ai-audit"
  * (that panel is where stratum selection becomes visible).
  */
@@ -105,7 +110,28 @@ function parseDeeplinkQuery(raw: unknown): {
   }
 }
 
+function isWashingtonCountiesHubHandoff(
+  metadata: Record<string, unknown> | undefined,
+): boolean {
+  if (!metadata) return false;
+  if (
+    metadata.launchContext !== 'washington-counties-hub'
+    || metadata.dataTrustTier !== 'public-reference-not-county-certified'
+    || typeof metadata.countyCode !== 'string'
+    || typeof metadata.countyName !== 'string'
+  ) {
+    return false;
+  }
+
+  const countyCode = metadata.countyCode;
+  const countyName = metadata.countyName.replace(/\s+county$/i, '').trim().toLowerCase();
+  return WASHINGTON_COUNTIES.some(
+    (county) => county.code === countyCode && county.name.toLowerCase() === countyName,
+  );
+}
+
 export default function SalesForge({ metadata }: SalesForgeProps = {}) {
+  const setDataSource     = useSalesForgeStore((s) => s.setDataSource);
   const activeTab         = useSalesForgeStore((s) => s.activeTab);
   const setActiveTab      = useSalesForgeStore((s) => s.setActiveTab);
   const taxYear           = useSalesForgeStore((s) => s.taxYear);
@@ -116,7 +142,21 @@ export default function SalesForge({ metadata }: SalesForgeProps = {}) {
   const contextSegmentId    = useSalesForgeStore((s) => s.contextSegmentId);
   const contextSegmentLabel = useSalesForgeStore((s) => s.contextSegmentLabel);
   const committedFilters = useSalesForgeStore((s) => s.committedFilters);
-  const launchDataMode = isWashingtonLaunchDataEnabled();
+  const countiesHubReferenceHandoff = isWashingtonCountiesHubHandoff(metadata);
+  const referencePackageSource = metadata?.referencePackageSource;
+  const repositoryReferenceHandoff = countiesHubReferenceHandoff && (
+    referencePackageSource === 'repository-reference'
+    || (
+      referencePackageSource === undefined
+      && metadata?.referenceDataPosture === 'repository_reference_demo'
+    )
+  );
+  const hostedReferenceHandoff = countiesHubReferenceHandoff
+    && referencePackageSource === 'hosted';
+  const syntheticReferenceData = countiesHubReferenceHandoff
+    && metadata?.referenceDataPosture === 'repository_reference_demo';
+  const hostedLaunchDataMode = isWashingtonLaunchDataEnabled() || hostedReferenceHandoff;
+  const launchDataMode = hostedLaunchDataMode || repositoryReferenceHandoff;
   const handoff = parseRollupHandoff(metadata);
   const selectedCounty = WASHINGTON_COUNTIES.find((county) => county.code === committedFilters.countyCode);
   const availableTabs = launchDataMode
@@ -126,6 +166,16 @@ export default function SalesForge({ metadata }: SalesForgeProps = {}) {
   const renderedActiveTab = launchDataMode && !WASHINGTON_LAUNCH_TABS.has(activeTab)
     ? 'queue'
     : activeTab;
+
+  useLayoutEffect(() => {
+    setDataSource(
+      repositoryReferenceHandoff
+        ? 'washington-reference'
+        : hostedLaunchDataMode
+          ? 'washington-hosted'
+          : 'live-api',
+    );
+  }, [hostedLaunchDataMode, repositoryReferenceHandoff, setDataSource]);
 
   useLayoutEffect(() => {
     if (launchDataMode && activeTab !== renderedActiveTab) {
@@ -263,9 +313,12 @@ export default function SalesForge({ metadata }: SalesForgeProps = {}) {
         )}
         {launchDataMode && (
           <p className="sf-header__source-note">
-            Public/reference package only — not county-certified valuation truth. Review decisions
-            stay browser-local and nonofficial; nothing is written back to a county system. Live AI
-            Audit, Ratio Audit, and DOR Export are unavailable in this mode.
+            Public/reference package only — not county-certified valuation truth.
+            {syntheticReferenceData
+              ? ' This workspace contains invented synthetic sales for workflow validation, not observed public sales or county records.'
+              : ''}{' '}
+            Review decisions stay browser-local and nonofficial; nothing is written back to a
+            county system. Live AI Audit, Ratio Audit, and DOR Export are unavailable in this mode.
           </p>
         )}
       </header>

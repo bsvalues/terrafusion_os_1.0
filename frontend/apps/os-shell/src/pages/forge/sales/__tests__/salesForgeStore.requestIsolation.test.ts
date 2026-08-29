@@ -10,6 +10,12 @@ const launchApiMocks = vi.hoisted(() => ({
   fetchDetail: vi.fn(),
   patchDecision: vi.fn(),
   bulkDecision: vi.fn(),
+  isEnabled: vi.fn(),
+  apiFetch: vi.fn(),
+}));
+
+vi.mock('@/lib/apiBase', () => ({
+  apiFetch: launchApiMocks.apiFetch,
 }));
 
 vi.mock('../washingtonLaunchApi', () => ({
@@ -19,7 +25,7 @@ vi.mock('../washingtonLaunchApi', () => ({
   fetchWashingtonLaunchQueue: launchApiMocks.fetchQueue,
   fetchWashingtonLaunchRunningStats: vi.fn(),
   fetchWashingtonLaunchSaleDetail: launchApiMocks.fetchDetail,
-  isWashingtonLaunchDataEnabled: () => true,
+  isWashingtonLaunchDataEnabled: launchApiMocks.isEnabled,
   patchWashingtonLaunchDecision: launchApiMocks.patchDecision,
 }));
 
@@ -41,7 +47,28 @@ describe('SalesForge request isolation', () => {
     launchApiMocks.fetchDetail.mockReset();
     launchApiMocks.patchDecision.mockReset();
     launchApiMocks.bulkDecision.mockReset();
+    launchApiMocks.isEnabled.mockReset().mockReturnValue(true);
+    launchApiMocks.apiFetch.mockReset();
+    useSalesForgeStore.getState().setDataSource('washington-reference');
     useSalesForgeStore.getState().applyCountyStudioScope('063', null);
+  });
+
+  it('keeps hosted and repository-reference launch providers explicit', async () => {
+    launchApiMocks.isEnabled.mockReturnValue(false);
+    launchApiMocks.fetchQueue.mockResolvedValue({
+      total: 0,
+      page: 1,
+      pageSize: 50,
+      items: [],
+    });
+
+    useSalesForgeStore.getState().setDataSource('washington-hosted');
+    await useSalesForgeStore.getState().fetchQueue();
+    expect(launchApiMocks.fetchQueue.mock.calls[0]?.[5]).toBe('hosted');
+
+    useSalesForgeStore.getState().setDataSource('washington-reference');
+    await useSalesForgeStore.getState().fetchQueue();
+    expect(launchApiMocks.fetchQueue.mock.calls[1]?.[5]).toBe('repository-reference');
   });
 
   it('lets only the latest same-county queue request own data and loading state', async () => {
@@ -86,6 +113,64 @@ describe('SalesForge request isolation', () => {
     expect(useSalesForgeStore.getState().saleDetail?.saleId).toBe('new-spokane-sale');
     expect(useSalesForgeStore.getState().detailLoading).toBe(false);
     expect(useSalesForgeStore.getState().detailError).toBeNull();
+  });
+
+  it('keeps a late live response from overwriting a Counties Hub reference transition', async () => {
+    launchApiMocks.isEnabled.mockReturnValue(false);
+    useSalesForgeStore.getState().setDataSource('live-api');
+    useSalesForgeStore.getState().applyCountyStudioScope('005', null);
+
+    const liveResponse = deferred<Response>();
+    launchApiMocks.apiFetch.mockImplementationOnce(() => liveResponse.promise);
+    const liveRequest = useSalesForgeStore.getState().fetchQueue();
+
+    useSalesForgeStore.getState().setDataSource('washington-reference');
+    useSalesForgeStore.getState().applyCountyStudioScope('063', null);
+    launchApiMocks.fetchQueue.mockResolvedValueOnce({
+      total: 3,
+      page: 1,
+      pageSize: 50,
+      items: [],
+    });
+    await useSalesForgeStore.getState().fetchQueue();
+
+    liveResponse.resolve(Response.json({
+      total: 99,
+      page: 1,
+      pageSize: 50,
+      items: [],
+    }));
+    await liveRequest;
+
+    expect(useSalesForgeStore.getState().dataSource).toBe('washington-reference');
+    expect(useSalesForgeStore.getState().committedFilters.countyCode).toBe('063');
+    expect(useSalesForgeStore.getState().queueData?.total).toBe(3);
+    expect(useSalesForgeStore.getState().queueLoading).toBe(false);
+  });
+
+  it('keeps a late reference response from overwriting a live-provider transition', async () => {
+    launchApiMocks.isEnabled.mockReturnValue(false);
+    const referenceResponse = deferred<SaleQueuePage>();
+    launchApiMocks.fetchQueue.mockImplementationOnce(() => referenceResponse.promise);
+    const referenceRequest = useSalesForgeStore.getState().fetchQueue();
+
+    useSalesForgeStore.getState().setDataSource('live-api');
+    useSalesForgeStore.getState().applyCountyStudioScope('005', null);
+    launchApiMocks.apiFetch.mockResolvedValueOnce(Response.json({
+      total: 7,
+      page: 1,
+      pageSize: 50,
+      items: [],
+    }));
+    await useSalesForgeStore.getState().fetchQueue();
+
+    referenceResponse.resolve({ total: 88, page: 1, pageSize: 50, items: [] });
+    await referenceRequest;
+
+    expect(useSalesForgeStore.getState().dataSource).toBe('live-api');
+    expect(useSalesForgeStore.getState().committedFilters.countyCode).toBe('005');
+    expect(useSalesForgeStore.getState().queueData?.total).toBe(7);
+    expect(useSalesForgeStore.getState().queueLoading).toBe(false);
   });
 
   it('binds a single public decision to Spokane and ignores completion after a county switch', async () => {

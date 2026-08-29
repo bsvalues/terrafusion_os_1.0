@@ -6,6 +6,7 @@
 
 import { create } from 'zustand';
 import { getSession } from '@/auth/session';
+import type { WashingtonReferencePackageSource } from '@/lib/washingtonAssessorReferencePackage';
 import { buildCountyScopedSessionHeaders } from '@/services/countyIsolation';
 import { apiFetch } from '../../../lib/apiBase';
 import type {
@@ -53,6 +54,11 @@ function addCountyScopeParam(params: URLSearchParams, countyId: string | null): 
 
 type RequestLane = 'queue' | 'detail' | 'stats' | 'hoodStats' | 'codeAudit' | 'decision';
 
+export type SalesForgeDataSource =
+  | 'live-api'
+  | 'washington-hosted'
+  | 'washington-reference';
+
 const ALL_REQUEST_LANES: RequestLane[] = [
   'queue',
   'detail',
@@ -86,6 +92,18 @@ function requestIsStale(lane: RequestLane, generation: number): boolean {
   return requestGeneration[lane] !== generation;
 }
 
+function washingtonReferencePackageSource(
+  dataSource: SalesForgeDataSource,
+): WashingtonReferencePackageSource | null {
+  if (dataSource === 'washington-reference') return 'repository-reference';
+  if (dataSource === 'washington-hosted' || isWashingtonLaunchDataEnabled()) return 'hosted';
+  return null;
+}
+
+function usesWashingtonReferenceData(dataSource: SalesForgeDataSource): boolean {
+  return washingtonReferencePackageSource(dataSource) !== null;
+}
+
 function clearedDerivedData() {
   return {
     queueData: null,
@@ -111,6 +129,10 @@ function clearedDerivedData() {
 // ── State interface ───────────────────────────────────────────────────────────
 
 interface SalesForgeState {
+  // Explicit for Counties Hub handoffs; hosted/query public-package mode is
+  // still honored by usesWashingtonReferenceData.
+  dataSource: SalesForgeDataSource;
+
   // Active tab
   activeTab: SalesForgeTab;
 
@@ -161,6 +183,7 @@ interface SalesForgeState {
 
   // ── Actions ───────────────────────────────────────────────────────────────
 
+  setDataSource: (dataSource: SalesForgeDataSource) => void;
   setActiveTab: (tab: SalesForgeTab) => void;
   setSelectedStratumKey: (key: string | null) => void;
   setTaxYear: (year: number) => void;
@@ -203,6 +226,7 @@ interface SalesForgeState {
 
 export const useSalesForgeStore = create<SalesForgeState>((set, get) => ({
   // ── Initial state ──────────────────────────────────────────────────────────
+  dataSource: 'live-api',
   activeTab: 'queue',
   taxYear: SALESFORGE_TAX_YEAR,
   filterForm: EMPTY_FILTER_FORM,
@@ -239,6 +263,12 @@ export const useSalesForgeStore = create<SalesForgeState>((set, get) => ({
   contextSegmentLabel: null,
 
   // ── Tab/page/filter actions ────────────────────────────────────────────────
+
+  setDataSource: (dataSource) => {
+    if (get().dataSource === dataSource) return;
+    invalidateRequests(...ALL_REQUEST_LANES);
+    set({ dataSource, ...clearedDerivedData() });
+  },
 
   setActiveTab: (tab) => set({ activeTab: tab }),
 
@@ -399,8 +429,16 @@ export const useSalesForgeStore = create<SalesForgeState>((set, get) => ({
     addCountyScopeParam(params, countyScope.countyId);
 
     try {
-      const data = isWashingtonLaunchDataEnabled()
-        ? await fetchWashingtonLaunchQueue(taxYear, queueTab, queuePage, QUEUE_PAGE_SIZE, committedFilters)
+      const packageSource = washingtonReferencePackageSource(get().dataSource);
+      const data = packageSource
+        ? await fetchWashingtonLaunchQueue(
+            taxYear,
+            queueTab,
+            queuePage,
+            QUEUE_PAGE_SIZE,
+            committedFilters,
+            packageSource,
+          )
         : await (async () => {
             const res = await apiFetch(`/terraforge/sale-qualification?${params}`, { headers: countyScope.headers });
             if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -432,8 +470,9 @@ export const useSalesForgeStore = create<SalesForgeState>((set, get) => ({
     const countyScope = getSalesForgeCountyScope();
     set({ detailLoading: true, detailError: null });
     try {
-      const detail = isWashingtonLaunchDataEnabled()
-        ? await fetchWashingtonLaunchSaleDetail(saleId, committedFilters)
+      const packageSource = washingtonReferencePackageSource(get().dataSource);
+      const detail = packageSource
+        ? await fetchWashingtonLaunchSaleDetail(saleId, committedFilters, packageSource)
         : await (async () => {
             const params = new URLSearchParams();
             addCountyScopeParam(params, countyScope.countyId);
@@ -464,8 +503,9 @@ export const useSalesForgeStore = create<SalesForgeState>((set, get) => ({
     if (committedFilters.hood)         params.set('hood',         committedFilters.hood);
     if (committedFilters.propertyType) params.set('propertyType', committedFilters.propertyType);
     try {
-      const stats = isWashingtonLaunchDataEnabled()
-        ? await fetchWashingtonLaunchRunningStats(taxYear, committedFilters)
+      const packageSource = washingtonReferencePackageSource(get().dataSource);
+      const stats = packageSource
+        ? await fetchWashingtonLaunchRunningStats(taxYear, committedFilters, packageSource)
         : await (async () => {
             const res = await apiFetch(`/terraforge/sale-qualification/running-stats?${params}`, { headers: countyScope.headers });
             if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -493,8 +533,9 @@ export const useSalesForgeStore = create<SalesForgeState>((set, get) => ({
     if (committedFilters.hood)         params.set('hood',         committedFilters.hood);
     if (committedFilters.propertyType) params.set('propertyType', committedFilters.propertyType);
     try {
-      const stats = isWashingtonLaunchDataEnabled()
-        ? await fetchWashingtonLaunchNeighborhoodStats(taxYear, committedFilters)
+      const packageSource = washingtonReferencePackageSource(get().dataSource);
+      const stats = packageSource
+        ? await fetchWashingtonLaunchNeighborhoodStats(taxYear, committedFilters, packageSource)
         : await (async () => {
             const res = await apiFetch(`/terraforge/sale-qualification/neighborhood-stats?${params}`, { headers: countyScope.headers });
             if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -522,8 +563,9 @@ export const useSalesForgeStore = create<SalesForgeState>((set, get) => ({
     if (committedFilters.hood) params.set('hood', committedFilters.hood);
     if (committedFilters.propertyType) params.set('propertyType', committedFilters.propertyType);
     try {
-      const audit = isWashingtonLaunchDataEnabled()
-        ? await fetchWashingtonLaunchCodeAudit(taxYear, committedFilters)
+      const packageSource = washingtonReferencePackageSource(get().dataSource);
+      const audit = packageSource
+        ? await fetchWashingtonLaunchCodeAudit(taxYear, committedFilters, packageSource)
         : await (async () => {
             const res = await apiFetch(`/terraforge/sale-qualification/code-audit?${params}`, { headers: countyScope.headers });
             if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -552,7 +594,7 @@ export const useSalesForgeStore = create<SalesForgeState>((set, get) => ({
     const countyScope = getSalesForgeCountyScope();
     set((s) => ({ patchState: { ...s.patchState, [saleId]: 'working' } }));
     try {
-      if (isWashingtonLaunchDataEnabled()) {
+      if (usesWashingtonReferenceData(get().dataSource)) {
         await patchWashingtonLaunchDecision(
           requestedCountyCode,
           saleId,
@@ -600,7 +642,7 @@ export const useSalesForgeStore = create<SalesForgeState>((set, get) => ({
       return { patchState: patch };
     });
     try {
-      if (isWashingtonLaunchDataEnabled()) {
+      if (usesWashingtonReferenceData(get().dataSource)) {
         await bulkPatchWashingtonLaunchDecision(
           requestedCountyCode,
           saleIds,
