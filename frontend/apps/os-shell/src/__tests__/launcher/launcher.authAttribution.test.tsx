@@ -147,7 +147,9 @@ describe('Launcher actor attribution', () => {
       </MemoryRouter>,
     );
 
-    await user.click(screen.getByRole('button', { name: /Counties HUB/i }));
+    await user.click(
+      screen.getByRole('button', { name: COUNTIES_HUB_ITEM.a11yLabel }),
+    );
 
     await waitFor(() => {
       expect(activateModuleMock).toHaveBeenCalledOnce();
