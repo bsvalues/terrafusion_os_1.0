@@ -17,6 +17,11 @@
  * for candidate selection.
  */
 
+import {
+  resolveWashingtonAssessorReferenceRoute,
+  type WashingtonReferencePackageSource,
+} from '@/lib/washingtonAssessorReferencePackage';
+
 // ═══════════════════════════════════════════════════════════════
 // Types
 // ═══════════════════════════════════════════════════════════════
@@ -191,13 +196,17 @@ const WASHINGTON_COUNTIES = [
 const COUNTY_SHARD_BASE = '/launch-data/washington/sales/by-county';
 const countyShardCache = new Map<string, Promise<ComparableSale[]>>();
 
-function normalizeCountyCode(raw: string | null | undefined): string {
+function normalizeCountyCode(raw: string | null | undefined): string | null {
   const value = String(raw ?? '').trim();
-  if (/^\d{1,3}$/.test(value)) return value.padStart(3, '0');
+  const numericCode = /^\d{1,3}$/.test(value) ? value.padStart(3, '0') : null;
+  if (numericCode && WASHINGTON_COUNTIES.some((county) => county.code === numericCode)) {
+    return numericCode;
+  }
+  const countyName = value.replace(/\s+county$/i, '').trim();
   const byName = WASHINGTON_COUNTIES.find(
-    (county) => county.name.toLowerCase() === value.toLowerCase(),
+    (county) => county.name.toLowerCase() === countyName.toLowerCase(),
   );
-  return byName?.code ?? '005';
+  return byName?.code ?? null;
 }
 
 function normalizeCountyScopeToken(raw: string | null | undefined): string | null {
@@ -210,13 +219,15 @@ function normalizeCountyScopeToken(raw: string | null | undefined): string | nul
   return value.length > 0 ? value : null;
 }
 
-export function getComparableCountyCode(raw: string | null | undefined): string {
+export function getComparableCountyCode(raw: string | null | undefined): string | null {
   return normalizeCountyCode(raw);
 }
 
 export function getComparableCountyName(raw: string | null | undefined): string {
   const code = normalizeCountyCode(raw);
-  return WASHINGTON_COUNTIES.find((county) => county.code === code)?.name ?? 'Washington';
+  return code
+    ? WASHINGTON_COUNTIES.find((county) => county.code === code)?.name ?? 'Washington'
+    : 'Washington';
 }
 
 export function getComparableCountyScopeToken(raw: string | null | undefined): string {
@@ -232,7 +243,7 @@ export function doesPilotCountyMatchComparableCounty(
   countyCode: string | null | undefined,
 ): boolean {
   const pilotToken = getPilotCountyScopeToken(pilotCounty);
-  if (!pilotToken) return false;
+  if (!pilotToken || !normalizeCountyCode(countyCode)) return false;
   return pilotToken === getComparableCountyScopeToken(countyCode);
 }
 
@@ -240,6 +251,53 @@ export function supportsGovernedComparableAdjustments(
   countyCode: string | null | undefined,
 ): boolean {
   return normalizeCountyCode(countyCode) === '005';
+}
+
+function assertCountySalesShard(
+  payload: unknown,
+  expectedCountyCode: string,
+): LaunchCountySalesShard {
+  if (
+    typeof payload !== 'object'
+    || payload === null
+    || !('county' in payload)
+    || typeof payload.county !== 'string'
+    || !('countyCode' in payload)
+    || payload.countyCode !== expectedCountyCode
+    || !('records' in payload)
+    || !Array.isArray(payload.records)
+  ) {
+    throw new Error(`County comp shard identity is invalid for ${expectedCountyCode}.`);
+  }
+
+  const expectedCountyName = getComparableCountyName(expectedCountyCode);
+  const reportedCountyName = payload.county.replace(/\s+county$/i, '').trim();
+  if (reportedCountyName.toLowerCase() !== expectedCountyName.toLowerCase()) {
+    throw new Error(`County comp shard name does not match ${expectedCountyCode}.`);
+  }
+
+  if (payload.records.some((record) => (
+    typeof record !== 'object'
+    || record === null
+    || !('countyCode' in record)
+    || record.countyCode !== expectedCountyCode
+  ))) {
+    throw new Error(`County comp shard ${expectedCountyCode} contains cross-county records.`);
+  }
+
+  if (payload.records.some((record) => (
+    typeof record !== 'object'
+    || record === null
+    || !('flags' in record)
+    || typeof record.flags !== 'object'
+    || record.flags === null
+    || !('needsReview' in record.flags)
+    || typeof record.flags.needsReview !== 'boolean'
+  ))) {
+    throw new Error(`County comp shard ${expectedCountyCode} contains malformed record flags.`);
+  }
+
+  return payload as LaunchCountySalesShard;
 }
 
 function addressForSale(record: LaunchSaleRecord): string {
@@ -310,33 +368,53 @@ export function clearComparableSalesCacheForTests(): void {
   countyShardCache.clear();
 }
 
-export async function loadCountyComps(countyCode: string): Promise<ComparableSale[]> {
+export async function loadCountyComps(
+  countyCode: string,
+  packageSource: WashingtonReferencePackageSource = 'hosted',
+): Promise<ComparableSale[]> {
   const normalizedCountyCode = normalizeCountyCode(countyCode);
-  const cached = countyShardCache.get(normalizedCountyCode);
+  if (!normalizedCountyCode) {
+    throw new Error(`Washington county comp context is invalid: ${countyCode || '(missing)'}.`);
+  }
+
+  const cacheKey = `${packageSource}:${normalizedCountyCode}`;
+  const cached = countyShardCache.get(cacheKey);
   if (cached) return cached;
 
-  const promise = fetch(`${COUNTY_SHARD_BASE}/${normalizedCountyCode}.json`, { cache: 'no-store' })
-    .then(async (response) => {
+  const shardRoute = `${COUNTY_SHARD_BASE}/${normalizedCountyCode}.json`;
+  const promise = (async () => {
+    let payload: unknown;
+    if (packageSource === 'repository-reference') {
+      payload = resolveWashingtonAssessorReferenceRoute(shardRoute);
+      if (payload === undefined) {
+        throw new Error(`Tracked county comp shard unavailable for ${normalizedCountyCode}.`);
+      }
+    } else {
+      const response = await fetch(shardRoute, { cache: 'no-store' });
       if (!response.ok) {
         throw new Error(`County comp shard unavailable for ${normalizedCountyCode} (${response.status})`);
       }
-      return response.json() as Promise<LaunchCountySalesShard>;
-    })
-    .then((shard) =>
-      shard.records
-        .filter(
-          (record) =>
-            typeof record.parcelNumber === 'string' &&
-            record.parcelNumber.trim().length > 0 &&
-            typeof record.saleDate === 'string' &&
-            record.saleDate.trim().length > 0 &&
-            typeof (record.adjustedSalePrice ?? record.salePrice) === 'number' &&
-            (record.adjustedSalePrice ?? record.salePrice ?? 0) > 0,
-        )
-        .map(toComparableSale),
-    );
+      payload = await response.json() as unknown;
+    }
 
-  countyShardCache.set(normalizedCountyCode, promise);
+    const shard = assertCountySalesShard(payload, normalizedCountyCode);
+    return shard.records
+      .filter(
+        (record) =>
+          typeof record.parcelNumber === 'string' &&
+          record.parcelNumber.trim().length > 0 &&
+          typeof record.saleDate === 'string' &&
+          record.saleDate.trim().length > 0 &&
+          typeof (record.adjustedSalePrice ?? record.salePrice) === 'number' &&
+          (record.adjustedSalePrice ?? record.salePrice ?? 0) > 0,
+      )
+      .map(toComparableSale);
+  })().catch((error) => {
+    countyShardCache.delete(cacheKey);
+    throw error;
+  });
+
+  countyShardCache.set(cacheKey, promise);
   return promise;
 }
 

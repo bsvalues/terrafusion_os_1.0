@@ -232,6 +232,7 @@ describe('TerraForge suite home — taxonomy contract', () => {
 
     const primary = screen.getByTestId('forge-primary-applications');
     expect(within(primary).getByRole('button', { name: /SalesForge/i })).toBeDisabled();
+    expect(within(primary).getByRole('button', { name: /CompsForge/i })).toBeDisabled();
     expect(within(primary).getByRole('button', { name: /CostForge/i })).toBeDisabled();
     expect(within(primary).getByRole('button', { name: /Reconciliation/i })).toHaveAttribute(
       'title',
@@ -259,18 +260,25 @@ describe('TerraForge suite home — taxonomy contract', () => {
     expect(activateModuleMock).not.toHaveBeenCalled();
   });
 
-  it('opens only a county-supported SalesForge workflow with the exact selected context', async () => {
+  it('opens county-supported sales review and comparable scouting with the exact selected context', async () => {
     const metadata = washingtonCountyContext();
     await renderForgeSuiteHome(metadata);
 
     const primary = screen.getByTestId('forge-primary-applications');
     const salesForge = within(primary).getByRole('button', { name: /SalesForge/i });
+    const compsForge = within(primary).getByRole('button', { name: /CompsForge/i });
     expect(salesForge).toBeEnabled();
+    expect(compsForge).toBeEnabled();
     expect(within(primary).getByRole('button', { name: /CostForge/i })).toBeDisabled();
 
     fireEvent.click(salesForge);
+    fireEvent.click(compsForge);
 
     expect(activateModuleMock).toHaveBeenCalledWith('sales-forge', {
+      source: 'system',
+      metadata,
+    });
+    expect(activateModuleMock).toHaveBeenCalledWith('comps-forge', {
       source: 'system',
       metadata,
     });

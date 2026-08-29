@@ -414,6 +414,10 @@ function formatCountyContextPosture(value: string): string {
   return value === 'unavailable' ? 'Unavailable' : value.replaceAll('_', ' ');
 }
 
+function isPublicSalesWorkflow(mod: ForgeModuleDef): boolean {
+  return mod.id === 'salesforge' || mod.id === 'compsforge';
+}
+
 function isForgeModuleAvailableInContext(
   mod: ForgeModuleDef,
   countyContext: WashingtonCountiesHubHandoff | null,
@@ -422,7 +426,7 @@ function isForgeModuleAvailableInContext(
   if (!isJune10RuntimeForgeModule(mod) || mod.truthState === 'queued') return false;
   if (!countyContextRequested) return true;
   return countyContext !== null
-    && mod.id === 'salesforge'
+    && isPublicSalesWorkflow(mod)
     && countyContext.salesReviewAvailability === 'available';
 }
 
@@ -433,12 +437,16 @@ function getContextualLaunchLabel(
 ): string {
   if (!countyContextRequested || !isJune10RuntimeForgeModule(mod)) return getLaunchLabel(mod);
   if (!countyContext) return 'Valid county scope required';
-  if (mod.id !== 'salesforge') return 'Authenticated county data required';
+  if (!isPublicSalesWorkflow(mod)) return 'Authenticated county data required';
   if (countyContext.salesReviewAvailability !== 'available') {
-    return 'Public sales review unavailable';
+    return mod.id === 'compsforge'
+      ? 'Public comparable scouting unavailable'
+      : 'Public sales review unavailable';
   }
   return countyContext.referenceRecordCount === null
-    ? 'Public sales review available'
+    ? mod.id === 'compsforge'
+      ? 'Public comparable scouting available'
+      : 'Public sales review available'
     : `${countyContext.referenceRecordCount.toLocaleString()} public/reference sales`;
 }
 
@@ -779,6 +787,11 @@ export default function ForgeSuiteHome({ metadata }: ForgeSuiteHomeProps = {}) {
                 >
                   SalesForge {washingtonCountyContext.salesReviewAvailability}
                 </span>
+                <span
+                  className={`forge-chip ${washingtonCountyContext.salesReviewAvailability === 'available' ? 'forge-chip--success' : 'forge-chip--warn'}`}
+                >
+                  CompsForge {washingtonCountyContext.salesReviewAvailability}
+                </span>
               </div>
               <p className="forge-ops-note">
                 County selection is navigation context only. Protected TerraFusion APIs remain
@@ -1047,7 +1060,7 @@ export default function ForgeSuiteHome({ metadata }: ForgeSuiteHomeProps = {}) {
                           washingtonCountyContext,
                           washingtonCountyContextRequested,
                         )
-                        ? mod.id === 'salesforge'
+                        ? isPublicSalesWorkflow(mod)
                           ? washingtonCountyContext?.salesReviewUnavailableMessage
                             ?? 'Valid Washington county scope is required.'
                           : isJune10RuntimeForgeModule(mod)
