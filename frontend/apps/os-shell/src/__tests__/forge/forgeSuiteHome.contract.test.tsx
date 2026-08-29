@@ -25,10 +25,14 @@
  */
 
 import React from 'react';
-import { render, screen, within } from '@testing-library/react';
+import { fireEvent, render, screen, within } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { getTerraForgeCanonicalInventory } from '../../pages/suites/terraforgeCanonicalInventory';
+
+const { activateModuleMock } = vi.hoisted(() => ({
+  activateModuleMock: vi.fn(),
+}));
 
 // ── Mocks ─────────────────────────────────────────────────────────────────────
 
@@ -49,7 +53,7 @@ vi.mock('../../stores/propertyStore', () => ({
 }));
 
 vi.mock('../../orchestration/moduleActivation', () => ({
-  activateModule: vi.fn(),
+  activateModule: activateModuleMock,
 }));
 
 vi.mock('../../pages/suites/SaleQualificationQueue', () => ({
@@ -70,15 +74,34 @@ vi.mock('../../pages/suites/CompsPoolBrowser', () => ({
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
-async function renderForgeSuiteHome() {
+async function renderForgeSuiteHome(metadata?: Record<string, unknown>) {
   const { default: ForgeSuiteHome } = await import(
     '../../pages/suites/ForgeSuiteHome'
   );
   return render(
     <MemoryRouter>
-      <ForgeSuiteHome />
+      <ForgeSuiteHome metadata={metadata} />
     </MemoryRouter>
   );
+}
+
+function washingtonCountyContext(
+  overrides: Record<string, unknown> = {},
+): Record<string, unknown> {
+  return {
+    countyCode: '063',
+    countyName: 'Spokane',
+    resetValuationScope: true,
+    launchContext: 'washington-counties-hub',
+    dataTrustTier: 'public-reference-not-county-certified',
+    referencePackageSource: 'hosted',
+    referenceDataPosture: 'public_recorder_export',
+    referenceRecordCount: 12,
+    latestReferenceSaleDate: '2025-12-31',
+    salesReviewAvailability: 'available',
+    salesReviewUnavailableMessage: null,
+    ...overrides,
+  };
 }
 
 // ── Tests ─────────────────────────────────────────────────────────────────────
@@ -86,6 +109,7 @@ async function renderForgeSuiteHome() {
 describe('TerraForge suite home — taxonomy contract', () => {
   beforeEach(() => {
     vi.resetModules();
+    activateModuleMock.mockReset();
   });
 
   // ── Primary tier ────────────────────────────────────────────────────────────
@@ -184,6 +208,72 @@ describe('TerraForge suite home — taxonomy contract', () => {
   it('renders SaleQualificationQueue as the only panel surface', async () => {
     await renderForgeSuiteHome();
     expect(screen.getByTestId('mock-sale-qualification-queue')).toBeDefined();
+  });
+
+  it('enters any selected county context without falling back to Benton runtime data', async () => {
+    await renderForgeSuiteHome(washingtonCountyContext({
+      countyCode: '001',
+      countyName: 'Adams',
+      referenceDataPosture: 'unavailable',
+      referenceRecordCount: null,
+      latestReferenceSaleDate: null,
+      salesReviewAvailability: 'unavailable',
+      salesReviewUnavailableMessage: 'No governed public sales state is available for Adams County.',
+    }));
+
+    const countyContext = screen.getByTestId('forge-county-context');
+    expect(countyContext).toHaveTextContent('Adams County');
+    expect(countyContext).toHaveTextContent('WA-001');
+    expect(countyContext).toHaveTextContent(/navigation context only/i);
+    expect(countyContext).toHaveTextContent(/never fall back to Benton or another county/i);
+    expect(screen.queryByTestId('forge-stats')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('forge-calibration-desk')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('mock-sale-qualification-queue')).not.toBeInTheDocument();
+
+    const primary = screen.getByTestId('forge-primary-applications');
+    expect(within(primary).getByRole('button', { name: /SalesForge/i })).toBeDisabled();
+    expect(within(primary).getByRole('button', { name: /CostForge/i })).toBeDisabled();
+    expect(within(primary).getByRole('button', { name: /Reconciliation/i })).toHaveAttribute(
+      'title',
+      'This workflow is unavailable in the selected public county context.',
+    );
+    expect(activateModuleMock).not.toHaveBeenCalled();
+  });
+
+  it('fails closed when a Counties Hub county name and code do not match', async () => {
+    await renderForgeSuiteHome(washingtonCountyContext({ countyName: 'Adams' }));
+
+    expect(screen.getByTestId('forge-county-context-invalid')).toHaveTextContent(
+      'County scope required',
+    );
+    expect(screen.getByText(/county scope invalid/i)).toBeInTheDocument();
+    expect(screen.queryByTestId('forge-runtime-status')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('forge-stats')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('forge-calibration-desk')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('mock-sale-qualification-queue')).not.toBeInTheDocument();
+
+    const primary = screen.getByTestId('forge-primary-applications');
+    for (const button of within(primary).getAllByRole('button')) {
+      expect(button).toBeDisabled();
+    }
+    expect(activateModuleMock).not.toHaveBeenCalled();
+  });
+
+  it('opens only a county-supported SalesForge workflow with the exact selected context', async () => {
+    const metadata = washingtonCountyContext();
+    await renderForgeSuiteHome(metadata);
+
+    const primary = screen.getByTestId('forge-primary-applications');
+    const salesForge = within(primary).getByRole('button', { name: /SalesForge/i });
+    expect(salesForge).toBeEnabled();
+    expect(within(primary).getByRole('button', { name: /CostForge/i })).toBeDisabled();
+
+    fireEvent.click(salesForge);
+
+    expect(activateModuleMock).toHaveBeenCalledWith('sales-forge', {
+      source: 'system',
+      metadata,
+    });
   });
 
   // ── Banned cards (legacy resurrection tests) ────────────────────────────────

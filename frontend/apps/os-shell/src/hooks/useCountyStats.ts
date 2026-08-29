@@ -27,13 +27,22 @@ function computeSourceDisclosure(source: DataMode | null): string | null {
   return null;
 }
 
-export function useCountyStats(): CountyStatsResult {
+export function useCountyStats(options: { enabled?: boolean } = {}): CountyStatsResult {
+  const enabled = options.enabled ?? true;
   const [stats, setStats] = useState<CountyAggregateStats | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(enabled);
   const [error, setError] = useState<string | null>(null);
   const [source, setSource] = useState<DataMode | null>(null);
 
   useEffect(() => {
+    if (!enabled) {
+      setStats(null);
+      setLoading(false);
+      setError(null);
+      setSource(null);
+      return;
+    }
+
     let cancelled = false;
     setLoading(true);
     setError(null);
@@ -56,7 +65,7 @@ export function useCountyStats(): CountyStatsResult {
       });
 
     return () => { cancelled = true; };
-  }, []);
+  }, [enabled]);
 
   return { stats, loading, error, source, sourceDisclosure: computeSourceDisclosure(source) };
 }

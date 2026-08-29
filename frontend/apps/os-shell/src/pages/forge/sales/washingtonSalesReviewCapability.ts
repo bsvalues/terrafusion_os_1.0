@@ -5,6 +5,7 @@
  * not interpret staged-sales or shard-route fields as suite capability rules.
  */
 
+import type { WashingtonReferencePackageSource } from '@/lib/washingtonAssessorReferencePackage';
 import {
   isWashingtonLaunchDataEnabled,
   WASHINGTON_COUNTIES,
@@ -13,6 +14,7 @@ import {
 export interface WashingtonSalesReviewCapabilityInput {
   county: string;
   countyCode: string;
+  primarySourceMode?: string;
   stagedSales: number;
   staticRoutes: {
     salesShard: string;
@@ -22,6 +24,7 @@ export interface WashingtonSalesReviewCapabilityInput {
 export type WashingtonSalesReviewCapabilityStatus =
   | 'available'
   | 'county-context-invalid'
+  | 'reference-demo-only'
   | 'no-staged-sales'
   | 'sales-shard-unavailable';
 
@@ -30,6 +33,119 @@ export interface WashingtonSalesReviewCapability {
   status: WashingtonSalesReviewCapabilityStatus;
   statusLabel: string;
   unavailableMessage: string | null;
+}
+
+export type WashingtonSalesReviewAvailability = 'available' | 'unavailable';
+
+export interface WashingtonCountiesHubHandoff {
+  countyCode: string;
+  countyName: string;
+  resetValuationScope: true;
+  launchContext: 'washington-counties-hub';
+  dataTrustTier: 'public-reference-not-county-certified';
+  referencePackageSource: WashingtonReferencePackageSource;
+  referenceDataPosture: string;
+  referenceRecordCount: number | null;
+  latestReferenceSaleDate: string | null;
+  salesReviewAvailability: WashingtonSalesReviewAvailability;
+  salesReviewUnavailableMessage: string | null;
+}
+
+function isNullableFiniteNumber(value: unknown): value is number | null {
+  return value === null
+    || (typeof value === 'number' && Number.isFinite(value) && value >= 0);
+}
+
+function isNullableString(value: unknown): value is string | null {
+  return value === null || typeof value === 'string';
+}
+
+/**
+ * Validate the shell-to-Forge county-context handoff before any suite uses it.
+ * This is navigation context only; it never substitutes for authenticated
+ * county authority on protected TerraFusion APIs.
+ */
+export function parseWashingtonCountiesHubHandoff(
+  metadata: Record<string, unknown> | undefined,
+): WashingtonCountiesHubHandoff | null {
+  if (
+    !metadata
+    || metadata.launchContext !== 'washington-counties-hub'
+    || metadata.dataTrustTier !== 'public-reference-not-county-certified'
+    || typeof metadata.countyCode !== 'string'
+    || typeof metadata.countyName !== 'string'
+    || metadata.resetValuationScope !== true
+    || (
+      metadata.referencePackageSource !== 'hosted'
+      && metadata.referencePackageSource !== 'repository-reference'
+    )
+    || typeof metadata.referenceDataPosture !== 'string'
+    || !(
+      metadata.referenceRecordCount === undefined
+      || isNullableFiniteNumber(metadata.referenceRecordCount)
+    )
+    || !(
+      metadata.latestReferenceSaleDate === undefined
+      || isNullableString(metadata.latestReferenceSaleDate)
+    )
+    || (
+      metadata.salesReviewAvailability !== undefined
+      && metadata.salesReviewAvailability !== 'available'
+      && metadata.salesReviewAvailability !== 'unavailable'
+    )
+    || !(
+      metadata.salesReviewUnavailableMessage === undefined
+      || isNullableString(metadata.salesReviewUnavailableMessage)
+    )
+  ) {
+    return null;
+  }
+
+  const countyName = metadata.countyName.replace(/\s+county$/i, '').trim();
+  const registeredCounty = WASHINGTON_COUNTIES.find(
+    (county) => county.code === metadata.countyCode
+      && county.name.toLowerCase() === countyName.toLowerCase(),
+  );
+  if (!registeredCounty) return null;
+
+  const referenceRecordCount = typeof metadata.referenceRecordCount === 'number'
+    ? metadata.referenceRecordCount
+    : null;
+  const latestReferenceSaleDate = typeof metadata.latestReferenceSaleDate === 'string'
+    ? metadata.latestReferenceSaleDate
+    : null;
+  const salesReviewAvailability = metadata.salesReviewAvailability === 'available'
+    ? 'available'
+    : 'unavailable';
+  const salesReviewUnavailableMessage = typeof metadata.salesReviewUnavailableMessage === 'string'
+    ? metadata.salesReviewUnavailableMessage
+    : null;
+
+  if (
+    salesReviewAvailability === 'available'
+    && (
+      referenceRecordCount === null
+      || referenceRecordCount <= 0
+      || metadata.referenceDataPosture.trim().toLowerCase() === 'unavailable'
+      || metadata.referenceDataPosture.trim().toLowerCase() === 'repository_reference_demo'
+    )
+  ) {
+    return null;
+  }
+
+  return {
+    countyCode: registeredCounty.code,
+    countyName: registeredCounty.name,
+    resetValuationScope: true,
+    launchContext: 'washington-counties-hub',
+    dataTrustTier: 'public-reference-not-county-certified',
+    referencePackageSource: metadata.referencePackageSource,
+    referenceDataPosture: metadata.referenceDataPosture,
+    referenceRecordCount,
+    latestReferenceSaleDate,
+    salesReviewAvailability,
+    salesReviewUnavailableMessage,
+  };
 }
 
 export function getWashingtonSalesReviewCapability(
@@ -47,7 +163,18 @@ export function getWashingtonSalesReviewCapability(
       statusLabel: 'Registry mismatch',
       unavailableMessage:
         'The observed county name and code do not match the Washington registry. '
-        + 'TerraForge remains disabled instead of guessing a county context.',
+        + 'Sales review remains unavailable instead of guessing a county context.',
+    };
+  }
+
+  if (input.primarySourceMode?.trim().toLowerCase() === 'repository_reference_demo') {
+    return {
+      eligible: false,
+      status: 'reference-demo-only',
+      statusLabel: 'Reference demo only',
+      unavailableMessage:
+        'Only invented repository reference records are available for this county. '
+        + 'They remain visible as test evidence but cannot enable an assessor sales workflow.',
     };
   }
 
@@ -58,7 +185,7 @@ export function getWashingtonSalesReviewCapability(
       statusLabel: 'Source gap',
       unavailableMessage:
         'No governed staged sales are available for this county. '
-        + 'TerraForge remains disabled instead of falling back to another county.',
+        + 'Sales review remains unavailable instead of falling back to another county.',
     };
   }
 
@@ -69,7 +196,7 @@ export function getWashingtonSalesReviewCapability(
       statusLabel: 'Source gap',
       unavailableMessage:
         'The governed TerraForge sales package is unavailable for this county. '
-        + 'TerraForge remains disabled instead of falling back to another county.',
+        + 'Sales review remains unavailable instead of falling back to another county.',
     };
   }
 

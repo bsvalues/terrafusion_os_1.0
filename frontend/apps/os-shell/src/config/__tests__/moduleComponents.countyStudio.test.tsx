@@ -9,6 +9,13 @@ vi.mock('../../pages/forge/county-studio/CountyStudyPage', () => ({
 vi.mock('../../pages/forge/atlas-live/AtlasLivePage', () => ({
   AtlasLivePage: () => <div data-testid="atlas-live-page">Atlas Live</div>,
 }));
+vi.mock('../../pages/suites/ForgeSuiteHome', () => ({
+  default: ({ metadata }: { metadata?: Record<string, unknown> }) => (
+    <div data-testid="forge-suite-home">
+      {String(metadata?.countyCode ?? 'missing-county')}
+    </div>
+  ),
+}));
 
 const makeModule = (id: string) => ({
   id,
@@ -32,5 +39,16 @@ describe('ModuleRenderer — county-studio and atlas-live-view', () => {
   it('renders AtlasLivePage for atlas-live-view', async () => {
     render(<ModuleRenderer module={makeModule('atlas-live-view') as any} />);
     expect(await screen.findByTestId('atlas-live-page')).toBeInTheDocument();
+  });
+
+  it('forwards Counties Hub metadata into the TerraForge suite home', async () => {
+    render(
+      <ModuleRenderer
+        module={makeModule('suite-forge') as any}
+        metadata={{ countyCode: '063' }}
+      />,
+    );
+
+    expect(await screen.findByTestId('forge-suite-home')).toHaveTextContent('063');
   });
 });

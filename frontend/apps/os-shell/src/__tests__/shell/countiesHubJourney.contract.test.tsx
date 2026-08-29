@@ -54,7 +54,7 @@ function countyStatus(
     countyCode: '063',
     priority: 'statewide',
     prometheusStatus: 'reference_ready',
-    primarySourceMode: 'repository_reference_demo',
+    primarySourceMode: 'public_recorder_export',
     latestSaleDate: '2025-12-31',
     candidateSales: 18,
     stagedSales: 12,
@@ -87,7 +87,7 @@ describe('Washington Counties Hub assessor journey', () => {
     isWashingtonSalesReviewLaunchEnabledMock.mockReset().mockReturnValue(true);
   });
 
-  it('selects an observed county and opens TerraForge with an exact county-only handoff', async () => {
+  it('selects an observed county and opens the TerraForge suite with an exact county-only handoff', async () => {
     render(<CountiesHub />);
 
     expect(screen.getByRole('status')).toHaveTextContent(
@@ -106,9 +106,7 @@ describe('Washington Counties Hub assessor journey', () => {
       expect.any(AbortSignal),
       'repository-reference',
     );
-    expect(screen.getByText(/invented synthetic sales/i)).toHaveTextContent(
-      /not observed public sales.*not county records/i,
-    );
+    expect(screen.queryByText(/invented synthetic sales/i)).not.toBeInTheDocument();
     expect(spokaneOption).toHaveAttribute('aria-selected', 'false');
     expect(screen.queryByTestId('selected-county-context')).not.toBeInTheDocument();
 
@@ -124,11 +122,11 @@ describe('Washington Counties Hub assessor journey', () => {
     expect(screen.getByText(/navigation context only/i)).toBeInTheDocument();
 
     fireEvent.click(
-      screen.getByRole('button', { name: 'Open TerraForge sales review' }),
+      screen.getByRole('button', { name: 'Open TerraForge' }),
     );
 
     await waitFor(() => {
-      expect(activateModuleMock).toHaveBeenCalledWith('sales-forge', {
+      expect(activateModuleMock).toHaveBeenCalledWith('suite-forge', {
         source: 'system',
         metadata: {
           countyCode: '063',
@@ -137,13 +135,17 @@ describe('Washington Counties Hub assessor journey', () => {
           launchContext: 'washington-counties-hub',
           dataTrustTier: 'public-reference-not-county-certified',
           referencePackageSource: 'repository-reference',
-          referenceDataPosture: 'repository_reference_demo',
+          referenceDataPosture: 'public_recorder_export',
+          referenceRecordCount: 12,
+          latestReferenceSaleDate: '2025-12-31',
+          salesReviewAvailability: 'available',
+          salesReviewUnavailableMessage: null,
         },
       });
     });
   });
 
-  it('keeps all 39 counties selectable and marks missing public data unavailable', async () => {
+  it('opens TerraForge context for any of 39 counties while marking missing sales data unavailable', async () => {
     render(<CountiesHub />);
 
     await screen.findByRole('option', { name: 'Select Spokane County' });
@@ -159,14 +161,30 @@ describe('Washington Counties Hub assessor journey', () => {
     expect(selectedContext).toHaveTextContent('Adams County');
     expect(within(selectedContext).getAllByText('Unavailable')).toHaveLength(4);
     expect(screen.getByText(/No governed public sales state is available for Adams/i))
-      .toHaveTextContent(/unavailable instead of borrowing another county's data/i);
-    expect(
-      screen.getByRole('button', { name: 'Open TerraForge sales review' }),
-    ).toBeDisabled();
+      .toHaveTextContent(/TerraForge still opens.*unavailable instead of borrowing/i);
+    const openTerraForge = screen.getByRole('button', { name: 'Open TerraForge' });
+    expect(openTerraForge).toBeEnabled();
+    fireEvent.click(openTerraForge);
+
+    await waitFor(() => {
+      expect(activateModuleMock).toHaveBeenCalledWith('suite-forge', {
+        source: 'system',
+        metadata: expect.objectContaining({
+          countyCode: '001',
+          countyName: 'Adams',
+          referenceDataPosture: 'unavailable',
+          referenceRecordCount: null,
+          latestReferenceSaleDate: null,
+          salesReviewAvailability: 'unavailable',
+          salesReviewUnavailableMessage: expect.stringMatching(
+            /No governed public sales state is available for Adams County/i,
+          ),
+        }),
+      });
+    });
     expect(getWashingtonSalesReviewCapabilityMock).not.toHaveBeenCalledWith(
       expect.objectContaining({ county: 'Adams' }),
     );
-    expect(activateModuleMock).not.toHaveBeenCalled();
   });
 
   it('preserves the hosted county feed when hosted launch mode is active', async () => {
@@ -191,11 +209,11 @@ describe('Washington Counties Hub assessor journey', () => {
 
     fireEvent.click(spokaneOption);
     fireEvent.click(
-      screen.getByRole('button', { name: 'Open TerraForge sales review' }),
+      screen.getByRole('button', { name: 'Open TerraForge' }),
     );
 
     await waitFor(() => {
-      expect(activateModuleMock).toHaveBeenCalledWith('sales-forge', {
+      expect(activateModuleMock).toHaveBeenCalledWith('suite-forge', {
         source: 'system',
         metadata: {
           countyCode: '063',
@@ -205,19 +223,23 @@ describe('Washington Counties Hub assessor journey', () => {
           dataTrustTier: 'public-reference-not-county-certified',
           referencePackageSource: 'hosted',
           referenceDataPosture: 'public_recorder_export',
+          referenceRecordCount: 12,
+          latestReferenceSaleDate: '2025-12-31',
+          salesReviewAvailability: 'available',
+          salesReviewUnavailableMessage: null,
         },
       });
     });
   });
 
-  it('keeps TerraForge disabled when the selected county has no governed sales shard', async () => {
+  it('opens TerraForge but keeps SalesForge unavailable when the county has no governed sales shard', async () => {
     getWashingtonSalesReviewCapabilityMock.mockReturnValue({
       eligible: false,
       status: 'no-staged-sales',
       statusLabel: 'Source gap',
       unavailableMessage:
         'No governed staged sales are available for this county. '
-        + 'TerraForge remains disabled instead of falling back to another county.',
+        + 'Sales review remains unavailable instead of falling back to another county.',
     });
     fetchWashingtonCountyStatusMock.mockResolvedValue([
       countyStatus({
@@ -234,11 +256,25 @@ describe('Washington Counties Hub assessor journey', () => {
     render(<CountiesHub />);
     fireEvent.click(await screen.findByRole('option', { name: 'Select Adams County' }));
 
-    expect(
-      screen.getByRole('button', { name: 'Open TerraForge sales review' }),
-    ).toBeDisabled();
+    const openTerraForge = screen.getByRole('button', { name: 'Open TerraForge' });
+    expect(openTerraForge).toBeEnabled();
     expect(screen.getByText(/No governed staged sales are available/i)).toBeInTheDocument();
-    expect(activateModuleMock).not.toHaveBeenCalled();
+    fireEvent.click(openTerraForge);
+
+    await waitFor(() => {
+      expect(activateModuleMock).toHaveBeenCalledWith(
+        'suite-forge',
+        expect.objectContaining({
+          metadata: expect.objectContaining({
+            countyCode: '001',
+            salesReviewAvailability: 'unavailable',
+            salesReviewUnavailableMessage: expect.stringMatching(
+              /No governed staged sales are available/i,
+            ),
+          }),
+        }),
+      );
+    });
   });
 
   it('rejects a mismatched observed county name and code instead of guessing scope', async () => {
@@ -251,9 +287,8 @@ describe('Washington Counties Hub assessor journey', () => {
     fireEvent.click(spokaneOption);
 
     const selectedContext = screen.getByTestId('selected-county-context');
-    expect(
-      screen.getByRole('button', { name: 'Open TerraForge sales review' }),
-    ).toBeDisabled();
+    const openTerraForge = screen.getByRole('button', { name: 'Open TerraForge' });
+    expect(openTerraForge).toBeEnabled();
     expect(screen.getByText(/name and code do not match/i)).toBeInTheDocument();
     expect(screen.getByText(/record counts, freshness, and runtime posture are suppressed/i))
       .toBeInTheDocument();
@@ -265,7 +300,19 @@ describe('Washington Counties Hub assessor journey', () => {
     expect(selectedContext).not.toHaveTextContent('2025-12-31');
     expect(selectedContext).not.toHaveTextContent('12');
     expect(getWashingtonSalesReviewCapabilityMock).not.toHaveBeenCalled();
-    expect(activateModuleMock).not.toHaveBeenCalled();
+    fireEvent.click(openTerraForge);
+    await waitFor(() => {
+      expect(activateModuleMock).toHaveBeenCalledWith(
+        'suite-forge',
+        expect.objectContaining({
+          metadata: expect.objectContaining({
+            countyCode: '063',
+            salesReviewAvailability: 'unavailable',
+            salesReviewUnavailableMessage: expect.stringMatching(/registry mismatch/i),
+          }),
+        }),
+      );
+    });
   });
 
   it('surfaces an unregistered county code by its unique canonical county name', async () => {
@@ -285,24 +332,47 @@ describe('Washington Counties Hub assessor journey', () => {
       .toBeInTheDocument();
     expect(screen.getByText('0 with governed status')).toBeInTheDocument();
     expect(within(selectedContext).getAllByText('Unavailable')).toHaveLength(4);
-    expect(
-      screen.getByRole('button', { name: 'Open TerraForge sales review' }),
-    ).toBeDisabled();
+    const openTerraForge = screen.getByRole('button', { name: 'Open TerraForge' });
+    expect(openTerraForge).toBeEnabled();
     expect(getWashingtonSalesReviewCapabilityMock).not.toHaveBeenCalled();
-    expect(activateModuleMock).not.toHaveBeenCalled();
+    fireEvent.click(openTerraForge);
+    await waitFor(() => {
+      expect(activateModuleMock).toHaveBeenCalledWith(
+        'suite-forge',
+        expect.objectContaining({
+          metadata: expect.objectContaining({
+            countyCode: '063',
+            salesReviewAvailability: 'unavailable',
+          }),
+        }),
+      );
+    });
   });
 
-  it('keeps the launch disabled outside the hosted public-package mode', async () => {
+  it('keeps county entry available when the public sales package is disabled', async () => {
     isWashingtonSalesReviewLaunchEnabledMock.mockReturnValue(false);
 
     render(<CountiesHub />);
     fireEvent.click(await screen.findByRole('option', { name: 'Select Spokane County' }));
 
-    expect(
-      screen.getByRole('button', { name: 'Open TerraForge sales review' }),
-    ).toBeDisabled();
-    expect(screen.getByText(/public launch package is not enabled/i)).toBeInTheDocument();
-    expect(activateModuleMock).not.toHaveBeenCalled();
+    const openTerraForge = screen.getByRole('button', { name: 'Open TerraForge' });
+    expect(openTerraForge).toBeEnabled();
+    expect(screen.getByText(/public sales package is not enabled/i)).toHaveTextContent(
+      /TerraForge still opens.*unavailable/i,
+    );
+    fireEvent.click(openTerraForge);
+    await waitFor(() => {
+      expect(activateModuleMock).toHaveBeenCalledWith(
+        'suite-forge',
+        expect.objectContaining({
+          metadata: expect.objectContaining({
+            countyCode: '063',
+            salesReviewAvailability: 'unavailable',
+            salesReviewUnavailableMessage: expect.stringMatching(/not enabled/i),
+          }),
+        }),
+      );
+    });
   });
 
   it('shows an honest feed failure and recovers through Retry without a fallback county', async () => {
@@ -318,8 +388,8 @@ describe('Washington Counties Hub assessor journey', () => {
     fireEvent.click(adamsOption);
     expect(screen.getByTestId('selected-county-context')).toHaveTextContent('Adams County');
     expect(
-      screen.getByRole('button', { name: 'Open TerraForge sales review' }),
-    ).toBeDisabled();
+      screen.getByRole('button', { name: 'Open TerraForge' }),
+    ).toBeEnabled();
 
     fireEvent.click(screen.getByRole('button', { name: 'Retry' }));
 
