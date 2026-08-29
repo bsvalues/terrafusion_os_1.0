@@ -257,11 +257,21 @@ describe('Washington Counties Hub assessor journey', () => {
     render(<CountiesHub />);
     fireEvent.click(await screen.findByRole('option', { name: 'Select Spokane County' }));
 
+    const selectedContext = screen.getByTestId('selected-county-context');
     expect(
       screen.getByRole('button', { name: 'Open TerraForge sales review' }),
     ).toBeDisabled();
     expect(screen.getByText(/name and code do not match/i)).toBeInTheDocument();
+    expect(screen.getByText(/record counts, freshness, and runtime posture are suppressed/i))
+      .toBeInTheDocument();
     expect(screen.getByText('Registry mismatch')).toBeInTheDocument();
+    expect(screen.getByText('0 with governed status')).toBeInTheDocument();
+    expect(within(selectedContext).getAllByText('Unavailable')).toHaveLength(4);
+    expect(selectedContext).not.toHaveTextContent('2025-12-31');
+    expect(selectedContext).not.toHaveTextContent('12');
+    expect(getWashingtonSalesReviewCapabilityMock).toHaveBeenCalledWith(
+      expect.objectContaining({ county: 'Adams', countyCode: '063' }),
+    );
     expect(activateModuleMock).not.toHaveBeenCalled();
   });
 

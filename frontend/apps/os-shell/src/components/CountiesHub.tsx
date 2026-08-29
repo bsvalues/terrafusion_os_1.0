@@ -46,11 +46,16 @@ interface WashingtonCountyDirectoryEntry {
   county: string;
   countyCode: string;
   status: WashingtonCountyStatusEntry | null;
+  identityMismatch: WashingtonCountyStatusEntry | null;
 }
 
 function formatStatus(value: string | null | undefined): string {
   if (!value) return 'Not reported';
   return value.replaceAll('_', ' ');
+}
+
+function normalizeCountyName(value: string): string {
+  return value.replace(/\s+county$/i, '').trim().toLowerCase();
 }
 
 const CountiesHub = () => {
@@ -105,11 +110,18 @@ const CountiesHub = () => {
       counties.map((county) => [county.countyCode, county] as const),
     );
 
-    return WASHINGTON_COUNTIES.map((county) => ({
-      county: county.name,
-      countyCode: county.code,
-      status: observedByCode.get(county.code) ?? null,
-    }));
+    return WASHINGTON_COUNTIES.map((county) => {
+      const observedStatus = observedByCode.get(county.code) ?? null;
+      const identityMatches = observedStatus !== null
+        && normalizeCountyName(observedStatus.county) === normalizeCountyName(county.name);
+
+      return {
+        county: county.name,
+        countyCode: county.code,
+        status: identityMatches ? observedStatus : null,
+        identityMismatch: observedStatus && !identityMatches ? observedStatus : null,
+      };
+    });
   }, [counties]);
 
   const selectedCounty = useMemo(
@@ -117,6 +129,7 @@ const CountiesHub = () => {
     [countyDirectory, selectedCountyCode],
   );
   const selectedStatus = selectedCounty?.status ?? null;
+  const selectedIdentityMismatch = selectedCounty?.identityMismatch ?? null;
   const observedCountyCount = useMemo(
     () => countyDirectory.filter((county) => county.status !== null).length,
     [countyDirectory],
@@ -133,6 +146,7 @@ const CountiesHub = () => {
       county.county.toLowerCase().includes(normalizedQuery)
       || county.countyCode.includes(normalizedQuery)
       || county.status?.primarySourceMode.toLowerCase().includes(normalizedQuery)
+      || (county.identityMismatch !== null && 'registry mismatch'.includes(normalizedQuery))
       || (!county.status && 'unavailable'.includes(normalizedQuery)),
     );
   }, [countyDirectory, query]);
@@ -359,14 +373,24 @@ const CountiesHub = () => {
                         TerraForge cannot safely use this navigation context here.
                       </Alert>
                     )}
-                    {!selectedStatus && (
+                    {selectedIdentityMismatch && (
+                      <Alert severity='error'>
+                        The observed county name and code do not match the Washington registry. The
+                        feed reported {selectedIdentityMismatch.county} County with code{' '}
+                        {selectedIdentityMismatch.countyCode} for canonical {selectedCounty.county}{' '}
+                        County. Its record counts, freshness, and runtime posture are suppressed.
+                      </Alert>
+                    )}
+                    {!selectedStatus && !selectedIdentityMismatch && (
                       <Alert severity='warning'>
                         No governed public sales state is available for {selectedCounty.county}{' '}
                         County. The county remains selectable, but TerraForge sales review is
                         unavailable instead of borrowing another county&apos;s data.
                       </Alert>
                     )}
-                    {!selectedCapability?.eligible && selectedCapability?.unavailableMessage && (
+                    {!selectedIdentityMismatch
+                      && !selectedCapability?.eligible
+                      && selectedCapability?.unavailableMessage && (
                       <Alert severity='warning'>
                         {selectedCapability.unavailableMessage}
                       </Alert>
@@ -387,8 +411,9 @@ const CountiesHub = () => {
             >
               {filteredCounties.map((county) => {
                 const selected = county.countyCode === selectedCountyCode;
-                const capability = county.status
-                  ? getWashingtonSalesReviewCapability(county.status)
+                const capabilityStatus = county.status ?? county.identityMismatch;
+                const capability = capabilityStatus
+                  ? getWashingtonSalesReviewCapability(capabilityStatus)
                   : null;
                 return (
                   <Grid item xs={12} sm={6} lg={4} key={county.countyCode}>
