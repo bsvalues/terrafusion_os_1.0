@@ -22,10 +22,17 @@ import {
 } from '@mui/material';
 import {
   Launch as LaunchIcon,
+  OpenInNew as OpenInNewIcon,
   Refresh as RefreshIcon,
   Search as SearchIcon,
   ShieldOutlined as ShieldIcon,
 } from '@mui/icons-material';
+import {
+  getWashingtonPublicSourceInventory,
+  WASHINGTON_PUBLIC_SOURCE_INVENTORY_GENERATED_AT,
+  WASHINGTON_PUBLIC_SOURCE_INVENTORY_LIMITATION,
+  type WashingtonPublicSourceInventoryEntry,
+} from '../lib/washingtonPublicSourceInventory';
 import activateModule from '../orchestration/moduleActivation';
 import {
   getWashingtonSalesReviewCapability,
@@ -48,6 +55,7 @@ interface WashingtonCountyDirectoryEntry {
   countyCode: string;
   status: WashingtonCountyStatusEntry | null;
   identityMismatch: WashingtonCountyStatusEntry | null;
+  publicSource: WashingtonPublicSourceInventoryEntry | null;
 }
 
 function formatStatus(value: string | null | undefined): string {
@@ -57,6 +65,20 @@ function formatStatus(value: string | null | undefined): string {
 
 function normalizeCountyName(value: string): string {
   return value.replace(/\s+county$/i, '').trim().toLowerCase();
+}
+
+function formatInventoryStatus(status: WashingtonPublicSourceInventoryEntry['status']): string {
+  return status === 'adapter-ready'
+    ? 'Acquisition path adapter-ready'
+    : 'Source path researched';
+}
+
+function formatSnapshotDate(value: string | null): string {
+  if (!value) return 'date not reported';
+  const date = new Date(value);
+  return Number.isNaN(date.getTime())
+    ? value
+    : new Intl.DateTimeFormat('en-US', { dateStyle: 'medium' }).format(date);
 }
 
 const CountiesHub = () => {
@@ -153,6 +175,7 @@ const CountiesHub = () => {
         countyCode: county.code,
         status: identityMismatch ? null : validatedStatusByCode.get(county.code) ?? null,
         identityMismatch,
+        publicSource: getWashingtonPublicSourceInventory(county.name),
       };
     });
 
@@ -205,6 +228,7 @@ const CountiesHub = () => {
       county.county.toLowerCase().includes(normalizedQuery)
       || county.countyCode.includes(normalizedQuery)
       || county.status?.primarySourceMode.toLowerCase().includes(normalizedQuery)
+      || county.publicSource?.acquisitionFamily.toLowerCase().includes(normalizedQuery)
       || (county.identityMismatch !== null && 'registry mismatch'.includes(normalizedQuery))
       || (!county.status && 'unavailable'.includes(normalizedQuery)),
     );
@@ -437,6 +461,60 @@ const CountiesHub = () => {
                       </Grid>
                     </Grid>
 
+                    {selectedCounty.publicSource ? (
+                      <Alert
+                        severity='info'
+                        icon={<ShieldIcon fontSize='inherit' />}
+                        data-testid='county-public-source-inventory'
+                      >
+                        <Stack spacing={1.5}>
+                          <Box>
+                            <Typography variant='subtitle2'>Tracked official public source</Typography>
+                            <Typography variant='body2'>
+                              {selectedCounty.county} County official assessor website
+                            </Typography>
+                          </Box>
+                          <Grid container spacing={2}>
+                            <Grid item xs={12} sm={6}>
+                              <Typography variant='caption' color='text.secondary'>Acquisition path</Typography>
+                              <Typography variant='body2'>
+                                {selectedCounty.publicSource.acquisitionFamily}
+                              </Typography>
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                              <Typography variant='caption' color='text.secondary'>Inventory posture</Typography>
+                              <Typography variant='body2'>
+                                {formatInventoryStatus(selectedCounty.publicSource.status)}
+                              </Typography>
+                            </Grid>
+                          </Grid>
+                          <Box>
+                            <Button
+                              component='a'
+                              href={selectedCounty.publicSource.officialAssessorBaseUrl}
+                              target='_blank'
+                              rel='noopener noreferrer'
+                              variant='outlined'
+                              size='small'
+                              startIcon={<OpenInNewIcon />}
+                              aria-label={`Open official ${selectedCounty.county} County public assessor source in a new tab`}
+                            >
+                              Open official public source
+                            </Button>
+                          </Box>
+                          <Typography variant='caption' color='text.secondary'>
+                            Read-only external source · inventory snapshot{' '}
+                            {formatSnapshotDate(WASHINGTON_PUBLIC_SOURCE_INVENTORY_GENERATED_AT)}.{' '}
+                            {WASHINGTON_PUBLIC_SOURCE_INVENTORY_LIMITATION}
+                          </Typography>
+                        </Stack>
+                      </Alert>
+                    ) : (
+                      <Alert severity='warning'>
+                        No tracked official public-source inventory is available for this county.
+                      </Alert>
+                    )}
+
                     {!launchDataEnabled && (
                       <Alert severity='warning'>
                         The Washington public sales package is not enabled in this environment.
@@ -531,6 +609,11 @@ const CountiesHub = () => {
                               Freshness: {county.status
                                 ? county.status.latestSaleDate ?? 'Not reported'
                                 : 'Unavailable'}
+                            </Typography>
+                            <Typography variant='body2' color='text.secondary'>
+                              Public path: {county.publicSource
+                                ? county.publicSource.acquisitionFamily
+                                : 'Not inventoried'}
                             </Typography>
                             <Stack direction='row' spacing={1} flexWrap='wrap' useFlexGap>
                               <Chip
