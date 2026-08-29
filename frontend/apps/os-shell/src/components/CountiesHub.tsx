@@ -31,7 +31,10 @@ import {
   getWashingtonSalesReviewCapability,
   isWashingtonSalesReviewLaunchEnabled,
 } from '../pages/forge/sales/washingtonSalesReviewCapability';
-import { isWashingtonLaunchDataEnabled } from '../pages/forge/sales/washingtonLaunchApi';
+import {
+  isWashingtonLaunchDataEnabled,
+  WASHINGTON_COUNTIES,
+} from '../pages/forge/sales/washingtonLaunchApi';
 import {
   fetchWashingtonCountyStatus,
   type WashingtonCountyStatusEntry,
@@ -39,9 +42,20 @@ import {
 
 const EXPECTED_WASHINGTON_COUNTIES = 39;
 
+interface WashingtonCountyDirectoryEntry {
+  county: string;
+  countyCode: string;
+  status: WashingtonCountyStatusEntry | null;
+  identityMismatch: WashingtonCountyStatusEntry | null;
+}
+
 function formatStatus(value: string | null | undefined): string {
   if (!value) return 'Not reported';
   return value.replaceAll('_', ' ');
+}
+
+function normalizeCountyName(value: string): string {
+  return value.replace(/\s+county$/i, '').trim().toLowerCase();
 }
 
 const CountiesHub = () => {
@@ -67,7 +81,7 @@ const CountiesHub = () => {
       if (signal?.aborted) return;
       setCounties(observedCounties);
       setSelectedCountyCode((current) =>
-        current && observedCounties.some((county) => county.countyCode === current)
+        current && WASHINGTON_COUNTIES.some((county) => county.code === current)
           ? current
           : null,
       );
@@ -91,31 +105,97 @@ const CountiesHub = () => {
     return () => controller.abort();
   }, [loadCounties]);
 
+  const {
+    directory: countyDirectory,
+    registryIssueStatuses,
+  } = useMemo<{
+    directory: WashingtonCountyDirectoryEntry[];
+    registryIssueStatuses: WashingtonCountyStatusEntry[];
+  }>(() => {
+    const canonicalNameByCode = new Map<string, string>(
+      WASHINGTON_COUNTIES.map((county) => [county.code, county.name] as const),
+    );
+    const canonicalCodeByName = new Map<string, string>(
+      WASHINGTON_COUNTIES.map((county) => [normalizeCountyName(county.name), county.code] as const),
+    );
+    const validatedStatusByCode = new Map<string, WashingtonCountyStatusEntry>();
+    const identityMismatchByCode = new Map<string, WashingtonCountyStatusEntry>();
+    const registryIssueStatuses: WashingtonCountyStatusEntry[] = [];
+
+    for (const observedStatus of counties) {
+      const canonicalName = canonicalNameByCode.get(observedStatus.countyCode);
+      const canonicalCodeForName = canonicalCodeByName.get(
+        normalizeCountyName(observedStatus.county),
+      );
+
+      if (
+        canonicalName
+        && canonicalCodeForName === observedStatus.countyCode
+        && normalizeCountyName(observedStatus.county) === normalizeCountyName(canonicalName)
+      ) {
+        validatedStatusByCode.set(observedStatus.countyCode, observedStatus);
+      } else {
+        registryIssueStatuses.push(observedStatus);
+        if (canonicalName) {
+          identityMismatchByCode.set(observedStatus.countyCode, observedStatus);
+        }
+        if (canonicalCodeForName) {
+          identityMismatchByCode.set(canonicalCodeForName, observedStatus);
+        }
+      }
+    }
+
+    const directory = WASHINGTON_COUNTIES.map((county) => {
+      const identityMismatch = identityMismatchByCode.get(county.code) ?? null;
+      return {
+        county: county.name,
+        countyCode: county.code,
+        status: identityMismatch ? null : validatedStatusByCode.get(county.code) ?? null,
+        identityMismatch,
+      };
+    });
+
+    return { directory, registryIssueStatuses };
+  }, [counties]);
+
   const selectedCounty = useMemo(
-    () => counties.find((county) => county.countyCode === selectedCountyCode) ?? null,
-    [counties, selectedCountyCode],
+    () => countyDirectory.find((county) => county.countyCode === selectedCountyCode) ?? null,
+    [countyDirectory, selectedCountyCode],
+  );
+  const selectedStatus = selectedCounty?.status ?? null;
+  const selectedIdentityMismatch = selectedCounty?.identityMismatch ?? null;
+  const observedCountyCount = useMemo(
+    () => countyDirectory.filter((county) => county.status !== null).length,
+    [countyDirectory],
   );
   const selectedCapability = useMemo(
-    () => selectedCounty ? getWashingtonSalesReviewCapability(selectedCounty) : null,
-    [selectedCounty],
+    () => selectedStatus ? getWashingtonSalesReviewCapability(selectedStatus) : null,
+    [selectedStatus],
   );
 
   const filteredCounties = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase();
-    if (!normalizedQuery) return counties;
-    return counties.filter((county) =>
+    if (!normalizedQuery) return countyDirectory;
+    return countyDirectory.filter((county) =>
       county.county.toLowerCase().includes(normalizedQuery)
       || county.countyCode.includes(normalizedQuery)
-      || county.primarySourceMode.toLowerCase().includes(normalizedQuery),
+      || county.status?.primarySourceMode.toLowerCase().includes(normalizedQuery)
+      || (county.identityMismatch !== null && 'registry mismatch'.includes(normalizedQuery))
+      || (!county.status && 'unavailable'.includes(normalizedQuery)),
     );
-  }, [counties, query]);
+  }, [countyDirectory, query]);
   const repositoryReferenceDemo = useMemo(
     () => counties.some((county) => county.primarySourceMode === 'repository_reference_demo'),
     [counties],
   );
 
   const launchSelectedCounty = useCallback(async () => {
-    if (!selectedCounty || !selectedCapability?.eligible || !launchDataEnabled) {
+    if (
+      !selectedCounty
+      || !selectedStatus
+      || !selectedCapability?.eligible
+      || !launchDataEnabled
+    ) {
       return;
     }
 
@@ -131,7 +211,7 @@ const CountiesHub = () => {
           launchContext: 'washington-counties-hub',
           dataTrustTier: 'public-reference-not-county-certified',
           referencePackageSource: countyStatusSource,
-          referenceDataPosture: selectedCounty.primarySourceMode,
+          referenceDataPosture: selectedStatus.primarySourceMode,
         },
       });
     } catch (error) {
@@ -141,7 +221,13 @@ const CountiesHub = () => {
     } finally {
       setLaunching(false);
     }
-  }, [countyStatusSource, launchDataEnabled, selectedCapability, selectedCounty]);
+  }, [
+    countyStatusSource,
+    launchDataEnabled,
+    selectedCapability,
+    selectedCounty,
+    selectedStatus,
+  ]);
 
   return (
     <Box
@@ -193,18 +279,30 @@ const CountiesHub = () => {
               </Button>
             )}
           >
-            {loadError} No county readiness or capability claim is shown while the governed feed is
-            unavailable.
+            {loadError} Governed status claims are suppressed while the feed is unavailable. All 39
+            counties remain selectable with explicit unavailable state.
           </Alert>
         )}
 
-        {!loading && !loadError && (
+        {!loading && (
           <>
-            {counties.length !== EXPECTED_WASHINGTON_COUNTIES && (
+            {observedCountyCount !== EXPECTED_WASHINGTON_COUNTIES && (
               <Alert severity='warning'>
-                The governed feed currently reports {counties.length} of{' '}
+                The governed feed currently reports status for {observedCountyCount} of{' '}
                 {EXPECTED_WASHINGTON_COUNTIES} Washington counties. Missing counties remain
                 explicitly unavailable rather than being synthesized.
+              </Alert>
+            )}
+
+            {registryIssueStatuses.length > 0 && (
+              <Alert severity='error' data-testid='county-registry-integrity-error'>
+                The governed feed reported {registryIssueStatuses.length}{' '}
+                unregistered or mismatched county{' '}
+                {registryIssueStatuses.length === 1 ? 'identity' : 'identities'}. Their status data
+                is suppressed:{' '}
+                {registryIssueStatuses
+                  .map((status) => `${status.county} (${status.countyCode})`)
+                  .join(', ')}.
               </Alert>
             )}
 
@@ -222,7 +320,8 @@ const CountiesHub = () => {
               justifyContent='space-between'
             >
               <Stack direction='row' spacing={1} flexWrap='wrap' useFlexGap>
-                <Chip label={`${counties.length} governed county contexts`} color='primary' />
+                <Chip label={`${countyDirectory.length} Washington counties`} color='primary' />
+                <Chip label={`${observedCountyCount} with governed status`} variant='outlined' />
                 <Chip label='Public/reference · not county-certified' variant='outlined' />
               </Stack>
               <TextField
@@ -261,7 +360,9 @@ const CountiesHub = () => {
                         </Typography>
                         <Typography variant='body2' color='text.secondary'>
                           Washington county code {selectedCounty.countyCode} · source{' '}
-                          {formatStatus(selectedCounty.primarySourceMode)}
+                          {selectedStatus
+                            ? formatStatus(selectedStatus.primarySourceMode)
+                            : 'Unavailable'}
                         </Typography>
                       </Box>
                       <Button
@@ -270,11 +371,12 @@ const CountiesHub = () => {
                         disabled={
                           launching
                           || !launchDataEnabled
+                          || !selectedStatus
                           || !selectedCapability?.eligible
                         }
                         onClick={() => void launchSelectedCounty()}
                       >
-                        {launching ? 'Opening TerraForge…' : 'Review public sales in TerraForge'}
+                        {launching ? 'Opening TerraForge…' : 'Open TerraForge sales review'}
                       </Button>
                     </Stack>
 
@@ -283,19 +385,31 @@ const CountiesHub = () => {
                     <Grid container spacing={2}>
                       <Grid item xs={12} sm={6} md={3}>
                         <Typography variant='caption' color='text.secondary'>Reference records</Typography>
-                        <Typography variant='body1'>{selectedCounty.stagedSales.toLocaleString()}</Typography>
+                        <Typography variant='body1'>
+                          {selectedStatus ? selectedStatus.stagedSales.toLocaleString() : 'Unavailable'}
+                        </Typography>
                       </Grid>
                       <Grid item xs={12} sm={6} md={3}>
                         <Typography variant='caption' color='text.secondary'>Latest reference sale</Typography>
-                        <Typography variant='body1'>{selectedCounty.latestSaleDate ?? 'Not reported'}</Typography>
+                        <Typography variant='body1'>
+                          {selectedStatus
+                            ? selectedStatus.latestSaleDate ?? 'Not reported'
+                            : 'Unavailable'}
+                        </Typography>
                       </Grid>
                       <Grid item xs={12} sm={6} md={3}>
                         <Typography variant='caption' color='text.secondary'>Records needing review</Typography>
-                        <Typography variant='body1'>{selectedCounty.needsReview.toLocaleString()}</Typography>
+                        <Typography variant='body1'>
+                          {selectedStatus ? selectedStatus.needsReview.toLocaleString() : 'Unavailable'}
+                        </Typography>
                       </Grid>
                       <Grid item xs={12} sm={6} md={3}>
                         <Typography variant='caption' color='text.secondary'>Runtime posture</Typography>
-                        <Typography variant='body1'>{formatStatus(selectedCounty.prometheusStatus)}</Typography>
+                        <Typography variant='body1'>
+                          {selectedStatus
+                            ? formatStatus(selectedStatus.prometheusStatus)
+                            : 'Unavailable'}
+                        </Typography>
                       </Grid>
                     </Grid>
 
@@ -305,7 +419,24 @@ const CountiesHub = () => {
                         TerraForge cannot safely use this navigation context here.
                       </Alert>
                     )}
-                    {!selectedCapability?.eligible && selectedCapability?.unavailableMessage && (
+                    {selectedIdentityMismatch && (
+                      <Alert severity='error'>
+                        The observed county name and code do not match the Washington registry. The
+                        feed reported {selectedIdentityMismatch.county} County with code{' '}
+                        {selectedIdentityMismatch.countyCode} for canonical {selectedCounty.county}{' '}
+                        County. Its record counts, freshness, and runtime posture are suppressed.
+                      </Alert>
+                    )}
+                    {!selectedStatus && !selectedIdentityMismatch && (
+                      <Alert severity='warning'>
+                        No governed public sales state is available for {selectedCounty.county}{' '}
+                        County. The county remains selectable, but TerraForge sales review is
+                        unavailable instead of borrowing another county&apos;s data.
+                      </Alert>
+                    )}
+                    {!selectedIdentityMismatch
+                      && !selectedCapability?.eligible
+                      && selectedCapability?.unavailableMessage && (
                       <Alert severity='warning'>
                         {selectedCapability.unavailableMessage}
                       </Alert>
@@ -326,7 +457,9 @@ const CountiesHub = () => {
             >
               {filteredCounties.map((county) => {
                 const selected = county.countyCode === selectedCountyCode;
-                const capability = getWashingtonSalesReviewCapability(county);
+                const capability = county.status
+                  ? getWashingtonSalesReviewCapability(county.status)
+                  : null;
                 return (
                   <Grid item xs={12} sm={6} lg={4} key={county.countyCode}>
                     <Card
@@ -358,23 +491,31 @@ const CountiesHub = () => {
                               </Box>
                               <Chip
                                 size='small'
-                                color={capability.eligible ? 'success' : 'default'}
-                                label={capability.statusLabel}
+                                color={capability?.eligible ? 'success' : 'default'}
+                                label={county.identityMismatch
+                                  ? 'Registry mismatch'
+                                  : capability?.statusLabel ?? 'Public data unavailable'}
                               />
                             </Stack>
                             <Typography variant='body2' color='text.secondary'>
-                              Source: {formatStatus(county.primarySourceMode)}
+                              Source: {county.status
+                                ? formatStatus(county.status.primarySourceMode)
+                                : 'Unavailable'}
                             </Typography>
                             <Typography variant='body2' color='text.secondary'>
-                              Freshness: {county.latestSaleDate ?? 'Not reported'}
+                              Freshness: {county.status
+                                ? county.status.latestSaleDate ?? 'Not reported'
+                                : 'Unavailable'}
                             </Typography>
                             <Stack direction='row' spacing={1} flexWrap='wrap' useFlexGap>
                               <Chip
                                 size='small'
                                 variant='outlined'
-                                label={formatStatus(county.confidence.rawStatus)}
+                                label={county.status
+                                  ? formatStatus(county.status.confidence.rawStatus)
+                                  : 'Not reported'}
                               />
-                              {county.confidence.rawDriftDetected && (
+                              {county.status?.confidence.rawDriftDetected && (
                                 <Chip size='small' color='warning' label='Source drift reported' />
                               )}
                             </Stack>
@@ -388,7 +529,7 @@ const CountiesHub = () => {
             </Grid>
 
             {filteredCounties.length === 0 && (
-              <Alert severity='info'>No observed Washington county matches “{query}”.</Alert>
+              <Alert severity='info'>No Washington county matches “{query}”.</Alert>
             )}
           </>
         )}
