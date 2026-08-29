@@ -53,14 +53,19 @@ describe('Counties HUB launcher entry', () => {
 
   it('activates the canonical Counties HUB window through the module orchestrator', async () => {
     const navigate = vi.fn();
+    const actor = {
+      userId: 'assessor-7',
+      countyId: 'wa-063',
+      roles: ['assessor'],
+    };
 
-    navigateToLauncherItem(getCountiesHubLauncherItem(), navigate);
+    navigateToLauncherItem(getCountiesHubLauncherItem(), navigate, actor);
 
     await vi.waitFor(() => {
       expect(activateModuleMock).toHaveBeenCalledOnce();
       expect(activateModuleMock).toHaveBeenCalledWith('counties', {
         source: 'start_menu',
-        actor: null,
+        actor,
       });
     });
     expect(navigate).not.toHaveBeenCalled();
