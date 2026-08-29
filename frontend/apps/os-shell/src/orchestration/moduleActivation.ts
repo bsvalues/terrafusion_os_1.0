@@ -304,7 +304,17 @@ export async function activateModule(
   moduleId: string,
   options: ActivateModuleOptions
 ): Promise<void> {
-  const { source, focusIfOpen = true, warmLoad = true, showNotification = true } = options;
+  const {
+    source,
+    focusIfOpen = true,
+    warmLoad = true,
+    showNotification = true,
+    actor = null,
+  } = options;
+  const auditIdentity = {
+    actor: actor?.userId ?? '',
+    countyId: actor?.countyId ?? '',
+  };
 
   // -------------------------------------------------------------------------
   // Step 1: Normalize alias → canonical ID
@@ -321,6 +331,7 @@ export async function activateModule(
       moduleId: canonicalId,
       source,
       reason: 'not_registered',
+      ...auditIdentity,
     });
     
     // Fail closed - no throw, just return (UI-safe)
@@ -334,6 +345,7 @@ export async function activateModule(
     moduleId: canonicalId,
     source,
     metadata,
+    ...auditIdentity,
   });
 
   // -------------------------------------------------------------------------
@@ -358,6 +370,7 @@ export async function activateModule(
         source,
         windowId: existingWindowId,
         metadata,
+        ...auditIdentity,
       });
     }
     

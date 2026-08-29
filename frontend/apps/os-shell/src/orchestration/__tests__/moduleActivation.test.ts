@@ -181,6 +181,27 @@ describe('moduleActivation', () => {
       );
     });
 
+    it('attributes module.activate telemetry to the authenticated actor and county', async () => {
+      await activateModule('costforge', {
+        source: 'start_menu',
+        actor: {
+          userId: 'assessor-7',
+          countyId: 'wa-063',
+          roles: ['assessor'],
+        },
+      });
+
+      expect(mockTrackEvent).toHaveBeenCalledWith(
+        'module.activate',
+        expect.objectContaining({
+          moduleId: 'costforge',
+          source: 'start_menu',
+          actor: 'assessor-7',
+          countyId: 'wa-063',
+        })
+      );
+    });
+
     it('opens exactly one window per activation', async () => {
       await activateModule('terra-gaia', { source: 'route' });
 
@@ -298,13 +319,22 @@ describe('moduleActivation', () => {
     it('emits module.focus telemetry when focusing existing window', async () => {
       simulateExistingWindow('costforge');
 
-      await activateModule('costforge', { source: 'desktop' });
+      await activateModule('costforge', {
+        source: 'desktop',
+        actor: {
+          userId: 'assessor-7',
+          countyId: 'wa-063',
+          roles: ['assessor'],
+        },
+      });
 
       expect(mockTrackEvent).toHaveBeenCalledWith(
         'module.focus',
         expect.objectContaining({
           moduleId: 'costforge',
           source: 'desktop',
+          actor: 'assessor-7',
+          countyId: 'wa-063',
         })
       );
     });
@@ -362,7 +392,14 @@ describe('moduleActivation', () => {
     });
 
     it('emits module.reject telemetry for unregistered module', async () => {
-      await activateModule('nonexistent-module', { source: 'desktop' });
+      await activateModule('nonexistent-module', {
+        source: 'desktop',
+        actor: {
+          userId: 'assessor-7',
+          countyId: 'wa-063',
+          roles: ['assessor'],
+        },
+      });
 
       expect(mockTrackEvent).toHaveBeenCalledWith(
         'module.reject',
@@ -370,6 +407,8 @@ describe('moduleActivation', () => {
           moduleId: 'nonexistent-module',
           reason: 'not_registered',
           source: 'desktop',
+          actor: 'assessor-7',
+          countyId: 'wa-063',
         })
       );
     });
