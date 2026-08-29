@@ -114,7 +114,7 @@ describe('SalesForge — County Studio deeplink consumption (Task D2)', () => {
     });
   });
 
-  it('keeps the hosted provider when a hosted feed labels its content synthetic', async () => {
+  it('keeps county context but blocks a synthetic reference demo from assessor workflows', async () => {
     render(
       <SalesForge
         metadata={{
@@ -125,6 +125,11 @@ describe('SalesForge — County Studio deeplink consumption (Task D2)', () => {
           dataTrustTier: 'public-reference-not-county-certified',
           referencePackageSource: 'hosted',
           referenceDataPosture: 'repository_reference_demo',
+          referenceRecordCount: 3,
+          latestReferenceSaleDate: '2025-11-06',
+          salesReviewAvailability: 'unavailable',
+          salesReviewUnavailableMessage:
+            'Only invented repository reference records are available for this county.',
         }}
       />
     );
@@ -133,9 +138,39 @@ describe('SalesForge — County Studio deeplink consumption (Task D2)', () => {
       expect(useSalesForgeStore.getState().committedFilters.countyCode).toBe('063');
       expect(useSalesForgeStore.getState().dataSource).toBe('washington-hosted');
     });
-    expect(screen.getByText(/Public\/reference package only/i)).toHaveTextContent(
-      /invented synthetic sales/i,
+    expect(screen.getByText(/Only invented repository reference records/i)).toBeInTheDocument();
+    expect(screen.getByTestId('salesforge-data-unavailable')).toHaveTextContent(
+      /No sales-review records or data-dependent tools/i,
     );
+    expect(screen.queryByTestId('stub-queue')).not.toBeInTheDocument();
+  });
+
+  it('fails closed instead of retaining Benton when a Counties Hub handoff is invalid', async () => {
+    render(
+      <SalesForge
+        metadata={{
+          countyCode: '063',
+          countyName: 'Adams',
+          resetValuationScope: true,
+          launchContext: 'washington-counties-hub',
+          dataTrustTier: 'public-reference-not-county-certified',
+          referencePackageSource: 'hosted',
+          referenceDataPosture: 'public_recorder_export',
+          referenceRecordCount: 12,
+          latestReferenceSaleDate: '2025-12-31',
+          salesReviewAvailability: 'available',
+          salesReviewUnavailableMessage: null,
+        }}
+      />
+    );
+
+    await waitFor(() => {
+      expect(useSalesForgeStore.getState().committedFilters.countyCode).toBe('');
+    });
+    expect(screen.getByText('County scope required')).toBeInTheDocument();
+    expect(screen.getByText(/Counties Hub county handoff is invalid/i)).toBeInTheDocument();
+    expect(screen.getByTestId('salesforge-data-unavailable')).toBeInTheDocument();
+    expect(screen.queryByTestId('stub-queue')).not.toBeInTheDocument();
   });
 
   it('consumes pre-split metadata (stratumKey / taxYear / segmentId) on mount', async () => {
@@ -229,7 +264,11 @@ describe('SalesForge — County Studio deeplink consumption (Task D2)', () => {
           launchContext: 'washington-counties-hub',
           dataTrustTier: 'public-reference-not-county-certified',
           referencePackageSource: 'repository-reference',
-          referenceDataPosture: 'repository_reference_demo',
+          referenceDataPosture: 'public_recorder_export',
+          referenceRecordCount: 12,
+          latestReferenceSaleDate: '2025-12-31',
+          salesReviewAvailability: 'available',
+          salesReviewUnavailableMessage: null,
           // Even a conflicting mixed payload must not retain valuation scope
           // when the reset contract is present.
           rollupScope: 'neighborhood',
@@ -258,9 +297,7 @@ describe('SalesForge — County Studio deeplink consumption (Task D2)', () => {
 
     expect(screen.getByText('Spokane County')).toBeInTheDocument();
     expect(screen.getByText(/Public\/reference package only/i)).toBeInTheDocument();
-    expect(screen.getByText(/invented synthetic sales/i)).toHaveTextContent(
-      /not observed public sales or county records/i,
-    );
+    expect(screen.queryByText(/invented synthetic sales/i)).not.toBeInTheDocument();
     expect(screen.queryByRole('tab', { name: 'DOR Export' })).not.toBeInTheDocument();
     expect(screen.queryByTestId('sf-scoped-from-chip')).not.toBeInTheDocument();
     expect(screen.queryByText(/Old Benton neighborhood/)).not.toBeInTheDocument();

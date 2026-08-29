@@ -14,6 +14,10 @@ import { useCountyStats } from '../../hooks/useCountyStats';
 import { apiFetch } from '../../lib/apiBase';
 import { activateModule } from '../../orchestration/moduleActivation';
 import { buildCountyScopedSessionHeaders } from '../../services/countyIsolation';
+import {
+  parseWashingtonCountiesHubHandoff,
+  type WashingtonCountiesHubHandoff,
+} from '../forge/sales/washingtonSalesReviewCapability';
 import { SaleQualificationQueue } from './SaleQualificationQueue';
 import { CompsPoolBrowser } from './CompsPoolBrowser';
 import {
@@ -183,8 +187,15 @@ function renderRuntimeMetricValue(metric: RuntimeMetricStatus): string {
   return metric.value != null ? metric.value.toLocaleString() : 'Pending';
 }
 
-function useRuntimeForgeMetrics(runtimeCountyId: string, taxYear: number): RuntimeMetricsState {
+function useRuntimeForgeMetrics(
+  runtimeCountyId: string,
+  taxYear: number,
+  enabled = true,
+): RuntimeMetricsState {
   const countyScope = useMemo(() => {
+    if (!enabled) {
+      return { countyId: runtimeCountyId, headers: {}, isolated: false };
+    }
     const session = getSession();
     const { headers, isolated } = buildCountyScopedSessionHeaders(session);
     const token = getToken();
@@ -192,10 +203,21 @@ function useRuntimeForgeMetrics(runtimeCountyId: string, taxYear: number): Runti
       headers.Authorization = `Bearer ${token}`;
     }
     return { countyId: session?.countyId ?? runtimeCountyId, headers, isolated };
-  }, [runtimeCountyId]);
+  }, [enabled, runtimeCountyId]);
   const [runtimeMetrics, setRuntimeMetrics] = useState<RuntimeMetricsState>(() => createRuntimeMetricsState());
 
   useEffect(() => {
+    if (!enabled) {
+      const unavailable = Object.fromEntries(
+        (Object.keys(createRuntimeMetricsState()) as RuntimeMetricKey[]).map((key) => [
+          key,
+          { value: null, loading: false, error: 'Authenticated county data required.' },
+        ]),
+      ) as RuntimeMetricsState;
+      setRuntimeMetrics(unavailable);
+      return;
+    }
+
     if (!countyScope.isolated) {
       const blocked = Object.fromEntries(
         (Object.keys(createRuntimeMetricsState()) as RuntimeMetricKey[]).map((key) => [
@@ -331,7 +353,7 @@ function useRuntimeForgeMetrics(runtimeCountyId: string, taxYear: number): Runti
     );
 
     return () => abortController.abort();
-  }, [countyScope, taxYear]);
+  }, [countyScope, enabled, taxYear]);
 
   return runtimeMetrics;
 }
@@ -384,11 +406,58 @@ function getLaunchLabel(mod: ForgeModuleDef): string {
   return 'Support tool';
 }
 
-export default function ForgeSuiteHome() {
-  const { stats, loading, error, source } = useCountyStats();
-  const runtimeCountyId = getSession()?.countyId ?? 'benton';
+export interface ForgeSuiteHomeProps {
+  metadata?: Record<string, unknown>;
+}
+
+function formatCountyContextPosture(value: string): string {
+  return value === 'unavailable' ? 'Unavailable' : value.replaceAll('_', ' ');
+}
+
+function isForgeModuleAvailableInContext(
+  mod: ForgeModuleDef,
+  countyContext: WashingtonCountiesHubHandoff | null,
+  countyContextRequested: boolean,
+): boolean {
+  if (!isJune10RuntimeForgeModule(mod) || mod.truthState === 'queued') return false;
+  if (!countyContextRequested) return true;
+  return countyContext !== null
+    && mod.id === 'salesforge'
+    && countyContext.salesReviewAvailability === 'available';
+}
+
+function getContextualLaunchLabel(
+  mod: ForgeModuleDef,
+  countyContext: WashingtonCountiesHubHandoff | null,
+  countyContextRequested: boolean,
+): string {
+  if (!countyContextRequested || !isJune10RuntimeForgeModule(mod)) return getLaunchLabel(mod);
+  if (!countyContext) return 'Valid county scope required';
+  if (mod.id !== 'salesforge') return 'Authenticated county data required';
+  if (countyContext.salesReviewAvailability !== 'available') {
+    return 'Public sales review unavailable';
+  }
+  return countyContext.referenceRecordCount === null
+    ? 'Public sales review available'
+    : `${countyContext.referenceRecordCount.toLocaleString()} public/reference sales`;
+}
+
+export default function ForgeSuiteHome({ metadata }: ForgeSuiteHomeProps = {}) {
+  const washingtonCountyContextRequested = metadata?.launchContext
+    === 'washington-counties-hub';
+  const washingtonCountyContext = useMemo(
+    () => parseWashingtonCountiesHubHandoff(metadata),
+    [metadata],
+  );
+  const countyContextOnly = washingtonCountyContextRequested;
+  const { stats, loading, error, source } = useCountyStats({ enabled: !countyContextOnly });
+  const runtimeCountyId = countyContextOnly ? '' : getSession()?.countyId ?? 'benton';
   const runtimeTaxYear = 2026;
-  const runtimeMetrics = useRuntimeForgeMetrics(runtimeCountyId, runtimeTaxYear);
+  const runtimeMetrics = useRuntimeForgeMetrics(
+    runtimeCountyId,
+    runtimeTaxYear,
+    !countyContextOnly,
+  );
   const sourceDisclosure = getSourceDisclosure(source);
   const showForgeMetrics = !JUNE_10_PROOF_FREEZE;
   const displayedStats = showForgeMetrics ? stats : null;
@@ -454,16 +523,21 @@ export default function ForgeSuiteHome() {
       ] as const;
 
   const handleModuleLaunch = (mod: ForgeModuleDef) => {
-    if (!isJune10RuntimeForgeModule(mod)) {
-      return;
-    }
-
-    if (mod.truthState === 'queued') {
-      return;
-    }
+    if (!isForgeModuleAvailableInContext(
+      mod,
+      washingtonCountyContext,
+      washingtonCountyContextRequested,
+    )) return;
 
     const targetId = mod.moduleId;
     if (!targetId) {
+      return;
+    }
+    if (washingtonCountyContext) {
+      void activateModule(targetId, {
+        source: 'system',
+        metadata: washingtonCountyContext,
+      });
       return;
     }
     const metadata = mod.id === 'costforge'
@@ -649,66 +723,150 @@ export default function ForgeSuiteHome() {
         <div className="forge-workspace__stage">
           <header className="forge-workspace__header">
             <div>
-              <p className="forge-workspace__eyebrow">Suite-Forge · Benton operating model</p>
+              <p className="forge-workspace__eyebrow">
+                {washingtonCountyContext
+                  ? `Washington Counties Hub · WA-${washingtonCountyContext.countyCode}`
+                  : washingtonCountyContextRequested
+                    ? 'Washington Counties Hub · county scope invalid'
+                    : 'Suite-Forge · Benton operating model'}
+              </p>
               <h1 className="forge-workspace__title">TerraForge</h1>
-              <p className="forge-workspace__subtitle">Valuation suite available in Benton context; unverified standalone workflows stay preview-locked until separately verified.</p>
+              <p className="forge-workspace__subtitle">
+                {washingtonCountyContext
+                  ? `${washingtonCountyContext.countyName} County context is active. TerraForge exposes only workflows supported by this county's governed public/reference data.`
+                  : washingtonCountyContextRequested
+                    ? 'The Counties Hub handoff could not be validated. TerraForge is fail-closed and no county workflow can run.'
+                    : 'Valuation suite available in Benton context; unverified standalone workflows stay preview-locked until separately verified.'}
+              </p>
             </div>
             <div className="forge-workspace__status">
               <span className="forge-chip forge-chip--neutral">Layer 2 Workspace</span>
-              <span className="forge-chip forge-chip--warn">
-                Suite metrics app-backed partial
-              </span>
+              {washingtonCountyContextRequested ? (
+                <span className="forge-chip forge-chip--warn">Public navigation context</span>
+              ) : (
+                <span className="forge-chip forge-chip--warn">
+                  Suite metrics app-backed partial
+                </span>
+              )}
             </div>
           </header>
 
-          {sourceDisclosure && (
+          {!countyContextOnly && sourceDisclosure && (
             <div data-testid="forge-source-disclosure" role="status" className="forge-workspace__notice forge-workspace__notice--warn">
               {sourceDisclosure}
             </div>
           )}
-          <section className="forge-panel forge-runtime-status" data-testid="forge-runtime-status">
-            <div className="forge-panel__header">
-              <div>
-                <p className="forge-panel__eyebrow">TerraForge Runtime Status</p>
-                <h2 className="forge-panel__title">One verified app at a time</h2>
+          {countyContextOnly ? (
+            washingtonCountyContext ? (
+              <section className="forge-panel forge-runtime-status" data-testid="forge-county-context">
+              <div className="forge-panel__header">
+                <div>
+                  <p className="forge-panel__eyebrow">Selected county context</p>
+                  <h2 className="forge-panel__title">
+                    {washingtonCountyContext.countyName} County
+                  </h2>
+                </div>
               </div>
-            </div>
-            <div className="forge-ops-tags">
-              <span className="forge-chip forge-chip--success">SalesForge runtime</span>
-              <span className="forge-chip forge-chip--success">CostForge live triage path</span>
-              <span className="forge-chip forge-chip--success">CompsForge runtime comps pool</span>
-              <span className="forge-chip forge-chip--success">IncomeForge runtime income approach</span>
-              <span className="forge-chip forge-chip--success">County Studio runtime studies</span>
-              <span className={`forge-chip ${countyRollupChipClass}`}>
-                {countyRollupStatus}
-              </span>
-              <span className="forge-chip forge-chip--warn">Full TerraForge not done</span>
-              <span className="forge-chip forge-chip--warn">CUForge/specialists locked</span>
-              <span className="forge-chip forge-chip--warn">County Studio health not rollup proof</span>
-            </div>
-          </section>
-          {showForgeMetrics && loading && !stats && (
+              <div className="forge-ops-tags">
+                <span className="forge-chip forge-chip--neutral">
+                  WA-{washingtonCountyContext.countyCode}
+                </span>
+                <span className="forge-chip forge-chip--neutral">
+                  Source {formatCountyContextPosture(washingtonCountyContext.referenceDataPosture)}
+                </span>
+                <span
+                  className={`forge-chip ${washingtonCountyContext.salesReviewAvailability === 'available' ? 'forge-chip--success' : 'forge-chip--warn'}`}
+                >
+                  SalesForge {washingtonCountyContext.salesReviewAvailability}
+                </span>
+              </div>
+              <p className="forge-ops-note">
+                County selection is navigation context only. Protected TerraFusion APIs remain
+                bound to the authenticated county session, and unavailable public inputs never
+                fall back to Benton or another county.
+              </p>
+              {washingtonCountyContext.salesReviewAvailability === 'available' ? (
+                <p className="forge-ops-note">
+                  {washingtonCountyContext.referenceRecordCount?.toLocaleString() ?? 'Governed'}{' '}
+                  public/reference sales are available for read-only review
+                  {washingtonCountyContext.latestReferenceSaleDate
+                    ? ` through ${washingtonCountyContext.latestReferenceSaleDate}`
+                    : ''}.
+                </p>
+              ) : (
+                <div className="forge-workspace__notice forge-workspace__notice--warn" role="status">
+                  {washingtonCountyContext.salesReviewUnavailableMessage
+                    ?? 'No governed public sales workflow is available for this county.'}
+                </div>
+              )}
+              </section>
+            ) : (
+              <section
+                className="forge-panel forge-runtime-status"
+                data-testid="forge-county-context-invalid"
+                role="alert"
+              >
+                <div className="forge-panel__header">
+                  <div>
+                    <p className="forge-panel__eyebrow">Selected county context</p>
+                    <h2 className="forge-panel__title">County scope required</h2>
+                  </div>
+                </div>
+                <p className="forge-ops-note">
+                  The Washington county name and code must match the canonical registry. No
+                  TerraForge workflow or authenticated county data is loaded when that handoff is
+                  invalid.
+                </p>
+              </section>
+            )
+          ) : (
+            <section className="forge-panel forge-runtime-status" data-testid="forge-runtime-status">
+              <div className="forge-panel__header">
+                <div>
+                  <p className="forge-panel__eyebrow">TerraForge Runtime Status</p>
+                  <h2 className="forge-panel__title">One verified app at a time</h2>
+                </div>
+              </div>
+              <div className="forge-ops-tags">
+                <span className="forge-chip forge-chip--success">SalesForge runtime</span>
+                <span className="forge-chip forge-chip--success">CostForge live triage path</span>
+                <span className="forge-chip forge-chip--success">CompsForge runtime comps pool</span>
+                <span className="forge-chip forge-chip--success">IncomeForge runtime income approach</span>
+                <span className="forge-chip forge-chip--success">County Studio runtime studies</span>
+                <span className={`forge-chip ${countyRollupChipClass}`}>
+                  {countyRollupStatus}
+                </span>
+                <span className="forge-chip forge-chip--warn">Full TerraForge not done</span>
+                <span className="forge-chip forge-chip--warn">CUForge/specialists locked</span>
+                <span className="forge-chip forge-chip--warn">County Studio health not rollup proof</span>
+              </div>
+            </section>
+          )}
+          {!countyContextOnly && showForgeMetrics && loading && !stats && (
             <div data-testid="forge-loading" role="status" className="forge-workspace__notice">
               Loading county metrics…
             </div>
           )}
-          {error && (
+          {!countyContextOnly && error && (
             <div data-testid="forge-error" role="alert" className="forge-workspace__notice forge-workspace__notice--error">
               {error}
             </div>
           )}
 
-          <section data-testid="forge-stats" className="forge-kpi-grid">
-            {kpiMetrics.map(({ label, value, tone, source: metricSource }) => (
-              <div key={label} className="forge-kpi-cell">
-                <div className="forge-kpi-cell__label">{label}</div>
-                <div className={`forge-kpi-cell__value forge-kpi-cell__value--${tone}`}>{value}</div>
-                <div className="forge-kpi-cell__source">{metricSource}</div>
-              </div>
-            ))}
-          </section>
+          {!countyContextOnly && (
+            <section data-testid="forge-stats" className="forge-kpi-grid">
+              {kpiMetrics.map(({ label, value, tone, source: metricSource }) => (
+                <div key={label} className="forge-kpi-cell">
+                  <div className="forge-kpi-cell__label">{label}</div>
+                  <div className={`forge-kpi-cell__value forge-kpi-cell__value--${tone}`}>{value}</div>
+                  <div className="forge-kpi-cell__source">{metricSource}</div>
+                </div>
+              ))}
+            </section>
+          )}
 
-          <section className="forge-panel" data-testid="forge-calibration-desk">
+          {!countyContextOnly && (
+            <section className="forge-panel" data-testid="forge-calibration-desk">
             <div className="forge-panel__header">
               <div>
                 <p className="forge-panel__eyebrow">County Calibration Desk</p>
@@ -861,6 +1019,7 @@ export default function ForgeSuiteHome() {
               </div>
             </div>
           </section>
+          )}
 
           <section className="forge-panel" data-testid="forge-primary-applications">
             <div className="forge-panel__header">
@@ -876,15 +1035,50 @@ export default function ForgeSuiteHome() {
                   type="button"
                   className="forge-card forge-card--primary"
                   onClick={() => handleModuleLaunch(mod)}
-                  disabled={!isJune10RuntimeForgeModule(mod) || mod.truthState === 'queued'}
-                  title={!isJune10RuntimeForgeModule(mod) ? JUNE_10_FORGE_NOTICE : undefined}
+                  disabled={!isForgeModuleAvailableInContext(
+                    mod,
+                    washingtonCountyContext,
+                    washingtonCountyContextRequested,
+                  )}
+                  title={
+                    washingtonCountyContextRequested
+                      ? !isForgeModuleAvailableInContext(
+                          mod,
+                          washingtonCountyContext,
+                          washingtonCountyContextRequested,
+                        )
+                        ? mod.id === 'salesforge'
+                          ? washingtonCountyContext?.salesReviewUnavailableMessage
+                            ?? 'Valid Washington county scope is required.'
+                          : isJune10RuntimeForgeModule(mod)
+                            ? 'Authenticated county data is required for this workflow.'
+                            : 'This workflow is unavailable in the selected public county context.'
+                        : undefined
+                      : !isJune10RuntimeForgeModule(mod)
+                        ? JUNE_10_FORGE_NOTICE
+                        : undefined
+                  }
                 >
                   <div className="forge-card__rail">
                     <span className="forge-chip forge-chip--neutral">{mod.chipLabel}</span>
-                    <span className={`forge-chip ${mod.status === 'active' ? 'forge-chip--success' : 'forge-chip--warn'}`}>
-                      {mod.status.replace(/-/g, ' ')}
+                    <span className={`forge-chip ${isForgeModuleAvailableInContext(mod, washingtonCountyContext, washingtonCountyContextRequested) ? 'forge-chip--success' : 'forge-chip--warn'}`}>
+                      {washingtonCountyContextRequested
+                        && isJune10RuntimeForgeModule(mod)
+                        && !isForgeModuleAvailableInContext(
+                          mod,
+                          washingtonCountyContext,
+                          washingtonCountyContextRequested,
+                        )
+                        ? 'unavailable in county context'
+                        : mod.status.replace(/-/g, ' ')}
                     </span>
-                    <span className="forge-card__foot">{getLaunchLabel(mod)}</span>
+                    <span className="forge-card__foot">
+                      {getContextualLaunchLabel(
+                        mod,
+                        washingtonCountyContext,
+                        washingtonCountyContextRequested,
+                      )}
+                    </span>
                   </div>
                   <div className="forge-card__title">{mod.label}</div>
                   <p className="forge-card__description">{mod.description}</p>
@@ -907,15 +1101,47 @@ export default function ForgeSuiteHome() {
                   type="button"
                   className="forge-card forge-card--secondary"
                   onClick={() => handleModuleLaunch(mod)}
-                  disabled={!isJune10RuntimeForgeModule(mod) || mod.truthState === 'queued'}
-                  title={!isJune10RuntimeForgeModule(mod) ? JUNE_10_FORGE_NOTICE : undefined}
+                  disabled={!isForgeModuleAvailableInContext(
+                    mod,
+                    washingtonCountyContext,
+                    washingtonCountyContextRequested,
+                  )}
+                  title={
+                    washingtonCountyContextRequested
+                      ? !isForgeModuleAvailableInContext(
+                          mod,
+                          washingtonCountyContext,
+                          washingtonCountyContextRequested,
+                        )
+                        ? isJune10RuntimeForgeModule(mod)
+                          ? 'Authenticated county data is required for this workflow.'
+                          : 'This workflow is unavailable in the selected public county context.'
+                        : undefined
+                      : !isJune10RuntimeForgeModule(mod)
+                        ? JUNE_10_FORGE_NOTICE
+                        : undefined
+                  }
                 >
                   <div className="forge-card__rail">
                     <span className="forge-chip forge-chip--neutral">{mod.chipLabel}</span>
-                    <span className={`forge-chip ${mod.status === 'active' ? 'forge-chip--success' : 'forge-chip--warn'}`}>
-                      {mod.status.replace(/-/g, ' ')}
+                    <span className={`forge-chip ${isForgeModuleAvailableInContext(mod, washingtonCountyContext, washingtonCountyContextRequested) ? 'forge-chip--success' : 'forge-chip--warn'}`}>
+                      {washingtonCountyContextRequested
+                        && isJune10RuntimeForgeModule(mod)
+                        && !isForgeModuleAvailableInContext(
+                          mod,
+                          washingtonCountyContext,
+                          washingtonCountyContextRequested,
+                        )
+                        ? 'unavailable in county context'
+                        : mod.status.replace(/-/g, ' ')}
                     </span>
-                    <span className="forge-card__foot">{getLaunchLabel(mod)}</span>
+                    <span className="forge-card__foot">
+                      {getContextualLaunchLabel(
+                        mod,
+                        washingtonCountyContext,
+                        washingtonCountyContextRequested,
+                      )}
+                    </span>
                   </div>
                   <div className="forge-card__title">{mod.label}</div>
                   <p className="forge-card__description">{mod.description}</p>
@@ -924,7 +1150,7 @@ export default function ForgeSuiteHome() {
             </div>
           </section>
 
-          {JUNE_10_RUNTIME_PANELS_ENABLED && (
+          {JUNE_10_RUNTIME_PANELS_ENABLED && !countyContextOnly && (
             <>
               {/* Slice 1.4 — county-wide sale qualification queue */}
               <SaleQualificationQueue />

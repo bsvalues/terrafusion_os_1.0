@@ -31,6 +31,7 @@ import { useSalesForgeStore } from './salesForgeStore';
 import { RunningStatsPanel } from './components/RunningStatsPanel';
 import { SALESFORGE_TAX_YEAR, type SalesForgeTab } from './salesForgeTypes';
 import { isWashingtonLaunchDataEnabled, WASHINGTON_COUNTIES } from './washingtonLaunchApi';
+import { parseWashingtonCountiesHubHandoff } from './washingtonSalesReviewCapability';
 import { parseRollupHandoff } from '../shared/rollupHandoff';
 import './SalesForge.css';
 
@@ -110,26 +111,6 @@ function parseDeeplinkQuery(raw: unknown): {
   }
 }
 
-function isWashingtonCountiesHubHandoff(
-  metadata: Record<string, unknown> | undefined,
-): boolean {
-  if (!metadata) return false;
-  if (
-    metadata.launchContext !== 'washington-counties-hub'
-    || metadata.dataTrustTier !== 'public-reference-not-county-certified'
-    || typeof metadata.countyCode !== 'string'
-    || typeof metadata.countyName !== 'string'
-  ) {
-    return false;
-  }
-
-  const countyCode = metadata.countyCode;
-  const countyName = metadata.countyName.replace(/\s+county$/i, '').trim().toLowerCase();
-  return WASHINGTON_COUNTIES.some(
-    (county) => county.code === countyCode && county.name.toLowerCase() === countyName,
-  );
-}
-
 export default function SalesForge({ metadata }: SalesForgeProps = {}) {
   const setDataSource     = useSalesForgeStore((s) => s.setDataSource);
   const activeTab         = useSalesForgeStore((s) => s.activeTab);
@@ -142,26 +123,37 @@ export default function SalesForge({ metadata }: SalesForgeProps = {}) {
   const contextSegmentId    = useSalesForgeStore((s) => s.contextSegmentId);
   const contextSegmentLabel = useSalesForgeStore((s) => s.contextSegmentLabel);
   const committedFilters = useSalesForgeStore((s) => s.committedFilters);
-  const countiesHubReferenceHandoff = isWashingtonCountiesHubHandoff(metadata);
-  const referencePackageSource = metadata?.referencePackageSource;
-  const repositoryReferenceHandoff = countiesHubReferenceHandoff && (
-    referencePackageSource === 'repository-reference'
-    || (
-      referencePackageSource === undefined
-      && metadata?.referenceDataPosture === 'repository_reference_demo'
-    )
-  );
-  const hostedReferenceHandoff = countiesHubReferenceHandoff
+  const countiesHubHandoffRequested = metadata?.launchContext
+    === 'washington-counties-hub';
+  const countiesHubHandoff = parseWashingtonCountiesHubHandoff(metadata);
+  const invalidCountiesHubHandoff = countiesHubHandoffRequested
+    && countiesHubHandoff === null;
+  const referencePackageSource = countiesHubHandoff?.referencePackageSource;
+  const repositoryReferenceHandoff = referencePackageSource === 'repository-reference';
+  const hostedReferenceHandoff = countiesHubHandoff !== null
     && referencePackageSource === 'hosted';
-  const syntheticReferenceData = countiesHubReferenceHandoff
-    && metadata?.referenceDataPosture === 'repository_reference_demo';
+  const syntheticReferenceData = countiesHubHandoff?.referenceDataPosture
+    === 'repository_reference_demo';
+  const salesReviewUnavailable = invalidCountiesHubHandoff
+    || countiesHubHandoff?.salesReviewAvailability === 'unavailable';
   const hostedLaunchDataMode = isWashingtonLaunchDataEnabled() || hostedReferenceHandoff;
   const launchDataMode = hostedLaunchDataMode || repositoryReferenceHandoff;
-  const handoff = parseRollupHandoff(metadata);
+  const handoff = parseRollupHandoff(invalidCountiesHubHandoff ? undefined : metadata);
   const selectedCounty = WASHINGTON_COUNTIES.find((county) => county.code === committedFilters.countyCode);
-  const availableTabs = launchDataMode
+  const countyScopeLabel = countiesHubHandoffRequested
+    ? countiesHubHandoff
+      ? `${countiesHubHandoff.countyName} County`
+      : 'County scope required'
+    : selectedCounty?.name
+      ? `${selectedCounty.name} County`
+      : handoff.countyName
+        ? `${handoff.countyName} County`
+        : 'County scope required';
+  const availableTabs = launchDataMode && !salesReviewUnavailable
     ? TABS.filter((tab) => WASHINGTON_LAUNCH_TABS.has(tab.id))
-    : TABS;
+    : salesReviewUnavailable
+      ? []
+      : TABS;
   // Never mount a live-only panel while the header claims public-package mode.
   const renderedActiveTab = launchDataMode && !WASHINGTON_LAUNCH_TABS.has(activeTab)
     ? 'queue'
@@ -186,6 +178,13 @@ export default function SalesForge({ metadata }: SalesForgeProps = {}) {
   // ── Consume County Studio handoff metadata before child fetch effects ───
   useLayoutEffect(() => {
     if (!metadata) return;
+    if (invalidCountiesHubHandoff) {
+      applyCountyStudioScope('', null);
+      setSelectedStratum(null);
+      setContextSegment(null);
+      setActiveTab('queue');
+      return;
+    }
     const parsed = parseDeeplinkQuery(metadata.deeplinkQuery);
     const stratum = handoff.stratumKey ?? parsed.stratum ?? null;
     const year = handoff.taxYear ?? parsed.year ?? null;
@@ -231,6 +230,7 @@ export default function SalesForge({ metadata }: SalesForgeProps = {}) {
     handoff.segmentLabel,
     handoff.stratumKey,
     handoff.taxYear,
+    invalidCountiesHubHandoff,
     metadata,
     setActiveTab,
     setContextSegment,
@@ -292,9 +292,13 @@ export default function SalesForge({ metadata }: SalesForgeProps = {}) {
               </span>
             )}
             <span className="forge-chip forge-chip--neutral">{taxYear} study year</span>
-            <span className="forge-chip forge-chip--neutral">{selectedCounty?.name ?? handoff.countyName ?? 'County scope required'} County</span>
-            <span className="forge-chip forge-chip--success">
-              {launchDataMode ? 'Washington launch data package' : 'Live TerraFusion API'}
+            <span className="forge-chip forge-chip--neutral">{countyScopeLabel}</span>
+            <span className={`forge-chip ${salesReviewUnavailable ? 'forge-chip--warn' : 'forge-chip--success'}`}>
+              {salesReviewUnavailable
+                ? 'County context · sales data unavailable'
+                : launchDataMode
+                  ? 'Washington launch data package'
+                  : 'Live TerraFusion API'}
             </span>
           </div>
         </div>
@@ -311,7 +315,7 @@ export default function SalesForge({ metadata }: SalesForgeProps = {}) {
             {handoff.revalArea !== null ? ` in reval ${handoff.revalArea}` : ''}. SalesForge is pinned to that county and neighborhood because counties track reval area and neighborhood before parcel-level action.
           </p>
         )}
-        {launchDataMode && (
+        {launchDataMode && !salesReviewUnavailable && (
           <p className="sf-header__source-note">
             Public/reference package only — not county-certified valuation truth.
             {syntheticReferenceData
@@ -321,40 +325,57 @@ export default function SalesForge({ metadata }: SalesForgeProps = {}) {
             county system. Live AI Audit, Ratio Audit, and DOR Export are unavailable in this mode.
           </p>
         )}
+        {salesReviewUnavailable && (
+          <p className="sf-header__source-note" role="status">
+            {invalidCountiesHubHandoff
+              ? 'The Counties Hub county handoff is invalid, so no county workflow can run.'
+              : countiesHubHandoff?.salesReviewUnavailableMessage
+                ?? 'No governed public sales workflow is available for this county.'}{' '}
+            County context remains active, and SalesForge does not borrow another county&apos;s data.
+          </p>
+        )}
       </header>
 
       {/* Tab bar */}
-      <nav className="sf-tabbar" aria-label="SalesForge sections">
-        {availableTabs.map((tab) => (
-          <button
-            key={tab.id}
-            type="button"
-            role="tab"
-            aria-selected={renderedActiveTab === tab.id}
-            className={`sf-tab ${renderedActiveTab === tab.id ? 'sf-tab--active' : ''}`}
-            onClick={() => setActiveTab(tab.id)}
-            title={tab.title}
-          >
-            {tab.label}
-          </button>
-        ))}
-      </nav>
+      {!salesReviewUnavailable && (
+        <nav className="sf-tabbar" aria-label="SalesForge sections">
+          {availableTabs.map((tab) => (
+            <button
+              key={tab.id}
+              type="button"
+              role="tab"
+              aria-selected={renderedActiveTab === tab.id}
+              className={`sf-tab ${renderedActiveTab === tab.id ? 'sf-tab--active' : ''}`}
+              onClick={() => setActiveTab(tab.id)}
+              title={tab.title}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </nav>
+      )}
 
       {/* Main layout: content + stats rail */}
-      <div className="sf-layout">
-        {/* Left: panel content */}
-        <Suspense fallback={<TabSpinner />}>
-          {renderedActiveTab === 'ai-audit'      && <AuditCommandCenter taxYear={taxYear} />}
-          {renderedActiveTab === 'queue'         && <QualificationQueuePanel />}
-          {renderedActiveTab === 'ratio-audit'   && <RatioAuditPanel />}
-          {renderedActiveTab === 'neighborhoods' && <NeighborhoodViewPanel />}
-          {renderedActiveTab === 'code-audit'    && <CodeAuditPanel />}
-          {renderedActiveTab === 'dor-export'    && <DorExportPanel />}
-        </Suspense>
+      {salesReviewUnavailable ? (
+        <div className="sf-state" data-testid="salesforge-data-unavailable" role="status">
+          No sales-review records or data-dependent tools are available in this county context.
+        </div>
+      ) : (
+        <div className="sf-layout">
+          {/* Left: panel content */}
+          <Suspense fallback={<TabSpinner />}>
+            {renderedActiveTab === 'ai-audit'      && <AuditCommandCenter taxYear={taxYear} />}
+            {renderedActiveTab === 'queue'         && <QualificationQueuePanel />}
+            {renderedActiveTab === 'ratio-audit'   && <RatioAuditPanel />}
+            {renderedActiveTab === 'neighborhoods' && <NeighborhoodViewPanel />}
+            {renderedActiveTab === 'code-audit'    && <CodeAuditPanel />}
+            {renderedActiveTab === 'dor-export'    && <DorExportPanel />}
+          </Suspense>
 
-        {/* Right: live IAAO stats rail */}
-        <RunningStatsPanel />
-      </div>
+          {/* Right: live IAAO stats rail */}
+          <RunningStatsPanel />
+        </div>
+      )}
     </div>
   );
 }

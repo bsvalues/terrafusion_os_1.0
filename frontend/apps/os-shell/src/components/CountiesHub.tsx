@@ -30,6 +30,7 @@ import activateModule from '../orchestration/moduleActivation';
 import {
   getWashingtonSalesReviewCapability,
   isWashingtonSalesReviewLaunchEnabled,
+  type WashingtonCountiesHubHandoff,
 } from '../pages/forge/sales/washingtonSalesReviewCapability';
 import {
   isWashingtonLaunchDataEnabled,
@@ -172,6 +173,30 @@ const CountiesHub = () => {
     () => selectedStatus ? getWashingtonSalesReviewCapability(selectedStatus) : null,
     [selectedStatus],
   );
+  const selectedSalesReviewAvailable = Boolean(
+    selectedStatus
+    && selectedCapability?.eligible
+    && launchDataEnabled,
+  );
+  const selectedSalesReviewUnavailableMessage = useMemo(() => {
+    if (selectedIdentityMismatch) {
+      return 'The observed public-data status has a county registry mismatch, so no '
+        + 'TerraForge sales workflow can use it.';
+    }
+    if (!selectedStatus) {
+      return `No governed public sales state is available for ${selectedCounty?.county ?? 'this'} County.`;
+    }
+    if (!launchDataEnabled) {
+      return 'The Washington public sales package is not enabled in this environment.';
+    }
+    return selectedCapability?.unavailableMessage;
+  }, [
+    launchDataEnabled,
+    selectedCapability,
+    selectedCounty,
+    selectedIdentityMismatch,
+    selectedStatus,
+  ]);
 
   const filteredCounties = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase();
@@ -190,29 +215,31 @@ const CountiesHub = () => {
   );
 
   const launchSelectedCounty = useCallback(async () => {
-    if (
-      !selectedCounty
-      || !selectedStatus
-      || !selectedCapability?.eligible
-      || !launchDataEnabled
-    ) {
-      return;
-    }
+    if (!selectedCounty) return;
 
     setLaunching(true);
     setLaunchError(null);
     try {
-      await activateModule('sales-forge', {
+      const metadata = {
+        countyCode: selectedCounty.countyCode,
+        countyName: selectedCounty.county,
+        resetValuationScope: true,
+        launchContext: 'washington-counties-hub',
+        dataTrustTier: 'public-reference-not-county-certified',
+        referencePackageSource: countyStatusSource,
+        referenceDataPosture: selectedStatus?.primarySourceMode ?? 'unavailable',
+        referenceRecordCount: selectedStatus?.stagedSales ?? null,
+        latestReferenceSaleDate: selectedStatus?.latestSaleDate ?? null,
+        salesReviewAvailability: selectedSalesReviewAvailable ? 'available' : 'unavailable',
+        salesReviewUnavailableMessage: selectedSalesReviewAvailable
+          ? null
+          : selectedSalesReviewUnavailableMessage
+            ?? 'No governed public sales workflow is available for this county.',
+      } satisfies WashingtonCountiesHubHandoff;
+
+      await activateModule('suite-forge', {
         source: 'system',
-        metadata: {
-          countyCode: selectedCounty.countyCode,
-          countyName: selectedCounty.county,
-          resetValuationScope: true,
-          launchContext: 'washington-counties-hub',
-          dataTrustTier: 'public-reference-not-county-certified',
-          referencePackageSource: countyStatusSource,
-          referenceDataPosture: selectedStatus.primarySourceMode,
-        },
+        metadata,
       });
     } catch (error) {
       setLaunchError(
@@ -223,9 +250,9 @@ const CountiesHub = () => {
     }
   }, [
     countyStatusSource,
-    launchDataEnabled,
-    selectedCapability,
     selectedCounty,
+    selectedSalesReviewAvailable,
+    selectedSalesReviewUnavailableMessage,
     selectedStatus,
   ]);
 
@@ -240,8 +267,9 @@ const CountiesHub = () => {
             Washington Counties Hub
           </Typography>
           <Typography variant='body1' color='text.secondary' sx={{ maxWidth: 900 }}>
-            Inspect the governed public/reference data posture for a Washington county, then open
-            the supported TerraForge sales-review workflow in that explicit navigation context.
+            Inspect the governed public/reference data posture for a Washington county, then enter
+            TerraForge in that explicit navigation context. Each data-dependent workflow reports
+            its own availability.
           </Typography>
         </Box>
 
@@ -308,8 +336,9 @@ const CountiesHub = () => {
 
             {repositoryReferenceDemo && (
               <Alert severity='warning'>
-                Repository reference mode uses invented synthetic sales to exercise the assessor
-                workflow. These are not observed public sales and are not county records.
+                Repository reference mode contains invented synthetic sales for interface testing.
+                They cannot enable an assessor workflow, are not observed public sales, and are not
+                county records.
               </Alert>
             )}
 
@@ -368,15 +397,10 @@ const CountiesHub = () => {
                       <Button
                         variant='contained'
                         startIcon={<LaunchIcon />}
-                        disabled={
-                          launching
-                          || !launchDataEnabled
-                          || !selectedStatus
-                          || !selectedCapability?.eligible
-                        }
+                        disabled={launching}
                         onClick={() => void launchSelectedCounty()}
                       >
-                        {launching ? 'Opening TerraForge…' : 'Open TerraForge sales review'}
+                        {launching ? 'Opening TerraForge…' : 'Open TerraForge'}
                       </Button>
                     </Stack>
 
@@ -415,8 +439,9 @@ const CountiesHub = () => {
 
                     {!launchDataEnabled && (
                       <Alert severity='warning'>
-                        The Washington public launch package is not enabled in this environment, so
-                        TerraForge cannot safely use this navigation context here.
+                        The Washington public sales package is not enabled in this environment.
+                        TerraForge still opens in this county context and marks that workflow
+                        unavailable.
                       </Alert>
                     )}
                     {selectedIdentityMismatch && (
@@ -430,8 +455,8 @@ const CountiesHub = () => {
                     {!selectedStatus && !selectedIdentityMismatch && (
                       <Alert severity='warning'>
                         No governed public sales state is available for {selectedCounty.county}{' '}
-                        County. The county remains selectable, but TerraForge sales review is
-                        unavailable instead of borrowing another county&apos;s data.
+                        County. TerraForge still opens in this county context, while sales review
+                        remains unavailable instead of borrowing another county&apos;s data.
                       </Alert>
                     )}
                     {!selectedIdentityMismatch

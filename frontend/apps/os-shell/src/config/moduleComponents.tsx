@@ -1137,11 +1137,17 @@ export const ModuleRenderer: React.FC<ModuleRendererProps> = ({ module, metadata
           </Suspense>
         );
       }
+      if (module.id === 'suite-forge') {
+        return (
+          <Suspense fallback={<ModuleLoadingFallback />}>
+            <ForgeSuiteHome metadata={metadata as Record<string, unknown> | undefined} />
+          </Suspense>
+        );
+      }
       const SuiteComponent = {
-        'suite-forge': ForgeSuiteHome,
         'suite-atlas': AtlasSuiteHome,
         'suite-gpt': GptSuiteHome,
-      }[module.id as 'suite-forge' | 'suite-atlas' | 'suite-gpt']!;
+      }[module.id as 'suite-atlas' | 'suite-gpt']!;
       return (
         <Suspense fallback={<ModuleLoadingFallback />}>
           <SuiteComponent />
