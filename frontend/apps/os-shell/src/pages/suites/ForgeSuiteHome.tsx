@@ -12,6 +12,11 @@ import { invokeTool } from '../../api/pilotApi';
 import { getSession } from '../../auth/session';
 import { useCountyStats } from '../../hooks/useCountyStats';
 import { apiFetch } from '../../lib/apiBase';
+import {
+  getWashingtonPublicSourceInventory,
+  WASHINGTON_PUBLIC_SOURCE_INVENTORY_LIMITATION,
+  type WashingtonPublicSourceInventoryStatus,
+} from '../../lib/washingtonPublicSourceInventory';
 import { activateModule } from '../../orchestration/moduleActivation';
 import { buildCountyScopedSessionHeaders } from '../../services/countyIsolation';
 import {
@@ -414,6 +419,10 @@ function formatCountyContextPosture(value: string): string {
   return value === 'unavailable' ? 'Unavailable' : value.replaceAll('_', ' ');
 }
 
+function formatPublicSourceStatus(status: WashingtonPublicSourceInventoryStatus): string {
+  return status === 'adapter-ready' ? 'Acquisition path ready' : 'Source path researched';
+}
+
 function isPublicSalesWorkflow(mod: ForgeModuleDef): boolean {
   return mod.id === 'salesforge' || mod.id === 'compsforge';
 }
@@ -456,6 +465,12 @@ export default function ForgeSuiteHome({ metadata }: ForgeSuiteHomeProps = {}) {
   const washingtonCountyContext = useMemo(
     () => parseWashingtonCountiesHubHandoff(metadata),
     [metadata],
+  );
+  const washingtonPublicSource = useMemo(
+    () => washingtonCountyContext
+      ? getWashingtonPublicSourceInventory(washingtonCountyContext.countyName)
+      : null,
+    [washingtonCountyContext],
   );
   const countyContextOnly = washingtonCountyContextRequested;
   const { stats, loading, error, source } = useCountyStats({ enabled: !countyContextOnly });
@@ -810,6 +825,49 @@ export default function ForgeSuiteHome({ metadata }: ForgeSuiteHomeProps = {}) {
                 <div className="forge-workspace__notice forge-workspace__notice--warn" role="status">
                   {washingtonCountyContext.salesReviewUnavailableMessage
                     ?? 'No governed public sales workflow is available for this county.'}
+                </div>
+              )}
+              {washingtonPublicSource ? (
+                <div
+                  className="forge-ops-card forge-ops-card--wide"
+                  data-testid="forge-public-source-workflow"
+                >
+                  <div className="forge-ops-card__head">
+                    <div>
+                      <div className="forge-ops-card__title">County public-source research</div>
+                      <div className="forge-ops-card__sub">
+                        Use {washingtonCountyContext.countyName} County&apos;s tracked official entry
+                        point. Research path: {washingtonPublicSource.acquisitionFamily}.
+                      </div>
+                    </div>
+                    <div className="forge-ops-actions">
+                      <a
+                        className="forge-ops-btn forge-ops-btn--ghost"
+                        href={washingtonPublicSource.officialAssessorBaseUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label={`Open ${washingtonCountyContext.countyName} County public-data entry point in a new tab`}
+                      >
+                        Open county source
+                      </a>
+                    </div>
+                  </div>
+                  <div className="forge-ops-tags">
+                    <span className="forge-chip forge-chip--success">Read-only external source</span>
+                    <span className="forge-chip forge-chip--neutral">
+                      {formatPublicSourceStatus(washingtonPublicSource.status)}
+                    </span>
+                  </div>
+                  <p className="forge-ops-note">
+                    The link may open the county&apos;s main site; use the listed acquisition path to
+                    locate its public assessor data. This action does not activate a TerraFusion
+                    sales shard, grant county authority, or write to the county system.{' '}
+                    {WASHINGTON_PUBLIC_SOURCE_INVENTORY_LIMITATION}
+                  </p>
+                </div>
+              ) : (
+                <div className="forge-workspace__notice forge-workspace__notice--warn" role="status">
+                  No tracked official public-source inventory is available for this county.
                 </div>
               )}
               </section>
