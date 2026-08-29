@@ -198,7 +198,7 @@ export function itemMatchesQuery(item: LauncherItem, query: string): boolean {
 
 /**
  * Build sections for launcher display (empty query view).
- * Order: Pinned → Recent → Suites → System
+ * Order: Pinned → Recent → Suites → Operational Apps → System
  */
 export function buildSectionsForEmptyQuery(
   items: LauncherItem[],
@@ -215,14 +215,19 @@ export function buildSectionsForEmptyQuery(
   );
 
   const suiteItems = remainingItems.filter(
-    (item) => item.intent === 'workbench' || item.intent === 'standalone'
+    (item) =>
+      !item.moduleId && (item.intent === 'workbench' || item.intent === 'standalone')
   );
-  const systemItems = remainingItems.filter((item) => item.intent === 'system');
+  const operationalItems = remainingItems.filter((item) => Boolean(item.moduleId));
+  const systemItems = remainingItems.filter(
+    (item) => !item.moduleId && item.intent === 'system'
+  );
 
   const sections = [
     { id: 'pinned', label: 'Pinned', items: pinnedItems },
     { id: 'recent', label: 'Recent', items: recentItems },
     { id: 'suites', label: 'Suites', items: suiteItems },
+    { id: 'operations', label: 'Operational Apps', items: operationalItems },
     { id: 'system', label: 'System', items: systemItems },
   ];
 

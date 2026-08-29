@@ -46,8 +46,12 @@ describe('Counties HUB launcher entry', () => {
     );
     expect(item.a11yLabel).toMatch(/Washington assessor county workspace/i);
 
-    const suitesSection = getLauncherSections().find((section) => section.id === 'suites');
-    expect(suitesSection?.items).toContainEqual(item);
+    const sections = getLauncherSections();
+    const operationsSection = sections.find((section) => section.id === 'operations');
+    const suitesSection = sections.find((section) => section.id === 'suites');
+    expect(operationsSection).toMatchObject({ label: 'Operational Apps' });
+    expect(operationsSection?.items).toContainEqual(item);
+    expect(suitesSection?.items).not.toContainEqual(item);
     expect(filterLauncherItems(getLauncherItems(), 'assessor')).toContainEqual(item);
   });
 

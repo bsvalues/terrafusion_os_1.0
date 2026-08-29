@@ -214,14 +214,20 @@ export function getLauncherSections(): LauncherSection[] {
       label: 'Suites',
       items: allItems.filter(
         (item) =>
-          item.intent === 'workbench' ||
-          (item.intent === 'standalone' && !['settings', 'docs'].includes(item.id))
+          !item.moduleId &&
+          (item.intent === 'workbench' ||
+            (item.intent === 'standalone' && !['settings', 'docs'].includes(item.id)))
       ),
+    },
+    {
+      id: 'operations',
+      label: 'Operational Apps',
+      items: allItems.filter((item) => Boolean(item.moduleId)),
     },
     {
       id: 'system',
       label: 'System',
-      items: allItems.filter((item) => item.intent === 'system'),
+      items: allItems.filter((item) => !item.moduleId && item.intent === 'system'),
     },
   ];
 
