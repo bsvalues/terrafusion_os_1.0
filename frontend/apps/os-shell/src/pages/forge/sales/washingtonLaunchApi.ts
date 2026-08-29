@@ -155,12 +155,24 @@ function envFlag(value: unknown): boolean {
   return String(value ?? '').toLowerCase() === 'true';
 }
 
+const HOSTED_WASHINGTON_LAUNCH_HOSTNAMES = new Set([
+  // Canonical OS deployment environments.
+  'terrafusionmarket.com',
+  'staging.terrafusionmarket.com',
+  // Dedicated launch-data surfaces retained for existing deployments.
+  'preview.terrafusionmarket.com',
+  'sales.terrafusionmarket.com',
+  'suite.terrafusionmarket.com',
+]);
+
+export function isHostedWashingtonLaunchHostname(hostname: string): boolean {
+  const normalizedHostname = hostname.trim().toLowerCase().replace(/\.$/, '');
+  return HOSTED_WASHINGTON_LAUNCH_HOSTNAMES.has(normalizedHostname);
+}
+
 function isHostedWashingtonLaunchSurface(): boolean {
   if (typeof window === 'undefined') return false;
-  const host = window.location.hostname.toLowerCase();
-  return host === 'preview.terrafusionmarket.com'
-    || host === 'sales.terrafusionmarket.com'
-    || host === 'suite.terrafusionmarket.com';
+  return isHostedWashingtonLaunchHostname(window.location.hostname);
 }
 
 export function isWashingtonLaunchDataEnabled(): boolean {

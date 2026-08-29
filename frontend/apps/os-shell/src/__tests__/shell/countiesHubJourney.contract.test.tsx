@@ -162,6 +162,15 @@ describe('Washington Counties Hub assessor journey', () => {
     expect(within(selectedContext).getAllByText('Unavailable')).toHaveLength(4);
     expect(screen.getByText(/No governed public sales state is available for Adams/i))
       .toHaveTextContent(/TerraForge still opens.*unavailable instead of borrowing/i);
+    expect(selectedContext).toHaveTextContent(/Parcel transfer history/i);
+    expect(selectedContext).toHaveTextContent(/Source path researched/i);
+    const officialSourceLink = within(selectedContext).getByRole('link', {
+      name: /Open official Adams County public assessor source in a new tab/i,
+    });
+    expect(officialSourceLink).toHaveAttribute('href', 'https://co.adams.wa.us');
+    expect(officialSourceLink).toHaveAttribute('target', '_blank');
+    expect(officialSourceLink).toHaveAttribute('rel', 'noopener noreferrer');
+    expect(selectedContext).toHaveTextContent(/does not prove statewide ingestion/i);
     const openTerraForge = screen.getByRole('button', { name: 'Open TerraForge' });
     expect(openTerraForge).toBeEnabled();
     fireEvent.click(openTerraForge);

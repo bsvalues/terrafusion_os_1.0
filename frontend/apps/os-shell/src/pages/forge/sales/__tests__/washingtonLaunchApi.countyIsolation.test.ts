@@ -8,6 +8,7 @@ import {
   fetchWashingtonLaunchQueue,
   fetchWashingtonLaunchRunningStats,
   fetchWashingtonLaunchSaleDetail,
+  isHostedWashingtonLaunchHostname,
   patchWashingtonLaunchDecision,
 } from '../washingtonLaunchApi';
 
@@ -91,6 +92,29 @@ function countyShard(county: string, countyCode: string, saleIds: string[]) {
     records: saleIds.map((saleId) => saleRecord(county, countyCode, saleId)),
   };
 }
+
+describe('Washington hosted launch hostname routing', () => {
+  it.each([
+    'terrafusionmarket.com',
+    'staging.terrafusionmarket.com',
+    'preview.terrafusionmarket.com',
+    'sales.terrafusionmarket.com',
+    'suite.terrafusionmarket.com',
+    'TERRAFUSIONMARKET.COM.',
+  ])('uses the hosted public-data package on %s', (hostname) => {
+    expect(isHostedWashingtonLaunchHostname(hostname)).toBe(true);
+  });
+
+  it.each([
+    'localhost',
+    '127.0.0.1',
+    'terrafusionmarket.com.example.test',
+    'staging-terrafusionmarket.com',
+    '',
+  ])('does not trust an unlisted or lookalike hostname %s', (hostname) => {
+    expect(isHostedWashingtonLaunchHostname(hostname)).toBe(false);
+  });
+});
 
 describe('Washington launch shard county isolation', () => {
   afterEach(() => {
