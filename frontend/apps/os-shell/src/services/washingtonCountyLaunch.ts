@@ -10,7 +10,10 @@ import {
   type WashingtonReferencePackageSource,
   WASHINGTON_REFERENCE_ROUTES,
 } from '@/lib/washingtonAssessorReferencePackage';
-import { verifyWashingtonSalesReviewHostedShard } from '@/pages/forge/sales/washingtonSalesReviewCapability';
+import {
+  verifyWashingtonSalesReviewHostedShard,
+  type WashingtonSalesReviewShardVerificationState,
+} from '@/pages/forge/sales/washingtonSalesReviewCapability';
 
 export const WASHINGTON_COUNTY_STATUS_PATH = WASHINGTON_REFERENCE_ROUTES.status;
 const WASHINGTON_COUNTY_DETAIL_PATH_PREFIX = '/launch-data/washington/counties';
@@ -26,6 +29,7 @@ export interface WashingtonCountyStatusEntry {
   candidateSales: number;
   stagedSales: number;
   needsReview: number;
+  salesShardVerification: WashingtonSalesReviewShardVerificationState;
   confidence: {
     averageQualityScore: number;
     parserStatus: string;
@@ -37,6 +41,11 @@ export interface WashingtonCountyStatusEntry {
     salesShard: string;
   };
 }
+
+type WashingtonCountyStatusPayloadEntry = Omit<
+  WashingtonCountyStatusEntry,
+  'salesShardVerification'
+>;
 
 export interface WashingtonCountyStatusResolution {
   counties: WashingtonCountyStatusEntry[];
@@ -64,9 +73,9 @@ function isCanonicalCountyRoute(
   return route === `${prefix}/${countyCode}.json`;
 }
 
-function isWashingtonCountyStatusEntry(
+function isWashingtonCountyStatusPayloadEntry(
   value: unknown,
-): value is WashingtonCountyStatusEntry {
+): value is WashingtonCountyStatusPayloadEntry {
   if (!isRecord(value) || !isRecord(value.confidence) || !isRecord(value.staticRoutes)) {
     return false;
   }
@@ -115,7 +124,7 @@ export async function fetchWashingtonCountyStatus(
   if (
     !isRecord(payload)
     || !Array.isArray(payload.counties)
-    || !payload.counties.every(isWashingtonCountyStatusEntry)
+    || !payload.counties.every(isWashingtonCountyStatusPayloadEntry)
   ) {
     throw new Error('Washington county status returned an invalid county registry.');
   }
@@ -127,27 +136,31 @@ export async function fetchWashingtonCountyStatus(
 
   return payload.counties.map((county) => ({
     ...county,
+    salesShardVerification: packageSource === 'hosted' ? 'unverified' : 'not-required',
     confidence: { ...county.confidence },
     staticRoutes: { ...county.staticRoutes },
   }));
 }
 
-async function verifyHostedSalesShards(
-  counties: WashingtonCountyStatusEntry[],
+export async function verifyWashingtonCountySalesShard(
+  county: WashingtonCountyStatusEntry,
   signal?: AbortSignal,
-): Promise<WashingtonCountyStatusEntry[]> {
-  return Promise.all(counties.map(async (county) => {
-    const verification = await verifyWashingtonSalesReviewHostedShard(county, signal);
-    if (verification !== 'unavailable') return county;
-
+): Promise<WashingtonCountyStatusEntry> {
+  const verification = await verifyWashingtonSalesReviewHostedShard(county, signal);
+  if (verification.state === 'verified') {
     return {
       ...county,
-      staticRoutes: {
-        ...county.staticRoutes,
-        salesShard: '',
-      },
+      stagedSales: verification.stagedSales,
+      needsReview: verification.needsReview,
+      latestSaleDate: verification.latestSaleDate,
+      salesShardVerification: 'verified',
     };
-  }));
+  }
+
+  return {
+    ...county,
+    salesShardVerification: verification.state,
+  };
 }
 
 /**
@@ -156,9 +169,10 @@ async function verifyHostedSalesShards(
  * package, while a configured host outside that list may still serve it.
  *
  * The hosted payload remains fail-closed through fetchWashingtonCountyStatus's
- * schema validation. An otherwise eligible sales shard must also pass the
- * Forge-owned GET/body schema before its county can advertise a workflow; a
- * missing or corrupt shard degrades only that county. If the status payload is
+ * schema validation. Hosted shard bodies remain unverified until their county
+ * is selected, so opening Counties HUB never downloads the statewide package.
+ * The selected county then uses verifyWashingtonCountySalesShard to validate
+ * and cache its shard before advertising a workflow. If the status payload is
  * absent or invalid, the tracked repository reference keeps the 39-county
  * navigation journey available without granting any assessor workflow access
  * to its synthetic fixture records.
@@ -169,7 +183,7 @@ export async function resolveWashingtonCountyStatus(
   try {
     const hostedCounties = await fetchWashingtonCountyStatus(signal, 'hosted');
     return {
-      counties: await verifyHostedSalesShards(hostedCounties, signal),
+      counties: hostedCounties,
       packageSource: 'hosted',
       usedRepositoryFallback: false,
     };

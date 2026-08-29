@@ -8,9 +8,15 @@
 import type { WashingtonReferencePackageSource } from '@/lib/washingtonAssessorReferencePackage';
 import {
   isWashingtonLaunchDataEnabled,
-  validateWashingtonLaunchCountyShard,
+  validateAndCacheWashingtonLaunchCountyShard,
   WASHINGTON_COUNTIES,
 } from './washingtonLaunchApi';
+
+export type WashingtonSalesReviewShardVerificationState =
+  | 'not-required'
+  | 'unverified'
+  | 'verified'
+  | 'unavailable';
 
 export interface WashingtonSalesReviewCapabilityInput {
   county: string;
@@ -20,6 +26,7 @@ export interface WashingtonSalesReviewCapabilityInput {
   latestSaleDate: string | null;
   stagedSales: number;
   needsReview: number;
+  salesShardVerification?: WashingtonSalesReviewShardVerificationState;
   confidence: {
     rawStatus: string;
     rawDriftDetected: boolean;
@@ -35,6 +42,7 @@ export type WashingtonSalesReviewCapabilityStatus =
   | 'reference-demo-only'
   | 'source-posture-unavailable'
   | 'no-staged-sales'
+  | 'sales-shard-verification-required'
   | 'sales-shard-unavailable';
 
 export interface WashingtonSalesReviewCapability {
@@ -61,9 +69,14 @@ export interface WashingtonSalesReviewReferenceData {
 }
 
 export type WashingtonSalesReviewHostedShardVerification =
-  | 'not-required'
-  | 'verified'
-  | 'unavailable';
+  | { state: 'not-required' }
+  | {
+      state: 'verified';
+      stagedSales: number;
+      latestSaleDate: string | null;
+      needsReview: number;
+    }
+  | { state: 'unavailable' };
 
 export type WashingtonSalesReviewAvailability = 'available' | 'unavailable';
 
@@ -203,10 +216,18 @@ export function getWashingtonSalesReviewCapability(
   const normalizedPosture = normalizeReferenceDataPosture(input.primarySourceMode);
   const isSyntheticReference = isRepositoryReferenceDemoPosture(input.primarySourceMode);
   const isSourcePostureUnavailable = isUnavailableReferenceDataPosture(input.primarySourceMode);
+  const salesClaimsLackShardEvidence = input.stagedSales > 0 && (
+    input.salesShardVerification === 'unverified'
+    || input.salesShardVerification === 'unavailable'
+    || !input.staticRoutes.salesShard.trim()
+  );
   const referenceData: WashingtonSalesReviewReferenceData = {
     posture: normalizedPosture || 'unavailable',
     isSyntheticReference,
-    observed: registeredCounty && !isSyntheticReference && !isSourcePostureUnavailable
+    observed: registeredCounty
+      && !isSyntheticReference
+      && !isSourcePostureUnavailable
+      && !salesClaimsLackShardEvidence
       ? {
           recordCount: input.stagedSales,
           latestSaleDate: input.latestSaleDate,
@@ -266,7 +287,10 @@ export function getWashingtonSalesReviewCapability(
     };
   }
 
-  if (!input.staticRoutes.salesShard.trim()) {
+  if (
+    !input.staticRoutes.salesShard.trim()
+    || input.salesShardVerification === 'unavailable'
+  ) {
     return {
       eligible: false,
       status: 'sales-shard-unavailable',
@@ -274,6 +298,18 @@ export function getWashingtonSalesReviewCapability(
       unavailableMessage:
         'The governed TerraForge sales package is unavailable for this county. '
         + 'Sales review remains unavailable instead of falling back to another county.',
+      referenceData,
+    };
+  }
+
+  if (input.salesShardVerification === 'unverified') {
+    return {
+      eligible: false,
+      status: 'sales-shard-verification-required',
+      statusLabel: 'Verification required',
+      unavailableMessage:
+        'The linked public sales package must be validated for this county. '
+        + 'Select the county and Counties HUB will verify it without loading other counties.',
       referenceData,
     };
   }
@@ -297,21 +333,29 @@ export async function verifyWashingtonSalesReviewHostedShard(
   input: WashingtonSalesReviewCapabilityInput,
   signal?: AbortSignal,
 ): Promise<WashingtonSalesReviewHostedShardVerification> {
-  if (!getWashingtonSalesReviewCapability(input).eligible) return 'not-required';
+  const candidateCapability = getWashingtonSalesReviewCapability({
+    ...input,
+    salesShardVerification: 'verified',
+  });
+  if (!candidateCapability.eligible) return { state: 'not-required' };
 
   try {
     const response = await fetch(input.staticRoutes.salesShard, {
       cache: 'no-store',
       signal,
     });
-    if (!response.ok) return 'unavailable';
+    if (!response.ok) return { state: 'unavailable' };
 
     const payload = await response.json() as unknown;
-    validateWashingtonLaunchCountyShard(payload, input.countyCode);
-    return 'verified';
+    const summary = validateAndCacheWashingtonLaunchCountyShard(
+      payload,
+      input.countyCode,
+      'hosted',
+    );
+    return { state: 'verified', ...summary };
   } catch (error) {
     if (signal?.aborted) throw error;
-    return 'unavailable';
+    return { state: 'unavailable' };
   }
 }
 

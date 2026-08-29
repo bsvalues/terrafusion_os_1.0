@@ -350,16 +350,30 @@ function assertCountyShard(
   });
 }
 
+export interface WashingtonLaunchValidatedShardSummary {
+  stagedSales: number;
+  latestSaleDate: string | null;
+  needsReview: number;
+}
+
 /**
- * Apply the same county-isolated shard schema used by every SalesForge read.
- * Callers that only need to establish availability can discard the validated
- * body while retaining the exact runtime validation contract.
+ * Apply the same county-isolated schema used by every SalesForge read and
+ * retain the body in that loader's cache. The selected county can therefore
+ * enter SalesForge without downloading or parsing the validated shard twice.
  */
-export function validateWashingtonLaunchCountyShard(
+export function validateAndCacheWashingtonLaunchCountyShard(
   value: unknown,
   expectedCountyCode: string,
-): void {
-  assertCountyShard(value, normalizeCountyCode(expectedCountyCode));
+  packageSource: WashingtonReferencePackageSource = 'hosted',
+): WashingtonLaunchValidatedShardSummary {
+  const normalized = normalizeCountyCode(expectedCountyCode);
+  assertCountyShard(value, normalized);
+  shardCache.set(`${packageSource}:${normalized}`, Promise.resolve(value));
+  return {
+    stagedSales: value.summary.records,
+    latestSaleDate: value.summary.latestSaleDate,
+    needsReview: value.summary.reviewRecords,
+  };
 }
 
 async function loadCountyShard(

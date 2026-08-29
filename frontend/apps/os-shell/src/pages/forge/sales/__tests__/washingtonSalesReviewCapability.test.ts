@@ -78,6 +78,20 @@ describe('Forge-owned Washington sales-review capability', () => {
     });
   });
 
+  it('requires selected-county shard verification before exposing status claims', () => {
+    expect(getWashingtonSalesReviewCapability({
+      ...SPOKANE_CAPABILITY_INPUT,
+      salesShardVerification: 'unverified',
+    })).toMatchObject({
+      eligible: false,
+      status: 'sales-shard-verification-required',
+      statusLabel: 'Verification required',
+      referenceData: {
+        observed: null,
+      },
+    });
+  });
+
   it('does not mistake invented repository demo records for assessor-ready public data', () => {
     expect(getWashingtonSalesReviewCapability({
       ...SPOKANE_CAPABILITY_INPUT,

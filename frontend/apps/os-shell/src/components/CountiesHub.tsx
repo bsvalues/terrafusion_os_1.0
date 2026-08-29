@@ -45,6 +45,7 @@ import {
 } from '../pages/forge/sales/washingtonLaunchApi';
 import {
   resolveWashingtonCountyStatus,
+  verifyWashingtonCountySalesShard,
   type WashingtonCountyStatusEntry,
 } from '../services/washingtonCountyLaunch';
 
@@ -53,6 +54,7 @@ const EXPECTED_WASHINGTON_COUNTIES = 39;
 interface WashingtonCountyDirectoryEntry {
   county: string;
   countyCode: string;
+  status: WashingtonCountyStatusEntry | null;
   capability: WashingtonSalesReviewCapability | null;
   identityMismatch: WashingtonCountyStatusEntry | null;
   publicSource: WashingtonPublicSourceInventoryEntry | null;
@@ -178,6 +180,7 @@ const CountiesHub = () => {
       return {
         county: county.name,
         countyCode: county.code,
+        status,
         capability: status ? getWashingtonSalesReviewCapability(status) : null,
         identityMismatch,
         publicSource: getWashingtonPublicSourceInventory(county.name),
@@ -191,9 +194,44 @@ const CountiesHub = () => {
     () => countyDirectory.find((county) => county.countyCode === selectedCountyCode) ?? null,
     [countyDirectory, selectedCountyCode],
   );
+  const selectedStatus = selectedCounty?.status ?? null;
+
+  useEffect(() => {
+    if (
+      countyStatusSource !== 'hosted'
+      || !selectedStatus
+      || selectedStatus.salesShardVerification !== 'unverified'
+    ) {
+      return;
+    }
+
+    const controller = new AbortController();
+    void verifyWashingtonCountySalesShard(selectedStatus, controller.signal)
+      .then((verifiedStatus) => {
+        if (controller.signal.aborted) return;
+        setCounties((current) => current.map((status) => (
+          status === selectedStatus
+            ? verifiedStatus
+            : status
+        )));
+      })
+      .catch(() => {
+        if (controller.signal.aborted) return;
+        setCounties((current) => current.map((status) => (
+          status === selectedStatus
+            ? { ...status, salesShardVerification: 'unavailable' as const }
+            : status
+        )));
+      });
+
+    return () => controller.abort();
+  }, [countyStatusSource, selectedStatus]);
+
   const selectedCapability = selectedCounty?.capability ?? null;
   const selectedObservedReference = selectedCapability?.referenceData.observed ?? null;
   const selectedIdentityMismatch = selectedCounty?.identityMismatch ?? null;
+  const selectedShardVerificationPending =
+    selectedCapability?.status === 'sales-shard-verification-required';
   const observedCountyCount = useMemo(
     () => countyDirectory.filter(
       (county) => Boolean(county.capability?.referenceData.observed),
@@ -243,7 +281,7 @@ const CountiesHub = () => {
   );
 
   const launchSelectedCounty = useCallback(async () => {
-    if (!selectedCounty) return;
+    if (!selectedCounty || selectedShardVerificationPending) return;
 
     setLaunching(true);
     setLaunchError(null);
@@ -283,6 +321,7 @@ const CountiesHub = () => {
     selectedObservedReference,
     selectedSalesReviewAvailable,
     selectedSalesReviewUnavailableMessage,
+    selectedShardVerificationPending,
   ]);
 
   return (
@@ -345,9 +384,9 @@ const CountiesHub = () => {
           <>
             {observedCountyCount !== EXPECTED_WASHINGTON_COUNTIES && (
               <Alert severity='warning'>
-                The governed feed currently reports status for {observedCountyCount} of{' '}
-                {EXPECTED_WASHINGTON_COUNTIES} Washington counties. Missing counties remain
-                explicitly unavailable rather than being synthesized.
+                Counties HUB currently has verified observed status for {observedCountyCount} of{' '}
+                {EXPECTED_WASHINGTON_COUNTIES} Washington counties. Select a county to validate its
+                linked sales package; unverified or missing data remains explicitly unavailable.
               </Alert>
             )}
 
@@ -388,7 +427,10 @@ const CountiesHub = () => {
             >
               <Stack direction='row' spacing={1} flexWrap='wrap' useFlexGap>
                 <Chip label={`${countyDirectory.length} Washington counties`} color='primary' />
-                <Chip label={`${observedCountyCount} with governed status`} variant='outlined' />
+                <Chip
+                  label={`${observedCountyCount} with verified observed status`}
+                  variant='outlined'
+                />
                 <Chip label='Public/reference · not county-certified' variant='outlined' />
               </Stack>
               <TextField
@@ -435,10 +477,14 @@ const CountiesHub = () => {
                       <Button
                         variant='contained'
                         startIcon={<LaunchIcon />}
-                        disabled={launching}
+                        disabled={launching || selectedShardVerificationPending}
                         onClick={() => void launchSelectedCounty()}
                       >
-                        {launching ? 'Opening TerraForge…' : 'Open TerraForge'}
+                        {selectedShardVerificationPending
+                          ? 'Checking county data…'
+                          : launching
+                            ? 'Opening TerraForge…'
+                            : 'Open TerraForge'}
                       </Button>
                     </Stack>
 

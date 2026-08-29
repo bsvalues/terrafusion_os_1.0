@@ -7,8 +7,11 @@ import {
 import {
   fetchWashingtonCountyStatus,
   resolveWashingtonCountyStatus,
+  verifyWashingtonCountySalesShard,
+  type WashingtonCountyStatusEntry,
 } from '../../services/washingtonCountyLaunch';
 import { getWashingtonSalesReviewCapability } from '../../pages/forge/sales/washingtonSalesReviewCapability';
+import { fetchWashingtonLaunchQueue } from '../../pages/forge/sales/washingtonLaunchApi';
 
 interface ReferenceRoutes {
   detail: string;
@@ -79,12 +82,18 @@ function readBundledReferenceRoute<T>(route: string): T {
   return payload as T;
 }
 
-function hostedEligibleStatus() {
+function hostedEligibleStatus(
+  overrides: Partial<Pick<
+    WashingtonCountyStatusEntry,
+    'stagedSales' | 'needsReview' | 'latestSaleDate'
+  >> = {},
+) {
   return {
     ...WASHINGTON_ASSESSOR_REFERENCE_PACKAGE.status,
     counties: WASHINGTON_ASSESSOR_REFERENCE_PACKAGE.status.counties.map((county) => ({
       ...county,
       primarySourceMode: 'public_recorder_export',
+      ...overrides,
     })),
   };
 }
@@ -104,17 +113,43 @@ describe('Washington assessor reference package', () => {
     );
 
     expect(counties).toHaveLength(1);
-    expect(counties[0]).toMatchObject({ county: 'Spokane', countyCode: '063' });
+    expect(counties[0]).toMatchObject({
+      county: 'Spokane',
+      countyCode: '063',
+      salesShardVerification: 'not-required',
+    });
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
   it('uses a valid same-origin hosted status package wherever the OS is running', async () => {
-    const hostedStatus = hostedEligibleStatus();
+    const hostedStatus = hostedEligibleStatus({
+      stagedSales: 999,
+      needsReview: 998,
+      latestSaleDate: '2099-12-31',
+    });
+    const spokaneStatus = hostedStatus.counties[0];
+    expect(spokaneStatus).toBeDefined();
+    if (!spokaneStatus) throw new Error('Hosted Spokane payload is missing.');
+    const multiCountyStatus = {
+      ...hostedStatus,
+      counties: [
+        ...hostedStatus.counties,
+        {
+          ...spokaneStatus,
+          county: 'Adams',
+          countyCode: '001',
+          staticRoutes: {
+            detail: '/launch-data/washington/counties/001.json',
+            salesShard: '/launch-data/washington/sales/by-county/001.json',
+          },
+        },
+      ],
+    };
     const fetchMock = vi.fn()
       .mockResolvedValueOnce({
         ok: true,
         status: 200,
-        json: async () => hostedStatus,
+        json: async () => multiCountyStatus,
       })
       .mockResolvedValueOnce({
         ok: true,
@@ -128,17 +163,62 @@ describe('Washington assessor reference package', () => {
     expect(resolution).toMatchObject({
       packageSource: 'hosted',
       usedRepositoryFallback: false,
-      counties: [{ county: 'Spokane', countyCode: '063' }],
+    });
+    expect(resolution.counties).toHaveLength(2);
+    expect(resolution.counties[0]).toMatchObject({
+      county: 'Spokane',
+      countyCode: '063',
+      stagedSales: 999,
+      salesShardVerification: 'unverified',
     });
     expect(fetchMock).toHaveBeenCalledWith(WASHINGTON_REFERENCE_ROUTES.status, {
       cache: 'no-store',
       signal: undefined,
     });
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+
+    const spokane = resolution.counties[0];
+    expect(spokane).toBeDefined();
+    if (!spokane) throw new Error('Hosted Spokane status is missing.');
+    const verifiedSpokane = await verifyWashingtonCountySalesShard(spokane);
+
+    expect(verifiedSpokane).toMatchObject({
+      stagedSales: 3,
+      needsReview: 2,
+      latestSaleDate: '2025-11-06',
+      salesShardVerification: 'verified',
+    });
+    expect(getWashingtonSalesReviewCapability(verifiedSpokane)).toMatchObject({
+      eligible: true,
+      status: 'available',
+      referenceData: {
+        observed: {
+          recordCount: 3,
+          needsReview: 2,
+          latestSaleDate: '2025-11-06',
+        },
+      },
+    });
     expect(fetchMock).toHaveBeenCalledWith(WASHINGTON_REFERENCE_ROUTES.spokaneSales, {
       cache: 'no-store',
       signal: undefined,
     });
+
+    const queue = await fetchWashingtonLaunchQueue(2025, 'all', 1, 25, {
+      countyCode: '063',
+      hood: null,
+      propertyType: null,
+      saleDateFrom: null,
+      saleDateTo: null,
+      minPrice: null,
+      maxPrice: null,
+    });
+    expect(queue.total).toBe(3);
     expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect(fetchMock).not.toHaveBeenCalledWith(
+      '/launch-data/washington/sales/by-county/001.json',
+      expect.anything(),
+    );
   });
 
   it('keeps a hosted package but makes a county workflow unavailable when its shard is missing', async () => {
@@ -160,13 +240,19 @@ describe('Washington assessor reference package', () => {
       counties: [{
         county: 'Spokane',
         countyCode: '063',
-        staticRoutes: { salesShard: '' },
+        salesShardVerification: 'unverified',
       }],
     });
     const spokane = resolution.counties[0];
     expect(spokane).toBeDefined();
     if (!spokane) throw new Error('Hosted Spokane status is missing.');
-    expect(getWashingtonSalesReviewCapability(spokane)).toMatchObject({
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    const unavailableSpokane = await verifyWashingtonCountySalesShard(spokane);
+    expect(unavailableSpokane).toMatchObject({
+      salesShardVerification: 'unavailable',
+      staticRoutes: { salesShard: WASHINGTON_REFERENCE_ROUTES.spokaneSales },
+    });
+    expect(getWashingtonSalesReviewCapability(unavailableSpokane)).toMatchObject({
       eligible: false,
       status: 'sales-shard-unavailable',
     });
@@ -194,13 +280,18 @@ describe('Washington assessor reference package', () => {
       usedRepositoryFallback: false,
       counties: [{
         countyCode: '063',
-        staticRoutes: { salesShard: '' },
+        salesShardVerification: 'unverified',
       }],
     });
     const spokane = resolution.counties[0];
     expect(spokane).toBeDefined();
     if (!spokane) throw new Error('Hosted Spokane status is missing.');
-    expect(getWashingtonSalesReviewCapability(spokane)).toMatchObject({
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    const unavailableSpokane = await verifyWashingtonCountySalesShard(spokane);
+    expect(unavailableSpokane).toMatchObject({
+      salesShardVerification: 'unavailable',
+    });
+    expect(getWashingtonSalesReviewCapability(unavailableSpokane)).toMatchObject({
       eligible: false,
       status: 'sales-shard-unavailable',
     });
