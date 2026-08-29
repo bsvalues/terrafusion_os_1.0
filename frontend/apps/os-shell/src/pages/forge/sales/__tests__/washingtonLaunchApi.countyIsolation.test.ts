@@ -95,12 +95,10 @@ function countyShard(county: string, countyCode: string, saleIds: string[]) {
 
 describe('Washington hosted launch hostname routing', () => {
   it.each([
-    'terrafusionmarket.com',
-    'staging.terrafusionmarket.com',
     'preview.terrafusionmarket.com',
     'sales.terrafusionmarket.com',
     'suite.terrafusionmarket.com',
-    'TERRAFUSIONMARKET.COM.',
+    'PREVIEW.TERRAFUSIONMARKET.COM.',
   ])('uses the hosted public-data package on %s', (hostname) => {
     expect(isHostedWashingtonLaunchHostname(hostname)).toBe(true);
   });
@@ -108,10 +106,12 @@ describe('Washington hosted launch hostname routing', () => {
   it.each([
     'localhost',
     '127.0.0.1',
+    'terrafusionmarket.com',
+    'staging.terrafusionmarket.com',
     'terrafusionmarket.com.example.test',
     'staging-terrafusionmarket.com',
     '',
-  ])('does not trust an unlisted or lookalike hostname %s', (hostname) => {
+  ])('retains the repository reference on an unserved or untrusted hostname %s', (hostname) => {
     expect(isHostedWashingtonLaunchHostname(hostname)).toBe(false);
   });
 });

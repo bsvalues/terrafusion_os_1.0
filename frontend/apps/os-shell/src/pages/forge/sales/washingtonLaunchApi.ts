@@ -156,10 +156,9 @@ function envFlag(value: unknown): boolean {
 }
 
 const HOSTED_WASHINGTON_LAUNCH_HOSTNAMES = new Set([
-  // Canonical OS deployment environments.
-  'terrafusionmarket.com',
-  'staging.terrafusionmarket.com',
-  // Dedicated launch-data surfaces retained for existing deployments.
+  // These dedicated surfaces are expected to serve /launch-data/washington/**.
+  // Canonical OS hosts intentionally retain the bundled repository reference
+  // until their release artifact packages or routes that JSON surface.
   'preview.terrafusionmarket.com',
   'sales.terrafusionmarket.com',
   'suite.terrafusionmarket.com',
