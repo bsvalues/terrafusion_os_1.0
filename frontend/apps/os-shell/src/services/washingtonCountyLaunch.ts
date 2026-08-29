@@ -12,6 +12,8 @@ import {
 } from '@/lib/washingtonAssessorReferencePackage';
 
 export const WASHINGTON_COUNTY_STATUS_PATH = WASHINGTON_REFERENCE_ROUTES.status;
+const WASHINGTON_COUNTY_DETAIL_PATH_PREFIX = '/launch-data/washington/counties';
+const WASHINGTON_SALES_SHARD_PATH_PREFIX = '/launch-data/washington/sales/by-county';
 
 export interface WashingtonCountyStatusEntry {
   county: string;
@@ -35,12 +37,30 @@ export interface WashingtonCountyStatusEntry {
   };
 }
 
+export interface WashingtonCountyStatusResolution {
+  counties: WashingtonCountyStatusEntry[];
+  packageSource: WashingtonReferencePackageSource;
+  usedRepositoryFallback: boolean;
+}
+
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null;
 }
 
 function isFiniteNumber(value: unknown): value is number {
   return typeof value === 'number' && Number.isFinite(value);
+}
+
+function isCanonicalCountyRoute(
+  route: string,
+  countyCode: string,
+  kind: 'detail' | 'sales-shard',
+): boolean {
+  if (!route) return true;
+  const prefix = kind === 'detail'
+    ? WASHINGTON_COUNTY_DETAIL_PATH_PREFIX
+    : WASHINGTON_SALES_SHARD_PATH_PREFIX;
+  return route === `${prefix}/${countyCode}.json`;
 }
 
 function isWashingtonCountyStatusEntry(
@@ -66,7 +86,9 @@ function isWashingtonCountyStatusEntry(
     && typeof value.confidence.rawStatus === 'string'
     && typeof value.confidence.rawDriftDetected === 'boolean'
     && typeof value.staticRoutes.detail === 'string'
-    && typeof value.staticRoutes.salesShard === 'string';
+    && typeof value.staticRoutes.salesShard === 'string'
+    && isCanonicalCountyRoute(value.staticRoutes.detail, value.countyCode, 'detail')
+    && isCanonicalCountyRoute(value.staticRoutes.salesShard, value.countyCode, 'sales-shard');
 }
 
 export async function fetchWashingtonCountyStatus(
@@ -107,4 +129,33 @@ export async function fetchWashingtonCountyStatus(
     confidence: { ...county.confidence },
     staticRoutes: { ...county.staticRoutes },
   }));
+}
+
+/**
+ * Resolve the Washington status package from what the running OS actually
+ * serves. A hostname allowlist cannot prove that a deployment contains the
+ * package, while a configured host outside that list may still serve it.
+ *
+ * The hosted payload remains fail-closed through fetchWashingtonCountyStatus's
+ * schema validation. If it is absent or invalid, the tracked repository
+ * reference keeps the 39-county navigation journey available without granting
+ * any assessor workflow access to its synthetic fixture records.
+ */
+export async function resolveWashingtonCountyStatus(
+  signal?: AbortSignal,
+): Promise<WashingtonCountyStatusResolution> {
+  try {
+    return {
+      counties: await fetchWashingtonCountyStatus(signal, 'hosted'),
+      packageSource: 'hosted',
+      usedRepositoryFallback: false,
+    };
+  } catch (error) {
+    if (signal?.aborted) throw error;
+    return {
+      counties: await fetchWashingtonCountyStatus(signal, 'repository-reference'),
+      packageSource: 'repository-reference',
+      usedRepositoryFallback: true,
+    };
+  }
 }

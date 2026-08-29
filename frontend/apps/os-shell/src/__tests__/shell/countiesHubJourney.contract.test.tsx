@@ -5,19 +5,20 @@
 import '@testing-library/jest-dom';
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import type { WashingtonCountyStatusEntry } from '../../services/washingtonCountyLaunch';
+import type {
+  WashingtonCountyStatusEntry,
+  WashingtonCountyStatusResolution,
+} from '../../services/washingtonCountyLaunch';
 
 const {
   activateModuleMock,
-  fetchWashingtonCountyStatusMock,
+  resolveWashingtonCountyStatusMock,
   getWashingtonSalesReviewCapabilityMock,
-  isWashingtonLaunchDataEnabledMock,
   isWashingtonSalesReviewLaunchEnabledMock,
 } = vi.hoisted(() => ({
   activateModuleMock: vi.fn(),
-  fetchWashingtonCountyStatusMock: vi.fn(),
+  resolveWashingtonCountyStatusMock: vi.fn(),
   getWashingtonSalesReviewCapabilityMock: vi.fn(),
-  isWashingtonLaunchDataEnabledMock: vi.fn(),
   isWashingtonSalesReviewLaunchEnabledMock: vi.fn(),
 }));
 
@@ -26,23 +27,13 @@ vi.mock('../../orchestration/moduleActivation', () => ({
 }));
 
 vi.mock('../../services/washingtonCountyLaunch', () => ({
-  fetchWashingtonCountyStatus: fetchWashingtonCountyStatusMock,
+  resolveWashingtonCountyStatus: resolveWashingtonCountyStatusMock,
 }));
 
 vi.mock('../../pages/forge/sales/washingtonSalesReviewCapability', () => ({
   getWashingtonSalesReviewCapability: getWashingtonSalesReviewCapabilityMock,
   isWashingtonSalesReviewLaunchEnabled: isWashingtonSalesReviewLaunchEnabledMock,
 }));
-
-vi.mock('../../pages/forge/sales/washingtonLaunchApi', async (importOriginal) => {
-  const actual = await importOriginal<
-    typeof import('../../pages/forge/sales/washingtonLaunchApi')
-  >();
-  return {
-    ...actual,
-    isWashingtonLaunchDataEnabled: isWashingtonLaunchDataEnabledMock,
-  };
-});
 
 import CountiesHub from '../../components/CountiesHub';
 
@@ -73,17 +64,26 @@ function countyStatus(
   };
 }
 
+function countyStatusResolution(
+  counties: WashingtonCountyStatusEntry[],
+  packageSource: WashingtonCountyStatusResolution['packageSource'] = 'hosted',
+  usedRepositoryFallback = packageSource === 'repository-reference',
+): WashingtonCountyStatusResolution {
+  return { counties, packageSource, usedRepositoryFallback };
+}
+
 describe('Washington Counties Hub assessor journey', () => {
   beforeEach(() => {
     activateModuleMock.mockReset().mockResolvedValue(undefined);
-    fetchWashingtonCountyStatusMock.mockReset().mockResolvedValue([countyStatus()]);
+    resolveWashingtonCountyStatusMock.mockReset().mockResolvedValue(
+      countyStatusResolution([countyStatus()]),
+    );
     getWashingtonSalesReviewCapabilityMock.mockReset().mockReturnValue({
       eligible: true,
       status: 'available',
       statusLabel: 'Sales review available',
       unavailableMessage: null,
     });
-    isWashingtonLaunchDataEnabledMock.mockReset().mockReturnValue(false);
     isWashingtonSalesReviewLaunchEnabledMock.mockReset().mockReturnValue(true);
   });
 
@@ -102,10 +102,7 @@ describe('Washington Counties Hub assessor journey', () => {
     expect(isWashingtonSalesReviewLaunchEnabledMock).toHaveBeenCalledWith({
       explicitReferenceHandoff: true,
     });
-    expect(fetchWashingtonCountyStatusMock).toHaveBeenCalledWith(
-      expect.any(AbortSignal),
-      'repository-reference',
-    );
+    expect(resolveWashingtonCountyStatusMock).toHaveBeenCalledWith(expect.any(AbortSignal));
     expect(screen.queryByText(/invented synthetic sales/i)).not.toBeInTheDocument();
     expect(spokaneOption).toHaveAttribute('aria-selected', 'false');
     expect(screen.queryByTestId('selected-county-context')).not.toBeInTheDocument();
@@ -134,7 +131,7 @@ describe('Washington Counties Hub assessor journey', () => {
           resetValuationScope: true,
           launchContext: 'washington-counties-hub',
           dataTrustTier: 'public-reference-not-county-certified',
-          referencePackageSource: 'repository-reference',
+          referencePackageSource: 'hosted',
           referenceDataPosture: 'public_recorder_export',
           referenceRecordCount: 12,
           latestReferenceSaleDate: '2025-12-31',
@@ -196,13 +193,29 @@ describe('Washington Counties Hub assessor journey', () => {
     );
   });
 
-  it('preserves the hosted county feed when hosted launch mode is active', async () => {
-    isWashingtonLaunchDataEnabledMock.mockReturnValue(true);
-    fetchWashingtonCountyStatusMock.mockResolvedValue([
+  it('falls back to repository navigation without exposing synthetic records as public data', async () => {
+    resolveWashingtonCountyStatusMock.mockResolvedValue(countyStatusResolution([
       countyStatus({
-        primarySourceMode: 'public_recorder_export',
+        primarySourceMode: ' Repository_Reference_Demo ',
+        prometheusStatus: 'reference_demo',
+        latestSaleDate: '2025-11-06',
+        candidateSales: 3,
+        stagedSales: 3,
+        needsReview: 2,
+        confidence: {
+          averageQualityScore: 0.85,
+          parserStatus: 'repository_fixture',
+          rawStatus: 'synthetic_reference',
+          rawDriftDetected: false,
+        },
       }),
-    ]);
+    ], 'repository-reference'));
+    getWashingtonSalesReviewCapabilityMock.mockReturnValue({
+      eligible: false,
+      status: 'reference-demo-only',
+      statusLabel: 'Reference demo only',
+      unavailableMessage: 'Only invented repository reference records are available.',
+    });
 
     render(<CountiesHub />);
 
@@ -210,13 +223,15 @@ describe('Washington Counties Hub assessor journey', () => {
       name: 'Select Spokane County',
     });
     expect(spokaneOption).toBeInTheDocument();
-    expect(fetchWashingtonCountyStatusMock).toHaveBeenCalledWith(
-      expect.any(AbortSignal),
-      'hosted',
-    );
-    expect(screen.queryByText(/invented synthetic sales/i)).not.toBeInTheDocument();
+    expect(resolveWashingtonCountyStatusMock).toHaveBeenCalledWith(expect.any(AbortSignal));
+    expect(screen.getByText(/valid same-origin Washington public sales package was not available/i))
+      .toHaveTextContent(/invented interface fixtures remain suppressed/i);
+    expect(screen.getByText('0 with governed status')).toBeInTheDocument();
 
     fireEvent.click(spokaneOption);
+    const selectedContext = screen.getByTestId('selected-county-context');
+    expect(within(selectedContext).getAllByText('Unavailable')).toHaveLength(4);
+    expect(selectedContext).not.toHaveTextContent('2025-11-06');
     fireEvent.click(
       screen.getByRole('button', { name: 'Open TerraForge' }),
     );
@@ -230,12 +245,12 @@ describe('Washington Counties Hub assessor journey', () => {
           resetValuationScope: true,
           launchContext: 'washington-counties-hub',
           dataTrustTier: 'public-reference-not-county-certified',
-          referencePackageSource: 'hosted',
-          referenceDataPosture: 'public_recorder_export',
-          referenceRecordCount: 12,
-          latestReferenceSaleDate: '2025-12-31',
-          salesReviewAvailability: 'available',
-          salesReviewUnavailableMessage: null,
+          referencePackageSource: 'repository-reference',
+          referenceDataPosture: 'repository_reference_demo',
+          referenceRecordCount: null,
+          latestReferenceSaleDate: null,
+          salesReviewAvailability: 'unavailable',
+          salesReviewUnavailableMessage: 'Only invented repository reference records are available.',
         },
       });
     });
@@ -250,7 +265,7 @@ describe('Washington Counties Hub assessor journey', () => {
         'No governed staged sales are available for this county. '
         + 'Sales review remains unavailable instead of falling back to another county.',
     });
-    fetchWashingtonCountyStatusMock.mockResolvedValue([
+    resolveWashingtonCountyStatusMock.mockResolvedValue(countyStatusResolution([
       countyStatus({
         county: 'Adams',
         countyCode: '001',
@@ -260,7 +275,7 @@ describe('Washington Counties Hub assessor journey', () => {
           salesShard: '',
         },
       }),
-    ]);
+    ]));
 
     render(<CountiesHub />);
     fireEvent.click(await screen.findByRole('option', { name: 'Select Adams County' }));
@@ -287,9 +302,9 @@ describe('Washington Counties Hub assessor journey', () => {
   });
 
   it('rejects a mismatched observed county name and code instead of guessing scope', async () => {
-    fetchWashingtonCountyStatusMock.mockResolvedValue([
+    resolveWashingtonCountyStatusMock.mockResolvedValue(countyStatusResolution([
       countyStatus({ county: 'Adams', countyCode: '063' }),
-    ]);
+    ]));
 
     render(<CountiesHub />);
     const spokaneOption = await screen.findByRole('option', { name: 'Select Spokane County' });
@@ -325,9 +340,9 @@ describe('Washington Counties Hub assessor journey', () => {
   });
 
   it('surfaces an unregistered county code by its unique canonical county name', async () => {
-    fetchWashingtonCountyStatusMock.mockResolvedValue([
+    resolveWashingtonCountyStatusMock.mockResolvedValue(countyStatusResolution([
       countyStatus({ county: 'Spokane', countyCode: '999' }),
-    ]);
+    ]));
 
     render(<CountiesHub />);
     const spokaneOption = await screen.findByRole('option', { name: 'Select Spokane County' });
@@ -385,9 +400,9 @@ describe('Washington Counties Hub assessor journey', () => {
   });
 
   it('shows an honest feed failure and recovers through Retry without a fallback county', async () => {
-    fetchWashingtonCountyStatusMock
+    resolveWashingtonCountyStatusMock
       .mockRejectedValueOnce(new Error('Observed county feed is offline.'))
-      .mockResolvedValueOnce([countyStatus()]);
+      .mockResolvedValueOnce(countyStatusResolution([countyStatus()]));
 
     render(<CountiesHub />);
 
@@ -409,6 +424,6 @@ describe('Washington Counties Hub assessor journey', () => {
       .toHaveAttribute('aria-selected', 'true');
     expect(screen.getByTestId('selected-county-context')).toHaveTextContent('Adams County');
     expect(activateModuleMock).not.toHaveBeenCalled();
-    expect(fetchWashingtonCountyStatusMock).toHaveBeenCalledTimes(2);
+    expect(resolveWashingtonCountyStatusMock).toHaveBeenCalledTimes(2);
   });
 });

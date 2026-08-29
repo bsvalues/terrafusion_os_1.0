@@ -4,7 +4,10 @@ import {
   WASHINGTON_ASSESSOR_REFERENCE_PACKAGE,
   WASHINGTON_REFERENCE_ROUTES,
 } from '../../lib/washingtonAssessorReferencePackage';
-import { fetchWashingtonCountyStatus } from '../../services/washingtonCountyLaunch';
+import {
+  fetchWashingtonCountyStatus,
+  resolveWashingtonCountyStatus,
+} from '../../services/washingtonCountyLaunch';
 
 interface ReferenceRoutes {
   detail: string;
@@ -92,6 +95,73 @@ describe('Washington assessor reference package', () => {
     expect(counties).toHaveLength(1);
     expect(counties[0]).toMatchObject({ county: 'Spokane', countyCode: '063' });
     expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it('uses a valid same-origin hosted status package wherever the OS is running', async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      status: 200,
+      json: async () => WASHINGTON_ASSESSOR_REFERENCE_PACKAGE.status,
+    });
+    vi.stubGlobal('fetch', fetchMock);
+
+    const resolution = await resolveWashingtonCountyStatus();
+
+    expect(resolution).toMatchObject({
+      packageSource: 'hosted',
+      usedRepositoryFallback: false,
+      counties: [{ county: 'Spokane', countyCode: '063' }],
+    });
+    expect(fetchMock).toHaveBeenCalledWith(WASHINGTON_REFERENCE_ROUTES.status, {
+      cache: 'no-store',
+      signal: undefined,
+    });
+  });
+
+  it('falls back fail-closed when the same-origin hosted status route is absent', async () => {
+    const fetchMock = vi.fn().mockResolvedValue({ ok: false, status: 404 });
+    vi.stubGlobal('fetch', fetchMock);
+
+    const resolution = await resolveWashingtonCountyStatus();
+
+    expect(resolution).toMatchObject({
+      packageSource: 'repository-reference',
+      usedRepositoryFallback: true,
+      counties: [{
+        county: 'Spokane',
+        countyCode: '063',
+        primarySourceMode: 'repository_reference_demo',
+      }],
+    });
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
+  it('rejects a hosted status that points a county at another county shard', async () => {
+    const hostedStatus = {
+      ...WASHINGTON_ASSESSOR_REFERENCE_PACKAGE.status,
+      counties: WASHINGTON_ASSESSOR_REFERENCE_PACKAGE.status.counties.map((county) => ({
+        ...county,
+        staticRoutes: {
+          ...county.staticRoutes,
+          salesShard: '/launch-data/washington/sales/by-county/005.json',
+        },
+      })),
+    };
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      status: 200,
+      json: async () => hostedStatus,
+    });
+    vi.stubGlobal('fetch', fetchMock);
+
+    const resolution = await resolveWashingtonCountyStatus();
+
+    expect(resolution).toMatchObject({
+      packageSource: 'repository-reference',
+      usedRepositoryFallback: true,
+      counties: [{ county: 'Spokane', countyCode: '063' }],
+    });
+    expect(fetchMock).toHaveBeenCalledTimes(1);
   });
 
   it('ships a tracked county status -> detail -> sales-shard chain', () => {

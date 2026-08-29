@@ -40,11 +40,10 @@ import {
   type WashingtonCountiesHubHandoff,
 } from '../pages/forge/sales/washingtonSalesReviewCapability';
 import {
-  isWashingtonLaunchDataEnabled,
   WASHINGTON_COUNTIES,
 } from '../pages/forge/sales/washingtonLaunchApi';
 import {
-  fetchWashingtonCountyStatus,
+  resolveWashingtonCountyStatus,
   type WashingtonCountyStatusEntry,
 } from '../services/washingtonCountyLaunch';
 
@@ -60,11 +59,23 @@ interface WashingtonCountyDirectoryEntry {
 
 function formatStatus(value: string | null | undefined): string {
   if (!value) return 'Not reported';
-  return value.replaceAll('_', ' ');
+  return value.trim().replaceAll('_', ' ');
 }
 
 function normalizeCountyName(value: string): string {
   return value.replace(/\s+county$/i, '').trim().toLowerCase();
+}
+
+function normalizeDataPosture(value: string): string {
+  return value.trim().toLowerCase();
+}
+
+function isRepositoryReferenceDemo(
+  status: WashingtonCountyStatusEntry | null | undefined,
+): boolean {
+  return status !== null
+    && status !== undefined
+    && normalizeDataPosture(status.primarySourceMode) === 'repository_reference_demo';
 }
 
 function formatInventoryStatus(status: WashingtonPublicSourceInventoryEntry['status']): string {
@@ -89,20 +100,23 @@ const CountiesHub = () => {
   const [loadError, setLoadError] = useState<string | null>(null);
   const [launching, setLaunching] = useState(false);
   const [launchError, setLaunchError] = useState<string | null>(null);
+  const [countyStatusSource, setCountyStatusSource] = useState<
+    WashingtonCountiesHubHandoff['referencePackageSource']
+  >('repository-reference');
+  const [usedRepositoryFallback, setUsedRepositoryFallback] = useState(false);
   const launchDataEnabled = isWashingtonSalesReviewLaunchEnabled({
     explicitReferenceHandoff: true,
   });
-  const countyStatusSource = isWashingtonLaunchDataEnabled()
-    ? 'hosted'
-    : 'repository-reference';
 
   const loadCounties = useCallback(async (signal?: AbortSignal) => {
     setLoading(true);
     setLoadError(null);
     try {
-      const observedCounties = await fetchWashingtonCountyStatus(signal, countyStatusSource);
+      const resolution = await resolveWashingtonCountyStatus(signal);
       if (signal?.aborted) return;
-      setCounties(observedCounties);
+      setCounties(resolution.counties);
+      setCountyStatusSource(resolution.packageSource);
+      setUsedRepositoryFallback(resolution.usedRepositoryFallback);
       setSelectedCountyCode((current) =>
         current && WASHINGTON_COUNTIES.some((county) => county.code === current)
           ? current
@@ -111,6 +125,7 @@ const CountiesHub = () => {
     } catch (error) {
       if (signal?.aborted) return;
       setCounties([]);
+      setUsedRepositoryFallback(false);
       setSelectedCountyCode(null);
       setLoadError(
         error instanceof Error
@@ -120,7 +135,7 @@ const CountiesHub = () => {
     } finally {
       if (!signal?.aborted) setLoading(false);
     }
-  }, [countyStatusSource]);
+  }, []);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -187,9 +202,13 @@ const CountiesHub = () => {
     [countyDirectory, selectedCountyCode],
   );
   const selectedStatus = selectedCounty?.status ?? null;
+  const selectedObservedStatus = isRepositoryReferenceDemo(selectedStatus) ? null : selectedStatus;
   const selectedIdentityMismatch = selectedCounty?.identityMismatch ?? null;
   const observedCountyCount = useMemo(
-    () => countyDirectory.filter((county) => county.status !== null).length,
+    () => countyDirectory.filter(
+      (county) => county.status !== null
+        && !isRepositoryReferenceDemo(county.status),
+    ).length,
     [countyDirectory],
   );
   const selectedCapability = useMemo(
@@ -234,7 +253,7 @@ const CountiesHub = () => {
     );
   }, [countyDirectory, query]);
   const repositoryReferenceDemo = useMemo(
-    () => counties.some((county) => county.primarySourceMode === 'repository_reference_demo'),
+    () => counties.some(isRepositoryReferenceDemo),
     [counties],
   );
 
@@ -251,9 +270,11 @@ const CountiesHub = () => {
         launchContext: 'washington-counties-hub',
         dataTrustTier: 'public-reference-not-county-certified',
         referencePackageSource: countyStatusSource,
-        referenceDataPosture: selectedStatus?.primarySourceMode ?? 'unavailable',
-        referenceRecordCount: selectedStatus?.stagedSales ?? null,
-        latestReferenceSaleDate: selectedStatus?.latestSaleDate ?? null,
+        referenceDataPosture: selectedStatus
+          ? normalizeDataPosture(selectedStatus.primarySourceMode)
+          : 'unavailable',
+        referenceRecordCount: selectedObservedStatus?.stagedSales ?? null,
+        latestReferenceSaleDate: selectedObservedStatus?.latestSaleDate ?? null,
         salesReviewAvailability: selectedSalesReviewAvailable ? 'available' : 'unavailable',
         salesReviewUnavailableMessage: selectedSalesReviewAvailable
           ? null
@@ -277,6 +298,7 @@ const CountiesHub = () => {
     selectedCounty,
     selectedSalesReviewAvailable,
     selectedSalesReviewUnavailableMessage,
+    selectedObservedStatus,
     selectedStatus,
   ]);
 
@@ -358,11 +380,20 @@ const CountiesHub = () => {
               </Alert>
             )}
 
-            {repositoryReferenceDemo && (
+            {usedRepositoryFallback && (
               <Alert severity='warning'>
-                Repository reference mode contains invented synthetic sales for interface testing.
-                They cannot enable an assessor workflow, are not observed public sales, and are not
-                county records.
+                A valid same-origin Washington public sales package was not available. Counties HUB
+                is using its tracked repository reference for navigation and source research;
+                invented interface fixtures remain suppressed from assessor workflows and observed
+                public-data counts.
+              </Alert>
+            )}
+
+            {repositoryReferenceDemo && !usedRepositoryFallback && (
+              <Alert severity='warning'>
+                This hosted package contains invented synthetic sales for interface testing. They
+                cannot enable an assessor workflow, are not observed public sales, and are not county
+                records.
               </Alert>
             )}
 
@@ -434,28 +465,32 @@ const CountiesHub = () => {
                       <Grid item xs={12} sm={6} md={3}>
                         <Typography variant='caption' color='text.secondary'>Reference records</Typography>
                         <Typography variant='body1'>
-                          {selectedStatus ? selectedStatus.stagedSales.toLocaleString() : 'Unavailable'}
+                          {selectedObservedStatus
+                            ? selectedObservedStatus.stagedSales.toLocaleString()
+                            : 'Unavailable'}
                         </Typography>
                       </Grid>
                       <Grid item xs={12} sm={6} md={3}>
                         <Typography variant='caption' color='text.secondary'>Latest reference sale</Typography>
                         <Typography variant='body1'>
-                          {selectedStatus
-                            ? selectedStatus.latestSaleDate ?? 'Not reported'
+                          {selectedObservedStatus
+                            ? selectedObservedStatus.latestSaleDate ?? 'Not reported'
                             : 'Unavailable'}
                         </Typography>
                       </Grid>
                       <Grid item xs={12} sm={6} md={3}>
                         <Typography variant='caption' color='text.secondary'>Records needing review</Typography>
                         <Typography variant='body1'>
-                          {selectedStatus ? selectedStatus.needsReview.toLocaleString() : 'Unavailable'}
+                          {selectedObservedStatus
+                            ? selectedObservedStatus.needsReview.toLocaleString()
+                            : 'Unavailable'}
                         </Typography>
                       </Grid>
                       <Grid item xs={12} sm={6} md={3}>
                         <Typography variant='caption' color='text.secondary'>Runtime posture</Typography>
                         <Typography variant='body1'>
-                          {selectedStatus
-                            ? formatStatus(selectedStatus.prometheusStatus)
+                          {selectedObservedStatus
+                            ? formatStatus(selectedObservedStatus.prometheusStatus)
                             : 'Unavailable'}
                         </Typography>
                       </Grid>
@@ -560,6 +595,9 @@ const CountiesHub = () => {
             >
               {filteredCounties.map((county) => {
                 const selected = county.countyCode === selectedCountyCode;
+                const observedStatus = isRepositoryReferenceDemo(county.status)
+                  ? null
+                  : county.status;
                 const capability = county.status
                   ? getWashingtonSalesReviewCapability(county.status)
                   : null;
@@ -606,8 +644,8 @@ const CountiesHub = () => {
                                 : 'Unavailable'}
                             </Typography>
                             <Typography variant='body2' color='text.secondary'>
-                              Freshness: {county.status
-                                ? county.status.latestSaleDate ?? 'Not reported'
+                              Freshness: {observedStatus
+                                ? observedStatus.latestSaleDate ?? 'Not reported'
                                 : 'Unavailable'}
                             </Typography>
                             <Typography variant='body2' color='text.secondary'>
