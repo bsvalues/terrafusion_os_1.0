@@ -106,22 +106,29 @@ const CountiesHub = () => {
   }, [loadCounties]);
 
   const countyDirectory = useMemo<WashingtonCountyDirectoryEntry[]>(() => {
-    const observedByCode = new Map(
-      counties.map((county) => [county.countyCode, county] as const),
+    const canonicalNameByCode = new Map<string, string>(
+      WASHINGTON_COUNTIES.map((county) => [county.code, county.name] as const),
     );
+    const validatedStatusByCode = new Map<string, WashingtonCountyStatusEntry>();
+    const identityMismatchByCode = new Map<string, WashingtonCountyStatusEntry>();
 
-    return WASHINGTON_COUNTIES.map((county) => {
-      const observedStatus = observedByCode.get(county.code) ?? null;
-      const identityMatches = observedStatus !== null
-        && normalizeCountyName(observedStatus.county) === normalizeCountyName(county.name);
+    for (const observedStatus of counties) {
+      const canonicalName = canonicalNameByCode.get(observedStatus.countyCode);
+      if (!canonicalName) continue;
 
-      return {
-        county: county.name,
-        countyCode: county.code,
-        status: identityMatches ? observedStatus : null,
-        identityMismatch: observedStatus && !identityMatches ? observedStatus : null,
-      };
-    });
+      if (normalizeCountyName(observedStatus.county) === normalizeCountyName(canonicalName)) {
+        validatedStatusByCode.set(observedStatus.countyCode, observedStatus);
+      } else {
+        identityMismatchByCode.set(observedStatus.countyCode, observedStatus);
+      }
+    }
+
+    return WASHINGTON_COUNTIES.map((county) => ({
+      county: county.name,
+      countyCode: county.code,
+      status: validatedStatusByCode.get(county.code) ?? null,
+      identityMismatch: identityMismatchByCode.get(county.code) ?? null,
+    }));
   }, [counties]);
 
   const selectedCounty = useMemo(
