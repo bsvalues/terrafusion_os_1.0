@@ -219,6 +219,7 @@ describe('TerraForge suite home — taxonomy contract', () => {
       latestReferenceSaleDate: null,
       salesReviewAvailability: 'unavailable',
       salesReviewUnavailableMessage: 'No governed public sales state is available for Adams County.',
+      officialAssessorBaseUrl: 'https://untrusted.example/adams',
     }));
 
     const countyContext = screen.getByTestId('forge-county-context');
@@ -226,6 +227,20 @@ describe('TerraForge suite home — taxonomy contract', () => {
     expect(countyContext).toHaveTextContent('WA-001');
     expect(countyContext).toHaveTextContent(/navigation context only/i);
     expect(countyContext).toHaveTextContent(/never fall back to Benton or another county/i);
+    const publicSourceWorkflow = within(countyContext).getByTestId(
+      'forge-public-source-workflow',
+    );
+    expect(publicSourceWorkflow).toHaveTextContent('County public-source research');
+    expect(publicSourceWorkflow).toHaveTextContent('Parcel transfer history');
+    expect(publicSourceWorkflow).toHaveTextContent('Source path researched');
+    expect(publicSourceWorkflow).toHaveTextContent(/does not activate a TerraFusion sales shard/i);
+    const officialSource = within(publicSourceWorkflow).getByRole('link', {
+      name: /Open Adams County public-data entry point in a new tab/i,
+    });
+    expect(officialSource).toHaveAttribute('href', 'https://co.adams.wa.us');
+    expect(officialSource).not.toHaveAttribute('href', 'https://untrusted.example/adams');
+    expect(officialSource).toHaveAttribute('target', '_blank');
+    expect(officialSource).toHaveAttribute('rel', 'noopener noreferrer');
     expect(screen.queryByTestId('forge-stats')).not.toBeInTheDocument();
     expect(screen.queryByTestId('forge-calibration-desk')).not.toBeInTheDocument();
     expect(screen.queryByTestId('mock-sale-qualification-queue')).not.toBeInTheDocument();
@@ -252,6 +267,7 @@ describe('TerraForge suite home — taxonomy contract', () => {
     expect(screen.queryByTestId('forge-stats')).not.toBeInTheDocument();
     expect(screen.queryByTestId('forge-calibration-desk')).not.toBeInTheDocument();
     expect(screen.queryByTestId('mock-sale-qualification-queue')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('forge-public-source-workflow')).not.toBeInTheDocument();
 
     const primary = screen.getByTestId('forge-primary-applications');
     for (const button of within(primary).getAllByRole('button')) {
