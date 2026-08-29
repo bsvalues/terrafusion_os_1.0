@@ -14,8 +14,15 @@ import {
 export interface WashingtonSalesReviewCapabilityInput {
   county: string;
   countyCode: string;
-  primarySourceMode?: string;
+  primarySourceMode: string;
+  prometheusStatus: string;
+  latestSaleDate: string | null;
   stagedSales: number;
+  needsReview: number;
+  confidence: {
+    rawStatus: string;
+    rawDriftDetected: boolean;
+  };
   staticRoutes: {
     salesShard: string;
   };
@@ -25,6 +32,7 @@ export type WashingtonSalesReviewCapabilityStatus =
   | 'available'
   | 'county-context-invalid'
   | 'reference-demo-only'
+  | 'source-posture-unavailable'
   | 'no-staged-sales'
   | 'sales-shard-unavailable';
 
@@ -33,6 +41,22 @@ export interface WashingtonSalesReviewCapability {
   status: WashingtonSalesReviewCapabilityStatus;
   statusLabel: string;
   unavailableMessage: string | null;
+  referenceData: WashingtonSalesReviewReferenceData;
+}
+
+export interface WashingtonSalesReviewObservedReference {
+  recordCount: number;
+  latestSaleDate: string | null;
+  needsReview: number;
+  runtimePosture: string;
+  sourceStatus: string;
+  sourceDriftDetected: boolean;
+}
+
+export interface WashingtonSalesReviewReferenceData {
+  posture: string;
+  isSyntheticReference: boolean;
+  observed: WashingtonSalesReviewObservedReference | null;
 }
 
 export type WashingtonSalesReviewAvailability = 'available' | 'unavailable';
@@ -49,6 +73,21 @@ export interface WashingtonCountiesHubHandoff {
   latestReferenceSaleDate: string | null;
   salesReviewAvailability: WashingtonSalesReviewAvailability;
   salesReviewUnavailableMessage: string | null;
+}
+
+const REPOSITORY_REFERENCE_DEMO_POSTURE = 'repository_reference_demo';
+
+function normalizeReferenceDataPosture(value: string): string {
+  return value.trim().toLowerCase();
+}
+
+function isRepositoryReferenceDemoPosture(value: string): boolean {
+  return normalizeReferenceDataPosture(value) === REPOSITORY_REFERENCE_DEMO_POSTURE;
+}
+
+function isUnavailableReferenceDataPosture(value: string): boolean {
+  const normalizedPosture = normalizeReferenceDataPosture(value);
+  return normalizedPosture.length === 0 || normalizedPosture === 'unavailable';
 }
 
 function isNullableFiniteNumber(value: unknown): value is number | null {
@@ -126,8 +165,8 @@ export function parseWashingtonCountiesHubHandoff(
     && (
       referenceRecordCount === null
       || referenceRecordCount <= 0
-      || metadata.referenceDataPosture.trim().toLowerCase() === 'unavailable'
-      || metadata.referenceDataPosture.trim().toLowerCase() === 'repository_reference_demo'
+      || isUnavailableReferenceDataPosture(metadata.referenceDataPosture)
+      || isRepositoryReferenceDemoPosture(metadata.referenceDataPosture)
     )
   ) {
     return null;
@@ -155,6 +194,23 @@ export function getWashingtonSalesReviewCapability(
   const registeredCounty = WASHINGTON_COUNTIES.some(
     (county) => county.code === input.countyCode && county.name.toLowerCase() === observedName,
   );
+  const normalizedPosture = normalizeReferenceDataPosture(input.primarySourceMode);
+  const isSyntheticReference = isRepositoryReferenceDemoPosture(input.primarySourceMode);
+  const isSourcePostureUnavailable = isUnavailableReferenceDataPosture(input.primarySourceMode);
+  const referenceData: WashingtonSalesReviewReferenceData = {
+    posture: normalizedPosture || 'unavailable',
+    isSyntheticReference,
+    observed: registeredCounty && !isSyntheticReference && !isSourcePostureUnavailable
+      ? {
+          recordCount: input.stagedSales,
+          latestSaleDate: input.latestSaleDate,
+          needsReview: input.needsReview,
+          runtimePosture: input.prometheusStatus,
+          sourceStatus: input.confidence.rawStatus,
+          sourceDriftDetected: input.confidence.rawDriftDetected,
+        }
+      : null,
+  };
 
   if (!registeredCounty) {
     return {
@@ -164,10 +220,11 @@ export function getWashingtonSalesReviewCapability(
       unavailableMessage:
         'The observed county name and code do not match the Washington registry. '
         + 'Sales review remains unavailable instead of guessing a county context.',
+      referenceData,
     };
   }
 
-  if (input.primarySourceMode?.trim().toLowerCase() === 'repository_reference_demo') {
+  if (isSyntheticReference) {
     return {
       eligible: false,
       status: 'reference-demo-only',
@@ -175,6 +232,19 @@ export function getWashingtonSalesReviewCapability(
       unavailableMessage:
         'Only invented repository reference records are available for this county. '
         + 'They remain visible as test evidence but cannot enable an assessor sales workflow.',
+      referenceData,
+    };
+  }
+
+  if (isSourcePostureUnavailable) {
+    return {
+      eligible: false,
+      status: 'source-posture-unavailable',
+      statusLabel: 'Source gap',
+      unavailableMessage:
+        'The governed source posture is unavailable for this county. '
+        + 'Sales review remains unavailable instead of inferring public-data trust.',
+      referenceData,
     };
   }
 
@@ -186,6 +256,7 @@ export function getWashingtonSalesReviewCapability(
       unavailableMessage:
         'No governed staged sales are available for this county. '
         + 'Sales review remains unavailable instead of falling back to another county.',
+      referenceData,
     };
   }
 
@@ -197,6 +268,7 @@ export function getWashingtonSalesReviewCapability(
       unavailableMessage:
         'The governed TerraForge sales package is unavailable for this county. '
         + 'Sales review remains unavailable instead of falling back to another county.',
+      referenceData,
     };
   }
 
@@ -205,6 +277,7 @@ export function getWashingtonSalesReviewCapability(
     status: 'available',
     statusLabel: 'Sales review available',
     unavailableMessage: null,
+    referenceData,
   };
 }
 

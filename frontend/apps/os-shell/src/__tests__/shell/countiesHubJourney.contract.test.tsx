@@ -83,6 +83,18 @@ describe('Washington Counties Hub assessor journey', () => {
       status: 'available',
       statusLabel: 'Sales review available',
       unavailableMessage: null,
+      referenceData: {
+        posture: 'public_recorder_export',
+        isSyntheticReference: false,
+        observed: {
+          recordCount: 12,
+          latestSaleDate: '2025-12-31',
+          needsReview: 4,
+          runtimePosture: 'reference_ready',
+          sourceStatus: 'observed',
+          sourceDriftDetected: false,
+        },
+      },
     });
     isWashingtonSalesReviewLaunchEnabledMock.mockReset().mockReturnValue(true);
   });
@@ -215,6 +227,11 @@ describe('Washington Counties Hub assessor journey', () => {
       status: 'reference-demo-only',
       statusLabel: 'Reference demo only',
       unavailableMessage: 'Only invented repository reference records are available.',
+      referenceData: {
+        posture: 'repository_reference_demo',
+        isSyntheticReference: true,
+        observed: null,
+      },
     });
 
     render(<CountiesHub />);
@@ -264,6 +281,18 @@ describe('Washington Counties Hub assessor journey', () => {
       unavailableMessage:
         'No governed staged sales are available for this county. '
         + 'Sales review remains unavailable instead of falling back to another county.',
+      referenceData: {
+        posture: 'public_recorder_export',
+        isSyntheticReference: false,
+        observed: {
+          recordCount: 0,
+          latestSaleDate: '2025-12-31',
+          needsReview: 4,
+          runtimePosture: 'reference_ready',
+          sourceStatus: 'observed',
+          sourceDriftDetected: false,
+        },
+      },
     });
     resolveWashingtonCountyStatusMock.mockResolvedValue(countyStatusResolution([
       countyStatus({

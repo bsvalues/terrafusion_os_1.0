@@ -131,22 +131,58 @@ export async function fetchWashingtonCountyStatus(
   }));
 }
 
+async function verifyHostedSalesShards(
+  counties: WashingtonCountyStatusEntry[],
+  signal?: AbortSignal,
+): Promise<WashingtonCountyStatusEntry[]> {
+  return Promise.all(counties.map(async (county) => {
+    const salesShard = county.staticRoutes.salesShard.trim();
+    if (!salesShard) return county;
+
+    try {
+      const response = await fetch(salesShard, {
+        cache: 'no-store',
+        method: 'HEAD',
+        signal,
+      });
+      if (response.ok) return county;
+    } catch (error) {
+      if (signal?.aborted) throw error;
+    }
+
+    if (signal?.aborted) {
+      throw new Error('Washington hosted sales-shard verification was aborted.');
+    }
+
+    return {
+      ...county,
+      staticRoutes: {
+        ...county.staticRoutes,
+        salesShard: '',
+      },
+    };
+  }));
+}
+
 /**
  * Resolve the Washington status package from what the running OS actually
  * serves. A hostname allowlist cannot prove that a deployment contains the
  * package, while a configured host outside that list may still serve it.
  *
  * The hosted payload remains fail-closed through fetchWashingtonCountyStatus's
- * schema validation. If it is absent or invalid, the tracked repository
- * reference keeps the 39-county navigation journey available without granting
- * any assessor workflow access to its synthetic fixture records.
+ * schema validation. Declared sales shards are checked before their county can
+ * advertise a workflow; a missing shard degrades only that county. If the
+ * status payload is absent or invalid, the tracked repository reference keeps
+ * the 39-county navigation journey available without granting any assessor
+ * workflow access to its synthetic fixture records.
  */
 export async function resolveWashingtonCountyStatus(
   signal?: AbortSignal,
 ): Promise<WashingtonCountyStatusResolution> {
   try {
+    const hostedCounties = await fetchWashingtonCountyStatus(signal, 'hosted');
     return {
-      counties: await fetchWashingtonCountyStatus(signal, 'hosted'),
+      counties: await verifyHostedSalesShards(hostedCounties, signal),
       packageSource: 'hosted',
       usedRepositoryFallback: false,
     };

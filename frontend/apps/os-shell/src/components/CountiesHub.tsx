@@ -38,6 +38,7 @@ import {
   getWashingtonSalesReviewCapability,
   isWashingtonSalesReviewLaunchEnabled,
   type WashingtonCountiesHubHandoff,
+  type WashingtonSalesReviewCapability,
 } from '../pages/forge/sales/washingtonSalesReviewCapability';
 import {
   WASHINGTON_COUNTIES,
@@ -52,7 +53,7 @@ const EXPECTED_WASHINGTON_COUNTIES = 39;
 interface WashingtonCountyDirectoryEntry {
   county: string;
   countyCode: string;
-  status: WashingtonCountyStatusEntry | null;
+  capability: WashingtonSalesReviewCapability | null;
   identityMismatch: WashingtonCountyStatusEntry | null;
   publicSource: WashingtonPublicSourceInventoryEntry | null;
 }
@@ -64,18 +65,6 @@ function formatStatus(value: string | null | undefined): string {
 
 function normalizeCountyName(value: string): string {
   return value.replace(/\s+county$/i, '').trim().toLowerCase();
-}
-
-function normalizeDataPosture(value: string): string {
-  return value.trim().toLowerCase();
-}
-
-function isRepositoryReferenceDemo(
-  status: WashingtonCountyStatusEntry | null | undefined,
-): boolean {
-  return status !== null
-    && status !== undefined
-    && normalizeDataPosture(status.primarySourceMode) === 'repository_reference_demo';
 }
 
 function formatInventoryStatus(status: WashingtonPublicSourceInventoryEntry['status']): string {
@@ -185,10 +174,11 @@ const CountiesHub = () => {
 
     const directory = WASHINGTON_COUNTIES.map((county) => {
       const identityMismatch = identityMismatchByCode.get(county.code) ?? null;
+      const status = identityMismatch ? null : validatedStatusByCode.get(county.code) ?? null;
       return {
         county: county.name,
         countyCode: county.code,
-        status: identityMismatch ? null : validatedStatusByCode.get(county.code) ?? null,
+        capability: status ? getWashingtonSalesReviewCapability(status) : null,
         identityMismatch,
         publicSource: getWashingtonPublicSourceInventory(county.name),
       };
@@ -201,23 +191,17 @@ const CountiesHub = () => {
     () => countyDirectory.find((county) => county.countyCode === selectedCountyCode) ?? null,
     [countyDirectory, selectedCountyCode],
   );
-  const selectedStatus = selectedCounty?.status ?? null;
-  const selectedObservedStatus = isRepositoryReferenceDemo(selectedStatus) ? null : selectedStatus;
+  const selectedCapability = selectedCounty?.capability ?? null;
+  const selectedObservedReference = selectedCapability?.referenceData.observed ?? null;
   const selectedIdentityMismatch = selectedCounty?.identityMismatch ?? null;
   const observedCountyCount = useMemo(
     () => countyDirectory.filter(
-      (county) => county.status !== null
-        && !isRepositoryReferenceDemo(county.status),
+      (county) => Boolean(county.capability?.referenceData.observed),
     ).length,
     [countyDirectory],
   );
-  const selectedCapability = useMemo(
-    () => selectedStatus ? getWashingtonSalesReviewCapability(selectedStatus) : null,
-    [selectedStatus],
-  );
   const selectedSalesReviewAvailable = Boolean(
-    selectedStatus
-    && selectedCapability?.eligible
+    selectedCapability?.eligible
     && launchDataEnabled,
   );
   const selectedSalesReviewUnavailableMessage = useMemo(() => {
@@ -225,7 +209,7 @@ const CountiesHub = () => {
       return 'The observed public-data status has a county registry mismatch, so no '
         + 'TerraForge sales workflow can use it.';
     }
-    if (!selectedStatus) {
+    if (!selectedCapability) {
       return `No governed public sales state is available for ${selectedCounty?.county ?? 'this'} County.`;
     }
     if (!launchDataEnabled) {
@@ -237,7 +221,6 @@ const CountiesHub = () => {
     selectedCapability,
     selectedCounty,
     selectedIdentityMismatch,
-    selectedStatus,
   ]);
 
   const filteredCounties = useMemo(() => {
@@ -246,15 +229,17 @@ const CountiesHub = () => {
     return countyDirectory.filter((county) =>
       county.county.toLowerCase().includes(normalizedQuery)
       || county.countyCode.includes(normalizedQuery)
-      || county.status?.primarySourceMode.toLowerCase().includes(normalizedQuery)
+      || county.capability?.referenceData.posture.includes(normalizedQuery)
       || county.publicSource?.acquisitionFamily.toLowerCase().includes(normalizedQuery)
       || (county.identityMismatch !== null && 'registry mismatch'.includes(normalizedQuery))
-      || (!county.status && 'unavailable'.includes(normalizedQuery)),
+      || (!county.capability && 'unavailable'.includes(normalizedQuery)),
     );
   }, [countyDirectory, query]);
   const repositoryReferenceDemo = useMemo(
-    () => counties.some(isRepositoryReferenceDemo),
-    [counties],
+    () => countyDirectory.some(
+      (county) => county.capability?.referenceData.isSyntheticReference === true,
+    ),
+    [countyDirectory],
   );
 
   const launchSelectedCounty = useCallback(async () => {
@@ -270,11 +255,9 @@ const CountiesHub = () => {
         launchContext: 'washington-counties-hub',
         dataTrustTier: 'public-reference-not-county-certified',
         referencePackageSource: countyStatusSource,
-        referenceDataPosture: selectedStatus
-          ? normalizeDataPosture(selectedStatus.primarySourceMode)
-          : 'unavailable',
-        referenceRecordCount: selectedObservedStatus?.stagedSales ?? null,
-        latestReferenceSaleDate: selectedObservedStatus?.latestSaleDate ?? null,
+        referenceDataPosture: selectedCapability?.referenceData.posture ?? 'unavailable',
+        referenceRecordCount: selectedObservedReference?.recordCount ?? null,
+        latestReferenceSaleDate: selectedObservedReference?.latestSaleDate ?? null,
         salesReviewAvailability: selectedSalesReviewAvailable ? 'available' : 'unavailable',
         salesReviewUnavailableMessage: selectedSalesReviewAvailable
           ? null
@@ -296,10 +279,10 @@ const CountiesHub = () => {
   }, [
     countyStatusSource,
     selectedCounty,
+    selectedCapability,
+    selectedObservedReference,
     selectedSalesReviewAvailable,
     selectedSalesReviewUnavailableMessage,
-    selectedObservedStatus,
-    selectedStatus,
   ]);
 
   return (
@@ -444,8 +427,8 @@ const CountiesHub = () => {
                         </Typography>
                         <Typography variant='body2' color='text.secondary'>
                           Washington county code {selectedCounty.countyCode} · source{' '}
-                          {selectedStatus
-                            ? formatStatus(selectedStatus.primarySourceMode)
+                          {selectedCapability
+                            ? formatStatus(selectedCapability.referenceData.posture)
                             : 'Unavailable'}
                         </Typography>
                       </Box>
@@ -465,32 +448,32 @@ const CountiesHub = () => {
                       <Grid item xs={12} sm={6} md={3}>
                         <Typography variant='caption' color='text.secondary'>Reference records</Typography>
                         <Typography variant='body1'>
-                          {selectedObservedStatus
-                            ? selectedObservedStatus.stagedSales.toLocaleString()
+                          {selectedObservedReference
+                            ? selectedObservedReference.recordCount.toLocaleString()
                             : 'Unavailable'}
                         </Typography>
                       </Grid>
                       <Grid item xs={12} sm={6} md={3}>
                         <Typography variant='caption' color='text.secondary'>Latest reference sale</Typography>
                         <Typography variant='body1'>
-                          {selectedObservedStatus
-                            ? selectedObservedStatus.latestSaleDate ?? 'Not reported'
+                          {selectedObservedReference
+                            ? selectedObservedReference.latestSaleDate ?? 'Not reported'
                             : 'Unavailable'}
                         </Typography>
                       </Grid>
                       <Grid item xs={12} sm={6} md={3}>
                         <Typography variant='caption' color='text.secondary'>Records needing review</Typography>
                         <Typography variant='body1'>
-                          {selectedObservedStatus
-                            ? selectedObservedStatus.needsReview.toLocaleString()
+                          {selectedObservedReference
+                            ? selectedObservedReference.needsReview.toLocaleString()
                             : 'Unavailable'}
                         </Typography>
                       </Grid>
                       <Grid item xs={12} sm={6} md={3}>
                         <Typography variant='caption' color='text.secondary'>Runtime posture</Typography>
                         <Typography variant='body1'>
-                          {selectedObservedStatus
-                            ? formatStatus(selectedObservedStatus.prometheusStatus)
+                          {selectedObservedReference
+                            ? formatStatus(selectedObservedReference.runtimePosture)
                             : 'Unavailable'}
                         </Typography>
                       </Grid>
@@ -565,7 +548,7 @@ const CountiesHub = () => {
                         County. Its record counts, freshness, and runtime posture are suppressed.
                       </Alert>
                     )}
-                    {!selectedStatus && !selectedIdentityMismatch && (
+                    {!selectedCapability && !selectedIdentityMismatch && (
                       <Alert severity='warning'>
                         No governed public sales state is available for {selectedCounty.county}{' '}
                         County. TerraForge still opens in this county context, while sales review
@@ -595,12 +578,8 @@ const CountiesHub = () => {
             >
               {filteredCounties.map((county) => {
                 const selected = county.countyCode === selectedCountyCode;
-                const observedStatus = isRepositoryReferenceDemo(county.status)
-                  ? null
-                  : county.status;
-                const capability = county.status
-                  ? getWashingtonSalesReviewCapability(county.status)
-                  : null;
+                const capability = county.capability;
+                const observedReference = capability?.referenceData.observed ?? null;
                 return (
                   <Grid item xs={12} sm={6} lg={4} key={county.countyCode}>
                     <Card
@@ -639,13 +618,13 @@ const CountiesHub = () => {
                               />
                             </Stack>
                             <Typography variant='body2' color='text.secondary'>
-                              Source: {county.status
-                                ? formatStatus(county.status.primarySourceMode)
+                              Source: {capability
+                                ? formatStatus(capability.referenceData.posture)
                                 : 'Unavailable'}
                             </Typography>
                             <Typography variant='body2' color='text.secondary'>
-                              Freshness: {observedStatus
-                                ? observedStatus.latestSaleDate ?? 'Not reported'
+                              Freshness: {observedReference
+                                ? observedReference.latestSaleDate ?? 'Not reported'
                                 : 'Unavailable'}
                             </Typography>
                             <Typography variant='body2' color='text.secondary'>
@@ -657,11 +636,11 @@ const CountiesHub = () => {
                               <Chip
                                 size='small'
                                 variant='outlined'
-                                label={county.status
-                                  ? formatStatus(county.status.confidence.rawStatus)
+                                label={observedReference
+                                  ? formatStatus(observedReference.sourceStatus)
                                   : 'Not reported'}
                               />
-                              {county.status?.confidence.rawDriftDetected && (
+                              {observedReference?.sourceDriftDetected && (
                                 <Chip size='small' color='warning' label='Source drift reported' />
                               )}
                             </Stack>

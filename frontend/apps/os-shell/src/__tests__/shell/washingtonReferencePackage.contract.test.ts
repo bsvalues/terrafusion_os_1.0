@@ -8,6 +8,7 @@ import {
   fetchWashingtonCountyStatus,
   resolveWashingtonCountyStatus,
 } from '../../services/washingtonCountyLaunch';
+import { getWashingtonSalesReviewCapability } from '../../pages/forge/sales/washingtonSalesReviewCapability';
 
 interface ReferenceRoutes {
   detail: string;
@@ -98,11 +99,13 @@ describe('Washington assessor reference package', () => {
   });
 
   it('uses a valid same-origin hosted status package wherever the OS is running', async () => {
-    const fetchMock = vi.fn().mockResolvedValue({
-      ok: true,
-      status: 200,
-      json: async () => WASHINGTON_ASSESSOR_REFERENCE_PACKAGE.status,
-    });
+    const fetchMock = vi.fn()
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => WASHINGTON_ASSESSOR_REFERENCE_PACKAGE.status,
+      })
+      .mockResolvedValueOnce({ ok: true, status: 200 });
     vi.stubGlobal('fetch', fetchMock);
 
     const resolution = await resolveWashingtonCountyStatus();
@@ -116,6 +119,50 @@ describe('Washington assessor reference package', () => {
       cache: 'no-store',
       signal: undefined,
     });
+    expect(fetchMock).toHaveBeenCalledWith(WASHINGTON_REFERENCE_ROUTES.spokaneSales, {
+      cache: 'no-store',
+      method: 'HEAD',
+      signal: undefined,
+    });
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+
+  it('keeps a hosted package but makes a county workflow unavailable when its shard is missing', async () => {
+    const hostedStatus = {
+      ...WASHINGTON_ASSESSOR_REFERENCE_PACKAGE.status,
+      counties: WASHINGTON_ASSESSOR_REFERENCE_PACKAGE.status.counties.map((county) => ({
+        ...county,
+        primarySourceMode: 'public_recorder_export',
+      })),
+    };
+    const fetchMock = vi.fn()
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => hostedStatus,
+      })
+      .mockResolvedValueOnce({ ok: false, status: 404 });
+    vi.stubGlobal('fetch', fetchMock);
+
+    const resolution = await resolveWashingtonCountyStatus();
+
+    expect(resolution).toMatchObject({
+      packageSource: 'hosted',
+      usedRepositoryFallback: false,
+      counties: [{
+        county: 'Spokane',
+        countyCode: '063',
+        staticRoutes: { salesShard: '' },
+      }],
+    });
+    const spokane = resolution.counties[0];
+    expect(spokane).toBeDefined();
+    if (!spokane) throw new Error('Hosted Spokane status is missing.');
+    expect(getWashingtonSalesReviewCapability(spokane)).toMatchObject({
+      eligible: false,
+      status: 'sales-shard-unavailable',
+    });
+    expect(fetchMock).toHaveBeenCalledTimes(2);
   });
 
   it('falls back fail-closed when the same-origin hosted status route is absent', async () => {

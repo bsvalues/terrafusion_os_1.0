@@ -9,7 +9,14 @@ const SPOKANE_CAPABILITY_INPUT = {
   county: 'Spokane',
   countyCode: '063',
   primarySourceMode: 'public_recorder_export',
+  prometheusStatus: 'reference_ready',
+  latestSaleDate: '2025-12-31',
   stagedSales: 12,
+  needsReview: 4,
+  confidence: {
+    rawStatus: 'observed',
+    rawDriftDetected: false,
+  },
   staticRoutes: {
     salesShard: '/launch-data/washington/sales/by-county/063.json',
   },
@@ -26,6 +33,18 @@ describe('Forge-owned Washington sales-review capability', () => {
       status: 'available',
       statusLabel: 'Sales review available',
       unavailableMessage: null,
+      referenceData: {
+        posture: 'public_recorder_export',
+        isSyntheticReference: false,
+        observed: {
+          recordCount: 12,
+          latestSaleDate: '2025-12-31',
+          needsReview: 4,
+          runtimePosture: 'reference_ready',
+          sourceStatus: 'observed',
+          sourceDriftDetected: false,
+        },
+      },
     });
   });
 
@@ -62,11 +81,32 @@ describe('Forge-owned Washington sales-review capability', () => {
   it('does not mistake invented repository demo records for assessor-ready public data', () => {
     expect(getWashingtonSalesReviewCapability({
       ...SPOKANE_CAPABILITY_INPUT,
-      primarySourceMode: 'repository_reference_demo',
+      primarySourceMode: ' Repository_Reference_Demo ',
     })).toMatchObject({
       eligible: false,
       status: 'reference-demo-only',
       statusLabel: 'Reference demo only',
+      referenceData: {
+        posture: 'repository_reference_demo',
+        isSyntheticReference: true,
+        observed: null,
+      },
+    });
+  });
+
+  it('fails closed when the Forge-owned source posture is unavailable', () => {
+    expect(getWashingtonSalesReviewCapability({
+      ...SPOKANE_CAPABILITY_INPUT,
+      primarySourceMode: '  ',
+    })).toMatchObject({
+      eligible: false,
+      status: 'source-posture-unavailable',
+      statusLabel: 'Source gap',
+      referenceData: {
+        posture: 'unavailable',
+        isSyntheticReference: false,
+        observed: null,
+      },
     });
   });
 
