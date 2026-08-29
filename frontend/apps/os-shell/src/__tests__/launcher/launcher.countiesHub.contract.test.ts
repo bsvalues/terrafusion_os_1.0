@@ -20,7 +20,7 @@ import {
 } from '../../components/launcher/launcherModel';
 
 function getCountiesHubLauncherItem() {
-  const item = getLauncherItems().find((candidate) => candidate.id === 'counties-hub');
+  const item = getLauncherItems().find((candidate) => candidate.id === 'counties');
   expect(item).toBeDefined();
   return item!;
 }
@@ -36,7 +36,7 @@ describe('Counties HUB launcher entry', () => {
     expect(item).toMatchObject({
       label: 'Counties HUB',
       description: 'Washington assessor county workspace',
-      intent: 'system',
+      intent: 'standalone',
       route: '/counties',
       moduleId: 'counties',
       iconName: 'Map',
@@ -46,8 +46,8 @@ describe('Counties HUB launcher entry', () => {
     );
     expect(item.a11yLabel).toMatch(/Washington assessor county workspace/i);
 
-    const systemSection = getLauncherSections().find((section) => section.id === 'system');
-    expect(systemSection?.items).toContainEqual(item);
+    const suitesSection = getLauncherSections().find((section) => section.id === 'suites');
+    expect(suitesSection?.items).toContainEqual(item);
     expect(filterLauncherItems(getLauncherItems(), 'assessor')).toContainEqual(item);
   });
 

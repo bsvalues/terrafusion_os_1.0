@@ -52,7 +52,7 @@ export interface LauncherItem {
   icon?: string;
   /** Navigation intent */
   intent: LauncherIntent;
-  /** Route path (for navigation) */
+  /** Route metadata for route-driven items and deep links */
   route: string;
   /** Canonical module ID when activation must use the module orchestrator */
   moduleId?: string;
@@ -80,26 +80,36 @@ export interface LauncherSection {
 // ============================================================================
 
 // ============================================================================
-// System Actions
+// Canonical Module Actions
 // ============================================================================
 
 /**
- * System surfaces and actions available in the launcher.
- * These are not suites but OS-level destinations and operations.
+ * Window-spawned operational modules exposed by the launcher.
  */
-export const SYSTEM_ACTIONS: LauncherItem[] = [
+export const MODULE_ACTIONS: LauncherItem[] = [
   {
-    id: 'counties-hub',
+    id: 'counties',
     label: 'Counties HUB',
     description: 'Washington assessor county workspace',
     iconName: 'Map',
     icon: 'Map',
-    intent: 'system',
+    intent: 'standalone',
     route: '/counties',
     moduleId: 'counties',
     keywords: ['counties', 'county', 'washington', 'assessor', 'terraforge', 'public data'],
     a11yLabel: 'Counties HUB - Open the Washington assessor county workspace',
   },
+];
+
+// ============================================================================
+// System Actions
+// ============================================================================
+
+/**
+ * System actions available in the launcher.
+ * These are not suites but OS-level destinations and operations.
+ */
+export const SYSTEM_ACTIONS: LauncherItem[] = [
   {
     id: 'settings',
     label: 'Settings',
@@ -189,7 +199,7 @@ export function getLauncherItems(): LauncherItem[] {
     a11yLabel: `${feature.displayName} - Opens standalone`,
   }));
 
-  return [...suiteItems, ...osFeatureItems, ...SYSTEM_ACTIONS];
+  return [...suiteItems, ...osFeatureItems, ...MODULE_ACTIONS, ...SYSTEM_ACTIONS];
 }
 
 /**
