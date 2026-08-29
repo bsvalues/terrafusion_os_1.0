@@ -105,30 +105,57 @@ const CountiesHub = () => {
     return () => controller.abort();
   }, [loadCounties]);
 
-  const countyDirectory = useMemo<WashingtonCountyDirectoryEntry[]>(() => {
+  const {
+    directory: countyDirectory,
+    registryIssueStatuses,
+  } = useMemo<{
+    directory: WashingtonCountyDirectoryEntry[];
+    registryIssueStatuses: WashingtonCountyStatusEntry[];
+  }>(() => {
     const canonicalNameByCode = new Map<string, string>(
       WASHINGTON_COUNTIES.map((county) => [county.code, county.name] as const),
     );
+    const canonicalCodeByName = new Map<string, string>(
+      WASHINGTON_COUNTIES.map((county) => [normalizeCountyName(county.name), county.code] as const),
+    );
     const validatedStatusByCode = new Map<string, WashingtonCountyStatusEntry>();
     const identityMismatchByCode = new Map<string, WashingtonCountyStatusEntry>();
+    const registryIssueStatuses: WashingtonCountyStatusEntry[] = [];
 
     for (const observedStatus of counties) {
       const canonicalName = canonicalNameByCode.get(observedStatus.countyCode);
-      if (!canonicalName) continue;
+      const canonicalCodeForName = canonicalCodeByName.get(
+        normalizeCountyName(observedStatus.county),
+      );
 
-      if (normalizeCountyName(observedStatus.county) === normalizeCountyName(canonicalName)) {
+      if (
+        canonicalName
+        && canonicalCodeForName === observedStatus.countyCode
+        && normalizeCountyName(observedStatus.county) === normalizeCountyName(canonicalName)
+      ) {
         validatedStatusByCode.set(observedStatus.countyCode, observedStatus);
       } else {
-        identityMismatchByCode.set(observedStatus.countyCode, observedStatus);
+        registryIssueStatuses.push(observedStatus);
+        if (canonicalName) {
+          identityMismatchByCode.set(observedStatus.countyCode, observedStatus);
+        }
+        if (canonicalCodeForName) {
+          identityMismatchByCode.set(canonicalCodeForName, observedStatus);
+        }
       }
     }
 
-    return WASHINGTON_COUNTIES.map((county) => ({
-      county: county.name,
-      countyCode: county.code,
-      status: validatedStatusByCode.get(county.code) ?? null,
-      identityMismatch: identityMismatchByCode.get(county.code) ?? null,
-    }));
+    const directory = WASHINGTON_COUNTIES.map((county) => {
+      const identityMismatch = identityMismatchByCode.get(county.code) ?? null;
+      return {
+        county: county.name,
+        countyCode: county.code,
+        status: identityMismatch ? null : validatedStatusByCode.get(county.code) ?? null,
+        identityMismatch,
+      };
+    });
+
+    return { directory, registryIssueStatuses };
   }, [counties]);
 
   const selectedCounty = useMemo(
@@ -264,6 +291,18 @@ const CountiesHub = () => {
                 The governed feed currently reports status for {observedCountyCount} of{' '}
                 {EXPECTED_WASHINGTON_COUNTIES} Washington counties. Missing counties remain
                 explicitly unavailable rather than being synthesized.
+              </Alert>
+            )}
+
+            {registryIssueStatuses.length > 0 && (
+              <Alert severity='error' data-testid='county-registry-integrity-error'>
+                The governed feed reported {registryIssueStatuses.length}{' '}
+                unregistered or mismatched county{' '}
+                {registryIssueStatuses.length === 1 ? 'identity' : 'identities'}. Their status data
+                is suppressed:{' '}
+                {registryIssueStatuses
+                  .map((status) => `${status.county} (${status.countyCode})`)
+                  .join(', ')}.
               </Alert>
             )}
 
@@ -418,9 +457,8 @@ const CountiesHub = () => {
             >
               {filteredCounties.map((county) => {
                 const selected = county.countyCode === selectedCountyCode;
-                const capabilityStatus = county.status ?? county.identityMismatch;
-                const capability = capabilityStatus
-                  ? getWashingtonSalesReviewCapability(capabilityStatus)
+                const capability = county.status
+                  ? getWashingtonSalesReviewCapability(county.status)
                   : null;
                 return (
                   <Grid item xs={12} sm={6} lg={4} key={county.countyCode}>
@@ -454,7 +492,9 @@ const CountiesHub = () => {
                               <Chip
                                 size='small'
                                 color={capability?.eligible ? 'success' : 'default'}
-                                label={capability?.statusLabel ?? 'Public data unavailable'}
+                                label={county.identityMismatch
+                                  ? 'Registry mismatch'
+                                  : capability?.statusLabel ?? 'Public data unavailable'}
                               />
                             </Stack>
                             <Typography variant='body2' color='text.secondary'>
