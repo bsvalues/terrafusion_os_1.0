@@ -2,7 +2,16 @@
  * @vitest-environment jsdom
  */
 
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+
+const { activateModuleMock } = vi.hoisted(() => ({
+  activateModuleMock: vi.fn(),
+}));
+
+vi.mock('../../orchestration/moduleActivation', () => ({
+  activateModule: activateModuleMock,
+}));
+
 import {
   filterLauncherItems,
   getLauncherItems,
@@ -17,6 +26,10 @@ function getCountiesHubLauncherItem() {
 }
 
 describe('Counties HUB launcher entry', () => {
+  beforeEach(() => {
+    activateModuleMock.mockReset().mockResolvedValue(undefined);
+  });
+
   it('exposes the Washington assessor journey through the real launcher model', () => {
     const item = getCountiesHubLauncherItem();
 
@@ -25,6 +38,7 @@ describe('Counties HUB launcher entry', () => {
       description: 'Washington assessor county workspace',
       intent: 'system',
       route: '/counties',
+      moduleId: 'counties',
       iconName: 'Map',
     });
     expect(item.keywords).toEqual(
@@ -37,12 +51,18 @@ describe('Counties HUB launcher entry', () => {
     expect(filterLauncherItems(getLauncherItems(), 'assessor')).toContainEqual(item);
   });
 
-  it('navigates from the primary launcher to the existing Counties HUB route', () => {
+  it('activates the canonical Counties HUB window through the module orchestrator', async () => {
     const navigate = vi.fn();
 
     navigateToLauncherItem(getCountiesHubLauncherItem(), navigate);
 
-    expect(navigate).toHaveBeenCalledOnce();
-    expect(navigate).toHaveBeenCalledWith('/counties');
+    await vi.waitFor(() => {
+      expect(activateModuleMock).toHaveBeenCalledOnce();
+      expect(activateModuleMock).toHaveBeenCalledWith('counties', {
+        source: 'start_menu',
+        actor: null,
+      });
+    });
+    expect(navigate).not.toHaveBeenCalled();
   });
 });

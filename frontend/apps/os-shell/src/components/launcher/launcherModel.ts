@@ -54,6 +54,8 @@ export interface LauncherItem {
   intent: LauncherIntent;
   /** Route path (for navigation) */
   route: string;
+  /** Canonical module ID when activation must use the module orchestrator */
+  moduleId?: string;
   /** Optional action function (for non-route items) */
   action?: () => void;
   /** Search keywords for filtering */
@@ -94,6 +96,7 @@ export const SYSTEM_ACTIONS: LauncherItem[] = [
     icon: 'Map',
     intent: 'system',
     route: '/counties',
+    moduleId: 'counties',
     keywords: ['counties', 'county', 'washington', 'assessor', 'terraforge', 'public data'],
     a11yLabel: 'Counties HUB - Open the Washington assessor county workspace',
   },
@@ -244,8 +247,8 @@ export function launcherItemToOsAction(item: LauncherItem): OsAction {
 }
 
 /**
- * Navigate to a launcher item.
- * Routes through executeOsAction for consistent telemetry.
+ * Dispatch a launcher item through its canonical route or module lifecycle.
+ * Both paths preserve the owning surface's telemetry contract.
  * Slice 16: Unified OS action dispatch.
  */
 export function navigateToLauncherItem(
@@ -256,6 +259,19 @@ export function navigateToLauncherItem(
   // Legacy action items still execute directly (for backward compat)
   if (item.action) {
     item.action();
+    return;
+  }
+
+  // Window-spawned operational surfaces use the canonical orchestrator so
+  // activation deduplicates/focuses windows, emits telemetry, and warm-loads.
+  const canonicalModuleId = item.moduleId;
+  if (canonicalModuleId) {
+    void import('../../orchestration/moduleActivation').then(({ activateModule }) => {
+      void activateModule(canonicalModuleId, {
+        source: 'start_menu',
+        actor: actor ?? null,
+      });
+    });
     return;
   }
 
