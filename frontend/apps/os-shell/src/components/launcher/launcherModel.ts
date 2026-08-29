@@ -82,10 +82,21 @@ export interface LauncherSection {
 // ============================================================================
 
 /**
- * System actions available in the launcher.
- * These are not suites but system-level operations.
+ * System surfaces and actions available in the launcher.
+ * These are not suites but OS-level destinations and operations.
  */
 export const SYSTEM_ACTIONS: LauncherItem[] = [
+  {
+    id: 'counties-hub',
+    label: 'Counties HUB',
+    description: 'Washington assessor county workspace',
+    iconName: 'Map',
+    icon: 'Map',
+    intent: 'system',
+    route: '/counties',
+    keywords: ['counties', 'county', 'washington', 'assessor', 'terraforge', 'public data'],
+    a11yLabel: 'Counties HUB - Open the Washington assessor county workspace',
+  },
   {
     id: 'settings',
     label: 'Settings',
