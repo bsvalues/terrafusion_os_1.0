@@ -29,6 +29,7 @@ import {
 } from '@mui/icons-material';
 import {
   getWashingtonPublicSourceInventory,
+  matchesWashingtonPublicSourceQuery,
   WASHINGTON_PUBLIC_SOURCE_INVENTORY_GENERATED_AT,
   WASHINGTON_PUBLIC_SOURCE_INVENTORY_LIMITATION,
   type WashingtonPublicSourceInventoryEntry,
@@ -286,7 +287,7 @@ const CountiesHub = () => {
       county.county.toLowerCase().includes(normalizedQuery)
       || county.countyCode.includes(normalizedQuery)
       || county.capability?.referenceData.posture.includes(normalizedQuery)
-      || county.publicSource?.acquisitionFamily.toLowerCase().includes(normalizedQuery)
+      || matchesWashingtonPublicSourceQuery(county.publicSource, normalizedQuery)
       || (county.identityMismatch !== null && 'registry mismatch'.includes(normalizedQuery))
       || (!county.capability && 'unavailable'.includes(normalizedQuery)),
     );
@@ -559,8 +560,26 @@ const CountiesHub = () => {
                             </Typography>
                           </Box>
                           <Grid container spacing={2}>
+                            <Grid item xs={12}>
+                              <Typography variant='caption' color='text.secondary'>Primary public sales workflow</Typography>
+                              <Typography variant='body2'>
+                                {selectedCounty.publicSource.primarySalesSource}
+                              </Typography>
+                            </Grid>
                             <Grid item xs={12} sm={6}>
-                              <Typography variant='caption' color='text.secondary'>Acquisition path</Typography>
+                              <Typography variant='caption' color='text.secondary'>Fallback public workflow</Typography>
+                              <Typography variant='body2'>
+                                {selectedCounty.publicSource.fallbackSource ?? 'Not inventoried'}
+                              </Typography>
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                              <Typography variant='caption' color='text.secondary'>GIS / map surface</Typography>
+                              <Typography variant='body2'>
+                                {selectedCounty.publicSource.gisMapSurface ?? 'Not inventoried'}
+                              </Typography>
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                              <Typography variant='caption' color='text.secondary'>Acquisition family</Typography>
                               <Typography variant='body2'>
                                 {selectedCounty.publicSource.acquisitionFamily}
                               </Typography>
@@ -676,7 +695,6 @@ const CountiesHub = () => {
                           setSelectedCountyCode(county.countyCode);
                           setLaunchError(null);
                         }}
-                        sx={{ height: '100%', alignItems: 'stretch' }}
                       >
                         <CardContent>
                           <Stack spacing={1.5}>

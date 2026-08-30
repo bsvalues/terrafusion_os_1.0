@@ -410,6 +410,12 @@ describe('Washington Counties Hub assessor journey', () => {
     expect(within(selectedContext).getAllByText('Unavailable')).toHaveLength(4);
     expect(screen.getByText(/No governed public sales state is available for Adams/i))
       .toHaveTextContent(/TerraForge still opens.*unavailable instead of borrowing/i);
+    expect(selectedContext).toHaveTextContent(
+      'Parcel/property search via TaxSifter; direct sales UI not yet verified in this pass',
+    );
+    expect(selectedContext).toHaveTextContent('MapSifter/parcel detail history');
+    expect(selectedContext).toHaveTextContent('GIS / map surface');
+    expect(selectedContext).toHaveTextContent('MapSifter');
     expect(selectedContext).toHaveTextContent(/Parcel transfer history/i);
     expect(selectedContext).toHaveTextContent(/Source path researched/i);
     const officialSourceLink = within(selectedContext).getByRole('link', {
@@ -442,6 +448,19 @@ describe('Washington Counties Hub assessor journey', () => {
     expect(getWashingtonSalesReviewCapabilityMock).not.toHaveBeenCalledWith(
       expect.objectContaining({ county: 'Adams' }),
     );
+  });
+
+  it('finds counties by their canonical public workflow guidance', async () => {
+    render(<CountiesHub />);
+
+    await screen.findByRole('option', { name: 'Select Spokane County' });
+    fireEvent.change(screen.getByLabelText('Find a Washington county'), {
+      target: { value: 'SCOUT Sales Search' },
+    });
+
+    expect(screen.getByRole('option', { name: 'Select Spokane County' })).toBeInTheDocument();
+    expect(screen.queryByRole('option', { name: 'Select Adams County' })).not.toBeInTheDocument();
+    expect(screen.getAllByRole('option')).toHaveLength(1);
   });
 
   it('falls back to repository navigation without exposing synthetic records as public data', async () => {

@@ -3,6 +3,7 @@ import coverageProof from '../../../../../../os-platform/core/pilot/evidence/was
 import { WASHINGTON_COUNTIES } from '../../pages/forge/sales/washingtonLaunchApi';
 import {
   getWashingtonPublicSourceInventory,
+  matchesWashingtonPublicSourceQuery,
   WASHINGTON_PUBLIC_SOURCE_INVENTORY,
   WASHINGTON_PUBLIC_SOURCE_INVENTORY_GENERATED_AT,
   WASHINGTON_PUBLIC_SOURCE_INVENTORY_LIMITATION,
@@ -20,9 +21,24 @@ describe('Washington public-source inventory projection', () => {
       expect(source, `${county.name} public-source inventory`).not.toBeNull();
       expect(source!.countyCode).toBe(county.code);
       expect(new URL(source!.officialAssessorBaseUrl).protocol).toBe('https:');
+      expect(source!.primarySalesSource.length).toBeGreaterThan(0);
+      expect(source!.fallbackSource === null || source!.fallbackSource.length > 0).toBe(true);
       expect(source!.acquisitionFamily.length).toBeGreaterThan(0);
+      expect(source!.gisMapSurface === null || source!.gisMapSurface.length > 0).toBe(true);
       expect(['adapter-ready', 'researched']).toContain(source!.status);
     }
+  });
+
+  it('matches canonical workflow guidance for Counties HUB search', () => {
+    const spokane = getWashingtonPublicSourceInventory('Spokane');
+    const adams = getWashingtonPublicSourceInventory('Adams');
+
+    expect(matchesWashingtonPublicSourceQuery(spokane, ' SCOUT Sales Search ')).toBe(true);
+    expect(matchesWashingtonPublicSourceQuery(spokane, 'scout map')).toBe(true);
+    expect(matchesWashingtonPublicSourceQuery(adams, 'MapSifter/parcel detail')).toBe(true);
+    expect(matchesWashingtonPublicSourceQuery(adams, 'invented workflow')).toBe(false);
+    expect(matchesWashingtonPublicSourceQuery(null, 'SCOUT')).toBe(false);
+    expect(matchesWashingtonPublicSourceQuery(spokane, '   ')).toBe(false);
   });
 
   it('matches the canonical core evidence fields consumed by the product', () => {
@@ -37,7 +53,10 @@ describe('Washington public-source inventory projection', () => {
         county: canonicalByCounty.get(projected.county)?.county,
         officialAssessorBaseUrl:
           canonicalByCounty.get(projected.county)?.officialAssessorBaseUrl,
+        primarySalesSource: canonicalByCounty.get(projected.county)?.primarySalesSource,
+        fallbackSource: canonicalByCounty.get(projected.county)?.fallbackSource,
         acquisitionFamily: canonicalByCounty.get(projected.county)?.acquisitionFamily,
+        gisMapSurface: canonicalByCounty.get(projected.county)?.gisMapSurface,
         status: canonicalByCounty.get(projected.county)?.status,
       }));
     }
