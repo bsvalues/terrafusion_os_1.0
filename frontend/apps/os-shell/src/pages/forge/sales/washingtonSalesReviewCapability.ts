@@ -262,8 +262,10 @@ export function getWashingtonSalesReviewCapability(
   const normalizedPosture = normalizeReferenceDataPosture(input.primarySourceMode);
   const isSyntheticReference = isRepositoryReferenceDemoPosture(input.primarySourceMode);
   const isSourcePostureUnavailable = isUnavailableReferenceDataPosture(input.primarySourceMode);
-  const salesClaimsHaveShardEvidence = input.salesShardVerification === 'verified'
-    || input.salesShardVerification === 'not-required';
+  // Only a parsed county shard can support observed public-sales claims.
+  // `not-required` is reserved for postures where sales are already
+  // inapplicable (for example, the synthetic repository reference package).
+  const salesClaimsHaveShardEvidence = input.salesShardVerification === 'verified';
   const referenceData: WashingtonSalesReviewReferenceData = {
     posture: normalizedPosture || 'unavailable',
     isSyntheticReference,
@@ -334,7 +336,7 @@ export function getWashingtonSalesReviewCapability(
     };
   }
 
-  if (input.salesShardVerification === 'unverified') {
+  if (input.salesShardVerification !== 'verified') {
     return {
       eligible: false,
       status: 'sales-shard-verification-required',

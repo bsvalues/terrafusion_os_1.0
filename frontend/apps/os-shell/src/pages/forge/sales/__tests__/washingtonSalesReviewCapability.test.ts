@@ -111,6 +111,23 @@ describe('Forge-owned Washington sales-review capability', () => {
     });
   });
 
+  it('does not treat not-required as observed public-sales evidence', () => {
+    expect(getWashingtonSalesReviewCapability({
+      ...SPOKANE_CAPABILITY_INPUT,
+      stagedSales: 0,
+      needsReview: 9,
+      latestSaleDate: '2099-12-31',
+      salesShardVerification: 'not-required',
+    })).toMatchObject({
+      eligible: false,
+      status: 'sales-shard-verification-required',
+      statusLabel: 'Verification required',
+      referenceData: {
+        observed: null,
+      },
+    });
+  });
+
   it('does not mistake invented repository demo records for assessor-ready public data', () => {
     expect(getWashingtonSalesReviewCapability({
       ...SPOKANE_CAPABILITY_INPUT,
