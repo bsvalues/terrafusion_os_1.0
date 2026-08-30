@@ -252,6 +252,55 @@ describe('Washington Counties Hub assessor journey', () => {
     });
   });
 
+  it('keeps TerraForge navigation available while selected-county verification is pending', async () => {
+    const unverifiedStatus = countyStatus({
+      salesShardVerification: 'unverified',
+    });
+    resolveWashingtonCountyStatusMock.mockResolvedValue(
+      countyStatusResolution([unverifiedStatus]),
+    );
+    verifyWashingtonCountySalesShardMock.mockReturnValue(
+      new Promise<WashingtonCountyStatusEntry>(() => undefined),
+    );
+    getWashingtonSalesReviewCapabilityMock.mockReturnValue({
+      eligible: false,
+      status: 'sales-shard-verification-required',
+      statusLabel: 'Verification required',
+      unavailableMessage: 'The selected county package must be verified.',
+      referenceData: {
+        posture: 'public_recorder_export',
+        isSyntheticReference: false,
+        observed: null,
+      },
+    });
+
+    render(<CountiesHub />);
+    fireEvent.click(await screen.findByRole('option', { name: 'Select Spokane County' }));
+
+    await waitFor(() => {
+      expect(verifyWashingtonCountySalesShardMock).toHaveBeenCalledWith(
+        expect.objectContaining({ countyCode: '063' }),
+        expect.any(AbortSignal),
+      );
+    });
+    const openTerraForge = screen.getByRole('button', { name: 'Open TerraForge' });
+    expect(openTerraForge).toBeEnabled();
+    fireEvent.click(openTerraForge);
+
+    await waitFor(() => {
+      expect(activateModuleMock).toHaveBeenCalledWith(
+        'suite-forge',
+        expect.objectContaining({
+          metadata: expect.objectContaining({
+            countyCode: '063',
+            salesReviewAvailability: 'unavailable',
+            salesReviewUnavailableMessage: 'The selected county package must be verified.',
+          }),
+        }),
+      );
+    });
+  });
+
   it('opens TerraForge context for any of 39 counties while marking missing sales data unavailable', async () => {
     render(<CountiesHub />);
 

@@ -230,8 +230,6 @@ const CountiesHub = () => {
   const selectedCapability = selectedCounty?.capability ?? null;
   const selectedObservedReference = selectedCapability?.referenceData.observed ?? null;
   const selectedIdentityMismatch = selectedCounty?.identityMismatch ?? null;
-  const selectedShardVerificationPending =
-    selectedCapability?.status === 'sales-shard-verification-required';
   const observedCountyCount = useMemo(
     () => countyDirectory.filter(
       (county) => Boolean(county.capability?.referenceData.observed),
@@ -281,7 +279,7 @@ const CountiesHub = () => {
   );
 
   const launchSelectedCounty = useCallback(async () => {
-    if (!selectedCounty || selectedShardVerificationPending) return;
+    if (!selectedCounty) return;
 
     setLaunching(true);
     setLaunchError(null);
@@ -321,7 +319,6 @@ const CountiesHub = () => {
     selectedObservedReference,
     selectedSalesReviewAvailable,
     selectedSalesReviewUnavailableMessage,
-    selectedShardVerificationPending,
   ]);
 
   return (
@@ -477,14 +474,10 @@ const CountiesHub = () => {
                       <Button
                         variant='contained'
                         startIcon={<LaunchIcon />}
-                        disabled={launching || selectedShardVerificationPending}
+                        disabled={launching}
                         onClick={() => void launchSelectedCounty()}
                       >
-                        {selectedShardVerificationPending
-                          ? 'Checking county data…'
-                          : launching
-                            ? 'Opening TerraForge…'
-                            : 'Open TerraForge'}
+                        {launching ? 'Opening TerraForge…' : 'Open TerraForge'}
                       </Button>
                     </Stack>
 

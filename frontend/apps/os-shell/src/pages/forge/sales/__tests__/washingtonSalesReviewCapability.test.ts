@@ -3,6 +3,7 @@ import {
   getWashingtonSalesReviewCapability,
   isWashingtonSalesReviewLaunchEnabled,
   parseWashingtonCountiesHubHandoff,
+  type WashingtonSalesReviewCapabilityInput,
 } from '../washingtonSalesReviewCapability';
 
 const SPOKANE_CAPABILITY_INPUT = {
@@ -13,6 +14,7 @@ const SPOKANE_CAPABILITY_INPUT = {
   latestSaleDate: '2025-12-31',
   stagedSales: 12,
   needsReview: 4,
+  salesShardVerification: 'verified',
   confidence: {
     rawStatus: 'observed',
     rawDriftDetected: false,
@@ -20,7 +22,7 @@ const SPOKANE_CAPABILITY_INPUT = {
   staticRoutes: {
     salesShard: '/launch-data/washington/sales/by-county/063.json',
   },
-};
+} satisfies WashingtonSalesReviewCapabilityInput;
 
 describe('Forge-owned Washington sales-review capability', () => {
   it('allows an explicit read-only Counties Hub handoff without enabling live-suite fallback', () => {

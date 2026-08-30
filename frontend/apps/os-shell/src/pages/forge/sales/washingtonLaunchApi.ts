@@ -407,6 +407,19 @@ export function validateAndCacheWashingtonLaunchCountyShard(
   return verifiedSummary;
 }
 
+/**
+ * Remove a previously verified shard when fresh hosted evidence fails closed.
+ * Verification and SalesForge share this cache, so an unavailable result must
+ * also prevent later data-loader calls from serving the older body.
+ */
+export function evictWashingtonLaunchCountyShard(
+  expectedCountyCode: string,
+  packageSource: WashingtonReferencePackageSource = 'hosted',
+): void {
+  const normalized = normalizeCountyCode(expectedCountyCode);
+  shardCache.delete(`${packageSource}:${normalized}`);
+}
+
 async function loadCountyShard(
   countyCode: string,
   packageSource: WashingtonReferencePackageSource = 'hosted',
