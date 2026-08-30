@@ -23,6 +23,9 @@ const SPOKANE_SCOPE: AtlasRouteScope = {
 };
 
 const statusPayload = {
+  schemaVersion: 'terrafusion.washington.county-status.v1',
+  generatedAt: '2026-04-22T00:00:00.000Z',
+  sourcePosture: 'repository_reference_demo',
   counties: [
     {
       county: 'Benton',
@@ -143,6 +146,7 @@ describe('fetchAtlasCountyContext contract posture', () => {
 
   it('uses county status without fetching when no detail route is published', async () => {
     const fetchMock = mockFetch({
+      ...statusPayload,
       counties: statusPayload.counties.map((county) =>
         county.countyCode === '063'
           ? {
