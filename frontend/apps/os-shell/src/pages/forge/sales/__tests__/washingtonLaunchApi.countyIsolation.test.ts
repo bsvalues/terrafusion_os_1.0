@@ -265,6 +265,9 @@ describe('Washington launch shard county isolation', () => {
   it('preserves public source and quality evidence for an assessor review', async () => {
     const record = {
       ...saleRecord('Whatcom', '073', 'whatcom-evidence-sale'),
+      documentNumber: '00A-00127',
+      grantor: 'Northwest Holdings LLC',
+      grantee: 'Riverbend Housing Trust',
       sourceMode: 'public_recorder_export',
       candidateSource: 'whatcom_sales_candidate_index',
       confidenceScore: 0.91,
@@ -297,6 +300,10 @@ describe('Washington launch shard county isolation', () => {
 
     expect(detail).toMatchObject({
       countyCode: '073',
+      documentNumber: '00A-00127',
+      grantor: 'Northwest Holdings LLC',
+      grantee: 'Riverbend Housing Trust',
+      exciseNumber: null,
       dataTrustTier: 'public-reference-not-county-certified',
       sourceMode: 'public_recorder_export',
       candidateSource: 'whatcom_sales_candidate_index',

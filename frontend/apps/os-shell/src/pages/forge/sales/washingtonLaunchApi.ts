@@ -596,7 +596,12 @@ function toDetail(sale: LaunchSaleRecord): SaleDetail {
     imprvTypeCode: null,
     saleAdjustmentAmount: null,
     saleExemptionAmount: null,
-    exciseNumber: sale.documentNumber ? Number.parseInt(sale.documentNumber, 10) || null : null,
+    // Recorder identifiers may be alphanumeric or zero-padded. Keep the public value
+    // lossless instead of presenting a truncated value in a different identifier field.
+    exciseNumber: null,
+    documentNumber: sale.documentNumber,
+    grantor: sale.grantor,
+    grantee: sale.grantee,
     sourceChangeOfOwnerId: null,
     slLandAcres: typeof sale.acres === 'number' ? sale.acres : Number.parseFloat(String(sale.acres ?? '')) || null,
     slLandSqft: null,

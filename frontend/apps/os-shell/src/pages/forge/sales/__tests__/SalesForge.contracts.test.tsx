@@ -136,6 +136,9 @@ describe('SalesForge contract posture', () => {
         address: 'Reference address',
         saleDate: '2025-01-15',
         salePrice: 300_000,
+        documentNumber: '00A-00127',
+        grantor: 'Northwest Holdings LLC',
+        grantee: 'Riverbend Housing Trust',
         dataTrustTier: 'public-reference-not-county-certified',
         sourceMode: 'public_recorder_export',
         candidateSource: 'spokane_sales_candidate_index',
@@ -157,6 +160,14 @@ describe('SalesForge contract posture', () => {
 
     render(<SaleDetailPanel />);
 
+    const transactionEvidence = screen.getByTestId('salesforge-transaction-evidence');
+    expect(transactionEvidence).toHaveTextContent('Recorder document');
+    expect(transactionEvidence).toHaveTextContent('00A-00127');
+    expect(transactionEvidence).toHaveTextContent('Grantor');
+    expect(transactionEvidence).toHaveTextContent('Northwest Holdings LLC');
+    expect(transactionEvidence).toHaveTextContent('Grantee');
+    expect(transactionEvidence).toHaveTextContent('Riverbend Housing Trust');
+
     const evidence = screen.getByTestId('salesforge-source-evidence');
     expect(evidence).toHaveTextContent('public reference not county certified');
     expect(evidence).toHaveTextContent('public recorder export');
@@ -171,6 +182,9 @@ describe('SalesForge contract posture', () => {
     expect(screen.getByText(/Reference evidence only/i)).toBeInTheDocument();
 
     const decisionControl = screen.getByRole('textbox', { name: 'Research notes' });
+    expect(
+      transactionEvidence.compareDocumentPosition(decisionControl) & Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
     expect(
       evidence.compareDocumentPosition(decisionControl) & Node.DOCUMENT_POSITION_FOLLOWING,
     ).toBeTruthy();

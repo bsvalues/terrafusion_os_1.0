@@ -62,6 +62,10 @@ export interface SaleDetail extends SaleQueueItem {
   saleAdjustmentAmount: number | null;
   saleExemptionAmount: number | null;
   exciseNumber: number | null;
+  /** Lossless recorder identity and transaction parties supplied by public launch data. */
+  documentNumber?: string | null;
+  grantor?: string | null;
+  grantee?: string | null;
   sourceChangeOfOwnerId: number | null;
   slLandAcres: number | null;
   slLandSqft: number | null;
