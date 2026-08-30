@@ -95,6 +95,7 @@ export interface WashingtonCountiesHubHandoff {
 }
 
 const REPOSITORY_REFERENCE_DEMO_POSTURE = 'repository_reference_demo';
+const SYNTHETIC_REFERENCE_RECORD_TYPE = 'synthetic_reference';
 
 function normalizeReferenceDataPosture(value: string): string {
   return value.trim().toLowerCase();
@@ -107,6 +108,50 @@ function isRepositoryReferenceDemoPosture(value: string): boolean {
 function isUnavailableReferenceDataPosture(value: string): boolean {
   const normalizedPosture = normalizeReferenceDataPosture(value);
   return normalizedPosture.length === 0 || normalizedPosture === 'unavailable';
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null;
+}
+
+function isSyntheticReferenceMarker(value: unknown): boolean {
+  if (typeof value !== 'string') return false;
+  const normalizedValue = normalizeReferenceDataPosture(value);
+  return normalizedValue === REPOSITORY_REFERENCE_DEMO_POSTURE
+    || normalizedValue === SYNTHETIC_REFERENCE_RECORD_TYPE;
+}
+
+/**
+ * A hosted status document cannot relabel synthetic records as observed public
+ * data. Require every record's source mode to support the county posture and
+ * reject explicit synthetic markers anywhere in the record provenance before
+ * the shard enters the SalesForge cache.
+ *
+ * Shape errors remain the launch API validator's responsibility. Returning
+ * true for a non-shard shape lets that validator provide the canonical
+ * fail-closed result without duplicating its complete schema here.
+ */
+function shardRecordProvenanceSupportsPosture(
+  value: unknown,
+  expectedPosture: string,
+): boolean {
+  if (!isRecord(value) || !Array.isArray(value.records)) return true;
+  const normalizedExpectedPosture = normalizeReferenceDataPosture(expectedPosture);
+
+  return value.records.every((record) => {
+    if (!isRecord(record)) return true;
+    const normalizedSourceMode = typeof record.sourceMode === 'string'
+      ? normalizeReferenceDataPosture(record.sourceMode)
+      : '';
+    const candidateRecordType = isRecord(record.provenance)
+      ? record.provenance.candidateRecordType
+      : null;
+
+    return normalizedSourceMode === normalizedExpectedPosture
+      && !isSyntheticReferenceMarker(record.sourceMode)
+      && !isSyntheticReferenceMarker(record.candidateSource)
+      && !isSyntheticReferenceMarker(candidateRecordType);
+  });
 }
 
 function isNullableFiniteNumber(value: unknown): value is number | null {
@@ -347,6 +392,9 @@ export async function verifyWashingtonSalesReviewHostedShard(
     if (!response.ok) return { state: 'unavailable' };
 
     const payload = await response.json() as unknown;
+    if (!shardRecordProvenanceSupportsPosture(payload, input.primarySourceMode)) {
+      return { state: 'unavailable' };
+    }
     const summary = validateAndCacheWashingtonLaunchCountyShard(
       payload,
       input.countyCode,

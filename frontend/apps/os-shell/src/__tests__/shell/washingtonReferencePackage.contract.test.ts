@@ -98,6 +98,30 @@ function hostedEligibleStatus(
   };
 }
 
+function hostedPublicSalesShard() {
+  const shard = WASHINGTON_ASSESSOR_REFERENCE_PACKAGE.salesShards['063'];
+  return {
+    ...shard,
+    records: shard.records.map((record, index) => ({
+      ...record,
+      saleId: `WA-PUBLIC-063-${index + 1}`,
+      parcelNumber: `PUBLIC-063-${index + 1}`,
+      saleNote: 'Observed public recorder export fixture.',
+      sourceMode: 'public_recorder_export',
+      candidateSource: 'spokane_public_recorder_export',
+      provenance: {
+        ...record.provenance,
+        sourceUrl: 'https://public.example.test/spokane/sales',
+        sourceFinalUrl: `https://public.example.test/spokane/sales/${index + 1}`,
+        sourcePayloadPath: `washington/spokane/public-sale-${index + 1}.json`,
+        sourcePayloadSha256: `public-fixture-${index + 1}`,
+        candidateIndexSource: 'spokane_public_recorder_index',
+        candidateRecordType: 'public_sale_candidate',
+      },
+    })),
+  };
+}
+
 describe('Washington assessor reference package', () => {
   afterEach(() => {
     vi.unstubAllGlobals();
@@ -154,7 +178,7 @@ describe('Washington assessor reference package', () => {
       .mockResolvedValueOnce({
         ok: true,
         status: 200,
-        json: async () => WASHINGTON_ASSESSOR_REFERENCE_PACKAGE.salesShards['063'],
+        json: async () => hostedPublicSalesShard(),
       });
     vi.stubGlobal('fetch', fetchMock);
 
@@ -219,6 +243,39 @@ describe('Washington assessor reference package', () => {
       '/launch-data/washington/sales/by-county/001.json',
       expect.anything(),
     );
+  });
+
+  it('rejects a hosted status relabel when the shard still has synthetic provenance', async () => {
+    const fetchMock = vi.fn()
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => hostedEligibleStatus(),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => WASHINGTON_ASSESSOR_REFERENCE_PACKAGE.salesShards['063'],
+      });
+    vi.stubGlobal('fetch', fetchMock);
+
+    const resolution = await resolveWashingtonCountyStatus();
+    const spokane = resolution.counties[0];
+    expect(spokane).toBeDefined();
+    if (!spokane) throw new Error('Hosted Spokane status is missing.');
+
+    const unavailableSpokane = await verifyWashingtonCountySalesShard(spokane);
+
+    expect(unavailableSpokane).toMatchObject({
+      countyCode: '063',
+      salesShardVerification: 'unavailable',
+    });
+    expect(getWashingtonSalesReviewCapability(unavailableSpokane)).toMatchObject({
+      eligible: false,
+      status: 'sales-shard-unavailable',
+      referenceData: { observed: null },
+    });
+    expect(fetchMock).toHaveBeenCalledTimes(2);
   });
 
   it('keeps a hosted package but makes a county workflow unavailable when its shard is missing', async () => {
