@@ -608,7 +608,11 @@ async function main() {
 
   let packagedCountyDetailCount = 0;
   for (const countyStatus of status.counties) {
-    if (!countyStatus.staticRoutes.detail) continue;
+    if (!countyStatus.staticRoutes.detail) {
+      // An empty route explicitly means no detail document is advertised; Atlas
+      // derives its county context from this validated status entry instead.
+      continue;
+    }
 
     const detailRoute = packageUrlForCountyDetailRoute(
       packageRoot,
