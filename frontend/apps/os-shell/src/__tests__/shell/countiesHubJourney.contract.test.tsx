@@ -46,6 +46,11 @@ function countyStatus(
   return {
     county: 'Spokane',
     countyCode: '063',
+    packageIdentity: {
+      statusSchemaVersion: 'terrafusion.washington.county-status.v1',
+      generatedAt: '2026-08-28T00:00:00.000Z',
+      sourcePosture: 'public_recorder_export',
+    },
     priority: 'statewide',
     prometheusStatus: 'reference_ready',
     primarySourceMode: 'public_recorder_export',

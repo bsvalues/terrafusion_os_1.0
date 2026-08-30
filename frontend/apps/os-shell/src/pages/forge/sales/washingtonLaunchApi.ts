@@ -16,6 +16,7 @@ import type {
 } from './salesForgeTypes';
 
 const BASE = '/launch-data/washington';
+export const WASHINGTON_LAUNCH_MANIFEST_SCHEMA = 'terrafusion.washington.launch-manifest.v1';
 
 export const WASHINGTON_COUNTIES = [
   { code: '001', name: 'Adams' },
@@ -126,10 +127,25 @@ interface LaunchCountySalesShard {
   records: LaunchSaleRecord[];
 }
 
+export interface WashingtonLaunchSalesShardAttestation {
+  algorithm: 'SHA-256';
+  canonicalJsonSha256: string;
+  county: string;
+  countyCode: string;
+  officialSourceBaseUrl: string;
+  route: string;
+  sourcePayloadSha256: string[];
+  sourcePosture: string;
+}
+
 export interface WashingtonLaunchManifest {
   schemaVersion: string;
+  /** Required for hosted assessor eligibility; absent on synthetic repository references. */
+  statusSchemaVersion?: string;
   generatedAt: string;
   sourcePosture: string;
+  /** Required for hosted assessor eligibility; absent on synthetic repository references. */
+  salesShardAttestations?: WashingtonLaunchSalesShardAttestation[];
   summary: {
     counties: number;
     rawLanded: number;

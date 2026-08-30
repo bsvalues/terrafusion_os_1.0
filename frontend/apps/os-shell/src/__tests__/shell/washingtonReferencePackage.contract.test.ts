@@ -10,7 +10,10 @@ import {
   verifyWashingtonCountySalesShard,
   type WashingtonCountyStatusEntry,
 } from '../../services/washingtonCountyLaunch';
-import { getWashingtonSalesReviewCapability } from '../../pages/forge/sales/washingtonSalesReviewCapability';
+import {
+  computeWashingtonLaunchCanonicalJsonSha256,
+  getWashingtonSalesReviewCapability,
+} from '../../pages/forge/sales/washingtonSalesReviewCapability';
 import { fetchWashingtonLaunchQueue } from '../../pages/forge/sales/washingtonLaunchApi';
 
 interface ReferenceRoutes {
@@ -90,6 +93,7 @@ function hostedEligibleStatus(
 ) {
   return {
     ...WASHINGTON_ASSESSOR_REFERENCE_PACKAGE.status,
+    sourcePosture: 'public_recorder_export',
     counties: WASHINGTON_ASSESSOR_REFERENCE_PACKAGE.status.counties.map((county) => ({
       ...county,
       primarySourceMode: 'public_recorder_export',
@@ -111,8 +115,8 @@ function hostedPublicSalesShard() {
       candidateSource: 'spokane_public_recorder_export',
       provenance: {
         ...record.provenance,
-        sourceUrl: 'https://public.example.test/spokane/sales',
-        sourceFinalUrl: `https://public.example.test/spokane/sales/${index + 1}`,
+        sourceUrl: 'https://www.spokanecounty.org/scout/sales',
+        sourceFinalUrl: `https://www.spokanecounty.org/scout/sales/${index + 1}`,
         sourcePayloadPath: `washington/spokane/public-sale-${index + 1}.json`,
         sourcePayloadSha256: String(index + 1).padStart(64, '0'),
         candidateIndexSource: 'spokane_public_recorder_index',
@@ -122,9 +126,84 @@ function hostedPublicSalesShard() {
   };
 }
 
+async function hostedManifest(
+  shard: unknown,
+  attestationOverrides: Record<string, unknown> = {},
+) {
+  const canonicalJsonSha256 = await computeWashingtonLaunchCanonicalJsonSha256(shard);
+  if (!canonicalJsonSha256) {
+    throw new Error('Web Crypto is required for Washington package contract tests.');
+  }
+
+  const records = typeof shard === 'object'
+    && shard !== null
+    && 'records' in shard
+    && Array.isArray(shard.records)
+    ? shard.records
+    : [];
+  const sourcePayloadSha256 = records.flatMap((record) => {
+    if (
+      typeof record !== 'object'
+      || record === null
+      || !('provenance' in record)
+      || typeof record.provenance !== 'object'
+      || record.provenance === null
+      || !('sourcePayloadSha256' in record.provenance)
+      || typeof record.provenance.sourcePayloadSha256 !== 'string'
+    ) {
+      return [];
+    }
+    return [record.provenance.sourcePayloadSha256];
+  });
+
+  return {
+    ...WASHINGTON_ASSESSOR_REFERENCE_PACKAGE.manifest,
+    statusSchemaVersion: WASHINGTON_ASSESSOR_REFERENCE_PACKAGE.status.schemaVersion,
+    sourcePosture: 'public_recorder_export',
+    salesShardAttestations: [{
+      algorithm: 'SHA-256',
+      canonicalJsonSha256,
+      county: 'Spokane',
+      countyCode: '063',
+      officialSourceBaseUrl: 'https://www.spokanecounty.org',
+      route: WASHINGTON_REFERENCE_ROUTES.spokaneSales,
+      sourcePayloadSha256,
+      sourcePosture: 'public_recorder_export',
+      ...attestationOverrides,
+    }],
+  };
+}
+
+async function hostedManifestResponse(
+  shard: unknown,
+  attestationOverrides: Record<string, unknown> = {},
+) {
+  const manifest = await hostedManifest(shard, attestationOverrides);
+  const manifestSha256 = await computeWashingtonLaunchCanonicalJsonSha256(manifest);
+  if (!manifestSha256) {
+    throw new Error('Web Crypto is required to pin the hosted manifest in contract tests.');
+  }
+  vi.stubEnv('VITE_WASHINGTON_LAUNCH_MANIFEST_SHA256', manifestSha256);
+
+  return {
+    ok: true,
+    status: 200,
+    json: async () => manifest,
+  };
+}
+
+function hostedShardResponse(shard: unknown) {
+  return {
+    ok: true,
+    status: 200,
+    json: async () => shard,
+  };
+}
+
 describe('Washington assessor reference package', () => {
   afterEach(() => {
     vi.unstubAllGlobals();
+    vi.unstubAllEnvs();
   });
 
   it('loads Counties Hub status from tracked source without HTTP', async () => {
@@ -184,11 +263,8 @@ describe('Washington assessor reference package', () => {
         status: 200,
         json: async () => multiCountyStatus,
       })
-      .mockResolvedValueOnce({
-        ok: true,
-        status: 200,
-        json: async () => hostedShardWithStaleSummary,
-      });
+      .mockResolvedValueOnce(await hostedManifestResponse(hostedShardWithStaleSummary))
+      .mockResolvedValueOnce(hostedShardResponse(hostedShardWithStaleSummary));
     vi.stubGlobal('fetch', fetchMock);
 
     const resolution = await resolveWashingtonCountyStatus();
@@ -236,6 +312,10 @@ describe('Washington assessor reference package', () => {
       cache: 'no-store',
       signal: undefined,
     });
+    expect(fetchMock).toHaveBeenCalledWith(WASHINGTON_REFERENCE_ROUTES.manifest, {
+      cache: 'no-store',
+      signal: undefined,
+    });
 
     const queue = await fetchWashingtonLaunchQueue(2025, 'all', 1, 25, {
       countyCode: '063',
@@ -247,7 +327,7 @@ describe('Washington assessor reference package', () => {
       maxPrice: null,
     });
     expect(queue.total).toBe(3);
-    expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect(fetchMock).toHaveBeenCalledTimes(3);
     expect(fetchMock).not.toHaveBeenCalledWith(
       '/launch-data/washington/sales/by-county/001.json',
       expect.anything(),
@@ -268,11 +348,8 @@ describe('Washington assessor reference package', () => {
         status: 200,
         json: async () => hostedEligibleStatus(),
       })
-      .mockResolvedValueOnce({
-        ok: true,
-        status: 200,
-        json: async () => hostedShardWithNoncanonicalDate,
-      });
+      .mockResolvedValueOnce(await hostedManifestResponse(hostedShardWithNoncanonicalDate))
+      .mockResolvedValueOnce(hostedShardResponse(hostedShardWithNoncanonicalDate));
     vi.stubGlobal('fetch', fetchMock);
 
     const resolution = await resolveWashingtonCountyStatus();
@@ -291,21 +368,19 @@ describe('Washington assessor reference package', () => {
       status: 'sales-shard-unavailable',
       referenceData: { observed: null },
     });
-    expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect(fetchMock).toHaveBeenCalledTimes(3);
   });
 
   it('rejects a hosted status relabel when the shard still has synthetic provenance', async () => {
+    const syntheticShard = WASHINGTON_ASSESSOR_REFERENCE_PACKAGE.salesShards['063'];
     const fetchMock = vi.fn()
       .mockResolvedValueOnce({
         ok: true,
         status: 200,
         json: async () => hostedEligibleStatus(),
       })
-      .mockResolvedValueOnce({
-        ok: true,
-        status: 200,
-        json: async () => WASHINGTON_ASSESSOR_REFERENCE_PACKAGE.salesShards['063'],
-      });
+      .mockResolvedValueOnce(await hostedManifestResponse(syntheticShard))
+      .mockResolvedValueOnce(hostedShardResponse(syntheticShard));
     vi.stubGlobal('fetch', fetchMock);
 
     const resolution = await resolveWashingtonCountyStatus();
@@ -324,7 +399,7 @@ describe('Washington assessor reference package', () => {
       status: 'sales-shard-unavailable',
       referenceData: { observed: null },
     });
-    expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect(fetchMock).toHaveBeenCalledTimes(3);
   });
 
   it('rejects a matching source mode without affirmative public provenance', async () => {
@@ -351,11 +426,8 @@ describe('Washington assessor reference package', () => {
         status: 200,
         json: async () => hostedEligibleStatus(),
       })
-      .mockResolvedValueOnce({
-        ok: true,
-        status: 200,
-        json: async () => hostedShardWithoutPublicProvenance,
-      });
+      .mockResolvedValueOnce(await hostedManifestResponse(hostedShardWithoutPublicProvenance))
+      .mockResolvedValueOnce(hostedShardResponse(hostedShardWithoutPublicProvenance));
     vi.stubGlobal('fetch', fetchMock);
 
     const resolution = await resolveWashingtonCountyStatus();
@@ -374,17 +446,146 @@ describe('Washington assessor reference package', () => {
       status: 'sales-shard-unavailable',
       referenceData: { observed: null },
     });
+    expect(fetchMock).toHaveBeenCalledTimes(3);
+  });
+
+  it('rejects manifest-attested records that cite an untrusted public source', async () => {
+    const hostedShard = hostedPublicSalesShard();
+    const shardWithUntrustedSource = {
+      ...hostedShard,
+      records: hostedShard.records.map((record, index) => ({
+        ...record,
+        provenance: {
+          ...record.provenance,
+          sourceUrl: 'https://public.example.test/spokane/sales',
+          sourceFinalUrl: `https://public.example.test/spokane/sales/${index + 1}`,
+        },
+      })),
+    };
+    const fetchMock = vi.fn()
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => hostedEligibleStatus(),
+      })
+      .mockResolvedValueOnce(await hostedManifestResponse(shardWithUntrustedSource))
+      .mockResolvedValueOnce(hostedShardResponse(shardWithUntrustedSource));
+    vi.stubGlobal('fetch', fetchMock);
+
+    const resolution = await resolveWashingtonCountyStatus();
+    const spokane = resolution.counties[0];
+    expect(spokane).toBeDefined();
+    if (!spokane) throw new Error('Hosted Spokane status is missing.');
+
+    await expect(verifyWashingtonCountySalesShard(spokane)).resolves.toMatchObject({
+      countyCode: '063',
+      salesShardVerification: 'unavailable',
+    });
+    expect(fetchMock).toHaveBeenCalledTimes(3);
+  });
+
+  it('rejects an otherwise valid manifest that does not match the build trust pin', async () => {
+    const hostedShard = hostedPublicSalesShard();
+    const manifest = await hostedManifest(hostedShard);
+    vi.stubEnv('VITE_WASHINGTON_LAUNCH_MANIFEST_SHA256', '0'.repeat(64));
+    const fetchMock = vi.fn()
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => hostedEligibleStatus(),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => manifest,
+      });
+    vi.stubGlobal('fetch', fetchMock);
+
+    const resolution = await resolveWashingtonCountyStatus();
+    const spokane = resolution.counties[0];
+    expect(spokane).toBeDefined();
+    if (!spokane) throw new Error('Hosted Spokane status is missing.');
+
+    await expect(verifyWashingtonCountySalesShard(spokane)).resolves.toMatchObject({
+      countyCode: '063',
+      salesShardVerification: 'unavailable',
+    });
     expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect(fetchMock).not.toHaveBeenCalledWith(
+      WASHINGTON_REFERENCE_ROUTES.spokaneSales,
+      expect.anything(),
+    );
+  });
+
+  it('rejects a manifest that is not bound to the packaged official county source', async () => {
+    const hostedShard = hostedPublicSalesShard();
+    const fetchMock = vi.fn()
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => hostedEligibleStatus(),
+      })
+      .mockResolvedValueOnce(await hostedManifestResponse(hostedShard, {
+        officialSourceBaseUrl: 'https://public.example.test',
+      }));
+    vi.stubGlobal('fetch', fetchMock);
+
+    const resolution = await resolveWashingtonCountyStatus();
+    const spokane = resolution.counties[0];
+    expect(spokane).toBeDefined();
+    if (!spokane) throw new Error('Hosted Spokane status is missing.');
+
+    await expect(verifyWashingtonCountySalesShard(spokane)).resolves.toMatchObject({
+      countyCode: '063',
+      salesShardVerification: 'unavailable',
+    });
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect(fetchMock).not.toHaveBeenCalledWith(
+      WASHINGTON_REFERENCE_ROUTES.spokaneSales,
+      expect.anything(),
+    );
+  });
+
+  it('rejects a hosted shard whose body does not match its manifest digest', async () => {
+    const attestedShard = hostedPublicSalesShard();
+    const tamperedShard = {
+      ...attestedShard,
+      records: attestedShard.records.map((record, index) => index === 0
+        ? { ...record, salePrice: (record.salePrice ?? 0) + 1 }
+        : record),
+    };
+    const fetchMock = vi.fn()
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => hostedEligibleStatus(),
+      })
+      .mockResolvedValueOnce(await hostedManifestResponse(attestedShard))
+      .mockResolvedValueOnce(hostedShardResponse(tamperedShard));
+    vi.stubGlobal('fetch', fetchMock);
+
+    const resolution = await resolveWashingtonCountyStatus();
+    const spokane = resolution.counties[0];
+    expect(spokane).toBeDefined();
+    if (!spokane) throw new Error('Hosted Spokane status is missing.');
+
+    await expect(verifyWashingtonCountySalesShard(spokane)).resolves.toMatchObject({
+      countyCode: '063',
+      salesShardVerification: 'unavailable',
+    });
+    expect(fetchMock).toHaveBeenCalledTimes(3);
   });
 
   it('keeps a hosted package but makes a county workflow unavailable when its shard is missing', async () => {
     const hostedStatus = hostedEligibleStatus();
+    const hostedShard = hostedPublicSalesShard();
     const fetchMock = vi.fn()
       .mockResolvedValueOnce({
         ok: true,
         status: 200,
         json: async () => hostedStatus,
       })
+      .mockResolvedValueOnce(await hostedManifestResponse(hostedShard))
       .mockResolvedValueOnce({ ok: false, status: 404 });
     vi.stubGlobal('fetch', fetchMock);
 
@@ -412,21 +613,20 @@ describe('Washington assessor reference package', () => {
       eligible: false,
       status: 'sales-shard-unavailable',
     });
-    expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect(fetchMock).toHaveBeenCalledTimes(3);
   });
 
   it('evicts a previously verified hosted shard when fresh verification fails', async () => {
+    const hostedShard = hostedPublicSalesShard();
     const fetchMock = vi.fn()
       .mockResolvedValueOnce({
         ok: true,
         status: 200,
         json: async () => hostedEligibleStatus(),
       })
-      .mockResolvedValueOnce({
-        ok: true,
-        status: 200,
-        json: async () => hostedPublicSalesShard(),
-      })
+      .mockResolvedValueOnce(await hostedManifestResponse(hostedShard))
+      .mockResolvedValueOnce(hostedShardResponse(hostedShard))
+      .mockResolvedValueOnce(await hostedManifestResponse(hostedShard))
       .mockResolvedValueOnce({ ok: false, status: 404 })
       .mockResolvedValueOnce({ ok: false, status: 404 });
     vi.stubGlobal('fetch', fetchMock);
@@ -451,21 +651,19 @@ describe('Washington assessor reference package', () => {
       minPrice: null,
       maxPrice: null,
     })).rejects.toThrow(/HTTP 404/i);
-    expect(fetchMock).toHaveBeenCalledTimes(4);
+    expect(fetchMock).toHaveBeenCalledTimes(6);
   });
 
   it('evicts a verified hosted shard when refreshed status makes verification unnecessary', async () => {
+    const hostedShard = hostedPublicSalesShard();
     const fetchMock = vi.fn()
       .mockResolvedValueOnce({
         ok: true,
         status: 200,
         json: async () => hostedEligibleStatus(),
       })
-      .mockResolvedValueOnce({
-        ok: true,
-        status: 200,
-        json: async () => hostedPublicSalesShard(),
-      })
+      .mockResolvedValueOnce(await hostedManifestResponse(hostedShard))
+      .mockResolvedValueOnce(hostedShardResponse(hostedShard))
       .mockResolvedValueOnce({ ok: false, status: 404 });
     vi.stubGlobal('fetch', fetchMock);
 
@@ -484,7 +682,7 @@ describe('Washington assessor reference package', () => {
     })).resolves.toMatchObject({
       salesShardVerification: 'not-required',
     });
-    expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect(fetchMock).toHaveBeenCalledTimes(3);
 
     await expect(fetchWashingtonLaunchQueue(2025, 'all', 1, 25, {
       countyCode: '063',
@@ -495,21 +693,19 @@ describe('Washington assessor reference package', () => {
       minPrice: null,
       maxPrice: null,
     })).rejects.toThrow(/HTTP 404/i);
-    expect(fetchMock).toHaveBeenCalledTimes(3);
+    expect(fetchMock).toHaveBeenCalledTimes(4);
   });
 
   it('rejects a successful hosted response whose body is not a valid county shard', async () => {
+    const invalidShard = { htmlFallback: '<!doctype html>' };
     const fetchMock = vi.fn()
       .mockResolvedValueOnce({
         ok: true,
         status: 200,
         json: async () => hostedEligibleStatus(),
       })
-      .mockResolvedValueOnce({
-        ok: true,
-        status: 200,
-        json: async () => ({ htmlFallback: '<!doctype html>' }),
-      });
+      .mockResolvedValueOnce(await hostedManifestResponse(invalidShard))
+      .mockResolvedValueOnce(hostedShardResponse(invalidShard));
     vi.stubGlobal('fetch', fetchMock);
 
     const resolution = await resolveWashingtonCountyStatus();
@@ -534,7 +730,7 @@ describe('Washington assessor reference package', () => {
       eligible: false,
       status: 'sales-shard-unavailable',
     });
-    expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect(fetchMock).toHaveBeenCalledTimes(3);
   });
 
   it('falls back fail-closed when the same-origin hosted status route is absent', async () => {

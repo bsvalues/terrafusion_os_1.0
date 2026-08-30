@@ -16,12 +16,18 @@ import {
 } from '@/pages/forge/sales/washingtonSalesReviewCapability';
 
 export const WASHINGTON_COUNTY_STATUS_PATH = WASHINGTON_REFERENCE_ROUTES.status;
+const WASHINGTON_COUNTY_STATUS_SCHEMA = 'terrafusion.washington.county-status.v1';
 const WASHINGTON_COUNTY_DETAIL_PATH_PREFIX = '/launch-data/washington/counties';
 const WASHINGTON_SALES_SHARD_PATH_PREFIX = '/launch-data/washington/sales/by-county';
 
 export interface WashingtonCountyStatusEntry {
   county: string;
   countyCode: string;
+  packageIdentity: {
+    statusSchemaVersion: string;
+    generatedAt: string;
+    sourcePosture: string;
+  };
   priority: string;
   prometheusStatus: string;
   primarySourceMode: string;
@@ -44,7 +50,7 @@ export interface WashingtonCountyStatusEntry {
 
 type WashingtonCountyStatusPayloadEntry = Omit<
   WashingtonCountyStatusEntry,
-  'salesShardVerification'
+  'packageIdentity' | 'salesShardVerification'
 >;
 
 export interface WashingtonCountyStatusResolution {
@@ -123,6 +129,11 @@ export async function fetchWashingtonCountyStatus(
   }
   if (
     !isRecord(payload)
+    || payload.schemaVersion !== WASHINGTON_COUNTY_STATUS_SCHEMA
+    || typeof payload.generatedAt !== 'string'
+    || payload.generatedAt.trim().length === 0
+    || typeof payload.sourcePosture !== 'string'
+    || payload.sourcePosture.trim().length === 0
     || !Array.isArray(payload.counties)
     || !payload.counties.every(isWashingtonCountyStatusPayloadEntry)
   ) {
@@ -136,6 +147,11 @@ export async function fetchWashingtonCountyStatus(
 
   return payload.counties.map((county) => ({
     ...county,
+    packageIdentity: {
+      statusSchemaVersion: payload.schemaVersion,
+      generatedAt: payload.generatedAt,
+      sourcePosture: payload.sourcePosture,
+    },
     salesShardVerification: packageSource === 'hosted' ? 'unverified' : 'not-required',
     confidence: { ...county.confidence },
     staticRoutes: { ...county.staticRoutes },
@@ -171,11 +187,11 @@ export async function verifyWashingtonCountySalesShard(
  * The hosted payload remains fail-closed through fetchWashingtonCountyStatus's
  * schema validation. Hosted shard bodies remain unverified until their county
  * is selected, so opening Counties HUB never downloads the statewide package.
- * The selected county then uses verifyWashingtonCountySalesShard to validate
- * and cache its shard before advertising a workflow. If the status payload is
- * absent or invalid, the tracked repository reference keeps the 39-county
- * navigation journey available without granting any assessor workflow access
- * to its synthetic fixture records.
+ * The selected county then requires a matching manifest attestation, canonical
+ * shard digest, official-source binding, and county schema before caching the
+ * shard or advertising a workflow. If that trust chain is absent or invalid,
+ * the tracked repository reference keeps the 39-county navigation journey
+ * available without granting workflow access to its synthetic fixture records.
  */
 export async function resolveWashingtonCountyStatus(
   signal?: AbortSignal,

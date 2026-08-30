@@ -9,6 +9,11 @@ import {
 const SPOKANE_CAPABILITY_INPUT = {
   county: 'Spokane',
   countyCode: '063',
+  packageIdentity: {
+    statusSchemaVersion: 'terrafusion.washington.county-status.v1',
+    generatedAt: '2026-08-28T00:00:00.000Z',
+    sourcePosture: 'public_recorder_export',
+  },
   primarySourceMode: 'public_recorder_export',
   prometheusStatus: 'reference_ready',
   latestSaleDate: '2025-12-31',

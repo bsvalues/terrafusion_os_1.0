@@ -5,12 +5,19 @@
  * not interpret staged-sales or shard-route fields as suite capability rules.
  */
 
-import type { WashingtonReferencePackageSource } from '@/lib/washingtonAssessorReferencePackage';
+import {
+  WASHINGTON_REFERENCE_ROUTES,
+  type WashingtonReferencePackageSource,
+} from '@/lib/washingtonAssessorReferencePackage';
+import { getWashingtonPublicSourceInventory } from '@/lib/washingtonPublicSourceInventory';
+import { getViteEnv } from '@/env/getViteEnv';
 import {
   evictWashingtonLaunchCountyShard,
   isWashingtonLaunchDataEnabled,
   validateAndCacheWashingtonLaunchCountyShard,
+  WASHINGTON_LAUNCH_MANIFEST_SCHEMA,
   WASHINGTON_COUNTIES,
+  type WashingtonLaunchSalesShardAttestation,
 } from './washingtonLaunchApi';
 
 export type WashingtonSalesReviewShardVerificationState =
@@ -22,6 +29,11 @@ export type WashingtonSalesReviewShardVerificationState =
 export interface WashingtonSalesReviewCapabilityInput {
   county: string;
   countyCode: string;
+  packageIdentity: {
+    statusSchemaVersion: string;
+    generatedAt: string;
+    sourcePosture: string;
+  };
   primarySourceMode: string;
   prometheusStatus: string;
   latestSaleDate: string | null;
@@ -126,31 +138,187 @@ function isNonEmptyString(value: unknown): value is string {
   return typeof value === 'string' && value.trim().length > 0;
 }
 
-function isPublicSourceUrl(value: unknown): boolean {
-  if (!isNonEmptyString(value)) return false;
+function isSha256Digest(value: unknown): value is string {
+  return typeof value === 'string' && /^[a-f\d]{64}$/.test(value);
+}
+
+function readSha256DigestArray(value: unknown): string[] | null {
+  if (!Array.isArray(value)) return null;
+  const digests: string[] = [];
+  for (const digest of value) {
+    if (!isSha256Digest(digest)) return null;
+    digests.push(digest);
+  }
+  return digests;
+}
+
+function readPinnedHostedManifestSha256(): string | null {
+  const value = String(
+    getViteEnv().VITE_WASHINGTON_LAUNCH_MANIFEST_SHA256 ?? '',
+  ).trim().toLowerCase();
+  return isSha256Digest(value) ? value : null;
+}
+
+function parseTrustedHttpsUrl(value: unknown): URL | null {
+  if (!isNonEmptyString(value)) return null;
   try {
     const url = new URL(value);
-    return (url.protocol === 'https:' || url.protocol === 'http:')
-      && url.hostname.length > 0;
+    return url.protocol === 'https:'
+      && url.hostname.length > 0
+      && url.username.length === 0
+      && url.password.length === 0
+      && (url.port === '' || url.port === '443')
+      ? url
+      : null;
   } catch {
-    return false;
+    return null;
   }
 }
 
-function hasAffirmativePublicSourceProvenance(record: Record<string, unknown>): boolean {
+function isOfficialCountySourceUrl(value: unknown, officialSourceBaseUrl: string): boolean {
+  const sourceUrl = parseTrustedHttpsUrl(value);
+  const officialUrl = parseTrustedHttpsUrl(officialSourceBaseUrl);
+  if (!sourceUrl || !officialUrl) return false;
+
+  const officialHostname = officialUrl.hostname.toLowerCase().replace(/^www\./, '');
+  const sourceHostname = sourceUrl.hostname.toLowerCase().replace(/^www\./, '');
+  return sourceHostname === officialHostname
+    || sourceHostname.endsWith(`.${officialHostname}`);
+}
+
+function hasAffirmativePublicSourceProvenance(
+  record: Record<string, unknown>,
+  officialSourceBaseUrl: string,
+): boolean {
   if (!isRecord(record.provenance)) return false;
   const provenance = record.provenance;
+  const sourceUrlIsOfficial = isOfficialCountySourceUrl(
+    provenance.sourceUrl,
+    officialSourceBaseUrl,
+  );
+  const sourceFinalUrlIsOfficial = isOfficialCountySourceUrl(
+    provenance.sourceFinalUrl,
+    officialSourceBaseUrl,
+  );
 
   return isNonEmptyString(record.candidateSource)
-    && (
-      isPublicSourceUrl(provenance.sourceUrl)
-      || isPublicSourceUrl(provenance.sourceFinalUrl)
-    )
+    && (sourceUrlIsOfficial || sourceFinalUrlIsOfficial)
+    && (provenance.sourceUrl === null || sourceUrlIsOfficial)
+    && (provenance.sourceFinalUrl === null || sourceFinalUrlIsOfficial)
     && isNonEmptyString(provenance.sourcePayloadPath)
-    && isNonEmptyString(provenance.sourcePayloadSha256)
-    && /^[a-f\d]{64}$/i.test(provenance.sourcePayloadSha256)
+    && isSha256Digest(provenance.sourcePayloadSha256)
     && isNonEmptyString(provenance.candidateIndexSource)
     && isNonEmptyString(provenance.candidateRecordType);
+}
+
+function canonicalizeJson(value: unknown): string {
+  if (value === null || typeof value === 'boolean' || typeof value === 'string') {
+    const serialized = JSON.stringify(value);
+    if (serialized !== undefined) return serialized;
+  }
+  if (typeof value === 'number' && Number.isFinite(value)) {
+    const serialized = JSON.stringify(value);
+    if (serialized !== undefined) return serialized;
+  }
+  if (Array.isArray(value)) {
+    return `[${value.map(canonicalizeJson).join(',')}]`;
+  }
+  if (isRecord(value)) {
+    return `{${Object.keys(value)
+      .sort()
+      .map((key) => `${JSON.stringify(key)}:${canonicalizeJson(value[key])}`)
+      .join(',')}}`;
+  }
+  throw new Error('Washington launch integrity input is not JSON-compatible.');
+}
+
+/**
+ * Compute the canonical package digest used by the hosted manifest. There is
+ * deliberately no non-cryptographic fallback: without Web Crypto, hosted
+ * public records remain unavailable rather than being weakly attested.
+ */
+export async function computeWashingtonLaunchCanonicalJsonSha256(
+  value: unknown,
+): Promise<string | null> {
+  if (
+    typeof TextEncoder === 'undefined'
+    || typeof globalThis.crypto?.subtle?.digest !== 'function'
+  ) {
+    return null;
+  }
+
+  try {
+    const encoded = new TextEncoder().encode(canonicalizeJson(value));
+    const digest = await globalThis.crypto.subtle.digest('SHA-256', encoded);
+    return Array.from(new Uint8Array(digest))
+      .map((byte) => byte.toString(16).padStart(2, '0'))
+      .join('');
+  } catch {
+    return null;
+  }
+}
+
+function getHostedSalesShardAttestation(
+  manifest: unknown,
+  input: WashingtonSalesReviewCapabilityInput,
+): WashingtonLaunchSalesShardAttestation | null {
+  const officialSource = getWashingtonPublicSourceInventory(input.county);
+  if (
+    !officialSource
+    || !isRecord(manifest)
+    || manifest.schemaVersion !== WASHINGTON_LAUNCH_MANIFEST_SCHEMA
+    || manifest.statusSchemaVersion !== input.packageIdentity.statusSchemaVersion
+    || manifest.generatedAt !== input.packageIdentity.generatedAt
+    || normalizeReferenceDataPosture(String(manifest.sourcePosture ?? ''))
+      !== normalizeReferenceDataPosture(input.packageIdentity.sourcePosture)
+    || !Array.isArray(manifest.salesShardAttestations)
+  ) {
+    return null;
+  }
+
+  const matchingAttestations = manifest.salesShardAttestations.filter((value) =>
+    isRecord(value) && value.countyCode === input.countyCode,
+  );
+  if (matchingAttestations.length !== 1) return null;
+  const attestation = matchingAttestations[0];
+  if (!isRecord(attestation)) return null;
+  const sourcePayloadSha256 = readSha256DigestArray(attestation.sourcePayloadSha256);
+
+  const officialSourceOrigin = parseTrustedHttpsUrl(
+    officialSource.officialAssessorBaseUrl,
+  )?.origin;
+  const attestedSourceOrigin = parseTrustedHttpsUrl(
+    attestation.officialSourceBaseUrl,
+  )?.origin;
+  const attestedCountyName = typeof attestation.county === 'string'
+    ? attestation.county.replace(/\s+county$/i, '').trim().toLowerCase()
+    : '';
+  const expectedCountyName = input.county.replace(/\s+county$/i, '').trim().toLowerCase();
+
+  if (
+    attestation.algorithm !== 'SHA-256'
+    || !isSha256Digest(attestation.canonicalJsonSha256)
+    || !sourcePayloadSha256
+    || attestedCountyName !== expectedCountyName
+    || attestation.route !== input.staticRoutes.salesShard
+    || normalizeReferenceDataPosture(String(attestation.sourcePosture ?? ''))
+      !== normalizeReferenceDataPosture(input.primarySourceMode)
+    || !officialSourceOrigin
+    || attestedSourceOrigin !== officialSourceOrigin
+  ) {
+    return null;
+  }
+
+  return {
+    algorithm: 'SHA-256',
+    canonicalJsonSha256: attestation.canonicalJsonSha256,
+    county: input.county,
+    countyCode: input.countyCode,
+    officialSourceBaseUrl: officialSource.officialAssessorBaseUrl,
+    route: input.staticRoutes.salesShard,
+    sourcePayloadSha256,
+    sourcePosture: input.primarySourceMode,
+  };
 }
 
 /**
@@ -166,6 +334,8 @@ function hasAffirmativePublicSourceProvenance(record: Record<string, unknown>): 
 function shardRecordProvenanceSupportsPosture(
   value: unknown,
   expectedPosture: string,
+  officialSourceBaseUrl: string,
+  attestedSourcePayloadDigests: ReadonlySet<string>,
 ): boolean {
   if (!isRecord(value) || !Array.isArray(value.records)) return true;
   const normalizedExpectedPosture = normalizeReferenceDataPosture(expectedPosture);
@@ -180,7 +350,10 @@ function shardRecordProvenanceSupportsPosture(
       : null;
 
     return normalizedSourceMode === normalizedExpectedPosture
-      && hasAffirmativePublicSourceProvenance(record)
+      && hasAffirmativePublicSourceProvenance(record, officialSourceBaseUrl)
+      && isRecord(record.provenance)
+      && typeof record.provenance.sourcePayloadSha256 === 'string'
+      && attestedSourcePayloadDigests.has(record.provenance.sourcePayloadSha256)
       && !isSyntheticReferenceMarker(record.sourceMode)
       && !isSyntheticReferenceMarker(record.candidateSource)
       && !isSyntheticReferenceMarker(candidateRecordType);
@@ -403,9 +576,11 @@ export function getWashingtonSalesReviewCapability(
 
 /**
  * Verify the selected hosted shard before exposing any observed sales claim.
- * A successful HTTP status is insufficient because the OS web server may
- * return its HTML fallback for a missing JSON path; the response body must pass
- * the same county-isolated schema used when SalesForge loads the shard.
+ * The same-origin manifest must bind the status identity, canonical shard
+ * digest, source-payload digests, and repository-packaged official county
+ * source. A successful HTTP status is insufficient because the OS web server
+ * may return its HTML fallback for a missing JSON path; the response body must
+ * also pass the same county-isolated schema used when SalesForge loads it.
  */
 export async function verifyWashingtonSalesReviewHostedShard(
   input: WashingtonSalesReviewCapabilityInput,
@@ -430,6 +605,23 @@ export async function verifyWashingtonSalesReviewHostedShard(
   }
 
   try {
+    const manifestResponse = await fetch(WASHINGTON_REFERENCE_ROUTES.manifest, {
+      cache: 'no-store',
+      signal,
+    });
+    if (!manifestResponse.ok) return unavailable();
+    const manifest = await manifestResponse.json() as unknown;
+    const pinnedManifestDigest = readPinnedHostedManifestSha256();
+    const observedManifestDigest = await computeWashingtonLaunchCanonicalJsonSha256(manifest);
+    if (
+      !pinnedManifestDigest
+      || observedManifestDigest !== pinnedManifestDigest
+    ) {
+      return unavailable();
+    }
+    const attestation = getHostedSalesShardAttestation(manifest, input);
+    if (!attestation) return unavailable();
+
     const response = await fetch(input.staticRoutes.salesShard, {
       cache: 'no-store',
       signal,
@@ -437,7 +629,16 @@ export async function verifyWashingtonSalesReviewHostedShard(
     if (!response.ok) return unavailable();
 
     const payload = await response.json() as unknown;
-    if (!shardRecordProvenanceSupportsPosture(payload, input.primarySourceMode)) {
+    const shardDigest = await computeWashingtonLaunchCanonicalJsonSha256(payload);
+    if (
+      shardDigest !== attestation.canonicalJsonSha256
+      || !shardRecordProvenanceSupportsPosture(
+        payload,
+        input.primarySourceMode,
+        attestation.officialSourceBaseUrl,
+        new Set(attestation.sourcePayloadSha256),
+      )
+    ) {
       return unavailable();
     }
     const summary = validateAndCacheWashingtonLaunchCountyShard(
