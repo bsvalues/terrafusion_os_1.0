@@ -18,6 +18,7 @@ describe('Washington public-source inventory projection', () => {
     for (const county of WASHINGTON_COUNTIES) {
       const source = getWashingtonPublicSourceInventory(county.name);
       expect(source, `${county.name} public-source inventory`).not.toBeNull();
+      expect(source!.countyCode).toBe(county.code);
       expect(new URL(source!.officialAssessorBaseUrl).protocol).toBe('https:');
       expect(source!.acquisitionFamily.length).toBeGreaterThan(0);
       expect(['adapter-ready', 'researched']).toContain(source!.status);

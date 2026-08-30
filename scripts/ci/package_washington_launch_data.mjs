@@ -1,12 +1,15 @@
 #!/usr/bin/env node
 
 import { createHash } from 'node:crypto';
-import { lstat, mkdir, writeFile } from 'node:fs/promises';
+import { lstat, mkdir, readFile, writeFile } from 'node:fs/promises';
 import { dirname, resolve, sep } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 const MANIFEST_SCHEMA = 'terrafusion.washington.launch-manifest.v1';
 const STATUS_SCHEMA = 'terrafusion.washington.county-status.v1';
 const PACKAGE_PATH = '/launch-data/washington';
+const COUNTY_DETAIL_PATH_PREFIX = `${PACKAGE_PATH}/counties`;
+const SALES_SHARD_PATH_PREFIX = `${PACKAGE_PATH}/sales/by-county`;
 const SALES_ROUTE_PATTERN = /^\/launch-data\/washington\/sales\/by-county\/(\d{3})\.json$/;
 const SHA256_PATTERN = /^[a-f\d]{64}$/;
 const FETCH_TIMEOUT_MS = 120_000;
@@ -17,6 +20,10 @@ const SYNTHETIC_MARKERS = new Set([
   'repository_reference_demo',
   'synthetic_reference',
 ]);
+const REPOSITORY_PUBLIC_SOURCE_INVENTORY_PATH = resolve(
+  dirname(fileURLToPath(import.meta.url)),
+  '../../frontend/apps/os-shell/src/lib/washingtonPublicSourceInventory.data.json',
+);
 
 function invariant(condition, message) {
   if (!condition) throw new Error(message);
@@ -36,6 +43,172 @@ function normalize(value) {
 
 function normalizeCountyName(value) {
   return normalize(value).replace(/\s+county$/, '').trim();
+}
+
+function isFiniteNumber(value) {
+  return typeof value === 'number' && Number.isFinite(value);
+}
+
+function isNullableString(value) {
+  return value === null || typeof value === 'string';
+}
+
+function isNullableNumber(value) {
+  return value === null || isFiniteNumber(value);
+}
+
+function isNullableCanonicalSaleDate(value) {
+  if (value === null) return true;
+  if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+  const timestamp = Date.parse(`${value}T00:00:00.000Z`);
+  return Number.isFinite(timestamp)
+    && new Date(timestamp).toISOString().slice(0, 10) === value;
+}
+
+function isCanonicalCountyRoute(route, countyCode, kind) {
+  if (!route) return true;
+  const prefix = kind === 'detail'
+    ? COUNTY_DETAIL_PATH_PREFIX
+    : SALES_SHARD_PATH_PREFIX;
+  return route === `${prefix}/${countyCode}.json`;
+}
+
+function assertRuntimeCompatibleCountyStatusEntry(value, repositorySourceByCounty) {
+  invariant(
+    isRecord(value)
+      && isRecord(value.confidence)
+      && isRecord(value.staticRoutes)
+      && isNonEmptyString(value.county)
+      && typeof value.countyCode === 'string'
+      && /^\d{3}$/.test(value.countyCode)
+      && typeof value.priority === 'string'
+      && typeof value.prometheusStatus === 'string'
+      && typeof value.primarySourceMode === 'string'
+      && isNullableString(value.latestSaleDate)
+      && isFiniteNumber(value.candidateSales)
+      && isFiniteNumber(value.stagedSales)
+      && isFiniteNumber(value.needsReview)
+      && isFiniteNumber(value.confidence.averageQualityScore)
+      && typeof value.confidence.parserStatus === 'string'
+      && typeof value.confidence.rawStatus === 'string'
+      && typeof value.confidence.rawDriftDetected === 'boolean'
+      && typeof value.staticRoutes.detail === 'string'
+      && typeof value.staticRoutes.salesShard === 'string'
+      && isCanonicalCountyRoute(value.staticRoutes.detail, value.countyCode, 'detail')
+      && isCanonicalCountyRoute(value.staticRoutes.salesShard, value.countyCode, 'sales-shard'),
+    'Washington county status contains an entry the browser runtime cannot load.',
+  );
+  const repositorySource = repositorySourceByCounty.get(normalizeCountyName(value.county));
+  invariant(
+    repositorySource?.countyCode === value.countyCode,
+    `Washington county status does not match the canonical name/code pair for ${value.countyCode}.`,
+  );
+}
+
+export function assertRuntimeCompatibleLaunchSaleRecord(
+  value,
+  expectedCountyCode,
+  expectedCountyName,
+  index,
+) {
+  invariant(
+    isRecord(value)
+      && isNonEmptyString(value.saleId)
+      && typeof value.county === 'string'
+      && typeof value.countyCode === 'string',
+    `Washington county ${expectedCountyCode} shard has an invalid sale record at index ${index}.`,
+  );
+  invariant(
+    value.countyCode === expectedCountyCode
+      && normalizeCountyName(value.county) === normalizeCountyName(expectedCountyName),
+    `Washington county ${expectedCountyCode} shard has a county mismatch at record ${index}.`,
+  );
+  invariant(
+    isNullableString(value.parcelNumber)
+      && isNullableCanonicalSaleDate(value.saleDate)
+      && isNullableNumber(value.saleYear)
+      && isNullableNumber(value.salePrice)
+      && isNullableNumber(value.adjustedSalePrice)
+      && isNullableString(value.documentNumber)
+      && isNullableString(value.deedType)
+      && isNullableString(value.situsAddress)
+      && isNullableString(value.situsCity)
+      && isNullableString(value.situsZip)
+      && isNullableString(value.useCode)
+      && (value.acres === null || typeof value.acres === 'string' || typeof value.acres === 'number')
+      && isNullableString(value.grantor)
+      && isNullableString(value.grantee)
+      && isNullableString(value.saleNote)
+      && isNullableString(value.neighborhoodCode)
+      && isNullableString(value.currentNeighborhoodCode)
+      && isNullableString(value.sourceMode)
+      && isNullableString(value.candidateSource)
+      && isNullableNumber(value.confidenceScore)
+      && isNullableNumber(value.qualityScore)
+      && isNullableString(value.qualityBand)
+      && isNullableString(value.reviewStatus)
+      && isRecord(value.provenance)
+      && isRecord(value.flags)
+      && isNullableString(value.provenance.sourceUrl)
+      && isNullableString(value.provenance.sourceFinalUrl)
+      && isNullableString(value.provenance.sourcePayloadPath)
+      && isNullableString(value.provenance.sourcePayloadSha256)
+      && isNullableString(value.provenance.candidateIndexSource)
+      && isNullableString(value.provenance.candidateRecordType)
+      && isNullableNumber(value.provenance.candidateSourceOrdinal)
+      && typeof value.flags.duplicateRisk === 'boolean'
+      && typeof value.flags.needsReview === 'boolean'
+      && (value.flags.futureSaleDate === undefined
+        || typeof value.flags.futureSaleDate === 'boolean')
+      && typeof value.flags.manualException === 'boolean',
+    `Washington county ${expectedCountyCode} shard has a runtime-incompatible sale record at index ${index}.`,
+  );
+}
+
+export function assertRuntimeCompatibleCountyShard(
+  value,
+  expectedCountyCode,
+  expectedCountyName,
+) {
+  invariant(
+    isRecord(value)
+      && typeof value.schemaVersion === 'string'
+      && typeof value.generatedAt === 'string'
+      && typeof value.county === 'string'
+      && typeof value.countyCode === 'string'
+      && isRecord(value.summary)
+      && Array.isArray(value.records),
+    `Washington county ${expectedCountyCode} shard has an invalid runtime shape.`,
+  );
+  invariant(
+    value.countyCode === expectedCountyCode
+      && normalizeCountyName(value.county) === normalizeCountyName(expectedCountyName),
+    `Washington county ${expectedCountyCode} shard identity is invalid.`,
+  );
+  invariant(
+    typeof value.summary.records === 'number'
+      && value.summary.records === value.records.length
+      && isNullableString(value.summary.latestSaleDate)
+      && typeof value.summary.reviewRecords === 'number'
+      && typeof value.summary.recordsWithNeighborhoodCode === 'number'
+      && isRecord(value.summary.topNeighborhoodCodes),
+    `Washington county ${expectedCountyCode} shard summary is runtime-incompatible.`,
+  );
+
+  const saleIds = new Set();
+  value.records.forEach((record, index) => {
+    assertRuntimeCompatibleLaunchSaleRecord(
+      record,
+      expectedCountyCode,
+      expectedCountyName,
+      index,
+    );
+    invariant(
+      !saleIds.has(record.saleId),
+      `Washington county ${expectedCountyCode} shard has duplicate saleId ${record.saleId}.`,
+    );
+    saleIds.add(record.saleId);
+  });
 }
 
 function canonicalizeJson(value) {
@@ -97,6 +270,87 @@ function parseOfficialSourceUrl(rawValue) {
   invariant(url.username === '' && url.password === '', 'Shard attestation official source must not contain credentials.');
   invariant(url.port === '' || url.port === '443', 'Shard attestation official source must use the default HTTPS port.');
   return url;
+}
+
+export async function readRepositoryPublicSourceInventory() {
+  let value;
+  try {
+    value = JSON.parse(await readFile(REPOSITORY_PUBLIC_SOURCE_INVENTORY_PATH, 'utf8'));
+  } catch {
+    throw new Error('Repository Washington public-source inventory is missing or invalid JSON.');
+  }
+  invariant(
+    isRecord(value)
+      && Array.isArray(value.counties)
+      && value.counties.length === 39,
+    'Repository Washington public-source inventory must contain all 39 counties.',
+  );
+
+  const sourceByCounty = new Map();
+  const countyCodes = new Set();
+  for (const entry of value.counties) {
+    invariant(
+      isRecord(entry)
+        && isNonEmptyString(entry.county)
+        && typeof entry.countyCode === 'string'
+        && /^\d{3}$/.test(entry.countyCode)
+        && isNonEmptyString(entry.officialAssessorBaseUrl)
+        && isNonEmptyString(entry.acquisitionFamily)
+        && (entry.status === 'adapter-ready' || entry.status === 'researched'),
+      'Repository Washington public-source inventory contains an invalid county source.',
+    );
+    const countyKey = normalizeCountyName(entry.county);
+    invariant(
+      !sourceByCounty.has(countyKey),
+      `Repository Washington public-source inventory duplicates ${entry.county}.`,
+    );
+    invariant(
+      !countyCodes.has(entry.countyCode),
+      `Repository Washington public-source inventory duplicates county code ${entry.countyCode}.`,
+    );
+    countyCodes.add(entry.countyCode);
+    sourceByCounty.set(countyKey, {
+      countyCode: entry.countyCode,
+      officialSourceUrl: parseOfficialSourceUrl(entry.officialAssessorBaseUrl),
+    });
+  }
+  return sourceByCounty;
+}
+
+export function bindAttestedOfficialSourceToRepository(
+  attestedOfficialSource,
+  countyName,
+  countyCode,
+  repositorySourceByCounty,
+) {
+  const repositorySource = repositorySourceByCounty.get(normalizeCountyName(countyName));
+  invariant(
+    repositorySource?.officialSourceUrl instanceof URL
+      && repositorySource.countyCode === countyCode,
+    `Repository public-source inventory is missing ${countyName} County.`,
+  );
+  const attestedSource = parseOfficialSourceUrl(attestedOfficialSource);
+  invariant(
+    attestedSource.origin === repositorySource.officialSourceUrl.origin,
+    `Attested official source origin is inconsistent with the repository inventory for ${countyName} County.`,
+  );
+  return repositorySource.officialSourceUrl;
+}
+
+export function requireAttestedSourcePosture(
+  attestedSourcePosture,
+  statusSourcePosture,
+  countyCode,
+) {
+  const normalizedPosture = normalize(attestedSourcePosture);
+  invariant(
+    normalizedPosture.length > 0
+      && normalizedPosture === normalize(statusSourcePosture)
+      && normalizedPosture !== 'unavailable'
+      && !SYNTHETIC_MARKERS.has(normalizedPosture),
+    `Attested source posture is inconsistent for ${countyCode}.`,
+  );
+  return normalizedPosture;
 }
 
 function sourceUrlMatchesOfficial(rawValue, officialUrl) {
@@ -214,6 +468,7 @@ async function main() {
   const packageRoot = parsePublicPackageRoot(sourceValue);
   const outputRoot = resolve(outputValue);
   await ensureAbsent(outputRoot);
+  const repositorySourceByCounty = await readRepositoryPublicSourceInventory();
 
   const manifestDocument = await fetchJson(
     new URL('manifest.json', packageRoot),
@@ -263,14 +518,7 @@ async function main() {
 
   const statusByCountyCode = new Map();
   for (const county of status.counties) {
-    invariant(
-      isRecord(county)
-        && /^\d{3}$/.test(county.countyCode)
-        && isNonEmptyString(county.county)
-        && isNonEmptyString(county.primarySourceMode)
-        && isRecord(county.staticRoutes),
-      'Washington county status contains an invalid county entry.',
-    );
+    assertRuntimeCompatibleCountyStatusEntry(county, repositorySourceByCounty);
     invariant(!statusByCountyCode.has(county.countyCode), `Duplicate county status: ${county.countyCode}`);
     statusByCountyCode.set(county.countyCode, county);
   }
@@ -306,14 +554,17 @@ async function main() {
       countyStatus.staticRoutes.salesShard === attestation.route,
       `Attested sales route is inconsistent for ${route.countyCode}.`,
     );
-    const attestedSourcePosture = normalize(attestation.sourcePosture);
-    invariant(
-      attestedSourcePosture === normalize(countyStatus.primarySourceMode)
-        && attestedSourcePosture !== 'unavailable'
-        && !SYNTHETIC_MARKERS.has(attestedSourcePosture),
-      `Attested source posture is inconsistent for ${route.countyCode}.`,
+    const attestedSourcePosture = requireAttestedSourcePosture(
+      attestation.sourcePosture,
+      countyStatus.primarySourceMode,
+      route.countyCode,
     );
-    const officialSourceUrl = parseOfficialSourceUrl(attestation.officialSourceBaseUrl);
+    const officialSourceUrl = bindAttestedOfficialSourceToRepository(
+      attestation.officialSourceBaseUrl,
+      countyStatus.county,
+      route.countyCode,
+      repositorySourceByCounty,
+    );
     invariant(
       Array.isArray(attestation.sourcePayloadSha256)
         && attestation.sourcePayloadSha256.every((digest) => SHA256_PATTERN.test(digest)),
@@ -332,13 +583,10 @@ async function main() {
       canonicalJsonSha256(shard) === attestation.canonicalJsonSha256,
       `Washington county ${route.countyCode} shard does not match its manifest attestation.`,
     );
-    invariant(
-      shard.countyCode === route.countyCode
-        && normalizeCountyName(shard.county) === normalizeCountyName(countyStatus.county)
-        && Array.isArray(shard.records)
-        && isRecord(shard.summary)
-        && shard.summary.records === shard.records.length,
-      `Washington county ${route.countyCode} shard identity or record summary is invalid.`,
+    assertRuntimeCompatibleCountyShard(
+      shard,
+      route.countyCode,
+      countyStatus.county,
     );
 
     for (const record of shard.records) {
@@ -385,4 +633,9 @@ async function main() {
   );
 }
 
-await main();
+if (
+  process.argv[1]
+  && resolve(process.argv[1]) === fileURLToPath(import.meta.url)
+) {
+  await main();
+}

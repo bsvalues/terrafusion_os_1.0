@@ -47,6 +47,7 @@ RUN --mount=type=cache,id=pnpm,target=/root/.local/share/pnpm/store \
 # manifest/status/attested-shard routes, checks every canonical digest and
 # public provenance claim, and refuses an empty assessor package.
 COPY scripts/ci/package_washington_launch_data.mjs scripts/ci/package_washington_launch_data.mjs
+COPY frontend/apps/os-shell/src/lib/washingtonPublicSourceInventory.data.json frontend/apps/os-shell/src/lib/washingtonPublicSourceInventory.data.json
 ARG WASHINGTON_LAUNCH_DATA_SOURCE_URL
 RUN node scripts/ci/package_washington_launch_data.mjs \
     "$WASHINGTON_LAUNCH_DATA_SOURCE_URL" \

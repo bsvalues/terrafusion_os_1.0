@@ -258,6 +258,16 @@ test('production frontend images require the hosted Washington manifest trust pi
 
 test('production frontend packages the public data authenticated by its Washington pin', () => {
   const text = job('sbom-compliance');
+  const inventoryCopy = frontendDockerfile.indexOf(
+    'COPY frontend/apps/os-shell/src/lib/washingtonPublicSourceInventory.data.json'
+  );
+  const packageRun = frontendDockerfile.indexOf(
+    'RUN node scripts/ci/package_washington_launch_data.mjs'
+  );
+  assert.ok(
+    inventoryCopy >= 0 && packageRun > inventoryCopy,
+    'the exact runtime public-source inventory must be present before package validation'
+  );
   assert.match(frontendDockerfile, /ARG WASHINGTON_LAUNCH_DATA_SOURCE_URL/);
   assert.match(
     frontendDockerfile,
@@ -302,6 +312,9 @@ test('production frontend packages the public data authenticated by its Washingt
     washingtonLaunchPackager,
     /canonicalJsonSha256\(shard\) === attestation\.canonicalJsonSha256/
   );
+  assert.match(washingtonLaunchPackager, /assertRuntimeCompatibleCountyShard/);
+  assert.match(washingtonLaunchPackager, /bindAttestedOfficialSourceToRepository/);
+  assert.match(washingtonLaunchPackager, /requireAttestedSourcePosture/);
   assert.match(washingtonLaunchPackager, /attestedRecordCount > 0/);
 });
 
@@ -576,6 +589,7 @@ test('release lifecycle contracts are mandatory in PR and release CI', () => {
   const lifecycle = packageJson.scripts['test:release-lifecycle'];
   for (const required of [
     'backend_runtime_license_evidence.test.mjs',
+    'package_washington_launch_data.test.mjs',
     'release_compliance_workflow.contract.test.mjs',
     'frontend_dependency_sbom.test.mjs',
     'release_image_manifest.test.mjs',

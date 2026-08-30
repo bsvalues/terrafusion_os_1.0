@@ -266,6 +266,7 @@ function getHostedSalesShardAttestation(
   const officialSource = getWashingtonPublicSourceInventory(input.county);
   if (
     !officialSource
+    || officialSource.countyCode !== input.countyCode
     || !isRecord(manifest)
     || manifest.schemaVersion !== WASHINGTON_LAUNCH_MANIFEST_SCHEMA
     || manifest.statusSchemaVersion !== input.packageIdentity.statusSchemaVersion

@@ -1,0 +1,280 @@
+{
+  "evidencePath": "os-platform/core/pilot/evidence/washington-39-county-coverage.latest.json",
+  "generatedAt": "2026-04-29T17:16:08.237Z",
+  "limitation": "This proves registry coverage and acquisition-path inventory only; it does not prove statewide ingestion, normalization, geometry, or endpoint runtime coverage.",
+  "counties": [
+    {
+      "county": "Adams",
+      "countyCode": "001",
+      "officialAssessorBaseUrl": "https://co.adams.wa.us",
+      "acquisitionFamily": "Parcel transfer history",
+      "status": "researched"
+    },
+    {
+      "county": "Asotin",
+      "countyCode": "003",
+      "officialAssessorBaseUrl": "https://co.asotin.wa.us",
+      "acquisitionFamily": "Direct sales search",
+      "status": "adapter-ready"
+    },
+    {
+      "county": "Benton",
+      "countyCode": "005",
+      "officialAssessorBaseUrl": "https://co.benton.wa.us",
+      "acquisitionFamily": "Direct sales search",
+      "status": "adapter-ready"
+    },
+    {
+      "county": "Chelan",
+      "countyCode": "007",
+      "officialAssessorBaseUrl": "https://co.chelan.wa.us",
+      "acquisitionFamily": "Direct sales search",
+      "status": "adapter-ready"
+    },
+    {
+      "county": "Clallam",
+      "countyCode": "009",
+      "officialAssessorBaseUrl": "https://clallamcountywa.gov",
+      "acquisitionFamily": "Direct sales search",
+      "status": "adapter-ready"
+    },
+    {
+      "county": "Clark",
+      "countyCode": "011",
+      "officialAssessorBaseUrl": "https://clark.wa.gov",
+      "acquisitionFamily": "Direct sales search",
+      "status": "adapter-ready"
+    },
+    {
+      "county": "Columbia",
+      "countyCode": "013",
+      "officialAssessorBaseUrl": "https://columbiaco.com",
+      "acquisitionFamily": "Monthly sales report",
+      "status": "adapter-ready"
+    },
+    {
+      "county": "Cowlitz",
+      "countyCode": "015",
+      "officialAssessorBaseUrl": "https://www.co.cowlitz.wa.us",
+      "acquisitionFamily": "Parcel transfer history",
+      "status": "adapter-ready"
+    },
+    {
+      "county": "Douglas",
+      "countyCode": "017",
+      "officialAssessorBaseUrl": "https://www.douglascountywa.gov",
+      "acquisitionFamily": "Monthly report / parcel history",
+      "status": "adapter-ready"
+    },
+    {
+      "county": "Ferry",
+      "countyCode": "019",
+      "officialAssessorBaseUrl": "https://www.ferry-county.com",
+      "acquisitionFamily": "Parcel transfer history",
+      "status": "adapter-ready"
+    },
+    {
+      "county": "Franklin",
+      "countyCode": "021",
+      "officialAssessorBaseUrl": "https://www.franklincountywa.gov",
+      "acquisitionFamily": "Parcel transfer history",
+      "status": "adapter-ready"
+    },
+    {
+      "county": "Garfield",
+      "countyCode": "023",
+      "officialAssessorBaseUrl": "https://www.co.garfield.wa.us",
+      "acquisitionFamily": "Direct sales search",
+      "status": "adapter-ready"
+    },
+    {
+      "county": "Grant",
+      "countyCode": "025",
+      "officialAssessorBaseUrl": "https://www.grantcountywa.gov",
+      "acquisitionFamily": "Direct sales search",
+      "status": "adapter-ready"
+    },
+    {
+      "county": "Grays Harbor",
+      "countyCode": "027",
+      "officialAssessorBaseUrl": "https://www.co.grays-harbor.wa.us",
+      "acquisitionFamily": "Direct sales search",
+      "status": "adapter-ready"
+    },
+    {
+      "county": "Island",
+      "countyCode": "029",
+      "officialAssessorBaseUrl": "https://www.islandcountywa.gov",
+      "acquisitionFamily": "Direct sales search",
+      "status": "adapter-ready"
+    },
+    {
+      "county": "Jefferson",
+      "countyCode": "031",
+      "officialAssessorBaseUrl": "https://www.co.jefferson.wa.us",
+      "acquisitionFamily": "Direct sales search",
+      "status": "adapter-ready"
+    },
+    {
+      "county": "King",
+      "countyCode": "033",
+      "officialAssessorBaseUrl": "https://kingcounty.gov",
+      "acquisitionFamily": "Direct sales search",
+      "status": "adapter-ready"
+    },
+    {
+      "county": "Kitsap",
+      "countyCode": "035",
+      "officialAssessorBaseUrl": "https://www.kitsapgov.com",
+      "acquisitionFamily": "Parcel transfer history / open data export",
+      "status": "adapter-ready"
+    },
+    {
+      "county": "Kittitas",
+      "countyCode": "037",
+      "officialAssessorBaseUrl": "https://www.co.kittitas.wa.us",
+      "acquisitionFamily": "Direct sales search",
+      "status": "adapter-ready"
+    },
+    {
+      "county": "Klickitat",
+      "countyCode": "039",
+      "officialAssessorBaseUrl": "https://www.klickitatcounty.org",
+      "acquisitionFamily": "Monthly sales report",
+      "status": "adapter-ready"
+    },
+    {
+      "county": "Lewis",
+      "countyCode": "041",
+      "officialAssessorBaseUrl": "https://lewiscountywa.gov",
+      "acquisitionFamily": "Monthly sales report",
+      "status": "adapter-ready"
+    },
+    {
+      "county": "Lincoln",
+      "countyCode": "043",
+      "officialAssessorBaseUrl": "https://www.co.lincoln.wa.us",
+      "acquisitionFamily": "Direct sales search",
+      "status": "adapter-ready"
+    },
+    {
+      "county": "Mason",
+      "countyCode": "045",
+      "officialAssessorBaseUrl": "https://masoncountywa.gov",
+      "acquisitionFamily": "Monthly sales report",
+      "status": "adapter-ready"
+    },
+    {
+      "county": "Okanogan",
+      "countyCode": "047",
+      "officialAssessorBaseUrl": "https://okanogancounty.org",
+      "acquisitionFamily": "Direct sales search",
+      "status": "adapter-ready"
+    },
+    {
+      "county": "Pacific",
+      "countyCode": "049",
+      "officialAssessorBaseUrl": "https://www.co.pacific.wa.us",
+      "acquisitionFamily": "Parcel transfer history",
+      "status": "researched"
+    },
+    {
+      "county": "Pend Oreille",
+      "countyCode": "051",
+      "officialAssessorBaseUrl": "https://www.pendoreilleco.org",
+      "acquisitionFamily": "Direct sales search",
+      "status": "adapter-ready"
+    },
+    {
+      "county": "Pierce",
+      "countyCode": "053",
+      "officialAssessorBaseUrl": "https://www.co.pierce.wa.us",
+      "acquisitionFamily": "Direct sales search",
+      "status": "adapter-ready"
+    },
+    {
+      "county": "San Juan",
+      "countyCode": "055",
+      "officialAssessorBaseUrl": "https://www.sanjuanco.com",
+      "acquisitionFamily": "Direct sales search",
+      "status": "adapter-ready"
+    },
+    {
+      "county": "Skagit",
+      "countyCode": "057",
+      "officialAssessorBaseUrl": "https://skagitcounty.net",
+      "acquisitionFamily": "Direct sales search",
+      "status": "adapter-ready"
+    },
+    {
+      "county": "Skamania",
+      "countyCode": "059",
+      "officialAssessorBaseUrl": "https://www.skamaniacounty.org",
+      "acquisitionFamily": "Direct sales search",
+      "status": "adapter-ready"
+    },
+    {
+      "county": "Snohomish",
+      "countyCode": "061",
+      "officialAssessorBaseUrl": "https://snohomishcountywa.gov",
+      "acquisitionFamily": "Direct sales search",
+      "status": "adapter-ready"
+    },
+    {
+      "county": "Spokane",
+      "countyCode": "063",
+      "officialAssessorBaseUrl": "https://www.spokanecounty.org",
+      "acquisitionFamily": "Direct sales search",
+      "status": "adapter-ready"
+    },
+    {
+      "county": "Stevens",
+      "countyCode": "065",
+      "officialAssessorBaseUrl": "https://stevenscountywa.gov",
+      "acquisitionFamily": "Direct sales search",
+      "status": "adapter-ready"
+    },
+    {
+      "county": "Thurston",
+      "countyCode": "067",
+      "officialAssessorBaseUrl": "https://www.co.thurston.wa.us",
+      "acquisitionFamily": "Parcel transfer history",
+      "status": "adapter-ready"
+    },
+    {
+      "county": "Wahkiakum",
+      "countyCode": "069",
+      "officialAssessorBaseUrl": "https://www.co.wahkiakum.wa.us",
+      "acquisitionFamily": "Parcel transfer history",
+      "status": "researched"
+    },
+    {
+      "county": "Walla Walla",
+      "countyCode": "071",
+      "officialAssessorBaseUrl": "https://www.co.walla-walla.wa.us",
+      "acquisitionFamily": "Direct sales search",
+      "status": "adapter-ready"
+    },
+    {
+      "county": "Whatcom",
+      "countyCode": "073",
+      "officialAssessorBaseUrl": "https://www.co.whatcom.wa.us",
+      "acquisitionFamily": "Direct sales search",
+      "status": "adapter-ready"
+    },
+    {
+      "county": "Whitman",
+      "countyCode": "075",
+      "officialAssessorBaseUrl": "https://www.whitmancounty.org",
+      "acquisitionFamily": "Parcel transfer history",
+      "status": "researched"
+    },
+    {
+      "county": "Yakima",
+      "countyCode": "077",
+      "officialAssessorBaseUrl": "https://www.yakimacounty.us",
+      "acquisitionFamily": "Direct sales search",
+      "status": "adapter-ready"
+    }
+  ]
+}
