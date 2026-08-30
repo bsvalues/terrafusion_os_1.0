@@ -142,6 +142,8 @@ export interface WashingtonLaunchManifest {
   schemaVersion: string;
   /** Required for hosted assessor eligibility; absent on synthetic repository references. */
   statusSchemaVersion?: string;
+  /** Canonical digest of the complete hosted status document displayed by Counties HUB. */
+  statusCanonicalJsonSha256?: string;
   generatedAt: string;
   sourcePosture: string;
   /** Required for hosted assessor eligibility; absent on synthetic repository references. */
@@ -397,15 +399,15 @@ function deriveValidatedShardSummary(
 }
 
 /**
- * Apply the same county-isolated schema used by every SalesForge read and
- * derive assessor-facing claims from the records SalesForge will render. The
- * normalized body is retained in that loader's cache, so the selected county
- * can enter SalesForge without downloading or parsing the shard twice.
+ * Cache a shard only after the caller has authenticated its package evidence.
+ * The Forge verifier is the sole production hosted caller. This function then
+ * applies the same county-isolated schema used by every SalesForge read and
+ * derives assessor-facing claims from the exact records SalesForge will render.
  */
-export function validateAndCacheWashingtonLaunchCountyShard(
+export function validateAndCacheAttestedWashingtonLaunchCountyShard(
   value: unknown,
   expectedCountyCode: string,
-  packageSource: WashingtonReferencePackageSource = 'hosted',
+  packageSource: WashingtonReferencePackageSource,
 ): WashingtonLaunchValidatedShardSummary {
   const normalized = normalizeCountyCode(expectedCountyCode);
   assertCountyShard(value, normalized);
@@ -444,6 +446,13 @@ async function loadCountyShard(
   const cacheKey = `${packageSource}:${normalized}`;
   const existing = shardCache.get(cacheKey);
   if (existing) return existing;
+
+  if (packageSource === 'hosted') {
+    throw new Error(
+      `Washington hosted county ${normalized} requires authenticated package verification before SalesForge can read it.`,
+    );
+  }
+
   const promise = fetchJson<unknown>(
     `${BASE}/sales/by-county/${normalized}.json`,
     packageSource,

@@ -5,11 +5,13 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { CommittedFilters } from '../salesForgeTypes';
 import {
+  evictWashingtonLaunchCountyShard,
   fetchWashingtonLaunchQueue,
   fetchWashingtonLaunchRunningStats,
   fetchWashingtonLaunchSaleDetail,
   isHostedWashingtonLaunchHostname,
   patchWashingtonLaunchDecision,
+  validateAndCacheAttestedWashingtonLaunchCountyShard,
 } from '../washingtonLaunchApi';
 
 const SPOKANE_FILTERS: CommittedFilters = {
@@ -120,6 +122,9 @@ describe('Washington launch shard county isolation', () => {
   afterEach(() => {
     vi.unstubAllGlobals();
     window.sessionStorage.clear();
+    ['005', '063', '073', '077'].forEach((countyCode) => {
+      evictWashingtonLaunchCountyShard(countyCode, 'hosted');
+    });
   });
 
   it('loads the tracked Spokane reference shard without an HTTP request', async () => {
@@ -144,45 +149,48 @@ describe('Washington launch shard county isolation', () => {
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
-  it('prefers the hosted Spokane shard when no repository source is requested', async () => {
-    const fetchMock = vi.fn(async () => Response.json(
-      countyShard('Spokane', '063', ['hosted-spokane-sale']),
-    ));
+  it('rejects a direct hosted read that has not crossed the attestation boundary', async () => {
+    const fetchMock = vi.fn();
     vi.stubGlobal('fetch', fetchMock);
 
+    await expect(fetchWashingtonLaunchQueue(
+      2025, 'all', 1, 25, SPOKANE_FILTERS,
+    )).rejects.toThrow(/authenticated package verification/i);
+
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it('reuses a hosted Spokane shard only after package verification cached it', async () => {
+    const fetchMock = vi.fn();
+    vi.stubGlobal('fetch', fetchMock);
+    validateAndCacheAttestedWashingtonLaunchCountyShard(
+      countyShard('Spokane', '063', ['hosted-spokane-sale']),
+      '063',
+      'hosted',
+    );
+
     const queue = await fetchWashingtonLaunchQueue(
-      2025,
-      'all',
-      1,
-      25,
-      SPOKANE_FILTERS,
+      2025, 'all', 1, 25, SPOKANE_FILTERS,
     );
 
     expect(queue.total).toBe(1);
     expect(queue.items[0]?.saleId).toBe('hosted-spokane-sale');
-    expect(fetchMock).toHaveBeenCalledWith(
-      '/launch-data/washington/sales/by-county/063.json',
-      { cache: 'no-store' },
-    );
+    expect(fetchMock).not.toHaveBeenCalled();
   });
 
   it('rejects a shard whose declared county does not match the requested county', async () => {
-    vi.stubGlobal('fetch', vi.fn(async () => Response.json({
+    expect(() => validateAndCacheAttestedWashingtonLaunchCountyShard({
       schemaVersion: '1.0.0',
       generatedAt: '2026-08-28T00:00:00.000Z',
       county: 'Benton',
       countyCode: '005',
       summary: summary(0),
       records: [],
-    })));
-
-    await expect(
-      fetchWashingtonLaunchQueue(2025, 'all', 1, 25, YAKIMA_FILTERS),
-    ).rejects.toThrow(/shard county mismatch: expected Yakima \(077\)/i);
+    }, '077', 'hosted')).toThrow(/shard county mismatch: expected Yakima \(077\)/i);
   });
 
   it('rejects a mismatched record inside an otherwise Yakima-declared shard', async () => {
-    vi.stubGlobal('fetch', vi.fn(async () => Response.json({
+    expect(() => validateAndCacheAttestedWashingtonLaunchCountyShard({
       schemaVersion: '1.0.0',
       generatedAt: '2026-08-28T00:00:00.000Z',
       county: 'Yakima',
@@ -195,11 +203,7 @@ describe('Washington launch shard county isolation', () => {
           countyCode: '005',
         },
       ],
-    })));
-
-    await expect(
-      fetchWashingtonLaunchQueue(2025, 'all', 1, 25, YAKIMA_FILTERS),
-    ).rejects.toThrow(/county mismatch at record 0: expected 077/i);
+    }, '077', 'hosted')).toThrow(/county mismatch at record 0: expected 077/i);
   });
 
   it('rejects invalid county context before issuing a shard request', async () => {
@@ -216,13 +220,11 @@ describe('Washington launch shard county isolation', () => {
   });
 
   it('rejects duplicate sale identifiers within a county shard', async () => {
-    vi.stubGlobal('fetch', vi.fn(async () => Response.json(
+    expect(() => validateAndCacheAttestedWashingtonLaunchCountyShard(
       countyShard('Yakima', '077', ['duplicate-sale', 'duplicate-sale']),
-    )));
-
-    await expect(
-      fetchWashingtonLaunchQueue(2025, 'all', 1, 25, YAKIMA_FILTERS),
-    ).rejects.toThrow(/duplicate saleId duplicate-sale/i);
+      '077',
+      'hosted',
+    )).toThrow(/duplicate saleId duplicate-sale/i);
   });
 
   it('keeps browser-local decisions isolated when counties share a sale identifier', async () => {
@@ -233,14 +235,16 @@ describe('Washington launch shard county isolation', () => {
       'Yakima reference review',
       'Test reviewer',
     );
-    vi.stubGlobal('fetch', vi.fn(async (input: RequestInfo | URL) => {
-      const url = String(input);
-      return Response.json(
-        url.endsWith('/077.json')
-          ? countyShard('Yakima', '077', ['shared-sale'])
-          : countyShard('Benton', '005', ['shared-sale']),
-      );
-    }));
+    validateAndCacheAttestedWashingtonLaunchCountyShard(
+      countyShard('Yakima', '077', ['shared-sale']),
+      '077',
+      'hosted',
+    );
+    validateAndCacheAttestedWashingtonLaunchCountyShard(
+      countyShard('Benton', '005', ['shared-sale']),
+      '005',
+      'hosted',
+    );
 
     const [yakima, benton] = await Promise.all([
       fetchWashingtonLaunchQueue(2025, 'all', 1, 25, YAKIMA_FILTERS),
@@ -277,14 +281,14 @@ describe('Washington launch shard county isolation', () => {
         candidateSourceOrdinal: 7,
       },
     };
-    vi.stubGlobal('fetch', vi.fn(async () => Response.json({
+    validateAndCacheAttestedWashingtonLaunchCountyShard({
       schemaVersion: '1.0.0',
       generatedAt: '2026-08-28T00:00:00.000Z',
       county: 'Whatcom',
       countyCode: '073',
       summary: summary(1),
       records: [record],
-    })));
+    }, '073', 'hosted');
 
     const detail = await fetchWashingtonLaunchSaleDetail(
       'whatcom-evidence-sale',

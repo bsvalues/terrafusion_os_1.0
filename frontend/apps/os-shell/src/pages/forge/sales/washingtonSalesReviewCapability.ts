@@ -14,7 +14,7 @@ import { getViteEnv } from '@/env/getViteEnv';
 import {
   evictWashingtonLaunchCountyShard,
   isWashingtonLaunchDataEnabled,
-  validateAndCacheWashingtonLaunchCountyShard,
+  validateAndCacheAttestedWashingtonLaunchCountyShard,
   WASHINGTON_LAUNCH_MANIFEST_SCHEMA,
   WASHINGTON_COUNTIES,
   type WashingtonLaunchSalesShardAttestation,
@@ -31,6 +31,7 @@ export interface WashingtonSalesReviewCapabilityInput {
   countyCode: string;
   packageIdentity: {
     statusSchemaVersion: string;
+    statusCanonicalJsonSha256: string | null;
     generatedAt: string;
     sourcePosture: string;
   };
@@ -268,6 +269,9 @@ function getHostedSalesShardAttestation(
     || !isRecord(manifest)
     || manifest.schemaVersion !== WASHINGTON_LAUNCH_MANIFEST_SCHEMA
     || manifest.statusSchemaVersion !== input.packageIdentity.statusSchemaVersion
+    || !isSha256Digest(manifest.statusCanonicalJsonSha256)
+    || manifest.statusCanonicalJsonSha256
+      !== input.packageIdentity.statusCanonicalJsonSha256
     || manifest.generatedAt !== input.packageIdentity.generatedAt
     || normalizeReferenceDataPosture(String(manifest.sourcePosture ?? ''))
       !== normalizeReferenceDataPosture(input.packageIdentity.sourcePosture)
@@ -576,11 +580,12 @@ export function getWashingtonSalesReviewCapability(
 
 /**
  * Verify the selected hosted shard before exposing any observed sales claim.
- * The same-origin manifest must bind the status identity, canonical shard
- * digest, source-payload digests, and repository-packaged official county
- * source. A successful HTTP status is insufficient because the OS web server
- * may return its HTML fallback for a missing JSON path; the response body must
- * also pass the same county-isolated schema used when SalesForge loads it.
+ * The build-pinned same-origin manifest must bind the complete status document,
+ * canonical shard digest, source-payload digests, and repository-packaged
+ * official county source. A successful HTTP status is insufficient because the
+ * OS web server may return its HTML fallback for a missing JSON path; the
+ * response body must also pass the same county-isolated schema used when
+ * SalesForge loads it.
  */
 export async function verifyWashingtonSalesReviewHostedShard(
   input: WashingtonSalesReviewCapabilityInput,
@@ -641,7 +646,7 @@ export async function verifyWashingtonSalesReviewHostedShard(
     ) {
       return unavailable();
     }
-    const summary = validateAndCacheWashingtonLaunchCountyShard(
+    const summary = validateAndCacheAttestedWashingtonLaunchCountyShard(
       payload,
       input.countyCode,
       'hosted',

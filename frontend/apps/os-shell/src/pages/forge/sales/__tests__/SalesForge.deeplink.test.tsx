@@ -18,9 +18,17 @@ import { SALESFORGE_TAX_YEAR } from '../salesForgeTypes';
 
 // Mock activateModule so chip-click is observable without the full shell.
 const activateModuleMock = vi.hoisted(() => vi.fn());
+const washingtonCountyLaunchMocks = vi.hoisted(() => ({
+  resolve: vi.fn(),
+  verify: vi.fn(),
+}));
 vi.mock('@/orchestration/moduleActivation', () => ({
   default: activateModuleMock,
   activateModule: activateModuleMock,
+}));
+vi.mock('@/services/washingtonCountyLaunch', () => ({
+  resolveWashingtonCountyStatus: washingtonCountyLaunchMocks.resolve,
+  verifyWashingtonCountySalesShard: washingtonCountyLaunchMocks.verify,
 }));
 
 // The child panels fetch live data — replace them with cheap render stubs
@@ -63,10 +71,51 @@ function resetStore() {
   });
 }
 
+function hostedBentonStatus() {
+  return {
+    county: 'Benton',
+    countyCode: '005',
+    packageIdentity: {
+      statusSchemaVersion: 'terrafusion.washington.county-status.v1',
+      statusCanonicalJsonSha256: 'a'.repeat(64),
+      generatedAt: '2026-08-28T00:00:00.000Z',
+      sourcePosture: 'public_recorder_export',
+    },
+    priority: 'statewide',
+    prometheusStatus: 'reference_ready',
+    primarySourceMode: 'public_recorder_export',
+    latestSaleDate: '2025-12-31',
+    candidateSales: 1,
+    stagedSales: 1,
+    needsReview: 0,
+    salesShardVerification: 'unverified',
+    confidence: {
+      averageQualityScore: 0.9,
+      parserStatus: 'ready',
+      rawStatus: 'observed',
+      rawDriftDetected: false,
+    },
+    staticRoutes: {
+      detail: '/launch-data/washington/counties/005.json',
+      salesShard: '/launch-data/washington/sales/by-county/005.json',
+    },
+  };
+}
+
 describe('SalesForge — County Studio deeplink consumption (Task D2)', () => {
   beforeEach(() => {
     window.history.replaceState({}, '', '/');
     activateModuleMock.mockReset();
+    const benton = hostedBentonStatus();
+    washingtonCountyLaunchMocks.resolve.mockReset().mockResolvedValue({
+      counties: [benton],
+      packageSource: 'hosted',
+      usedRepositoryFallback: false,
+    });
+    washingtonCountyLaunchMocks.verify.mockReset().mockImplementation(async (county) => ({
+      ...county,
+      salesShardVerification: 'verified',
+    }));
     resetStore();
   });
 
@@ -93,7 +142,7 @@ describe('SalesForge — County Studio deeplink consumption (Task D2)', () => {
 
     render(<SalesForge />);
 
-    expect(screen.getByRole('tab', { name: 'Queue' })).toHaveAttribute('aria-selected', 'true');
+    expect(await screen.findByRole('tab', { name: 'Queue' })).toHaveAttribute('aria-selected', 'true');
     expect(screen.getByRole('tab', { name: 'Neighborhoods' })).toBeInTheDocument();
     expect(screen.getByRole('tab', { name: 'Code Audit' })).toBeInTheDocument();
     expect(screen.queryByRole('tab', { name: 'AI Audit' })).not.toBeInTheDocument();
@@ -112,6 +161,37 @@ describe('SalesForge — County Studio deeplink consumption (Task D2)', () => {
       expect(useSalesForgeStore.getState().activeTab).toBe('queue');
       expect(useSalesForgeStore.getState().dataSource).toBe('washington-hosted');
     });
+    expect(washingtonCountyLaunchMocks.resolve).toHaveBeenCalledTimes(1);
+    expect(washingtonCountyLaunchMocks.verify).toHaveBeenCalledTimes(1);
+  });
+
+  it('keeps direct hosted SalesForge data-closed when county attestation is unavailable', async () => {
+    window.history.replaceState({}, '', '/?wa-launch-data=1');
+    washingtonCountyLaunchMocks.resolve.mockResolvedValueOnce({
+      counties: [],
+      packageSource: 'repository-reference',
+      usedRepositoryFallback: true,
+    });
+
+    render(<SalesForge />);
+
+    expect(await screen.findByText(
+      /No authenticated hosted sales package is currently available/i,
+    )).toBeInTheDocument();
+    expect(screen.getByTestId('salesforge-data-unavailable')).toBeInTheDocument();
+    expect(screen.queryByRole('tab')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('stub-queue')).not.toBeInTheDocument();
+    expect(useSalesForgeStore.getState().dataSource).toBe('live-api');
+    expect(washingtonCountyLaunchMocks.verify).not.toHaveBeenCalled();
+
+    fireEvent.click(screen.getByTestId('salesforge-retry-hosted-verification'));
+
+    expect(await screen.findByTestId('stub-queue')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(useSalesForgeStore.getState().dataSource).toBe('washington-hosted');
+    });
+    expect(washingtonCountyLaunchMocks.resolve).toHaveBeenCalledTimes(2);
+    expect(washingtonCountyLaunchMocks.verify).toHaveBeenCalledTimes(1);
   });
 
   it('keeps county context but blocks a synthetic reference demo from assessor workflows', async () => {

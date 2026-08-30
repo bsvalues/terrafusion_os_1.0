@@ -129,9 +129,12 @@ function hostedPublicSalesShard() {
 async function hostedManifest(
   shard: unknown,
   attestationOverrides: Record<string, unknown> = {},
+  status: unknown = hostedEligibleStatus(),
 ) {
   const canonicalJsonSha256 = await computeWashingtonLaunchCanonicalJsonSha256(shard);
-  if (!canonicalJsonSha256) {
+  const statusCanonicalJsonSha256 =
+    await computeWashingtonLaunchCanonicalJsonSha256(status);
+  if (!canonicalJsonSha256 || !statusCanonicalJsonSha256) {
     throw new Error('Web Crypto is required for Washington package contract tests.');
   }
 
@@ -159,6 +162,7 @@ async function hostedManifest(
   return {
     ...WASHINGTON_ASSESSOR_REFERENCE_PACKAGE.manifest,
     statusSchemaVersion: WASHINGTON_ASSESSOR_REFERENCE_PACKAGE.status.schemaVersion,
+    statusCanonicalJsonSha256,
     sourcePosture: 'public_recorder_export',
     salesShardAttestations: [{
       algorithm: 'SHA-256',
@@ -177,8 +181,9 @@ async function hostedManifest(
 async function hostedManifestResponse(
   shard: unknown,
   attestationOverrides: Record<string, unknown> = {},
+  status: unknown = hostedEligibleStatus(),
 ) {
-  const manifest = await hostedManifest(shard, attestationOverrides);
+  const manifest = await hostedManifest(shard, attestationOverrides, status);
   const manifestSha256 = await computeWashingtonLaunchCanonicalJsonSha256(manifest);
   if (!manifestSha256) {
     throw new Error('Web Crypto is required to pin the hosted manifest in contract tests.');
@@ -263,7 +268,11 @@ describe('Washington assessor reference package', () => {
         status: 200,
         json: async () => multiCountyStatus,
       })
-      .mockResolvedValueOnce(await hostedManifestResponse(hostedShardWithStaleSummary))
+      .mockResolvedValueOnce(await hostedManifestResponse(
+        hostedShardWithStaleSummary,
+        {},
+        multiCountyStatus,
+      ))
       .mockResolvedValueOnce(hostedShardResponse(hostedShardWithStaleSummary));
     vi.stubGlobal('fetch', fetchMock);
 
@@ -517,6 +526,54 @@ describe('Washington assessor reference package', () => {
     );
   });
 
+  it('rejects displayed status fields that are not bound by the pinned manifest', async () => {
+    const attestedStatus = hostedEligibleStatus();
+    const alteredStatus = {
+      ...attestedStatus,
+      counties: attestedStatus.counties.map((county) => ({
+        ...county,
+        prometheusStatus: 'forged_ready',
+        confidence: {
+          ...county.confidence,
+          rawStatus: 'forged_observed',
+          rawDriftDetected: true,
+        },
+      })),
+    };
+    const hostedShard = hostedPublicSalesShard();
+    const fetchMock = vi.fn()
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => alteredStatus,
+      })
+      .mockResolvedValueOnce(await hostedManifestResponse(
+        hostedShard,
+        {},
+        attestedStatus,
+      ));
+    vi.stubGlobal('fetch', fetchMock);
+
+    const resolution = await resolveWashingtonCountyStatus();
+    const spokane = resolution.counties[0];
+    expect(spokane).toBeDefined();
+    if (!spokane) throw new Error('Hosted Spokane status is missing.');
+
+    const unavailableSpokane = await verifyWashingtonCountySalesShard(spokane);
+    expect(unavailableSpokane).toMatchObject({
+      countyCode: '063',
+      salesShardVerification: 'unavailable',
+    });
+    expect(
+      getWashingtonSalesReviewCapability(unavailableSpokane).referenceData.observed,
+    ).toBeNull();
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect(fetchMock).not.toHaveBeenCalledWith(
+      WASHINGTON_REFERENCE_ROUTES.spokaneSales,
+      expect.anything(),
+    );
+  });
+
   it('rejects a manifest that is not bound to the packaged official county source', async () => {
     const hostedShard = hostedPublicSalesShard();
     const fetchMock = vi.fn()
@@ -650,8 +707,8 @@ describe('Washington assessor reference package', () => {
       saleDateTo: null,
       minPrice: null,
       maxPrice: null,
-    })).rejects.toThrow(/HTTP 404/i);
-    expect(fetchMock).toHaveBeenCalledTimes(6);
+    })).rejects.toThrow(/authenticated package verification/i);
+    expect(fetchMock).toHaveBeenCalledTimes(5);
   });
 
   it('evicts a verified hosted shard when refreshed status makes verification unnecessary', async () => {
@@ -692,8 +749,8 @@ describe('Washington assessor reference package', () => {
       saleDateTo: null,
       minPrice: null,
       maxPrice: null,
-    })).rejects.toThrow(/HTTP 404/i);
-    expect(fetchMock).toHaveBeenCalledTimes(4);
+    })).rejects.toThrow(/authenticated package verification/i);
+    expect(fetchMock).toHaveBeenCalledTimes(3);
   });
 
   it('rejects a successful hosted response whose body is not a valid county shard', async () => {

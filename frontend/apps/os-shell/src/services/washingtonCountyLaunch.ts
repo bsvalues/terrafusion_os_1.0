@@ -11,6 +11,7 @@ import {
   WASHINGTON_REFERENCE_ROUTES,
 } from '@/lib/washingtonAssessorReferencePackage';
 import {
+  computeWashingtonLaunchCanonicalJsonSha256,
   verifyWashingtonSalesReviewHostedShard,
   type WashingtonSalesReviewShardVerificationState,
 } from '@/pages/forge/sales/washingtonSalesReviewCapability';
@@ -25,6 +26,7 @@ export interface WashingtonCountyStatusEntry {
   countyCode: string;
   packageIdentity: {
     statusSchemaVersion: string;
+    statusCanonicalJsonSha256: string | null;
     generatedAt: string;
     sourcePosture: string;
   };
@@ -145,10 +147,14 @@ export async function fetchWashingtonCountyStatus(
     throw new Error('Washington county status returned duplicate county contexts.');
   }
 
+  const statusCanonicalJsonSha256 =
+    await computeWashingtonLaunchCanonicalJsonSha256(payload);
+
   return payload.counties.map((county) => ({
     ...county,
     packageIdentity: {
       statusSchemaVersion: payload.schemaVersion,
+      statusCanonicalJsonSha256,
       generatedAt: payload.generatedAt,
       sourcePosture: payload.sourcePosture,
     },
@@ -187,9 +193,10 @@ export async function verifyWashingtonCountySalesShard(
  * The hosted payload remains fail-closed through fetchWashingtonCountyStatus's
  * schema validation. Hosted shard bodies remain unverified until their county
  * is selected, so opening Counties HUB never downloads the statewide package.
- * The selected county then requires a matching manifest attestation, canonical
- * shard digest, official-source binding, and county schema before caching the
- * shard or advertising a workflow. If that trust chain is absent or invalid,
+ * The selected county then requires a complete-status digest in the build-pinned
+ * manifest, a canonical shard digest, official-source binding, and county
+ * schema before caching the shard or advertising a workflow. If that trust
+ * chain is absent or invalid,
  * the tracked repository reference keeps the 39-county navigation journey
  * available without granting workflow access to its synthetic fixture records.
  */
