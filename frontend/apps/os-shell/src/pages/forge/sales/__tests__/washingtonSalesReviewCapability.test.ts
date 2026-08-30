@@ -187,6 +187,52 @@ describe('Forge-owned Washington sales-review capability', () => {
 
     expect(parseWashingtonCountiesHubHandoff({
       countyCode: '063',
+      countyName: 'Spokane',
+      resetValuationScope: true,
+      launchContext: 'washington-counties-hub',
+      dataTrustTier: 'public-reference-not-county-certified',
+      referencePackageSource: 'hosted',
+      referenceDataPosture: 'public_recorder_export',
+      referenceRecordCount: null,
+      latestReferenceSaleDate: null,
+      salesReviewAvailability: 'verifying',
+      salesReviewUnavailableMessage: null,
+    })).toMatchObject({
+      countyCode: '063',
+      salesReviewAvailability: 'verifying',
+      referenceRecordCount: null,
+    });
+
+    expect(parseWashingtonCountiesHubHandoff({
+      countyCode: '063',
+      countyName: 'Spokane',
+      resetValuationScope: true,
+      launchContext: 'washington-counties-hub',
+      dataTrustTier: 'public-reference-not-county-certified',
+      referencePackageSource: 'repository-reference',
+      referenceDataPosture: 'repository_reference_demo',
+      referenceRecordCount: null,
+      latestReferenceSaleDate: null,
+      salesReviewAvailability: 'verifying',
+      salesReviewUnavailableMessage: null,
+    })).toBeNull();
+
+    expect(parseWashingtonCountiesHubHandoff({
+      countyCode: '063',
+      countyName: 'Spokane',
+      resetValuationScope: true,
+      launchContext: 'washington-counties-hub',
+      dataTrustTier: 'public-reference-not-county-certified',
+      referencePackageSource: 'hosted',
+      referenceDataPosture: 'public_recorder_export',
+      referenceRecordCount: 12,
+      latestReferenceSaleDate: null,
+      salesReviewAvailability: 'verifying',
+      salesReviewUnavailableMessage: null,
+    })).toBeNull();
+
+    expect(parseWashingtonCountiesHubHandoff({
+      countyCode: '063',
       countyName: 'Adams',
       resetValuationScope: true,
       launchContext: 'washington-counties-hub',

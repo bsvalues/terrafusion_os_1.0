@@ -258,7 +258,7 @@ describe('Washington Counties Hub assessor journey', () => {
     });
   });
 
-  it('keeps TerraForge navigation available while selected-county verification is pending', async () => {
+  it('hands pending verification to TerraForge without collapsing it into unavailable', async () => {
     const unverifiedStatus = countyStatus({
       salesShardVerification: 'unverified',
     });
@@ -299,8 +299,8 @@ describe('Washington Counties Hub assessor journey', () => {
         expect.objectContaining({
           metadata: expect.objectContaining({
             countyCode: '063',
-            salesReviewAvailability: 'unavailable',
-            salesReviewUnavailableMessage: 'The selected county package must be verified.',
+            salesReviewAvailability: 'verifying',
+            salesReviewUnavailableMessage: null,
           }),
         }),
       );

@@ -25,7 +25,7 @@
  * (that panel is where stratum selection becomes visible).
  */
 
-import { lazy, Suspense, useEffect, useLayoutEffect, useState } from 'react';
+import { lazy, Suspense, useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import activateModule from '@/orchestration/moduleActivation';
 import {
   resolveWashingtonCountyStatus,
@@ -42,6 +42,7 @@ import {
 import {
   getWashingtonSalesReviewCapability,
   parseWashingtonCountiesHubHandoff,
+  type WashingtonCountiesHubHandoff,
 } from './washingtonSalesReviewCapability';
 import { parseRollupHandoff } from '../shared/rollupHandoff';
 import './SalesForge.css';
@@ -138,7 +139,10 @@ export default function SalesForge({ metadata }: SalesForgeProps = {}) {
   const committedFilters = useSalesForgeStore((s) => s.committedFilters);
   const countiesHubHandoffRequested = metadata?.launchContext
     === 'washington-counties-hub';
-  const countiesHubHandoff = parseWashingtonCountiesHubHandoff(metadata);
+  const countiesHubHandoff = useMemo(
+    () => parseWashingtonCountiesHubHandoff(metadata),
+    [metadata],
+  );
   const invalidCountiesHubHandoff = countiesHubHandoffRequested
     && countiesHubHandoff === null;
   const referencePackageSource = countiesHubHandoff?.referencePackageSource;
@@ -154,9 +158,11 @@ export default function SalesForge({ metadata }: SalesForgeProps = {}) {
     useState<string | null>(null);
   const [directHostedVerification, setDirectHostedVerification] = useState<{
     countyCode: string | null;
+    request: WashingtonCountiesHubHandoff | null;
     state: 'not-required' | 'pending' | 'available' | 'unavailable';
   }>({
     countyCode: directHostedLaunch ? committedFilters.countyCode : null,
+    request: null,
     state: directHostedLaunch ? 'pending' : 'not-required',
   });
   const [directHostedVerificationAttempt, setDirectHostedVerificationAttempt] = useState(0);
@@ -164,17 +170,32 @@ export default function SalesForge({ metadata }: SalesForgeProps = {}) {
     === 'repository_reference_demo';
   const hostedHandoffInitializationPending = hostedReferenceHandoff
     && establishedHostedHandoffCountyCode !== hostedHandoffCountyCode;
-  const hostedHandoffCountyChanged = hostedReferenceHandoff
-    && !hostedHandoffInitializationPending
-    && committedFilters.countyCode !== hostedHandoffCountyCode;
-  const hostedCountyVerificationRequired = directHostedLaunch || hostedHandoffCountyChanged;
+  const hostedHandoffVerificationRequired = hostedReferenceHandoff
+    && countiesHubHandoff?.salesReviewAvailability !== 'unavailable';
+  const hostedVerificationCountyCode = directHostedLaunch
+    ? committedFilters.countyCode
+    : hostedHandoffVerificationRequired
+      ? hostedHandoffInitializationPending
+        ? hostedHandoffCountyCode
+        : committedFilters.countyCode
+      : null;
+  const hostedCountyVerificationRequired = hostedVerificationCountyCode !== null;
+  const hostedVerificationRequest = hostedHandoffVerificationRequired
+    ? countiesHubHandoff
+    : null;
   const directHostedVerificationMatchesCounty = directHostedVerification.countyCode
-    === committedFilters.countyCode;
-  const directHostedVerificationPending = hostedHandoffInitializationPending
+    === hostedVerificationCountyCode;
+  const directHostedVerificationMatchesRequest = directHostedVerification.request
+    === hostedVerificationRequest;
+  const directHostedVerificationPending = (
+    hostedHandoffInitializationPending
+    && hostedHandoffVerificationRequired
+  )
     || (
       hostedCountyVerificationRequired
       && (
         !directHostedVerificationMatchesCounty
+        || !directHostedVerificationMatchesRequest
         || (
           directHostedVerification.state !== 'available'
           && directHostedVerification.state !== 'unavailable'
@@ -183,18 +204,20 @@ export default function SalesForge({ metadata }: SalesForgeProps = {}) {
     );
   const directHostedVerificationUnavailable = hostedCountyVerificationRequired
     && directHostedVerificationMatchesCounty
+    && directHostedVerificationMatchesRequest
     && directHostedVerification.state === 'unavailable';
   const hostedLaunchReady = (
-    hostedReferenceHandoff
-    && !hostedHandoffInitializationPending
-    && !hostedHandoffCountyChanged
-  ) || (
-    hostedCountyVerificationRequired
+    !hostedHandoffInitializationPending
+    && hostedCountyVerificationRequired
     && directHostedVerificationMatchesCounty
+    && directHostedVerificationMatchesRequest
     && directHostedVerification.state === 'available'
   );
   const salesReviewUnavailable = invalidCountiesHubHandoff
-    || countiesHubHandoff?.salesReviewAvailability === 'unavailable'
+    || (
+      countiesHubHandoff !== null
+      && countiesHubHandoff.salesReviewAvailability === 'unavailable'
+    )
     || directHostedVerificationPending
     || directHostedVerificationUnavailable;
   const hostedLaunchDataMode = directHostedLaunch || hostedReferenceHandoff;
@@ -220,9 +243,8 @@ export default function SalesForge({ metadata }: SalesForgeProps = {}) {
     ? 'queue'
     : activeTab;
 
-  // The Hub handoff has already authenticated its original county. Establish
-  // that county only after the metadata scope reaches the store, so stale
-  // pre-handoff state cannot trigger verification for the wrong county.
+  // Establish the handed-off county only after its navigation scope reaches
+  // the store. The handoff itself is never treated as package attestation.
   useLayoutEffect(() => {
     if (!hostedReferenceHandoff || hostedHandoffCountyCode === null) {
       setEstablishedHostedHandoffCountyCode((current) => (
@@ -243,16 +265,18 @@ export default function SalesForge({ metadata }: SalesForgeProps = {}) {
   ]);
 
   useEffect(() => {
-    if (!hostedCountyVerificationRequired) {
+    if (!hostedCountyVerificationRequired || hostedVerificationCountyCode === null) {
       setDirectHostedVerification((current) => (
-        current.countyCode === null && current.state === 'not-required'
+        current.countyCode === null
+          && current.request === null
+          && current.state === 'not-required'
           ? current
-          : { countyCode: null, state: 'not-required' }
+          : { countyCode: null, request: null, state: 'not-required' }
       ));
       return;
     }
 
-    const selectedCountyCode = committedFilters.countyCode;
+    const selectedCountyCode = hostedVerificationCountyCode;
     const selectedCountyIsRegistered = WASHINGTON_COUNTIES.some(
       (county) => county.code === selectedCountyCode,
     );
@@ -263,6 +287,7 @@ export default function SalesForge({ metadata }: SalesForgeProps = {}) {
       }
       setDirectHostedVerification({
         countyCode: selectedCountyCode,
+        request: hostedVerificationRequest,
         state: 'unavailable',
       });
     };
@@ -270,7 +295,11 @@ export default function SalesForge({ metadata }: SalesForgeProps = {}) {
       controller.abort();
       markUnavailable();
     }, DIRECT_HOSTED_PACKAGE_VERIFICATION_TIMEOUT_MS);
-    setDirectHostedVerification({ countyCode: selectedCountyCode, state: 'pending' });
+    setDirectHostedVerification({
+      countyCode: selectedCountyCode,
+      request: hostedVerificationRequest,
+      state: 'pending',
+    });
 
     void (async () => {
       const resolution = await resolveWashingtonCountyStatus(controller.signal);
@@ -296,6 +325,7 @@ export default function SalesForge({ metadata }: SalesForgeProps = {}) {
       }
       setDirectHostedVerification({
         countyCode: selectedCountyCode,
+        request: hostedVerificationRequest,
         state: eligible ? 'available' : 'unavailable',
       });
     })().catch(() => {
@@ -311,9 +341,11 @@ export default function SalesForge({ metadata }: SalesForgeProps = {}) {
       controller.abort();
     };
   }, [
-    committedFilters.countyCode,
+    countiesHubHandoff,
     directHostedVerificationAttempt,
     hostedCountyVerificationRequired,
+    hostedVerificationCountyCode,
+    hostedVerificationRequest,
   ]);
 
   useLayoutEffect(() => {
@@ -496,8 +528,10 @@ export default function SalesForge({ metadata }: SalesForgeProps = {}) {
                 ? 'No authenticated hosted sales package is currently available for this county.'
                 : invalidCountiesHubHandoff
                   ? 'The Counties Hub county handoff is invalid, so no county workflow can run.'
-                  : countiesHubHandoff?.salesReviewUnavailableMessage
-                    ?? 'No governed public sales workflow is available for this county.'}{' '}
+                  : countiesHubHandoff?.salesReviewAvailability === 'verifying'
+                    ? 'The selected county public sales package is still being verified.'
+                    : countiesHubHandoff?.salesReviewUnavailableMessage
+                      ?? 'No governed public sales workflow is available for this county.'}{' '}
             County context remains active, and SalesForge does not borrow another county&apos;s data.
           </p>
         )}
