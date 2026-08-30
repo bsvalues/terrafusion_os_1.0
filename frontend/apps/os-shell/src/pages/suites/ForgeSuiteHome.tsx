@@ -1035,7 +1035,7 @@ export default function ForgeSuiteHome({ metadata }: ForgeSuiteHomeProps = {}) {
                       <div className="forge-ops-card__title">County public-source research</div>
                       <div className="forge-ops-card__sub">
                         Use {washingtonCountyContext.countyName} County&apos;s tracked official entry
-                        point. Research path: {washingtonPublicSource.acquisitionFamily}.
+                        point. Acquisition family: {washingtonPublicSource.acquisitionFamily}.
                       </div>
                     </div>
                     <div className="forge-ops-actions">
@@ -1056,10 +1056,30 @@ export default function ForgeSuiteHome({ metadata }: ForgeSuiteHomeProps = {}) {
                       {formatPublicSourceStatus(washingtonPublicSource.status)}
                     </span>
                   </div>
+                  <div className="forge-ops-metrics">
+                    <div className="forge-ops-metric">
+                      <span className="forge-ops-metric__label">Primary public sales workflow</span>
+                      <span className="forge-ops-metric__value">
+                        {washingtonPublicSource.primarySalesSource}
+                      </span>
+                    </div>
+                    <div className="forge-ops-metric">
+                      <span className="forge-ops-metric__label">Fallback public workflow</span>
+                      <span className="forge-ops-metric__value">
+                        {washingtonPublicSource.fallbackSource ?? 'Not inventoried'}
+                      </span>
+                    </div>
+                    <div className="forge-ops-metric">
+                      <span className="forge-ops-metric__label">GIS / map surface</span>
+                      <span className="forge-ops-metric__value">
+                        {washingtonPublicSource.gisMapSurface ?? 'Not inventoried'}
+                      </span>
+                    </div>
+                  </div>
                   <p className="forge-ops-note">
-                    The link may open the county&apos;s main site; use the listed acquisition path to
-                    locate its public assessor data. This action does not activate a TerraFusion
-                    sales shard, grant county authority, or write to the county system.{' '}
+                    The link may open the county&apos;s main site; use the recorded primary, fallback,
+                    and GIS labels to locate its public assessor data. This action does not activate
+                    a TerraFusion sales shard, grant county authority, or write to the county system.{' '}
                     {WASHINGTON_PUBLIC_SOURCE_INVENTORY_LIMITATION}
                   </p>
                 </div>

@@ -280,6 +280,12 @@ describe('TerraForge suite home — taxonomy contract', () => {
       'forge-public-source-workflow',
     );
     expect(publicSourceWorkflow).toHaveTextContent('County public-source research');
+    expect(publicSourceWorkflow).toHaveTextContent(
+      'Parcel/property search via TaxSifter; direct sales UI not yet verified in this pass',
+    );
+    expect(publicSourceWorkflow).toHaveTextContent('MapSifter/parcel detail history');
+    expect(publicSourceWorkflow).toHaveTextContent('GIS / map surface');
+    expect(publicSourceWorkflow).toHaveTextContent('MapSifter');
     expect(publicSourceWorkflow).toHaveTextContent('Parcel transfer history');
     expect(publicSourceWorkflow).toHaveTextContent('Source path researched');
     expect(publicSourceWorkflow).toHaveTextContent(/does not activate a TerraFusion sales shard/i);
