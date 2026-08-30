@@ -44,8 +44,9 @@ RUN --mount=type=cache,id=pnpm,target=/root/.local/share/pnpm/store \
 
 # Package the exact public Washington JSON surface attested by the client pin.
 # The source is credential-free HTTPS; the packager fetches only read-only
-# manifest/status/attested-shard routes, checks every canonical digest and
-# public provenance claim, and refuses an empty assessor package.
+# manifest/status/advertised-detail/attested-shard routes, checks every
+# canonical digest and public provenance claim, and refuses an empty assessor
+# package.
 COPY scripts/ci/package_washington_launch_data.mjs scripts/ci/package_washington_launch_data.mjs
 COPY frontend/apps/os-shell/src/lib/washingtonPublicSourceInventory.data.json frontend/apps/os-shell/src/lib/washingtonPublicSourceInventory.data.json
 ARG WASHINGTON_LAUNCH_DATA_SOURCE_URL

@@ -2,11 +2,14 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import {
+  assertRuntimeCompatibleCountyDetail,
   assertRuntimeCompatibleCountyShard,
   bindAttestedOfficialSourceToRepository,
   readRepositoryPublicSourceInventory,
   requireAttestedSourcePosture,
 } from './package_washington_launch_data.mjs';
+
+const GENERATED_AT = '2026-01-03T00:00:00.000Z';
 
 function validRecord(overrides = {}) {
   return {
@@ -57,7 +60,7 @@ function validRecord(overrides = {}) {
 function validShard(records = [validRecord()]) {
   return {
     schemaVersion: 'terrafusion.washington.sales-shard.v1',
-    generatedAt: '2026-01-03T00:00:00.000Z',
+    generatedAt: GENERATED_AT,
     county: 'Benton',
     countyCode: '005',
     summary: {
@@ -68,6 +71,41 @@ function validShard(records = [validRecord()]) {
       topNeighborhoodCodes: {},
     },
     records,
+  };
+}
+
+function validCountyStatus(overrides = {}) {
+  return {
+    county: 'Benton',
+    countyCode: '005',
+    prometheusStatus: 'reference_ready',
+    primarySourceMode: 'public_recorder_export',
+    latestSaleDate: '2026-01-02',
+    stagedSales: 1,
+    staticRoutes: {
+      detail: '/launch-data/washington/counties/005.json',
+      salesShard: '/launch-data/washington/sales/by-county/005.json',
+    },
+    ...overrides,
+  };
+}
+
+function validCountyDetail(overrides = {}) {
+  return {
+    schemaVersion: 'terrafusion.washington.county-detail.v1',
+    generatedAt: GENERATED_AT,
+    county: 'Benton',
+    countyCode: '005',
+    operationalState: {
+      primarySourceMode: 'public_recorder_export',
+      prometheusStatus: 'reference_ready',
+    },
+    summary: {
+      records: 1,
+      latestSaleDate: '2026-01-02',
+    },
+    salesRoute: '/launch-data/washington/sales/by-county/005.json',
+    ...overrides,
   };
 }
 
@@ -114,6 +152,58 @@ test('packager rejects noncanonical dates and duplicate sale IDs before publicat
       'Benton',
     );
   }, /duplicate saleId/);
+});
+
+test('packager binds advertised county detail files to attested status', () => {
+  const status = validCountyStatus();
+  assert.doesNotThrow(() => {
+    assertRuntimeCompatibleCountyDetail(validCountyDetail(), status, GENERATED_AT);
+  });
+
+  assert.throws(() => {
+    assertRuntimeCompatibleCountyDetail(
+      validCountyDetail({ countyCode: '063' }),
+      status,
+      GENERATED_AT,
+    );
+  }, /detail identity is invalid/);
+
+  assert.throws(() => {
+    assertRuntimeCompatibleCountyDetail(
+      validCountyDetail({
+        operationalState: {
+          primarySourceMode: 'repository_reference_demo',
+          prometheusStatus: 'reference_ready',
+        },
+      }),
+      status,
+      GENERATED_AT,
+    );
+  }, /operational state does not match attested status/);
+
+  assert.throws(() => {
+    assertRuntimeCompatibleCountyDetail(
+      validCountyDetail({ summary: { records: 2, latestSaleDate: '2026-01-02' } }),
+      status,
+      GENERATED_AT,
+    );
+  }, /summary does not match attested status/);
+
+  assert.throws(() => {
+    assertRuntimeCompatibleCountyDetail(
+      validCountyDetail({ salesRoute: '/launch-data/washington/sales/by-county/063.json' }),
+      status,
+      GENERATED_AT,
+    );
+  }, /sales route does not match attested status/);
+
+  assert.throws(() => {
+    assertRuntimeCompatibleCountyDetail(
+      validCountyDetail({ generatedAt: '2026-01-04T00:00:00.000Z' }),
+      status,
+      GENERATED_AT,
+    );
+  }, /generation identity/);
 });
 
 test('attested official source origin is bound to the runtime repository inventory', async () => {

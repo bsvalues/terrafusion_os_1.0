@@ -7,14 +7,17 @@ import { fileURLToPath } from 'node:url';
 
 const MANIFEST_SCHEMA = 'terrafusion.washington.launch-manifest.v1';
 const STATUS_SCHEMA = 'terrafusion.washington.county-status.v1';
+const COUNTY_DETAIL_SCHEMA = 'terrafusion.washington.county-detail.v1';
 const PACKAGE_PATH = '/launch-data/washington';
 const COUNTY_DETAIL_PATH_PREFIX = `${PACKAGE_PATH}/counties`;
 const SALES_SHARD_PATH_PREFIX = `${PACKAGE_PATH}/sales/by-county`;
+const COUNTY_DETAIL_ROUTE_PATTERN = /^\/launch-data\/washington\/counties\/(\d{3})\.json$/;
 const SALES_ROUTE_PATTERN = /^\/launch-data\/washington\/sales\/by-county\/(\d{3})\.json$/;
 const SHA256_PATTERN = /^[a-f\d]{64}$/;
 const FETCH_TIMEOUT_MS = 120_000;
 const MAX_MANIFEST_BYTES = 5 * 1024 * 1024;
 const MAX_STATUS_BYTES = 20 * 1024 * 1024;
+const MAX_COUNTY_DETAIL_BYTES = 5 * 1024 * 1024;
 const MAX_SHARD_BYTES = 512 * 1024 * 1024;
 const SYNTHETIC_MARKERS = new Set([
   'repository_reference_demo',
@@ -102,6 +105,72 @@ function assertRuntimeCompatibleCountyStatusEntry(value, repositorySourceByCount
   invariant(
     repositorySource?.countyCode === value.countyCode,
     `Washington county status does not match the canonical name/code pair for ${value.countyCode}.`,
+  );
+}
+
+export function assertRuntimeCompatibleCountyDetail(
+  value,
+  countyStatus,
+  expectedGeneratedAt,
+) {
+  const expectedCountyCode = countyStatus.countyCode;
+  invariant(
+    isRecord(value)
+      && value.schemaVersion === COUNTY_DETAIL_SCHEMA
+      && value.generatedAt === expectedGeneratedAt
+      && isNonEmptyString(value.county)
+      && typeof value.countyCode === 'string',
+    `Washington county ${expectedCountyCode} detail has an invalid runtime shape or generation identity.`,
+  );
+  invariant(
+    value.countyCode === expectedCountyCode
+      && normalizeCountyName(value.county) === normalizeCountyName(countyStatus.county),
+    `Washington county ${expectedCountyCode} detail identity is invalid.`,
+  );
+  invariant(
+    value.operationalState === undefined
+      || (
+        isRecord(value.operationalState)
+        && (
+          value.operationalState.primarySourceMode === undefined
+          || value.operationalState.primarySourceMode === countyStatus.primarySourceMode
+        )
+        && (
+          value.operationalState.prometheusStatus === undefined
+          || value.operationalState.prometheusStatus === countyStatus.prometheusStatus
+        )
+      ),
+    `Washington county ${expectedCountyCode} detail operational state does not match attested status.`,
+  );
+  invariant(
+    value.summary === undefined
+      || (
+        isRecord(value.summary)
+        && (
+          value.summary.records === undefined
+          || (
+            Number.isInteger(value.summary.records)
+            && value.summary.records >= 0
+            && value.summary.records === countyStatus.stagedSales
+          )
+        )
+        && (
+          value.summary.latestSaleDate === undefined
+          || (
+            isNullableCanonicalSaleDate(value.summary.latestSaleDate)
+            && value.summary.latestSaleDate === countyStatus.latestSaleDate
+          )
+        )
+      ),
+    `Washington county ${expectedCountyCode} detail summary does not match attested status.`,
+  );
+  invariant(
+    value.salesRoute === undefined
+      || (
+        typeof value.salesRoute === 'string'
+        && value.salesRoute === countyStatus.staticRoutes.salesShard
+      ),
+    `Washington county ${expectedCountyCode} detail sales route does not match attested status.`,
   );
 }
 
@@ -434,6 +503,16 @@ function packageUrlForRoute(packageRoot, route) {
   };
 }
 
+function packageUrlForCountyDetailRoute(packageRoot, route) {
+  const match = COUNTY_DETAIL_ROUTE_PATTERN.exec(route);
+  invariant(match !== null, `County detail route is outside ${PACKAGE_PATH}: ${String(route)}`);
+  return {
+    countyCode: match[1],
+    relativePath: route.slice(`${PACKAGE_PATH}/`.length),
+    url: new URL(route, packageRoot.origin),
+  };
+}
+
 async function ensureAbsent(path) {
   try {
     await lstat(path);
@@ -526,6 +605,32 @@ async function main() {
   await mkdir(outputRoot, { recursive: false });
   await writePackageFile(outputRoot, 'manifest.json', manifestDocument.body);
   await writePackageFile(outputRoot, 'counties/status.json', statusDocument.body);
+
+  let packagedCountyDetailCount = 0;
+  for (const countyStatus of status.counties) {
+    if (!countyStatus.staticRoutes.detail) continue;
+
+    const detailRoute = packageUrlForCountyDetailRoute(
+      packageRoot,
+      countyStatus.staticRoutes.detail,
+    );
+    invariant(
+      detailRoute.countyCode === countyStatus.countyCode,
+      `Washington county detail route identity is invalid: ${detailRoute.countyCode}`,
+    );
+    const detailDocument = await fetchJson(
+      detailRoute.url,
+      MAX_COUNTY_DETAIL_BYTES,
+      `Washington county ${detailRoute.countyCode} detail`,
+    );
+    assertRuntimeCompatibleCountyDetail(
+      detailDocument.value,
+      countyStatus,
+      status.generatedAt,
+    );
+    await writePackageFile(outputRoot, detailRoute.relativePath, detailDocument.body);
+    packagedCountyDetailCount += 1;
+  }
 
   const attestedCountyCodes = new Set();
   let attestedRecordCount = 0;
@@ -629,7 +734,7 @@ async function main() {
     'Washington launch package must contain at least one authenticated public sales record.',
   );
   console.log(
-    `Packaged ${attestedRecordCount} authenticated Washington public sales records across ${attestedCountyCodes.size} counties.`,
+    `Packaged ${attestedRecordCount} authenticated Washington public sales records across ${attestedCountyCodes.size} counties with ${packagedCountyDetailCount} advertised county detail files.`,
   );
 }
 
