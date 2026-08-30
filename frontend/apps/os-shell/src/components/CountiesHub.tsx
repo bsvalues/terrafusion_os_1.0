@@ -254,6 +254,12 @@ const CountiesHub = () => {
     selectedCapability?.eligible
     && launchDataEnabled,
   );
+  const selectedSalesReviewVerifying = Boolean(
+    launchDataEnabled
+    && countyStatusSource === 'hosted'
+    && selectedStatus?.salesShardVerification === 'unverified'
+    && selectedCapability?.status === 'sales-shard-verification-required',
+  );
   const selectedSalesReviewUnavailableMessage = useMemo(() => {
     if (selectedIdentityMismatch) {
       return 'The observed public-data status has a county registry mismatch, so no '
@@ -308,11 +314,17 @@ const CountiesHub = () => {
         referenceDataPosture: selectedCapability?.referenceData.posture ?? 'unavailable',
         referenceRecordCount: selectedObservedReference?.recordCount ?? null,
         latestReferenceSaleDate: selectedObservedReference?.latestSaleDate ?? null,
-        salesReviewAvailability: selectedSalesReviewAvailable ? 'available' : 'unavailable',
+        salesReviewAvailability: selectedSalesReviewAvailable
+          ? 'available'
+          : selectedSalesReviewVerifying
+            ? 'verifying'
+            : 'unavailable',
         salesReviewUnavailableMessage: selectedSalesReviewAvailable
           ? null
-          : selectedSalesReviewUnavailableMessage
-            ?? 'No governed public sales workflow is available for this county.',
+          : selectedSalesReviewVerifying
+            ? null
+            : selectedSalesReviewUnavailableMessage
+              ?? 'No governed public sales workflow is available for this county.',
       } satisfies WashingtonCountiesHubHandoff;
 
       await activateModule('suite-forge', {
@@ -332,6 +344,7 @@ const CountiesHub = () => {
     selectedCapability,
     selectedObservedReference,
     selectedSalesReviewAvailable,
+    selectedSalesReviewVerifying,
     selectedSalesReviewUnavailableMessage,
   ]);
 

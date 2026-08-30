@@ -20,6 +20,11 @@ import {
 import { activateModule } from '../../orchestration/moduleActivation';
 import { buildCountyScopedSessionHeaders } from '../../services/countyIsolation';
 import {
+  resolveWashingtonCountyStatus,
+  verifyWashingtonCountySalesShard,
+} from '../../services/washingtonCountyLaunch';
+import {
+  getWashingtonSalesReviewCapability,
   parseWashingtonCountiesHubHandoff,
   type WashingtonCountiesHubHandoff,
 } from '../forge/sales/washingtonSalesReviewCapability';
@@ -427,6 +432,67 @@ function isPublicSalesWorkflow(mod: ForgeModuleDef): boolean {
   return mod.id === 'salesforge' || mod.id === 'compsforge';
 }
 
+const WASHINGTON_COUNTY_VERIFICATION_TIMEOUT_MS = 10_000;
+
+function unavailableWashingtonCountyContext(
+  countyContext: WashingtonCountiesHubHandoff,
+  message: string,
+): WashingtonCountiesHubHandoff {
+  return {
+    ...countyContext,
+    referenceDataPosture: 'unavailable',
+    referenceRecordCount: null,
+    latestReferenceSaleDate: null,
+    salesReviewAvailability: 'unavailable',
+    salesReviewUnavailableMessage: message,
+  };
+}
+
+async function verifyPendingWashingtonCountyContext(
+  countyContext: WashingtonCountiesHubHandoff,
+  signal: AbortSignal,
+): Promise<WashingtonCountiesHubHandoff> {
+  const unavailable = (message: string) => unavailableWashingtonCountyContext(
+    countyContext,
+    message,
+  );
+  const resolution = await resolveWashingtonCountyStatus(signal);
+  if (resolution.packageSource !== 'hosted') {
+    return unavailable(
+      `The hosted ${countyContext.countyName} County public sales package is unavailable. `
+      + 'County context remains active without borrowing another county\'s data.',
+    );
+  }
+
+  const normalizedCountyName = countyContext.countyName.trim().toLowerCase();
+  const selectedStatus = resolution.counties.find((status) => (
+    status.countyCode === countyContext.countyCode
+    && status.county.replace(/\s+county$/i, '').trim().toLowerCase() === normalizedCountyName
+  ));
+  if (!selectedStatus) {
+    return unavailable(
+      `The hosted county registry did not return the exact ${countyContext.countyName} County context. `
+      + 'Public sales workflows remain unavailable.',
+    );
+  }
+
+  const verifiedStatus = await verifyWashingtonCountySalesShard(selectedStatus, signal);
+  const capability = getWashingtonSalesReviewCapability(verifiedStatus);
+  const observed = capability.referenceData.observed;
+
+  return {
+    ...countyContext,
+    referenceDataPosture: capability.referenceData.posture,
+    referenceRecordCount: observed?.recordCount ?? null,
+    latestReferenceSaleDate: observed?.latestSaleDate ?? null,
+    salesReviewAvailability: capability.eligible ? 'available' : 'unavailable',
+    salesReviewUnavailableMessage: capability.eligible
+      ? null
+      : capability.unavailableMessage
+        ?? `No governed public sales workflow is available for ${countyContext.countyName} County.`,
+  };
+}
+
 function isForgeModuleAvailableInContext(
   mod: ForgeModuleDef,
   countyContext: WashingtonCountiesHubHandoff | null,
@@ -447,6 +513,11 @@ function getContextualLaunchLabel(
   if (!countyContextRequested || !isJune10RuntimeForgeModule(mod)) return getLaunchLabel(mod);
   if (!countyContext) return 'Valid county scope required';
   if (!isPublicSalesWorkflow(mod)) return 'Authenticated county data required';
+  if (countyContext.salesReviewAvailability === 'verifying') {
+    return mod.id === 'compsforge'
+      ? 'Verifying public comparable data'
+      : 'Verifying public sales data';
+  }
   if (countyContext.salesReviewAvailability !== 'available') {
     return mod.id === 'compsforge'
       ? 'Public comparable scouting unavailable'
@@ -462,9 +533,114 @@ function getContextualLaunchLabel(
 export default function ForgeSuiteHome({ metadata }: ForgeSuiteHomeProps = {}) {
   const washingtonCountyContextRequested = metadata?.launchContext
     === 'washington-counties-hub';
-  const washingtonCountyContext = useMemo(
+  const requestedWashingtonCountyContext = useMemo(
     () => parseWashingtonCountiesHubHandoff(metadata),
     [metadata],
+  );
+  const washingtonCountyVerificationRequest = useMemo(() => {
+    if (
+      requestedWashingtonCountyContext?.referencePackageSource !== 'hosted'
+      || requestedWashingtonCountyContext.salesReviewAvailability === 'unavailable'
+    ) {
+      return null;
+    }
+
+    // Handoff metadata is navigation context, not attestation. Strip every
+    // positive data claim until this window independently verifies the exact
+    // hosted county package.
+    return {
+      ...requestedWashingtonCountyContext,
+      referenceDataPosture: 'verification_pending',
+      referenceRecordCount: null,
+      latestReferenceSaleDate: null,
+      salesReviewAvailability: 'verifying',
+      salesReviewUnavailableMessage: null,
+    } satisfies WashingtonCountiesHubHandoff;
+  }, [requestedWashingtonCountyContext]);
+  const washingtonCountyVerificationKey = washingtonCountyVerificationRequest
+    ? [
+        washingtonCountyVerificationRequest.countyCode,
+        washingtonCountyVerificationRequest.countyName,
+        washingtonCountyVerificationRequest.referencePackageSource,
+        washingtonCountyVerificationRequest.referenceDataPosture,
+      ].join('|')
+    : null;
+  const [countyVerificationAttempt, setCountyVerificationAttempt] = useState(0);
+  const [countyVerificationResolution, setCountyVerificationResolution] = useState<{
+    key: string;
+    request: WashingtonCountiesHubHandoff;
+    context: WashingtonCountiesHubHandoff;
+  } | null>(null);
+
+  useEffect(() => {
+    if (!washingtonCountyVerificationKey || !washingtonCountyVerificationRequest) {
+      setCountyVerificationResolution(null);
+      return;
+    }
+
+    const controller = new AbortController();
+    setCountyVerificationResolution(null);
+    const timeout = window.setTimeout(() => {
+      controller.abort();
+      setCountyVerificationResolution({
+        key: washingtonCountyVerificationKey,
+        request: washingtonCountyVerificationRequest,
+        context: unavailableWashingtonCountyContext(
+          washingtonCountyVerificationRequest,
+          `Verification timed out for the ${washingtonCountyVerificationRequest.countyName} County `
+          + 'public sales package. County context remains active and can be retried.',
+        ),
+      });
+    }, WASHINGTON_COUNTY_VERIFICATION_TIMEOUT_MS);
+    void verifyPendingWashingtonCountyContext(
+      washingtonCountyVerificationRequest,
+      controller.signal,
+    ).then((context) => {
+      if (!controller.signal.aborted) {
+        window.clearTimeout(timeout);
+        setCountyVerificationResolution({
+          key: washingtonCountyVerificationKey,
+          request: washingtonCountyVerificationRequest,
+          context,
+        });
+      }
+    }).catch(() => {
+      if (!controller.signal.aborted) {
+        window.clearTimeout(timeout);
+        setCountyVerificationResolution({
+          key: washingtonCountyVerificationKey,
+          request: washingtonCountyVerificationRequest,
+          context: unavailableWashingtonCountyContext(
+            washingtonCountyVerificationRequest,
+            `The ${washingtonCountyVerificationRequest.countyName} County public sales package `
+            + 'could not be verified. County context remains active and can be retried.',
+          ),
+        });
+      }
+    });
+
+    return () => {
+      window.clearTimeout(timeout);
+      controller.abort();
+    };
+  }, [
+    countyVerificationAttempt,
+    washingtonCountyVerificationKey,
+    washingtonCountyVerificationRequest,
+  ]);
+
+  const washingtonCountyContext = washingtonCountyVerificationKey
+    && countyVerificationResolution?.key === washingtonCountyVerificationKey
+    && countyVerificationResolution.request === washingtonCountyVerificationRequest
+    ? countyVerificationResolution.context
+    : washingtonCountyVerificationRequest ?? requestedWashingtonCountyContext;
+  const washingtonCountyVerificationPending = washingtonCountyContext
+    ?.salesReviewAvailability === 'verifying';
+  const washingtonCountyVerificationRetryable = Boolean(
+    washingtonCountyVerificationKey
+    && countyVerificationResolution?.key === washingtonCountyVerificationKey
+    && countyVerificationResolution.request === washingtonCountyVerificationRequest
+    && countyVerificationResolution.context.salesReviewAvailability === 'unavailable',
   );
   const washingtonPublicSource = useMemo(
     () => washingtonCountyContext
@@ -813,7 +989,18 @@ export default function ForgeSuiteHome({ metadata }: ForgeSuiteHomeProps = {}) {
                 bound to the authenticated county session, and unavailable public inputs never
                 fall back to Benton or another county.
               </p>
-              {washingtonCountyContext.salesReviewAvailability === 'available' ? (
+              {washingtonCountyVerificationPending ? (
+                <div
+                  className="forge-workspace__notice forge-workspace__notice--warn"
+                  role="status"
+                  aria-live="polite"
+                  data-testid="forge-county-verification-pending"
+                >
+                  Verifying the exact {washingtonCountyContext.countyName} County hosted public
+                  sales package. County context is active now; SalesForge and CompsForge will unlock
+                  only after attestation succeeds.
+                </div>
+              ) : washingtonCountyContext.salesReviewAvailability === 'available' ? (
                 <p className="forge-ops-note">
                   {washingtonCountyContext.referenceRecordCount?.toLocaleString() ?? 'Governed'}{' '}
                   public/reference sales are available for read-only review
@@ -822,9 +1009,20 @@ export default function ForgeSuiteHome({ metadata }: ForgeSuiteHomeProps = {}) {
                     : ''}.
                 </p>
               ) : (
-                <div className="forge-workspace__notice forge-workspace__notice--warn" role="status">
-                  {washingtonCountyContext.salesReviewUnavailableMessage
-                    ?? 'No governed public sales workflow is available for this county.'}
+                <div className="forge-workspace__notice forge-workspace__notice--warn">
+                  <p role="status">
+                    {washingtonCountyContext.salesReviewUnavailableMessage
+                      ?? 'No governed public sales workflow is available for this county.'}
+                  </p>
+                  {washingtonCountyVerificationRetryable && (
+                    <button
+                      type="button"
+                      className="forge-ops-btn forge-ops-btn--ghost"
+                      onClick={() => setCountyVerificationAttempt((attempt) => attempt + 1)}
+                    >
+                      Retry county sales data
+                    </button>
+                  )}
                 </div>
               )}
               {washingtonPublicSource ? (
@@ -1119,8 +1317,10 @@ export default function ForgeSuiteHome({ metadata }: ForgeSuiteHomeProps = {}) {
                           washingtonCountyContextRequested,
                         )
                         ? isPublicSalesWorkflow(mod)
-                          ? washingtonCountyContext?.salesReviewUnavailableMessage
-                            ?? 'Valid Washington county scope is required.'
+                          ? washingtonCountyContext?.salesReviewAvailability === 'verifying'
+                            ? 'The selected county public sales package is being verified.'
+                            : washingtonCountyContext?.salesReviewUnavailableMessage
+                              ?? 'Valid Washington county scope is required.'
                           : isJune10RuntimeForgeModule(mod)
                             ? 'Authenticated county data is required for this workflow.'
                             : 'This workflow is unavailable in the selected public county context.'

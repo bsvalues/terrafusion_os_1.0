@@ -92,7 +92,10 @@ export type WashingtonSalesReviewHostedShardVerification =
     }
   | { state: 'unavailable' };
 
-export type WashingtonSalesReviewAvailability = 'available' | 'unavailable';
+export type WashingtonSalesReviewAvailability =
+  | 'available'
+  | 'verifying'
+  | 'unavailable';
 
 export interface WashingtonCountiesHubHandoff {
   countyCode: string;
@@ -405,6 +408,7 @@ export function parseWashingtonCountiesHubHandoff(
     || (
       metadata.salesReviewAvailability !== undefined
       && metadata.salesReviewAvailability !== 'available'
+      && metadata.salesReviewAvailability !== 'verifying'
       && metadata.salesReviewAvailability !== 'unavailable'
     )
     || !(
@@ -430,19 +434,40 @@ export function parseWashingtonCountiesHubHandoff(
     : null;
   const salesReviewAvailability = metadata.salesReviewAvailability === 'available'
     ? 'available'
-    : 'unavailable';
+    : metadata.salesReviewAvailability === 'verifying'
+      ? 'verifying'
+      : 'unavailable';
   const salesReviewUnavailableMessage = typeof metadata.salesReviewUnavailableMessage === 'string'
     ? metadata.salesReviewUnavailableMessage
     : null;
 
   // The tracked repository-reference package is a synthetic navigation fixture.
-  // Only a hosted package that passed Forge attestation may advertise sales.
+  // A structurally valid hosted availability claim remains navigation context;
+  // every workflow boundary must independently attest the exact county package
+  // before treating the claim as available.
   if (
     salesReviewAvailability === 'available'
     && (
       metadata.referencePackageSource !== 'hosted'
       || referenceRecordCount === null
       || referenceRecordCount <= 0
+      || isUnavailableReferenceDataPosture(metadata.referenceDataPosture)
+      || isRepositoryReferenceDemoPosture(metadata.referenceDataPosture)
+    )
+  ) {
+    return null;
+  }
+
+  // A pending handoff carries no positive data claim. It is valid only for a
+  // hosted package and must be re-attested by TerraForge before any public
+  // workflow is enabled.
+  if (
+    salesReviewAvailability === 'verifying'
+    && (
+      metadata.referencePackageSource !== 'hosted'
+      || referenceRecordCount !== null
+      || latestReferenceSaleDate !== null
+      || salesReviewUnavailableMessage !== null
       || isUnavailableReferenceDataPosture(metadata.referenceDataPosture)
       || isRepositoryReferenceDemoPosture(metadata.referenceDataPosture)
     )
