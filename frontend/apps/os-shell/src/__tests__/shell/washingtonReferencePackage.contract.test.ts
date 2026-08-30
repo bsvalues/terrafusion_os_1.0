@@ -1,4 +1,5 @@
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { webcrypto } from 'node:crypto';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   resolveWashingtonAssessorReferenceRoute,
   WASHINGTON_ASSESSOR_REFERENCE_PACKAGE,
@@ -206,6 +207,12 @@ function hostedShardResponse(shard: unknown) {
 }
 
 describe('Washington assessor reference package', () => {
+  beforeEach(() => {
+    // jsdom 23 exposes Crypto without SubtleCrypto. Exercise the browser digest
+    // path with Node's standards-compatible Web Crypto implementation.
+    vi.stubGlobal('crypto', webcrypto);
+  });
+
   afterEach(() => {
     vi.unstubAllGlobals();
     vi.unstubAllEnvs();
