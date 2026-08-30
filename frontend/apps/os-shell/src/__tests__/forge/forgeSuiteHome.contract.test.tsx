@@ -450,12 +450,15 @@ describe('TerraForge suite home — taxonomy contract', () => {
     await renderForgeSuiteHome(washingtonCountyContext());
 
     const retry = await screen.findByRole('button', { name: 'Retry county sales data' });
-    expect(screen.getByTestId('forge-county-context')).toHaveTextContent(
+    const countyContext = screen.getByTestId('forge-county-context');
+    expect(countyContext).toHaveTextContent(
       /hosted Spokane County public sales package is unavailable/i,
     );
+    expect(countyContext).toHaveTextContent(/Source Unavailable/i);
+    expect(countyContext).not.toHaveTextContent(/Source verification pending/i);
     const primary = screen.getByTestId('forge-primary-applications');
     expect(within(primary).getByRole('button', { name: /SalesForge/i })).toBeDisabled();
-    expect(screen.getByTestId('forge-county-context')).not.toHaveTextContent(
+    expect(countyContext).not.toHaveTextContent(
       /12 public\/reference sales are available/i,
     );
 

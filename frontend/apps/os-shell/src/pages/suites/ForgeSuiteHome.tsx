@@ -440,6 +440,7 @@ function unavailableWashingtonCountyContext(
 ): WashingtonCountiesHubHandoff {
   return {
     ...countyContext,
+    referenceDataPosture: 'unavailable',
     referenceRecordCount: null,
     latestReferenceSaleDate: null,
     salesReviewAvailability: 'unavailable',
