@@ -368,7 +368,7 @@ describe('SalesForge — County Studio deeplink consumption (Task D2)', () => {
           resetValuationScope: true,
           launchContext: 'washington-counties-hub',
           dataTrustTier: 'public-reference-not-county-certified',
-          referencePackageSource: 'repository-reference',
+          referencePackageSource: 'hosted',
           referenceDataPosture: 'public_recorder_export',
           referenceRecordCount: 12,
           latestReferenceSaleDate: '2025-12-31',
@@ -397,7 +397,7 @@ describe('SalesForge — County Studio deeplink consumption (Task D2)', () => {
       expect(s.contextSegmentLabel).toBeNull();
       expect(s.activeTab).toBe('queue');
       expect(s.taxYear).toBe(SALESFORGE_TAX_YEAR);
-      expect(s.dataSource).toBe('washington-reference');
+      expect(s.dataSource).toBe('washington-hosted');
     });
 
     expect(screen.getByText('Spokane County')).toBeInTheDocument();

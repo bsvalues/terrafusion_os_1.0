@@ -212,5 +212,19 @@ describe('Forge-owned Washington sales-review capability', () => {
       salesReviewAvailability: 'available',
       salesReviewUnavailableMessage: null,
     })).toBeNull();
+
+    expect(parseWashingtonCountiesHubHandoff({
+      countyCode: '063',
+      countyName: 'Spokane',
+      resetValuationScope: true,
+      launchContext: 'washington-counties-hub',
+      dataTrustTier: 'public-reference-not-county-certified',
+      referencePackageSource: 'repository-reference',
+      referenceDataPosture: 'public_recorder_export',
+      referenceRecordCount: 12,
+      latestReferenceSaleDate: '2025-12-31',
+      salesReviewAvailability: 'available',
+      salesReviewUnavailableMessage: null,
+    })).toBeNull();
   });
 });

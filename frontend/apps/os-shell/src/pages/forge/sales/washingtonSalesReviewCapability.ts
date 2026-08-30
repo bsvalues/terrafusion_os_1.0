@@ -434,10 +434,13 @@ export function parseWashingtonCountiesHubHandoff(
     ? metadata.salesReviewUnavailableMessage
     : null;
 
+  // The tracked repository-reference package is a synthetic navigation fixture.
+  // Only a hosted package that passed Forge attestation may advertise sales.
   if (
     salesReviewAvailability === 'available'
     && (
-      referenceRecordCount === null
+      metadata.referencePackageSource !== 'hosted'
+      || referenceRecordCount === null
       || referenceRecordCount <= 0
       || isUnavailableReferenceDataPosture(metadata.referenceDataPosture)
       || isRepositoryReferenceDemoPosture(metadata.referenceDataPosture)
