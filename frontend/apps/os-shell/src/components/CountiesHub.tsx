@@ -195,6 +195,20 @@ const CountiesHub = () => {
     [countyDirectory, selectedCountyCode],
   );
   const selectedStatus = selectedCounty?.status ?? null;
+  const selectedShardRetryAvailable = countyStatusSource === 'hosted'
+    && selectedStatus?.salesShardVerification === 'unavailable'
+    && Boolean(selectedStatus.staticRoutes.salesShard.trim());
+
+  const retrySelectedCountySalesShard = useCallback(() => {
+    if (!selectedStatus || !selectedShardRetryAvailable) return;
+    const retryCountyCode = selectedStatus.countyCode;
+    setCounties((current) => current.map((status) => (
+      status.countyCode === retryCountyCode
+        ? { ...status, salesShardVerification: 'unverified' as const }
+        : status
+    )));
+    setLaunchError(null);
+  }, [selectedShardRetryAvailable, selectedStatus]);
 
   useEffect(() => {
     if (
@@ -597,7 +611,19 @@ const CountiesHub = () => {
                     {!selectedIdentityMismatch
                       && !selectedCapability?.eligible
                       && selectedCapability?.unavailableMessage && (
-                      <Alert severity='warning'>
+                      <Alert
+                        severity='warning'
+                        action={selectedShardRetryAvailable ? (
+                          <Button
+                            color='inherit'
+                            size='small'
+                            startIcon={<RefreshIcon />}
+                            onClick={retrySelectedCountySalesShard}
+                          >
+                            Retry sales data
+                          </Button>
+                        ) : undefined}
+                      >
                         {selectedCapability.unavailableMessage}
                       </Alert>
                     )}

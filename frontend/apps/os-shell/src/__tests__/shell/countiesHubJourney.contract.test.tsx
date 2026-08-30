@@ -301,6 +301,92 @@ describe('Washington Counties Hub assessor journey', () => {
     });
   });
 
+  it('retries selected-county sales verification after a transient failure', async () => {
+    const unverifiedStatus = countyStatus({
+      salesShardVerification: 'unverified',
+    });
+    const unavailableStatus: WashingtonCountyStatusEntry = {
+      ...unverifiedStatus,
+      salesShardVerification: 'unavailable',
+    };
+    const verifiedStatus: WashingtonCountyStatusEntry = {
+      ...unverifiedStatus,
+      stagedSales: 3,
+      needsReview: 2,
+      latestSaleDate: '2025-11-06',
+      salesShardVerification: 'verified',
+    };
+    resolveWashingtonCountyStatusMock.mockResolvedValue(
+      countyStatusResolution([unverifiedStatus]),
+    );
+    verifyWashingtonCountySalesShardMock
+      .mockResolvedValueOnce(unavailableStatus)
+      .mockResolvedValueOnce(verifiedStatus);
+    getWashingtonSalesReviewCapabilityMock.mockImplementation(
+      (status: WashingtonCountyStatusEntry) => {
+        const verified = status.salesShardVerification === 'verified';
+        const unavailable = status.salesShardVerification === 'unavailable';
+        return {
+          eligible: verified,
+          status: verified
+            ? 'available'
+            : unavailable
+              ? 'sales-shard-unavailable'
+              : 'sales-shard-verification-required',
+          statusLabel: verified
+            ? 'Sales review available'
+            : unavailable
+              ? 'Source gap'
+              : 'Verification required',
+          unavailableMessage: verified
+            ? null
+            : unavailable
+              ? 'The selected county sales package is temporarily unavailable.'
+              : 'The selected county package must be verified.',
+          referenceData: {
+            posture: 'public_recorder_export',
+            isSyntheticReference: false,
+            observed: verified
+              ? {
+                  recordCount: status.stagedSales,
+                  latestSaleDate: status.latestSaleDate,
+                  needsReview: status.needsReview,
+                  runtimePosture: status.prometheusStatus,
+                  sourceStatus: status.confidence.rawStatus,
+                  sourceDriftDetected: status.confidence.rawDriftDetected,
+                }
+              : null,
+          },
+        };
+      },
+    );
+
+    render(<CountiesHub />);
+    fireEvent.click(await screen.findByRole('option', { name: 'Select Spokane County' }));
+
+    const retrySalesData = await screen.findByRole('button', {
+      name: 'Retry sales data',
+    });
+    expect(verifyWashingtonCountySalesShardMock).toHaveBeenCalledTimes(1);
+    fireEvent.click(retrySalesData);
+
+    await waitFor(() => {
+      expect(verifyWashingtonCountySalesShardMock).toHaveBeenCalledTimes(2);
+      expect(verifyWashingtonCountySalesShardMock).toHaveBeenLastCalledWith(
+        expect.objectContaining({
+          countyCode: '063',
+          salesShardVerification: 'unverified',
+        }),
+        expect.any(AbortSignal),
+      );
+    });
+    await waitFor(() => {
+      const selectedContext = screen.getByTestId('selected-county-context');
+      expect(selectedContext).toHaveTextContent('2025-11-06');
+      expect(screen.queryByRole('button', { name: 'Retry sales data' })).not.toBeInTheDocument();
+    });
+  });
+
   it('opens TerraForge context for any of 39 counties while marking missing sales data unavailable', async () => {
     render(<CountiesHub />);
 

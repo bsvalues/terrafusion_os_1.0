@@ -379,18 +379,23 @@ export async function verifyWashingtonSalesReviewHostedShard(
   input: WashingtonSalesReviewCapabilityInput,
   signal?: AbortSignal,
 ): Promise<WashingtonSalesReviewHostedShardVerification> {
+  const evictHostedShard = (): void => {
+    evictWashingtonLaunchCountyShard(input.countyCode, 'hosted');
+  };
+  const unavailable = (): WashingtonSalesReviewHostedShardVerification => {
+    evictHostedShard();
+    return { state: 'unavailable' };
+  };
   const verificationCandidate = getWashingtonSalesReviewCapability({
     ...input,
     salesShardVerification: 'unverified',
   });
   if (verificationCandidate.status !== 'sales-shard-verification-required') {
+    // A removed route or downgraded posture is fresh evidence that a
+    // previously verified hosted body must no longer be served.
+    evictHostedShard();
     return { state: 'not-required' };
   }
-
-  const unavailable = (): WashingtonSalesReviewHostedShardVerification => {
-    evictWashingtonLaunchCountyShard(input.countyCode, 'hosted');
-    return { state: 'unavailable' };
-  };
 
   try {
     const response = await fetch(input.staticRoutes.salesShard, {

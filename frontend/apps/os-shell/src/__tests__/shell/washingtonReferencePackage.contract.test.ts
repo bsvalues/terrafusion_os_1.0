@@ -404,6 +404,50 @@ describe('Washington assessor reference package', () => {
     expect(fetchMock).toHaveBeenCalledTimes(4);
   });
 
+  it('evicts a verified hosted shard when refreshed status makes verification unnecessary', async () => {
+    const fetchMock = vi.fn()
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => hostedEligibleStatus(),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => hostedPublicSalesShard(),
+      })
+      .mockResolvedValueOnce({ ok: false, status: 404 });
+    vi.stubGlobal('fetch', fetchMock);
+
+    const resolution = await resolveWashingtonCountyStatus();
+    const spokane = resolution.counties[0];
+    expect(spokane).toBeDefined();
+    if (!spokane) throw new Error('Hosted Spokane status is missing.');
+
+    await expect(verifyWashingtonCountySalesShard(spokane)).resolves.toMatchObject({
+      salesShardVerification: 'verified',
+    });
+    await expect(verifyWashingtonCountySalesShard({
+      ...spokane,
+      primarySourceMode: 'repository_reference_demo',
+      salesShardVerification: 'unverified',
+    })).resolves.toMatchObject({
+      salesShardVerification: 'not-required',
+    });
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+
+    await expect(fetchWashingtonLaunchQueue(2025, 'all', 1, 25, {
+      countyCode: '063',
+      hood: null,
+      propertyType: null,
+      saleDateFrom: null,
+      saleDateTo: null,
+      minPrice: null,
+      maxPrice: null,
+    })).rejects.toThrow(/HTTP 404/i);
+    expect(fetchMock).toHaveBeenCalledTimes(3);
+  });
+
   it('rejects a successful hosted response whose body is not a valid county shard', async () => {
     const fetchMock = vi.fn()
       .mockResolvedValueOnce({
