@@ -9,6 +9,7 @@ import { fileURLToPath } from 'node:url';
 const root = join(dirname(fileURLToPath(import.meta.url)), '../..');
 const workflow = readFileSync(join(root, '.github/workflows/release-compliance.yml'), 'utf8');
 const ciWorkflow = readFileSync(join(root, '.github/workflows/ci.yml'), 'utf8');
+const devStartScript = readFileSync(join(root, 'tools/dev/start.ps1'), 'utf8');
 const dockerignore = readFileSync(join(root, '.dockerignore'), 'utf8');
 const frontendDockerfile = readFileSync(join(root, 'frontend/Dockerfile'), 'utf8');
 const backendDockerfile = readFileSync(join(root, 'backend/Dockerfile'), 'utf8');
@@ -232,6 +233,21 @@ test('production frontend images require the hosted Washington manifest trust pi
     ciWorkflow,
     /docker build --target production[^\n]*--build-arg VITE_WASHINGTON_LAUNCH_MANIFEST_SHA256=\$\{\{ vars\.VITE_WASHINGTON_LAUNCH_MANIFEST_SHA256 \}\}[^\n]*-f frontend\/Dockerfile/
   );
+  assert.match(
+    devStartScript,
+    /\[string\]\$WashingtonLaunchManifestSha256 = \$env:VITE_WASHINGTON_LAUNCH_MANIFEST_SHA256/
+  );
+  assert.match(
+    devStartScript,
+    /'build',[\s\S]*'--build-arg',[\s\S]*"VITE_WASHINGTON_LAUNCH_MANIFEST_SHA256=\$manifestSha256"/
+  );
+  const composeBuild = devStartScript.indexOf('docker compose @buildArgs');
+  const composeUp = devStartScript.indexOf('docker compose @upArgs');
+  assert.ok(
+    composeBuild >= 0 && composeUp > composeBuild,
+    'quick-start must finish the authenticated Compose build before starting services'
+  );
+  assert.doesNotMatch(devStartScript, /\$upArgs \+= '--build'/);
 });
 
 test('published frontend image embeds and scans browser and build dependency evidence fail closed', () => {
