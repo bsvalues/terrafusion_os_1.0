@@ -7,6 +7,15 @@ FROM node:20-alpine AS build
 WORKDIR /app
 ARG VITE_BUILD_SHA=dev
 ENV VITE_BUILD_SHA=$VITE_BUILD_SHA
+ARG VITE_WASHINGTON_LAUNCH_MANIFEST_SHA256
+ENV VITE_WASHINGTON_LAUNCH_MANIFEST_SHA256=$VITE_WASHINGTON_LAUNCH_MANIFEST_SHA256
+
+# Hosted Washington sales are enabled only when the production bundle pins the
+# exact attested package manifest. Keep development builds optional, but refuse
+# to publish a production target with an absent or malformed public trust pin.
+RUN printf '%s' "$VITE_WASHINGTON_LAUNCH_MANIFEST_SHA256" \
+    | grep -Eq '^[0-9a-f]{64}$' \
+    || (echo 'ERROR: VITE_WASHINGTON_LAUNCH_MANIFEST_SHA256 must be a lowercase SHA-256 digest' && exit 1)
 
 # Enable corepack for pnpm
 RUN corepack enable && corepack prepare pnpm@9.0.0 --activate

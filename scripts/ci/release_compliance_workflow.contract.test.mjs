@@ -8,6 +8,7 @@ import { fileURLToPath } from 'node:url';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '../..');
 const workflow = readFileSync(join(root, '.github/workflows/release-compliance.yml'), 'utf8');
+const ciWorkflow = readFileSync(join(root, '.github/workflows/ci.yml'), 'utf8');
 const dockerignore = readFileSync(join(root, '.dockerignore'), 'utf8');
 const frontendDockerfile = readFileSync(join(root, 'frontend/Dockerfile'), 'utf8');
 const backendDockerfile = readFileSync(join(root, 'backend/Dockerfile'), 'utf8');
@@ -208,6 +209,28 @@ test('publisher creates each canonical runtime image exactly once and records di
   assert.match(
     text,
     /name: release-image-inputs[\s\S]*release-images\.json[\s\S]*backend-runtime-license-evidence\.json/
+  );
+});
+
+test('production frontend images require the hosted Washington manifest trust pin', () => {
+  const text = job('sbom-compliance');
+  assert.match(frontendDockerfile, /ARG VITE_WASHINGTON_LAUNCH_MANIFEST_SHA256/);
+  assert.match(
+    frontendDockerfile,
+    /ENV VITE_WASHINGTON_LAUNCH_MANIFEST_SHA256=\$VITE_WASHINGTON_LAUNCH_MANIFEST_SHA256/
+  );
+  assert.match(
+    frontendDockerfile,
+    /grep -Eq '\^\[0-9a-f\]\{64\}\$'/,
+    'production builds must reject an absent or malformed manifest pin'
+  );
+  assert.match(
+    text,
+    /VITE_WASHINGTON_LAUNCH_MANIFEST_SHA256=\$\{\{ vars\.VITE_WASHINGTON_LAUNCH_MANIFEST_SHA256 \}\}/
+  );
+  assert.match(
+    ciWorkflow,
+    /docker build --target production[^\n]*--build-arg VITE_WASHINGTON_LAUNCH_MANIFEST_SHA256=\$\{\{ vars\.VITE_WASHINGTON_LAUNCH_MANIFEST_SHA256 \}\}[^\n]*-f frontend\/Dockerfile/
   );
 });
 
