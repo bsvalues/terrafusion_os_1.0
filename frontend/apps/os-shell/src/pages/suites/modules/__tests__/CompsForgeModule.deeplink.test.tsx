@@ -22,6 +22,7 @@ vi.mock('@/stores/propertyStore', () => ({
 }));
 
 const loadCountyCompsMock = vi.hoisted(() => vi.fn());
+const loadAttestedCountyCompsMock = vi.hoisted(() => vi.fn());
 const adjustCompMock = vi.hoisted(() => vi.fn());
 const reconcileCompsMock = vi.hoisted(() => vi.fn());
 
@@ -43,6 +44,7 @@ vi.mock('@/services/comparableSalesService', () => ({
     if (raw === '077') return 'Yakima';
     return 'Washington';
   }),
+  loadAttestedCountyComps: loadAttestedCountyCompsMock,
   loadCountyComps: loadCountyCompsMock,
   reconcileComps: reconcileCompsMock,
   supportsGovernedComparableAdjustments: vi.fn(() => false),
@@ -84,7 +86,7 @@ function publicComparable(overrides: Record<string, unknown> = {}) {
     bathrooms: null,
     condition: null,
     qualityGrade: null,
-    saleQualification: 'qualified',
+    saleQualification: 'candidate_ready',
     ...overrides,
   };
 }
@@ -102,6 +104,7 @@ describe('CompsForgeModule deeplink consumption', () => {
     activateModuleMock.mockReset();
     propertyState.activeParcel = null;
     loadCountyCompsMock.mockReset();
+    loadAttestedCountyCompsMock.mockReset();
     adjustCompMock.mockReset();
     reconcileCompsMock.mockReset();
     useCompsForgeHandoffStore.getState().clearHandoffContext();
@@ -229,7 +232,7 @@ describe('CompsForgeModule deeplink consumption', () => {
 
   it('uses the exact Counties HUB county and source instead of a stale active parcel', async () => {
     propertyState.activeParcel = { countyCode: '005', neighborhood: 'BENTON-STALE' };
-    loadCountyCompsMock.mockResolvedValue([
+    loadAttestedCountyCompsMock.mockResolvedValue([
       publicComparable(),
       publicComparable({
         parcelId: 'SP-2',
@@ -248,7 +251,8 @@ describe('CompsForgeModule deeplink consumption', () => {
     expect(
       await screen.findByText(/Spokane County public sales scouting is active/i),
     ).toBeInTheDocument();
-    expect(loadCountyCompsMock).toHaveBeenCalledWith('063', 'hosted');
+    expect(loadAttestedCountyCompsMock).toHaveBeenCalledWith('063', 'hosted');
+    expect(loadCountyCompsMock).not.toHaveBeenCalled();
     expect(await screen.findByText('100 Spokane Public Sale Ave')).toBeInTheDocument();
     expect(screen.getByTestId('compsforge-public-trust')).toHaveTextContent(
       /public\/reference · not county-certified · source current through 2026-03-01/i,
@@ -258,9 +262,15 @@ describe('CompsForgeModule deeplink consumption', () => {
     expect(adjustCompMock).not.toHaveBeenCalled();
     expect(reconcileCompsMock).not.toHaveBeenCalled();
 
-    expect(screen.queryByText('200 Spokane Review Sale Ave')).not.toBeInTheDocument();
+    const qualifiedOnlyCheckbox = screen.getByRole('checkbox', { name: /Qualified sales only/i });
+    expect(qualifiedOnlyCheckbox).not.toBeChecked();
+    expect(screen.getByText('200 Spokane Review Sale Ave')).toBeInTheDocument();
     expect(screen.queryByText('300 Spokane Historic Sale Ave')).not.toBeInTheDocument();
-    fireEvent.click(screen.getByRole('checkbox', { name: /Qualified sales only/i }));
+    fireEvent.click(qualifiedOnlyCheckbox);
+    expect(screen.queryByText('100 Spokane Public Sale Ave')).not.toBeInTheDocument();
+    expect(screen.queryByText('200 Spokane Review Sale Ave')).not.toBeInTheDocument();
+    expect(screen.getByText(/No county-qualified sales match this filter/i)).toBeInTheDocument();
+    fireEvent.click(qualifiedOnlyCheckbox);
     expect(await screen.findByText('200 Spokane Review Sale Ave')).toBeInTheDocument();
     expect(screen.queryByText('300 Spokane Historic Sale Ave')).not.toBeInTheDocument();
     fireEvent.change(screen.getByLabelText('Sale date from'), {
@@ -285,6 +295,7 @@ describe('CompsForgeModule deeplink consumption', () => {
 
     expect(await screen.findByText('Spokane County public sales are not staged.')).toBeInTheDocument();
     expect(screen.getByText('Spokane (063)')).toBeInTheDocument();
+    expect(loadAttestedCountyCompsMock).not.toHaveBeenCalled();
     expect(loadCountyCompsMock).not.toHaveBeenCalled();
     expect(screen.queryByText('BENTON-STALE')).not.toBeInTheDocument();
     expect(screen.queryByText(/Select a parcel before running sales comparison/i)).not.toBeInTheDocument();
@@ -292,7 +303,7 @@ describe('CompsForgeModule deeplink consumption', () => {
 
   it('never renders prior-county candidates under a newly selected county while loading', async () => {
     let resolveKing: ((sales: unknown[]) => void) | undefined;
-    loadCountyCompsMock.mockImplementation((countyCode: string) => {
+    loadAttestedCountyCompsMock.mockImplementation((countyCode: string) => {
       if (countyCode === '063') return Promise.resolve([publicComparable()]);
       return new Promise((resolve) => {
         resolveKing = resolve;
@@ -315,26 +326,26 @@ describe('CompsForgeModule deeplink consumption', () => {
 
     expect(screen.queryByText('100 Spokane Public Sale Ave')).not.toBeInTheDocument();
     expect(screen.getByText(/Loading King County sales/i)).toBeInTheDocument();
-    expect(loadCountyCompsMock).toHaveBeenLastCalledWith('033', 'hosted');
+    expect(loadAttestedCountyCompsMock).toHaveBeenLastCalledWith('033', 'hosted');
 
     await act(async () => {
       resolveKing?.([]);
     });
     await waitFor(() => {
-      expect(screen.getByText(/No governed public comparable sales are available/i)).toBeInTheDocument();
+      expect(screen.getByText(/No observed public comparable sales are available/i)).toBeInTheDocument();
     });
   });
 
   it('ignores a superseded county request that resolves after the new county', async () => {
     const spokaneRequest = deferredSales();
     const kingRequest = deferredSales();
-    loadCountyCompsMock.mockImplementation((countyCode: string) => (
+    loadAttestedCountyCompsMock.mockImplementation((countyCode: string) => (
       countyCode === '063' ? spokaneRequest.promise : kingRequest.promise
     ));
 
     const { rerender } = render(<CompsForgeModule metadata={washingtonCountyContext()} />);
     await waitFor(() => {
-      expect(loadCountyCompsMock).toHaveBeenCalledWith('063', 'hosted');
+      expect(loadAttestedCountyCompsMock).toHaveBeenCalledWith('063', 'hosted');
     });
 
     rerender(
@@ -348,7 +359,7 @@ describe('CompsForgeModule deeplink consumption', () => {
       />,
     );
     await waitFor(() => {
-      expect(loadCountyCompsMock).toHaveBeenLastCalledWith('033', 'hosted');
+      expect(loadAttestedCountyCompsMock).toHaveBeenLastCalledWith('033', 'hosted');
     });
 
     await act(async () => {
@@ -369,6 +380,45 @@ describe('CompsForgeModule deeplink consumption', () => {
     });
     expect(screen.getByText('100 King Current Sale Ave')).toBeInTheDocument();
     expect(screen.queryByText('999 Spokane Late Sale Ave')).not.toBeInTheDocument();
+  });
+
+  it('reloads the attested body when the same county package is refreshed', async () => {
+    const refreshedRequest = deferredSales();
+    loadAttestedCountyCompsMock
+      .mockResolvedValueOnce([publicComparable({ address: '100 Prior Package Sale Ave' })])
+      .mockReturnValueOnce(refreshedRequest.promise);
+
+    const { rerender } = render(<CompsForgeModule metadata={washingtonCountyContext()} />);
+    expect(await screen.findByText('100 Prior Package Sale Ave')).toBeInTheDocument();
+
+    rerender(
+      <CompsForgeModule
+        metadata={washingtonCountyContext({
+          referenceRecordCount: 2,
+          latestReferenceSaleDate: '2026-04-01',
+        })}
+      />,
+    );
+
+    expect(screen.queryByText('100 Prior Package Sale Ave')).not.toBeInTheDocument();
+    expect(screen.getByText(/Loading Spokane County sales/i)).toBeInTheDocument();
+    await waitFor(() => {
+      expect(loadAttestedCountyCompsMock).toHaveBeenCalledTimes(2);
+    });
+
+    await act(async () => {
+      refreshedRequest.resolve([
+        publicComparable({
+          parcelId: 'SP-REFRESHED',
+          address: '200 Current Package Sale Ave',
+          saleDate: '2026-04-01',
+        }),
+      ]);
+    });
+
+    expect(await screen.findByText('200 Current Package Sale Ave')).toBeInTheDocument();
+    expect(screen.queryByText('100 Prior Package Sale Ave')).not.toBeInTheDocument();
+    expect(loadCountyCompsMock).not.toHaveBeenCalled();
   });
 
   it('populates the County Studio round-trip chip from segment handoff metadata', async () => {

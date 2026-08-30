@@ -16,7 +16,10 @@ import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import activateModule from '@/orchestration/moduleActivation';
 import { parseRollupHandoff } from '@/pages/forge/shared/rollupHandoff';
-import { parseWashingtonCountiesHubHandoff } from '@/pages/forge/sales/washingtonSalesReviewCapability';
+import {
+  parseWashingtonCountiesHubHandoff,
+  type WashingtonCountiesHubHandoff,
+} from '@/pages/forge/sales/washingtonSalesReviewCapability';
 import {
   AlertTriangle,
   BarChart3,
@@ -33,6 +36,7 @@ import {
   adjustComp,
   findCompsForSubject,
   getComparableCountyName,
+  loadAttestedCountyComps,
   loadCountyComps,
   reconcileComps,
   supportsGovernedComparableAdjustments,
@@ -50,6 +54,7 @@ type SaleWindow = {
 
 type CountySalesState = {
   scopeKey: string;
+  publicRequest: WashingtonCountiesHubHandoff | null;
   status: 'loading' | 'loaded' | 'error';
   sales: ComparableSale[];
   error: string | null;
@@ -75,6 +80,7 @@ export const COMPSFORGE_CANDIDATE_RECONCILIATION_CONTRACT = {
     'Candidate selection is county-shard scoped; governed adjustment and reconciliation remain Benton-certified until additional county proof is promoted.',
   candidatePolicy: {
     qualifiedOnlyDefault: true,
+    publicCountyScoutingQualifiedOnlyDefault: false,
     saleWindowDefault: INITIAL_SALE_WINDOW,
     maxCandidates: 30,
     defaultSelectedCandidates: 3,
@@ -145,14 +151,6 @@ export default function CompsForgeModule({ metadata }: CompsForgeModuleProps = {
   const contextSegmentId = useCompsForgeHandoffStore((state) => state.contextSegmentId);
   const contextSegmentLabel = useCompsForgeHandoffStore((state) => state.contextSegmentLabel);
   const preloadedSampleIds = useCompsForgeHandoffStore((state) => state.preloadedSampleIds);
-  const [selectedKeys, setSelectedKeys] = useState<Set<string>>(new Set());
-  const [qualifiedOnly, setQualifiedOnly] = useState(true);
-  const [saleWindow, setSaleWindow] = useState<SaleWindow>(INITIAL_SALE_WINDOW);
-  const [countySalesState, setCountySalesState] = useState<CountySalesState | null>(null);
-  const [adjustments, setAdjustments] = useState<Record<string, AdjustmentResult>>({});
-  const [reconciliation, setReconciliation] = useState<ReconciliationResult | null>(null);
-  const [adjustmentError, setAdjustmentError] = useState<string | null>(null);
-  const [isAdjusting, setIsAdjusting] = useState(false);
   const handoff = useMemo(() => parseRollupHandoff(metadata), [metadata]);
   const washingtonCountyContextRequested = metadata?.launchContext === 'washington-counties-hub';
   const washingtonCountyContext = useMemo(
@@ -162,6 +160,14 @@ export default function CompsForgeModule({ metadata }: CompsForgeModuleProps = {
   const publicCountySalesContext = washingtonCountyContext?.salesReviewAvailability === 'available'
     ? washingtonCountyContext
     : null;
+  const [selectedKeys, setSelectedKeys] = useState<Set<string>>(new Set());
+  const [qualifiedOnly, setQualifiedOnly] = useState(!washingtonCountyContextRequested);
+  const [saleWindow, setSaleWindow] = useState<SaleWindow>(INITIAL_SALE_WINDOW);
+  const [countySalesState, setCountySalesState] = useState<CountySalesState | null>(null);
+  const [adjustments, setAdjustments] = useState<Record<string, AdjustmentResult>>({});
+  const [reconciliation, setReconciliation] = useState<ReconciliationResult | null>(null);
+  const [adjustmentError, setAdjustmentError] = useState<string | null>(null);
+  const [isAdjusting, setIsAdjusting] = useState(false);
 
   // A Counties HUB launch is an explicit navigation reset. Never let a stale
   // parcel from the prior county become the subject or override that county.
@@ -177,6 +183,7 @@ export default function CompsForgeModule({ metadata }: CompsForgeModuleProps = {
     ? `${countySalesPackageSource}:${countyCode}`
     : null;
   const currentCountySalesState = countySalesState?.scopeKey === countySalesScopeKey
+    && countySalesState.publicRequest === publicCountySalesContext
     ? countySalesState
     : null;
   const allSales = currentCountySalesState?.status === 'loaded'
@@ -204,6 +211,10 @@ export default function CompsForgeModule({ metadata }: CompsForgeModuleProps = {
     : handoff.city ?? 'City overview';
 
   useEffect(() => {
+    setQualifiedOnly(!washingtonCountyContextRequested);
+  }, [countyCode, washingtonCountyContextRequested]);
+
+  useEffect(() => {
     if (handoff.sampleParcelIds.length > 0 || handoff.segmentId) {
       setHandoffContext(handoff.sampleParcelIds, handoff.segmentId, handoff.segmentLabel);
       return;
@@ -227,16 +238,20 @@ export default function CompsForgeModule({ metadata }: CompsForgeModuleProps = {
 
       setCountySalesState({
         scopeKey: countySalesScopeKey,
+        publicRequest: publicCountySalesContext,
         status: 'loading',
         sales: [],
         error: null,
       });
 
       try {
-        const sales = await loadCountyComps(countyCode, countySalesPackageSource);
+        const sales = publicCountySalesContext
+          ? await loadAttestedCountyComps(countyCode, countySalesPackageSource)
+          : await loadCountyComps(countyCode, countySalesPackageSource);
         if (!cancelled) {
           setCountySalesState({
             scopeKey: countySalesScopeKey,
+            publicRequest: publicCountySalesContext,
             status: 'loaded',
             sales,
             error: null,
@@ -246,6 +261,7 @@ export default function CompsForgeModule({ metadata }: CompsForgeModuleProps = {
         if (!cancelled) {
           setCountySalesState({
             scopeKey: countySalesScopeKey,
+            publicRequest: publicCountySalesContext,
             status: 'error',
             sales: [],
             error: error instanceof Error
@@ -266,6 +282,7 @@ export default function CompsForgeModule({ metadata }: CompsForgeModuleProps = {
     countyName,
     countySalesPackageSource,
     countySalesScopeKey,
+    publicCountySalesContext,
   ]);
 
   const rollupCandidates = useMemo(() => {
@@ -657,7 +674,9 @@ export default function CompsForgeModule({ metadata }: CompsForgeModuleProps = {
                     : salesError
                       ? 'Comparable sales are unavailable until the county sales shard is restored.'
                       : hasPublicCountyHandoff
-                        ? 'No governed public comparable sales are available in this county context.'
+                        ? qualifiedOnly && allSales.length > 0
+                          ? 'No county-qualified sales match this filter. Clear “Qualified sales only” to review observed public candidates.'
+                          : 'No observed public comparable sales are available in this county context.'
                         : hasRollupHandoff
                           ? 'No county sales match the current rollup scope.'
                         : 'No comparable sales match the current parcel and filters.'}
