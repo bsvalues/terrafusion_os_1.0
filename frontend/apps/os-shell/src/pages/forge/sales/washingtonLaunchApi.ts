@@ -95,6 +95,17 @@ interface LaunchSaleRecord {
   qualityScore: number | null;
   qualityBand: string | null;
   reviewStatus: string | null;
+  grossLivingArea?: unknown;
+  buildingSquareFeet?: unknown;
+  gla?: unknown;
+  lotSizeSqft?: unknown;
+  yearBuilt?: unknown;
+  bedrooms?: unknown;
+  bathrooms?: unknown;
+  condition?: unknown;
+  propertyCondition?: unknown;
+  qualityGrade?: unknown;
+  quality?: unknown;
   provenance: {
     sourceUrl: string | null;
     sourceFinalUrl: string | null;
@@ -125,6 +136,27 @@ interface LaunchCountySalesShard {
     topNeighborhoodCodes: Record<string, number>;
   };
   records: LaunchSaleRecord[];
+}
+
+export interface WashingtonLaunchComparableSale {
+  parcelId: string;
+  saleDate: string;
+  salePrice: number;
+  propertyType: string;
+  address: string;
+  countyCode: string;
+  countyName: string;
+  city: string | null;
+  neighborhoodCode: string | null;
+  currentNeighborhoodCode: string | null;
+  grossLivingArea: number | null;
+  lotSizeSqft: number | null;
+  yearBuilt: number | null;
+  bedrooms: number | null;
+  bathrooms: number | null;
+  condition: string | null;
+  qualityGrade: string | null;
+  saleQualification: string | null;
 }
 
 export interface WashingtonLaunchSalesShardAttestation {
@@ -519,6 +551,24 @@ function addressFor(sale: LaunchSaleRecord): string | null {
   return [sale.situsAddress, sale.situsCity, sale.situsZip].filter(Boolean).join(', ') || null;
 }
 
+function firstComparableNumber(values: unknown[]): number | null {
+  for (const value of values) {
+    if (typeof value === 'number' && Number.isFinite(value)) return value;
+    if (typeof value === 'string') {
+      const parsed = Number.parseFloat(value);
+      if (Number.isFinite(parsed)) return parsed;
+    }
+  }
+  return null;
+}
+
+function firstComparableString(values: unknown[]): string | null {
+  for (const value of values) {
+    if (typeof value === 'string' && value.trim().length > 0) return value.trim();
+  }
+  return null;
+}
+
 function recommendationFor(sale: LaunchSaleRecord): string {
   return sale.flags.needsReview ? 'review_required' : 'candidate_ready';
 }
@@ -882,6 +932,62 @@ export async function fetchWashingtonLaunchCompsPool(
       qualificationSource: 'recommendation',
     })),
   };
+}
+
+/**
+ * Project comparable candidates from the same county shard used by SalesForge.
+ * Hosted reads fail closed until Forge has authenticated and cached the exact
+ * package body, so CompsForge cannot issue a second, unattested shard request.
+ */
+export async function fetchWashingtonLaunchVerifiedComparableSales(
+  countyCode: string,
+  packageSource: WashingtonReferencePackageSource = 'hosted',
+): Promise<WashingtonLaunchComparableSale[]> {
+  const normalizedCountyCode = normalizeCountyCode(countyCode);
+  const countyName = WASHINGTON_COUNTIES.find(
+    (county) => county.code === normalizedCountyCode,
+  )?.name ?? 'Washington';
+  const shard = await loadCountyShard(normalizedCountyCode, packageSource);
+
+  return shard.records
+    .filter(
+      (record) =>
+        typeof record.parcelNumber === 'string'
+        && record.parcelNumber.trim().length > 0
+        && typeof record.saleDate === 'string'
+        && record.saleDate.trim().length > 0
+        && typeof (record.adjustedSalePrice ?? record.salePrice) === 'number'
+        && (record.adjustedSalePrice ?? record.salePrice ?? 0) > 0,
+    )
+    .map((record) => {
+      const acres = firstComparableNumber([record.acres]);
+      return {
+        parcelId: record.parcelNumber ?? '',
+        saleDate: record.saleDate ?? '',
+        salePrice: record.adjustedSalePrice ?? record.salePrice ?? 0,
+        propertyType: record.useCode ?? 'unknown',
+        address: addressFor(record) ?? 'Address unavailable',
+        countyCode: record.countyCode,
+        countyName,
+        city: record.situsCity,
+        neighborhoodCode: record.neighborhoodCode,
+        currentNeighborhoodCode: record.currentNeighborhoodCode,
+        grossLivingArea: firstComparableNumber([
+          record.grossLivingArea,
+          record.buildingSquareFeet,
+          record.gla,
+        ]),
+        lotSizeSqft:
+          firstComparableNumber([record.lotSizeSqft])
+          ?? (acres !== null && acres > 0 ? Math.round(acres * 43560) : null),
+        yearBuilt: firstComparableNumber([record.yearBuilt]),
+        bedrooms: firstComparableNumber([record.bedrooms]),
+        bathrooms: firstComparableNumber([record.bathrooms]),
+        condition: firstComparableString([record.condition, record.propertyCondition]),
+        qualityGrade: firstComparableString([record.qualityGrade, record.quality]),
+        saleQualification: record.flags.needsReview ? 'review_required' : record.reviewStatus,
+      };
+    });
 }
 
 export async function patchWashingtonLaunchDecision(

@@ -6,6 +6,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { CommittedFilters } from '../salesForgeTypes';
 import {
   evictWashingtonLaunchCountyShard,
+  fetchWashingtonLaunchVerifiedComparableSales,
   fetchWashingtonLaunchQueue,
   fetchWashingtonLaunchRunningStats,
   fetchWashingtonLaunchSaleDetail,
@@ -175,6 +176,64 @@ describe('Washington launch shard county isolation', () => {
 
     expect(queue.total).toBe(1);
     expect(queue.items[0]?.saleId).toBe('hosted-spokane-sale');
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it('serves CompsForge candidates from only the current attested hosted body', async () => {
+    const fetchMock = vi.fn();
+    vi.stubGlobal('fetch', fetchMock);
+
+    await expect(
+      fetchWashingtonLaunchVerifiedComparableSales('063', 'hosted'),
+    ).rejects.toThrow(/authenticated package verification/i);
+
+    validateAndCacheAttestedWashingtonLaunchCountyShard({
+      ...countyShard('Spokane', '063', ['first-package-sale']),
+      records: [{
+        ...saleRecord('Spokane', '063', 'first-package-sale'),
+        parcelNumber: 'SP-FIRST',
+        situsAddress: '100 First Package Ave',
+        grossLivingArea: '1800',
+        reviewStatus: 'candidate_ready',
+      }],
+    }, '063', 'hosted');
+
+    await expect(
+      fetchWashingtonLaunchVerifiedComparableSales('063', 'hosted'),
+    ).resolves.toEqual([
+      expect.objectContaining({
+        parcelId: 'SP-FIRST',
+        address: '100 First Package Ave',
+        grossLivingArea: 1800,
+        saleQualification: 'candidate_ready',
+      }),
+    ]);
+
+    validateAndCacheAttestedWashingtonLaunchCountyShard({
+      ...countyShard('Spokane', '063', ['refreshed-package-sale']),
+      records: [{
+        ...saleRecord('Spokane', '063', 'refreshed-package-sale'),
+        parcelNumber: 'SP-REFRESHED',
+        situsAddress: '200 Refreshed Package Ave',
+        flags: {
+          duplicateRisk: false,
+          needsReview: true,
+          manualException: false,
+        },
+      }],
+    }, '063', 'hosted');
+
+    const refreshed = await fetchWashingtonLaunchVerifiedComparableSales('063', 'hosted');
+    expect(refreshed).toEqual([
+      expect.objectContaining({
+        parcelId: 'SP-REFRESHED',
+        address: '200 Refreshed Package Ave',
+        saleQualification: 'review_required',
+      }),
+    ]);
+    expect(refreshed).not.toEqual([
+      expect.objectContaining({ parcelId: 'SP-FIRST' }),
+    ]);
     expect(fetchMock).not.toHaveBeenCalled();
   });
 

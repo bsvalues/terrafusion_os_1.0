@@ -21,6 +21,7 @@ import {
   resolveWashingtonAssessorReferenceRoute,
   type WashingtonReferencePackageSource,
 } from '@/lib/washingtonAssessorReferencePackage';
+import { fetchWashingtonLaunchVerifiedComparableSales } from '@/pages/forge/sales/washingtonLaunchApi';
 
 // ═══════════════════════════════════════════════════════════════
 // Types
@@ -416,6 +417,17 @@ export async function loadCountyComps(
 
   countyShardCache.set(cacheKey, promise);
   return promise;
+}
+
+/**
+ * Counties HUB launches may only consume the exact shard Forge authenticated.
+ * This intentionally bypasses the legacy standalone hosted cache above.
+ */
+export async function loadAttestedCountyComps(
+  countyCode: string,
+  packageSource: WashingtonReferencePackageSource = 'hosted',
+): Promise<ComparableSale[]> {
+  return fetchWashingtonLaunchVerifiedComparableSales(countyCode, packageSource);
 }
 
 // ═══════════════════════════════════════════════════════════════
