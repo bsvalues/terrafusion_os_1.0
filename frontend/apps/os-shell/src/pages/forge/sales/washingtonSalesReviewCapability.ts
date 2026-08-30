@@ -122,10 +122,41 @@ function isSyntheticReferenceMarker(value: unknown): boolean {
     || normalizedValue === SYNTHETIC_REFERENCE_RECORD_TYPE;
 }
 
+function isNonEmptyString(value: unknown): value is string {
+  return typeof value === 'string' && value.trim().length > 0;
+}
+
+function isPublicSourceUrl(value: unknown): boolean {
+  if (!isNonEmptyString(value)) return false;
+  try {
+    const url = new URL(value);
+    return (url.protocol === 'https:' || url.protocol === 'http:')
+      && url.hostname.length > 0;
+  } catch {
+    return false;
+  }
+}
+
+function hasAffirmativePublicSourceProvenance(record: Record<string, unknown>): boolean {
+  if (!isRecord(record.provenance)) return false;
+  const provenance = record.provenance;
+
+  return isNonEmptyString(record.candidateSource)
+    && (
+      isPublicSourceUrl(provenance.sourceUrl)
+      || isPublicSourceUrl(provenance.sourceFinalUrl)
+    )
+    && isNonEmptyString(provenance.sourcePayloadPath)
+    && isNonEmptyString(provenance.sourcePayloadSha256)
+    && /^[a-f\d]{64}$/i.test(provenance.sourcePayloadSha256)
+    && isNonEmptyString(provenance.candidateIndexSource)
+    && isNonEmptyString(provenance.candidateRecordType);
+}
+
 /**
  * A hosted status document cannot relabel synthetic records as observed public
- * data. Require every record's source mode to support the county posture and
- * reject explicit synthetic markers anywhere in the record provenance before
+ * data. Require every record's source mode to support the county posture,
+ * affirmative public-source evidence, and no explicit synthetic marker before
  * the shard enters the SalesForge cache.
  *
  * Shape errors remain the launch API validator's responsibility. Returning
@@ -149,6 +180,7 @@ function shardRecordProvenanceSupportsPosture(
       : null;
 
     return normalizedSourceMode === normalizedExpectedPosture
+      && hasAffirmativePublicSourceProvenance(record)
       && !isSyntheticReferenceMarker(record.sourceMode)
       && !isSyntheticReferenceMarker(record.candidateSource)
       && !isSyntheticReferenceMarker(candidateRecordType);

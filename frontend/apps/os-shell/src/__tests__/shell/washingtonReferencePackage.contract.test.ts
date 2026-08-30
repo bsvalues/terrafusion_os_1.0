@@ -114,7 +114,7 @@ function hostedPublicSalesShard() {
         sourceUrl: 'https://public.example.test/spokane/sales',
         sourceFinalUrl: `https://public.example.test/spokane/sales/${index + 1}`,
         sourcePayloadPath: `washington/spokane/public-sale-${index + 1}.json`,
-        sourcePayloadSha256: `public-fixture-${index + 1}`,
+        sourcePayloadSha256: String(index + 1).padStart(64, '0'),
         candidateIndexSource: 'spokane_public_recorder_index',
         candidateRecordType: 'public_sale_candidate',
       },
@@ -305,6 +305,56 @@ describe('Washington assessor reference package', () => {
         ok: true,
         status: 200,
         json: async () => WASHINGTON_ASSESSOR_REFERENCE_PACKAGE.salesShards['063'],
+      });
+    vi.stubGlobal('fetch', fetchMock);
+
+    const resolution = await resolveWashingtonCountyStatus();
+    const spokane = resolution.counties[0];
+    expect(spokane).toBeDefined();
+    if (!spokane) throw new Error('Hosted Spokane status is missing.');
+
+    const unavailableSpokane = await verifyWashingtonCountySalesShard(spokane);
+
+    expect(unavailableSpokane).toMatchObject({
+      countyCode: '063',
+      salesShardVerification: 'unavailable',
+    });
+    expect(getWashingtonSalesReviewCapability(unavailableSpokane)).toMatchObject({
+      eligible: false,
+      status: 'sales-shard-unavailable',
+      referenceData: { observed: null },
+    });
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+
+  it('rejects a matching source mode without affirmative public provenance', async () => {
+    const hostedShard = hostedPublicSalesShard();
+    const hostedShardWithoutPublicProvenance = {
+      ...hostedShard,
+      records: hostedShard.records.map((record) => ({
+        ...record,
+        candidateSource: null,
+        provenance: {
+          ...record.provenance,
+          sourceUrl: null,
+          sourceFinalUrl: null,
+          sourcePayloadPath: null,
+          sourcePayloadSha256: null,
+          candidateIndexSource: null,
+          candidateRecordType: null,
+        },
+      })),
+    };
+    const fetchMock = vi.fn()
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => hostedEligibleStatus(),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => hostedShardWithoutPublicProvenance,
       });
     vi.stubGlobal('fetch', fetchMock);
 
