@@ -374,29 +374,24 @@ describe('Washington Counties Hub assessor journey', () => {
   it('opens TerraForge but keeps SalesForge unavailable when the county has no governed sales shard', async () => {
     getWashingtonSalesReviewCapabilityMock.mockReturnValue({
       eligible: false,
-      status: 'no-staged-sales',
+      status: 'sales-shard-unavailable',
       statusLabel: 'Source gap',
       unavailableMessage:
-        'No governed staged sales are available for this county. '
+        'The governed TerraForge sales package is unavailable for this county. '
         + 'Sales review remains unavailable instead of falling back to another county.',
       referenceData: {
         posture: 'public_recorder_export',
         isSyntheticReference: false,
-        observed: {
-          recordCount: 0,
-          latestSaleDate: '2025-12-31',
-          needsReview: 4,
-          runtimePosture: 'reference_ready',
-          sourceStatus: 'observed',
-          sourceDriftDetected: false,
-        },
+        observed: null,
       },
     });
     resolveWashingtonCountyStatusMock.mockResolvedValue(countyStatusResolution([
       countyStatus({
         county: 'Adams',
         countyCode: '001',
+        latestSaleDate: null,
         stagedSales: 0,
+        needsReview: 0,
         staticRoutes: {
           detail: '/launch-data/washington/counties/001.json',
           salesShard: '',
@@ -409,7 +404,7 @@ describe('Washington Counties Hub assessor journey', () => {
 
     const openTerraForge = screen.getByRole('button', { name: 'Open TerraForge' });
     expect(openTerraForge).toBeEnabled();
-    expect(screen.getByText(/No governed staged sales are available/i)).toBeInTheDocument();
+    expect(screen.getByText(/TerraForge sales package is unavailable/i)).toBeInTheDocument();
     fireEvent.click(openTerraForge);
 
     await waitFor(() => {
@@ -420,7 +415,7 @@ describe('Washington Counties Hub assessor journey', () => {
             countyCode: '001',
             salesReviewAvailability: 'unavailable',
             salesReviewUnavailableMessage: expect.stringMatching(
-              /No governed staged sales are available/i,
+              /TerraForge sales package is unavailable/i,
             ),
           }),
         }),

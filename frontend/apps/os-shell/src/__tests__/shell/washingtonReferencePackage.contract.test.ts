@@ -147,7 +147,7 @@ describe('Washington assessor reference package', () => {
 
   it('uses a valid same-origin hosted status package wherever the OS is running', async () => {
     const hostedStatus = hostedEligibleStatus({
-      stagedSales: 999,
+      stagedSales: 0,
       needsReview: 998,
       latestSaleDate: '2099-12-31',
     });
@@ -201,7 +201,7 @@ describe('Washington assessor reference package', () => {
     expect(resolution.counties[0]).toMatchObject({
       county: 'Spokane',
       countyCode: '063',
-      stagedSales: 999,
+      stagedSales: 0,
       salesShardVerification: 'unverified',
     });
     expect(fetchMock).toHaveBeenCalledWith(WASHINGTON_REFERENCE_ROUTES.status, {
@@ -252,6 +252,46 @@ describe('Washington assessor reference package', () => {
       '/launch-data/washington/sales/by-county/001.json',
       expect.anything(),
     );
+  });
+
+  it('rejects a noncanonical sale date before deriving verified freshness', async () => {
+    const hostedShard = hostedPublicSalesShard();
+    const hostedShardWithNoncanonicalDate = {
+      ...hostedShard,
+      records: hostedShard.records.map((record, index) => index === 0
+        ? { ...record, saleDate: '12/31/2025' }
+        : record),
+    };
+    const fetchMock = vi.fn()
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => hostedEligibleStatus(),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => hostedShardWithNoncanonicalDate,
+      });
+    vi.stubGlobal('fetch', fetchMock);
+
+    const resolution = await resolveWashingtonCountyStatus();
+    const spokane = resolution.counties[0];
+    expect(spokane).toBeDefined();
+    if (!spokane) throw new Error('Hosted Spokane status is missing.');
+
+    const unavailableSpokane = await verifyWashingtonCountySalesShard(spokane);
+
+    expect(unavailableSpokane).toMatchObject({
+      countyCode: '063',
+      salesShardVerification: 'unavailable',
+    });
+    expect(getWashingtonSalesReviewCapability(unavailableSpokane)).toMatchObject({
+      eligible: false,
+      status: 'sales-shard-unavailable',
+      referenceData: { observed: null },
+    });
+    expect(fetchMock).toHaveBeenCalledTimes(2);
   });
 
   it('rejects a hosted status relabel when the shard still has synthetic provenance', async () => {

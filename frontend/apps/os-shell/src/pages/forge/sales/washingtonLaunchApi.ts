@@ -224,6 +224,14 @@ function isNullableString(value: unknown): value is string | null {
   return value === null || typeof value === 'string';
 }
 
+function isNullableCanonicalSaleDate(value: unknown): value is string | null {
+  if (value === null) return true;
+  if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+  const timestamp = Date.parse(`${value}T00:00:00.000Z`);
+  return Number.isFinite(timestamp)
+    && new Date(timestamp).toISOString().slice(0, 10) === value;
+}
+
 function isNullableNumber(value: unknown): value is number | null {
   return value === null || (typeof value === 'number' && Number.isFinite(value));
 }
@@ -255,7 +263,7 @@ function assertLaunchSaleRecord(
 
   if (
     !isNullableString(value.parcelNumber)
-    || !isNullableString(value.saleDate)
+    || !isNullableCanonicalSaleDate(value.saleDate)
     || !isNullableNumber(value.saleYear)
     || !isNullableNumber(value.salePrice)
     || !isNullableNumber(value.adjustedSalePrice)
@@ -359,6 +367,7 @@ export interface WashingtonLaunchValidatedShardSummary {
 function deriveValidatedShardSummary(
   shard: LaunchCountySalesShard,
 ): WashingtonLaunchValidatedShardSummary {
+  // assertLaunchSaleRecord requires YYYY-MM-DD, so lexical order is chronological.
   const latestSaleDate = shard.records.reduce<string | null>((latest, record) => {
     if (!record.saleDate) return latest;
     return latest === null || record.saleDate > latest ? record.saleDate : latest;

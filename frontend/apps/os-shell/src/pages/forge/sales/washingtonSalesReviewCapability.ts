@@ -261,11 +261,9 @@ export function getWashingtonSalesReviewCapability(
   const normalizedPosture = normalizeReferenceDataPosture(input.primarySourceMode);
   const isSyntheticReference = isRepositoryReferenceDemoPosture(input.primarySourceMode);
   const isSourcePostureUnavailable = isUnavailableReferenceDataPosture(input.primarySourceMode);
-  const salesClaimsLackShardEvidence = input.stagedSales > 0 && (
-    input.salesShardVerification === 'unverified'
+  const salesClaimsLackShardEvidence = input.salesShardVerification === 'unverified'
     || input.salesShardVerification === 'unavailable'
-    || !input.staticRoutes.salesShard.trim()
-  );
+    || !input.staticRoutes.salesShard.trim();
   const referenceData: WashingtonSalesReviewReferenceData = {
     posture: normalizedPosture || 'unavailable',
     isSyntheticReference,
@@ -320,18 +318,6 @@ export function getWashingtonSalesReviewCapability(
     };
   }
 
-  if (input.stagedSales <= 0) {
-    return {
-      eligible: false,
-      status: 'no-staged-sales',
-      statusLabel: 'Source gap',
-      unavailableMessage:
-        'No governed staged sales are available for this county. '
-        + 'Sales review remains unavailable instead of falling back to another county.',
-      referenceData,
-    };
-  }
-
   if (
     !input.staticRoutes.salesShard.trim()
     || input.salesShardVerification === 'unavailable'
@@ -359,6 +345,18 @@ export function getWashingtonSalesReviewCapability(
     };
   }
 
+  if (input.stagedSales <= 0) {
+    return {
+      eligible: false,
+      status: 'no-staged-sales',
+      statusLabel: 'Source gap',
+      unavailableMessage:
+        'No governed staged sales are available for this county. '
+        + 'Sales review remains unavailable instead of falling back to another county.',
+      referenceData,
+    };
+  }
+
   return {
     eligible: true,
     status: 'available',
@@ -369,7 +367,7 @@ export function getWashingtonSalesReviewCapability(
 }
 
 /**
- * Verify only a hosted shard that would otherwise enable an assessor workflow.
+ * Verify the selected hosted shard before exposing any observed sales claim.
  * A successful HTTP status is insufficient because the OS web server may
  * return its HTML fallback for a missing JSON path; the response body must pass
  * the same county-isolated schema used when SalesForge loads the shard.
@@ -378,11 +376,13 @@ export async function verifyWashingtonSalesReviewHostedShard(
   input: WashingtonSalesReviewCapabilityInput,
   signal?: AbortSignal,
 ): Promise<WashingtonSalesReviewHostedShardVerification> {
-  const candidateCapability = getWashingtonSalesReviewCapability({
+  const verificationCandidate = getWashingtonSalesReviewCapability({
     ...input,
-    salesShardVerification: 'verified',
+    salesShardVerification: 'unverified',
   });
-  if (!candidateCapability.eligible) return { state: 'not-required' };
+  if (verificationCandidate.status !== 'sales-shard-verification-required') {
+    return { state: 'not-required' };
+  }
 
   try {
     const response = await fetch(input.staticRoutes.salesShard, {
