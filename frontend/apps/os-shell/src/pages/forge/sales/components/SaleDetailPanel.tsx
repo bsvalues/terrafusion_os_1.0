@@ -81,7 +81,7 @@ export function SaleDetailPanel() {
         <>
           {/* Sale facts */}
           <div className="sf-detail-section-heading">Sale facts</div>
-          <div className="sf-detail-grid">
+          <div className="sf-detail-grid" data-testid="salesforge-transaction-evidence">
             <Field label="Parcel ID"          value={saleDetail.parcelId} />
             <Field label="Address"            value={saleDetail.address} />
             <Field label="Neighborhood"       value={saleDetail.neighborhood ?? saleDetail.hood} />
@@ -89,6 +89,9 @@ export function SaleDetailPanel() {
             <Field label="Sale date"          value={fmtDate(saleDetail.saleDate)} />
             <Field label="Sale price"         value={fmtPrice(saleDetail.salePrice)} />
             <Field label="Adjusted price"     value={saleDetail.adjustedSalePrice != null ? fmtPrice(saleDetail.adjustedSalePrice) : null} />
+            <Field label="Recorder document"  value={saleDetail.documentNumber} />
+            <Field label="Grantor"             value={saleDetail.grantor} />
+            <Field label="Grantee"             value={saleDetail.grantee} />
             <Field label="Excise number"      value={saleDetail.exciseNumber} />
             <Field label="DOR sales year"     value={saleDetail.salesYear} />
             <Field label="Deed type"          value={saleDetail.rawSaleTypeCode} />
