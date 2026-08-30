@@ -16,6 +16,7 @@ import type {
 } from './salesForgeTypes';
 
 const BASE = '/launch-data/washington';
+export const WASHINGTON_LAUNCH_MANIFEST_SCHEMA = 'terrafusion.washington.launch-manifest.v1';
 
 export const WASHINGTON_COUNTIES = [
   { code: '001', name: 'Adams' },
@@ -126,10 +127,27 @@ interface LaunchCountySalesShard {
   records: LaunchSaleRecord[];
 }
 
+export interface WashingtonLaunchSalesShardAttestation {
+  algorithm: 'SHA-256';
+  canonicalJsonSha256: string;
+  county: string;
+  countyCode: string;
+  officialSourceBaseUrl: string;
+  route: string;
+  sourcePayloadSha256: string[];
+  sourcePosture: string;
+}
+
 export interface WashingtonLaunchManifest {
   schemaVersion: string;
+  /** Required for hosted assessor eligibility; absent on synthetic repository references. */
+  statusSchemaVersion?: string;
+  /** Canonical digest of the complete hosted status document displayed by Counties HUB. */
+  statusCanonicalJsonSha256?: string;
   generatedAt: string;
   sourcePosture: string;
+  /** Required for hosted assessor eligibility; absent on synthetic repository references. */
+  salesShardAttestations?: WashingtonLaunchSalesShardAttestation[];
   summary: {
     counties: number;
     rawLanded: number;
@@ -224,6 +242,14 @@ function isNullableString(value: unknown): value is string | null {
   return value === null || typeof value === 'string';
 }
 
+function isNullableCanonicalSaleDate(value: unknown): value is string | null {
+  if (value === null) return true;
+  if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+  const timestamp = Date.parse(`${value}T00:00:00.000Z`);
+  return Number.isFinite(timestamp)
+    && new Date(timestamp).toISOString().slice(0, 10) === value;
+}
+
 function isNullableNumber(value: unknown): value is number | null {
   return value === null || (typeof value === 'number' && Number.isFinite(value));
 }
@@ -255,7 +281,7 @@ function assertLaunchSaleRecord(
 
   if (
     !isNullableString(value.parcelNumber)
-    || !isNullableString(value.saleDate)
+    || !isNullableCanonicalSaleDate(value.saleDate)
     || !isNullableNumber(value.saleYear)
     || !isNullableNumber(value.salePrice)
     || !isNullableNumber(value.adjustedSalePrice)
@@ -350,6 +376,68 @@ function assertCountyShard(
   });
 }
 
+export interface WashingtonLaunchValidatedShardSummary {
+  stagedSales: number;
+  latestSaleDate: string | null;
+  needsReview: number;
+}
+
+function deriveValidatedShardSummary(
+  shard: LaunchCountySalesShard,
+): WashingtonLaunchValidatedShardSummary {
+  // assertLaunchSaleRecord requires YYYY-MM-DD, so lexical order is chronological.
+  const latestSaleDate = shard.records.reduce<string | null>((latest, record) => {
+    if (!record.saleDate) return latest;
+    return latest === null || record.saleDate > latest ? record.saleDate : latest;
+  }, null);
+
+  return {
+    stagedSales: shard.records.length,
+    latestSaleDate,
+    needsReview: shard.records.filter((record) => record.flags.needsReview).length,
+  };
+}
+
+/**
+ * Cache a shard only after the caller has authenticated its package evidence.
+ * The Forge verifier is the sole production hosted caller. This function then
+ * applies the same county-isolated schema used by every SalesForge read and
+ * derives assessor-facing claims from the exact records SalesForge will render.
+ */
+export function validateAndCacheAttestedWashingtonLaunchCountyShard(
+  value: unknown,
+  expectedCountyCode: string,
+  packageSource: WashingtonReferencePackageSource,
+): WashingtonLaunchValidatedShardSummary {
+  const normalized = normalizeCountyCode(expectedCountyCode);
+  assertCountyShard(value, normalized);
+  const verifiedSummary = deriveValidatedShardSummary(value);
+  const normalizedShard: LaunchCountySalesShard = {
+    ...value,
+    summary: {
+      ...value.summary,
+      records: verifiedSummary.stagedSales,
+      latestSaleDate: verifiedSummary.latestSaleDate,
+      reviewRecords: verifiedSummary.needsReview,
+    },
+  };
+  shardCache.set(`${packageSource}:${normalized}`, Promise.resolve(normalizedShard));
+  return verifiedSummary;
+}
+
+/**
+ * Remove a previously verified shard when fresh hosted evidence fails closed.
+ * Verification and SalesForge share this cache, so an unavailable result must
+ * also prevent later data-loader calls from serving the older body.
+ */
+export function evictWashingtonLaunchCountyShard(
+  expectedCountyCode: string,
+  packageSource: WashingtonReferencePackageSource = 'hosted',
+): void {
+  const normalized = normalizeCountyCode(expectedCountyCode);
+  shardCache.delete(`${packageSource}:${normalized}`);
+}
+
 async function loadCountyShard(
   countyCode: string,
   packageSource: WashingtonReferencePackageSource = 'hosted',
@@ -358,6 +446,13 @@ async function loadCountyShard(
   const cacheKey = `${packageSource}:${normalized}`;
   const existing = shardCache.get(cacheKey);
   if (existing) return existing;
+
+  if (packageSource === 'hosted') {
+    throw new Error(
+      `Washington hosted county ${normalized} requires authenticated package verification before SalesForge can read it.`,
+    );
+  }
+
   const promise = fetchJson<unknown>(
     `${BASE}/sales/by-county/${normalized}.json`,
     packageSource,

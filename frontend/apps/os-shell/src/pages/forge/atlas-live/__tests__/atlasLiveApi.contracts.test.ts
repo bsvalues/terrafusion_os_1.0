@@ -23,6 +23,9 @@ const SPOKANE_SCOPE: AtlasRouteScope = {
 };
 
 const statusPayload = {
+  schemaVersion: 'terrafusion.washington.county-status.v1',
+  generatedAt: '2026-04-22T00:00:00.000Z',
+  sourcePosture: 'repository_reference_demo',
   counties: [
     {
       county: 'Benton',
@@ -69,10 +72,10 @@ const statusPayload = {
   ],
 };
 
-function mockFetch() {
-  vi.stubGlobal('fetch', vi.fn(async (path: string) => {
+function mockFetch(payload = statusPayload) {
+  const fetchMock = vi.fn(async (path: string) => {
     if (path.endsWith('/status.json')) {
-      return Response.json(statusPayload);
+      return Response.json(payload);
     }
     if (path.endsWith('/005.json')) {
       return Response.json({
@@ -105,7 +108,9 @@ function mockFetch() {
       });
     }
     return new Response('not found', { status: 404 });
-  }));
+  });
+  vi.stubGlobal('fetch', fetchMock);
+  return fetchMock;
 }
 
 describe('fetchAtlasCountyContext contract posture', () => {
@@ -137,5 +142,37 @@ describe('fetchAtlasCountyContext contract posture', () => {
     expect(context?.databasePosture).toContain('TerraFusion.Reference39.Demo');
     expect(context?.productionClaimAllowed).toBe(false);
     expect(context?.geometryAvailability).toBe('unpublished');
+  });
+
+  it('uses county status without fetching when no detail route is published', async () => {
+    const fetchMock = mockFetch({
+      ...statusPayload,
+      counties: statusPayload.counties.map((county) =>
+        county.countyCode === '063'
+          ? {
+              ...county,
+              staticRoutes: {
+                ...county.staticRoutes,
+                detail: '',
+              },
+            }
+          : county,
+      ),
+    });
+
+    const context = await fetchAtlasCountyContext(SPOKANE_SCOPE);
+
+    expect(context).toMatchObject({
+      countyName: 'Spokane',
+      countyCode: '063',
+      primarySourceMode: 'arcgis_service',
+      prometheusStatus: 'source_drift',
+      latestSaleDate: '2026-04-22',
+      stagedSales: 23171,
+      detailRoute: '',
+      salesRoute: '/launch-data/washington/sales/by-county/063.json',
+    });
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(fetchMock.mock.calls.some(([path]) => path === '')).toBe(false);
   });
 });

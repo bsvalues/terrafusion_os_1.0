@@ -160,27 +160,29 @@ export async function fetchAtlasCountyContext(
     return null;
   }
 
-  const detail = await fetchLaunchJson<WashingtonCountyDetailFile>(match.staticRoutes.detail, signal);
+  const detail = match.staticRoutes.detail
+    ? await fetchLaunchJson<WashingtonCountyDetailFile>(match.staticRoutes.detail, signal)
+    : null;
   const geometryAvailability: AtlasGeometryAvailability =
     match.countyCode === '005' ? 'compatibility' : 'unpublished';
-  const trustContext = buildCountyTrustContext(detail.countyCode || match.countyCode);
+  const trustContext = buildCountyTrustContext(detail?.countyCode || match.countyCode);
 
   return {
     contractId: ATLAS_COUNTY_LAUNCH_CONTEXT_CONTRACT_ID,
     countyId: scope.countyId,
-    countyName: detail.county || match.county,
-    countyCode: detail.countyCode || match.countyCode,
+    countyName: detail?.county || match.county,
+    countyCode: detail?.countyCode || match.countyCode,
     segmentId: scope.segmentId,
     neighborhoodCode: scope.neighborhoodCode,
     studyId: scope.studyId,
     taxYear: scope.taxYear,
-    primarySourceMode: detail.operationalState?.primarySourceMode ?? match.primarySourceMode ?? null,
-    prometheusStatus: detail.operationalState?.prometheusStatus ?? match.prometheusStatus,
-    latestSaleDate: detail.summary?.latestSaleDate ?? match.latestSaleDate ?? null,
-    stagedSales: detail.summary?.records ?? match.stagedSales,
+    primarySourceMode: detail?.operationalState?.primarySourceMode ?? match.primarySourceMode ?? null,
+    prometheusStatus: detail?.operationalState?.prometheusStatus ?? match.prometheusStatus,
+    latestSaleDate: detail?.summary?.latestSaleDate ?? match.latestSaleDate ?? null,
+    stagedSales: detail?.summary?.records ?? match.stagedSales,
     needsReview: match.needsReview,
     detailRoute: match.staticRoutes.detail,
-    salesRoute: detail.salesRoute ?? match.staticRoutes.salesShard,
+    salesRoute: detail?.salesRoute ?? match.staticRoutes.salesShard,
     geometryAvailability,
     geometryMessage:
       geometryAvailability === 'compatibility'

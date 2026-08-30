@@ -25,13 +25,24 @@
  * (that panel is where stratum selection becomes visible).
  */
 
-import { lazy, Suspense, useLayoutEffect } from 'react';
+import { lazy, Suspense, useEffect, useLayoutEffect, useState } from 'react';
 import activateModule from '@/orchestration/moduleActivation';
+import {
+  resolveWashingtonCountyStatus,
+  verifyWashingtonCountySalesShard,
+} from '@/services/washingtonCountyLaunch';
 import { useSalesForgeStore } from './salesForgeStore';
 import { RunningStatsPanel } from './components/RunningStatsPanel';
 import { SALESFORGE_TAX_YEAR, type SalesForgeTab } from './salesForgeTypes';
-import { isWashingtonLaunchDataEnabled, WASHINGTON_COUNTIES } from './washingtonLaunchApi';
-import { parseWashingtonCountiesHubHandoff } from './washingtonSalesReviewCapability';
+import {
+  evictWashingtonLaunchCountyShard,
+  isWashingtonLaunchDataEnabled,
+  WASHINGTON_COUNTIES,
+} from './washingtonLaunchApi';
+import {
+  getWashingtonSalesReviewCapability,
+  parseWashingtonCountiesHubHandoff,
+} from './washingtonSalesReviewCapability';
 import { parseRollupHandoff } from '../shared/rollupHandoff';
 import './SalesForge.css';
 
@@ -68,6 +79,8 @@ const WASHINGTON_LAUNCH_TABS = new Set<SalesForgeTab>([
   'neighborhoods',
   'code-audit',
 ]);
+
+const DIRECT_HOSTED_PACKAGE_VERIFICATION_TIMEOUT_MS = 15_000;
 
 function TabSpinner() {
   return <div className="sf-state" role="status">Loading…</div>;
@@ -132,20 +145,68 @@ export default function SalesForge({ metadata }: SalesForgeProps = {}) {
   const repositoryReferenceHandoff = referencePackageSource === 'repository-reference';
   const hostedReferenceHandoff = countiesHubHandoff !== null
     && referencePackageSource === 'hosted';
+  const hostedHandoffCountyCode = hostedReferenceHandoff
+    ? countiesHubHandoff?.countyCode ?? null
+    : null;
+  const directHostedLaunch = isWashingtonLaunchDataEnabled()
+    && !countiesHubHandoffRequested;
+  const [establishedHostedHandoffCountyCode, setEstablishedHostedHandoffCountyCode] =
+    useState<string | null>(null);
+  const [directHostedVerification, setDirectHostedVerification] = useState<{
+    countyCode: string | null;
+    state: 'not-required' | 'pending' | 'available' | 'unavailable';
+  }>({
+    countyCode: directHostedLaunch ? committedFilters.countyCode : null,
+    state: directHostedLaunch ? 'pending' : 'not-required',
+  });
+  const [directHostedVerificationAttempt, setDirectHostedVerificationAttempt] = useState(0);
   const syntheticReferenceData = countiesHubHandoff?.referenceDataPosture
     === 'repository_reference_demo';
+  const hostedHandoffInitializationPending = hostedReferenceHandoff
+    && establishedHostedHandoffCountyCode !== hostedHandoffCountyCode;
+  const hostedHandoffCountyChanged = hostedReferenceHandoff
+    && !hostedHandoffInitializationPending
+    && committedFilters.countyCode !== hostedHandoffCountyCode;
+  const hostedCountyVerificationRequired = directHostedLaunch || hostedHandoffCountyChanged;
+  const directHostedVerificationMatchesCounty = directHostedVerification.countyCode
+    === committedFilters.countyCode;
+  const directHostedVerificationPending = hostedHandoffInitializationPending
+    || (
+      hostedCountyVerificationRequired
+      && (
+        !directHostedVerificationMatchesCounty
+        || (
+          directHostedVerification.state !== 'available'
+          && directHostedVerification.state !== 'unavailable'
+        )
+      )
+    );
+  const directHostedVerificationUnavailable = hostedCountyVerificationRequired
+    && directHostedVerificationMatchesCounty
+    && directHostedVerification.state === 'unavailable';
+  const hostedLaunchReady = (
+    hostedReferenceHandoff
+    && !hostedHandoffInitializationPending
+    && !hostedHandoffCountyChanged
+  ) || (
+    hostedCountyVerificationRequired
+    && directHostedVerificationMatchesCounty
+    && directHostedVerification.state === 'available'
+  );
   const salesReviewUnavailable = invalidCountiesHubHandoff
-    || countiesHubHandoff?.salesReviewAvailability === 'unavailable';
-  const hostedLaunchDataMode = isWashingtonLaunchDataEnabled() || hostedReferenceHandoff;
+    || countiesHubHandoff?.salesReviewAvailability === 'unavailable'
+    || directHostedVerificationPending
+    || directHostedVerificationUnavailable;
+  const hostedLaunchDataMode = directHostedLaunch || hostedReferenceHandoff;
   const launchDataMode = hostedLaunchDataMode || repositoryReferenceHandoff;
   const handoff = parseRollupHandoff(invalidCountiesHubHandoff ? undefined : metadata);
   const selectedCounty = WASHINGTON_COUNTIES.find((county) => county.code === committedFilters.countyCode);
-  const countyScopeLabel = countiesHubHandoffRequested
-    ? countiesHubHandoff
-      ? `${countiesHubHandoff.countyName} County`
-      : 'County scope required'
-    : selectedCounty?.name
-      ? `${selectedCounty.name} County`
+  const countyScopeLabel = selectedCounty?.name
+    ? `${selectedCounty.name} County`
+    : countiesHubHandoffRequested
+      ? countiesHubHandoff
+        ? `${countiesHubHandoff.countyName} County`
+        : 'County scope required'
       : handoff.countyName
         ? `${handoff.countyName} County`
         : 'County scope required';
@@ -159,15 +220,115 @@ export default function SalesForge({ metadata }: SalesForgeProps = {}) {
     ? 'queue'
     : activeTab;
 
+  // The Hub handoff has already authenticated its original county. Establish
+  // that county only after the metadata scope reaches the store, so stale
+  // pre-handoff state cannot trigger verification for the wrong county.
+  useLayoutEffect(() => {
+    if (!hostedReferenceHandoff || hostedHandoffCountyCode === null) {
+      setEstablishedHostedHandoffCountyCode((current) => (
+        current === null ? current : null
+      ));
+      return;
+    }
+
+    if (committedFilters.countyCode === hostedHandoffCountyCode) {
+      setEstablishedHostedHandoffCountyCode((current) => (
+        current === hostedHandoffCountyCode ? current : hostedHandoffCountyCode
+      ));
+    }
+  }, [
+    committedFilters.countyCode,
+    hostedHandoffCountyCode,
+    hostedReferenceHandoff,
+  ]);
+
+  useEffect(() => {
+    if (!hostedCountyVerificationRequired) {
+      setDirectHostedVerification((current) => (
+        current.countyCode === null && current.state === 'not-required'
+          ? current
+          : { countyCode: null, state: 'not-required' }
+      ));
+      return;
+    }
+
+    const selectedCountyCode = committedFilters.countyCode;
+    const selectedCountyIsRegistered = WASHINGTON_COUNTIES.some(
+      (county) => county.code === selectedCountyCode,
+    );
+    const controller = new AbortController();
+    const markUnavailable = (): void => {
+      if (selectedCountyIsRegistered) {
+        evictWashingtonLaunchCountyShard(selectedCountyCode, 'hosted');
+      }
+      setDirectHostedVerification({
+        countyCode: selectedCountyCode,
+        state: 'unavailable',
+      });
+    };
+    const timeout = window.setTimeout(() => {
+      controller.abort();
+      markUnavailable();
+    }, DIRECT_HOSTED_PACKAGE_VERIFICATION_TIMEOUT_MS);
+    setDirectHostedVerification({ countyCode: selectedCountyCode, state: 'pending' });
+
+    void (async () => {
+      const resolution = await resolveWashingtonCountyStatus(controller.signal);
+      const county = resolution.packageSource === 'hosted'
+        ? resolution.counties.find(
+            (entry) => entry.countyCode === selectedCountyCode,
+          )
+        : null;
+      if (controller.signal.aborted) return;
+      if (!county) {
+        markUnavailable();
+        return;
+      }
+
+      const verifiedCounty = await verifyWashingtonCountySalesShard(
+        county,
+        controller.signal,
+      );
+      if (controller.signal.aborted) return;
+      const eligible = getWashingtonSalesReviewCapability(verifiedCounty).eligible;
+      if (!eligible && selectedCountyIsRegistered) {
+        evictWashingtonLaunchCountyShard(selectedCountyCode, 'hosted');
+      }
+      setDirectHostedVerification({
+        countyCode: selectedCountyCode,
+        state: eligible ? 'available' : 'unavailable',
+      });
+    })().catch(() => {
+      if (!controller.signal.aborted) {
+        markUnavailable();
+      }
+    }).finally(() => {
+      window.clearTimeout(timeout);
+    });
+
+    return () => {
+      window.clearTimeout(timeout);
+      controller.abort();
+    };
+  }, [
+    committedFilters.countyCode,
+    directHostedVerificationAttempt,
+    hostedCountyVerificationRequired,
+  ]);
+
   useLayoutEffect(() => {
     setDataSource(
       repositoryReferenceHandoff
         ? 'washington-reference'
-        : hostedLaunchDataMode
+        : hostedLaunchReady
           ? 'washington-hosted'
           : 'live-api',
     );
-  }, [hostedLaunchDataMode, repositoryReferenceHandoff, setDataSource]);
+  }, [
+    hostedLaunchReady,
+    repositoryReferenceHandoff,
+    setDataSource,
+  ]);
 
   useLayoutEffect(() => {
     if (launchDataMode && activeTab !== renderedActiveTab) {
@@ -294,11 +455,13 @@ export default function SalesForge({ metadata }: SalesForgeProps = {}) {
             <span className="forge-chip forge-chip--neutral">{taxYear} study year</span>
             <span className="forge-chip forge-chip--neutral">{countyScopeLabel}</span>
             <span className={`forge-chip ${salesReviewUnavailable ? 'forge-chip--warn' : 'forge-chip--success'}`}>
-              {salesReviewUnavailable
-                ? 'County context · sales data unavailable'
-                : launchDataMode
-                  ? 'Washington launch data package'
-                  : 'Live TerraFusion API'}
+              {directHostedVerificationPending
+                ? 'County context · verifying sales data'
+                : salesReviewUnavailable
+                  ? 'County context · sales data unavailable'
+                  : launchDataMode
+                    ? 'Washington launch data package'
+                    : 'Live TerraFusion API'}
             </span>
           </div>
         </div>
@@ -327,12 +490,26 @@ export default function SalesForge({ metadata }: SalesForgeProps = {}) {
         )}
         {salesReviewUnavailable && (
           <p className="sf-header__source-note" role="status">
-            {invalidCountiesHubHandoff
-              ? 'The Counties Hub county handoff is invalid, so no county workflow can run.'
-              : countiesHubHandoff?.salesReviewUnavailableMessage
-                ?? 'No governed public sales workflow is available for this county.'}{' '}
+            {directHostedVerificationPending
+              ? 'TerraForge is authenticating the selected county public-data package before any sales record can load.'
+              : directHostedVerificationUnavailable
+                ? 'No authenticated hosted sales package is currently available for this county.'
+                : invalidCountiesHubHandoff
+                  ? 'The Counties Hub county handoff is invalid, so no county workflow can run.'
+                  : countiesHubHandoff?.salesReviewUnavailableMessage
+                    ?? 'No governed public sales workflow is available for this county.'}{' '}
             County context remains active, and SalesForge does not borrow another county&apos;s data.
           </p>
+        )}
+        {directHostedVerificationUnavailable && (
+          <button
+            type="button"
+            className="forge-chip forge-chip--neutral"
+            data-testid="salesforge-retry-hosted-verification"
+            onClick={() => setDirectHostedVerificationAttempt((attempt) => attempt + 1)}
+          >
+            Retry public-data verification
+          </button>
         )}
       </header>
 

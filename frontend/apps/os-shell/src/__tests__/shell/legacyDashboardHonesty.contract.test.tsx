@@ -27,7 +27,7 @@ describe('Legacy dashboard static honesty contract', () => {
     expect(src).not.toContain('92%');
     expect(src).not.toContain('Pierce County');
     expect(src).toContain("data-testid='counties-hub'");
-    expect(src).toContain('fetchWashingtonCountyStatus');
+    expect(src).toContain('resolveWashingtonCountyStatus');
     expect(src).toContain('navigation context only');
     expect(src).toContain('not county-certified valuation truth');
     expect(src).not.toContain('localStorage');
