@@ -169,6 +169,15 @@ describe('Washington assessor reference package', () => {
         },
       ],
     };
+    const hostedShard = hostedPublicSalesShard();
+    const hostedShardWithStaleSummary = {
+      ...hostedShard,
+      summary: {
+        ...hostedShard.summary,
+        latestSaleDate: '1999-01-01',
+        reviewRecords: 0,
+      },
+    };
     const fetchMock = vi.fn()
       .mockResolvedValueOnce({
         ok: true,
@@ -178,7 +187,7 @@ describe('Washington assessor reference package', () => {
       .mockResolvedValueOnce({
         ok: true,
         status: 200,
-        json: async () => hostedPublicSalesShard(),
+        json: async () => hostedShardWithStaleSummary,
       });
     vi.stubGlobal('fetch', fetchMock);
 

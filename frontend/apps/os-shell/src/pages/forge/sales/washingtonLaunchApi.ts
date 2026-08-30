@@ -356,10 +356,26 @@ export interface WashingtonLaunchValidatedShardSummary {
   needsReview: number;
 }
 
+function deriveValidatedShardSummary(
+  shard: LaunchCountySalesShard,
+): WashingtonLaunchValidatedShardSummary {
+  const latestSaleDate = shard.records.reduce<string | null>((latest, record) => {
+    if (!record.saleDate) return latest;
+    return latest === null || record.saleDate > latest ? record.saleDate : latest;
+  }, null);
+
+  return {
+    stagedSales: shard.records.length,
+    latestSaleDate,
+    needsReview: shard.records.filter((record) => record.flags.needsReview).length,
+  };
+}
+
 /**
  * Apply the same county-isolated schema used by every SalesForge read and
- * retain the body in that loader's cache. The selected county can therefore
- * enter SalesForge without downloading or parsing the validated shard twice.
+ * derive assessor-facing claims from the records SalesForge will render. The
+ * normalized body is retained in that loader's cache, so the selected county
+ * can enter SalesForge without downloading or parsing the shard twice.
  */
 export function validateAndCacheWashingtonLaunchCountyShard(
   value: unknown,
@@ -368,12 +384,18 @@ export function validateAndCacheWashingtonLaunchCountyShard(
 ): WashingtonLaunchValidatedShardSummary {
   const normalized = normalizeCountyCode(expectedCountyCode);
   assertCountyShard(value, normalized);
-  shardCache.set(`${packageSource}:${normalized}`, Promise.resolve(value));
-  return {
-    stagedSales: value.summary.records,
-    latestSaleDate: value.summary.latestSaleDate,
-    needsReview: value.summary.reviewRecords,
+  const verifiedSummary = deriveValidatedShardSummary(value);
+  const normalizedShard: LaunchCountySalesShard = {
+    ...value,
+    summary: {
+      ...value.summary,
+      records: verifiedSummary.stagedSales,
+      latestSaleDate: verifiedSummary.latestSaleDate,
+      reviewRecords: verifiedSummary.needsReview,
+    },
   };
+  shardCache.set(`${packageSource}:${normalized}`, Promise.resolve(normalizedShard));
+  return verifiedSummary;
 }
 
 async function loadCountyShard(
