@@ -219,6 +219,86 @@ describe('SalesForge — County Studio deeplink consumption (Task D2)', () => {
     expect(washingtonCountyLaunchMocks.verify).not.toHaveBeenCalled();
   });
 
+  it('reverifies a changed county after an available hosted Hub handoff', async () => {
+    const benton = hostedBentonStatus();
+    const spokane = {
+      ...benton,
+      county: 'Spokane',
+      countyCode: '063',
+      staticRoutes: {
+        detail: '/launch-data/washington/counties/063.json',
+        salesShard: '/launch-data/washington/sales/by-county/063.json',
+      },
+    };
+    washingtonCountyLaunchMocks.resolve.mockResolvedValueOnce({
+      counties: [benton, spokane],
+      packageSource: 'hosted',
+      usedRepositoryFallback: false,
+    });
+    let finishVerification: ((county: typeof spokane) => void) | undefined;
+    washingtonCountyLaunchMocks.verify.mockImplementationOnce(() => new Promise((resolve) => {
+      finishVerification = resolve;
+    }));
+
+    render(
+      <SalesForge
+        metadata={{
+          countyCode: '005',
+          countyName: 'Benton',
+          resetValuationScope: true,
+          launchContext: 'washington-counties-hub',
+          dataTrustTier: 'public-reference-not-county-certified',
+          referencePackageSource: 'hosted',
+          referenceDataPosture: 'public_recorder_export',
+          referenceRecordCount: 1,
+          latestReferenceSaleDate: '2025-12-31',
+          salesReviewAvailability: 'available',
+          salesReviewUnavailableMessage: null,
+        }}
+      />,
+    );
+
+    await waitFor(() => {
+      expect(useSalesForgeStore.getState().dataSource).toBe('washington-hosted');
+    });
+    expect(washingtonCountyLaunchMocks.resolve).not.toHaveBeenCalled();
+    expect(washingtonCountyLaunchMocks.verify).not.toHaveBeenCalled();
+
+    act(() => {
+      const store = useSalesForgeStore.getState();
+      store.setFilterForm({ countyCode: '063' });
+      store.applyFilters();
+    });
+
+    await waitFor(() => {
+      expect(washingtonCountyLaunchMocks.resolve).toHaveBeenCalledTimes(1);
+      expect(washingtonCountyLaunchMocks.verify).toHaveBeenCalledWith(
+        expect.objectContaining({ countyCode: '063' }),
+        expect.anything(),
+      );
+    });
+    expect(useSalesForgeStore.getState().committedFilters.countyCode).toBe('063');
+    expect(useSalesForgeStore.getState().dataSource).toBe('live-api');
+    expect(screen.getByText('Spokane County')).toBeInTheDocument();
+    expect(screen.getByText(/authenticating the selected county public-data package/i))
+      .toBeInTheDocument();
+    expect(screen.queryByTestId('stub-queue')).not.toBeInTheDocument();
+
+    await act(async () => {
+      finishVerification?.({
+        ...spokane,
+        salesShardVerification: 'verified',
+      });
+    });
+
+    await waitFor(() => {
+      expect(useSalesForgeStore.getState().dataSource).toBe('washington-hosted');
+      expect(screen.getByTestId('stub-queue')).toBeInTheDocument();
+    });
+    expect(washingtonCountyLaunchMocks.resolve).toHaveBeenCalledTimes(1);
+    expect(washingtonCountyLaunchMocks.verify).toHaveBeenCalledTimes(1);
+  });
+
   it('keeps county context but blocks a synthetic reference demo from assessor workflows', async () => {
     render(
       <SalesForge

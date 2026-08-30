@@ -145,8 +145,13 @@ export default function SalesForge({ metadata }: SalesForgeProps = {}) {
   const repositoryReferenceHandoff = referencePackageSource === 'repository-reference';
   const hostedReferenceHandoff = countiesHubHandoff !== null
     && referencePackageSource === 'hosted';
+  const hostedHandoffCountyCode = hostedReferenceHandoff
+    ? countiesHubHandoff?.countyCode ?? null
+    : null;
   const directHostedLaunch = isWashingtonLaunchDataEnabled()
     && !countiesHubHandoffRequested;
+  const [establishedHostedHandoffCountyCode, setEstablishedHostedHandoffCountyCode] =
+    useState<string | null>(null);
   const [directHostedVerification, setDirectHostedVerification] = useState<{
     countyCode: string | null;
     state: 'not-required' | 'pending' | 'available' | 'unavailable';
@@ -157,19 +162,37 @@ export default function SalesForge({ metadata }: SalesForgeProps = {}) {
   const [directHostedVerificationAttempt, setDirectHostedVerificationAttempt] = useState(0);
   const syntheticReferenceData = countiesHubHandoff?.referenceDataPosture
     === 'repository_reference_demo';
+  const hostedHandoffInitializationPending = hostedReferenceHandoff
+    && establishedHostedHandoffCountyCode !== hostedHandoffCountyCode;
+  const hostedHandoffCountyChanged = hostedReferenceHandoff
+    && !hostedHandoffInitializationPending
+    && committedFilters.countyCode !== hostedHandoffCountyCode;
+  const hostedCountyVerificationRequired = directHostedLaunch || hostedHandoffCountyChanged;
   const directHostedVerificationMatchesCounty = directHostedVerification.countyCode
     === committedFilters.countyCode;
-  const directHostedVerificationPending = directHostedLaunch
-    && (
-      !directHostedVerificationMatchesCounty
-      || (
-        directHostedVerification.state !== 'available'
-        && directHostedVerification.state !== 'unavailable'
+  const directHostedVerificationPending = hostedHandoffInitializationPending
+    || (
+      hostedCountyVerificationRequired
+      && (
+        !directHostedVerificationMatchesCounty
+        || (
+          directHostedVerification.state !== 'available'
+          && directHostedVerification.state !== 'unavailable'
+        )
       )
     );
-  const directHostedVerificationUnavailable = directHostedLaunch
+  const directHostedVerificationUnavailable = hostedCountyVerificationRequired
     && directHostedVerificationMatchesCounty
     && directHostedVerification.state === 'unavailable';
+  const hostedLaunchReady = (
+    hostedReferenceHandoff
+    && !hostedHandoffInitializationPending
+    && !hostedHandoffCountyChanged
+  ) || (
+    hostedCountyVerificationRequired
+    && directHostedVerificationMatchesCounty
+    && directHostedVerification.state === 'available'
+  );
   const salesReviewUnavailable = invalidCountiesHubHandoff
     || countiesHubHandoff?.salesReviewAvailability === 'unavailable'
     || directHostedVerificationPending
@@ -178,12 +201,12 @@ export default function SalesForge({ metadata }: SalesForgeProps = {}) {
   const launchDataMode = hostedLaunchDataMode || repositoryReferenceHandoff;
   const handoff = parseRollupHandoff(invalidCountiesHubHandoff ? undefined : metadata);
   const selectedCounty = WASHINGTON_COUNTIES.find((county) => county.code === committedFilters.countyCode);
-  const countyScopeLabel = countiesHubHandoffRequested
-    ? countiesHubHandoff
-      ? `${countiesHubHandoff.countyName} County`
-      : 'County scope required'
-    : selectedCounty?.name
-      ? `${selectedCounty.name} County`
+  const countyScopeLabel = selectedCounty?.name
+    ? `${selectedCounty.name} County`
+    : countiesHubHandoffRequested
+      ? countiesHubHandoff
+        ? `${countiesHubHandoff.countyName} County`
+        : 'County scope required'
       : handoff.countyName
         ? `${handoff.countyName} County`
         : 'County scope required';
@@ -197,8 +220,30 @@ export default function SalesForge({ metadata }: SalesForgeProps = {}) {
     ? 'queue'
     : activeTab;
 
+  // The Hub handoff has already authenticated its original county. Establish
+  // that county only after the metadata scope reaches the store, so stale
+  // pre-handoff state cannot trigger verification for the wrong county.
+  useLayoutEffect(() => {
+    if (!hostedReferenceHandoff || hostedHandoffCountyCode === null) {
+      setEstablishedHostedHandoffCountyCode((current) => (
+        current === null ? current : null
+      ));
+      return;
+    }
+
+    if (committedFilters.countyCode === hostedHandoffCountyCode) {
+      setEstablishedHostedHandoffCountyCode((current) => (
+        current === hostedHandoffCountyCode ? current : hostedHandoffCountyCode
+      ));
+    }
+  }, [
+    committedFilters.countyCode,
+    hostedHandoffCountyCode,
+    hostedReferenceHandoff,
+  ]);
+
   useEffect(() => {
-    if (!directHostedLaunch) {
+    if (!hostedCountyVerificationRequired) {
       setDirectHostedVerification((current) => (
         current.countyCode === null && current.state === 'not-required'
           ? current
@@ -267,30 +312,20 @@ export default function SalesForge({ metadata }: SalesForgeProps = {}) {
     };
   }, [
     committedFilters.countyCode,
-    directHostedLaunch,
     directHostedVerificationAttempt,
+    hostedCountyVerificationRequired,
   ]);
 
   useLayoutEffect(() => {
     setDataSource(
       repositoryReferenceHandoff
         ? 'washington-reference'
-        : (
-          hostedReferenceHandoff
-          || (
-            directHostedLaunch
-            && directHostedVerificationMatchesCounty
-            && directHostedVerification.state === 'available'
-          )
-        )
+        : hostedLaunchReady
           ? 'washington-hosted'
           : 'live-api',
     );
   }, [
-    directHostedLaunch,
-    directHostedVerification.state,
-    directHostedVerificationMatchesCounty,
-    hostedReferenceHandoff,
+    hostedLaunchReady,
     repositoryReferenceHandoff,
     setDataSource,
   ]);
