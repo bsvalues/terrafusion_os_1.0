@@ -695,6 +695,7 @@ const CountiesHub = () => {
                           setSelectedCountyCode(county.countyCode);
                           setLaunchError(null);
                         }}
+                        sx={{ height: '100%' }}
                       >
                         <CardContent>
                           <Stack spacing={1.5}>
