@@ -597,7 +597,7 @@ function toDetail(sale: LaunchSaleRecord): SaleDetail {
     saleAdjustmentAmount: null,
     saleExemptionAmount: null,
     // Recorder identifiers may be alphanumeric or zero-padded. Keep the public value
-    // lossless instead of presenting a truncated identifier as a PACS excise number.
+    // lossless instead of presenting a truncated value in a different identifier field.
     exciseNumber: null,
     documentNumber: sale.documentNumber,
     grantor: sale.grantor,
