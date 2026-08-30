@@ -80,6 +80,8 @@ const WASHINGTON_LAUNCH_TABS = new Set<SalesForgeTab>([
   'code-audit',
 ]);
 
+const DIRECT_HOSTED_PACKAGE_VERIFICATION_TIMEOUT_MS = 15_000;
+
 function TabSpinner() {
   return <div className="sf-state" role="status">Loading…</div>;
 }
@@ -210,6 +212,19 @@ export default function SalesForge({ metadata }: SalesForgeProps = {}) {
       (county) => county.code === selectedCountyCode,
     );
     const controller = new AbortController();
+    const markUnavailable = (): void => {
+      if (selectedCountyIsRegistered) {
+        evictWashingtonLaunchCountyShard(selectedCountyCode, 'hosted');
+      }
+      setDirectHostedVerification({
+        countyCode: selectedCountyCode,
+        state: 'unavailable',
+      });
+    };
+    const timeout = window.setTimeout(() => {
+      controller.abort();
+      markUnavailable();
+    }, DIRECT_HOSTED_PACKAGE_VERIFICATION_TIMEOUT_MS);
     setDirectHostedVerification({ countyCode: selectedCountyCode, state: 'pending' });
 
     void (async () => {
@@ -221,13 +236,7 @@ export default function SalesForge({ metadata }: SalesForgeProps = {}) {
         : null;
       if (controller.signal.aborted) return;
       if (!county) {
-        if (selectedCountyIsRegistered) {
-          evictWashingtonLaunchCountyShard(selectedCountyCode, 'hosted');
-        }
-        setDirectHostedVerification({
-          countyCode: selectedCountyCode,
-          state: 'unavailable',
-        });
+        markUnavailable();
         return;
       }
 
@@ -236,25 +245,26 @@ export default function SalesForge({ metadata }: SalesForgeProps = {}) {
         controller.signal,
       );
       if (controller.signal.aborted) return;
+      const eligible = getWashingtonSalesReviewCapability(verifiedCounty).eligible;
+      if (!eligible && selectedCountyIsRegistered) {
+        evictWashingtonLaunchCountyShard(selectedCountyCode, 'hosted');
+      }
       setDirectHostedVerification({
         countyCode: selectedCountyCode,
-        state: getWashingtonSalesReviewCapability(verifiedCounty).eligible
-          ? 'available'
-          : 'unavailable',
+        state: eligible ? 'available' : 'unavailable',
       });
     })().catch(() => {
       if (!controller.signal.aborted) {
-        if (selectedCountyIsRegistered) {
-          evictWashingtonLaunchCountyShard(selectedCountyCode, 'hosted');
-        }
-        setDirectHostedVerification({
-          countyCode: selectedCountyCode,
-          state: 'unavailable',
-        });
+        markUnavailable();
       }
+    }).finally(() => {
+      window.clearTimeout(timeout);
     });
 
-    return () => controller.abort();
+    return () => {
+      window.clearTimeout(timeout);
+      controller.abort();
+    };
   }, [
     committedFilters.countyCode,
     directHostedLaunch,

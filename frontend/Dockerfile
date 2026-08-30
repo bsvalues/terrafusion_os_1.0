@@ -42,6 +42,17 @@ RUN --mount=type=cache,id=pnpm,target=/root/.local/share/pnpm/store \
        /tmp/frontend-docker-build-licenses.json /app/frontend-build-dependencies.spdx.json docker-build \
     && rm /tmp/frontend-browser-production-licenses.json /tmp/frontend-docker-build-licenses.json
 
+# Package the exact public Washington JSON surface attested by the client pin.
+# The source is credential-free HTTPS; the packager fetches only read-only
+# manifest/status/attested-shard routes, checks every canonical digest and
+# public provenance claim, and refuses an empty assessor package.
+COPY scripts/ci/package_washington_launch_data.mjs scripts/ci/package_washington_launch_data.mjs
+ARG WASHINGTON_LAUNCH_DATA_SOURCE_URL
+RUN node scripts/ci/package_washington_launch_data.mjs \
+    "$WASHINGTON_LAUNCH_DATA_SOURCE_URL" \
+    "$VITE_WASHINGTON_LAUNCH_MANIFEST_SHA256" \
+    /app/washington-launch-data
+
 # Copy workspace packages (vite resolve aliases)
 COPY packages/ packages/
 
@@ -64,6 +75,10 @@ RUN rm -rf ./*
 
 # Copy built assets
 COPY --from=build /app/dist ./
+
+# Same-origin public launch data travels with the bundle whose compiled pin
+# authenticates it.
+COPY --from=build /app/washington-launch-data ./launch-data/washington/
 
 # Preserve the exact dependency-resolution inputs that produced this bundle.
 # This path is outside the nginx document root, so it is available to image

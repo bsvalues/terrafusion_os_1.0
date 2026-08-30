@@ -120,6 +120,7 @@ describe('SalesForge — County Studio deeplink consumption (Task D2)', () => {
   });
 
   afterEach(() => {
+    vi.useRealTimers();
     window.history.replaceState({}, '', '/');
   });
 
@@ -192,6 +193,30 @@ describe('SalesForge — County Studio deeplink consumption (Task D2)', () => {
     });
     expect(washingtonCountyLaunchMocks.resolve).toHaveBeenCalledTimes(2);
     expect(washingtonCountyLaunchMocks.verify).toHaveBeenCalledTimes(1);
+  });
+
+  it('bounds a stalled direct hosted verification and exposes retry', async () => {
+    vi.useFakeTimers();
+    window.history.replaceState({}, '', '/?wa-launch-data=1');
+    washingtonCountyLaunchMocks.resolve.mockReturnValueOnce(new Promise(() => {}));
+
+    render(<SalesForge />);
+
+    expect(screen.getByText(/authenticating the selected county public-data package/i))
+      .toBeInTheDocument();
+    expect(screen.queryByTestId('salesforge-retry-hosted-verification'))
+      .not.toBeInTheDocument();
+
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(15_000);
+    });
+
+    expect(screen.getByText(/No authenticated hosted sales package is currently available/i))
+      .toBeInTheDocument();
+    expect(screen.getByTestId('salesforge-retry-hosted-verification')).toBeInTheDocument();
+    expect(screen.getByTestId('salesforge-data-unavailable')).toBeInTheDocument();
+    expect(washingtonCountyLaunchMocks.resolve).toHaveBeenCalledTimes(1);
+    expect(washingtonCountyLaunchMocks.verify).not.toHaveBeenCalled();
   });
 
   it('keeps county context but blocks a synthetic reference demo from assessor workflows', async () => {

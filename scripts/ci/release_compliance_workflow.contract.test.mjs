@@ -12,6 +12,11 @@ const ciWorkflow = readFileSync(join(root, '.github/workflows/ci.yml'), 'utf8');
 const devStartScript = readFileSync(join(root, 'tools/dev/start.ps1'), 'utf8');
 const dockerignore = readFileSync(join(root, '.dockerignore'), 'utf8');
 const frontendDockerfile = readFileSync(join(root, 'frontend/Dockerfile'), 'utf8');
+const frontendNginx = readFileSync(join(root, 'frontend/nginx.conf'), 'utf8');
+const washingtonLaunchPackager = readFileSync(
+  join(root, 'scripts/ci/package_washington_launch_data.mjs'),
+  'utf8'
+);
 const backendDockerfile = readFileSync(join(root, 'backend/Dockerfile'), 'utf8');
 const trivyIgnore = readFileSync(join(root, '.trivyignore.yaml'), 'utf8');
 const backendPackages = readFileSync(join(root, 'backend/Directory.Packages.props'), 'utf8');
@@ -231,7 +236,7 @@ test('production frontend images require the hosted Washington manifest trust pi
   );
   assert.match(
     ciWorkflow,
-    /docker build --target production[^\n]*--build-arg VITE_WASHINGTON_LAUNCH_MANIFEST_SHA256=\$\{\{ vars\.VITE_WASHINGTON_LAUNCH_MANIFEST_SHA256 \}\}[^\n]*-f frontend\/Dockerfile/
+    /docker build --target production[^\n]*--build-arg VITE_WASHINGTON_LAUNCH_MANIFEST_SHA256="\$VITE_WASHINGTON_LAUNCH_MANIFEST_SHA256"[^\n]*-f frontend\/Dockerfile/
   );
   assert.match(
     devStartScript,
@@ -247,7 +252,57 @@ test('production frontend images require the hosted Washington manifest trust pi
     composeBuild >= 0 && composeUp > composeBuild,
     'quick-start must finish the authenticated Compose build before starting services'
   );
+  assert.match(devStartScript, /\$upArgs = @\('[^\n]*'--no-build'\)/);
   assert.doesNotMatch(devStartScript, /\$upArgs \+= '--build'/);
+});
+
+test('production frontend packages the public data authenticated by its Washington pin', () => {
+  const text = job('sbom-compliance');
+  assert.match(frontendDockerfile, /ARG WASHINGTON_LAUNCH_DATA_SOURCE_URL/);
+  assert.match(
+    frontendDockerfile,
+    /node scripts\/ci\/package_washington_launch_data\.mjs[\s\\]*"\$WASHINGTON_LAUNCH_DATA_SOURCE_URL"[\s\\]*"\$VITE_WASHINGTON_LAUNCH_MANIFEST_SHA256"[\s\\]*\/app\/washington-launch-data/
+  );
+  assert.match(
+    frontendDockerfile,
+    /COPY --from=build \/app\/washington-launch-data \.\/launch-data\/washington\//
+  );
+  assert.match(
+    text,
+    /WASHINGTON_LAUNCH_DATA_SOURCE_URL=\$\{\{ vars\.WASHINGTON_LAUNCH_DATA_SOURCE_URL \}\}/
+  );
+  assert.match(
+    ciWorkflow,
+    /WASHINGTON_LAUNCH_DATA_SOURCE_URL: \$\{\{ vars\.WASHINGTON_LAUNCH_DATA_SOURCE_URL \}\}/
+  );
+  assert.match(
+    ciWorkflow,
+    /--build-arg WASHINGTON_LAUNCH_DATA_SOURCE_URL="\$WASHINGTON_LAUNCH_DATA_SOURCE_URL"/
+  );
+  assert.match(
+    devStartScript,
+    /\[string\]\$WashingtonLaunchDataSourceUrl = \$env:WASHINGTON_LAUNCH_DATA_SOURCE_URL/
+  );
+  assert.match(
+    devStartScript,
+    /"WASHINGTON_LAUNCH_DATA_SOURCE_URL=\$packageSourceUrl"/
+  );
+  assert.match(frontendNginx, /location \^~ \/launch-data\/washington\/[\s\S]*try_files \$uri =404;/);
+  assert.match(washingtonLaunchPackager, /credentials: 'omit'/);
+  assert.match(washingtonLaunchPackager, /redirect: 'error'/);
+  assert.match(
+    washingtonLaunchPackager,
+    /canonicalJsonSha256\(manifest\) === expectedManifestSha256/
+  );
+  assert.match(
+    washingtonLaunchPackager,
+    /canonicalJsonSha256\(status\) === manifest\.statusCanonicalJsonSha256/
+  );
+  assert.match(
+    washingtonLaunchPackager,
+    /canonicalJsonSha256\(shard\) === attestation\.canonicalJsonSha256/
+  );
+  assert.match(washingtonLaunchPackager, /attestedRecordCount > 0/);
 });
 
 test('published frontend image embeds and scans browser and build dependency evidence fail closed', () => {
