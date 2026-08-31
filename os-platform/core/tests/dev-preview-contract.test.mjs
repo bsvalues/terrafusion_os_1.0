@@ -15,7 +15,7 @@ const PREVIEW_SCRIPT = path.resolve(TEST_DIR, "..", "pilot", "dev-preview.mjs");
 
 test("the canonical preview launcher starts with its shebang and parses as JavaScript", () => {
   const source = fs.readFileSync(PREVIEW_SCRIPT, "utf8");
-  assert.equal(source.startsWith("#!/usr/bin/env node\n"), true);
+  assert.match(source, /^#!\/usr\/bin\/env node\r?\n/);
   execFileSync(process.execPath, ["--check", PREVIEW_SCRIPT], { stdio: "pipe" });
 });
 
