@@ -30,7 +30,7 @@ function invalidConfiguration(message: string): never {
  * fixture as assessor-ready data.
  */
 export function resolveWashingtonLaunchDataProxy(
-  environment: WashingtonLaunchDataProxyEnvironment,
+  environment: WashingtonLaunchDataProxyEnvironment
 ): WashingtonLaunchDataProxyConfiguration | undefined {
   const manifestSha256 = String(environment.manifestSha256 ?? '')
     .trim()
@@ -40,11 +40,13 @@ export function resolveWashingtonLaunchDataProxy(
   if (!manifestSha256 && !sourceUrl) return undefined;
 
   if (!sourceUrl) {
-    invalidConfiguration('WASHINGTON_LAUNCH_DATA_SOURCE_URL is required when a manifest pin is set.');
+    invalidConfiguration(
+      'WASHINGTON_LAUNCH_DATA_SOURCE_URL is required when a manifest pin is set.'
+    );
   }
   if (!WASHINGTON_LAUNCH_MANIFEST_SHA256_PATTERN.test(manifestSha256)) {
     invalidConfiguration(
-      'VITE_WASHINGTON_LAUNCH_MANIFEST_SHA256 must be a 64-character SHA-256 digest.',
+      'VITE_WASHINGTON_LAUNCH_MANIFEST_SHA256 must be a 64-character SHA-256 digest.'
     );
   }
 
@@ -57,17 +59,17 @@ export function resolveWashingtonLaunchDataProxy(
 
   const normalizedPath = parsedSourceUrl.pathname.replace(/\/+$/, '');
   if (
-    parsedSourceUrl.protocol !== 'https:'
-    || parsedSourceUrl.hostname.length === 0
-    || parsedSourceUrl.username.length > 0
-    || parsedSourceUrl.password.length > 0
-    || (parsedSourceUrl.port !== '' && parsedSourceUrl.port !== '443')
-    || parsedSourceUrl.search.length > 0
-    || parsedSourceUrl.hash.length > 0
-    || normalizedPath !== WASHINGTON_LAUNCH_DATA_PATH
+    parsedSourceUrl.protocol !== 'https:' ||
+    parsedSourceUrl.hostname.length === 0 ||
+    parsedSourceUrl.username.length > 0 ||
+    parsedSourceUrl.password.length > 0 ||
+    (parsedSourceUrl.port !== '' && parsedSourceUrl.port !== '443') ||
+    parsedSourceUrl.search.length > 0 ||
+    parsedSourceUrl.hash.length > 0 ||
+    normalizedPath !== WASHINGTON_LAUNCH_DATA_PATH
   ) {
     invalidConfiguration(
-      `WASHINGTON_LAUNCH_DATA_SOURCE_URL must be a credential-free HTTPS URL ending in ${WASHINGTON_LAUNCH_DATA_PATH}.`,
+      `WASHINGTON_LAUNCH_DATA_SOURCE_URL must be a credential-free HTTPS URL ending in ${WASHINGTON_LAUNCH_DATA_PATH}.`
     );
   }
 
