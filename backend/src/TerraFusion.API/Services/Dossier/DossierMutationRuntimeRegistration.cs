@@ -185,5 +185,10 @@ internal static class DossierMutationArtifactExpectation
         DossierMutationOptions.ExpectedContractSourceSha,
         DossierMutationOptions.ExpectedSourceDtoSha256,
         DossierMutationOptions.ExpectedTransport,
-        DossierMutationOptions.ArtifactSlotRelativePath);
+        DossierMutationOptions.ArtifactSlotRelativePath,
+        DossierMutationOptions.ExpectedModuleGitBlob,
+        DossierMutationOptions.ExpectedSchemaGitBlob,
+        DossierMutationOptions.ExpectedSourceManifestLength,
+        DossierMutationOptions.ExpectedSourceManifestGitBlob,
+        DossierMutationOptions.ExpectedContractReviewedHeadSha);
 }

@@ -437,9 +437,21 @@ internal sealed class DossierEvidenceRegistryReadArtifactVerifier
         var distinct = properties.Select(property => property.Name)
             .Distinct(StringComparer.Ordinal)
             .ToArray();
-        if (properties.Length != ManifestFields.Count
-            || distinct.Length != ManifestFields.Count
-            || distinct.Any(field => !ManifestFields.Contains(field)))
+        var expectedFields = new HashSet<string>(ManifestFields, StringComparer.Ordinal);
+        if (_expected.ModuleGitBlob is not null)
+        {
+            expectedFields.UnionWith(
+                [
+                    "moduleGitBlob",
+                    "schemaGitBlob",
+                    "sourceManifestLength",
+                    "sourceManifestGitBlob",
+                    "contractReviewedHeadSha",
+                ]);
+        }
+        if (properties.Length != expectedFields.Count
+            || distinct.Length != expectedFields.Count
+            || distinct.Any(field => !expectedFields.Contains(field)))
         {
             throw Fail("Dossier provenance manifest fields did not match the exact schema.");
         }
@@ -463,6 +475,23 @@ internal sealed class DossierEvidenceRegistryReadArtifactVerifier
         RequireManifestString(root, "contractSourceSha", _expected.ContractSourceSha);
         RequireManifestString(root, "sourceDtoSha256", _expected.SourceDtoSha256);
         RequireManifestString(root, "transport", _expected.Transport);
+        if (_expected.ModuleGitBlob is not null)
+        {
+            RequireManifestString(root, "moduleGitBlob", _expected.ModuleGitBlob);
+            RequireManifestString(root, "schemaGitBlob", _expected.SchemaGitBlob!);
+            RequireManifestInteger(
+                root,
+                "sourceManifestLength",
+                _expected.SourceManifestLength!.Value);
+            RequireManifestString(
+                root,
+                "sourceManifestGitBlob",
+                _expected.SourceManifestGitBlob!);
+            RequireManifestString(
+                root,
+                "contractReviewedHeadSha",
+                _expected.ContractReviewedHeadSha!);
+        }
     }
 
     private static void RequireManifestString(JsonElement root, string name, string expected)
@@ -568,7 +597,12 @@ internal sealed record DossierEvidenceRegistryReadArtifactExpectation(
     string ContractSourceSha,
     string SourceDtoSha256,
     string Transport,
-    string ArtifactSlotRelativePath)
+    string ArtifactSlotRelativePath,
+    string? ModuleGitBlob = null,
+    string? SchemaGitBlob = null,
+    long? SourceManifestLength = null,
+    string? SourceManifestGitBlob = null,
+    string? ContractReviewedHeadSha = null)
 {
     internal static DossierEvidenceRegistryReadArtifactExpectation Canonical { get; } = new(
         DossierEvidenceRegistryReadOptions.ExpectedArtifactType,

@@ -3542,7 +3542,7 @@ public class CostForgeController : ControllerBase
       ?? NormalizeComparablePropertyType(subject?.PropertyType);
     if (!string.IsNullOrWhiteSpace(effectivePropertyType))
     {
-      query = query.Where(c => NormalizeComparablePropertyType(c.PropertyType) == effectivePropertyType);
+      query = ApplyComparablePropertyTypeFilter(query, effectivePropertyType);
       selectionMethodParts.Add($"property type:{effectivePropertyType}");
     }
 
@@ -3550,7 +3550,7 @@ public class CostForgeController : ControllerBase
       ?? NormalizeNeighborhoodToken(subject?.Neighborhood);
     if (!string.IsNullOrWhiteSpace(effectiveNeighborhood))
     {
-      query = query.Where(c => NormalizeNeighborhoodToken(c.Neighborhood) == effectiveNeighborhood);
+      query = ApplyComparableNeighborhoodFilter(query, effectiveNeighborhood);
       selectionMethodParts.Add($"neighborhood:{effectiveNeighborhood}");
     }
 
@@ -3759,6 +3759,28 @@ public class CostForgeController : ControllerBase
     };
   }
 
+  internal static IQueryable<ComparableSale> ApplyComparablePropertyTypeFilter(
+    IQueryable<ComparableSale> query,
+    string normalized)
+  {
+    var aliases = GetComparablePropertyTypeAliases(normalized);
+    return query.Where(c => c.PropertyType != null
+      && aliases.Contains(c.PropertyType.Trim().ToLower()));
+  }
+
+  private static string[] GetComparablePropertyTypeAliases(string normalized)
+  {
+    return normalized switch
+    {
+      "residential" => ["r", "sfr", "residential", "r1", "r2"],
+      "multifamily" => ["mfr", "multifamily"],
+      "commercial" => ["commercial", "com", "c1", "c2", "c3", "c4"],
+      "industrial" => ["industrial", "ind", "i1"],
+      "agricultural" => ["agricultural", "agr", "a1", "a2"],
+      _ => [normalized]
+    };
+  }
+
   private static string? ExtractNeighborhood(string? address)
   {
     if (string.IsNullOrWhiteSpace(address))
@@ -3788,6 +3810,25 @@ public class CostForgeController : ControllerBase
       "W RICHLAND" => "WEST RICHLAND",
       "UNDETERMINED" => null,
       _ => normalized
+    };
+  }
+
+  internal static IQueryable<ComparableSale> ApplyComparableNeighborhoodFilter(
+    IQueryable<ComparableSale> query,
+    string normalized)
+  {
+    var aliases = GetNeighborhoodAliases(normalized);
+    return query.Where(c => c.Neighborhood != null
+      && aliases.Contains(c.Neighborhood.Trim().ToUpper()));
+  }
+
+  private static string[] GetNeighborhoodAliases(string normalized)
+  {
+    return normalized switch
+    {
+      "KENNEWICK" => ["KENNEWICK", "KENENWICK"],
+      "WEST RICHLAND" => ["WEST RICHLAND", "W RICHLAND"],
+      _ => [normalized]
     };
   }
 

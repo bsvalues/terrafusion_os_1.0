@@ -139,9 +139,11 @@ export default defineConfig(({ mode }) => {
     },
 
     server: {
-      port: parseInt(process.env.PORT || process.env.VITE_PORT || '5173'),
+      port: parseInt(
+        process.env.TF_FRONTEND_PORT || process.env.PORT || process.env.VITE_PORT || '3102'
+      ),
       host: '0.0.0.0',
-      strictPort: false,
+      strictPort: true,
       // Suppress the blocking error overlay for pnpm store issues (e.g. stale
       // @tailwindcss/node chunks). Fix by running: pnpm install --force in frontend/
       hmr: { overlay: false },

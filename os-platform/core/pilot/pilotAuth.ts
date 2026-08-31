@@ -1,17 +1,20 @@
 /**
  * TerraFusion OS — Pilot Auth
  *
- * Service-account token acquisition for the Pilot runtime.
- * Calls POST /api/auth/login with configurable credentials.
+ * Token acquisition for the Pilot runtime.
+ * Uses the development-only token endpoint when explicitly selected by the
+ * integrated preview, otherwise calls POST /api/auth/login with configured
+ * service-account credentials.
  *
  * Credentials are resolved from environment variables:
- *   TF_PILOT_EMAIL     (default: admin@gov.)
- *   TF_PILOT_PASSWORD  (required)
+ *   TF_PILOT_AUTH_MODE (optional: dev-token)
+ *   TF_PILOT_EMAIL     (service-account default: admin@gov.)
+ *   TF_PILOT_PASSWORD  (required for service-account auth)
  *
  * Tokens are cached in-process and refreshed 5 minutes before expiry.
  */
 
-import { backendPost } from './backendClient.js';
+import { backendGet, backendPost } from './backendClient.js';
 
 // ============================================================================
 // Types
@@ -36,11 +39,41 @@ let cachedToken: PilotToken | null = null;
 
 /**
  * Acquire a Pilot service token. Returns cached token if still valid
- * (with 5-minute safety buffer). Otherwise, calls backend /api/auth/login.
+ * (with 5-minute safety buffer). Otherwise, acquires a backend token using the
+ * configured authentication mode.
  */
 export async function acquirePilotToken(): Promise<PilotToken> {
   const bufferMs = 5 * 60 * 1000;
   if (cachedToken && cachedToken.expiresAt.getTime() > Date.now() + bufferMs) {
+    return cachedToken;
+  }
+
+  if (process.env.TF_PILOT_AUTH_MODE === 'dev-token') {
+    const result = await backendGet<{
+      token: string;
+      expiresIn: number;
+      countyId: string;
+      countyCode: string;
+    }>('/api/auth/dev-token');
+
+    if (result.ok === false) {
+      cachedToken = null;
+      throw new Error(`Pilot development auth failed: ${result.error}`);
+    }
+
+    const expiresInSeconds = Number(result.data.expiresIn);
+    if (!Number.isFinite(expiresInSeconds) || expiresInSeconds <= 0) {
+      cachedToken = null;
+      throw new Error('Pilot development auth failed: invalid token expiry');
+    }
+
+    cachedToken = {
+      token: result.data.token,
+      email: 'dev@terrafusion.local',
+      roles: ['Developer', 'Assessor', 'GovernmentUser'],
+      expiresAt: new Date(Date.now() + expiresInSeconds * 1000),
+    };
+
     return cachedToken;
   }
 

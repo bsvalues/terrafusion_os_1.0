@@ -387,6 +387,73 @@ public sealed class R2Wave25ForgeValuationTests
   }
 
   [Fact]
+  public async Task SearchComparableSales_NormalizedAliasesMatchOperationalRows()
+  {
+    using var db = CreateDbContext(nameof(SearchComparableSales_NormalizedAliasesMatchOperationalRows));
+    await SeedCounty(db, BentonCountyId);
+
+    db.ComparableSales.AddRange(
+      new ComparableSale
+      {
+        ParcelId = "ALIAS-1",
+        SaleDate = DateTime.UtcNow.AddMonths(-2),
+        SalePrice = 325_000m,
+        PropertyType = "R",
+        Neighborhood = "KENNEWICK",
+        QualificationRecommendation = "qualified",
+        CountyId = BentonCountyId,
+        IngestedBy = "test"
+      },
+      new ComparableSale
+      {
+        ParcelId = "ALIAS-2",
+        SaleDate = DateTime.UtcNow.AddMonths(-2),
+        SalePrice = 525_000m,
+        PropertyType = "commercial",
+        Neighborhood = "KENNEWICK",
+        QualificationRecommendation = "qualified",
+        CountyId = BentonCountyId,
+        IngestedBy = "test"
+      });
+    await db.SaveChangesAsync();
+
+    var controller = CreateController(db);
+    var result = await controller.SearchComparableSales(
+      "SUBJECT-ALIAS",
+      propertyType: "SFR",
+      neighborhood: "KENENWICK");
+
+    var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+    var value = ok.Value!;
+    var count = (int)value.GetType().GetProperty("count")!.GetValue(value)!;
+    count.Should().Be(1);
+  }
+
+  [Fact]
+  public void SearchComparableSales_AliasFiltersTranslateForPostgreSql()
+  {
+    var options = new DbContextOptionsBuilder<DataDbContext>()
+      .UseNpgsql("Host=localhost;Database=translation_only;Username=test;Password=test")
+      .Options;
+    var config = new ConfigurationBuilder()
+      .AddInMemoryCollection(new Dictionary<string, string?>())
+      .Build();
+    using var db = new DataDbContext(options, config);
+
+    var query = CostForgeController.ApplyComparablePropertyTypeFilter(
+      db.ComparableSales,
+      "residential");
+    query = CostForgeController.ApplyComparableNeighborhoodFilter(query, "KENNEWICK");
+
+    var sql = query.ToQueryString();
+
+    sql.Should().Contain("PropertyType");
+    sql.Should().Contain("Neighborhood");
+    sql.Should().Contain("lower");
+    sql.Should().Contain("upper");
+  }
+
+  [Fact]
   public async Task SearchComparableSales_ExcludesSubjectParcel()
   {
     using var db = CreateDbContext(nameof(SearchComparableSales_ExcludesSubjectParcel));

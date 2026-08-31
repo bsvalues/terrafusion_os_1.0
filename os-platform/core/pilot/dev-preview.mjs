@@ -1,10 +1,11 @@
-10000 0 -20000  980552Q3  C4  ArmsLengthSale  $0  $330.90#!/usr/bin/env node
+#!/usr/bin/env node
 
 import { spawn } from "node:child_process";
 import path from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
 import { setTimeout as sleep } from "node:timers/promises";
+import { createPreviewBackendEnv, createPreviewRuntimeEnv } from "./dev-preview-env.mjs";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -13,7 +14,9 @@ const READY_TIMEOUT_MS = 120_000;
 const POLL_INTERVAL_MS = 750;
 const DEFAULT_KERNEL_BASE_URL = `http://localhost:${process.env.TF_API_PORT || "5046"}`;
 const DEFAULT_PILOT_BASE_URL = `http://localhost:${process.env.TF_PILOT_PORT || process.env.PILOT_PORT || "4317"}`;
-const DEFAULT_FRONTEND_BASE_URL = `http://localhost:${process.env.TF_FRONTEND_PORT || "3102"}`;
+const DEFAULT_FRONTEND_PORT =
+  process.env.TF_FRONTEND_PORT || process.env.PORT || process.env.VITE_PORT || "3102";
+const DEFAULT_FRONTEND_BASE_URL = `http://localhost:${DEFAULT_FRONTEND_PORT}`;
 
 function parseArgs(argv) {
   const args = argv.slice(2).filter((arg) => arg !== "--");
@@ -63,10 +66,14 @@ function getPnpmInvocation(pnpmArgs) {
   };
 }
 
-function startProcess(name, command, args, stdio = ["ignore", "pipe", "pipe"]) {
+function startProcess(name, command, args, options = {}) {
+  const {
+    env = process.env,
+    stdio = ["ignore", "pipe", "pipe"],
+  } = options;
   const child = spawn(command, args, {
     cwd: REPO_ROOT,
-    env: process.env,
+    env,
     shell: false,
     stdio,
   });
@@ -167,10 +174,16 @@ async function runLocalR1Proof(kernelUrl, pilotUrl) {
 
 async function main() {
   const args = parseArgs(process.argv);
-  const backendInvocation = getPnpmInvocation(["run", "dev:backend"]);
+  const backendInvocation = getPnpmInvocation(["run", "dev:backend:watch"]);
   const frontendInvocation = getPnpmInvocation(["run", "dev:frontend"]);
-  const backend = startProcess("backend", backendInvocation.command, backendInvocation.args);
-  const frontend = startProcess("frontend", frontendInvocation.command, frontendInvocation.args);
+  const runtimeEnv = createPreviewRuntimeEnv(process.env);
+  const backendEnv = createPreviewBackendEnv(runtimeEnv);
+  const backend = startProcess("backend", backendInvocation.command, backendInvocation.args, {
+    env: backendEnv,
+  });
+  const frontend = startProcess("frontend", frontendInvocation.command, frontendInvocation.args, {
+    env: runtimeEnv,
+  });
   const children = [backend, frontend];
 
   let shuttingDown = false;
@@ -206,7 +219,7 @@ async function main() {
     await waitForUrl(`${args.kernelUrl}/health`, "backend health");
     process.stdout.write("Waiting for pilot /pilot/health...\n");
     await waitForUrl(`${args.pilotUrl}/pilot/health`, "pilot health");
-    process.stdout.write("Waiting for frontend :5173...\n");
+    process.stdout.write(`Waiting for frontend ${DEFAULT_FRONTEND_BASE_URL}...\n`);
     await waitForUrl(DEFAULT_FRONTEND_BASE_URL, "frontend dev server");
 
     process.stdout.write(
