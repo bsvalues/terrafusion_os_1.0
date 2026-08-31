@@ -7,7 +7,7 @@ import {
   resolveWashingtonLaunchDataProxy,
   type WashingtonLaunchDataProxyConfiguration,
   WASHINGTON_LAUNCH_DATA_PROXY_CONTEXT,
-} from './apps/os-shell/vite/washingtonLaunchDataProxy';
+} from './washingtonLaunchDataProxy';
 
 // https://vitejs.dev/config/
 export default defineConfig(({ command, mode }) => {

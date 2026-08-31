@@ -3,7 +3,7 @@ import {
   resolveWashingtonLaunchDataProxy,
   WASHINGTON_LAUNCH_DATA_PATH,
   WASHINGTON_LAUNCH_DATA_PROXY_CONTEXT,
-} from '../../frontend/apps/os-shell/vite/washingtonLaunchDataProxy';
+} from '../../frontend/washingtonLaunchDataProxy';
 
 const MANIFEST_SHA256 = 'a'.repeat(64);
 
