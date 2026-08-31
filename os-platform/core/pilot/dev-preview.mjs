@@ -11,12 +11,17 @@ const __dirname = path.dirname(__filename);
 const REPO_ROOT = path.resolve(__dirname, "..", "..", "..");
 const READY_TIMEOUT_MS = 120_000;
 const POLL_INTERVAL_MS = 750;
-const DEFAULT_KERNEL_BASE_URL = `http://localhost:${process.env.TF_API_PORT || "5046"}`;
-const DEFAULT_PILOT_BASE_URL = `http://localhost:${process.env.TF_PILOT_PORT || process.env.PILOT_PORT || "4317"}`;
 
 export function resolveFrontendPort(environment = process.env) {
   return environment.TF_FRONTEND_PORT || "3102";
 }
+
+export function resolveApiPort(environment = process.env) {
+  return environment.TF_API_PORT || "5046";
+}
+
+const DEFAULT_KERNEL_BASE_URL = `http://localhost:${resolveApiPort()}`;
+const DEFAULT_PILOT_BASE_URL = `http://localhost:${process.env.TF_PILOT_PORT || process.env.PILOT_PORT || "4317"}`;
 
 function parseArgs(argv) {
   const args = argv.slice(2).filter((arg) => arg !== "--");
@@ -68,17 +73,35 @@ export function getPnpmInvocation(pnpmArgs, platform = process.platform) {
 
 export function createPreviewProcessPlan(environment = process.env, platform = process.platform) {
   const frontendPort = resolveFrontendPort(environment);
+  const apiPort = resolveApiPort(environment);
+  const sharedEnvironment = {
+    ...environment,
+    TF_API_PORT: apiPort,
+  };
   return {
-    backend: getPnpmInvocation(["run", "dev:backend:watch"], platform),
+    backendBuild: {
+      command: "dotnet",
+      args: [
+        "build",
+        "backend/src/TerraFusion.API/TerraFusion.API.csproj",
+        "-p:DotNetWatchBuild=true",
+      ],
+      env: sharedEnvironment,
+    },
+    backend: {
+      ...getPnpmInvocation(["run", "dev:backend"], platform),
+      env: sharedEnvironment,
+    },
     frontend: {
       ...getPnpmInvocation(["run", "dev:frontend"], platform),
       env: {
-        ...environment,
+        ...sharedEnvironment,
         TF_FRONTEND_PORT: frontendPort,
         PORT: frontendPort,
         VITE_PORT: frontendPort,
       },
     },
+    backendBaseUrl: `http://localhost:${apiPort}`,
     frontendBaseUrl: `http://localhost:${frontendPort}`,
   };
 }
@@ -189,13 +212,7 @@ async function runLocalR1Proof(kernelUrl, pilotUrl) {
 async function main() {
   const args = parseArgs(process.argv);
   const plan = createPreviewProcessPlan();
-  const backendInvocation = plan.backend;
-  const frontendInvocation = plan.frontend;
-  const backend = startProcess("backend", backendInvocation.command, backendInvocation.args);
-  const frontend = startProcess("frontend", frontendInvocation.command, frontendInvocation.args, {
-    env: frontendInvocation.env,
-  });
-  const children = [backend, frontend];
+  const children = [];
 
   let shuttingDown = false;
   const shutdown = async (exitCode = 0) => {
@@ -212,20 +229,42 @@ async function main() {
     void shutdown(0);
   });
 
-  backend.once("exit", (code) => {
-    if (!shuttingDown) {
-      process.stderr.write(`[backend] exited unexpectedly (code ${code ?? "unknown"})\n`);
-      void shutdown(1);
-    }
-  });
-  frontend.once("exit", (code) => {
-    if (!shuttingDown) {
-      process.stderr.write(`[frontend] exited unexpectedly (code ${code ?? "unknown"})\n`);
-      void shutdown(1);
-    }
-  });
-
   try {
+    process.stdout.write("Building backend for a clean checkout...\n");
+    const backendBuild = startProcess(
+      "backend-build",
+      plan.backendBuild.command,
+      plan.backendBuild.args,
+      { env: plan.backendBuild.env },
+    );
+    children.push(backendBuild);
+    const backendBuildExit = await waitForExit(backendBuild);
+    children.splice(children.indexOf(backendBuild), 1);
+    if (backendBuildExit !== 0) {
+      throw new Error(`Backend build failed with exit code ${backendBuildExit}`);
+    }
+
+    const backend = startProcess("backend", plan.backend.command, plan.backend.args, {
+      env: plan.backend.env,
+    });
+    const frontend = startProcess("frontend", plan.frontend.command, plan.frontend.args, {
+      env: plan.frontend.env,
+    });
+    children.push(backend, frontend);
+
+    backend.once("exit", (code) => {
+      if (!shuttingDown) {
+        process.stderr.write(`[backend] exited unexpectedly (code ${code ?? "unknown"})\n`);
+        void shutdown(1);
+      }
+    });
+    frontend.once("exit", (code) => {
+      if (!shuttingDown) {
+        process.stderr.write(`[frontend] exited unexpectedly (code ${code ?? "unknown"})\n`);
+        void shutdown(1);
+      }
+    });
+
     process.stdout.write("Waiting for backend /health...\n");
     await waitForUrl(`${args.kernelUrl}/health`, "backend health");
     process.stdout.write("Waiting for pilot /pilot/health...\n");

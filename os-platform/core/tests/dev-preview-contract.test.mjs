@@ -7,6 +7,7 @@ import { fileURLToPath } from "node:url";
 
 import {
   createPreviewProcessPlan,
+  resolveApiPort,
   resolveFrontendPort,
 } from "../pilot/dev-preview.mjs";
 
@@ -29,24 +30,55 @@ test("the canonical frontend port defaults to 3102 and honors explicit overrides
   );
 });
 
-test("the preview plan builds the API and isolates Vite from an inherited generic port", () => {
+test("the canonical API port defaults to 5046 and ignores unrelated generic ports", () => {
+  assert.equal(resolveApiPort({}), "5046");
+  assert.equal(resolveApiPort({ PORT: "3000", VITE_API_PORT: "5000" }), "5046");
+  assert.equal(resolveApiPort({ TF_API_PORT: "5050", VITE_API_PORT: "5000" }), "5050");
+});
+
+test("the preview plan builds the API and isolates both canonical port contracts", () => {
   const plan = createPreviewProcessPlan({
-    TF_FRONTEND_PORT: "3110",
     PORT: "3000",
     VITE_PORT: "5173",
+    VITE_API_PORT: "5000",
     KEEP: "value",
   }, "linux");
+  assert.deepEqual(plan.backendBuild, {
+    command: "dotnet",
+    args: [
+      "build",
+      "backend/src/TerraFusion.API/TerraFusion.API.csproj",
+      "-p:DotNetWatchBuild=true",
+    ],
+    env: {
+      PORT: "3000",
+      VITE_PORT: "5173",
+      VITE_API_PORT: "5000",
+      KEEP: "value",
+      TF_API_PORT: "5046",
+    },
+  });
   assert.deepEqual(plan.backend, {
     command: "pnpm",
-    args: ["run", "dev:backend:watch"],
+    args: ["run", "dev:backend"],
+    env: {
+      PORT: "3000",
+      VITE_PORT: "5173",
+      VITE_API_PORT: "5000",
+      KEEP: "value",
+      TF_API_PORT: "5046",
+    },
   });
   assert.equal(plan.frontend.command, "pnpm");
   assert.deepEqual(plan.frontend.args, ["run", "dev:frontend"]);
   assert.deepEqual(plan.frontend.env, {
-    TF_FRONTEND_PORT: "3110",
-    PORT: "3110",
-    VITE_PORT: "3110",
+    PORT: "3102",
+    VITE_PORT: "3102",
+    VITE_API_PORT: "5000",
     KEEP: "value",
+    TF_API_PORT: "5046",
+    TF_FRONTEND_PORT: "3102",
   });
-  assert.equal(plan.frontendBaseUrl, "http://localhost:3110");
+  assert.equal(plan.backendBaseUrl, "http://localhost:5046");
+  assert.equal(plan.frontendBaseUrl, "http://localhost:3102");
 });
