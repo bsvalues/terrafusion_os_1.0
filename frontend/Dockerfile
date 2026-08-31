@@ -8,14 +8,23 @@ WORKDIR /app
 ARG VITE_BUILD_SHA=dev
 ENV VITE_BUILD_SHA=$VITE_BUILD_SHA
 ARG VITE_WASHINGTON_LAUNCH_MANIFEST_SHA256
+ARG WASHINGTON_LAUNCH_DATA_SOURCE_URL
 ENV VITE_WASHINGTON_LAUNCH_MANIFEST_SHA256=$VITE_WASHINGTON_LAUNCH_MANIFEST_SHA256
 
-# Hosted Washington sales are enabled only when the production bundle pins the
-# exact attested package manifest. Keep development builds optional, but refuse
-# to publish a production target with an absent or malformed public trust pin.
-RUN printf '%s' "$VITE_WASHINGTON_LAUNCH_MANIFEST_SHA256" \
-    | grep -Eq '^[0-9a-f]{64}$' \
-    || (echo 'ERROR: VITE_WASHINGTON_LAUNCH_MANIFEST_SHA256 must be a lowercase SHA-256 digest' && exit 1)
+# Missing public-data inputs are a supported navigation-only posture: the shell
+# still exposes all 39 counties and reports unsupported county data honestly.
+# A configured public-data package remains fail closed and must supply both its
+# credential-free source and exact manifest trust pin.
+RUN launch_pin="$VITE_WASHINGTON_LAUNCH_MANIFEST_SHA256"; \
+    launch_source="$WASHINGTON_LAUNCH_DATA_SOURCE_URL"; \
+    if [ -z "$launch_pin" ] && [ -z "$launch_source" ]; then \
+      echo 'Building the Washington navigation-only fallback without hosted county data'; \
+    elif [ -z "$launch_pin" ] || [ -z "$launch_source" ]; then \
+      echo 'ERROR: VITE_WASHINGTON_LAUNCH_MANIFEST_SHA256 and WASHINGTON_LAUNCH_DATA_SOURCE_URL must be supplied together' && exit 1; \
+    else \
+      printf '%s' "$launch_pin" | grep -Eq '^[0-9a-f]{64}$' \
+        || (echo 'ERROR: VITE_WASHINGTON_LAUNCH_MANIFEST_SHA256 must be a lowercase SHA-256 digest' && exit 1); \
+    fi
 
 # Enable corepack for pnpm
 RUN corepack enable && corepack prepare pnpm@9.0.0 --activate
@@ -42,18 +51,22 @@ RUN --mount=type=cache,id=pnpm,target=/root/.local/share/pnpm/store \
        /tmp/frontend-docker-build-licenses.json /app/frontend-build-dependencies.spdx.json docker-build \
     && rm /tmp/frontend-browser-production-licenses.json /tmp/frontend-docker-build-licenses.json
 
-# Package the exact public Washington JSON surface attested by the client pin.
-# The source is credential-free HTTPS; the packager fetches only read-only
-# manifest/status/advertised-detail/attested-shard routes, checks every
-# canonical digest and public provenance claim, and refuses an empty assessor
-# package.
+# When configured, package the exact public Washington JSON surface attested by
+# the client pin. The credential-free HTTPS packager fetches only read-only
+# manifest/status/advertised-detail/attested-shard routes, checks every digest
+# and public provenance claim, and refuses an empty assessor package. Without a
+# configured pair, preserve an empty static route for the shell's honest
+# navigation-only fallback.
 COPY scripts/ci/package_washington_launch_data.mjs scripts/ci/package_washington_launch_data.mjs
 COPY frontend/apps/os-shell/src/lib/washingtonPublicSourceInventory.data.json frontend/apps/os-shell/src/lib/washingtonPublicSourceInventory.data.json
-ARG WASHINGTON_LAUNCH_DATA_SOURCE_URL
-RUN node scripts/ci/package_washington_launch_data.mjs \
-    "$WASHINGTON_LAUNCH_DATA_SOURCE_URL" \
-    "$VITE_WASHINGTON_LAUNCH_MANIFEST_SHA256" \
-    /app/washington-launch-data
+RUN if [ -n "$VITE_WASHINGTON_LAUNCH_MANIFEST_SHA256" ]; then \
+      node scripts/ci/package_washington_launch_data.mjs \
+        "$WASHINGTON_LAUNCH_DATA_SOURCE_URL" \
+        "$VITE_WASHINGTON_LAUNCH_MANIFEST_SHA256" \
+        /app/washington-launch-data; \
+    else \
+      mkdir -p /app/washington-launch-data; \
+    fi
 
 # Copy workspace packages (vite resolve aliases)
 COPY packages/ packages/
@@ -78,8 +91,8 @@ RUN rm -rf ./*
 # Copy built assets
 COPY --from=build /app/dist ./
 
-# Same-origin public launch data travels with the bundle whose compiled pin
-# authenticates it.
+# Configured same-origin public launch data travels with the bundle whose pin
+# authenticates it; the navigation-only image copies an empty directory.
 COPY --from=build /app/washington-launch-data ./launch-data/washington/
 
 # Preserve the exact dependency-resolution inputs that produced this bundle.

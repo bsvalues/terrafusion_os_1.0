@@ -18,7 +18,7 @@ import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 // Use vi.hoisted so mock variables are available when vi.mock factories run
 const {
   mockOpenWindow,
-  mockFocusWindow,
+  mockRevealWindow,
   mockReplaceWindowMetadata,
   mockGetWindows,
   mockLoadModule,
@@ -28,7 +28,7 @@ const {
   mockTrackEvent,
 } = vi.hoisted(() => ({
   mockOpenWindow: vi.fn().mockReturnValue('window-123'),
-  mockFocusWindow: vi.fn(),
+  mockRevealWindow: vi.fn(),
   mockReplaceWindowMetadata: vi.fn(),
   mockGetWindows: vi.fn().mockReturnValue([]),
   mockLoadModule: vi.fn().mockResolvedValue(undefined),
@@ -52,7 +52,7 @@ vi.mock('../../stores/desktopStore', () => ({
     getState: () => ({
       windows: mockGetWindows(),
       openWindow: mockOpenWindow,
-      focusWindow: mockFocusWindow,
+      revealWindow: mockRevealWindow,
       replaceWindowMetadata: mockReplaceWindowMetadata,
     }),
   },
@@ -98,7 +98,7 @@ import {
 
 function resetAllMocks() {
   mockOpenWindow.mockClear().mockReturnValue('window-123');
-  mockFocusWindow.mockClear();
+  mockRevealWindow.mockClear();
   mockReplaceWindowMetadata.mockClear();
   mockGetWindows.mockClear().mockReturnValue([]);
   mockLoadModule.mockClear().mockResolvedValue(undefined);
@@ -249,11 +249,11 @@ describe('moduleActivation', () => {
   });
 
   // --------------------------------------------------------------------------
-  // Focus Behavior (Window Already Open)
+  // Existing Window Reveal Behavior
   // --------------------------------------------------------------------------
 
-  describe('focus behavior', () => {
-    it('focuses existing window instead of opening new one', async () => {
+  describe('existing window reveal behavior', () => {
+    it('reveals existing window instead of opening new one', async () => {
       // Simulate costforge already open
       simulateExistingWindow('costforge', 'existing-costforge-window');
 
@@ -262,12 +262,12 @@ describe('moduleActivation', () => {
       // Should NOT open new window
       expect(mockOpenWindow).not.toHaveBeenCalled();
 
-      // Should focus existing window
-      expect(mockFocusWindow).toHaveBeenCalledTimes(1);
-      expect(mockFocusWindow).toHaveBeenCalledWith('existing-costforge-window');
+      // Should reveal the existing singleton without taskbar-toggle semantics
+      expect(mockRevealWindow).toHaveBeenCalledTimes(1);
+      expect(mockRevealWindow).toHaveBeenCalledWith('existing-costforge-window');
     });
 
-    it('does not trigger a new load when focusing existing window', async () => {
+    it('does not trigger a new load when revealing an existing window', async () => {
       simulateExistingWindow('costforge');
 
       await activateModule('costforge', { source: 'start_menu' });
@@ -276,7 +276,7 @@ describe('moduleActivation', () => {
       expect(mockLoadModule).not.toHaveBeenCalled();
     });
 
-    it('refreshes deep-link metadata before focusing an existing window', async () => {
+    it('refreshes deep-link metadata before revealing an existing window', async () => {
       simulateExistingWindow('costforge', 'existing-costforge-window');
       const metadata = { countyCode: '063', countyName: 'Spokane' };
 
@@ -287,7 +287,7 @@ describe('moduleActivation', () => {
         metadata,
       );
       expect(mockReplaceWindowMetadata.mock.invocationCallOrder[0]).toBeLessThan(
-        mockFocusWindow.mock.invocationCallOrder[0],
+        mockRevealWindow.mock.invocationCallOrder[0],
       );
     });
 
@@ -301,10 +301,10 @@ describe('moduleActivation', () => {
         'minimized-costforge-window',
         metadata,
       );
-      expect(mockFocusWindow).toHaveBeenCalledWith('minimized-costforge-window');
+      expect(mockRevealWindow).toHaveBeenCalledWith('minimized-costforge-window');
       expect(mockOpenWindow).not.toHaveBeenCalled();
       expect(mockReplaceWindowMetadata.mock.invocationCallOrder[0]).toBeLessThan(
-        mockFocusWindow.mock.invocationCallOrder[0],
+        mockRevealWindow.mock.invocationCallOrder[0],
       );
     });
 
@@ -316,7 +316,7 @@ describe('moduleActivation', () => {
       expect(mockReplaceWindowMetadata).not.toHaveBeenCalled();
     });
 
-    it('emits module.focus telemetry when focusing existing window', async () => {
+    it('emits module.focus telemetry when revealing an existing window', async () => {
       simulateExistingWindow('costforge');
 
       await activateModule('costforge', {
@@ -347,8 +347,8 @@ describe('moduleActivation', () => {
         focusIfOpen: false,
       });
 
-      // Should NOT focus existing window
-      expect(mockFocusWindow).not.toHaveBeenCalled();
+      // Should NOT reveal existing window
+      expect(mockRevealWindow).not.toHaveBeenCalled();
       // Should NOT open new window either (module already active)
       expect(mockOpenWindow).not.toHaveBeenCalled();
     });
@@ -368,8 +368,8 @@ describe('moduleActivation', () => {
 
       // Should still only have 1 openWindow call total
       expect(mockOpenWindow).toHaveBeenCalledTimes(1);
-      // Should have focused instead
-      expect(mockFocusWindow).toHaveBeenCalledTimes(1);
+      // Should have revealed instead
+      expect(mockRevealWindow).toHaveBeenCalledTimes(1);
     });
   });
 
