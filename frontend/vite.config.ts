@@ -1,12 +1,36 @@
 import fs from 'fs';
 import react from '@vitejs/plugin-react';
 import path from 'path';
-import { defineConfig } from 'vite';
+import { defineConfig, loadEnv } from 'vite';
 import { securityPlugin } from './apps/os-shell/src/middleware/security-plugin';
+import {
+  resolveWashingtonLaunchDataProxy,
+  type WashingtonLaunchDataProxyConfiguration,
+  WASHINGTON_LAUNCH_DATA_PROXY_CONTEXT,
+} from './apps/os-shell/src/config/washingtonLaunchDataProxy';
 
 // https://vitejs.dev/config/
-export default defineConfig(({ mode }) => {
+export default defineConfig(({ command, mode }) => {
   const appRoot = path.resolve(__dirname, 'apps/os-shell');
+  const configFileEnv: Record<string, string> = command === 'serve'
+    ? loadEnv(mode, __dirname, '')
+    : {};
+  const washingtonLaunchDataProxy = command === 'serve'
+    ? resolveWashingtonLaunchDataProxy({
+        manifestSha256:
+          process.env.VITE_WASHINGTON_LAUNCH_MANIFEST_SHA256
+          ?? configFileEnv.VITE_WASHINGTON_LAUNCH_MANIFEST_SHA256,
+        sourceUrl:
+          process.env.WASHINGTON_LAUNCH_DATA_SOURCE_URL
+          ?? configFileEnv.WASHINGTON_LAUNCH_DATA_SOURCE_URL,
+      })
+    : undefined;
+  const washingtonLaunchDataProxyEntry: Record<
+    string,
+    WashingtonLaunchDataProxyConfiguration
+  > = washingtonLaunchDataProxy
+    ? { [WASHINGTON_LAUNCH_DATA_PROXY_CONTEXT]: washingtonLaunchDataProxy }
+    : {};
   const emitBuildSourcemaps =
     mode === 'analyze' || process.env.VITE_BUILD_SOURCEMAP === '1';
   const configuredApiUrl = process.env.VITE_API_URL;
@@ -148,6 +172,10 @@ export default defineConfig(({ mode }) => {
 
       // Proxy API calls to .NET backend
       proxy: {
+        // In configured dev runtimes, expose the exact credential-free public
+        // package at the same canonical paths used by the production image.
+        // Browser-side manifest and county-shard attestation remains mandatory.
+        ...washingtonLaunchDataProxyEntry,
         // Capture error boundary reports in pilot runtime (dev diagnostics)
         '/api/errors': {
           target: backendUrl,
@@ -198,6 +226,7 @@ export default defineConfig(({ mode }) => {
     preview: {
       port: parseInt(process.env.VITE_PREVIEW_PORT || '4173'),
       strictPort: false,
+      proxy: washingtonLaunchDataProxyEntry,
     },
 
     optimizeDeps: {

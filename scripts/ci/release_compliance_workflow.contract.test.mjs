@@ -218,17 +218,28 @@ test('publisher creates each canonical runtime image exactly once and records di
   );
 });
 
-test('production frontend images require the hosted Washington manifest trust pin', () => {
+test('production frontend accepts only absent or complete Washington launch-data configuration', () => {
   const text = job('sbom-compliance');
   assert.match(frontendDockerfile, /ARG VITE_WASHINGTON_LAUNCH_MANIFEST_SHA256/);
+  assert.match(frontendDockerfile, /ARG WASHINGTON_LAUNCH_DATA_SOURCE_URL/);
   assert.match(
     frontendDockerfile,
     /ENV VITE_WASHINGTON_LAUNCH_MANIFEST_SHA256=\$VITE_WASHINGTON_LAUNCH_MANIFEST_SHA256/
   );
   assert.match(
     frontendDockerfile,
+    /if \[ -z "\$launch_pin" \] && \[ -z "\$launch_source" \]; then[\s\\]*echo 'Building the Washington navigation-only fallback without hosted county data'/,
+    'an absent configuration pair must retain the truthful navigation-only image'
+  );
+  assert.match(
+    frontendDockerfile,
+    /elif \[ -z "\$launch_pin" \] \|\| \[ -z "\$launch_source" \]; then[\s\\]*echo 'ERROR: VITE_WASHINGTON_LAUNCH_MANIFEST_SHA256 and WASHINGTON_LAUNCH_DATA_SOURCE_URL must be supplied together'/,
+    'partial public-data configuration must fail closed'
+  );
+  assert.match(
+    frontendDockerfile,
     /grep -Eq '\^\[0-9a-f\]\{64\}\$'/,
-    'production builds must reject an absent or malformed manifest pin'
+    'a configured production build must reject a malformed manifest pin'
   );
   assert.match(
     text,
@@ -244,13 +255,19 @@ test('production frontend images require the hosted Washington manifest trust pi
   );
   assert.match(
     devStartScript,
-    /'build',[\s\S]*'--build-arg',[\s\S]*"VITE_WASHINGTON_LAUNCH_MANIFEST_SHA256=\$manifestSha256"/
+    /if \(\$hasManifestPin -ne \$hasPackageSource\) \{[\s\S]*must be supplied together/,
+    'quick-start must reject a partial public-data configuration'
+  );
+  assert.match(
+    devStartScript,
+    /if \(\$hasManifestPin\) \{[\s\S]*\$buildArgs \+= @\([\s\S]*"VITE_WASHINGTON_LAUNCH_MANIFEST_SHA256=\$manifestSha256"/,
+    'quick-start must add the trust pin only for a complete configured pair'
   );
   const composeBuild = devStartScript.indexOf('docker compose @buildArgs');
   const composeUp = devStartScript.indexOf('docker compose @upArgs');
   assert.ok(
     composeBuild >= 0 && composeUp > composeBuild,
-    'quick-start must finish the authenticated Compose build before starting services'
+    'quick-start must finish the selected Compose build before starting services'
   );
   assert.match(devStartScript, /\$upArgs = @\('[^\n]*'--no-build'\)/);
   assert.doesNotMatch(devStartScript, /\$upArgs \+= '--build'/);
@@ -262,7 +279,7 @@ test('production frontend packages the public data authenticated by its Washingt
     'COPY frontend/apps/os-shell/src/lib/washingtonPublicSourceInventory.data.json'
   );
   const packageRun = frontendDockerfile.indexOf(
-    'RUN node scripts/ci/package_washington_launch_data.mjs'
+    'node scripts/ci/package_washington_launch_data.mjs'
   );
   assert.ok(
     inventoryCopy >= 0 && packageRun > inventoryCopy,
@@ -272,6 +289,16 @@ test('production frontend packages the public data authenticated by its Washingt
   assert.match(
     frontendDockerfile,
     /node scripts\/ci\/package_washington_launch_data\.mjs[\s\\]*"\$WASHINGTON_LAUNCH_DATA_SOURCE_URL"[\s\\]*"\$VITE_WASHINGTON_LAUNCH_MANIFEST_SHA256"[\s\\]*\/app\/washington-launch-data/
+  );
+  assert.match(
+    frontendDockerfile,
+    /if \[ -n "\$VITE_WASHINGTON_LAUNCH_MANIFEST_SHA256" \]; then[\s\\]*node scripts\/ci\/package_washington_launch_data\.mjs/,
+    'only a configured image may package hosted Washington data'
+  );
+  assert.match(
+    frontendDockerfile,
+    /else[\s\\]*mkdir -p \/app\/washington-launch-data/,
+    'navigation-only images need an empty copyable launch-data directory'
   );
   assert.match(
     frontendDockerfile,

@@ -27,6 +27,7 @@ import {
   type ObjectClassification,
 } from '../contracts/objectPlacement';
 import { shellEventBus } from './shellEventBus';
+import { computeWindowReveal } from './windowReveal';
 
 // ============================================================================
 // Types
@@ -126,6 +127,7 @@ export interface DesktopState {
   maximizeWindow: (windowId: string) => void;
   restoreWindow: (windowId: string) => void;
   focusWindow: (windowId: string) => void;
+  revealWindow: (windowId: string) => void;
   replaceWindowMetadata: (windowId: string, metadata: Record<string, any>) => void;
   updateWindowPosition: (windowId: string, position: Position) => void;
   updateWindowSize: (windowId: string, size: Size) => void;
@@ -790,6 +792,36 @@ export const useDesktopStore = create<DesktopState>()(
         });
       },
 
+      revealWindow: (windowId: string) => {
+        const { windows, nextZIndex, currentDesktopId } = get();
+        const targetWindow = windows.find((window) => window.id === windowId);
+        if (!targetWindow) return;
+
+        const transition = computeWindowReveal(
+          { windows, nextZIndex, currentDesktopId },
+          windowId,
+        );
+        if (!transition) return;
+
+        set({
+          windows: transition.windows,
+          activeWindowId: transition.activeWindowId,
+          currentDesktopId: transition.currentDesktopId,
+          nextZIndex: transition.nextZIndex,
+        });
+
+        // Explicit module activation is idempotent: unlike a taskbar click, it
+        // must never toggle an already-active window back to minimized. Enter
+        // application mode as well so Home cannot conceal the revealed window.
+        get().enterApplication();
+
+        shellEventBus.fire('window_focused', windowId, targetWindow.moduleId, {
+          restoredFromMinimized: transition.wasMinimized,
+          switchedDesktop: transition.switchedDesktop,
+          activationReveal: true,
+        });
+      },
+
       replaceWindowMetadata: (windowId: string, metadata: Record<string, any>) => {
         const { windows } = get();
         set({
@@ -1079,6 +1111,7 @@ export const useWindowActions = () =>
     maximizeWindow: state.maximizeWindow,
     restoreWindow: state.restoreWindow,
     focusWindow: state.focusWindow,
+    revealWindow: state.revealWindow,
     replaceWindowMetadata: state.replaceWindowMetadata,
     updateWindowPosition: state.updateWindowPosition,
     updateWindowSize: state.updateWindowSize,
