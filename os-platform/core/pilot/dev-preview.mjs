@@ -15,7 +15,7 @@ const DEFAULT_KERNEL_BASE_URL = `http://localhost:${process.env.TF_API_PORT || "
 const DEFAULT_PILOT_BASE_URL = `http://localhost:${process.env.TF_PILOT_PORT || process.env.PILOT_PORT || "4317"}`;
 
 export function resolveFrontendPort(environment = process.env) {
-  return environment.TF_FRONTEND_PORT || environment.PORT || environment.VITE_PORT || "3102";
+  return environment.TF_FRONTEND_PORT || "3102";
 }
 
 function parseArgs(argv) {

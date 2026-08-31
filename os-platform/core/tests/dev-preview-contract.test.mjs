@@ -21,16 +21,21 @@ test("the canonical preview launcher starts with its shebang and parses as JavaS
 
 test("the canonical frontend port defaults to 3102 and honors explicit overrides", () => {
   assert.equal(resolveFrontendPort({}), "3102");
-  assert.equal(resolveFrontendPort({ VITE_PORT: "4173" }), "4173");
-  assert.equal(resolveFrontendPort({ PORT: "4200", VITE_PORT: "4173" }), "4200");
+  assert.equal(resolveFrontendPort({ VITE_PORT: "4173" }), "3102");
+  assert.equal(resolveFrontendPort({ PORT: "4200", VITE_PORT: "4173" }), "3102");
   assert.equal(
     resolveFrontendPort({ TF_FRONTEND_PORT: "3109", PORT: "4200", VITE_PORT: "4173" }),
     "3109",
   );
 });
 
-test("the preview plan builds the API and forwards the same port contract to Vite", () => {
-  const plan = createPreviewProcessPlan({ TF_FRONTEND_PORT: "3110", KEEP: "value" }, "linux");
+test("the preview plan builds the API and isolates Vite from an inherited generic port", () => {
+  const plan = createPreviewProcessPlan({
+    TF_FRONTEND_PORT: "3110",
+    PORT: "3000",
+    VITE_PORT: "5173",
+    KEEP: "value",
+  }, "linux");
   assert.deepEqual(plan.backend, {
     command: "pnpm",
     args: ["run", "dev:backend:watch"],
