@@ -92,7 +92,7 @@ export function createPreviewProcessPlan(environment = process.env, platform = p
       env: sharedEnvironment,
     },
     frontend: {
-      ...getPnpmInvocation(["run", "dev:frontend"], platform),
+      ...getPnpmInvocation(["run", "dev:frontend", "--", "--strictPort"], platform),
       env: {
         ...sharedEnvironment,
         TF_FRONTEND_PORT: frontendPort,

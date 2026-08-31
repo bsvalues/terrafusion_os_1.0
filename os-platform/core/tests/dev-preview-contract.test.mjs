@@ -69,7 +69,7 @@ test("the preview plan builds the API and isolates both canonical port contracts
     },
   });
   assert.equal(plan.frontend.command, "pnpm");
-  assert.deepEqual(plan.frontend.args, ["run", "dev:frontend"]);
+  assert.deepEqual(plan.frontend.args, ["run", "dev:frontend", "--", "--strictPort"]);
   assert.deepEqual(plan.frontend.env, {
     PORT: "3102",
     VITE_PORT: "3102",
