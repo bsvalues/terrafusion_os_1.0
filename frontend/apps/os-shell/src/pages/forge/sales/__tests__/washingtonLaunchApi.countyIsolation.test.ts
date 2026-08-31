@@ -181,9 +181,14 @@ describe('Washington launch shard county isolation', () => {
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
-  it('keeps every year-scoped projection within the selected tax year', async () => {
+  it('matches the backend tax-year window across every year-scoped projection', async () => {
     validateAndCacheAttestedWashingtonLaunchCountyShard({
-      ...countyShard('Spokane', '063', ['sale-2025', 'sale-2024', 'sale-year-unknown']),
+      ...countyShard('Spokane', '063', [
+        'sale-2025',
+        'sale-2024',
+        'sale-year-from-date',
+        'sale-year-unknown',
+      ]),
       records: [
         {
           ...saleRecord('Spokane', '063', 'sale-2025'),
@@ -198,6 +203,14 @@ describe('Washington launch shard county isolation', () => {
           saleDate: '2024-01-15',
           saleYear: 2024,
           useCode: 'C1',
+        },
+        {
+          ...saleRecord('Spokane', '063', 'sale-year-from-date'),
+          deedType: 'SWD',
+          neighborhoodCode: 'N-DATE-FALLBACK',
+          saleDate: '2024-12-31',
+          saleYear: null,
+          useCode: 'R2',
         },
         {
           ...saleRecord('Spokane', '063', 'sale-year-unknown'),
@@ -215,18 +228,27 @@ describe('Washington launch shard county isolation', () => {
       fetchWashingtonLaunchCodeAudit(2025, SPOKANE_FILTERS),
     ]);
 
-    expect(queue).toMatchObject({
-      total: 1,
-      items: [expect.objectContaining({ saleId: 'sale-2025' })],
-    });
-    expect(stats.counts).toMatchObject({ total: 1, pending: 1 });
-    expect(neighborhoods.hoods).toEqual([
-      expect.objectContaining({ hood: 'N-2025', totalCount: 1 }),
+    expect(queue.total).toBe(2);
+    expect(queue.items.map((item) => item.saleId)).toEqual([
+      'sale-2025',
+      'sale-year-from-date',
     ]);
+    expect(stats.counts).toMatchObject({ total: 2, pending: 2 });
+    expect(neighborhoods.hoods).toHaveLength(2);
+    expect(neighborhoods.hoods).toEqual(expect.arrayContaining([
+      expect.objectContaining({ hood: 'N-2025', totalCount: 1 }),
+      expect.objectContaining({ hood: 'N-DATE-FALLBACK', totalCount: 1 }),
+    ]));
     expect(audit).toMatchObject({
-      totalSales: 1,
-      saleQualifierBreakdown: [{ code: 'WD', count: 1 }],
-      excludeCalcBreakdown: [{ code: 'R1', count: 1 }],
+      totalSales: 2,
+      saleQualifierBreakdown: expect.arrayContaining([
+        { code: 'WD', count: 1 },
+        { code: 'SWD', count: 1 },
+      ]),
+      excludeCalcBreakdown: expect.arrayContaining([
+        { code: 'R1', count: 1 },
+        { code: 'R2', count: 1 },
+      ]),
     });
   });
 

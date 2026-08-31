@@ -713,7 +713,15 @@ function matchesTaxYear(
   taxYear: number,
   filters: CommittedFilters,
 ): boolean {
-  return sale.saleYear === taxYear && matchesFilters(sale, filters);
+  const lookbackStart = `${taxYear - 2}-01-01`;
+  const lookbackEnd = `${taxYear}-01-01`;
+  const matchesStudyWindow = sale.saleYear === taxYear
+    || (sale.saleYear === null
+      && sale.saleDate !== null
+      && sale.saleDate >= lookbackStart
+      && sale.saleDate < lookbackEnd);
+
+  return matchesStudyWindow && matchesFilters(sale, filters);
 }
 
 function filterByTab(items: SaleQueueItem[], tab: QueueTab): SaleQueueItem[] {
