@@ -9,10 +9,10 @@ import {
   createPreviewProcessPlan,
   resolveApiPort,
   resolveFrontendPort,
-} from "../pilot/dev-preview.mjs";
+} from "./dev-preview.mjs";
 
 const TEST_DIR = path.dirname(fileURLToPath(import.meta.url));
-const PREVIEW_SCRIPT = path.resolve(TEST_DIR, "..", "pilot", "dev-preview.mjs");
+const PREVIEW_SCRIPT = path.resolve(TEST_DIR, "dev-preview.mjs");
 
 test("the canonical preview launcher starts with its shebang and parses as JavaScript", () => {
   const source = fs.readFileSync(PREVIEW_SCRIPT, "utf8");
