@@ -84,7 +84,6 @@ export function createPreviewProcessPlan(environment = process.env, platform = p
       args: [
         "build",
         "backend/src/TerraFusion.API/TerraFusion.API.csproj",
-        "-p:DotNetWatchBuild=true",
       ],
       env: sharedEnvironment,
     },

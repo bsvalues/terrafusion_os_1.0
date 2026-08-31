@@ -48,7 +48,6 @@ test("the preview plan builds the API and isolates both canonical port contracts
     args: [
       "build",
       "backend/src/TerraFusion.API/TerraFusion.API.csproj",
-      "-p:DotNetWatchBuild=true",
     ],
     env: {
       PORT: "3000",
