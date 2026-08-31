@@ -9,15 +9,15 @@
  * Contract: When the operator switches suites via Ctrl+1..7 (MODULE_SHORTCUTS),
  * the activation system must:
  *   1. Open a new window on first activation of a moduleId
- *   2. Focus the existing window (NOT open a new one) on subsequent activations
+ *   2. Reveal the existing window (NOT open a new one) on subsequent activations
  *   3. Switching A→B→A must leave exactly 2 windows open, not 3
- *   4. Switching A→B→C→B→A must leave exactly 3 windows, focus for return visits
+ *   4. Switching A→B→C→B→A must leave exactly 3 windows, reveal for return visits
  *   5. The MODULE_SHORTCUTS map must map Ctrl+1..7 to registered moduleIds
  *   6. Every shortcut-triggered activation is idempotent (no window duplication)
  *
  * @see src/hooks/useKeyboardShortcuts.ts — MODULE_SHORTCUTS map
  * @see src/orchestration/moduleActivation.ts — activateModule()
- * @see src/stores/desktopStore.ts — openWindow / focusWindow
+ * @see src/stores/desktopStore.ts — openWindow / revealWindow
  */
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { readFileSync } from 'fs';
@@ -27,7 +27,7 @@ import { resolve } from 'path';
 
 const {
   mockOpenWindow,
-  mockFocusWindow,
+  mockRevealWindow,
   mockGetWindows,
   mockLoadModule,
   mockGetLoadState,
@@ -36,7 +36,7 @@ const {
   mockTrackEvent,
 } = vi.hoisted(() => ({
   mockOpenWindow: vi.fn().mockReturnValue('window-auto'),
-  mockFocusWindow: vi.fn(),
+  mockRevealWindow: vi.fn(),
   mockGetWindows: vi.fn().mockReturnValue([]),
   mockLoadModule: vi.fn().mockResolvedValue(undefined),
   mockGetLoadState: vi.fn().mockReturnValue({ status: 'idle' }),
@@ -50,7 +50,7 @@ vi.mock('../../stores/desktopStore', () => ({
     getState: () => ({
       windows: mockGetWindows(),
       openWindow: mockOpenWindow,
-      focusWindow: mockFocusWindow,
+      revealWindow: mockRevealWindow,
     }),
   },
 }));
@@ -125,7 +125,7 @@ async function hotSwitch(moduleId: string): Promise<void> {
     await activateModule(moduleId, { source: 'shortcut' });
     registry.open(moduleId);
   } else {
-    // Subsequent — focusWindow will be called; update getWindows so store sees it
+    // Subsequent — revealWindow will be called; update getWindows so store sees it
     await activateModule(moduleId, { source: 'shortcut' });
   }
 }
@@ -135,7 +135,7 @@ async function hotSwitch(moduleId: string): Promise<void> {
 describe('Phase 15 Brick 2 — Suite hot-switch state persistence', () => {
   beforeEach(() => {
     mockOpenWindow.mockClear().mockReturnValue('window-auto');
-    mockFocusWindow.mockClear();
+    mockRevealWindow.mockClear();
     mockGetWindows.mockClear().mockReturnValue([]);
     mockLoadModule.mockClear().mockResolvedValue(undefined);
     mockGetLoadState.mockClear().mockReturnValue({ status: 'idle' });
@@ -156,7 +156,7 @@ describe('Phase 15 Brick 2 — Suite hot-switch state persistence', () => {
     it('activating costforge for the first time calls openWindow', async () => {
       await activateModule('costforge', { source: 'shortcut' });
       expect(mockOpenWindow).toHaveBeenCalledTimes(1);
-      expect(mockFocusWindow).not.toHaveBeenCalled();
+      expect(mockRevealWindow).not.toHaveBeenCalled();
     });
 
     it('openWindow receives the moduleId', async () => {
@@ -170,10 +170,10 @@ describe('Phase 15 Brick 2 — Suite hot-switch state persistence', () => {
     });
   });
 
-  // ── 2. Subsequent activation focuses — does not open new window ─────────────
+  // ── 2. Subsequent activation reveals — does not open new window ────────────
 
-  describe('subsequent activation — focusWindow, not openWindow', () => {
-    it('second activation of same module focuses, does not open new window', async () => {
+  describe('subsequent activation — revealWindow, not openWindow', () => {
+    it('second activation of same module reveals, does not open new window', async () => {
       // First activation
       await activateModule('costforge', { source: 'shortcut' });
       const windowId = mockOpenWindow.mock.results[0].value as string;
@@ -188,14 +188,14 @@ describe('Phase 15 Brick 2 — Suite hot-switch state persistence', () => {
       await activateModule('costforge', { source: 'shortcut' });
 
       expect(mockOpenWindow).not.toHaveBeenCalled();
-      expect(mockFocusWindow).toHaveBeenCalledWith(windowId);
+      expect(mockRevealWindow).toHaveBeenCalledWith(windowId);
     });
   });
 
   // ── 3. A→B→A leaves exactly 2 windows ─────────────────────────────────────
 
   describe('A→B→A switch pattern — exactly 2 windows, no duplication', () => {
-    it('forge→gaia→forge: 2 openWindow calls, 1 focusWindow call', async () => {
+    it('forge→gaia→forge: 2 openWindow calls, 1 revealWindow call', async () => {
       // Activate forge
       await activateModule('costforge', { source: 'shortcut' });
       const forgeWinId = mockOpenWindow.mock.results[0].value as string;
@@ -211,13 +211,13 @@ describe('Phase 15 Brick 2 — Suite hot-switch state persistence', () => {
         { id: gaiaWinId, moduleId: 'terra-gaia', state: 'normal' },
       ]);
 
-      // Return to forge (focus)
+      // Return to forge (reveal)
       mockOpenWindow.mockClear();
       await activateModule('costforge', { source: 'shortcut' });
 
       // Must not open a third window
       expect(mockOpenWindow).not.toHaveBeenCalled();
-      expect(mockFocusWindow).toHaveBeenCalledWith(forgeWinId);
+      expect(mockRevealWindow).toHaveBeenCalledWith(forgeWinId);
 
       // Total openWindow calls across the whole sequence = 2
       expect(mockOpenWindow.mock.calls.length).toBe(0); // cleared above; cumulative = 2
@@ -226,8 +226,8 @@ describe('Phase 15 Brick 2 — Suite hot-switch state persistence', () => {
 
   // ── 4. A→B→C→B→A leaves exactly 3 windows ────────────────────────────────
 
-  describe('A→B→C→B→A pattern — 3 windows, focus calls for returns', () => {
-    it('opens 3 windows then focuses on return visits', async () => {
+  describe('A→B→C→B→A pattern — 3 windows, reveal calls for returns', () => {
+    it('opens 3 windows then reveals on return visits', async () => {
       const opened: string[] = [];
       const modules = ['costforge', 'terra-gaia', 'atlas-ai'];
 
@@ -251,12 +251,12 @@ describe('Phase 15 Brick 2 — Suite hot-switch state persistence', () => {
       // Return to gaia
       await activateModule('terra-gaia', { source: 'shortcut' });
       expect(mockOpenWindow).not.toHaveBeenCalled();
-      expect(mockFocusWindow).toHaveBeenLastCalledWith(opened[1]);
+      expect(mockRevealWindow).toHaveBeenLastCalledWith(opened[1]);
 
       // Return to forge
       await activateModule('costforge', { source: 'shortcut' });
       expect(mockOpenWindow).not.toHaveBeenCalled();
-      expect(mockFocusWindow).toHaveBeenLastCalledWith(opened[0]);
+      expect(mockRevealWindow).toHaveBeenLastCalledWith(opened[0]);
     });
   });
 
@@ -313,7 +313,7 @@ describe('Phase 15 Brick 2 — Suite hot-switch state persistence', () => {
       await activateModule('costforge', { source: 'shortcut' });
 
       expect(mockOpenWindow).not.toHaveBeenCalled();
-      expect(mockFocusWindow).toHaveBeenCalledTimes(2);
+      expect(mockRevealWindow).toHaveBeenCalledTimes(2);
     });
   });
 });
