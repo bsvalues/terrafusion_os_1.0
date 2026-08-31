@@ -708,6 +708,14 @@ function matchesFilters(sale: LaunchSaleRecord, filters: CommittedFilters): bool
   return true;
 }
 
+function matchesTaxYear(
+  sale: LaunchSaleRecord,
+  taxYear: number,
+  filters: CommittedFilters,
+): boolean {
+  return sale.saleYear === taxYear && matchesFilters(sale, filters);
+}
+
 function filterByTab(items: SaleQueueItem[], tab: QueueTab): SaleQueueItem[] {
   if (tab === 'all') return items;
   if (tab === 'pending') return items.filter((item) => item.qualificationDecision == null);
@@ -723,9 +731,10 @@ export async function fetchWashingtonLaunchQueue(
   filters: CommittedFilters,
   packageSource: WashingtonReferencePackageSource = 'hosted',
 ): Promise<SaleQueuePage> {
-  void taxYear;
   const shard = await loadCountyShard(filters.countyCode, packageSource);
-  const filtered = shard.records.filter((sale) => matchesFilters(sale, filters)).map(toQueueItem);
+  const filtered = shard.records
+    .filter((sale) => matchesTaxYear(sale, taxYear, filters))
+    .map(toQueueItem);
   const tabbed = filterByTab(filtered, tab);
   const start = (page - 1) * pageSize;
   return {
@@ -754,9 +763,8 @@ export async function fetchWashingtonLaunchRunningStats(
   filters: CommittedFilters,
   packageSource: WashingtonReferencePackageSource = 'hosted',
 ): Promise<RunningStats> {
-  void taxYear;
   const shard = await loadCountyShard(filters.countyCode, packageSource);
-  const filtered = shard.records.filter((sale) => matchesFilters(sale, filters));
+  const filtered = shard.records.filter((sale) => matchesTaxYear(sale, taxYear, filters));
   const decided = getDecisionMap();
   const qualified = filtered.filter(
     (sale) => decided[decisionStorageKey(sale.countyCode, sale.saleId)]?.decision === 'qualified',
@@ -795,10 +803,9 @@ export async function fetchWashingtonLaunchNeighborhoodStats(
   filters: CommittedFilters,
   packageSource: WashingtonReferencePackageSource = 'hosted',
 ): Promise<NeighborhoodStats> {
-  void taxYear;
   const shard = await loadCountyShard(filters.countyCode, packageSource);
   const groups = new Map<string, HoodStat>();
-  for (const sale of shard.records.filter((record) => matchesFilters(record, filters))) {
+  for (const sale of shard.records.filter((record) => matchesTaxYear(record, taxYear, filters))) {
     const hood = sale.neighborhoodCode;
     if (!hood) continue;
     const current = groups.get(hood) ?? {
@@ -831,9 +838,8 @@ export async function fetchWashingtonLaunchCodeAudit(
   filters: CommittedFilters,
   packageSource: WashingtonReferencePackageSource = 'hosted',
 ): Promise<CodeAudit> {
-  void taxYear;
   const shard = await loadCountyShard(filters.countyCode, packageSource);
-  const filtered = shard.records.filter((sale) => matchesFilters(sale, filters));
+  const filtered = shard.records.filter((sale) => matchesTaxYear(sale, taxYear, filters));
   const deedCounts = new Map<string, number>();
   const useCounts = new Map<string, number>();
   for (const sale of filtered) {

@@ -6,6 +6,8 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { CommittedFilters } from '../salesForgeTypes';
 import {
   evictWashingtonLaunchCountyShard,
+  fetchWashingtonLaunchCodeAudit,
+  fetchWashingtonLaunchNeighborhoodStats,
   fetchWashingtonLaunchVerifiedComparableSales,
   fetchWashingtonLaunchQueue,
   fetchWashingtonLaunchRunningStats,
@@ -177,6 +179,55 @@ describe('Washington launch shard county isolation', () => {
     expect(queue.total).toBe(1);
     expect(queue.items[0]?.saleId).toBe('hosted-spokane-sale');
     expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it('keeps every year-scoped projection within the selected tax year', async () => {
+    validateAndCacheAttestedWashingtonLaunchCountyShard({
+      ...countyShard('Spokane', '063', ['sale-2025', 'sale-2024', 'sale-year-unknown']),
+      records: [
+        {
+          ...saleRecord('Spokane', '063', 'sale-2025'),
+          deedType: 'WD',
+          neighborhoodCode: 'N-2025',
+          useCode: 'R1',
+        },
+        {
+          ...saleRecord('Spokane', '063', 'sale-2024'),
+          deedType: 'QC',
+          neighborhoodCode: 'N-2024',
+          saleDate: '2024-01-15',
+          saleYear: 2024,
+          useCode: 'C1',
+        },
+        {
+          ...saleRecord('Spokane', '063', 'sale-year-unknown'),
+          neighborhoodCode: 'N-UNKNOWN',
+          saleDate: null,
+          saleYear: null,
+        },
+      ],
+    }, '063', 'hosted');
+
+    const [queue, stats, neighborhoods, audit] = await Promise.all([
+      fetchWashingtonLaunchQueue(2025, 'all', 1, 25, SPOKANE_FILTERS),
+      fetchWashingtonLaunchRunningStats(2025, SPOKANE_FILTERS),
+      fetchWashingtonLaunchNeighborhoodStats(2025, SPOKANE_FILTERS),
+      fetchWashingtonLaunchCodeAudit(2025, SPOKANE_FILTERS),
+    ]);
+
+    expect(queue).toMatchObject({
+      total: 1,
+      items: [expect.objectContaining({ saleId: 'sale-2025' })],
+    });
+    expect(stats.counts).toMatchObject({ total: 1, pending: 1 });
+    expect(neighborhoods.hoods).toEqual([
+      expect.objectContaining({ hood: 'N-2025', totalCount: 1 }),
+    ]);
+    expect(audit).toMatchObject({
+      totalSales: 1,
+      saleQualifierBreakdown: [{ code: 'WD', count: 1 }],
+      excludeCalcBreakdown: [{ code: 'R1', count: 1 }],
+    });
   });
 
   it('serves CompsForge candidates from only the current attested hosted body', async () => {
