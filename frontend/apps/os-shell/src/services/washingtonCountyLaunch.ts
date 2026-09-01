@@ -251,6 +251,17 @@ export async function verifyWashingtonCountySalesShard(
   washingtonCountyShardVerificationAttempts.set(county.countyCode, attempt);
   const isCurrentAttempt = (): boolean =>
     washingtonCountyShardVerificationAttempts.get(county.countyCode) === attempt;
+  const restoreNearestActivePreviousAttempt = (): void => {
+    if (!isCurrentAttempt()) return;
+    const previousAttempt = nearestActiveWashingtonCountyShardVerificationAttempt(
+      attempt.previous,
+    );
+    if (previousAttempt) {
+      washingtonCountyShardVerificationAttempts.set(county.countyCode, previousAttempt);
+    } else {
+      washingtonCountyShardVerificationAttempts.delete(county.countyCode);
+    }
+  };
   try {
     let verification: WashingtonSalesReviewHostedShardVerification;
     try {
@@ -264,20 +275,12 @@ export async function verifyWashingtonCountySalesShard(
       );
     } catch (error) {
       if (signal?.aborted) {
-        if (isCurrentAttempt()) {
-          const previousAttempt = nearestActiveWashingtonCountyShardVerificationAttempt(
-            attempt.previous,
-          );
-          if (previousAttempt) {
-            washingtonCountyShardVerificationAttempts.set(county.countyCode, previousAttempt);
-          } else {
-            washingtonCountyShardVerificationAttempts.delete(county.countyCode);
-          }
-        }
+        restoreNearestActivePreviousAttempt();
         throw error;
       }
       if (isCurrentAttempt()) {
         evictWashingtonLaunchCountyShard(county.countyCode, 'hosted');
+        restoreNearestActivePreviousAttempt();
       }
       return {
         ...county,
@@ -298,6 +301,10 @@ export async function verifyWashingtonCountySalesShard(
         latestSaleDate: verification.latestSaleDate,
         salesShardVerification: 'verified',
       };
+    }
+
+    if (verification.state === 'unavailable') {
+      restoreNearestActivePreviousAttempt();
     }
 
     return {
