@@ -98,6 +98,30 @@ test('Kitsap adapter serializes real and symlinked paths to the same package', a
   }
 });
 
+test('Kitsap adapter canonicalizes a symlinked package root before locking', async () => {
+  const root = await mkdtemp(join(tmpdir(), 'tf-kitsap-lock-root-alias-'));
+  const realOutputPath = join(root, 'real-washington');
+  const aliasOutputPath = join(root, 'alias-washington');
+  const firstOperation = '123-12345678-1234-4123-8123-123456789abc';
+  const secondOperation = '456-abcdefab-cdef-4abc-8def-abcdefabcdef';
+  try {
+    await mkdir(realOutputPath, { recursive: true });
+    await symlink(
+      realOutputPath,
+      aliasOutputPath,
+      process.platform === 'win32' ? 'junction' : 'dir'
+    );
+    await acquirePackageRefreshLock(realOutputPath, firstOperation);
+    await assert.rejects(
+      acquirePackageRefreshLock(aliasOutputPath, secondOperation),
+      /already running under PID/i
+    );
+    await releasePackageRefreshLock(realOutputPath, firstOperation);
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
 test('Kitsap adapter never replaces an unverifiable canonical lock regardless of age', async () => {
   const root = await mkdtemp(join(tmpdir(), 'tf-kitsap-lock-init-'));
   const outputPath = join(root, 'launch-data', 'washington');

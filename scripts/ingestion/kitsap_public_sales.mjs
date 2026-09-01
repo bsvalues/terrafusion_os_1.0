@@ -123,7 +123,12 @@ function readProcessIdentity(pid) {
 async function canonicalizePackageOutputRoot(outputPath) {
   const outputRoot = resolve(outputPath);
   await mkdir(dirname(outputRoot), { recursive: true });
-  return join(await realpath(dirname(outputRoot)), basename(outputRoot));
+  try {
+    return await realpath(outputRoot);
+  } catch (error) {
+    if (error?.code !== 'ENOENT') throw error;
+    return join(await realpath(dirname(outputRoot)), basename(outputRoot));
+  }
 }
 
 function startRefreshAcquisitionMutexProcess(mutexPath) {
@@ -208,6 +213,13 @@ async function acquireRefreshAcquisitionMutex(outputRoot) {
 
 async function releaseRefreshAcquisitionMutex(child) {
   if (!child) return;
+  if (child.exitCode !== null) {
+    invariant(
+      child.exitCode === 0,
+      `Kitsap package refresh acquisition mutex exited with ${child.exitCode}.`
+    );
+    return;
+  }
   const exited = new Promise((resolveExit, rejectExit) => {
     child.once('error', rejectExit);
     child.once('exit', code =>
