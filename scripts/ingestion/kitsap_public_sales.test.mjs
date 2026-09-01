@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import * as fs from 'node:fs';
-import { mkdir, mkdtemp, readFile, rm, stat, writeFile } from 'node:fs/promises';
+import { mkdir, mkdtemp, readFile, rm, stat, utimes, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { spawnSync } from 'node:child_process';
@@ -12,10 +12,7 @@ import {
   assertRuntimeCompatibleCountyDetail,
   assertRuntimeCompatibleCountyShard,
 } from '../ci/package_washington_launch_data.mjs';
-import {
-  acquirePackageRefreshLock,
-  releasePackageRefreshLock,
-} from './kitsap_public_sales.mjs';
+import { acquirePackageRefreshLock, releasePackageRefreshLock } from './kitsap_public_sales.mjs';
 
 XLSX.set_fs(fs);
 
@@ -56,10 +53,7 @@ test('Kitsap adapter restores the prior package after an interrupted refresh', a
     await assert.rejects(readFile(backupPath), error => error?.code === 'ENOENT');
     await assert.rejects(readFile(temporaryPath), error => error?.code === 'ENOENT');
     await assert.rejects(readFile(journalPath), error => error?.code === 'ENOENT');
-    await assert.rejects(
-      readFile(`${outputPath}.refresh.lock`),
-      error => error?.code === 'ENOENT'
-    );
+    await assert.rejects(readFile(`${outputPath}.refresh.lock`), error => error?.code === 'ENOENT');
   } finally {
     await rm(root, { recursive: true, force: true });
   }
@@ -82,18 +76,48 @@ test('Kitsap adapter serializes overlapping package refresh writers', async () =
   }
 });
 
-test('Kitsap adapter never reclaims lock metadata that is still initializing', async () => {
+test('Kitsap adapter never reclaims an unverifiable initializing lock regardless of age', async () => {
   const root = await mkdtemp(join(tmpdir(), 'tf-kitsap-lock-init-'));
   const outputPath = join(root, 'launch-data', 'washington');
   const lockPath = `${outputPath}.refresh.lock`;
   const operationId = '456-abcdefab-cdef-4abc-8def-abcdefabcdef';
   try {
     await mkdir(lockPath, { recursive: true });
+    const oldTimestamp = new Date(Date.now() - 60_000);
+    await utimes(lockPath, oldTimestamp, oldTimestamp);
     await assert.rejects(
       acquirePackageRefreshLock(outputPath, operationId),
-      /lock owner is still initializing/i
+      /lock owner cannot be verified; the lock remains fenced/i
     );
     assert.equal((await stat(lockPath)).isDirectory(), true);
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test('Kitsap adapter reclaims a lock whose PID belongs to a different process instance', async () => {
+  const root = await mkdtemp(join(tmpdir(), 'tf-kitsap-lock-pid-reuse-'));
+  const outputPath = join(root, 'launch-data', 'washington');
+  const lockPath = `${outputPath}.refresh.lock`;
+  const staleOperation = '123-12345678-1234-4123-8123-123456789abc';
+  const replacementOperation = '456-abcdefab-cdef-4abc-8def-abcdefabcdef';
+  try {
+    await mkdir(lockPath, { recursive: true });
+    await writeFile(
+      join(lockPath, 'owner.json'),
+      `${JSON.stringify({
+        operationId: staleOperation,
+        ownerPid: process.pid,
+        ownerProcessIdentity: 'reused-process-instance',
+      })}\n`,
+      'utf8'
+    );
+    await acquirePackageRefreshLock(outputPath, replacementOperation);
+    const owner = JSON.parse(await readFile(join(lockPath, 'owner.json'), 'utf8'));
+    assert.equal(owner.operationId, replacementOperation);
+    assert.equal(owner.ownerPid, process.pid);
+    assert.notEqual(owner.ownerProcessIdentity, 'reused-process-instance');
+    await releasePackageRefreshLock(outputPath, replacementOperation);
   } finally {
     await rm(root, { recursive: true, force: true });
   }

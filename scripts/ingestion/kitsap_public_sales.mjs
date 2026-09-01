@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 
 import { createHash, randomUUID } from 'node:crypto';
+import { execFileSync } from 'node:child_process';
 import * as fs from 'node:fs';
-import { access, mkdir, open, readFile, rename, rm, stat } from 'node:fs/promises';
+import { access, mkdir, open, readFile, rename, rm } from 'node:fs/promises';
 import { basename, dirname, join, resolve, sep } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import XLSX from 'xlsx';
@@ -21,7 +22,8 @@ const DETAIL_SCHEMA = 'terrafusion.washington.county-detail.v1';
 const SHARD_SCHEMA = 'terrafusion.washington.sales-shard.v1';
 const REFRESH_JOURNAL_SCHEMA = 'terrafusion.washington.package-refresh.v1';
 const SHA256_PATTERN = /^[a-f\d]{64}$/;
-const OPERATION_ID_PATTERN = /^\d+-[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
+const OPERATION_ID_PATTERN =
+  /^\d+-[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
 
 function invariant(condition, message) {
   if (!condition) throw new Error(message);
@@ -70,6 +72,53 @@ function isProcessRunning(pid) {
   }
 }
 
+function readProcessIdentity(pid) {
+  if (!Number.isSafeInteger(pid) || pid <= 0) return null;
+  try {
+    if (process.platform === 'win32') {
+      const powershell = join(
+        process.env.SystemRoot ?? 'C:\\Windows',
+        'System32',
+        'WindowsPowerShell',
+        'v1.0',
+        'powershell.exe'
+      );
+      const startedAt = execFileSync(
+        powershell,
+        [
+          '-NoProfile',
+          '-NonInteractive',
+          '-Command',
+          `(Get-Process -Id ${pid} -ErrorAction Stop).StartTime.ToUniversalTime().ToString('o')`,
+        ],
+        { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'], windowsHide: true }
+      ).trim();
+      return startedAt ? `windows-start:${startedAt}` : null;
+    }
+    if (process.platform === 'linux') {
+      const processStat = fs.readFileSync(`/proc/${pid}/stat`, 'utf8');
+      const closingParenthesis = processStat.lastIndexOf(')');
+      if (closingParenthesis < 0) return null;
+      const fieldsAfterCommand = processStat
+        .slice(closingParenthesis + 2)
+        .trim()
+        .split(/\s+/);
+      const startTicks = fieldsAfterCommand[19];
+      return startTicks ? `linux-start-ticks:${startTicks}` : null;
+    }
+    if (process.platform === 'darwin') {
+      const startedAt = execFileSync('/bin/ps', ['-o', 'lstart=', '-p', String(pid)], {
+        encoding: 'utf8',
+        stdio: ['ignore', 'pipe', 'ignore'],
+      }).trim();
+      return startedAt ? `darwin-start:${startedAt}` : null;
+    }
+  } catch {
+    return null;
+  }
+  return null;
+}
+
 async function readRefreshLockOwner(lockPath) {
   const ownerPath = join(lockPath, 'owner.json');
   for (let attempt = 0; attempt < 40; attempt += 1) {
@@ -86,44 +135,60 @@ async function readRefreshLockOwner(lockPath) {
 export async function acquirePackageRefreshLock(outputPath, operationId) {
   const outputRoot = resolve(outputPath);
   const lockPath = `${outputRoot}.refresh.lock`;
-  invariant(OPERATION_ID_PATTERN.test(operationId), 'Kitsap package refresh operation ID is invalid.');
+  const claimPath = `${lockPath}.claim-${operationId}`;
+  invariant(
+    OPERATION_ID_PATTERN.test(operationId),
+    'Kitsap package refresh operation ID is invalid.'
+  );
+  const ownerProcessIdentity = readProcessIdentity(process.pid);
+  invariant(
+    ownerProcessIdentity,
+    'Kitsap package refresh cannot establish the current process identity.'
+  );
   await mkdir(dirname(outputRoot), { recursive: true });
 
   for (let attempt = 0; attempt < 4; attempt += 1) {
-    let claimedLock = false;
+    let claimCreated = false;
     try {
-      await mkdir(lockPath, { recursive: false });
-      claimedLock = true;
-      await syncDirectory(dirname(lockPath));
+      await mkdir(claimPath, { recursive: false });
+      claimCreated = true;
       await writeDurableFile(
-        join(lockPath, 'owner.json'),
-        `${JSON.stringify({ operationId, ownerPid: process.pid })}\n`
+        join(claimPath, 'owner.json'),
+        `${JSON.stringify({ operationId, ownerPid: process.pid, ownerProcessIdentity })}\n`
       );
-      await syncDirectory(lockPath);
+      await syncDirectory(claimPath);
+      await rename(claimPath, lockPath);
+      claimCreated = false;
+      await syncDirectory(dirname(lockPath));
       return lockPath;
     } catch (error) {
-      if (claimedLock) {
-        await rm(lockPath, { recursive: true, force: true });
-        await syncDirectory(dirname(lockPath));
-        throw error;
-      }
-      if (error?.code !== 'EEXIST') throw error;
+      if (claimCreated) await rm(claimPath, { recursive: true, force: true });
+      if (!(await pathExists(lockPath))) throw error;
     }
 
     const owner = await readRefreshLockOwner(lockPath);
-    if (isProcessRunning(owner?.ownerPid)) {
-      throw new Error(`Kitsap package refresh is already running under PID ${owner.ownerPid}.`);
-    }
     if (!owner) {
-      let lockAgeMs;
-      try {
-        lockAgeMs = Date.now() - (await stat(lockPath)).mtimeMs;
-      } catch (error) {
-        if (error?.code === 'ENOENT') continue;
-        throw error;
+      throw new Error(
+        'Kitsap package refresh lock owner cannot be verified; the lock remains fenced.'
+      );
+    }
+    if (!Number.isSafeInteger(owner.ownerPid) || owner.ownerPid <= 0) {
+      throw new Error('Kitsap package refresh lock owner PID is invalid; the lock remains fenced.');
+    }
+    if (isProcessRunning(owner.ownerPid)) {
+      if (typeof owner.ownerProcessIdentity !== 'string' || !owner.ownerProcessIdentity) {
+        throw new Error(
+          'Kitsap package refresh lock process identity cannot be verified; the lock remains fenced.'
+        );
       }
-      if (lockAgeMs < 5_000) {
-        throw new Error('Kitsap package refresh lock owner is still initializing.');
+      const observedProcessIdentity = readProcessIdentity(owner.ownerPid);
+      if (!observedProcessIdentity) {
+        throw new Error(
+          'Kitsap package refresh lock process identity is unavailable; the lock remains fenced.'
+        );
+      }
+      if (observedProcessIdentity === owner.ownerProcessIdentity) {
+        throw new Error(`Kitsap package refresh is already running under PID ${owner.ownerPid}.`);
       }
     }
     const staleLockPath = `${lockPath}.stale-${operationId}`;
@@ -140,11 +205,13 @@ export async function acquirePackageRefreshLock(outputPath, operationId) {
 }
 
 async function assertRefreshLockOwner(outputRoot, operationId) {
-  const lock = JSON.parse(
-    await readFile(join(`${outputRoot}.refresh.lock`, 'owner.json'), 'utf8')
-  );
+  const lock = JSON.parse(await readFile(join(`${outputRoot}.refresh.lock`, 'owner.json'), 'utf8'));
+  const ownerProcessIdentity = readProcessIdentity(process.pid);
   invariant(
-    lock?.operationId === operationId && lock.ownerPid === process.pid,
+    lock?.operationId === operationId &&
+      lock.ownerPid === process.pid &&
+      ownerProcessIdentity &&
+      lock.ownerProcessIdentity === ownerProcessIdentity,
     'Kitsap package refresh lock ownership changed.'
   );
 }
@@ -526,22 +593,27 @@ async function generatePackage(sourcePath, expectedSha256, outputRoot, generated
       shard,
       temporaryRoot
     );
-    await writeJson(join(temporaryRoot, 'receipts/kitsap-source.json'), {
-      schemaVersion: 'terrafusion.washington.public-source-receipt.v1',
-      county: COUNTY,
-      countyCode: COUNTY_CODE,
-      generatedAt,
-      sourceUrl: SOURCE_URL,
-      sourcePayloadPath: basename(sourcePath),
-      sourcePayloadBytes: workbookBytes.byteLength,
-      sourcePayloadSha256: payloadSha256,
-      candidateSales,
-      stagedSales: records.length,
-      quarantinedSales: needsReview,
-      quarantine,
-      omittedFields: ['owner', 'grantor', 'grantee', 'buyer', 'seller'],
-    }, temporaryRoot);
+    await writeJson(
+      join(temporaryRoot, 'receipts/kitsap-source.json'),
+      {
+        schemaVersion: 'terrafusion.washington.public-source-receipt.v1',
+        county: COUNTY,
+        countyCode: COUNTY_CODE,
+        generatedAt,
+        sourceUrl: SOURCE_URL,
+        sourcePayloadPath: basename(sourcePath),
+        sourcePayloadBytes: workbookBytes.byteLength,
+        sourcePayloadSha256: payloadSha256,
+        candidateSales,
+        stagedSales: records.length,
+        quarantinedSales: needsReview,
+        quarantine,
+        omittedFields: ['owner', 'grantor', 'grantee', 'buyer', 'seller'],
+      },
+      temporaryRoot
+    );
     await syncDirectory(temporaryRoot);
+    await assertRefreshLockOwner(outputRoot, operationId);
     await writeDurableFile(
       temporaryJournalPath,
       `${JSON.stringify({ schemaVersion: REFRESH_JOURNAL_SCHEMA, operationId })}\n`
@@ -549,12 +621,14 @@ async function generatePackage(sourcePath, expectedSha256, outputRoot, generated
     await rename(temporaryJournalPath, journalPath);
     await syncDirectory(dirname(outputRoot));
     journalPublished = true;
+    await assertRefreshLockOwner(outputRoot, operationId);
     try {
       await rename(outputRoot, backupRoot);
     } catch (error) {
       if (error?.code !== 'ENOENT') throw error;
     }
     await syncDirectory(dirname(outputRoot));
+    await assertRefreshLockOwner(outputRoot, operationId);
     await rename(temporaryRoot, outputRoot);
     await syncDirectory(dirname(outputRoot));
     await rm(backupRoot, { recursive: true, force: true });
