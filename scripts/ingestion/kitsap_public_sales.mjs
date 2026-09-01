@@ -3,7 +3,7 @@
 import { createHash, randomUUID } from 'node:crypto';
 import * as fs from 'node:fs';
 import { access, mkdir, open, readFile, rename, rm } from 'node:fs/promises';
-import { basename, dirname, join, resolve } from 'node:path';
+import { basename, dirname, join, resolve, sep } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import XLSX from 'xlsx';
 
@@ -148,6 +148,7 @@ export async function recoverInterruptedPackageRefresh(outputPath, ownerOperatio
     } else {
       throw new Error('Kitsap package refresh cannot recover its published package.');
     }
+    await syncDirectory(dirname(outputRoot));
   }
 
   await rm(backupRoot, { recursive: true, force: true });
@@ -306,9 +307,24 @@ function topNeighborhoodCodes(records) {
   );
 }
 
-async function writeJson(path, value) {
+async function syncDirectoryChain(path, root) {
+  const resolvedRoot = resolve(root);
+  let current = resolve(path);
+  while (true) {
+    invariant(
+      current === resolvedRoot || current.startsWith(`${resolvedRoot}${sep}`),
+      'Kitsap package staging directory escaped its operation root.'
+    );
+    await syncDirectory(current);
+    if (current === resolvedRoot) return;
+    current = dirname(current);
+  }
+}
+
+async function writeJson(path, value, stagingRoot) {
   await mkdir(dirname(path), { recursive: true });
   await writeDurableFile(path, `${JSON.stringify(value)}\n`);
+  await syncDirectoryChain(dirname(path), stagingRoot);
 }
 
 async function generatePackage(sourcePath, expectedSha256, outputRoot, generatedAt, operationId) {
@@ -471,10 +487,14 @@ async function generatePackage(sourcePath, expectedSha256, outputRoot, generated
   await mkdir(temporaryRoot, { recursive: false });
   let journalPublished = false;
   try {
-    await writeJson(join(temporaryRoot, 'manifest.json'), manifest);
-    await writeJson(join(temporaryRoot, 'counties/status.json'), status);
-    await writeJson(join(temporaryRoot, `counties/${COUNTY_CODE}.json`), detail);
-    await writeJson(join(temporaryRoot, `sales/by-county/${COUNTY_CODE}.json`), shard);
+    await writeJson(join(temporaryRoot, 'manifest.json'), manifest, temporaryRoot);
+    await writeJson(join(temporaryRoot, 'counties/status.json'), status, temporaryRoot);
+    await writeJson(join(temporaryRoot, `counties/${COUNTY_CODE}.json`), detail, temporaryRoot);
+    await writeJson(
+      join(temporaryRoot, `sales/by-county/${COUNTY_CODE}.json`),
+      shard,
+      temporaryRoot
+    );
     await writeJson(join(temporaryRoot, 'receipts/kitsap-source.json'), {
       schemaVersion: 'terrafusion.washington.public-source-receipt.v1',
       county: COUNTY,
@@ -489,7 +509,7 @@ async function generatePackage(sourcePath, expectedSha256, outputRoot, generated
       quarantinedSales: needsReview,
       quarantine,
       omittedFields: ['owner', 'grantor', 'grantee', 'buyer', 'seller'],
-    });
+    }, temporaryRoot);
     await syncDirectory(temporaryRoot);
     await writeDurableFile(
       temporaryJournalPath,
