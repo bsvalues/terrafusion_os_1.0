@@ -14,7 +14,7 @@ import { getViteEnv } from '@/env/getViteEnv';
 import {
   evictWashingtonLaunchCountyShard,
   isWashingtonLaunchDataEnabled,
-  validateAndCacheAttestedWashingtonLaunchCountyShard,
+  validateAttestedWashingtonLaunchCountyShard,
   WASHINGTON_LAUNCH_MANIFEST_SCHEMA,
   WASHINGTON_COUNTIES,
   type WashingtonLaunchSalesShardAttestation,
@@ -89,6 +89,7 @@ export type WashingtonSalesReviewHostedShardVerification =
       stagedSales: number;
       latestSaleDate: string | null;
       needsReview: number;
+      commit: () => void;
     }
   | { state: 'unavailable' };
 
@@ -607,6 +608,13 @@ export function getWashingtonSalesReviewCapability(
   };
 }
 
+function abortErrorForSignal(signal: AbortSignal): Error {
+  if (signal.reason instanceof Error) return signal.reason;
+  const error = new Error('The Washington sales-shard verification was cancelled.');
+  error.name = 'AbortError';
+  return error;
+}
+
 /**
  * Verify the selected hosted shard before exposing any observed sales claim.
  * The build-pinned same-origin manifest must bind the complete status document,
@@ -619,9 +627,12 @@ export function getWashingtonSalesReviewCapability(
 export async function verifyWashingtonSalesReviewHostedShard(
   input: WashingtonSalesReviewCapabilityInput,
   signal?: AbortSignal,
+  isCurrentAttempt: () => boolean = () => true,
 ): Promise<WashingtonSalesReviewHostedShardVerification> {
   const evictHostedShard = (): void => {
-    evictWashingtonLaunchCountyShard(input.countyCode, 'hosted');
+    if (isCurrentAttempt()) {
+      evictWashingtonLaunchCountyShard(input.countyCode, 'hosted');
+    }
   };
   const unavailable = (): WashingtonSalesReviewHostedShardVerification => {
     evictHostedShard();
@@ -675,12 +686,21 @@ export async function verifyWashingtonSalesReviewHostedShard(
     ) {
       return unavailable();
     }
-    const summary = validateAndCacheAttestedWashingtonLaunchCountyShard(
+    if (signal?.aborted) throw abortErrorForSignal(signal);
+    const candidate = validateAttestedWashingtonLaunchCountyShard(
       payload,
       input.countyCode,
       'hosted',
     );
-    return { state: 'verified', ...summary };
+    return {
+      state: 'verified',
+      stagedSales: candidate.stagedSales,
+      latestSaleDate: candidate.latestSaleDate,
+      needsReview: candidate.needsReview,
+      commit: () => {
+        candidate.commit();
+      },
+    };
   } catch (error) {
     if (signal?.aborted) throw error;
     return unavailable();

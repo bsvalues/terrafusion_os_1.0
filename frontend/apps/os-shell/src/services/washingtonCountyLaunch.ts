@@ -13,13 +13,177 @@ import {
 import {
   computeWashingtonLaunchCanonicalJsonSha256,
   verifyWashingtonSalesReviewHostedShard,
+  type WashingtonSalesReviewHostedShardVerification,
   type WashingtonSalesReviewShardVerificationState,
 } from '@/pages/forge/sales/washingtonSalesReviewCapability';
+import { evictWashingtonLaunchCountyShard } from '@/pages/forge/sales/washingtonLaunchApi';
 
 export const WASHINGTON_COUNTY_STATUS_PATH = WASHINGTON_REFERENCE_ROUTES.status;
+export const WASHINGTON_PUBLIC_DATA_REQUEST_TIMEOUT_MS = 10_000;
 const WASHINGTON_COUNTY_STATUS_SCHEMA = 'terrafusion.washington.county-status.v1';
 const WASHINGTON_COUNTY_DETAIL_PATH_PREFIX = '/launch-data/washington/counties';
 const WASHINGTON_SALES_SHARD_PATH_PREFIX = '/launch-data/washington/sales/by-county';
+
+interface WashingtonCountyShardVerificationAttempt {
+  active: boolean;
+  ownershipRevision: number;
+  ownershipWaiters: Set<() => void>;
+  permanentlySuperseded: boolean;
+  previous: WashingtonCountyShardVerificationAttempt | null;
+}
+
+const washingtonCountyShardVerificationAttempts =
+  new Map<string, WashingtonCountyShardVerificationAttempt>();
+
+function nearestActiveWashingtonCountyShardVerificationAttempt(
+  attempt: WashingtonCountyShardVerificationAttempt | null,
+): WashingtonCountyShardVerificationAttempt | null {
+  let candidate = attempt;
+  while (candidate && !candidate.active) {
+    candidate = candidate.previous;
+  }
+  return candidate;
+}
+
+function signalAllActiveWashingtonCountyShardVerificationPredecessors(
+  attempt: WashingtonCountyShardVerificationAttempt | null,
+): void {
+  let candidate = attempt;
+  while (candidate) {
+    if (candidate.active) {
+      signalWashingtonCountyShardVerificationOwnershipChanged(candidate, true);
+    }
+    candidate = candidate.previous;
+  }
+}
+
+function signalWashingtonCountyShardVerificationOwnershipChanged(
+  attempt: WashingtonCountyShardVerificationAttempt,
+  permanentlySuperseded = false,
+): void {
+  if (permanentlySuperseded) {
+    attempt.permanentlySuperseded = true;
+  }
+  attempt.ownershipRevision += 1;
+  const waiters = [...attempt.ownershipWaiters];
+  attempt.ownershipWaiters.clear();
+  for (const waiter of waiters) {
+    waiter();
+  }
+}
+
+function createWashingtonCountyShardVerificationAttempt(
+  previous: WashingtonCountyShardVerificationAttempt | null,
+): WashingtonCountyShardVerificationAttempt {
+  return {
+    active: true,
+    ownershipRevision: 0,
+    ownershipWaiters: new Set(),
+    permanentlySuperseded: false,
+    previous,
+  };
+}
+
+async function waitForWashingtonCountyShardVerificationOwnershipChange(
+  attempt: WashingtonCountyShardVerificationAttempt,
+  observedRevision: number,
+  callerSignal?: AbortSignal,
+): Promise<void> {
+  if (callerSignal?.aborted) throw abortErrorForSignal(callerSignal);
+  if (
+    attempt.permanentlySuperseded
+    || attempt.ownershipRevision !== observedRevision
+  ) {
+    return;
+  }
+
+  await new Promise<void>((resolve, reject) => {
+    let settled = false;
+    const cleanup = (): void => {
+      attempt.ownershipWaiters.delete(ownershipChanged);
+      callerSignal?.removeEventListener('abort', aborted);
+    };
+    const ownershipChanged = (): void => {
+      if (settled) return;
+      settled = true;
+      cleanup();
+      resolve();
+    };
+    const aborted = (): void => {
+      if (settled) return;
+      settled = true;
+      cleanup();
+      reject(abortErrorForSignal(callerSignal as AbortSignal));
+    };
+
+    attempt.ownershipWaiters.add(ownershipChanged);
+    callerSignal?.addEventListener('abort', aborted, { once: true });
+
+    if (
+      attempt.permanentlySuperseded
+      || attempt.ownershipRevision !== observedRevision
+    ) {
+      ownershipChanged();
+    } else if (callerSignal?.aborted) {
+      aborted();
+    }
+  });
+}
+
+function createWashingtonRequestAbortError(): Error {
+  const error = new Error('The Washington public-data request was cancelled.');
+  error.name = 'AbortError';
+  return error;
+}
+
+function abortErrorForSignal(signal: AbortSignal): Error {
+  return signal.reason instanceof Error
+    ? signal.reason
+    : createWashingtonRequestAbortError();
+}
+
+/**
+ * Bound one hosted public-data attempt without weakening caller cancellation.
+ * The abort race also settles when a fetch implementation does not reject its
+ * promise after receiving the abort signal.
+ */
+async function runBoundedWashingtonPublicDataRequest<T>(
+  request: (signal: AbortSignal) => Promise<T>,
+  callerSignal?: AbortSignal,
+): Promise<T> {
+  if (callerSignal?.aborted) {
+    throw abortErrorForSignal(callerSignal);
+  }
+
+  const controller = new AbortController();
+  const abortFromCaller = (): void => {
+    controller.abort(callerSignal?.reason ?? createWashingtonRequestAbortError());
+  };
+  callerSignal?.addEventListener('abort', abortFromCaller, { once: true });
+
+  let rejectForAbort: (() => void) | null = null;
+  const aborted = new Promise<never>((_resolve, reject) => {
+    rejectForAbort = () => reject(abortErrorForSignal(controller.signal));
+    controller.signal.addEventListener('abort', rejectForAbort, { once: true });
+  });
+  const timeout = globalThis.setTimeout(() => {
+    const error = new Error(
+      `Washington public-data request timed out after ${WASHINGTON_PUBLIC_DATA_REQUEST_TIMEOUT_MS} ms.`,
+    );
+    error.name = 'TimeoutError';
+    controller.abort(error);
+  }, WASHINGTON_PUBLIC_DATA_REQUEST_TIMEOUT_MS);
+
+  try {
+    return await Promise.race([request(controller.signal), aborted]);
+  } finally {
+    globalThis.clearTimeout(timeout);
+    callerSignal?.removeEventListener('abort', abortFromCaller);
+    if (rejectForAbort) {
+      controller.signal.removeEventListener('abort', rejectForAbort);
+    }
+  }
+}
 
 export interface WashingtonCountyStatusEntry {
   county: string;
@@ -168,21 +332,96 @@ export async function verifyWashingtonCountySalesShard(
   county: WashingtonCountyStatusEntry,
   signal?: AbortSignal,
 ): Promise<WashingtonCountyStatusEntry> {
-  const verification = await verifyWashingtonSalesReviewHostedShard(county, signal);
-  if (verification.state === 'verified') {
+  const attempt = createWashingtonCountyShardVerificationAttempt(
+    washingtonCountyShardVerificationAttempts.get(county.countyCode) ?? null,
+  );
+  washingtonCountyShardVerificationAttempts.set(county.countyCode, attempt);
+  const isCurrentAttempt = (): boolean =>
+    washingtonCountyShardVerificationAttempts.get(county.countyCode) === attempt;
+  const restoreNearestActivePreviousAttempt = (): void => {
+    if (!isCurrentAttempt()) return;
+    const previousAttempt = nearestActiveWashingtonCountyShardVerificationAttempt(
+      attempt.previous,
+    );
+    if (previousAttempt) {
+      washingtonCountyShardVerificationAttempts.set(county.countyCode, previousAttempt);
+      signalWashingtonCountyShardVerificationOwnershipChanged(previousAttempt);
+    } else {
+      washingtonCountyShardVerificationAttempts.delete(county.countyCode);
+    }
+  };
+  try {
+    let verification: WashingtonSalesReviewHostedShardVerification;
+    try {
+      verification = await runBoundedWashingtonPublicDataRequest(
+        (boundedSignal) => verifyWashingtonSalesReviewHostedShard(
+          county,
+          boundedSignal,
+          isCurrentAttempt,
+        ),
+        signal,
+      );
+    } catch (error) {
+      if (signal?.aborted) {
+        restoreNearestActivePreviousAttempt();
+        throw error;
+      }
+      if (isCurrentAttempt()) {
+        evictWashingtonLaunchCountyShard(county.countyCode, 'hosted');
+        restoreNearestActivePreviousAttempt();
+      }
+      return {
+        ...county,
+        salesShardVerification: 'unavailable',
+      };
+    }
+    if (verification.state === 'verified') {
+      let observedRevision = attempt.ownershipRevision;
+      while (!isCurrentAttempt() && !attempt.permanentlySuperseded) {
+        await waitForWashingtonCountyShardVerificationOwnershipChange(
+          attempt,
+          observedRevision,
+          signal,
+        );
+        observedRevision = attempt.ownershipRevision;
+      }
+      if (!isCurrentAttempt()) {
+        return {
+          ...county,
+          salesShardVerification: 'unavailable',
+        };
+      }
+      if (signal?.aborted) {
+        restoreNearestActivePreviousAttempt();
+        throw abortErrorForSignal(signal);
+      }
+      verification.commit();
+      return {
+        ...county,
+        stagedSales: verification.stagedSales,
+        needsReview: verification.needsReview,
+        latestSaleDate: verification.latestSaleDate,
+        salesShardVerification: 'verified',
+      };
+    }
+
+    if (verification.state === 'unavailable') {
+      restoreNearestActivePreviousAttempt();
+    }
+
     return {
       ...county,
-      stagedSales: verification.stagedSales,
-      needsReview: verification.needsReview,
-      latestSaleDate: verification.latestSaleDate,
-      salesShardVerification: 'verified',
+      salesShardVerification: verification.state,
     };
+  } finally {
+    attempt.active = false;
+    if (isCurrentAttempt()) {
+      washingtonCountyShardVerificationAttempts.delete(county.countyCode);
+      signalAllActiveWashingtonCountyShardVerificationPredecessors(
+        attempt.previous,
+      );
+    }
   }
-
-  return {
-    ...county,
-    salesShardVerification: verification.state,
-  };
 }
 
 /**
@@ -191,7 +430,9 @@ export async function verifyWashingtonCountySalesShard(
  * package, while a configured host outside that list may still serve it.
  *
  * The hosted payload remains fail-closed through fetchWashingtonCountyStatus's
- * schema validation. Hosted shard bodies remain unverified until their county
+ * schema validation. The hosted attempt is bounded so a stalled response
+ * cannot hide the repository-backed 39-county navigation directory. Hosted
+ * shard bodies remain unverified until their county
  * is selected, so opening Counties HUB never downloads the statewide package.
  * The selected county then requires a complete-status digest in the build-pinned
  * manifest, a canonical shard digest, official-source binding, and county
@@ -204,7 +445,10 @@ export async function resolveWashingtonCountyStatus(
   signal?: AbortSignal,
 ): Promise<WashingtonCountyStatusResolution> {
   try {
-    const hostedCounties = await fetchWashingtonCountyStatus(signal, 'hosted');
+    const hostedCounties = await runBoundedWashingtonPublicDataRequest(
+      (boundedSignal) => fetchWashingtonCountyStatus(boundedSignal, 'hosted'),
+      signal,
+    );
     return {
       counties: hostedCounties,
       packageSource: 'hosted',
@@ -212,8 +456,13 @@ export async function resolveWashingtonCountyStatus(
     };
   } catch (error) {
     if (signal?.aborted) throw error;
+    const fallbackCounties = await fetchWashingtonCountyStatus(
+      signal,
+      'repository-reference',
+    );
+    if (signal?.aborted) throw abortErrorForSignal(signal);
     return {
-      counties: await fetchWashingtonCountyStatus(signal, 'repository-reference'),
+      counties: fallbackCounties,
       packageSource: 'repository-reference',
       usedRepositoryFallback: true,
     };

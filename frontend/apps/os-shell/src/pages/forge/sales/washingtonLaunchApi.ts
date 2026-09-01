@@ -414,6 +414,11 @@ export interface WashingtonLaunchValidatedShardSummary {
   needsReview: number;
 }
 
+export interface WashingtonLaunchValidatedShardCandidate
+  extends WashingtonLaunchValidatedShardSummary {
+  commit: () => WashingtonLaunchValidatedShardSummary;
+}
+
 function deriveValidatedShardSummary(
   shard: LaunchCountySalesShard,
 ): WashingtonLaunchValidatedShardSummary {
@@ -431,16 +436,15 @@ function deriveValidatedShardSummary(
 }
 
 /**
- * Cache a shard only after the caller has authenticated its package evidence.
- * The Forge verifier is the sole production hosted caller. This function then
- * applies the same county-isolated schema used by every SalesForge read and
- * derives assessor-facing claims from the exact records SalesForge will render.
+ * Validate an authenticated shard without exposing it to SalesForge yet.
+ * Overlapping same-county verifiers can retain this candidate until ownership
+ * settles, then commit only the winning independently authenticated payload.
  */
-export function validateAndCacheAttestedWashingtonLaunchCountyShard(
+export function validateAttestedWashingtonLaunchCountyShard(
   value: unknown,
   expectedCountyCode: string,
   packageSource: WashingtonReferencePackageSource,
-): WashingtonLaunchValidatedShardSummary {
+): WashingtonLaunchValidatedShardCandidate {
   const normalized = normalizeCountyCode(expectedCountyCode);
   assertCountyShard(value, normalized);
   const verifiedSummary = deriveValidatedShardSummary(value);
@@ -453,8 +457,30 @@ export function validateAndCacheAttestedWashingtonLaunchCountyShard(
       reviewRecords: verifiedSummary.needsReview,
     },
   };
-  shardCache.set(`${packageSource}:${normalized}`, Promise.resolve(normalizedShard));
-  return verifiedSummary;
+  return {
+    ...verifiedSummary,
+    commit: () => {
+      shardCache.set(`${packageSource}:${normalized}`, Promise.resolve(normalizedShard));
+      return verifiedSummary;
+    },
+  };
+}
+
+/**
+ * Cache a shard only after the caller has authenticated its package evidence.
+ * This compatibility boundary validates and commits atomically for callers
+ * that do not participate in overlapping verification ownership.
+ */
+export function validateAndCacheAttestedWashingtonLaunchCountyShard(
+  value: unknown,
+  expectedCountyCode: string,
+  packageSource: WashingtonReferencePackageSource,
+): WashingtonLaunchValidatedShardSummary {
+  return validateAttestedWashingtonLaunchCountyShard(
+    value,
+    expectedCountyCode,
+    packageSource,
+  ).commit();
 }
 
 /**
