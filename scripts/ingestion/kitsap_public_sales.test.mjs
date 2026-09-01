@@ -22,7 +22,12 @@ import {
   assertRuntimeCompatibleCountyDetail,
   assertRuntimeCompatibleCountyShard,
 } from '../ci/package_washington_launch_data.mjs';
-import { acquirePackageRefreshLock, releasePackageRefreshLock } from './kitsap_public_sales.mjs';
+import {
+  acquirePackageRefreshLock,
+  assertPackageRefreshLockHeld,
+  releasePackageRefreshLock,
+  terminatePackageRefreshMutexForTest,
+} from './kitsap_public_sales.mjs';
 
 XLSX.set_fs(fs);
 
@@ -81,6 +86,23 @@ test('Kitsap adapter serializes overlapping package refresh writers', async () =
       /already running under PID/i
     );
     await releasePackageRefreshLock(outputPath, firstOperation);
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test('Kitsap adapter fails closed when its filesystem mutex helper exits', async () => {
+  const root = await mkdtemp(join(tmpdir(), 'tf-kitsap-lock-helper-exit-'));
+  const outputPath = join(root, 'launch-data', 'washington');
+  const operationId = '123-12345678-1234-4123-8123-123456789abc';
+  try {
+    await acquirePackageRefreshLock(outputPath, operationId);
+    await terminatePackageRefreshMutexForTest(outputPath, operationId);
+    await assert.rejects(
+      assertPackageRefreshLockHeld(outputPath, operationId),
+      /filesystem mutex was lost|filesystem mutex ownership changed/i
+    );
+    assert.equal((await stat(`${outputPath}.refresh.lock`)).isFile(), true);
   } finally {
     await rm(root, { recursive: true, force: true });
   }

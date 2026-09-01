@@ -226,6 +226,41 @@ async function acquireRefreshAcquisitionMutex(outputRoot) {
   return child;
 }
 
+function monitorRefreshAcquisitionMutex(outputRoot, operationId, child) {
+  const state = {
+    operationId,
+    child,
+    releasing: false,
+    lostError: null,
+  };
+  const markLost = detail => {
+    if (!state.releasing && !state.lostError) {
+      state.lostError = new Error(`Kitsap package refresh filesystem mutex was lost${detail}.`);
+    }
+  };
+  child.once('error', error => markLost(`: ${error.message}`));
+  child.once('exit', (code, signal) =>
+    markLost(` (exit ${code ?? 'null'}, signal ${signal ?? 'none'})`)
+  );
+  heldRefreshAcquisitionMutexes.set(outputRoot, state);
+  return state;
+}
+
+function assertRefreshAcquisitionMutexHeld(outputRoot, operationId) {
+  const state = heldRefreshAcquisitionMutexes.get(outputRoot);
+  invariant(
+    state?.operationId === operationId &&
+      state.child &&
+      !state.releasing &&
+      !state.lostError &&
+      !state.child.killed &&
+      state.child.exitCode === null &&
+      state.child.signalCode === null,
+    state?.lostError?.message ?? 'Kitsap package refresh filesystem mutex ownership changed.'
+  );
+  return state;
+}
+
 async function releaseRefreshAcquisitionMutex(child) {
   if (!child) return;
   if (child.exitCode !== null) {
@@ -326,7 +361,7 @@ export async function acquirePackageRefreshLock(outputPath, operationId) {
       })}\n`
     );
     acquisitionMutex = await acquireRefreshAcquisitionMutex(outputRoot);
-    heldRefreshAcquisitionMutexes.set(outputRoot, { operationId, child: acquisitionMutex });
+    monitorRefreshAcquisitionMutex(outputRoot, operationId, acquisitionMutex);
     for (let attempt = 0; attempt < 4; attempt += 1) {
       try {
         await link(claimPath, lockPath);
@@ -398,6 +433,7 @@ export async function acquirePackageRefreshLock(outputPath, operationId) {
 }
 
 async function assertRefreshLockOwner(outputRoot, operationId) {
+  assertRefreshAcquisitionMutexHeld(outputRoot, operationId);
   const lock = JSON.parse(await readFile(`${outputRoot}.refresh.lock`, 'utf8'));
   const ownerProcessIdentity = readProcessIdentity(process.pid);
   invariant(
@@ -407,6 +443,23 @@ async function assertRefreshLockOwner(outputRoot, operationId) {
       lock.ownerProcessIdentity === ownerProcessIdentity,
     'Kitsap package refresh lock ownership changed.'
   );
+  assertRefreshAcquisitionMutexHeld(outputRoot, operationId);
+}
+
+export async function terminatePackageRefreshMutexForTest(outputPath, operationId) {
+  const outputRoot = await canonicalizePackageOutputRoot(outputPath);
+  const state = assertRefreshAcquisitionMutexHeld(outputRoot, operationId);
+  const exited = new Promise(resolveExit => {
+    if (state.child.exitCode !== null || state.child.signalCode !== null) resolveExit();
+    else state.child.once('exit', resolveExit);
+  });
+  state.child.kill();
+  await exited;
+}
+
+export async function assertPackageRefreshLockHeld(outputPath, operationId) {
+  const outputRoot = await canonicalizePackageOutputRoot(outputPath);
+  await assertRefreshLockOwner(outputRoot, operationId);
 }
 
 export async function releasePackageRefreshLock(outputPath, operationId) {
@@ -421,6 +474,7 @@ export async function releasePackageRefreshLock(outputPath, operationId) {
     await rm(`${outputRoot}.refresh.lock`, { recursive: true, force: true });
     await syncDirectory(dirname(outputRoot));
   } finally {
+    heldMutex.releasing = true;
     heldRefreshAcquisitionMutexes.delete(outputRoot);
     await releaseRefreshAcquisitionMutex(heldMutex.child);
   }
@@ -821,6 +875,7 @@ async function generatePackage(sourcePath, expectedSha256, outputRoot, generated
       temporaryJournalPath,
       `${JSON.stringify({ schemaVersion: REFRESH_JOURNAL_SCHEMA, operationId })}\n`
     );
+    await assertRefreshLockOwner(outputRoot, operationId);
     await rename(temporaryJournalPath, journalPath);
     await syncDirectory(dirname(outputRoot));
     journalPublished = true;
