@@ -391,6 +391,10 @@ export async function verifyWashingtonCountySalesShard(
           salesShardVerification: 'unavailable',
         };
       }
+      if (signal?.aborted) {
+        restoreNearestActivePreviousAttempt();
+        throw abortErrorForSignal(signal);
+      }
       verification.commit();
       return {
         ...county,

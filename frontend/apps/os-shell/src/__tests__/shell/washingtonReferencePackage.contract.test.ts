@@ -1443,6 +1443,57 @@ describe('Washington assessor reference package', () => {
     expect(fetchMock).toHaveBeenCalledTimes(5);
   });
 
+  it('does not commit a verified shard when its caller cancels immediately before commit', async () => {
+    evictWashingtonLaunchCountyShard('063', 'hosted');
+    const hostedStatus = hostedEligibleStatus();
+    const hostedShard = hostedPublicSalesShard();
+    const fetchMock = vi.fn()
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => hostedStatus,
+      })
+      .mockResolvedValueOnce(await hostedManifestResponse(
+        hostedShard,
+        {},
+        hostedStatus,
+      ))
+      .mockResolvedValueOnce(hostedShardResponse(hostedShard));
+    vi.stubGlobal('fetch', fetchMock);
+
+    const counties = await fetchWashingtonCountyStatus(undefined, 'hosted');
+    const spokane = counties[0];
+    expect(spokane).toBeDefined();
+    if (!spokane) throw new Error('Hosted Spokane status is missing.');
+
+    let abortedReads = 0;
+    const cancellation = new Error('Caller unmounted before commit.');
+    cancellation.name = 'AbortError';
+    const signal = {
+      get aborted() {
+        abortedReads += 1;
+        return abortedReads > 1;
+      },
+      reason: cancellation,
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+    } as unknown as AbortSignal;
+
+    await expect(verifyWashingtonCountySalesShard(spokane, signal)).rejects.toBe(
+      cancellation,
+    );
+    expect(abortedReads).toBeGreaterThanOrEqual(2);
+    await expect(fetchWashingtonLaunchQueue(2025, 'all', 1, 25, {
+      countyCode: '063',
+      hood: null,
+      propertyType: null,
+      saleDateFrom: null,
+      saleDateTo: null,
+      minPrice: null,
+      maxPrice: null,
+    })).rejects.toThrow(/authenticated package verification/i);
+  });
+
   it('evicts a verified hosted shard when refreshed status makes verification unnecessary', async () => {
     const hostedShard = hostedPublicSalesShard();
     const fetchMock = vi.fn()
