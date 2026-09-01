@@ -227,6 +227,7 @@ export async function verifyWashingtonCountySalesShard(
   county: WashingtonCountyStatusEntry,
   signal?: AbortSignal,
 ): Promise<WashingtonCountyStatusEntry> {
+  const previousAttempt = washingtonCountyShardVerificationAttempts.get(county.countyCode);
   const attempt = Symbol(county.countyCode);
   washingtonCountyShardVerificationAttempts.set(county.countyCode, attempt);
   const isCurrentAttempt = (): boolean =>
@@ -242,7 +243,16 @@ export async function verifyWashingtonCountySalesShard(
       signal,
     );
   } catch (error) {
-    if (signal?.aborted) throw error;
+    if (signal?.aborted) {
+      if (isCurrentAttempt()) {
+        if (previousAttempt) {
+          washingtonCountyShardVerificationAttempts.set(county.countyCode, previousAttempt);
+        } else {
+          washingtonCountyShardVerificationAttempts.delete(county.countyCode);
+        }
+      }
+      throw error;
+    }
     if (isCurrentAttempt()) {
       evictWashingtonLaunchCountyShard(county.countyCode, 'hosted');
     }
