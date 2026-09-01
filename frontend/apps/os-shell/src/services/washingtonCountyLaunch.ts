@@ -26,9 +26,10 @@ const WASHINGTON_SALES_SHARD_PATH_PREFIX = '/launch-data/washington/sales/by-cou
 
 interface WashingtonCountyShardVerificationAttempt {
   active: boolean;
-  ownershipChanged: Promise<void>;
+  ownershipRevision: number;
+  ownershipWaiters: Set<() => void>;
+  permanentlySuperseded: boolean;
   previous: WashingtonCountyShardVerificationAttempt | null;
-  signalOwnershipChanged: () => void;
 }
 
 const washingtonCountyShardVerificationAttempts =
@@ -50,49 +51,83 @@ function signalAllActiveWashingtonCountyShardVerificationPredecessors(
   let candidate = attempt;
   while (candidate) {
     if (candidate.active) {
-      candidate.signalOwnershipChanged();
+      signalWashingtonCountyShardVerificationOwnershipChanged(candidate, true);
     }
     candidate = candidate.previous;
+  }
+}
+
+function signalWashingtonCountyShardVerificationOwnershipChanged(
+  attempt: WashingtonCountyShardVerificationAttempt,
+  permanentlySuperseded = false,
+): void {
+  if (permanentlySuperseded) {
+    attempt.permanentlySuperseded = true;
+  }
+  attempt.ownershipRevision += 1;
+  const waiters = [...attempt.ownershipWaiters];
+  attempt.ownershipWaiters.clear();
+  for (const waiter of waiters) {
+    waiter();
   }
 }
 
 function createWashingtonCountyShardVerificationAttempt(
   previous: WashingtonCountyShardVerificationAttempt | null,
 ): WashingtonCountyShardVerificationAttempt {
-  let signalOwnershipChanged = (): void => {};
-  const ownershipChanged = new Promise<void>((resolve) => {
-    signalOwnershipChanged = resolve;
-  });
   return {
     active: true,
-    ownershipChanged,
+    ownershipRevision: 0,
+    ownershipWaiters: new Set(),
+    permanentlySuperseded: false,
     previous,
-    signalOwnershipChanged,
   };
 }
 
 async function waitForWashingtonCountyShardVerificationOwnershipChange(
   attempt: WashingtonCountyShardVerificationAttempt,
+  observedRevision: number,
   callerSignal?: AbortSignal,
 ): Promise<void> {
   if (callerSignal?.aborted) throw abortErrorForSignal(callerSignal);
-  if (!callerSignal) {
-    await attempt.ownershipChanged;
+  if (
+    attempt.permanentlySuperseded
+    || attempt.ownershipRevision !== observedRevision
+  ) {
     return;
   }
 
-  let rejectForAbort: (() => void) | null = null;
-  const aborted = new Promise<never>((_resolve, reject) => {
-    rejectForAbort = () => reject(abortErrorForSignal(callerSignal));
-    callerSignal.addEventListener('abort', rejectForAbort, { once: true });
-  });
-  try {
-    await Promise.race([attempt.ownershipChanged, aborted]);
-  } finally {
-    if (rejectForAbort) {
-      callerSignal.removeEventListener('abort', rejectForAbort);
+  await new Promise<void>((resolve, reject) => {
+    let settled = false;
+    const cleanup = (): void => {
+      attempt.ownershipWaiters.delete(ownershipChanged);
+      callerSignal?.removeEventListener('abort', aborted);
+    };
+    const ownershipChanged = (): void => {
+      if (settled) return;
+      settled = true;
+      cleanup();
+      resolve();
+    };
+    const aborted = (): void => {
+      if (settled) return;
+      settled = true;
+      cleanup();
+      reject(abortErrorForSignal(callerSignal as AbortSignal));
+    };
+
+    attempt.ownershipWaiters.add(ownershipChanged);
+    callerSignal?.addEventListener('abort', aborted, { once: true });
+
+    if (
+      attempt.permanentlySuperseded
+      || attempt.ownershipRevision !== observedRevision
+    ) {
+      ownershipChanged();
+    } else if (callerSignal?.aborted) {
+      aborted();
     }
-  }
+  });
 }
 
 function createWashingtonRequestAbortError(): Error {
@@ -310,7 +345,7 @@ export async function verifyWashingtonCountySalesShard(
     );
     if (previousAttempt) {
       washingtonCountyShardVerificationAttempts.set(county.countyCode, previousAttempt);
-      previousAttempt.signalOwnershipChanged();
+      signalWashingtonCountyShardVerificationOwnershipChanged(previousAttempt);
     } else {
       washingtonCountyShardVerificationAttempts.delete(county.countyCode);
     }
@@ -341,8 +376,14 @@ export async function verifyWashingtonCountySalesShard(
       };
     }
     if (verification.state === 'verified') {
-      if (!isCurrentAttempt()) {
-        await waitForWashingtonCountyShardVerificationOwnershipChange(attempt, signal);
+      let observedRevision = attempt.ownershipRevision;
+      while (!isCurrentAttempt() && !attempt.permanentlySuperseded) {
+        await waitForWashingtonCountyShardVerificationOwnershipChange(
+          attempt,
+          observedRevision,
+          signal,
+        );
+        observedRevision = attempt.ownershipRevision;
       }
       if (!isCurrentAttempt()) {
         return {
