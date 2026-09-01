@@ -542,6 +542,35 @@ describe('Desktop Store', () => {
     });
   });
 
+  describe('replaceWindowMetadata', () => {
+    it('replaces stale deep-link context with the latest activation snapshot', () => {
+      const { openWindow, replaceWindowMetadata } = useDesktopStore.getState();
+      let windowId = '';
+
+      act(() => {
+        windowId = openWindow('module-1', 'Module 1', '📊', {
+          countyCode: '005',
+          rollupScope: 'neighborhood',
+          neighborhoodCode: 'OLD-BENTON-HOOD',
+          segmentId: 'old-benton-segment',
+        });
+      });
+
+      act(() => {
+        replaceWindowMetadata(windowId, {
+          countyCode: '063',
+          countyName: 'Spokane',
+        });
+      });
+
+      const window = useDesktopStore.getState().windows.find((entry) => entry.id === windowId);
+      expect(window?.metadata).toEqual({
+        countyCode: '063',
+        countyName: 'Spokane',
+      });
+    });
+  });
+
   describe('updateWindowPosition', () => {
     it('updates window position', () => {
       const { openWindow, updateWindowPosition } = useDesktopStore.getState();

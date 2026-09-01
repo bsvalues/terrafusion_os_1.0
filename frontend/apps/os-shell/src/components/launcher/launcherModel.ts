@@ -52,8 +52,10 @@ export interface LauncherItem {
   icon?: string;
   /** Navigation intent */
   intent: LauncherIntent;
-  /** Route path (for navigation) */
+  /** Route metadata for route-driven items and deep links */
   route: string;
+  /** Canonical module ID when activation must use the module orchestrator */
+  moduleId?: string;
   /** Optional action function (for non-route items) */
   action?: () => void;
   /** Search keywords for filtering */
@@ -78,12 +80,34 @@ export interface LauncherSection {
 // ============================================================================
 
 // ============================================================================
+// Canonical Module Actions
+// ============================================================================
+
+/**
+ * Window-spawned operational modules exposed by the launcher.
+ */
+export const MODULE_ACTIONS: LauncherItem[] = [
+  {
+    id: 'counties',
+    label: 'Counties HUB',
+    description: 'Washington assessor county workspace',
+    iconName: 'Map',
+    icon: 'Map',
+    intent: 'standalone',
+    route: '/counties',
+    moduleId: 'counties',
+    keywords: ['counties', 'county', 'washington', 'assessor', 'terraforge', 'public data'],
+    a11yLabel: 'Counties HUB - Open the Washington assessor county workspace',
+  },
+];
+
+// ============================================================================
 // System Actions
 // ============================================================================
 
 /**
  * System actions available in the launcher.
- * These are not suites but system-level operations.
+ * These are not suites but OS-level destinations and operations.
  */
 export const SYSTEM_ACTIONS: LauncherItem[] = [
   {
@@ -175,7 +199,7 @@ export function getLauncherItems(): LauncherItem[] {
     a11yLabel: `${feature.displayName} - Opens standalone`,
   }));
 
-  return [...suiteItems, ...osFeatureItems, ...SYSTEM_ACTIONS];
+  return [...suiteItems, ...osFeatureItems, ...MODULE_ACTIONS, ...SYSTEM_ACTIONS];
 }
 
 /**
@@ -190,14 +214,20 @@ export function getLauncherSections(): LauncherSection[] {
       label: 'Suites',
       items: allItems.filter(
         (item) =>
-          item.intent === 'workbench' ||
-          (item.intent === 'standalone' && !['settings', 'docs'].includes(item.id))
+          !item.moduleId &&
+          (item.intent === 'workbench' ||
+            (item.intent === 'standalone' && !['settings', 'docs'].includes(item.id)))
       ),
+    },
+    {
+      id: 'operations',
+      label: 'Operational Apps',
+      items: allItems.filter((item) => Boolean(item.moduleId)),
     },
     {
       id: 'system',
       label: 'System',
-      items: allItems.filter((item) => item.intent === 'system'),
+      items: allItems.filter((item) => !item.moduleId && item.intent === 'system'),
     },
   ];
 
@@ -233,8 +263,8 @@ export function launcherItemToOsAction(item: LauncherItem): OsAction {
 }
 
 /**
- * Navigate to a launcher item.
- * Routes through executeOsAction for consistent telemetry.
+ * Dispatch a launcher item through its canonical route or module lifecycle.
+ * Both paths preserve the owning surface's telemetry contract.
  * Slice 16: Unified OS action dispatch.
  */
 export function navigateToLauncherItem(
@@ -245,6 +275,19 @@ export function navigateToLauncherItem(
   // Legacy action items still execute directly (for backward compat)
   if (item.action) {
     item.action();
+    return;
+  }
+
+  // Window-spawned operational surfaces use the canonical orchestrator so
+  // activation deduplicates/focuses windows, emits telemetry, and warm-loads.
+  const canonicalModuleId = item.moduleId;
+  if (canonicalModuleId) {
+    void import('../../orchestration/moduleActivation').then(({ activateModule }) => {
+      void activateModule(canonicalModuleId, {
+        source: 'start_menu',
+        actor: actor ?? null,
+      });
+    });
     return;
   }
 

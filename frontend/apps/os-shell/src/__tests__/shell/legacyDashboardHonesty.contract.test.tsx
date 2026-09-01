@@ -11,7 +11,6 @@ import React from 'react';
 import { describe, expect, it } from 'vitest';
 import { render, screen } from '@testing-library/react';
 
-import CountiesHub from '../../components/CountiesHub';
 import ABTestingFramework from '../../components/ABTestingFramework';
 import EnhancedGovernmentDashboard from '../../components/EnhancedGovernmentDashboard';
 
@@ -27,8 +26,12 @@ describe('Legacy dashboard static honesty contract', () => {
     expect(src).not.toContain('12 Washington counties');
     expect(src).not.toContain('92%');
     expect(src).not.toContain('Pierce County');
-    expect(src).toContain('counties-hub-unavailable');
-    expect(src).toContain('Counties Hub does not display seeded county readiness counts');
+    expect(src).toContain("data-testid='counties-hub'");
+    expect(src).toContain('resolveWashingtonCountyStatus');
+    expect(src).toContain('navigation context only');
+    expect(src).toContain('not county-certified valuation truth');
+    expect(src).not.toContain('localStorage');
+    expect(src).not.toContain('tf.session.dev');
   });
 
   it('ABTestingFramework removes seeded county persuasion metrics', () => {
@@ -51,16 +54,6 @@ describe('Legacy dashboard static honesty contract', () => {
 });
 
 describe('Legacy dashboard rendered honesty behavior', () => {
-  it('renders CountiesHub as an unavailable control-plane surface', () => {
-    render(<CountiesHub />);
-
-    expect(screen.getByTestId('counties-hub-unavailable')).toBeInTheDocument();
-    expect(screen.getByText(/County registry not connected/i)).toBeInTheDocument();
-    expect(screen.getByText(/Readiness metrics withheld/i)).toBeInTheDocument();
-    expect(screen.getByText(/Migration actions blocked/i)).toBeInTheDocument();
-    expect(screen.queryByText(/Pierce County/i)).not.toBeInTheDocument();
-  });
-
   it('renders ABTestingFramework as a governed guardrail', () => {
     render(<ABTestingFramework />);
 

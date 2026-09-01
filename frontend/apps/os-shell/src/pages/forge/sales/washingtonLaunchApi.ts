@@ -1,3 +1,7 @@
+import {
+  resolveWashingtonAssessorReferenceRoute,
+  type WashingtonReferencePackageSource,
+} from '@/lib/washingtonAssessorReferencePackage';
 import { getViteEnv } from '@/env/getViteEnv';
 import type {
   CodeAudit,
@@ -12,6 +16,7 @@ import type {
 } from './salesForgeTypes';
 
 const BASE = '/launch-data/washington';
+export const WASHINGTON_LAUNCH_MANIFEST_SCHEMA = 'terrafusion.washington.launch-manifest.v1';
 
 export const WASHINGTON_COUNTIES = [
   { code: '001', name: 'Adams' },
@@ -90,6 +95,17 @@ interface LaunchSaleRecord {
   qualityScore: number | null;
   qualityBand: string | null;
   reviewStatus: string | null;
+  grossLivingArea?: unknown;
+  buildingSquareFeet?: unknown;
+  gla?: unknown;
+  lotSizeSqft?: unknown;
+  yearBuilt?: unknown;
+  bedrooms?: unknown;
+  bathrooms?: unknown;
+  condition?: unknown;
+  propertyCondition?: unknown;
+  qualityGrade?: unknown;
+  quality?: unknown;
   provenance: {
     sourceUrl: string | null;
     sourceFinalUrl: string | null;
@@ -122,9 +138,48 @@ interface LaunchCountySalesShard {
   records: LaunchSaleRecord[];
 }
 
+export interface WashingtonLaunchComparableSale {
+  parcelId: string;
+  saleDate: string;
+  salePrice: number;
+  propertyType: string;
+  address: string;
+  countyCode: string;
+  countyName: string;
+  city: string | null;
+  neighborhoodCode: string | null;
+  currentNeighborhoodCode: string | null;
+  grossLivingArea: number | null;
+  lotSizeSqft: number | null;
+  yearBuilt: number | null;
+  bedrooms: number | null;
+  bathrooms: number | null;
+  condition: string | null;
+  qualityGrade: string | null;
+  saleQualification: string | null;
+}
+
+export interface WashingtonLaunchSalesShardAttestation {
+  algorithm: 'SHA-256';
+  canonicalJsonSha256: string;
+  county: string;
+  countyCode: string;
+  officialSourceBaseUrl: string;
+  route: string;
+  sourcePayloadSha256: string[];
+  sourcePosture: string;
+}
+
 export interface WashingtonLaunchManifest {
   schemaVersion: string;
+  /** Required for hosted assessor eligibility; absent on synthetic repository references. */
+  statusSchemaVersion?: string;
+  /** Canonical digest of the complete hosted status document displayed by Counties HUB. */
+  statusCanonicalJsonSha256?: string;
   generatedAt: string;
+  sourcePosture: string;
+  /** Required for hosted assessor eligibility; absent on synthetic repository references. */
+  salesShardAttestations?: WashingtonLaunchSalesShardAttestation[];
   summary: {
     counties: number;
     rawLanded: number;
@@ -150,12 +205,23 @@ function envFlag(value: unknown): boolean {
   return String(value ?? '').toLowerCase() === 'true';
 }
 
+const HOSTED_WASHINGTON_LAUNCH_HOSTNAMES = new Set([
+  // These dedicated surfaces are expected to serve /launch-data/washington/**.
+  // Canonical OS hosts intentionally retain the bundled repository reference
+  // until their release artifact packages or routes that JSON surface.
+  'preview.terrafusionmarket.com',
+  'sales.terrafusionmarket.com',
+  'suite.terrafusionmarket.com',
+]);
+
+export function isHostedWashingtonLaunchHostname(hostname: string): boolean {
+  const normalizedHostname = hostname.trim().toLowerCase().replace(/\.$/, '');
+  return HOSTED_WASHINGTON_LAUNCH_HOSTNAMES.has(normalizedHostname);
+}
+
 function isHostedWashingtonLaunchSurface(): boolean {
   if (typeof window === 'undefined') return false;
-  const host = window.location.hostname.toLowerCase();
-  return host === 'preview.terrafusionmarket.com'
-    || host === 'sales.terrafusionmarket.com'
-    || host === 'suite.terrafusionmarket.com';
+  return isHostedWashingtonLaunchHostname(window.location.hostname);
 }
 
 export function isWashingtonLaunchDataEnabled(): boolean {
@@ -167,12 +233,28 @@ export function isWashingtonLaunchDataEnabled(): boolean {
 
 function normalizeCountyCode(raw: string | null | undefined): string {
   const code = String(raw ?? '').trim();
-  if (/^\d{1,3}$/.test(code)) return code.padStart(3, '0');
-  const byName = WASHINGTON_COUNTIES.find((county) => county.name.toLowerCase() === code.toLowerCase());
-  return byName?.code ?? '005';
+  const normalizedCode = /^\d{1,3}$/.test(code) ? code.padStart(3, '0') : null;
+  const registeredCounty = WASHINGTON_COUNTIES.find(
+    (county) => county.code === normalizedCode || county.name.toLowerCase() === code.toLowerCase(),
+  );
+  if (!registeredCounty) {
+    throw new Error(`Washington launch county context is invalid: ${code || '(missing)'}.`);
+  }
+  return registeredCounty.code;
 }
 
-async function fetchJson<T>(url: string): Promise<T> {
+async function fetchJson<T>(
+  url: string,
+  packageSource: WashingtonReferencePackageSource = 'hosted',
+): Promise<T> {
+  if (packageSource === 'repository-reference') {
+    const bundledPayload = resolveWashingtonAssessorReferenceRoute(url);
+    if (bundledPayload === undefined) {
+      throw new Error(`Tracked Washington reference route is unavailable: ${url}`);
+    }
+    return bundledPayload as T;
+  }
+
   const response = await fetch(url, { cache: 'no-store' });
   if (!response.ok) {
     throw new Error(`HTTP ${response.status}: ${url}`);
@@ -180,17 +262,254 @@ async function fetchJson<T>(url: string): Promise<T> {
   return response.json() as Promise<T>;
 }
 
-async function loadCountyShard(countyCode: string): Promise<LaunchCountySalesShard> {
-  const normalized = normalizeCountyCode(countyCode);
-  const existing = shardCache.get(normalized);
-  if (existing) return existing;
-  const promise = fetchJson<LaunchCountySalesShard>(`${BASE}/sales/by-county/${normalized}.json`);
-  shardCache.set(normalized, promise);
-  return promise;
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null;
 }
 
-export async function fetchWashingtonLaunchManifest(): Promise<WashingtonLaunchManifest> {
-  manifestCache ??= fetchJson<WashingtonLaunchManifest>(`${BASE}/manifest.json`);
+function normalizeCountyName(value: string): string {
+  return value.replace(/\s+county$/i, '').trim().toLowerCase();
+}
+
+function isNullableString(value: unknown): value is string | null {
+  return value === null || typeof value === 'string';
+}
+
+function isNullableCanonicalSaleDate(value: unknown): value is string | null {
+  if (value === null) return true;
+  if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+  const timestamp = Date.parse(`${value}T00:00:00.000Z`);
+  return Number.isFinite(timestamp)
+    && new Date(timestamp).toISOString().slice(0, 10) === value;
+}
+
+function isNullableNumber(value: unknown): value is number | null {
+  return value === null || (typeof value === 'number' && Number.isFinite(value));
+}
+
+function assertLaunchSaleRecord(
+  value: unknown,
+  expectedCountyCode: string,
+  expectedCountyName: string,
+  index: number,
+): asserts value is LaunchSaleRecord {
+  if (
+    !isRecord(value)
+    || typeof value.saleId !== 'string'
+    || value.saleId.trim().length === 0
+    || typeof value.county !== 'string'
+    || typeof value.countyCode !== 'string'
+  ) {
+    throw new Error(`Washington launch shard has an invalid sale record at index ${index}.`);
+  }
+
+  if (
+    value.countyCode !== expectedCountyCode
+    || normalizeCountyName(value.county) !== normalizeCountyName(expectedCountyName)
+  ) {
+    throw new Error(
+      `Washington launch shard county mismatch at record ${index}: expected ${expectedCountyCode}.`,
+    );
+  }
+
+  if (
+    !isNullableString(value.parcelNumber)
+    || !isNullableCanonicalSaleDate(value.saleDate)
+    || !isNullableNumber(value.saleYear)
+    || !isNullableNumber(value.salePrice)
+    || !isNullableNumber(value.adjustedSalePrice)
+    || !isNullableString(value.documentNumber)
+    || !isNullableString(value.deedType)
+    || !isNullableString(value.situsAddress)
+    || !isNullableString(value.situsCity)
+    || !isNullableString(value.situsZip)
+    || !isNullableString(value.useCode)
+    || !(value.acres === null || typeof value.acres === 'string' || typeof value.acres === 'number')
+    || !isNullableString(value.grantor)
+    || !isNullableString(value.grantee)
+    || !isNullableString(value.saleNote)
+    || !isNullableString(value.neighborhoodCode)
+    || !isNullableString(value.currentNeighborhoodCode)
+    || !isNullableString(value.sourceMode)
+    || !isNullableString(value.candidateSource)
+    || !isNullableNumber(value.confidenceScore)
+    || !isNullableNumber(value.qualityScore)
+    || !isNullableString(value.qualityBand)
+    || !isNullableString(value.reviewStatus)
+    || !isRecord(value.provenance)
+    || !isRecord(value.flags)
+    || !isNullableString(value.provenance.sourceUrl)
+    || !isNullableString(value.provenance.sourceFinalUrl)
+    || !isNullableString(value.provenance.sourcePayloadPath)
+    || !isNullableString(value.provenance.sourcePayloadSha256)
+    || !isNullableString(value.provenance.candidateIndexSource)
+    || !isNullableString(value.provenance.candidateRecordType)
+    || !isNullableNumber(value.provenance.candidateSourceOrdinal)
+    || typeof value.flags.duplicateRisk !== 'boolean'
+    || typeof value.flags.needsReview !== 'boolean'
+    || !(value.flags.futureSaleDate === undefined || typeof value.flags.futureSaleDate === 'boolean')
+    || typeof value.flags.manualException !== 'boolean'
+  ) {
+    throw new Error(`Washington launch shard has an invalid sale record at index ${index}.`);
+  }
+}
+
+function assertCountyShard(
+  value: unknown,
+  expectedCountyCode: string,
+): asserts value is LaunchCountySalesShard {
+  const registeredCounty = WASHINGTON_COUNTIES.find(
+    (county) => county.code === expectedCountyCode,
+  );
+  if (!registeredCounty) {
+    throw new Error(`Washington launch county ${expectedCountyCode} is not registered.`);
+  }
+
+  if (
+    !isRecord(value)
+    || typeof value.schemaVersion !== 'string'
+    || typeof value.generatedAt !== 'string'
+    || typeof value.county !== 'string'
+    || typeof value.countyCode !== 'string'
+    || !isRecord(value.summary)
+    || !Array.isArray(value.records)
+  ) {
+    throw new Error(`Washington launch shard ${expectedCountyCode} has an invalid shape.`);
+  }
+
+  if (
+    value.countyCode !== expectedCountyCode
+    || normalizeCountyName(value.county) !== normalizeCountyName(registeredCounty.name)
+  ) {
+    throw new Error(
+      `Washington launch shard county mismatch: expected ${registeredCounty.name} (${expectedCountyCode}).`,
+    );
+  }
+
+  if (
+    typeof value.summary.records !== 'number'
+    || value.summary.records !== value.records.length
+    || !isNullableString(value.summary.latestSaleDate)
+    || typeof value.summary.reviewRecords !== 'number'
+    || typeof value.summary.recordsWithNeighborhoodCode !== 'number'
+    || !isRecord(value.summary.topNeighborhoodCodes)
+  ) {
+    throw new Error(`Washington launch shard ${expectedCountyCode} has an invalid summary.`);
+  }
+
+  const saleIds = new Set<string>();
+  value.records.forEach((record, index) => {
+    assertLaunchSaleRecord(record, expectedCountyCode, registeredCounty.name, index);
+    if (saleIds.has(record.saleId)) {
+      throw new Error(
+        `Washington launch shard ${expectedCountyCode} has duplicate saleId ${record.saleId}.`,
+      );
+    }
+    saleIds.add(record.saleId);
+  });
+}
+
+export interface WashingtonLaunchValidatedShardSummary {
+  stagedSales: number;
+  latestSaleDate: string | null;
+  needsReview: number;
+}
+
+function deriveValidatedShardSummary(
+  shard: LaunchCountySalesShard,
+): WashingtonLaunchValidatedShardSummary {
+  // assertLaunchSaleRecord requires YYYY-MM-DD, so lexical order is chronological.
+  const latestSaleDate = shard.records.reduce<string | null>((latest, record) => {
+    if (!record.saleDate) return latest;
+    return latest === null || record.saleDate > latest ? record.saleDate : latest;
+  }, null);
+
+  return {
+    stagedSales: shard.records.length,
+    latestSaleDate,
+    needsReview: shard.records.filter((record) => record.flags.needsReview).length,
+  };
+}
+
+/**
+ * Cache a shard only after the caller has authenticated its package evidence.
+ * The Forge verifier is the sole production hosted caller. This function then
+ * applies the same county-isolated schema used by every SalesForge read and
+ * derives assessor-facing claims from the exact records SalesForge will render.
+ */
+export function validateAndCacheAttestedWashingtonLaunchCountyShard(
+  value: unknown,
+  expectedCountyCode: string,
+  packageSource: WashingtonReferencePackageSource,
+): WashingtonLaunchValidatedShardSummary {
+  const normalized = normalizeCountyCode(expectedCountyCode);
+  assertCountyShard(value, normalized);
+  const verifiedSummary = deriveValidatedShardSummary(value);
+  const normalizedShard: LaunchCountySalesShard = {
+    ...value,
+    summary: {
+      ...value.summary,
+      records: verifiedSummary.stagedSales,
+      latestSaleDate: verifiedSummary.latestSaleDate,
+      reviewRecords: verifiedSummary.needsReview,
+    },
+  };
+  shardCache.set(`${packageSource}:${normalized}`, Promise.resolve(normalizedShard));
+  return verifiedSummary;
+}
+
+/**
+ * Remove a previously verified shard when fresh hosted evidence fails closed.
+ * Verification and SalesForge share this cache, so an unavailable result must
+ * also prevent later data-loader calls from serving the older body.
+ */
+export function evictWashingtonLaunchCountyShard(
+  expectedCountyCode: string,
+  packageSource: WashingtonReferencePackageSource = 'hosted',
+): void {
+  const normalized = normalizeCountyCode(expectedCountyCode);
+  shardCache.delete(`${packageSource}:${normalized}`);
+}
+
+async function loadCountyShard(
+  countyCode: string,
+  packageSource: WashingtonReferencePackageSource = 'hosted',
+): Promise<LaunchCountySalesShard> {
+  const normalized = normalizeCountyCode(countyCode);
+  const cacheKey = `${packageSource}:${normalized}`;
+  const existing = shardCache.get(cacheKey);
+  if (existing) return existing;
+
+  if (packageSource === 'hosted') {
+    throw new Error(
+      `Washington hosted county ${normalized} requires authenticated package verification before SalesForge can read it.`,
+    );
+  }
+
+  const promise = fetchJson<unknown>(
+    `${BASE}/sales/by-county/${normalized}.json`,
+    packageSource,
+  ).then(
+    (payload) => {
+      assertCountyShard(payload, normalized);
+      return payload;
+    },
+  );
+  shardCache.set(cacheKey, promise);
+  try {
+    return await promise;
+  } catch (error) {
+    shardCache.delete(cacheKey);
+    throw error;
+  }
+}
+
+export async function fetchWashingtonLaunchManifest(
+  packageSource: WashingtonReferencePackageSource = 'hosted',
+): Promise<WashingtonLaunchManifest> {
+  if (packageSource === 'repository-reference') {
+    return fetchJson<WashingtonLaunchManifest>(`${BASE}/manifest.json`, packageSource);
+  }
+  manifestCache ??= fetchJson<WashingtonLaunchManifest>(`${BASE}/manifest.json`, packageSource);
   return manifestCache;
 }
 
@@ -208,8 +527,12 @@ function setDecisionMap(map: Record<string, LaunchDecision>): void {
   window.sessionStorage.setItem(DECISION_STORAGE_KEY, JSON.stringify(map));
 }
 
+function decisionStorageKey(countyCode: string | null | undefined, saleId: string): string {
+  return `${normalizeCountyCode(countyCode)}:${saleId}`;
+}
+
 function applyDecision<T extends SaleQueueItem | SaleDetail>(item: T): T {
-  const decision = getDecisionMap()[item.saleId];
+  const decision = getDecisionMap()[decisionStorageKey(item.countyCode, item.saleId)];
   if (!decision) return item;
   return {
     ...item,
@@ -226,6 +549,24 @@ function applyDecision<T extends SaleQueueItem | SaleDetail>(item: T): T {
 
 function addressFor(sale: LaunchSaleRecord): string | null {
   return [sale.situsAddress, sale.situsCity, sale.situsZip].filter(Boolean).join(', ') || null;
+}
+
+function firstComparableNumber(values: unknown[]): number | null {
+  for (const value of values) {
+    if (typeof value === 'number' && Number.isFinite(value)) return value;
+    if (typeof value === 'string') {
+      const parsed = Number.parseFloat(value);
+      if (Number.isFinite(parsed)) return parsed;
+    }
+  }
+  return null;
+}
+
+function firstComparableString(values: unknown[]): string | null {
+  for (const value of values) {
+    if (typeof value === 'string' && value.trim().length > 0) return value.trim();
+  }
+  return null;
 }
 
 function recommendationFor(sale: LaunchSaleRecord): string {
@@ -290,9 +631,11 @@ function toQueueItem(sale: LaunchSaleRecord): SaleQueueItem {
     assessedValue: null,
     salesRatio: null,
     confidenceScore: sale.confidenceScore,
+    qualityScore: sale.qualityScore,
     qualityBand: sale.qualityBand,
     reviewStatus: sale.reviewStatus,
     sourceMode: sourceModeForDisplay(sale.sourceMode),
+    dataTrustTier: 'public-reference-not-county-certified',
   });
 }
 
@@ -303,7 +646,12 @@ function toDetail(sale: LaunchSaleRecord): SaleDetail {
     imprvTypeCode: null,
     saleAdjustmentAmount: null,
     saleExemptionAmount: null,
-    exciseNumber: sale.documentNumber ? Number.parseInt(sale.documentNumber, 10) || null : null,
+    // Recorder identifiers may be alphanumeric or zero-padded. Keep the public value
+    // lossless instead of presenting a truncated value in a different identifier field.
+    exciseNumber: null,
+    documentNumber: sale.documentNumber,
+    grantor: sale.grantor,
+    grantee: sale.grantee,
     sourceChangeOfOwnerId: null,
     slLandAcres: typeof sale.acres === 'number' ? sale.acres : Number.parseFloat(String(sale.acres ?? '')) || null,
     slLandSqft: null,
@@ -333,7 +681,11 @@ function toDetail(sale: LaunchSaleRecord): SaleDetail {
     sourcePayloadPath: sale.provenance.sourcePayloadPath,
     sourceMode: sourceModeForDisplay(sale.sourceMode),
     candidateSource: candidateSourceForDisplay(sale.candidateSource),
+    candidateIndexSource: sale.provenance.candidateIndexSource,
+    candidateRecordType: sale.provenance.candidateRecordType,
+    candidateSourceOrdinal: sale.provenance.candidateSourceOrdinal,
     confidenceScore: sale.confidenceScore,
+    qualityScore: sale.qualityScore,
     qualityBand: sale.qualityBand,
     reviewStatus: sale.reviewStatus,
   });
@@ -356,6 +708,22 @@ function matchesFilters(sale: LaunchSaleRecord, filters: CommittedFilters): bool
   return true;
 }
 
+function matchesTaxYear(
+  sale: LaunchSaleRecord,
+  taxYear: number,
+  filters: CommittedFilters,
+): boolean {
+  const lookbackStart = `${taxYear - 2}-01-01`;
+  const lookbackEnd = `${taxYear}-01-01`;
+  const matchesStudyWindow = sale.saleYear === taxYear
+    || (sale.saleYear === null
+      && sale.saleDate !== null
+      && sale.saleDate >= lookbackStart
+      && sale.saleDate < lookbackEnd);
+
+  return matchesStudyWindow && matchesFilters(sale, filters);
+}
+
 function filterByTab(items: SaleQueueItem[], tab: QueueTab): SaleQueueItem[] {
   if (tab === 'all') return items;
   if (tab === 'pending') return items.filter((item) => item.qualificationDecision == null);
@@ -369,10 +737,12 @@ export async function fetchWashingtonLaunchQueue(
   page: number,
   pageSize: number,
   filters: CommittedFilters,
+  packageSource: WashingtonReferencePackageSource = 'hosted',
 ): Promise<SaleQueuePage> {
-  void taxYear;
-  const shard = await loadCountyShard(filters.countyCode);
-  const filtered = shard.records.filter((sale) => matchesFilters(sale, filters)).map(toQueueItem);
+  const shard = await loadCountyShard(filters.countyCode, packageSource);
+  const filtered = shard.records
+    .filter((sale) => matchesTaxYear(sale, taxYear, filters))
+    .map(toQueueItem);
   const tabbed = filterByTab(filtered, tab);
   const start = (page - 1) * pageSize;
   return {
@@ -386,8 +756,9 @@ export async function fetchWashingtonLaunchQueue(
 export async function fetchWashingtonLaunchSaleDetail(
   saleId: string,
   filters: CommittedFilters,
+  packageSource: WashingtonReferencePackageSource = 'hosted',
 ): Promise<SaleDetail> {
-  const shard = await loadCountyShard(filters.countyCode);
+  const shard = await loadCountyShard(filters.countyCode, packageSource);
   const sale = shard.records.find((record) => record.saleId === saleId);
   if (!sale) {
     throw new Error(`Sale ${saleId} not found in county ${filters.countyCode ?? '005'}`);
@@ -398,14 +769,16 @@ export async function fetchWashingtonLaunchSaleDetail(
 export async function fetchWashingtonLaunchRunningStats(
   taxYear: number,
   filters: CommittedFilters,
+  packageSource: WashingtonReferencePackageSource = 'hosted',
 ): Promise<RunningStats> {
-  void taxYear;
-  const shard = await loadCountyShard(filters.countyCode);
-  const filtered = shard.records.filter((sale) => matchesFilters(sale, filters));
+  const shard = await loadCountyShard(filters.countyCode, packageSource);
+  const filtered = shard.records.filter((sale) => matchesTaxYear(sale, taxYear, filters));
   const decided = getDecisionMap();
-  const qualified = filtered.filter((sale) => decided[sale.saleId]?.decision === 'qualified').length;
+  const qualified = filtered.filter(
+    (sale) => decided[decisionStorageKey(sale.countyCode, sale.saleId)]?.decision === 'qualified',
+  ).length;
   const nonQualified = filtered.filter((sale) => {
-    const decision = decided[sale.saleId]?.decision;
+    const decision = decided[decisionStorageKey(sale.countyCode, sale.saleId)]?.decision;
     return decision != null && decision !== 'qualified';
   }).length;
 
@@ -427,6 +800,8 @@ export async function fetchWashingtonLaunchRunningStats(
       prd: null,
       prb: null,
     },
+    // The public package has no ratio observations, so compliance was not
+    // calculated. Null preserves "unknown" instead of reporting four failures.
     iaaoCompliant: null,
   };
 }
@@ -434,11 +809,11 @@ export async function fetchWashingtonLaunchRunningStats(
 export async function fetchWashingtonLaunchNeighborhoodStats(
   taxYear: number,
   filters: CommittedFilters,
+  packageSource: WashingtonReferencePackageSource = 'hosted',
 ): Promise<NeighborhoodStats> {
-  void taxYear;
-  const shard = await loadCountyShard(filters.countyCode);
+  const shard = await loadCountyShard(filters.countyCode, packageSource);
   const groups = new Map<string, HoodStat>();
-  for (const sale of shard.records.filter((record) => matchesFilters(record, filters))) {
+  for (const sale of shard.records.filter((record) => matchesTaxYear(record, taxYear, filters))) {
     const hood = sale.neighborhoodCode;
     if (!hood) continue;
     const current = groups.get(hood) ?? {
@@ -469,10 +844,10 @@ export async function fetchWashingtonLaunchNeighborhoodStats(
 export async function fetchWashingtonLaunchCodeAudit(
   taxYear: number,
   filters: CommittedFilters,
+  packageSource: WashingtonReferencePackageSource = 'hosted',
 ): Promise<CodeAudit> {
-  void taxYear;
-  const shard = await loadCountyShard(filters.countyCode);
-  const filtered = shard.records.filter((sale) => matchesFilters(sale, filters));
+  const shard = await loadCountyShard(filters.countyCode, packageSource);
+  const filtered = shard.records.filter((sale) => matchesTaxYear(sale, taxYear, filters));
   const deedCounts = new Map<string, number>();
   const useCounts = new Map<string, number>();
   for (const sale of filtered) {
@@ -498,13 +873,16 @@ export async function fetchWashingtonLaunchCodeAudit(
   };
 }
 
-export async function fetchWashingtonLaunchCompsPool(params: {
-  countyCode?: string | null;
-  hood?: string | null;
-  propertyType?: string | null;
-  page: number;
-  pageSize: number;
-}): Promise<{
+export async function fetchWashingtonLaunchCompsPool(
+  params: {
+    countyCode: string;
+    hood?: string | null;
+    propertyType?: string | null;
+    page: number;
+    pageSize: number;
+  },
+  packageSource: WashingtonReferencePackageSource = 'hosted',
+): Promise<{
   total: number;
   page: number;
   pageSize: number;
@@ -538,7 +916,7 @@ export async function fetchWashingtonLaunchCompsPool(params: {
     minPrice: null,
     maxPrice: null,
   };
-  const shard = await loadCountyShard(filters.countyCode);
+  const shard = await loadCountyShard(filters.countyCode, packageSource);
   const filtered = shard.records
     .filter((sale) => matchesFilters(sale, filters))
     .filter((sale) => (sale.salePrice ?? 0) > 0);
@@ -570,7 +948,64 @@ export async function fetchWashingtonLaunchCompsPool(params: {
   };
 }
 
+/**
+ * Project comparable candidates from the same county shard used by SalesForge.
+ * Hosted reads fail closed until Forge has authenticated and cached the exact
+ * package body, so CompsForge cannot issue a second, unattested shard request.
+ */
+export async function fetchWashingtonLaunchVerifiedComparableSales(
+  countyCode: string,
+  packageSource: WashingtonReferencePackageSource = 'hosted',
+): Promise<WashingtonLaunchComparableSale[]> {
+  const normalizedCountyCode = normalizeCountyCode(countyCode);
+  const countyName = WASHINGTON_COUNTIES.find(
+    (county) => county.code === normalizedCountyCode,
+  )?.name ?? 'Washington';
+  const shard = await loadCountyShard(normalizedCountyCode, packageSource);
+
+  return shard.records
+    .filter(
+      (record) =>
+        typeof record.parcelNumber === 'string'
+        && record.parcelNumber.trim().length > 0
+        && typeof record.saleDate === 'string'
+        && record.saleDate.trim().length > 0
+        && typeof (record.adjustedSalePrice ?? record.salePrice) === 'number'
+        && (record.adjustedSalePrice ?? record.salePrice ?? 0) > 0,
+    )
+    .map((record) => {
+      const acres = firstComparableNumber([record.acres]);
+      return {
+        parcelId: record.parcelNumber ?? '',
+        saleDate: record.saleDate ?? '',
+        salePrice: record.adjustedSalePrice ?? record.salePrice ?? 0,
+        propertyType: record.useCode ?? 'unknown',
+        address: addressFor(record) ?? 'Address unavailable',
+        countyCode: record.countyCode,
+        countyName,
+        city: record.situsCity,
+        neighborhoodCode: record.neighborhoodCode,
+        currentNeighborhoodCode: record.currentNeighborhoodCode,
+        grossLivingArea: firstComparableNumber([
+          record.grossLivingArea,
+          record.buildingSquareFeet,
+          record.gla,
+        ]),
+        lotSizeSqft:
+          firstComparableNumber([record.lotSizeSqft])
+          ?? (acres !== null && acres > 0 ? Math.round(acres * 43560) : null),
+        yearBuilt: firstComparableNumber([record.yearBuilt]),
+        bedrooms: firstComparableNumber([record.bedrooms]),
+        bathrooms: firstComparableNumber([record.bathrooms]),
+        condition: firstComparableString([record.condition, record.propertyCondition]),
+        qualityGrade: firstComparableString([record.qualityGrade, record.quality]),
+        saleQualification: record.flags.needsReview ? 'review_required' : record.reviewStatus,
+      };
+    });
+}
+
 export async function patchWashingtonLaunchDecision(
+  countyCode: string,
   saleId: string,
   decision: string,
   notes: string,
@@ -578,7 +1013,7 @@ export async function patchWashingtonLaunchDecision(
   decisionSource = 'StaffConfirmed',
 ): Promise<void> {
   const map = getDecisionMap();
-  map[saleId] = {
+  map[decisionStorageKey(countyCode, saleId)] = {
     decision,
     notes,
     decidedBy,
@@ -589,12 +1024,20 @@ export async function patchWashingtonLaunchDecision(
 }
 
 export async function bulkPatchWashingtonLaunchDecision(
+  countyCode: string,
   saleIds: string[],
   decision: string,
   notes: string,
   decidedBy: string,
 ): Promise<void> {
   for (const saleId of saleIds) {
-    await patchWashingtonLaunchDecision(saleId, decision, notes, decidedBy, 'StaffConfirmed');
+    await patchWashingtonLaunchDecision(
+      countyCode,
+      saleId,
+      decision,
+      notes,
+      decidedBy,
+      'StaffConfirmed',
+    );
   }
 }

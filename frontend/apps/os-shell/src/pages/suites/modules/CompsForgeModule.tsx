@@ -17,6 +17,10 @@ import { Separator } from '@/components/ui/separator';
 import activateModule from '@/orchestration/moduleActivation';
 import { parseRollupHandoff } from '@/pages/forge/shared/rollupHandoff';
 import {
+  parseWashingtonCountiesHubHandoff,
+  type WashingtonCountiesHubHandoff,
+} from '@/pages/forge/sales/washingtonSalesReviewCapability';
+import {
   AlertTriangle,
   BarChart3,
   Calendar,
@@ -32,6 +36,7 @@ import {
   adjustComp,
   findCompsForSubject,
   getComparableCountyName,
+  loadAttestedCountyComps,
   loadCountyComps,
   reconcileComps,
   supportsGovernedComparableAdjustments,
@@ -47,6 +52,14 @@ type SaleWindow = {
   end: string;
 };
 
+type CountySalesState = {
+  scopeKey: string;
+  publicRequest: WashingtonCountiesHubHandoff | null;
+  status: 'loading' | 'loaded' | 'error';
+  sales: ComparableSale[];
+  error: string | null;
+};
+
 export interface CompsForgeModuleProps {
   metadata?: Record<string, unknown>;
 }
@@ -55,6 +68,8 @@ const INITIAL_SALE_WINDOW: SaleWindow = {
   start: '2016-01-01',
   end: '2026-12-31',
 };
+
+const EMPTY_COMPARABLE_SALES: ComparableSale[] = [];
 
 export const COMPSFORGE_CANDIDATE_RECONCILIATION_CONTRACT = {
   status: 'contract-backed',
@@ -65,6 +80,7 @@ export const COMPSFORGE_CANDIDATE_RECONCILIATION_CONTRACT = {
     'Candidate selection is county-shard scoped; governed adjustment and reconciliation remain Benton-certified until additional county proof is promoted.',
   candidatePolicy: {
     qualifiedOnlyDefault: true,
+    publicCountyScoutingQualifiedOnlyDefault: false,
     saleWindowDefault: INITIAL_SALE_WINDOW,
     maxCandidates: 30,
     defaultSelectedCandidates: 3,
@@ -135,29 +151,68 @@ export default function CompsForgeModule({ metadata }: CompsForgeModuleProps = {
   const contextSegmentId = useCompsForgeHandoffStore((state) => state.contextSegmentId);
   const contextSegmentLabel = useCompsForgeHandoffStore((state) => state.contextSegmentLabel);
   const preloadedSampleIds = useCompsForgeHandoffStore((state) => state.preloadedSampleIds);
+  const handoff = useMemo(() => parseRollupHandoff(metadata), [metadata]);
+  const washingtonCountyContextRequested = metadata?.launchContext === 'washington-counties-hub';
+  const washingtonCountyContext = useMemo(
+    () => parseWashingtonCountiesHubHandoff(metadata),
+    [metadata],
+  );
+  const publicCountySalesContext = washingtonCountyContext?.salesReviewAvailability === 'available'
+    ? washingtonCountyContext
+    : null;
   const [selectedKeys, setSelectedKeys] = useState<Set<string>>(new Set());
-  const [qualifiedOnly, setQualifiedOnly] = useState(true);
+  const [qualifiedOnly, setQualifiedOnly] = useState(!washingtonCountyContextRequested);
   const [saleWindow, setSaleWindow] = useState<SaleWindow>(INITIAL_SALE_WINDOW);
-  const [allSales, setAllSales] = useState<ComparableSale[]>([]);
-  const [salesLoading, setSalesLoading] = useState(false);
-  const [salesError, setSalesError] = useState<string | null>(null);
+  const [countySalesState, setCountySalesState] = useState<CountySalesState | null>(null);
   const [adjustments, setAdjustments] = useState<Record<string, AdjustmentResult>>({});
   const [reconciliation, setReconciliation] = useState<ReconciliationResult | null>(null);
   const [adjustmentError, setAdjustmentError] = useState<string | null>(null);
   const [isAdjusting, setIsAdjusting] = useState(false);
-  const handoff = useMemo(() => parseRollupHandoff(metadata), [metadata]);
 
-  const subject = useMemo(() => buildSubjectFromActiveParcel(activeParcel), [activeParcel]);
-  const countyCode = activeParcel?.countyCode ?? handoff.countyCode ?? null;
+  // A Counties HUB launch is an explicit navigation reset. Never let a stale
+  // parcel from the prior county become the subject or override that county.
+  const subjectParcel = washingtonCountyContextRequested ? null : activeParcel;
+  const subject = useMemo(() => buildSubjectFromActiveParcel(subjectParcel), [subjectParcel]);
+  const countyCode = washingtonCountyContextRequested
+    ? washingtonCountyContext?.countyCode ?? null
+    : activeParcel?.countyCode ?? handoff.countyCode ?? null;
   const countyName = useMemo(() => getComparableCountyName(countyCode), [countyCode]);
+  const countySalesPackageSource = publicCountySalesContext?.referencePackageSource ?? 'hosted';
+  const countySalesScopeKey = countyCode
+    && (!washingtonCountyContextRequested || publicCountySalesContext)
+    ? `${countySalesPackageSource}:${countyCode}`
+    : null;
+  const currentCountySalesState = countySalesState?.scopeKey === countySalesScopeKey
+    && countySalesState.publicRequest === publicCountySalesContext
+    ? countySalesState
+    : null;
+  const allSales = currentCountySalesState?.status === 'loaded'
+    ? currentCountySalesState.sales
+    : EMPTY_COMPARABLE_SALES;
+  const salesLoading = countySalesScopeKey !== null
+    && (currentCountySalesState === null || currentCountySalesState.status === 'loading');
+  const salesError = countySalesScopeKey === null
+    ? washingtonCountyContextRequested
+      ? washingtonCountyContext?.salesReviewUnavailableMessage
+        ?? 'The Counties HUB handoff is invalid or has no governed public sales shard.'
+      : 'Active parcel is missing a county code, so CompsForge cannot load the county sales shard.'
+    : currentCountySalesState?.status === 'error'
+      ? currentCountySalesState.error
+      : null;
   const adjustmentsSupported = useMemo(
     () => supportsGovernedComparableAdjustments(countyCode),
     [countyCode],
   );
   const hasRollupHandoff = handoff.rollupScope === 'city' || handoff.rollupScope === 'neighborhood';
+  const hasPublicCountyHandoff = publicCountySalesContext !== null;
+  const hasScoutingContext = hasRollupHandoff || hasPublicCountyHandoff;
   const rollupScopeLabel = handoff.rollupScope === 'neighborhood'
     ? `${handoff.neighborhoodName ?? handoff.neighborhoodCode ?? 'Neighborhood'}${handoff.revalArea !== null ? ` · Reval ${handoff.revalArea}` : ''}`
     : handoff.city ?? 'City overview';
+
+  useEffect(() => {
+    setQualifiedOnly(!washingtonCountyContextRequested);
+  }, [countyCode, washingtonCountyContextRequested]);
 
   useEffect(() => {
     if (handoff.sampleParcelIds.length > 0 || handoff.segmentId) {
@@ -177,31 +232,42 @@ export default function CompsForgeModule({ metadata }: CompsForgeModuleProps = {
     let cancelled = false;
 
     async function loadSales() {
-      if (!countyCode) {
-        setAllSales([]);
-        setSalesError('Active parcel is missing a county code, so CompsForge cannot load the county sales shard.');
-        setSalesLoading(false);
+      if (!countyCode || !countySalesScopeKey) {
         return;
       }
 
-      setSalesLoading(true);
-      setSalesError(null);
+      setCountySalesState({
+        scopeKey: countySalesScopeKey,
+        publicRequest: publicCountySalesContext,
+        status: 'loading',
+        sales: [],
+        error: null,
+      });
 
       try {
-        const sales = await loadCountyComps(countyCode);
+        const sales = publicCountySalesContext
+          ? await loadAttestedCountyComps(countyCode, countySalesPackageSource)
+          : await loadCountyComps(countyCode, countySalesPackageSource);
         if (!cancelled) {
-          setAllSales(sales);
-          setSalesLoading(false);
+          setCountySalesState({
+            scopeKey: countySalesScopeKey,
+            publicRequest: publicCountySalesContext,
+            status: 'loaded',
+            sales,
+            error: null,
+          });
         }
       } catch (error) {
         if (!cancelled) {
-          setAllSales([]);
-          setSalesError(
-            error instanceof Error
+          setCountySalesState({
+            scopeKey: countySalesScopeKey,
+            publicRequest: publicCountySalesContext,
+            status: 'error',
+            sales: [],
+            error: error instanceof Error
               ? error.message
               : `CompsForge could not load the ${countyName} County sales shard.`,
-          );
-          setSalesLoading(false);
+          });
         }
       }
     }
@@ -211,7 +277,13 @@ export default function CompsForgeModule({ metadata }: CompsForgeModuleProps = {
     return () => {
       cancelled = true;
     };
-  }, [countyCode, countyName]);
+  }, [
+    countyCode,
+    countyName,
+    countySalesPackageSource,
+    countySalesScopeKey,
+    publicCountySalesContext,
+  ]);
 
   const rollupCandidates = useMemo(() => {
     let scopedSales = allSales;
@@ -223,6 +295,12 @@ export default function CompsForgeModule({ metadata }: CompsForgeModuleProps = {
     } else if (handoff.rollupScope === 'city' && handoff.city) {
       scopedSales = scopedSales.filter((sale) => sameText(sale.city, handoff.city));
     }
+
+    scopedSales = scopedSales.filter((sale) => {
+      const saleDate = sale.saleDate.slice(0, 10);
+      if (saleDate < saleWindow.start || saleDate > saleWindow.end) return false;
+      return !qualifiedOnly || sale.saleQualification === 'qualified';
+    });
 
     return scopedSales
       .slice()
@@ -236,7 +314,15 @@ export default function CompsForgeModule({ metadata }: CompsForgeModuleProps = {
             ? Math.round((sale.salePrice / sale.grossLivingArea) * 100) / 100
             : null,
       }));
-  }, [allSales, handoff.city, handoff.neighborhoodCode, handoff.rollupScope]);
+  }, [
+    allSales,
+    handoff.city,
+    handoff.neighborhoodCode,
+    handoff.rollupScope,
+    qualifiedOnly,
+    saleWindow.end,
+    saleWindow.start,
+  ]);
 
   const candidates = useMemo(() => {
     if (!subject) return [];
@@ -390,9 +476,16 @@ export default function CompsForgeModule({ metadata }: CompsForgeModuleProps = {
               {handoff.rollupScope === 'neighborhood' ? 'Neighborhood rollup' : 'City overview'}
             </Badge>
           )}
+          {hasPublicCountyHandoff && (
+            <Badge variant='outline'>Public countywide scouting</Badge>
+          )}
         </div>
         <p style={{ color: 'hsl(var(--tf-muted))' }} className='mt-1'>
-          Active-parcel comp selection using TerraFusion-normalized {countyName} County sales and CostForge governed adjustments.
+          {hasPublicCountyHandoff
+            ? `Read-only comparable-sale scouting from TerraFusion-normalized ${countyName} County public/reference sales.`
+            : washingtonCountyContextRequested
+              ? `Public comparable-sale scouting is unavailable for the selected ${countyName} County context.`
+              : `Active-parcel comp selection using TerraFusion-normalized ${countyName} County sales and CostForge governed adjustments.`}
         </p>
         <div
           data-testid='compsforge-contract-classification'
@@ -407,10 +500,18 @@ export default function CompsForgeModule({ metadata }: CompsForgeModuleProps = {
           <span>
             {COMPSFORGE_CANDIDATE_RECONCILIATION_CONTRACT.trustPosture}
           </span>
+          {hasPublicCountyHandoff && (
+            <span data-testid='compsforge-public-trust'>
+              Public/reference · not county-certified
+              {publicCountySalesContext.latestReferenceSaleDate
+                ? ` · source current through ${publicCountySalesContext.latestReferenceSaleDate}`
+                : ''}
+            </span>
+          )}
         </div>
       </div>
 
-      {!subject && !hasRollupHandoff && (
+      {!subject && !hasScoutingContext && !washingtonCountyContextRequested && (
         <Card
           style={{
             background: 'hsl(var(--tf-card-bg))',
@@ -431,7 +532,7 @@ export default function CompsForgeModule({ metadata }: CompsForgeModuleProps = {
         </Card>
       )}
 
-      {!subject && hasRollupHandoff && (
+      {!subject && hasScoutingContext && (
         <Card
           style={{
             background: 'hsl(var(--tf-card-bg))',
@@ -442,12 +543,16 @@ export default function CompsForgeModule({ metadata }: CompsForgeModuleProps = {
             <AlertTriangle size={22} style={{ color: 'hsl(var(--tf-suite-forge))' }} />
             <div>
               <p className='font-medium' style={{ color: 'hsl(var(--tf-fg))' }}>
-                {handoff.rollupScope === 'neighborhood'
+                {hasPublicCountyHandoff
+                  ? `${countyName} County public sales scouting is active.`
+                  : handoff.rollupScope === 'neighborhood'
                   ? `Rollup scouting mode is active for ${rollupScopeLabel}.`
                   : `${rollupScopeLabel} opened as a city overview, not a parcel subject.`}
               </p>
               <p className='text-sm mt-1' style={{ color: 'hsl(var(--tf-muted))' }}>
-                {handoff.rollupScope === 'neighborhood'
+                {hasPublicCountyHandoff
+                  ? 'Browse the county sales candidates and their reported provenance here. Similarity scoring, adjustments, and reconciliation remain unavailable until an authenticated same-county parcel supplies a lawful subject.'
+                  : handoff.rollupScope === 'neighborhood'
                   ? 'CompsForge is loading real county sales for this neighborhood. Scoring, adjustment, and reconciliation still stay parcel-bound until you drill to a subject parcel.'
                   : 'Cities are overview geography only. Counties actually work comps by reval area and neighborhood, so this surface stays in county-scoped scouting mode until you narrow below the city rollup.'}
               </p>
@@ -510,6 +615,7 @@ export default function CompsForgeModule({ metadata }: CompsForgeModuleProps = {
           <Label className='text-sm shrink-0' style={{ color: 'hsl(var(--tf-muted))' }}>Sale from</Label>
           <Input
             type='date'
+            aria-label='Sale date from'
             value={saleWindow.start}
             onChange={(event) => setSaleWindow((prev) => ({ ...prev, start: event.target.value }))}
             className='w-[150px]'
@@ -525,6 +631,7 @@ export default function CompsForgeModule({ metadata }: CompsForgeModuleProps = {
           <Label className='text-sm shrink-0' style={{ color: 'hsl(var(--tf-muted))' }}>through</Label>
           <Input
             type='date'
+            aria-label='Sale date through'
             value={saleWindow.end}
             onChange={(event) => setSaleWindow((prev) => ({ ...prev, end: event.target.value }))}
             className='w-[150px]'
@@ -537,7 +644,7 @@ export default function CompsForgeModule({ metadata }: CompsForgeModuleProps = {
         </div>
 
         <Badge variant='outline' style={{ color: 'hsl(var(--tf-fg))' }}>
-          {subject ? `${selectedKeys.size} selected / ${candidates.length} candidates` : `${displayComps.length} scoped sales`}
+          {subject ? `${selectedComps.length} selected / ${candidates.length} candidates` : `${displayComps.length} scoped sales`}
         </Badge>
 
         <Button
@@ -566,8 +673,12 @@ export default function CompsForgeModule({ metadata }: CompsForgeModuleProps = {
                     ? `Loading ${countyName} County sales…`
                     : salesError
                       ? 'Comparable sales are unavailable until the county sales shard is restored.'
-                      : hasRollupHandoff
-                        ? 'No county sales match the current rollup scope.'
+                      : hasPublicCountyHandoff
+                        ? qualifiedOnly && allSales.length > 0
+                          ? 'No county-qualified sales match this filter. Clear “Qualified sales only” to review observed public candidates.'
+                          : 'No observed public comparable sales are available in this county context.'
+                        : hasRollupHandoff
+                          ? 'No county sales match the current rollup scope.'
                         : 'No comparable sales match the current parcel and filters.'}
                 </p>
               </CardContent>
@@ -728,8 +839,10 @@ export default function CompsForgeModule({ metadata }: CompsForgeModuleProps = {
                 <div className='text-center py-8'>
                   <Search size={32} className='mx-auto mb-3' style={{ color: 'hsl(var(--tf-muted) / 0.4)' }} />
                   <p style={{ color: 'hsl(var(--tf-muted))' }}>
-                    {!subject && hasRollupHandoff
-                      ? 'Rollup scouting mode loads county sales, but reconciliation waits for a parcel-bound subject.'
+                    {!subject && hasPublicCountyHandoff
+                      ? 'Countywide public scouting is read-only; reconciliation waits for an authenticated same-county parcel subject.'
+                      : !subject && hasRollupHandoff
+                        ? 'Rollup scouting mode loads county sales, but reconciliation waits for a parcel-bound subject.'
                       : isAdjusting
                         ? 'CostForge is adjusting selected sales.'
                         : selectedComps.length < 2
@@ -758,7 +871,11 @@ export default function CompsForgeModule({ metadata }: CompsForgeModuleProps = {
                 style={{ color: 'hsl(var(--tf-fg))' }}
               >
                 <Home size={16} style={{ color: 'hsl(var(--tf-suite-forge))' }} />
-                {subject ? 'Subject Property' : 'Rollup Context'}
+                {subject
+                  ? 'Subject Property'
+                  : washingtonCountyContextRequested
+                    ? 'Public County Context'
+                    : 'Rollup Context'}
               </CardTitle>
             </CardHeader>
             <CardContent className='space-y-1 text-sm'>
@@ -802,6 +919,28 @@ export default function CompsForgeModule({ metadata }: CompsForgeModuleProps = {
                   )}
                 </>
               )}
+              {!subject && hasPublicCountyHandoff && (
+                <>
+                  <div className='flex justify-between gap-4'>
+                    <span style={{ color: 'hsl(var(--tf-muted))' }}>Reference records</span>
+                    <span className='text-right' style={{ color: 'hsl(var(--tf-fg))' }}>
+                      {publicCountySalesContext.referenceRecordCount?.toLocaleString() ?? 'Governed'}
+                    </span>
+                  </div>
+                  <div className='flex justify-between gap-4'>
+                    <span style={{ color: 'hsl(var(--tf-muted))' }}>Latest reference sale</span>
+                    <span className='text-right' style={{ color: 'hsl(var(--tf-fg))' }}>
+                      {publicCountySalesContext.latestReferenceSaleDate ?? 'Not reported'}
+                    </span>
+                  </div>
+                  <div className='flex justify-between gap-4'>
+                    <span style={{ color: 'hsl(var(--tf-muted))' }}>Trust</span>
+                    <span className='text-right' style={{ color: 'hsl(var(--tf-fg))' }}>
+                      Public/reference · not county-certified
+                    </span>
+                  </div>
+                </>
+              )}
               {subject && (
                 <div className='flex justify-between gap-4'>
                   <span style={{ color: 'hsl(var(--tf-muted))' }}>Parcel</span>
@@ -813,7 +952,7 @@ export default function CompsForgeModule({ metadata }: CompsForgeModuleProps = {
               <div className='flex justify-between gap-4'>
                 <span style={{ color: 'hsl(var(--tf-muted))' }}>Neighborhood code</span>
                 <span className='text-right' style={{ color: 'hsl(var(--tf-fg))' }}>
-                  {activeParcel?.neighborhood ?? handoff.neighborhoodCode ?? 'Unavailable from current provider'}
+                  {subjectParcel?.neighborhood ?? handoff.neighborhoodCode ?? 'Unavailable from current provider'}
                 </span>
               </div>
               <div className='flex justify-between gap-4'>

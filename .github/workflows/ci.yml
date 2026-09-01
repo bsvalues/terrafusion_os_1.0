@@ -493,9 +493,12 @@ jobs:
 
       - name: Build Docker Images
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+        env:
+          VITE_WASHINGTON_LAUNCH_MANIFEST_SHA256: ${{ vars.VITE_WASHINGTON_LAUNCH_MANIFEST_SHA256 }}
+          WASHINGTON_LAUNCH_DATA_SOURCE_URL: ${{ vars.WASHINGTON_LAUNCH_DATA_SOURCE_URL }}
         run: |
           docker build --build-arg GIT_SHA=${{ github.sha }} -f backend/Dockerfile.API -t terrafusion-api:${{ github.sha }} -t terrafusion-api:latest backend/
-          docker build -f frontend/Dockerfile -t terrafusion-frontend:${{ github.sha }} -t terrafusion-frontend:latest .
+          docker build --target production --build-arg VITE_BUILD_SHA=${{ github.sha }} --build-arg VITE_WASHINGTON_LAUNCH_MANIFEST_SHA256="$VITE_WASHINGTON_LAUNCH_MANIFEST_SHA256" --build-arg WASHINGTON_LAUNCH_DATA_SOURCE_URL="$WASHINGTON_LAUNCH_DATA_SOURCE_URL" -f frontend/Dockerfile -t terrafusion-frontend:${{ github.sha }} -t terrafusion-frontend:latest .
           docker build -f backend/Dockerfile.agents -t terrafusion-agents:${{ github.sha }} -t terrafusion-agents:latest backend/
           docker build -f backend/Dockerfile.spatial -t terrafusion-spatial:${{ github.sha }} -t terrafusion-spatial:latest backend/
 

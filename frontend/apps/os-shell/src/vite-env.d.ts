@@ -7,6 +7,8 @@
 interface ImportMetaEnv {
   readonly VITE_API_BASE_URL: string;
   readonly VITE_API_URL: string;
+  /** Public build-time trust pin for the hosted Washington launch manifest. */
+  readonly VITE_WASHINGTON_LAUNCH_MANIFEST_SHA256?: string;
   // more env variables...
 }
 

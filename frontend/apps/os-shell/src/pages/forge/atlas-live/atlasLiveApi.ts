@@ -4,6 +4,13 @@ import {
   type NbhdOutlineCollection,
   type ParcelTileCollection,
 } from '../geo/v2/v2Api';
+import {
+  fetchWashingtonCountyStatus,
+  type WashingtonCountyStatusEntry,
+} from '@/services/washingtonCountyLaunch';
+
+export { fetchWashingtonCountyStatus } from '@/services/washingtonCountyLaunch';
+export type { WashingtonCountyStatusEntry } from '@/services/washingtonCountyLaunch';
 
 const BENTON_COUNTY_ID = '19190019-1919-1919-1919-191919191919';
 export const ATLAS_COUNTY_LAUNCH_CONTEXT_CONTRACT_ID = 'county_data_trust_launch_context_v1';
@@ -15,32 +22,6 @@ export type CountyDataTrustTier =
   | 'converted_legacy_sensitive'
   | 'reference_demo'
   | 'unknown';
-
-export interface WashingtonCountyStatusEntry {
-  county: string;
-  countyCode: string;
-  priority: string;
-  prometheusStatus: string;
-  primarySourceMode: string;
-  latestSaleDate: string | null;
-  candidateSales: number;
-  stagedSales: number;
-  needsReview: number;
-  confidence: {
-    averageQualityScore: number;
-    parserStatus: string;
-    rawStatus: string;
-    rawDriftDetected: boolean;
-  };
-  staticRoutes: {
-    detail: string;
-    salesShard: string;
-  };
-}
-
-interface WashingtonCountyStatusFile {
-  counties: WashingtonCountyStatusEntry[];
-}
 
 interface WashingtonCountyDetailFile {
   county: string;
@@ -158,14 +139,6 @@ async function fetchLaunchJson<T>(path: string, signal?: AbortSignal): Promise<T
   return response.json() as Promise<T>;
 }
 
-export async function fetchWashingtonCountyStatus(signal?: AbortSignal): Promise<WashingtonCountyStatusEntry[]> {
-  const status = await fetchLaunchJson<WashingtonCountyStatusFile>(
-    '/launch-data/washington/counties/status.json',
-    signal,
-  );
-  return status.counties;
-}
-
 export async function fetchAtlasCountyContext(
   scope: AtlasRouteScope,
   signal?: AbortSignal,
@@ -187,27 +160,29 @@ export async function fetchAtlasCountyContext(
     return null;
   }
 
-  const detail = await fetchLaunchJson<WashingtonCountyDetailFile>(match.staticRoutes.detail, signal);
+  const detail = match.staticRoutes.detail
+    ? await fetchLaunchJson<WashingtonCountyDetailFile>(match.staticRoutes.detail, signal)
+    : null;
   const geometryAvailability: AtlasGeometryAvailability =
     match.countyCode === '005' ? 'compatibility' : 'unpublished';
-  const trustContext = buildCountyTrustContext(detail.countyCode || match.countyCode);
+  const trustContext = buildCountyTrustContext(detail?.countyCode || match.countyCode);
 
   return {
     contractId: ATLAS_COUNTY_LAUNCH_CONTEXT_CONTRACT_ID,
     countyId: scope.countyId,
-    countyName: detail.county || match.county,
-    countyCode: detail.countyCode || match.countyCode,
+    countyName: detail?.county || match.county,
+    countyCode: detail?.countyCode || match.countyCode,
     segmentId: scope.segmentId,
     neighborhoodCode: scope.neighborhoodCode,
     studyId: scope.studyId,
     taxYear: scope.taxYear,
-    primarySourceMode: detail.operationalState?.primarySourceMode ?? match.primarySourceMode ?? null,
-    prometheusStatus: detail.operationalState?.prometheusStatus ?? match.prometheusStatus,
-    latestSaleDate: detail.summary?.latestSaleDate ?? match.latestSaleDate ?? null,
-    stagedSales: detail.summary?.records ?? match.stagedSales,
+    primarySourceMode: detail?.operationalState?.primarySourceMode ?? match.primarySourceMode ?? null,
+    prometheusStatus: detail?.operationalState?.prometheusStatus ?? match.prometheusStatus,
+    latestSaleDate: detail?.summary?.latestSaleDate ?? match.latestSaleDate ?? null,
+    stagedSales: detail?.summary?.records ?? match.stagedSales,
     needsReview: match.needsReview,
     detailRoute: match.staticRoutes.detail,
-    salesRoute: detail.salesRoute ?? match.staticRoutes.salesShard,
+    salesRoute: detail?.salesRoute ?? match.staticRoutes.salesShard,
     geometryAvailability,
     geometryMessage:
       geometryAvailability === 'compatibility'

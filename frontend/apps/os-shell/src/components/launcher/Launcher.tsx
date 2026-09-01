@@ -359,7 +359,7 @@ export const Launcher: React.FC<LauncherProps> = ({ invokerRef, testItems }) => 
       navigateToLauncherItem(item, navigate, auth ? toOsActor(auth) : null);
       close();
     },
-    [navigate, close, recordRecent]
+    [navigate, close, recordRecent, auth]
   );
 
   const { activeIndex, setActiveIndex } = useArrowNavigation(filteredItems, handleActivate);
