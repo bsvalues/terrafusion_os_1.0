@@ -11787,6 +11787,85 @@
       "provenance": { "createdAt": "2026-08-28T20:00:00Z", "source": "Protected PRs #1508-#1510 and OWNER-WAL-V1-MISSION-AUTHORITY-20260827; prospective canonical state until protected merge.", "schemaVersion": "0.1.0" }
     },
     {
+      "id": "WO-WAL-000G",
+      "title": "Runtime Integration Reservations",
+      "program": "Washington Assessor Launch V1",
+      "goalId": "GOAL-WASHINGTON-ASSESSOR-LAUNCH-V1",
+      "loopId": "LOOP-WASHINGTON-ASSESSOR-LAUNCH-V1",
+      "goal": "Register the exact authenticated canonical county-context API integration followed by dependency-cleared real CSV API admission while preserving public-source and Sync authority walls.",
+      "riskClass": "R3",
+      "status": "complete",
+      "dependencies": [
+        { "id": "WO-WAL-000F", "status": "satisfied", "notes": "PR #1511 protected merge 37257bd84563a7a95c1c8d495e724584e2675230 records the prior zero-dispatch boundary." },
+        { "id": "WO-WAL-002E", "status": "satisfied", "notes": "Protected PR #1508 supplies the bounded CSV parser, county binding, idempotency and duplicate-decision chain through 002E." },
+        { "id": "WO-WAL-004E", "status": "satisfied", "notes": "Protected PR #1509 supplies the authenticated persisted-GUID to canonical 39-county context contract." }
+      ],
+      "allowedSystems": [{ "name": "Governance-only exact 004F, protected-completion 000H release reconciliation, then 002F runtime-integration routing from current protected-main implementation evidence" }],
+      "blockedSystems": [{ "name": "Child implementation, 001F public acquisition, 003E live Sync, durable upload persistence, protected data, credentials, external county systems, deployment and production" }],
+      "allowedFiles": [
+        "docs/brain/workorders/active/WO-WAL-000G-runtime-integration-reservations.md",
+        "docs/brain/workorders/active/WO-WAL-000H-upload-admission-release-reconciliation.md",
+        "docs/brain/workorders/active/WO-WAL-002F-authenticated-county-csv-api-admission.md",
+        "docs/brain/workorders/active/WO-WAL-004F-authenticated-canonical-context-runtime-integration.md",
+        "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
+        "docs/brain/workorders/programs/washington-assessor-launch-v1.md",
+        "docs/brain/workorders/registry/work-order-registry.seed.json",
+        "docs/brain/workorders/tools/wo-wave-plan.test.mjs"
+      ],
+      "contractReservations": [],
+      "environmentReservations": [],
+      "evidenceRequired": [{ "kind": "command", "description": "Registry/schema validation, exact 004F initial dispatch, post-004F 000H projection, persistent 002F status block until protected 000H, unverified-ref denial, reservation collision denial, absent 001F/003E/003F proof and exact eight-path audit." }],
+      "validationGates": [{ "name": "WAL runtime integration reservation governance", "command": "focused wave-plan tests, registry JSON/schema validation, protected-ref dispatch denial, git diff --check and exact eight-path audit", "required": true, "result": "pass", "evidence": ["Terminal result F_RUNTIME_INTEGRATION_CHILDREN_EXACTLY_RESERVED_WITH_SYNC_WALL_PRESERVED; canonical only when this validated governance commit reaches protected main."] }],
+      "stopConditions": [
+        { "type": "scope_boundary", "description": "Stop before any implementation file, contract, environment or child action outside the exact governance reservation." },
+        { "type": "authority_wall", "description": "Do not register or execute 003E without the named county/source/system, authorized read-only credential or role and secret-store reference, permitted execution/network environment, data classification/handling and source-side no-DML evidence method." },
+        { "type": "protected_data", "description": "No live county file, source, credential, secret value or protected data is authorized." }
+      ],
+      "nextCandidates": [
+        { "id": "WO-WAL-004F", "reason": "First dependency-cleared runtime integration: canonical authenticated county context in the real API scope.", "riskClass": "R5", "blocked": false },
+        { "id": "WO-WAL-000H", "reason": "After protected 004F, verify exact completion and explicitly release 002F from blocked to ready.", "riskClass": "R3", "blocked": true }
+      ],
+      "authority": { "mayWrite": true, "mayCommit": true, "mayPush": false, "mayOpenPr": false, "mayMarkReady": true, "mayMerge": false, "mayCleanup": true, "notes": "Issue #1485 and the active broad 002/004 continuation rules permit this exact governance decomposition only. Child authority becomes canonical only after protected merge." },
+      "provenance": { "createdAt": "2026-09-01T19:30:00Z", "source": "Protected PR #1511, current protected-main implementation audit and OWNER-WAL-V1-MISSION-AUTHORITY-20260827; prospective canonical state until protected merge.", "schemaVersion": "0.1.0" }
+    },
+    {
+      "id": "WO-WAL-000H",
+      "title": "Upload Admission Release Reconciliation",
+      "program": "Washington Assessor Launch V1",
+      "goalId": "GOAL-WASHINGTON-ASSESSOR-LAUNCH-V1",
+      "loopId": "LOOP-WASHINGTON-ASSESSOR-LAUNCH-V1",
+      "goal": "After protected 004F, verify its exact completion evidence and explicitly release 002F from blocked to ready through a governance-only protected boundary.",
+      "riskClass": "R3",
+      "status": "ready",
+      "dependencies": [
+        { "id": "WO-WAL-000G", "status": "satisfied", "notes": "Exact 000H reservation clearance becomes effective only on protected 000G merge." },
+        { "id": "WO-WAL-004F", "status": "required", "notes": "000H cannot execute until 004F is complete on verified protected main with exact merge and validation evidence." }
+      ],
+      "allowedSystems": [{ "name": "Governance-only exact 004F completion-evidence verification and deliberate 002F blocked-to-ready registry transition" }],
+      "blockedSystems": [{ "name": "004F implementation, upload implementation, controller mutation, protected data, county files, credentials, external sources, Sync, deployment, production and broad parent completion" }],
+      "allowedFiles": [
+        "docs/brain/workorders/active/WO-WAL-000H-upload-admission-release-reconciliation.md",
+        "docs/brain/workorders/active/WO-WAL-002F-authenticated-county-csv-api-admission.md",
+        "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
+        "docs/brain/workorders/programs/washington-assessor-launch-v1.md",
+        "docs/brain/workorders/registry/work-order-registry.seed.json",
+        "docs/brain/workorders/tools/wo-wave-plan.test.mjs"
+      ],
+      "contractReservations": [],
+      "environmentReservations": [],
+      "dispatchGuard": { "type": "protected_ref_head", "ref": "refs/remotes/origin/main" },
+      "evidenceRequired": [{ "kind": "command", "description": "Verify protected 004F exact merge/check/path/contract/environment/terminal evidence, then prove the explicit 002F blocked-to-ready dependency transition and exact six-path governance scope." }],
+      "validationGates": [{ "name": "WAL upload admission release reconciliation", "command": "protected 004F evidence verification, registry/schema and transition tests, protected-ref dispatch proof, git diff --check and exact six-path audit", "required": true, "result": "not_run" }],
+      "stopConditions": [
+        { "type": "dependency_blocked", "description": "Stop unless WO-WAL-004F is complete on verified protected main with exact evidence." },
+        { "type": "scope_boundary", "description": "Stop before any implementation file or action outside the exact six governance paths." },
+        { "type": "protected_data", "description": "No live county file, source, credential, secret value or protected data is authorized." }
+      ],
+      "nextCandidates": [{ "id": "WO-WAL-002F", "reason": "Protected 000H releases the exact authenticated county CSV API admission child after protected 004F.", "riskClass": "R5", "blocked": false }],
+      "authority": { "mayWrite": true, "mayCommit": true, "mayPush": true, "mayOpenPr": true, "mayMarkReady": true, "mayMerge": true, "mayCleanup": true, "notes": "Issue #1485 permits this exact governance-only protected-boundary reconciliation. It creates no product, protected-data, deployment or production authority." },
+      "provenance": { "createdAt": "2026-09-01T20:30:00Z", "source": "WO-WAL-000G, prospective protected 004F, P1 review on PR #1531 and OWNER-WAL-V1-MISSION-AUTHORITY-20260827.", "schemaVersion": "0.1.0" }
+    },
+    {
       "id": "WO-WAL-001",
       "title": "Statewide Public Baseline Runtime Completion",
       "program": "Washington Assessor Launch V1",
@@ -12081,6 +12160,34 @@
       "provenance": { "createdAt": "2026-08-28T12:16:28Z", "updatedAt": "2026-08-28T20:00:00Z", "source": "PR #1508 protected merge dcd1405b15d7aaa686ae444ed917117fcada3de0, integrated head 6dd01433b41db83ca73d1572e82e5910a0f3d7e5 and reviewed head a63ebf4f3a4c12a0c75499a9adb63ef1269a6dfe under OWNER-WAL-V1-MISSION-AUTHORITY-20260827.", "schemaVersion": "0.1.0" }
     },
     {
+      "id": "WO-WAL-002F",
+      "title": "Authenticated County CSV API Admission",
+      "program": "Washington Assessor Launch V1",
+      "goalId": "GOAL-WASHINGTON-ASSESSOR-LAUNCH-V1",
+      "loopId": "LOOP-WASHINGTON-ASSESSOR-LAUNCH-V1",
+      "goal": "Replace the fabricated anonymous upload response with assessor-authorized canonical-county CSV admission and a real protected parser/idempotency receipt.",
+      "riskClass": "R5",
+      "status": "blocked",
+      "dependencies": [
+        { "id": "WO-WAL-002E", "status": "satisfied", "notes": "Protected 002A-002E provides bounded CSV syntax, envelope, same-county binding, idempotency identity and duplicate decision." },
+        { "id": "WO-WAL-004F", "status": "required", "notes": "Real API admission must consume protected authenticated canonical request-county context; selector authority is denied." },
+        { "id": "WO-WAL-000H", "status": "required", "notes": "Protected 000H must verify 004F completion and explicitly release this record from blocked to ready." },
+        { "id": "WO-WAL-000G", "status": "satisfied", "notes": "Exact reservation clearance becomes effective only on protected 000G merge." }
+      ],
+      "allowedSystems": [{ "name": "RequireAssessor-protected multipart CSV controller action, canonical request county from 004F, protected 002A-002E in-memory admission and bounded real receipt" }, { "name": "Contract reservation wal.county-upload.authenticated-csv-api-admission.v1" }, { "name": "Environment reservation local-api-synthetic-csv-intake-only" }],
+      "blockedSystems": [{ "name": "Request county authority, anonymous success, durable storage, staging, quarantine persistence, promotion, rollback, UI, external county systems, credentials, protected files, deployment and production" }],
+      "allowedFiles": ["docs/brain/workorders/active/WO-WAL-002F-authenticated-county-csv-api-admission.md", "backend/src/TerraFusion.API/Controllers/DataImportController.cs", "backend/TerraFusion.API.Tests/Controllers/DataImportControllerTests.cs"],
+      "contractReservations": ["wal.county-upload.authenticated-csv-api-admission.v1"],
+      "environmentReservations": ["local-api-synthetic-csv-intake-only"],
+      "dispatchGuard": { "type": "protected_ref_head", "ref": "refs/remotes/origin/main" },
+      "evidenceRequired": [{ "kind": "command", "description": "Focused controller tests prove assessor authorization, canonical request-county binding, Parcels/Sales admission, real parser/hash/row/idempotency evidence, duplicate behavior and uniform fail-closed malformed/cross-authority denial." }],
+      "validationGates": [{ "name": "WAL authenticated CSV API admission", "command": "dotnet test backend/TerraFusion.API.Tests/TerraFusion.API.Tests.csproj --filter FullyQualifiedName~DataImportControllerTests && git diff --check && exact changed-path audit", "required": true, "result": "not_run" }],
+      "stopConditions": [{ "type": "dependency_blocked", "description": "Protected WO-WAL-004F must provide the authenticated canonical request-county context and protected WO-WAL-000H must explicitly release this record first." }, { "type": "scope_boundary", "description": "Stop before durable persistence, quarantine storage, promotion, rollback, UI or any file, contract or environment outside the exact reservations." }, { "type": "protected_data", "description": "Use synthetic CSV fixtures only; no live county file, credential, source system or protected data is authorized." }],
+      "nextCandidates": [],
+      "authority": { "mayWrite": true, "mayCommit": true, "mayPush": true, "mayOpenPr": true, "mayMarkReady": true, "mayMerge": true, "mayCleanup": true, "notes": "Issue #1485 permits this exact real API admission child after protected 004F. It creates no durable storage, external-system, protected-data, deployment or production authority." },
+      "provenance": { "createdAt": "2026-09-01T19:30:00Z", "source": "WO-WAL-002, protected 002A-002E, prospective protected 000G/004F and OWNER-WAL-V1-MISSION-AUTHORITY-20260827.", "schemaVersion": "0.1.0" }
+    },
+    {
       "id": "WO-WAL-003",
       "title": "Read-Only Multi-County TerraFusion Sync",
       "program": "Washington Assessor Launch V1",
@@ -12355,6 +12462,33 @@
       "nextCandidates": [],
       "authority": { "mayWrite": true, "mayCommit": true, "mayPush": true, "mayOpenPr": true, "mayMarkReady": true, "mayMerge": true, "mayCleanup": true, "notes": "Issue #1485 permits this exact R5 local authenticated canonical-context fixture child; it creates no authentication, grant, activation, protected-data, integration or production authority." },
       "provenance": { "createdAt": "2026-08-28T12:16:28Z", "updatedAt": "2026-08-28T20:00:00Z", "source": "PR #1509 protected merge b4c34f53a6c0251fc2df3a02974b5e7e96ef7a95 and reviewed head 6bee954e460fb1bf2d4541afa1e23e455f6a269d under OWNER-WAL-V1-MISSION-AUTHORITY-20260827.", "schemaVersion": "0.1.0" }
+    },
+    {
+      "id": "WO-WAL-004F",
+      "title": "Authenticated Canonical Context Runtime Integration",
+      "program": "Washington Assessor Launch V1",
+      "goalId": "GOAL-WASHINGTON-ASSESSOR-LAUNCH-V1",
+      "loopId": "LOOP-WASHINGTON-ASSESSOR-LAUNCH-V1",
+      "goal": "Wire current authenticated request county evidence through the protected binding and canonical 39-county context contracts in the real API request scope.",
+      "riskClass": "R5",
+      "status": "ready",
+      "dependencies": [
+        { "id": "WO-WAL-004D", "status": "satisfied", "notes": "Protected PR #1503 supplies authenticated persisted county GUID binding." },
+        { "id": "WO-WAL-004E", "status": "satisfied", "notes": "Protected PR #1509 supplies exact persisted GUID to canonical 39-county context." },
+        { "id": "WO-WAL-000G", "status": "satisfied", "notes": "Exact reservation clearance becomes effective only on protected 000G merge." }
+      ],
+      "allowedSystems": [{ "name": "Current authenticated API request context, persisted county resolver, protected 004D/004E composition and scoped dependency-injection registration" }, { "name": "Contract reservation wal.authenticated-canonical-county-runtime-context.v1" }, { "name": "Environment reservation local-api-auth-context-persisted-guid-fixture-only" }],
+      "blockedSystems": [{ "name": "Role/capability grant, controller resource authorization, route/body/header authority, county selector, default county, Benton fallback, activation, data access, protected data, credentials, live identity provider, deployment and production" }],
+      "allowedFiles": ["docs/brain/workorders/active/WO-WAL-004F-authenticated-canonical-context-runtime-integration.md", "backend/src/TerraFusion.Core/Counties/AuthenticatedCountyAuthorityBinding.cs", "backend/tests/TerraFusion.Unit.Tests/Counties/AuthenticatedCountyAuthorityBindingTests.cs", "backend/src/TerraFusion.API/Auth/AuthenticatedCanonicalCountyContextProvider.cs", "backend/src/TerraFusion.API/Program.cs", "backend/TerraFusion.API.Tests/Auth/AuthenticatedCanonicalCountyContextProviderTests.cs"],
+      "contractReservations": ["wal.authenticated-canonical-county-runtime-context.v1"],
+      "environmentReservations": ["local-api-auth-context-persisted-guid-fixture-only"],
+      "dispatchGuard": { "type": "protected_ref_head", "ref": "refs/remotes/origin/main" },
+      "evidenceRequired": [{ "kind": "command", "description": "Core and API tests prove one current-context snapshot, all-39 canonical success, anonymous/malformed/unknown denial, zero selector input, cancellation/exception propagation and scoped DI resolution." }],
+      "validationGates": [{ "name": "WAL authenticated canonical runtime context", "command": "focused AuthenticatedCountyAuthorityBindingTests and AuthenticatedCanonicalCountyContextProviderTests, API/Core compile, git diff --check and exact changed-path audit", "required": true, "result": "not_run" }],
+      "stopConditions": [{ "type": "scope_boundary", "description": "Stop before controller resource authorization, activation, data access or any file, contract or environment outside the exact reservations." }, { "type": "protected_data", "description": "No live credential, identity provider, county system or protected data is authorized." }],
+      "nextCandidates": [{ "id": "WO-WAL-000H", "reason": "Verify this exact protected completion and explicitly release 002F through the governance-only protected boundary.", "riskClass": "R3", "blocked": false }],
+      "authority": { "mayWrite": true, "mayCommit": true, "mayPush": true, "mayOpenPr": true, "mayMarkReady": true, "mayMerge": true, "mayCleanup": true, "notes": "Issue #1485 permits this exact R5 API request-scope identity integration child. It creates no resource grant, protected-data, deployment or production authority." },
+      "provenance": { "createdAt": "2026-09-01T19:30:00Z", "source": "WO-WAL-004, protected 004D/004E, prospective protected 000G and OWNER-WAL-V1-MISSION-AUTHORITY-20260827.", "schemaVersion": "0.1.0" }
     },
     {
       "id": "WO-WAL-005",
