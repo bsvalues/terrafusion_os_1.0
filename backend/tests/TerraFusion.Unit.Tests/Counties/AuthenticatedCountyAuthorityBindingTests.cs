@@ -12,6 +12,131 @@ public sealed class AuthenticatedCountyAuthorityBindingTests
     private static readonly Guid FranklinId = Guid.Parse("22222222-2222-2222-2222-222222222222");
 
     [Fact]
+    public async Task BindCurrentAsync_binds_each_canonical_county_from_only_its_authenticated_claim()
+    {
+        var canonicalCounties = WashingtonCountyRegistry.Counties;
+        Assert.Equal(39, canonicalCounties.Count);
+
+        for (var index = 0; index < canonicalCounties.Count; index++)
+        {
+            var county = canonicalCounties[index];
+            var countyId = CountyId(index + 1);
+            var accessor = new CountingContextAccessor(
+                () => Authenticated($"actor-{index + 1}", county.Key));
+            var resolver = Resolver((value, _) => Task.FromResult<Guid?>(
+                value == county.Key ? countyId : null));
+
+            var result = await new AuthenticatedCountyAuthorityBinding(accessor, resolver)
+                .BindCurrentAsync();
+
+            Assert.Equal(AuthenticatedCountyAuthorityBindingDecision.Bound, result.Decision);
+            Assert.Equal($"actor-{index + 1}", result.ActorId);
+            Assert.Equal(countyId, result.CountyId);
+            Assert.Equal(1, accessor.ReadCount);
+            Assert.Equal(new[] { county.Key }, resolver.Inputs);
+        }
+    }
+
+    [Theory]
+    [MemberData(nameof(InvalidCurrentContextCases))]
+    public async Task BindCurrentAsync_denies_invalid_current_evidence_without_resolution(
+        RequestUserContext? context)
+    {
+        var accessor = new CountingContextAccessor(() => context);
+        var resolver = Resolver((_, _) =>
+            throw new InvalidOperationException("resolver must not run"));
+
+        var result = await new AuthenticatedCountyAuthorityBinding(accessor, resolver)
+            .BindCurrentAsync();
+
+        AssertDataFreeDenial(result);
+        Assert.Equal(1, accessor.ReadCount);
+        Assert.Empty(resolver.Inputs);
+    }
+
+    public static IEnumerable<object?[]> InvalidCurrentContextCases()
+    {
+        yield return new object?[] { null };
+        yield return new object?[] { RequestUserContext.Anonymous };
+        yield return new object?[] { Authenticated(null, "Benton") };
+        yield return new object?[] { Authenticated(" ", "Benton") };
+        yield return new object?[] { Authenticated("actor", null) };
+        yield return new object?[] { Authenticated("actor", " ") };
+    }
+
+    [Fact]
+    public async Task BindCurrentAsync_uses_one_context_snapshot_and_one_resolution()
+    {
+        var reads = 0;
+        var accessor = new CountingContextAccessor(() =>
+            ++reads == 1
+                ? Authenticated("first-actor", "Benton")
+                : Authenticated("second-actor", "Franklin"));
+        var resolver = Resolver((value, _) => Task.FromResult<Guid?>(
+            value == "Benton" ? BentonId : FranklinId));
+
+        var result = await new AuthenticatedCountyAuthorityBinding(accessor, resolver)
+            .BindCurrentAsync();
+
+        Assert.Equal(AuthenticatedCountyAuthorityBindingDecision.Bound, result.Decision);
+        Assert.Equal("first-actor", result.ActorId);
+        Assert.Equal(BentonId, result.CountyId);
+        Assert.Equal(1, accessor.ReadCount);
+        Assert.Equal(new[] { "Benton" }, resolver.Inputs);
+    }
+
+    [Fact]
+    public async Task BindCurrentAsync_observes_pre_cancellation_before_reading_context()
+    {
+        var accessor = new CountingContextAccessor(() => Authenticated("actor", "Benton"));
+        var resolver = Resolver((_, _) => Task.FromResult<Guid?>(BentonId));
+        using var cts = new CancellationTokenSource();
+        cts.Cancel();
+
+        await Assert.ThrowsAnyAsync<OperationCanceledException>(
+            () => new AuthenticatedCountyAuthorityBinding(accessor, resolver)
+                .BindCurrentAsync(cts.Token));
+
+        Assert.Equal(0, accessor.ReadCount);
+        Assert.Empty(resolver.Inputs);
+    }
+
+    [Fact]
+    public async Task BindCurrentAsync_propagates_cancellation_without_retry_or_fallback()
+    {
+        using var cts = new CancellationTokenSource();
+        var accessor = new CountingContextAccessor(() => Authenticated("actor", "Benton"));
+        var resolver = Resolver((_, _) =>
+        {
+            cts.Cancel();
+            return Task.FromResult<Guid?>(BentonId);
+        });
+
+        await Assert.ThrowsAnyAsync<OperationCanceledException>(
+            () => new AuthenticatedCountyAuthorityBinding(accessor, resolver)
+                .BindCurrentAsync(cts.Token));
+
+        Assert.Equal(1, accessor.ReadCount);
+        Assert.Equal(new[] { "Benton" }, resolver.Inputs);
+    }
+
+    [Fact]
+    public async Task BindCurrentAsync_propagates_resolver_exception_without_retry_or_fallback()
+    {
+        var expected = new InvalidOperationException("resolver unavailable");
+        var accessor = new CountingContextAccessor(() => Authenticated("actor", "Benton"));
+        var resolver = Resolver((_, _) => Task.FromException<Guid?>(expected));
+
+        var actual = await Assert.ThrowsAsync<InvalidOperationException>(
+            () => new AuthenticatedCountyAuthorityBinding(accessor, resolver)
+                .BindCurrentAsync());
+
+        Assert.Same(expected, actual);
+        Assert.Equal(1, accessor.ReadCount);
+        Assert.Equal(new[] { "Benton" }, resolver.Inputs);
+    }
+
+    [Fact]
     public async Task BindAsync_snapshots_one_authenticated_context_and_binds_equal_persisted_ids()
     {
         var context = Authenticated("actor-7", "53005", roles: new[] { "viewer", "fabricated-admin" });
@@ -196,7 +321,7 @@ public sealed class AuthenticatedCountyAuthorityBindingTests
     }
 
     [Fact]
-    public void Contract_surface_is_sealed_core_only_and_has_no_grant_or_integration_operation()
+    public void Contract_surface_is_sealed_core_only_and_has_no_grant_operation()
     {
         Assert.Equal(
             "wal.authenticated-county-authority-binding.v1",
@@ -205,8 +330,22 @@ public sealed class AuthenticatedCountyAuthorityBindingTests
 
         var publicDeclaredMethods = typeof(AuthenticatedCountyAuthorityBinding)
             .GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
-        Assert.Equal(new[] { nameof(AuthenticatedCountyAuthorityBinding.BindAsync) },
+        Assert.Equal(
+            new[]
+            {
+                nameof(AuthenticatedCountyAuthorityBinding.BindCurrentAsync),
+                nameof(AuthenticatedCountyAuthorityBinding.BindAsync),
+            },
             publicDeclaredMethods.Select(method => method.Name));
+
+        var currentMethod = publicDeclaredMethods.Single(
+            method => method.Name == nameof(AuthenticatedCountyAuthorityBinding.BindCurrentAsync));
+        Assert.Equal(
+            new[] { typeof(CancellationToken) },
+            currentMethod.GetParameters().Select(parameter => parameter.ParameterType));
+        Assert.DoesNotContain(
+            currentMethod.GetParameters(),
+            parameter => parameter.ParameterType == typeof(string));
 
         var fieldTypes = typeof(AuthenticatedCountyAuthorityBinding)
             .GetFields(BindingFlags.NonPublic | BindingFlags.Instance)
@@ -252,6 +391,9 @@ public sealed class AuthenticatedCountyAuthorityBindingTests
     private static ScriptedCountyResolver Resolver(
         Func<string, CancellationToken, Task<Guid?>> callback) =>
         new(callback);
+
+    private static Guid CountyId(int index) =>
+        Guid.Parse($"00000000-0000-0000-0000-{index:D12}");
 
     private static void AssertDataFreeDenial(
         AuthenticatedCountyAuthorityBindingResult result)

@@ -67,6 +67,45 @@ public sealed class AuthenticatedCountyAuthorityBinding
             ?? throw new ArgumentNullException(nameof(countyResolver));
     }
 
+    /// <summary>
+    /// Binds only the county identity carried by the current authenticated request context. This
+    /// operation accepts no caller-supplied county selector and grants no resource capability.
+    /// </summary>
+    public async Task<AuthenticatedCountyAuthorityBindingResult> BindCurrentAsync(
+        CancellationToken cancellationToken = default)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+
+        // Current may be backed by mutable request state. Read it once, then snapshot only the
+        // bounded scalar values used by this contract before the first await.
+        var context = _contextAccessor.Current;
+        if (context is null)
+        {
+            return AuthenticatedCountyAuthorityBindingResult.Denied;
+        }
+
+        var isAuthenticated = context.IsAuthenticated;
+        var actorId = context.UserId;
+        var authorityCountyIdentifier = context.CountyId;
+
+        if (!isAuthenticated
+            || string.IsNullOrWhiteSpace(actorId)
+            || string.IsNullOrWhiteSpace(authorityCountyIdentifier))
+        {
+            return AuthenticatedCountyAuthorityBindingResult.Denied;
+        }
+
+        var authorityCountyId = await _countyResolver
+            .TryResolveAsync(authorityCountyIdentifier, cancellationToken)
+            .ConfigureAwait(false);
+
+        cancellationToken.ThrowIfCancellationRequested();
+
+        return authorityCountyId is not null
+            ? AuthenticatedCountyAuthorityBindingResult.Bound(actorId, authorityCountyId.Value)
+            : AuthenticatedCountyAuthorityBindingResult.Denied;
+    }
+
     public async Task<AuthenticatedCountyAuthorityBindingResult> BindAsync(
         string? targetCountyIdentifier,
         CancellationToken cancellationToken = default)
