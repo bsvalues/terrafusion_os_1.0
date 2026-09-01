@@ -607,6 +607,13 @@ export function getWashingtonSalesReviewCapability(
   };
 }
 
+function abortErrorForSignal(signal: AbortSignal): Error {
+  if (signal.reason instanceof Error) return signal.reason;
+  const error = new Error('The Washington sales-shard verification was cancelled.');
+  error.name = 'AbortError';
+  return error;
+}
+
 /**
  * Verify the selected hosted shard before exposing any observed sales claim.
  * The build-pinned same-origin manifest must bind the complete status document,
@@ -619,9 +626,12 @@ export function getWashingtonSalesReviewCapability(
 export async function verifyWashingtonSalesReviewHostedShard(
   input: WashingtonSalesReviewCapabilityInput,
   signal?: AbortSignal,
+  isCurrentAttempt: () => boolean = () => true,
 ): Promise<WashingtonSalesReviewHostedShardVerification> {
   const evictHostedShard = (): void => {
-    evictWashingtonLaunchCountyShard(input.countyCode, 'hosted');
+    if (isCurrentAttempt()) {
+      evictWashingtonLaunchCountyShard(input.countyCode, 'hosted');
+    }
   };
   const unavailable = (): WashingtonSalesReviewHostedShardVerification => {
     evictHostedShard();
@@ -674,6 +684,10 @@ export async function verifyWashingtonSalesReviewHostedShard(
       )
     ) {
       return unavailable();
+    }
+    if (signal?.aborted) throw abortErrorForSignal(signal);
+    if (!isCurrentAttempt()) {
+      return { state: 'unavailable' };
     }
     const summary = validateAndCacheAttestedWashingtonLaunchCountyShard(
       payload,

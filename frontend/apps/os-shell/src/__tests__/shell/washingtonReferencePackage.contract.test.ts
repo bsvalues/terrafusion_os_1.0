@@ -7,6 +7,7 @@ import {
 } from '../../lib/washingtonAssessorReferencePackage';
 import {
   fetchWashingtonCountyStatus,
+  WASHINGTON_PUBLIC_DATA_REQUEST_TIMEOUT_MS,
   resolveWashingtonCountyStatus,
   verifyWashingtonCountySalesShard,
   type WashingtonCountyStatusEntry,
@@ -15,7 +16,10 @@ import {
   computeWashingtonLaunchCanonicalJsonSha256,
   getWashingtonSalesReviewCapability,
 } from '../../pages/forge/sales/washingtonSalesReviewCapability';
-import { fetchWashingtonLaunchQueue } from '../../pages/forge/sales/washingtonLaunchApi';
+import {
+  evictWashingtonLaunchCountyShard,
+  fetchWashingtonLaunchQueue,
+} from '../../pages/forge/sales/washingtonLaunchApi';
 
 interface ReferenceRoutes {
   detail: string;
@@ -206,6 +210,16 @@ function hostedShardResponse(shard: unknown) {
   };
 }
 
+function deferred<T>() {
+  let resolve!: (value: T | PromiseLike<T>) => void;
+  let reject!: (reason?: unknown) => void;
+  const promise = new Promise<T>((resolvePromise, rejectPromise) => {
+    resolve = resolvePromise;
+    reject = rejectPromise;
+  });
+  return { promise, resolve, reject };
+}
+
 describe('Washington assessor reference package', () => {
   beforeEach(() => {
     // jsdom 23 exposes Crypto without SubtleCrypto. Exercise the browser digest
@@ -298,7 +312,7 @@ describe('Washington assessor reference package', () => {
     });
     expect(fetchMock).toHaveBeenCalledWith(WASHINGTON_REFERENCE_ROUTES.status, {
       cache: 'no-store',
-      signal: undefined,
+      signal: expect.any(AbortSignal),
     });
     expect(fetchMock).toHaveBeenCalledTimes(1);
 
@@ -326,11 +340,11 @@ describe('Washington assessor reference package', () => {
     });
     expect(fetchMock).toHaveBeenCalledWith(WASHINGTON_REFERENCE_ROUTES.spokaneSales, {
       cache: 'no-store',
-      signal: undefined,
+      signal: expect.any(AbortSignal),
     });
     expect(fetchMock).toHaveBeenCalledWith(WASHINGTON_REFERENCE_ROUTES.manifest, {
       cache: 'no-store',
-      signal: undefined,
+      signal: expect.any(AbortSignal),
     });
 
     const queue = await fetchWashingtonLaunchQueue(2025, 'all', 1, 25, {
@@ -348,6 +362,135 @@ describe('Washington assessor reference package', () => {
       '/launch-data/washington/sales/by-county/001.json',
       expect.anything(),
     );
+  });
+
+  it('does not cache a hosted shard that resolves after its bounded attempt times out', async () => {
+    evictWashingtonLaunchCountyShard('063', 'hosted');
+    const hostedStatus = hostedEligibleStatus();
+    const hostedShard = hostedPublicSalesShard();
+    const manifestResponse = await hostedManifestResponse(
+      hostedShard,
+      {},
+      hostedStatus,
+    );
+    const lateShardJson = deferred<unknown>();
+    const fetchMock = vi.fn()
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => hostedStatus,
+      })
+      .mockResolvedValueOnce(manifestResponse)
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: () => lateShardJson.promise,
+      });
+    vi.stubGlobal('fetch', fetchMock);
+
+    const counties = await fetchWashingtonCountyStatus(undefined, 'hosted');
+    const spokane = counties[0];
+    expect(spokane).toBeDefined();
+    if (!spokane) throw new Error('Hosted Spokane status is missing.');
+
+    vi.useFakeTimers();
+    try {
+      const verificationPromise = verifyWashingtonCountySalesShard(spokane);
+      await vi.advanceTimersByTimeAsync(WASHINGTON_PUBLIC_DATA_REQUEST_TIMEOUT_MS);
+      await expect(verificationPromise).resolves.toMatchObject({
+        countyCode: '063',
+        salesShardVerification: 'unavailable',
+      });
+
+      lateShardJson.resolve(hostedShard);
+      await Promise.resolve();
+      await Promise.resolve();
+      await Promise.resolve();
+
+      await expect(fetchWashingtonLaunchQueue(2025, 'all', 1, 25, {
+        countyCode: '063',
+        hood: null,
+        propertyType: null,
+        saleDateFrom: null,
+        saleDateTo: null,
+        minPrice: null,
+        maxPrice: null,
+      })).rejects.toThrow(/requires authenticated package verification/i);
+    } finally {
+      vi.useRealTimers();
+      evictWashingtonLaunchCountyShard('063', 'hosted');
+    }
+  });
+
+  it('does not let an older same-county attempt evict a newer verified shard', async () => {
+    evictWashingtonLaunchCountyShard('063', 'hosted');
+    const hostedStatus = hostedEligibleStatus();
+    const hostedShard = hostedPublicSalesShard();
+    const manifestResponse = await hostedManifestResponse(
+      hostedShard,
+      {},
+      hostedStatus,
+    );
+    const firstShardRequested = deferred<void>();
+    const lateInvalidShardJson = deferred<unknown>();
+    let shardRequests = 0;
+    const fetchMock = vi.fn(async (input: RequestInfo | URL) => {
+      const url = String(input);
+      if (url === WASHINGTON_REFERENCE_ROUTES.status) {
+        return {
+          ok: true,
+          status: 200,
+          json: async () => hostedStatus,
+        };
+      }
+      if (url === WASHINGTON_REFERENCE_ROUTES.manifest) {
+        return manifestResponse;
+      }
+      if (url === WASHINGTON_REFERENCE_ROUTES.spokaneSales) {
+        shardRequests += 1;
+        if (shardRequests === 1) {
+          firstShardRequested.resolve();
+          return {
+            ok: true,
+            status: 200,
+            json: () => lateInvalidShardJson.promise,
+          };
+        }
+        return hostedShardResponse(hostedShard);
+      }
+      throw new Error(`Unexpected Washington route: ${url}`);
+    });
+    vi.stubGlobal('fetch', fetchMock);
+
+    const counties = await fetchWashingtonCountyStatus(undefined, 'hosted');
+    const spokane = counties[0];
+    expect(spokane).toBeDefined();
+    if (!spokane) throw new Error('Hosted Spokane status is missing.');
+
+    const olderAttempt = verifyWashingtonCountySalesShard(spokane);
+    await firstShardRequested.promise;
+    await expect(verifyWashingtonCountySalesShard(spokane)).resolves.toMatchObject({
+      countyCode: '063',
+      salesShardVerification: 'verified',
+    });
+
+    lateInvalidShardJson.resolve({ ...hostedShard, countyCode: '001' });
+    await expect(olderAttempt).resolves.toMatchObject({
+      countyCode: '063',
+      salesShardVerification: 'unavailable',
+    });
+
+    const queue = await fetchWashingtonLaunchQueue(2025, 'all', 1, 25, {
+      countyCode: '063',
+      hood: null,
+      propertyType: null,
+      saleDateFrom: null,
+      saleDateTo: null,
+      minPrice: null,
+      maxPrice: null,
+    });
+    expect(queue.total).toBe(3);
+    evictWashingtonLaunchCountyShard('063', 'hosted');
   });
 
   it('rejects a noncanonical sale date before deriving verified freshness', async () => {
