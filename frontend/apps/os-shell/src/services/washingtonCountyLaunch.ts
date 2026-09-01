@@ -23,7 +23,24 @@ export const WASHINGTON_PUBLIC_DATA_REQUEST_TIMEOUT_MS = 10_000;
 const WASHINGTON_COUNTY_STATUS_SCHEMA = 'terrafusion.washington.county-status.v1';
 const WASHINGTON_COUNTY_DETAIL_PATH_PREFIX = '/launch-data/washington/counties';
 const WASHINGTON_SALES_SHARD_PATH_PREFIX = '/launch-data/washington/sales/by-county';
-const washingtonCountyShardVerificationAttempts = new Map<string, symbol>();
+
+interface WashingtonCountyShardVerificationAttempt {
+  active: boolean;
+  previous: WashingtonCountyShardVerificationAttempt | null;
+}
+
+const washingtonCountyShardVerificationAttempts =
+  new Map<string, WashingtonCountyShardVerificationAttempt>();
+
+function nearestActiveWashingtonCountyShardVerificationAttempt(
+  attempt: WashingtonCountyShardVerificationAttempt | null,
+): WashingtonCountyShardVerificationAttempt | null {
+  let candidate = attempt;
+  while (candidate && !candidate.active) {
+    candidate = candidate.previous;
+  }
+  return candidate;
+}
 
 function createWashingtonRequestAbortError(): Error {
   const error = new Error('The Washington public-data request was cancelled.');
@@ -227,60 +244,72 @@ export async function verifyWashingtonCountySalesShard(
   county: WashingtonCountyStatusEntry,
   signal?: AbortSignal,
 ): Promise<WashingtonCountyStatusEntry> {
-  const previousAttempt = washingtonCountyShardVerificationAttempts.get(county.countyCode);
-  const attempt = Symbol(county.countyCode);
+  const attempt: WashingtonCountyShardVerificationAttempt = {
+    active: true,
+    previous: washingtonCountyShardVerificationAttempts.get(county.countyCode) ?? null,
+  };
   washingtonCountyShardVerificationAttempts.set(county.countyCode, attempt);
   const isCurrentAttempt = (): boolean =>
     washingtonCountyShardVerificationAttempts.get(county.countyCode) === attempt;
-  let verification: WashingtonSalesReviewHostedShardVerification;
   try {
-    verification = await runBoundedWashingtonPublicDataRequest(
-      (boundedSignal) => verifyWashingtonSalesReviewHostedShard(
-        county,
-        boundedSignal,
-        isCurrentAttempt,
-      ),
-      signal,
-    );
-  } catch (error) {
-    if (signal?.aborted) {
-      if (isCurrentAttempt()) {
-        if (previousAttempt) {
-          washingtonCountyShardVerificationAttempts.set(county.countyCode, previousAttempt);
-        } else {
-          washingtonCountyShardVerificationAttempts.delete(county.countyCode);
+    let verification: WashingtonSalesReviewHostedShardVerification;
+    try {
+      verification = await runBoundedWashingtonPublicDataRequest(
+        (boundedSignal) => verifyWashingtonSalesReviewHostedShard(
+          county,
+          boundedSignal,
+          isCurrentAttempt,
+        ),
+        signal,
+      );
+    } catch (error) {
+      if (signal?.aborted) {
+        if (isCurrentAttempt()) {
+          const previousAttempt = nearestActiveWashingtonCountyShardVerificationAttempt(
+            attempt.previous,
+          );
+          if (previousAttempt) {
+            washingtonCountyShardVerificationAttempts.set(county.countyCode, previousAttempt);
+          } else {
+            washingtonCountyShardVerificationAttempts.delete(county.countyCode);
+          }
         }
+        throw error;
       }
-      throw error;
+      if (isCurrentAttempt()) {
+        evictWashingtonLaunchCountyShard(county.countyCode, 'hosted');
+      }
+      return {
+        ...county,
+        salesShardVerification: 'unavailable',
+      };
     }
-    if (isCurrentAttempt()) {
-      evictWashingtonLaunchCountyShard(county.countyCode, 'hosted');
+    if (!isCurrentAttempt()) {
+      return {
+        ...county,
+        salesShardVerification: 'unavailable',
+      };
     }
-    return {
-      ...county,
-      salesShardVerification: 'unavailable',
-    };
-  }
-  if (!isCurrentAttempt()) {
-    return {
-      ...county,
-      salesShardVerification: 'unavailable',
-    };
-  }
-  if (verification.state === 'verified') {
-    return {
-      ...county,
-      stagedSales: verification.stagedSales,
-      needsReview: verification.needsReview,
-      latestSaleDate: verification.latestSaleDate,
-      salesShardVerification: 'verified',
-    };
-  }
+    if (verification.state === 'verified') {
+      return {
+        ...county,
+        stagedSales: verification.stagedSales,
+        needsReview: verification.needsReview,
+        latestSaleDate: verification.latestSaleDate,
+        salesShardVerification: 'verified',
+      };
+    }
 
-  return {
-    ...county,
-    salesShardVerification: verification.state,
-  };
+    return {
+      ...county,
+      salesShardVerification: verification.state,
+    };
+  } finally {
+    attempt.active = false;
+    if (isCurrentAttempt()) {
+      washingtonCountyShardVerificationAttempts.delete(county.countyCode);
+    }
+  }
 }
 
 /**
