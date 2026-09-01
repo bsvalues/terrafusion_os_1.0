@@ -1,7 +1,7 @@
 # Work Order Program Queue (Current State)
 
 **Version:** 1.0
-**Date:** 2026-08-28
+**Date:** 2026-09-01
 **Authority:** `OWNER-WAL-V1-MISSION-AUTHORITY-20260827` plus `OWNER-TF-STANDING-OPERATOR-AUTHORITY`
 **Classification:** Operator Doctrine — live cross-program queue snapshot
 
@@ -20,10 +20,11 @@ merge `dcd1405b15d7aaa686ae444ed917117fcada3de0`, PR #1509 merge
 `b4c34f53a6c0251fc2df3a02974b5e7e96ef7a95`, and PR #1510 merge
 `1144599ac99e20312d38b83ab71457519f6b8181`. `WO-WAL-000F` reconciled that evidence and recorded the
 zero-dispatch boundary in protected PR #1511 at merge
-`37257bd84563a7a95c1c8d495e724584e2675230`. Current implementation inspection now supports the
-prospective 000G sequence: exact 004F API county-context integration first, governance-only 000H
-protected completion reconciliation second, and explicitly released 002F real CSV API admission
-third. The broad 001-004 parents remain open; 005/006 remain blocked.
+`37257bd84563a7a95c1c8d495e724584e2675230`. `WO-WAL-000G` then reached protected main in PR #1531
+at `0b5a8adafa74de34f58721fad1f514ac7f3d6e0f`, and exact 004F API county-context integration reached
+protected main in PR #1535 at `54e0df259c1712b156260b1b5d24444611906e2b`. Governance-only 000H
+now records that evidence and releases 002F on this reconciliation's protected merge. The broad
+001-004 parents remain open; 005/006 remain blocked.
 
 The E reservations remain bounded: 001E owns only an atomic local-temporary landing receipt for one
 already-verified public artifact; 002E owns only an in-memory first-seen/duplicate decision over
@@ -34,10 +35,10 @@ permitted execution/network environment, data classification/handling requiremen
 source-side no-DML evidence method.
 
 The candidate registry models the state that will exist after its protected merge. It is not itself
-dispatch authority while present only on a PR branch. `WO-WAL-000G` reserves governance files only;
-after protected merge its exact initial executable set is 004F. Ready 000H remains dependency-
-blocked until 004F is protected-complete; 002F remains status-blocked until protected 000H verifies
-004F and explicitly releases it. No 001F/003E/003F is registered.
+dispatch authority while present only on a PR branch. Protected 000G and protected 004F are complete.
+This exact 000H reconciliation is the remaining protected boundary: before it merges, 002F remains
+status-blocked in protected canon; after it merges, the exact initial executable set is 002F. No
+001F/003E/003F is registered.
 
 The program continues through 39-county runtime truth, governed county upload, read-only
 multi-county Sync, county identity/isolation/trust, the real Counties HUB, county-aware TerraForge,
@@ -174,7 +175,8 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | **WO-WAL-000D C-Wave Reconciliation and Next Exact Child Reservations** | **COMPLETE / PR #1502 / R3** | Protected merge `f21cfa6f6`; recorded C-wave completion and registered the four D children |
 | **WO-WAL-000E D-Wave Reconciliation and Exact E-Wave Reservations** | **COMPLETE / PR #1507 / R3** | Protected merge `984018696`; recorded D-wave completion, registered exactly 001E/002E/004E, and retained the 003 live-source authority wall |
 | **WO-WAL-000F E-Wave Reconciliation and F-Wave Authority Gates** | **COMPLETE / PR #1511 / R3** | Protected merge `37257bd84`; recorded E protected completion, zero executable F children, and the preserved 003 authority wall |
-| **WO-WAL-000G Runtime Integration Reservations** | **ACTIVE; COMPLETE ONLY ON PROTECTED MERGE / R3** | Seven exact governance files; register 004F then dependency-cleared 002F while preserving 001/003 authority walls |
+| **WO-WAL-000G Runtime Integration Reservations** | **COMPLETE / PR #1531 / R3** | Protected merge `0b5a8adaf`; registered 004F, protected 000H reconciliation, and blocked 002F while preserving 001/003 authority walls |
+| **WO-WAL-000H Upload Admission Release Reconciliation** | **COMPLETE ON PROTECTED MERGE / R3** | Six exact governance files; verifies protected 004F merge/check/path/contract/environment/terminal evidence and releases exactly 002F |
 | **WO-WAL-001 Statewide Public Baseline Runtime Completion** | **OPEN; EXACT CHILD ROUTING / R4** | Parent remains open; prove truthful source-to-rows-to-runtime state for all 39 counties with provenance, freshness, capability truth, and no Benton fallback |
 | **WO-WAL-001A Public Baseline Ledger Contract** | **COMPLETE / PR #1489** | Three exact files; deterministic 39-county registry-only ledger under `wal.public-baseline-ledger.v1`; local temp only, no network/database and no runtime inference |
 | **WO-WAL-001B Public Acquisition Artifact Receipt Contract** | **COMPLETE / PR #1493 / R2** | Protected merge `d54d1722f`; immutable public-artifact receipt evidence with no runtime inference |
@@ -187,7 +189,7 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | **WO-WAL-002C Canonical County-Bound CSV Intake** | **COMPLETE / PR #1500 / R5** | Protected merge `22d00eda8`; same-county `COUNTY_PROVIDED` protected-operation binding around one in-memory CSV envelope |
 | **WO-WAL-002D County CSV Idempotency Identity** | **COMPLETE / PR #1506 / R3** | Protected merge `f4480bdb5`; deterministic bounded identity proved with no duplicate store or decision |
 | **WO-WAL-002E County CSV Duplicate Decision** | **COMPLETE / PR #1508 / R3** | Protected merge `dcd1405b1`; reviewed head integrated at `6dd01433b`; local-memory first-seen/duplicate decision only, with no persistence, transport, quarantine, or promotion |
-| **WO-WAL-002F Authenticated County CSV API Admission** | **DEPENDENCY BLOCKED ON PROTECTED 004F / R5** | Three exact files; replace fabricated anonymous upload response with real assessor-authorized county-bound CSV admission and receipt; no durable staging/promotion claim |
+| **WO-WAL-002F Authenticated County CSV API Admission** | **READY ON PROTECTED 000H MERGE / R5** | Three exact files; replace fabricated anonymous upload response with real assessor-authorized county-bound CSV admission and receipt; no durable staging/promotion claim |
 | **WO-WAL-003 Read-Only Multi-County TerraFusion Sync** | **OPEN; EXACT CHILD ROUTING / R5** | Parent remains open; real source profiles, checkpoints, lineage, drift handling and observed zero external DML require later exact children |
 | **WO-WAL-003A Read-Only Source Adapter Contract** | **COMPLETE / PR #1491** | Four exact files; mock-only `wal.source-profile.v1` and `wal.external-readonly.v1`; no live source or observed no-DML claim |
 | **WO-WAL-003B Bounded Read Execution Envelope** | **COMPLETE / PR #1495 / R3** | Protected merge `3992e89f6`; one guarded mock-adapter execution with no live source or credential |
@@ -199,7 +201,7 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | **WO-WAL-004C County Data Activation Prerequisite Contract** | **COMPLETE / PR #1499 / R5** | Protected merge `da2443068`; data-free per-mode evidence eligibility with no activation, adoption, persistence or integration |
 | **WO-WAL-004D Authenticated County Authority Binding** | **COMPLETE / PR #1503 / R5** | Protected merge `d7f22442e`; authenticated exact persisted county GUID equality proved without grant or activation |
 | **WO-WAL-004E Authenticated Canonical County Context** | **COMPLETE / PR #1509 / R5** | Protected merge `b4c34f53a`; reviewed `6bee954e4`; canonical 39-county fixture context only, with no authentication, activation, persistence, default county, or production |
-| **WO-WAL-004F Authenticated Canonical Context Runtime Integration** | **READY AFTER PROTECTED 000G / R5** | Six exact files; wire current authenticated request county to canonical context in the real API scope with fail-closed tests and no capability grant |
+| **WO-WAL-004F Authenticated Canonical Context Runtime Integration** | **COMPLETE / PR #1535 / R5** | Protected merge `54e0df259`; exact reviewed head `508a87d6f`; current authenticated request county wired to canonical API scope with fail-closed proof and no capability grant |
 | **WO-WAL-005 Real 39-County Counties HUB** | **BLOCKED ON STABLE 001-004 CONTRACTS / R4** | Build `/counties` from real control-plane truth for PUBLIC, COUNTY_PROVIDED, CONNECTED, provenance, freshness and capability state |
 | **WO-WAL-006 TerraForge Statewide Launch Runtime** | **BLOCKED ON STABLE 001-004 CONTRACTS / R4** | Run county-aware supported workflows, disclose trust/source state, and withhold unsupported modules without silent fallback |
 | **WO-WAL-007 39-County End-to-End Launch Proof** | **BLOCKED ON 001-006 / R4** | Accept one exact candidate through all-county API/browser coverage, representative source-family journeys, rollback and adversarial isolation proof |

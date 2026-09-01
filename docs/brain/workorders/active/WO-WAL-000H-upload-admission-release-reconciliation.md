@@ -2,7 +2,7 @@
 
 | Field | Value |
 | --- | --- |
-| Status | `READY_AFTER_PROTECTED_004F` |
+| Status | `COMPLETE_ON_PROTECTED_MERGE` |
 | Parent | `WO-WAL-000` |
 | Program | Washington Assessor Launch V1 |
 | Risk | R3 governance-only protected-boundary reconciliation |
@@ -48,7 +48,33 @@ is authorized by this reconciliation.
 - pre-transition 002F blocked proof and post-transition exact 002F release proof;
 - exact six-path audit and `git diff --check`.
 
+## Protected 004F evidence
+
+- PR #1535 merged exact reviewed head `508a87d6f1df01dc2238511e6cb1dad99b44cb19`
+  from base `0b5a8adafa74de34f58721fad1f514ac7f3d6e0f` as protected commit
+  `54e0df259c1712b156260b1b5d24444611906e2b` at `2026-09-01T22:09:37Z`.
+- Protected `origin/main` was fetched and resolved exactly to that merge. Its parent and five changed
+  paths exactly match the recorded base and the five implementation/test members of the six-path
+  004F reservation; the pre-registered 004F Work Order document was not rewritten by the product PR.
+- All ten required contexts passed: both seal contexts, all three core-governance contexts, both
+  canonical .NET contexts, migration, Tier-1 UI, and the Vitest merge gate. The configured Codex
+  review completed on the exact head with zero review threads.
+- Protected main contains contract `wal.authenticated-canonical-county-runtime-context.v1`,
+  environment reservation `local-api-auth-context-persisted-guid-fixture-only`, the zero-selector
+  `BindCurrentAsync` operation, the scoped provider registration, and the real `Program` wiring.
+- Local terminal proof passed 30/30 focused Core tests and 6/6 focused API provider tests. Direct
+  Core and API builds completed with zero warnings and zero errors. This proves terminal condition
+  `AUTHENTICATED_CANONICAL_COUNTY_CONTEXT_API_SCOPE_FAIL_CLOSED_PROVEN` without a capability,
+  protected-data, deployment, or production claim.
+
+## Release transition
+
+The registry, queue, program, and 002F child record now model the state that becomes canonical only
+when this six-path reconciliation reaches protected main: 004F and 000H are terminal, 002F is
+`ready`, and its 004F/000H dependencies are `satisfied`. Before this protected merge, the prior
+protected registry remains authoritative and 002F remains blocked.
+
 ## Completion
 
-Completion releases exactly `WO-WAL-002F` for its own isolated protected lifecycle. It does not
-implement 002F or complete `WO-WAL-002`, `WO-WAL-004`, or the launch mission.
+Protected completion releases exactly `WO-WAL-002F` for its own isolated protected lifecycle. It
+does not implement 002F or complete `WO-WAL-002`, `WO-WAL-004`, or the launch mission.
