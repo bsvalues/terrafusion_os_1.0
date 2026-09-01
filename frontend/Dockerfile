@@ -74,6 +74,12 @@ COPY packages/ packages/
 # Copy frontend source
 COPY frontend/ frontend/
 
+# The tracked package supports local exact-package acceptance, but production
+# images receive Washington launch data only through the deployment-pinned
+# packager above. Remove the tracked copy before Vite copies public assets so a
+# navigation-only image cannot serve or activate county data without its pin.
+RUN rm -rf /app/frontend/apps/os-shell/public/launch-data/washington
+
 # Build production bundle
 WORKDIR /app/frontend
 RUN NODE_OPTIONS="--max-old-space-size=4096" pnpm exec vite build --outDir /app/dist

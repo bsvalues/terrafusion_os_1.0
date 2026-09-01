@@ -45,11 +45,13 @@ describe('Washington launch data Vite proxy', () => {
     expect(new RegExp(WASHINGTON_LAUNCH_DATA_PROXY_CONTEXT).test(requestPath)).toBe(false);
   });
 
-  it('requires the public source and browser trust pin together', () => {
-    expect(() => resolveWashingtonLaunchDataProxy({
+  it('accepts an exact pin for the tracked same-origin package without enabling a proxy', () => {
+    expect(resolveWashingtonLaunchDataProxy({
       manifestSha256: MANIFEST_SHA256,
-    })).toThrow(/WASHINGTON_LAUNCH_DATA_SOURCE_URL is required/);
+    })).toBeUndefined();
+  });
 
+  it('requires a browser trust pin whenever a public proxy source is configured', () => {
     expect(() => resolveWashingtonLaunchDataProxy({
       sourceUrl: `https://public-data.example.gov${WASHINGTON_LAUNCH_DATA_PATH}`,
     })).toThrow(/VITE_WASHINGTON_LAUNCH_MANIFEST_SHA256/);
@@ -57,6 +59,10 @@ describe('Washington launch data Vite proxy', () => {
     expect(() => resolveWashingtonLaunchDataProxy({
       manifestSha256: 'not-a-digest',
       sourceUrl: `https://public-data.example.gov${WASHINGTON_LAUNCH_DATA_PATH}`,
+    })).toThrow(/64-character SHA-256 digest/);
+
+    expect(() => resolveWashingtonLaunchDataProxy({
+      manifestSha256: 'not-a-digest',
     })).toThrow(/64-character SHA-256 digest/);
   });
 

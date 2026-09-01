@@ -10,7 +10,6 @@ import {
   type WashingtonReferencePackageSource,
 } from '@/lib/washingtonAssessorReferencePackage';
 import { getWashingtonPublicSourceInventory } from '@/lib/washingtonPublicSourceInventory';
-import { WASHINGTON_EMBEDDED_LAUNCH_MANIFEST_SHA256 } from '@/lib/washingtonEmbeddedLaunchData';
 import { getViteEnv } from '@/env/getViteEnv';
 import {
   evictWashingtonLaunchCountyShard,
@@ -162,10 +161,7 @@ function readPinnedHostedManifestSha256(): string | null {
   const value = String(
     getViteEnv().VITE_WASHINGTON_LAUNCH_MANIFEST_SHA256 ?? '',
   ).trim().toLowerCase();
-  if (isSha256Digest(value)) return value;
-  return isSha256Digest(WASHINGTON_EMBEDDED_LAUNCH_MANIFEST_SHA256)
-    ? WASHINGTON_EMBEDDED_LAUNCH_MANIFEST_SHA256
-    : null;
+  return isSha256Digest(value) ? value : null;
 }
 
 function parseTrustedHttpsUrl(value: unknown): URL | null {

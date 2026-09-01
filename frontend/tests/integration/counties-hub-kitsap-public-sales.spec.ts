@@ -14,7 +14,9 @@ test('uses the authenticated Kitsap public-sales package without lending it to a
 
   await page.goto('/counties');
 
-  await expect(page.getByRole('heading', { name: 'Washington Counties Hub' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Washington Counties Hub' })).toBeVisible({
+    timeout: 20_000,
+  });
   await expect(page.getByRole('option')).toHaveCount(39, { timeout: 20_000 });
   await expect(page.getByText('39 Washington counties', { exact: true })).toBeVisible();
   await expect(page.getByText('0 with verified observed status', { exact: true })).toBeVisible();

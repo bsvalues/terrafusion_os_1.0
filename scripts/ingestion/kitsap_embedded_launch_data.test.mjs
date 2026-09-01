@@ -9,7 +9,8 @@ import {
 } from '../ci/package_washington_launch_data.mjs';
 
 const PACKAGE_ROOT = 'frontend/apps/os-shell/public/launch-data/washington';
-const PIN_PATH = 'frontend/apps/os-shell/src/lib/washingtonEmbeddedLaunchData.ts';
+const EXPECTED_MANIFEST_SHA256 =
+  '349e5e44c03dbece94613252354d33d372f0d1e98361d12578ccf47faec6080e';
 
 function canonicalizeJson(value) {
   if (value === null || typeof value === 'boolean' || typeof value === 'string') {
@@ -30,16 +31,15 @@ function canonicalSha256(value) {
   return createHash('sha256').update(canonicalizeJson(value)).digest('hex');
 }
 
-test('embedded Kitsap package is pinned, county-isolated, public-only, and runtime-compatible', async () => {
+test('embedded Kitsap package is digest-bound, county-isolated, public-only, and runtime-compatible', async () => {
   const manifest = JSON.parse(await readFile(`${PACKAGE_ROOT}/manifest.json`, 'utf8'));
   const status = JSON.parse(await readFile(`${PACKAGE_ROOT}/counties/status.json`, 'utf8'));
   const detail = JSON.parse(await readFile(`${PACKAGE_ROOT}/counties/035.json`, 'utf8'));
   const shard = JSON.parse(await readFile(`${PACKAGE_ROOT}/sales/by-county/035.json`, 'utf8'));
   const receipt = JSON.parse(await readFile(`${PACKAGE_ROOT}/receipts/kitsap-source.json`, 'utf8'));
-  const pinSource = await readFile(PIN_PATH, 'utf8');
 
   const manifestDigest = canonicalSha256(manifest);
-  assert.match(pinSource, new RegExp(manifestDigest));
+  assert.equal(manifestDigest, EXPECTED_MANIFEST_SHA256);
   assert.equal(status.counties.length, 1);
   assert.equal(status.counties[0].countyCode, '035');
   assert.equal(status.counties[0].stagedSales, 24_585);
