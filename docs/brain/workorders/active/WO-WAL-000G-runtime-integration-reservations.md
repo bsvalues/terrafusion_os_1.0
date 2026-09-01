@@ -13,9 +13,10 @@
 
 Use the protected E-wave contracts and a current protected-main implementation audit to register
 the smallest non-colliding runtime integration sequence that replaces two proven launch stubs:
-authenticated canonical county context is wired into the real API request scope first, then the
-upload endpoint consumes that context and the protected CSV intake contracts. This Work Order
-changes governance only and implements neither child.
+authenticated canonical county context is wired into the real API request scope first, a protected
+governance reconciliation verifies that merge and releases the upload child second, then the upload
+endpoint consumes that context and the protected CSV intake contracts. This Work Order changes
+governance only and implements neither child.
 
 ## Current implementation evidence
 
@@ -52,10 +53,23 @@ promotion, rollback, or production readiness.
   - `backend/src/TerraFusion.API/Program.cs`
   - `backend/TerraFusion.API.Tests/Auth/AuthenticatedCanonicalCountyContextProviderTests.cs`
 
+### WO-WAL-000H — Upload Admission Release Reconciliation
+
+- Dependency: protected-complete `WO-WAL-004F` and protected `WO-WAL-000G`.
+- Risk: R3 governance-only.
+- Terminal: `PROTECTED_004F_VERIFIED_AND_002F_RELEASED_READY`.
+- Paths:
+  - `docs/brain/workorders/active/WO-WAL-000H-upload-admission-release-reconciliation.md`
+  - `docs/brain/workorders/active/WO-WAL-002F-authenticated-county-csv-api-admission.md`
+  - `docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md`
+  - `docs/brain/workorders/programs/washington-assessor-launch-v1.md`
+  - `docs/brain/workorders/registry/work-order-registry.seed.json`
+  - `docs/brain/workorders/tools/wo-wave-plan.test.mjs`
+
 ### WO-WAL-002F — Authenticated County CSV API Admission
 
 - Dependency: protected-complete `WO-WAL-002A` through `WO-WAL-002E`, protected-complete
-  `WO-WAL-004F`, and protected `WO-WAL-000G`.
+  `WO-WAL-004F`, protected release reconciliation `WO-WAL-000H`, and protected `WO-WAL-000G`.
 - Contract: `wal.county-upload.authenticated-csv-api-admission.v1`.
 - Environment: `local-api-synthetic-csv-intake-only`.
 - Risk: R5.
@@ -65,8 +79,9 @@ promotion, rollback, or production readiness.
   - `backend/src/TerraFusion.API/Controllers/DataImportController.cs`
   - `backend/TerraFusion.API.Tests/Controllers/DataImportControllerTests.cs`
 
-`WO-WAL-002F` is dependency-blocked until `WO-WAL-004F` reaches protected main. The verified
-initial executable set is therefore exactly `WO-WAL-004F`.
+`WO-WAL-002F` remains status-blocked after `WO-WAL-004F`; only protected `WO-WAL-000H` may verify
+that merge and change 002F to ready. The verified initial executable set is exactly `WO-WAL-004F`,
+with 000H projected only after 004F and 002F absent from every pre-reconciliation executable set.
 
 ## Preserved authority walls
 
@@ -87,6 +102,7 @@ initial executable set is therefore exactly `WO-WAL-004F`.
 Only these repository-relative paths may change in this governance Work Order:
 
 - `docs/brain/workorders/active/WO-WAL-000G-runtime-integration-reservations.md`
+- `docs/brain/workorders/active/WO-WAL-000H-upload-admission-release-reconciliation.md`
 - `docs/brain/workorders/active/WO-WAL-002F-authenticated-county-csv-api-admission.md`
 - `docs/brain/workorders/active/WO-WAL-004F-authenticated-canonical-context-runtime-integration.md`
 - `docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md`
@@ -96,15 +112,17 @@ Only these repository-relative paths may change in this governance Work Order:
 
 ## Validation
 
-- validate `WO-WAL-000G`, `WO-WAL-002F`, and `WO-WAL-004F` against the Work Order schema;
+- validate `WO-WAL-000G`, `WO-WAL-000H`, `WO-WAL-002F`, and `WO-WAL-004F` against the Work Order schema;
 - prove the verified initial executable set is exactly `WO-WAL-004F` and an unverified protected
   dispatch source yields an empty set;
-- prove `WO-WAL-002F` remains dependency-blocked until 004F is protected-complete;
+- prove `WO-WAL-000H` is projected only after 004F and 002F remains status-blocked until a later
+  protected 000H reconciliation explicitly releases it;
 - prove all implementation, contract, and environment reservations are unique and non-colliding;
 - prove 001F/003E/003F remain absent and the exact Sync authority wall is retained;
-- run focused wave-plan tests, `git diff --check`, and the exact seven-path audit.
+- run focused wave-plan tests, `git diff --check`, and the exact eight-path audit.
 
 ## Completion
 
 This governance barrier becomes canonical only when its validated commit reaches protected main.
-It clears exactly `WO-WAL-004F`; it does not implement either child or complete a broad parent.
+It clears exactly `WO-WAL-004F` and registers the later 000H protected release boundary; it does
+not implement either product child or complete a broad parent.

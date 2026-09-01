@@ -54,4 +54,5 @@ identity-provider integration, protected county data, deployment, or production 
 ## Completion
 
 Completion wires canonical authenticated county identity into the real API request scope only. It
-does not complete `WO-WAL-004` or authorize a protected resource action.
+does not complete `WO-WAL-004`, make `WO-WAL-002F` ready, or authorize a protected resource action.
+Protected `WO-WAL-000H` must verify this completion before releasing 002F.

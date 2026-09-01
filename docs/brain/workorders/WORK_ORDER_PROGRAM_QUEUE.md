@@ -21,8 +21,9 @@ merge `dcd1405b15d7aaa686ae444ed917117fcada3de0`, PR #1509 merge
 `1144599ac99e20312d38b83ab71457519f6b8181`. `WO-WAL-000F` reconciled that evidence and recorded the
 zero-dispatch boundary in protected PR #1511 at merge
 `37257bd84563a7a95c1c8d495e724584e2675230`. Current implementation inspection now supports the
-prospective 000G sequence: exact 004F API county-context integration first and dependency-cleared
-002F real CSV API admission second. The broad 001-004 parents remain open; 005/006 remain blocked.
+prospective 000G sequence: exact 004F API county-context integration first, governance-only 000H
+protected completion reconciliation second, and explicitly released 002F real CSV API admission
+third. The broad 001-004 parents remain open; 005/006 remain blocked.
 
 The E reservations remain bounded: 001E owns only an atomic local-temporary landing receipt for one
 already-verified public artifact; 002E owns only an in-memory first-seen/duplicate decision over
@@ -34,8 +35,9 @@ source-side no-DML evidence method.
 
 The candidate registry models the state that will exist after its protected merge. It is not itself
 dispatch authority while present only on a PR branch. `WO-WAL-000G` reserves governance files only;
-after protected merge its exact initial executable set is 004F. 002F remains dependency-blocked on
-protected 004F. No 001F/003E/003F is registered.
+after protected merge its exact initial executable set is 004F. Ready 000H remains dependency-
+blocked until 004F is protected-complete; 002F remains status-blocked until protected 000H verifies
+004F and explicitly releases it. No 001F/003E/003F is registered.
 
 The program continues through 39-county runtime truth, governed county upload, read-only
 multi-county Sync, county identity/isolation/trust, the real Counties HUB, county-aware TerraForge,

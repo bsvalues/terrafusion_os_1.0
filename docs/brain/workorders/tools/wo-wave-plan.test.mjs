@@ -980,6 +980,7 @@ describe('wo-wave-plan', () => {
       fs.readFileSync(path.join(root, '.governance/owner-decisions.json'), 'utf8')
     );
     const reconciliation = actualRegistry.records.find(item => item.id === 'WO-WAL-000G');
+    const releaseReconciliation = actualRegistry.records.find(item => item.id === 'WO-WAL-000H');
     const identityChild = actualRegistry.records.find(item => item.id === 'WO-WAL-004F');
     const uploadChild = actualRegistry.records.find(item => item.id === 'WO-WAL-002F');
     const forbiddenIds = ['WO-WAL-001F', 'WO-WAL-003E', 'WO-WAL-003F'];
@@ -987,6 +988,7 @@ describe('wo-wave-plan', () => {
       'WO-WAL-000',
       'WO-WAL-000F',
       'WO-WAL-000G',
+      'WO-WAL-000H',
       'WO-WAL-002E',
       'WO-WAL-004D',
       'WO-WAL-004E',
@@ -1017,15 +1019,16 @@ describe('wo-wave-plan', () => {
       reconciliation.nextCandidates.map(item => [item.id, item.blocked]),
       [
         ['WO-WAL-004F', false],
-        ['WO-WAL-002F', true],
+        ['WO-WAL-000H', true],
       ]
     );
-    assert.equal(reconciliation.allowedFiles.length, 7);
-    assert.equal(new Set(reconciliation.allowedFiles).size, 7);
+    assert.equal(reconciliation.allowedFiles.length, 8);
+    assert.equal(new Set(reconciliation.allowedFiles).size, 8);
     assert.deepEqual(
       reconciliation.allowedFiles,
       [
         'docs/brain/workorders/active/WO-WAL-000G-runtime-integration-reservations.md',
+        'docs/brain/workorders/active/WO-WAL-000H-upload-admission-release-reconciliation.md',
         'docs/brain/workorders/active/WO-WAL-002F-authenticated-county-csv-api-admission.md',
         'docs/brain/workorders/active/WO-WAL-004F-authenticated-canonical-context-runtime-integration.md',
         'docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md',
@@ -1043,6 +1046,19 @@ describe('wo-wave-plan', () => {
       'local-api-auth-context-persisted-guid-fixture-only',
     ]);
     assert.equal(identityChild.allowedFiles.length, 6);
+    assert.equal(releaseReconciliation.status, 'ready');
+    assert.deepEqual(releaseReconciliation.contractReservations, []);
+    assert.deepEqual(releaseReconciliation.environmentReservations, []);
+    assert.equal(releaseReconciliation.allowedFiles.length, 6);
+    assert.ok(
+      releaseReconciliation.dependencies.some(
+        item => item.id === identityChild.id && item.status === 'required'
+      )
+    );
+    assert.deepEqual(
+      identityChild.nextCandidates.map(item => item.id),
+      [releaseReconciliation.id]
+    );
     assert.equal(uploadChild.status, 'blocked');
     assert.deepEqual(uploadChild.contractReservations, [
       'wal.county-upload.authenticated-csv-api-admission.v1',
@@ -1054,6 +1070,11 @@ describe('wo-wave-plan', () => {
     assert.ok(
       uploadChild.dependencies.some(item => item.id === identityChild.id && item.status === 'required')
     );
+    assert.ok(
+      uploadChild.dependencies.some(
+        item => item.id === releaseReconciliation.id && item.status === 'required'
+      )
+    );
 
     const schema = JSON.parse(
       fs.readFileSync(
@@ -1062,7 +1083,7 @@ describe('wo-wave-plan', () => {
       )
     );
     const validate = new Ajv2020({ allErrors: true, strict: false }).compile(schema);
-    for (const id of ['WO-WAL-000G', 'WO-WAL-004F', 'WO-WAL-002F']) {
+    for (const id of ['WO-WAL-000G', 'WO-WAL-000H', 'WO-WAL-004F', 'WO-WAL-002F']) {
       const item = actualRegistry.records.find(record => record.id === id);
       assert.equal(validate(item), true, `${id}: ${JSON.stringify(validate.errors)}`);
     }
@@ -1102,6 +1123,13 @@ describe('wo-wave-plan', () => {
       verifiedPlan.initialExecutableSet,
       ['WO-WAL-004F'],
       JSON.stringify(verifiedPlan.excludedWorkOrders.find(item => item.workOrderId === identityChild.id))
+    );
+    assert.deepEqual(
+      verifiedPlan.waves.slice(0, 2).map(wave => wave.workOrders.map(item => item.workOrderId)),
+      [[identityChild.id], [releaseReconciliation.id]],
+      JSON.stringify(
+        verifiedPlan.excludedWorkOrders.find(item => item.workOrderId === releaseReconciliation.id)
+      )
     );
     assert.deepEqual(unverifiedPlan.initialExecutableSet, []);
     for (const id of ['WO-WAL-000F', 'WO-WAL-000G', 'WO-WAL-002E', 'WO-WAL-004D', 'WO-WAL-004E']) {

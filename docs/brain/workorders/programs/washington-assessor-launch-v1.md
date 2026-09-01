@@ -11,7 +11,8 @@
 **Status:** ACTIVE — PR #1486 completed governance activation on protected main and Issue #1485 is
 recorded as `OWNER-WAL-V1-MISSION-AUTHORITY-20260827`. The A through E construction waves and the
 zero-dispatch F reconciliation are protected-complete. `WO-WAL-000G` prospectively registers the
-first evidence-backed runtime integration sequence: 004F first, then dependency-cleared 002F.
+first evidence-backed runtime integration sequence: 004F first, protected completion reconciliation
+000H second, then explicitly released 002F.
 Broad parents 001-004 remain open, 005/006 remain blocked, and the 003 live-source continuation
 remains behind its exact authority wall.
 
@@ -67,6 +68,7 @@ Current protected launch baseline after Gate C repair PR #1484: `3651e2fb6c440f6
 | `WO-WAL-000E` | Reconcile protected D-wave completion, register exactly 001E/002E/004E, and record the Sync authority wall | protected-complete 001D-004D; complete only on protected merge |
 | `WO-WAL-000F` | Reconcile protected E-wave completion and record zero executable F children while preserving authority walls | protected-complete 001E/002E/004E; complete only on protected merge |
 | `WO-WAL-000G` | Register exact authenticated county-context runtime integration followed by real CSV API admission | protected 000F plus current protected-main implementation evidence; complete only on protected merge |
+| `WO-WAL-000H` | Verify protected 004F completion and explicitly release 002F from blocked to ready | protected-complete 004F plus protected 000G; complete only on protected merge |
 | `WO-WAL-001` | 39-county public-baseline acquisition → normalization → landed runtime truth | 000 |
 | `WO-WAL-001A` | Deterministic 39-county source-registry ledger contract; no runtime inference | protected complete in PR #1489; bounded child of open 001 |
 | `WO-WAL-001B` | Deterministic public acquisition artifact receipt evidence; no landing/runtime inference | protected complete in PR #1493; bounded child of open 001 |
@@ -138,8 +140,9 @@ The exact path allowlists, machine-readable contract/environment reservations, a
 documents. Contract/environment reservations do not create credential, protected-data, external-
 system or production authority.
 
-`WO-WAL-000F` remains the historical zero-dispatch boundary. `WO-WAL-000G` admits only the two rows
-above after current implementation inspection; 004F must complete before 002F becomes executable.
+`WO-WAL-000F` remains the historical zero-dispatch boundary. `WO-WAL-000G` admits the 004F product
+row plus the governance-only 000H protected release boundary. 004F must reach protected main, then
+000H must explicitly change 002F from blocked to ready before 002F becomes executable.
 The live 003 chain still requires the complete named source/credential/environment bundle, and
 public acquisition 001F remains unregistered until source bytes and provenance are observed.
 

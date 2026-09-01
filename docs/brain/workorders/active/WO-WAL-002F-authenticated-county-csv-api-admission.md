@@ -2,7 +2,7 @@
 
 | Field | Value |
 | --- | --- |
-| Status | `DEPENDENCY_BLOCKED_ON_004F` |
+| Status | `DEPENDENCY_BLOCKED_ON_PROTECTED_000H_RELEASE` |
 | Parent | `WO-WAL-002` |
 | Program | Washington Assessor Launch V1 |
 | Risk | R5 authenticated upload API admission |
@@ -13,7 +13,8 @@
 ## Objective
 
 Replace the fabricated anonymous upload response with a real assessor-authorized multipart CSV
-admission that derives county authority from `WO-WAL-004F`, explicitly binds the Parcels or Sales
+admission that derives county authority from protected `WO-WAL-004F` after `WO-WAL-000H` explicitly
+releases this child, binds the Parcels or Sales
 dataset, and consumes the protected 002A-002E validation and duplicate-decision contracts.
 
 ## Exact reservations
