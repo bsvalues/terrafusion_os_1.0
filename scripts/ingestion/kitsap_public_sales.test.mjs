@@ -76,20 +76,22 @@ test('Kitsap adapter serializes overlapping package refresh writers', async () =
   }
 });
 
-test('Kitsap adapter never reclaims an unverifiable initializing lock regardless of age', async () => {
+test('Kitsap adapter never replaces an unverifiable canonical lock regardless of age', async () => {
   const root = await mkdtemp(join(tmpdir(), 'tf-kitsap-lock-init-'));
   const outputPath = join(root, 'launch-data', 'washington');
   const lockPath = `${outputPath}.refresh.lock`;
   const operationId = '456-abcdefab-cdef-4abc-8def-abcdefabcdef';
   try {
-    await mkdir(lockPath, { recursive: true });
+    await mkdir(resolve(lockPath, '..'), { recursive: true });
+    await writeFile(lockPath, '', 'utf8');
     const oldTimestamp = new Date(Date.now() - 60_000);
     await utimes(lockPath, oldTimestamp, oldTimestamp);
     await assert.rejects(
       acquirePackageRefreshLock(outputPath, operationId),
       /lock owner cannot be verified; the lock remains fenced/i
     );
-    assert.equal((await stat(lockPath)).isDirectory(), true);
+    assert.equal((await stat(lockPath)).isFile(), true);
+    assert.equal(await readFile(lockPath, 'utf8'), '');
   } finally {
     await rm(root, { recursive: true, force: true });
   }
@@ -102,9 +104,9 @@ test('Kitsap adapter reclaims a lock whose PID belongs to a different process in
   const staleOperation = '123-12345678-1234-4123-8123-123456789abc';
   const replacementOperation = '456-abcdefab-cdef-4abc-8def-abcdefabcdef';
   try {
-    await mkdir(lockPath, { recursive: true });
+    await mkdir(resolve(lockPath, '..'), { recursive: true });
     await writeFile(
-      join(lockPath, 'owner.json'),
+      lockPath,
       `${JSON.stringify({
         operationId: staleOperation,
         ownerPid: process.pid,
@@ -113,11 +115,45 @@ test('Kitsap adapter reclaims a lock whose PID belongs to a different process in
       'utf8'
     );
     await acquirePackageRefreshLock(outputPath, replacementOperation);
-    const owner = JSON.parse(await readFile(join(lockPath, 'owner.json'), 'utf8'));
+    const owner = JSON.parse(await readFile(lockPath, 'utf8'));
     assert.equal(owner.operationId, replacementOperation);
     assert.equal(owner.ownerPid, process.pid);
     assert.notEqual(owner.ownerProcessIdentity, 'reused-process-instance');
     await releasePackageRefreshLock(outputPath, replacementOperation);
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test('Kitsap adapter permits only one concurrent stale-owner reclaimer', async () => {
+  const root = await mkdtemp(join(tmpdir(), 'tf-kitsap-lock-reclaim-race-'));
+  const outputPath = join(root, 'launch-data', 'washington');
+  const lockPath = `${outputPath}.refresh.lock`;
+  const staleOperation = '123-12345678-1234-4123-8123-123456789abc';
+  const firstOperation = '456-abcdefab-cdef-4abc-8def-abcdefabcdef';
+  const secondOperation = '789-fedcbafe-dcba-4fed-8cba-fedcbafedcba';
+  try {
+    await mkdir(resolve(lockPath, '..'), { recursive: true });
+    await writeFile(
+      lockPath,
+      `${JSON.stringify({
+        operationId: staleOperation,
+        ownerPid: process.pid,
+        ownerProcessIdentity: 'reused-process-instance',
+      })}\n`,
+      'utf8'
+    );
+
+    const results = await Promise.allSettled([
+      acquirePackageRefreshLock(outputPath, firstOperation),
+      acquirePackageRefreshLock(outputPath, secondOperation),
+    ]);
+    const fulfilled = results.filter(result => result.status === 'fulfilled');
+    assert.equal(fulfilled.length, 1);
+
+    const owner = JSON.parse(await readFile(lockPath, 'utf8'));
+    assert.equal([firstOperation, secondOperation].includes(owner.operationId), true);
+    await releasePackageRefreshLock(outputPath, owner.operationId);
   } finally {
     await rm(root, { recursive: true, force: true });
   }

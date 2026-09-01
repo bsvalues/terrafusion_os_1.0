@@ -3,7 +3,7 @@
 import { createHash, randomUUID } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
 import * as fs from 'node:fs';
-import { access, mkdir, open, readFile, rename, rm } from 'node:fs/promises';
+import { access, link, mkdir, open, readFile, rename, rm, stat } from 'node:fs/promises';
 import { basename, dirname, join, resolve, sep } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import XLSX from 'xlsx';
@@ -120,22 +120,57 @@ function readProcessIdentity(pid) {
 }
 
 async function readRefreshLockOwner(lockPath) {
-  const ownerPath = join(lockPath, 'owner.json');
   for (let attempt = 0; attempt < 40; attempt += 1) {
     try {
+      const lockStat = await stat(lockPath);
+      const ownerPath = lockStat.isDirectory() ? join(lockPath, 'owner.json') : lockPath;
       return JSON.parse(await readFile(ownerPath, 'utf8'));
     } catch (error) {
-      if (error?.code !== 'ENOENT' && !(error instanceof SyntaxError)) throw error;
+      if (!['ENOENT', 'ENOTDIR'].includes(error?.code) && !(error instanceof SyntaxError)) {
+        throw error;
+      }
       await new Promise(resolveDelay => setTimeout(resolveDelay, 50));
     }
   }
   return null;
 }
 
+function isSameRefreshLockOwner(left, right) {
+  return (
+    left?.operationId === right?.operationId &&
+    left?.ownerPid === right?.ownerPid &&
+    left?.ownerProcessIdentity === right?.ownerProcessIdentity
+  );
+}
+
+async function restoreUnexpectedFencedLock(staleLockPath, lockPath) {
+  try {
+    const staleStat = await stat(staleLockPath);
+    if (staleStat.isDirectory()) {
+      if (await pathExists(lockPath)) return false;
+      await rename(staleLockPath, lockPath);
+    } else {
+      await link(staleLockPath, lockPath);
+      await rm(staleLockPath, { force: true });
+    }
+    await syncDirectory(dirname(lockPath));
+    return true;
+  } catch (error) {
+    if (
+      ['EACCES', 'EEXIST', 'EISDIR', 'ENOENT', 'ENOTDIR', 'ENOTEMPTY', 'EPERM'].includes(
+        error?.code
+      )
+    ) {
+      return false;
+    }
+    throw error;
+  }
+}
+
 export async function acquirePackageRefreshLock(outputPath, operationId) {
   const outputRoot = resolve(outputPath);
   const lockPath = `${outputRoot}.refresh.lock`;
-  const claimPath = `${lockPath}.claim-${operationId}`;
+  const claimPath = `${lockPath}.claim-${operationId}.json`;
   invariant(
     OPERATION_ID_PATTERN.test(operationId),
     'Kitsap package refresh operation ID is invalid.'
@@ -146,66 +181,85 @@ export async function acquirePackageRefreshLock(outputPath, operationId) {
     'Kitsap package refresh cannot establish the current process identity.'
   );
   await mkdir(dirname(outputRoot), { recursive: true });
+  await writeDurableFile(
+    claimPath,
+    `${JSON.stringify({ operationId, ownerPid: process.pid, ownerProcessIdentity })}\n`
+  );
 
-  for (let attempt = 0; attempt < 4; attempt += 1) {
-    let claimCreated = false;
-    try {
-      await mkdir(claimPath, { recursive: false });
-      claimCreated = true;
-      await writeDurableFile(
-        join(claimPath, 'owner.json'),
-        `${JSON.stringify({ operationId, ownerPid: process.pid, ownerProcessIdentity })}\n`
-      );
-      await syncDirectory(claimPath);
-      await rename(claimPath, lockPath);
-      claimCreated = false;
-      await syncDirectory(dirname(lockPath));
-      return lockPath;
-    } catch (error) {
-      if (claimCreated) await rm(claimPath, { recursive: true, force: true });
-      if (!(await pathExists(lockPath))) throw error;
-    }
+  try {
+    for (let attempt = 0; attempt < 4; attempt += 1) {
+      try {
+        await link(claimPath, lockPath);
+        await syncDirectory(dirname(lockPath));
+        return lockPath;
+      } catch (error) {
+        if (!(await pathExists(lockPath))) throw error;
+      }
 
-    const owner = await readRefreshLockOwner(lockPath);
-    if (!owner) {
-      throw new Error(
-        'Kitsap package refresh lock owner cannot be verified; the lock remains fenced.'
-      );
-    }
-    if (!Number.isSafeInteger(owner.ownerPid) || owner.ownerPid <= 0) {
-      throw new Error('Kitsap package refresh lock owner PID is invalid; the lock remains fenced.');
-    }
-    if (isProcessRunning(owner.ownerPid)) {
-      if (typeof owner.ownerProcessIdentity !== 'string' || !owner.ownerProcessIdentity) {
+      const owner = await readRefreshLockOwner(lockPath);
+      if (!owner) {
+        if (!(await pathExists(lockPath))) continue;
         throw new Error(
-          'Kitsap package refresh lock process identity cannot be verified; the lock remains fenced.'
+          'Kitsap package refresh lock owner cannot be verified; the lock remains fenced.'
         );
       }
-      const observedProcessIdentity = readProcessIdentity(owner.ownerPid);
-      if (!observedProcessIdentity) {
+      if (!OPERATION_ID_PATTERN.test(owner.operationId)) {
         throw new Error(
-          'Kitsap package refresh lock process identity is unavailable; the lock remains fenced.'
+          'Kitsap package refresh lock operation ID is invalid; the lock remains fenced.'
         );
       }
-      if (observedProcessIdentity === owner.ownerProcessIdentity) {
-        throw new Error(`Kitsap package refresh is already running under PID ${owner.ownerPid}.`);
+      if (!Number.isSafeInteger(owner.ownerPid) || owner.ownerPid <= 0) {
+        throw new Error(
+          'Kitsap package refresh lock owner PID is invalid; the lock remains fenced.'
+        );
       }
-    }
-    const staleLockPath = `${lockPath}.stale-${operationId}`;
-    try {
-      await rename(lockPath, staleLockPath);
-      await syncDirectory(dirname(lockPath));
+      if (isProcessRunning(owner.ownerPid)) {
+        if (typeof owner.ownerProcessIdentity !== 'string' || !owner.ownerProcessIdentity) {
+          throw new Error(
+            'Kitsap package refresh lock process identity cannot be verified; the lock remains fenced.'
+          );
+        }
+        const observedProcessIdentity = readProcessIdentity(owner.ownerPid);
+        if (!observedProcessIdentity) {
+          throw new Error(
+            'Kitsap package refresh lock process identity is unavailable; the lock remains fenced.'
+          );
+        }
+        if (observedProcessIdentity === owner.ownerProcessIdentity) {
+          throw new Error(`Kitsap package refresh is already running under PID ${owner.ownerPid}.`);
+        }
+      }
+
+      const staleLockPath = `${lockPath}.stale-${operationId}`;
+      try {
+        await rename(lockPath, staleLockPath);
+        await syncDirectory(dirname(lockPath));
+      } catch (error) {
+        if (error?.code === 'ENOENT') continue;
+        throw error;
+      }
+
+      const fencedOwner = await readRefreshLockOwner(staleLockPath);
+      if (!isSameRefreshLockOwner(fencedOwner, owner)) {
+        const restored = await restoreUnexpectedFencedLock(staleLockPath, lockPath);
+        throw new Error(
+          restored
+            ? 'Kitsap package refresh lock changed during stale-owner fencing and was restored.'
+            : 'Kitsap package refresh lock changed during stale-owner fencing and remains fenced.'
+        );
+      }
       await rm(staleLockPath, { recursive: true, force: true });
       await syncDirectory(dirname(lockPath));
-    } catch (error) {
-      if (error?.code !== 'ENOENT') throw error;
     }
+    throw new Error('Kitsap package refresh lock could not be acquired.');
+  } finally {
+    await rm(claimPath, { force: true });
+    await syncDirectory(dirname(lockPath));
   }
-  throw new Error('Kitsap package refresh lock could not be acquired.');
 }
 
 async function assertRefreshLockOwner(outputRoot, operationId) {
-  const lock = JSON.parse(await readFile(join(`${outputRoot}.refresh.lock`, 'owner.json'), 'utf8'));
+  const lock = JSON.parse(await readFile(`${outputRoot}.refresh.lock`, 'utf8'));
   const ownerProcessIdentity = readProcessIdentity(process.pid);
   invariant(
     lock?.operationId === operationId &&
