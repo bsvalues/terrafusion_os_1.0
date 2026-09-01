@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import * as fs from 'node:fs';
-import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
+import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { spawnSync } from 'node:child_process';
@@ -12,11 +12,45 @@ import {
   assertRuntimeCompatibleCountyDetail,
   assertRuntimeCompatibleCountyShard,
 } from '../ci/package_washington_launch_data.mjs';
+import { recoverInterruptedPackageRefresh } from './kitsap_public_sales.mjs';
 
 XLSX.set_fs(fs);
 
 const GENERATED_AT = '2026-08-26T17:48:16.000Z';
 const SCRIPT_PATH = resolve('scripts/ingestion/kitsap_public_sales.mjs');
+
+test('Kitsap adapter restores the prior package after an interrupted refresh', async () => {
+  const root = await mkdtemp(join(tmpdir(), 'tf-kitsap-recovery-'));
+  const outputPath = join(root, 'launch-data', 'washington');
+  const operationId = '123-12345678-1234-4123-8123-123456789abc';
+  const backupPath = `${outputPath}.bak-${operationId}`;
+  const temporaryPath = `${outputPath}.tmp-${operationId}`;
+  const journalPath = `${outputPath}.refresh.json`;
+  try {
+    await mkdir(backupPath, { recursive: true });
+    await mkdir(temporaryPath, { recursive: true });
+    await writeFile(join(backupPath, 'manifest.json'), '{"package":"prior"}\n', 'utf8');
+    await writeFile(join(temporaryPath, 'manifest.json'), '{"package":"replacement"}\n', 'utf8');
+    await writeFile(
+      journalPath,
+      `${JSON.stringify({
+        schemaVersion: 'terrafusion.washington.package-refresh.v1',
+        operationId,
+      })}\n`,
+      'utf8'
+    );
+
+    assert.equal(await recoverInterruptedPackageRefresh(outputPath), true);
+    assert.deepEqual(JSON.parse(await readFile(join(outputPath, 'manifest.json'), 'utf8')), {
+      package: 'prior',
+    });
+    await assert.rejects(readFile(backupPath), error => error?.code === 'ENOENT');
+    await assert.rejects(readFile(temporaryPath), error => error?.code === 'ENOENT');
+    await assert.rejects(readFile(journalPath), error => error?.code === 'ENOENT');
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
 
 function fixtureRow(overrides = {}) {
   return {

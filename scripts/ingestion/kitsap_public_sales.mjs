@@ -2,8 +2,9 @@
 
 import { createHash, randomUUID } from 'node:crypto';
 import * as fs from 'node:fs';
-import { mkdir, readFile, rename, rm, writeFile } from 'node:fs/promises';
+import { access, mkdir, readFile, rename, rm, writeFile } from 'node:fs/promises';
 import { basename, dirname, join, resolve } from 'node:path';
+import { pathToFileURL } from 'node:url';
 import XLSX from 'xlsx';
 
 XLSX.set_fs(fs);
@@ -18,10 +19,52 @@ const MANIFEST_SCHEMA = 'terrafusion.washington.launch-manifest.v1';
 const STATUS_SCHEMA = 'terrafusion.washington.county-status.v1';
 const DETAIL_SCHEMA = 'terrafusion.washington.county-detail.v1';
 const SHARD_SCHEMA = 'terrafusion.washington.sales-shard.v1';
+const REFRESH_JOURNAL_SCHEMA = 'terrafusion.washington.package-refresh.v1';
 const SHA256_PATTERN = /^[a-f\d]{64}$/;
+const OPERATION_ID_PATTERN = /^\d+-[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
 
 function invariant(condition, message) {
   if (!condition) throw new Error(message);
+}
+
+async function pathExists(path) {
+  try {
+    await access(path);
+    return true;
+  } catch (error) {
+    if (error?.code === 'ENOENT') return false;
+    throw error;
+  }
+}
+
+export async function recoverInterruptedPackageRefresh(outputPath) {
+  const outputRoot = resolve(outputPath);
+  const journalPath = `${outputRoot}.refresh.json`;
+  if (!(await pathExists(journalPath))) return false;
+
+  const journal = JSON.parse(await readFile(journalPath, 'utf8'));
+  invariant(
+    journal?.schemaVersion === REFRESH_JOURNAL_SCHEMA &&
+      OPERATION_ID_PATTERN.test(journal.operationId),
+    'Kitsap package refresh journal is invalid.'
+  );
+
+  const temporaryRoot = `${outputRoot}.tmp-${journal.operationId}`;
+  const backupRoot = `${outputRoot}.bak-${journal.operationId}`;
+  if (!(await pathExists(outputRoot))) {
+    if (await pathExists(backupRoot)) {
+      await rename(backupRoot, outputRoot);
+    } else if (await pathExists(temporaryRoot)) {
+      await rename(temporaryRoot, outputRoot);
+    } else {
+      throw new Error('Kitsap package refresh cannot recover its published package.');
+    }
+  }
+
+  await rm(backupRoot, { recursive: true, force: true });
+  await rm(temporaryRoot, { recursive: true, force: true });
+  await rm(journalPath, { force: true });
+  return true;
 }
 
 function canonicalizeJson(value) {
@@ -337,12 +380,15 @@ async function main() {
   };
 
   const outputRoot = resolve(outputPath);
+  await mkdir(dirname(outputRoot), { recursive: true });
+  await recoverInterruptedPackageRefresh(outputRoot);
   const operationId = `${process.pid}-${randomUUID()}`;
   const temporaryRoot = `${outputRoot}.tmp-${operationId}`;
   const backupRoot = `${outputRoot}.bak-${operationId}`;
-  await mkdir(dirname(outputRoot), { recursive: true });
+  const journalPath = `${outputRoot}.refresh.json`;
+  const temporaryJournalPath = `${journalPath}.tmp-${operationId}`;
   await mkdir(temporaryRoot, { recursive: false });
-  let movedExistingOutput = false;
+  let journalPublished = false;
   try {
     await writeJson(join(temporaryRoot, 'manifest.json'), manifest);
     await writeJson(join(temporaryRoot, 'counties/status.json'), status);
@@ -363,29 +409,28 @@ async function main() {
       quarantine,
       omittedFields: ['owner', 'grantor', 'grantee', 'buyer', 'seller'],
     });
+    await writeFile(
+      temporaryJournalPath,
+      `${JSON.stringify({ schemaVersion: REFRESH_JOURNAL_SCHEMA, operationId })}\n`,
+      { flag: 'wx', mode: 0o644 }
+    );
+    await rename(temporaryJournalPath, journalPath);
+    journalPublished = true;
     try {
       await rename(outputRoot, backupRoot);
-      movedExistingOutput = true;
     } catch (error) {
       if (error?.code !== 'ENOENT') throw error;
     }
-    try {
-      await rename(temporaryRoot, outputRoot);
-    } catch (error) {
-      if (movedExistingOutput) {
-        await rename(backupRoot, outputRoot);
-        movedExistingOutput = false;
-      }
-      throw error;
-    }
-    if (movedExistingOutput) {
-      movedExistingOutput = false;
-      await rm(backupRoot, { recursive: true, force: true });
-    }
+    await rename(temporaryRoot, outputRoot);
+    await rm(backupRoot, { recursive: true, force: true });
+    await rm(journalPath, { force: true });
+    journalPublished = false;
   } catch (error) {
-    await rm(temporaryRoot, { recursive: true, force: true });
-    if (movedExistingOutput) {
-      await rename(backupRoot, outputRoot);
+    await rm(temporaryJournalPath, { force: true });
+    if (journalPublished) {
+      await recoverInterruptedPackageRefresh(outputRoot);
+    } else {
+      await rm(temporaryRoot, { recursive: true, force: true });
     }
     throw error;
   }
@@ -409,4 +454,6 @@ async function main() {
   );
 }
 
-await main();
+if (process.argv[1] && pathToFileURL(resolve(process.argv[1])).href === import.meta.url) {
+  await main();
+}
