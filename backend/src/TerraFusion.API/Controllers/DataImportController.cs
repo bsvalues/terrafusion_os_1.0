@@ -54,15 +54,18 @@ namespace TerraFusion.API.Controllers
                     MaxFieldsPerRow = MaximumFieldsPerRow,
                     MaxCharactersPerField = MaximumCharactersPerField,
                 });
-            _duplicateDecision = memoryCache.GetOrCreate(
-                    DuplicateDecisionCacheKey,
-                    entry =>
-                    {
-                        entry.Priority = CacheItemPriority.NeverRemove;
-                        return new CountyCsvIntakeDuplicateDecision(DuplicateDecisionCapacity);
-                    })
-                ?? throw new InvalidOperationException(
-                    "County CSV duplicate-decision state could not be initialized.");
+            lock (memoryCache)
+            {
+                _duplicateDecision = memoryCache.GetOrCreate(
+                        DuplicateDecisionCacheKey,
+                        entry =>
+                        {
+                            entry.Priority = CacheItemPriority.NeverRemove;
+                            return new CountyCsvIntakeDuplicateDecision(DuplicateDecisionCapacity);
+                        })
+                    ?? throw new InvalidOperationException(
+                        "County CSV duplicate-decision state could not be initialized.");
+            }
         }
 
         /// <summary>GET /api/files — list uploaded import files.</summary>

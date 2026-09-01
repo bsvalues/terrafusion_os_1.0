@@ -149,6 +149,34 @@ public sealed class DataImportControllerTests
         Assert.Equal(first.CountyId, second.CountyId);
     }
 
+    [Fact]
+    public async Task Controller_initializes_one_duplicate_decision_during_concurrent_activation()
+    {
+        using var cache = new RacingMemoryCache();
+        using var start = new ManualResetEventSlim();
+        var activations = Enumerable.Range(0, 8)
+            .Select(_ => Task.Run(
+                () =>
+                {
+                    start.Wait();
+                    return BuildController(cache);
+                }))
+            .ToArray();
+
+        start.Set();
+        var controllers = await Task.WhenAll(activations);
+        var field = typeof(DataImportController).GetField(
+            "_duplicateDecision",
+            BindingFlags.Instance | BindingFlags.NonPublic);
+        Assert.NotNull(field);
+        var decisions = controllers
+            .Select(controller => field.GetValue(controller))
+            .ToArray();
+
+        Assert.NotNull(decisions[0]);
+        Assert.All(decisions.Skip(1), decision => Assert.Same(decisions[0], decision));
+    }
+
     [Theory]
     [InlineData(true, false)]
     [InlineData(false, true)]
@@ -500,6 +528,39 @@ public sealed class DataImportControllerTests
         {
             ReadCount++;
             return base.ReadAsync(buffer, cancellationToken);
+        }
+    }
+
+    private sealed class RacingMemoryCache : IMemoryCache
+    {
+        private readonly MemoryCache _inner = new(new MemoryCacheOptions());
+        private readonly CountdownEvent _firstMisses = new(2);
+
+        public ICacheEntry CreateEntry(object key) => _inner.CreateEntry(key);
+
+        public void Remove(object key) => _inner.Remove(key);
+
+        public bool TryGetValue(object key, out object? value)
+        {
+            if (_inner.TryGetValue(key, out value))
+            {
+                return true;
+            }
+
+            if (_firstMisses.CurrentCount > 0)
+            {
+                _firstMisses.Signal();
+                _firstMisses.Wait(TimeSpan.FromMilliseconds(100));
+            }
+
+            value = null;
+            return false;
+        }
+
+        public void Dispose()
+        {
+            _firstMisses.Dispose();
+            _inner.Dispose();
         }
     }
 }
