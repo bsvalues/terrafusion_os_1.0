@@ -46,6 +46,7 @@ jobs:
           ════════════════════════════════════════════════════════════════
             🔒 TerraFusion Seal Gate
             Backend Gate (.NET 8) / Canonical .NET Test Run
+            Backend .NET Tests / Canonical .NET Test Run
             🧪 Tier-1 UI Harness Validation
             phase85-tools
             phase86-toolrunner
@@ -72,6 +73,7 @@ jobs:
           required=(
             "🔒 TerraFusion Seal Gate"
             "Backend Gate (.NET 8) / Canonical .NET Test Run"
+            "Backend .NET Tests / Canonical .NET Test Run"
             "🧪 Tier-1 UI Harness Validation"
             "phase85-tools"
             "phase86-toolrunner"
@@ -85,9 +87,43 @@ jobs:
               echo "::error::Required check missing from branch-protection.sh: $r"
               missing=1
             fi
+            # The doc is the third source this repo's own guidance names; it was never
+            # actually checked, which is how it came to describe one gate while the list
+            # required a different one.
+            if ! grep -qF "$r" docs/governance/branch-protection.md; then
+              echo "::error::Required check missing from docs/governance/branch-protection.md: $r"
+              missing=1
+            fi
           done
           if [ "$missing" -ne 0 ]; then
-            echo "Workflow and script have drifted. Reconcile them."
+            echo "Workflow, script and doc have drifted. Reconcile them."
             exit 1
           fi
-          echo "OK: branch-protection.sh covers every canonical required check."
+          # Hand the canonical list to the live-diff step rather than restating it: a
+          # second copy in another step is the same drift this workflow exists to catch.
+          for r in "${required[@]}"; do echo "$r"; done | sort > codified-required-checks.txt
+          echo "OK: branch-protection.sh and the doc cover every canonical required check."
+
+      # The header claims this file can be "diffed against the live branch protection API
+      # response during audits" -- but nothing performed that diff, so live protection sat
+      # at 5 of these 8 and no build ever went red. Reading protection needs admin scope the
+      # default GITHUB_TOKEN lacks, so this reports UNAVAILABLE loudly rather than passing
+      # silently: an audit that cannot see live state must not look like one that agreed
+      # with it.
+      - name: Live drift check - codified list vs actual branch protection
+        env:
+          GH_TOKEN: ${{ secrets.BRANCH_PROTECTION_READ_TOKEN || secrets.GITHUB_TOKEN }}
+        run: |
+          set -uo pipefail
+          if ! gh api "repos/${GITHUB_REPOSITORY}/branches/main/protection" > live.json 2> live.err; then
+            echo "::warning::LIVE_DIFF_UNAVAILABLE - cannot read branch protection (needs admin scope)."
+            echo "::warning::Verify by hand: gh api repos/${GITHUB_REPOSITORY}/branches/main/protection"
+            sed -n '1,3p' live.err || true
+            exit 0
+          fi
+          jq -r '.required_status_checks.contexts[]' live.json | sort > live-required-checks.txt
+          if ! diff -u codified-required-checks.txt live-required-checks.txt; then
+            echo "::error::Live branch protection differs from the codified required-checks list."
+            exit 1
+          fi
+          echo "OK: live branch protection matches the codified list."

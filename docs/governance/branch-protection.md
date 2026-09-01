@@ -10,9 +10,10 @@ Pre-PR-5, only **six** checks blocked merge to `main`:
 
 | Check | Pre-PR-5 | Target (PR-5) |
 |---|---|---|
-| TerraFusion Seal Gate | required | required |
+| 🔒 TerraFusion Seal Gate | required | required |
 | Backend Gate (.NET 8) / Canonical .NET Test Run | required | required |
-| Tier-1 UI Harness Validation | required | required |
+| **Backend .NET Tests / Canonical .NET Test Run** | advisory | **required** |
+| 🧪 Tier-1 UI Harness Validation | required | required |
 | phase85-tools | required | required |
 | phase86-toolrunner | required | required |
 | governed-spine | required | required |
@@ -23,11 +24,29 @@ Pre-PR-5, only **six** checks blocked merge to `main`:
 
 Two-Person Integrity (`required_approving_review_count`) was `0`. After PR-5 it is `1`.
 
+Every name in the table above is the **exact** required-context string, emoji included. The
+drift-guard matches these literally across all three sources, so a human-readable paraphrase
+here will fail the build rather than quietly describing a check that is not the one enforced.
+
 ## What each required check verifies
 
-- **TerraFusion Seal Gate** — composite gate aggregating quality-gate, classify_changes, contract-guard; runs the `ci-seal-gate.ps1` script that asserts canon invariants.
-- **Backend Gate (.NET 8)** — reusable `dotnet-test.yml`: 3,028+ unit tests against PostgreSQL service container. Includes the `Category!=DockerRequired&Category!=Vector` filter (CI-HYGIENE-4A).
-- **Tier-1 UI Harness Validation** — design-system token enforcement + a11y baseline on critical UI surfaces.
+- **🔒 TerraFusion Seal Gate** — composite gate aggregating quality-gate, classify_changes, contract-guard; runs the `ci-seal-gate.ps1` script that asserts canon invariants.
+- **Backend Gate (.NET 8)** — reusable `dotnet-test.yml` over `backend/TerraFusion.sln`: the
+  `CostForge`, `CurrentUse`, `Levy`, `SalesForge` and `Integration` suites. It does **not** contain
+  `TerraFusion.Unit.Tests`, so it cannot observe anything that project asserts — including the
+  Phase 10 async-safety governance guards.
+- **Backend .NET Tests** — the same reusable workflow over the root `TerraFusion.sln`: `Unit.Tests`,
+  `Tests` and `Integration.Tests`, ~3,850 tests, with the `Category!=DockerRequired&Category!=Vector`
+  filter (CI-HYGIENE-4A).
+
+  These two are **not** a subset and a superset. `Integration.Tests` is the only project they share,
+  so requiring either one alone leaves the other's suites entirely ungated. Both are required, and
+  neither may be dropped on the grounds that "the other .NET gate is green".
+
+  This entry previously attributed the root solution's test count and its `Category!=` filter to
+  **Backend Gate**, which runs neither. That misattribution is why the required-checks list carried
+  the narrower gate while the prose described the broader one — see the regression note below.
+- **🧪 Tier-1 UI Harness Validation** — design-system token enforcement + a11y baseline on critical UI surfaces.
 - **phase85-tools / phase86-toolrunner** — internal tooling contracts (registry + toolrunner). Constitutional.
 - **governed-spine** — sovereign-spine boundary checks (Phase 7 seal).
 - **Vitest Full Suite (merge gate)** — `frontend/` full vitest run with skip-ceiling enforcement (sealed 2026-03-21 at 222). This is the *frontend* analog of the backend gate; pre-PR-5 it was running but not required.
@@ -72,3 +91,21 @@ PR-5 takes the **simpler, more durable path**: `required_approving_review_count=
   3. This document
 - The `branch-protection-snapshot.yml` workflow has a drift-guard step that fails the build if any required check from the canonical list is missing from `branch-protection.sh`. That keeps the three sources from silently diverging.
 - The script captures a JSON snapshot of prior state on every run. Those snapshot files are the audit artifact.
+
+## Regression: why both .NET gates are required (#1449)
+
+PR #1449 merged with `Backend .NET Tests / Canonical .NET Test Run` **red**. It was not blocked,
+because no .NET context was required on `main` at all: live protection carried five contexts while
+this document and `branch-protection.sh` codified eight. Nothing compared the codified list to the
+live API, so the gap produced no failing build.
+
+Requiring the codified list as it then stood would **not** have blocked #1449 either. The only .NET
+context in it was `Backend Gate (.NET 8)`, which runs `backend/TerraFusion.sln` and therefore never
+executes `TerraFusion.Unit.Tests` — it was green on the same commit where the full suite failed.
+
+The failure it missed was real: `AtlasProjectionProcessHost.ResolvePermissionFlag` used
+`.GetAwaiter().GetResult()`, tripping `AllApiServices_NoGetAwaiterGetResult`. Every pull request
+opened afterwards inherited that red run from `main`.
+
+Use #1449 as the regression case for this list. A change to the required checks is correct only if,
+replayed against #1449's head, the merge would have been blocked.
