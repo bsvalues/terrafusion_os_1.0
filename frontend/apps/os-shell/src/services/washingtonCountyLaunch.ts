@@ -44,6 +44,18 @@ function nearestActiveWashingtonCountyShardVerificationAttempt(
   return candidate;
 }
 
+function signalAllActiveWashingtonCountyShardVerificationPredecessors(
+  attempt: WashingtonCountyShardVerificationAttempt | null,
+): void {
+  let candidate = attempt;
+  while (candidate) {
+    if (candidate.active) {
+      candidate.signalOwnershipChanged();
+    }
+    candidate = candidate.previous;
+  }
+}
+
 function createWashingtonCountyShardVerificationAttempt(
   previous: WashingtonCountyShardVerificationAttempt | null,
 ): WashingtonCountyShardVerificationAttempt {
@@ -360,9 +372,9 @@ export async function verifyWashingtonCountySalesShard(
     attempt.active = false;
     if (isCurrentAttempt()) {
       washingtonCountyShardVerificationAttempts.delete(county.countyCode);
-      nearestActiveWashingtonCountyShardVerificationAttempt(
+      signalAllActiveWashingtonCountyShardVerificationPredecessors(
         attempt.previous,
-      )?.signalOwnershipChanged();
+      );
     }
   }
 }
