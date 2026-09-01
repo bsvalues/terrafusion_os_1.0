@@ -9,9 +9,11 @@
 **Deadline:** production terminal proof before the WACO Annual Conference begins September 29, 2026; target no later than September 28, 2026 Pacific time.
 
 **Status:** ACTIVE — PR #1486 completed governance activation on protected main and Issue #1485 is
-recorded as `OWNER-WAL-V1-MISSION-AUTHORITY-20260827`. The A through E construction waves are
-protected-complete. `WO-WAL-000F` records no executable F child: broad parents 001-004 remain open,
-005/006 remain blocked, and the 003 live-source continuation remains behind its exact authority wall.
+recorded as `OWNER-WAL-V1-MISSION-AUTHORITY-20260827`. The A through E construction waves and the
+zero-dispatch F reconciliation are protected-complete. `WO-WAL-000G` prospectively registers the
+first evidence-backed runtime integration sequence: 004F first, then dependency-cleared 002F.
+Broad parents 001-004 remain open, 005/006 remain blocked, and the 003 live-source continuation
+remains behind its exact authority wall.
 
 ## Mission
 
@@ -64,6 +66,7 @@ Current protected launch baseline after Gate C repair PR #1484: `3651e2fb6c440f6
 | `WO-WAL-000D` | Reconcile protected C-wave completion and register the four next exact reservation sets | protected-complete 001C-004C; complete only on protected merge |
 | `WO-WAL-000E` | Reconcile protected D-wave completion, register exactly 001E/002E/004E, and record the Sync authority wall | protected-complete 001D-004D; complete only on protected merge |
 | `WO-WAL-000F` | Reconcile protected E-wave completion and record zero executable F children while preserving authority walls | protected-complete 001E/002E/004E; complete only on protected merge |
+| `WO-WAL-000G` | Register exact authenticated county-context runtime integration followed by real CSV API admission | protected 000F plus current protected-main implementation evidence; complete only on protected merge |
 | `WO-WAL-001` | 39-county public-baseline acquisition → normalization → landed runtime truth | 000 |
 | `WO-WAL-001A` | Deterministic 39-county source-registry ledger contract; no runtime inference | protected complete in PR #1489; bounded child of open 001 |
 | `WO-WAL-001B` | Deterministic public acquisition artifact receipt evidence; no landing/runtime inference | protected complete in PR #1493; bounded child of open 001 |
@@ -76,6 +79,7 @@ Current protected launch baseline after Gate C repair PR #1484: `3651e2fb6c440f6
 | `WO-WAL-002C` | Canonical same-county operational binding around one protected CSV envelope | protected complete in PR #1500; bounded child of open 002 |
 | `WO-WAL-002D` | Deterministic county/dataset/content CSV idempotency identity | protected 002A/002B/002C plus protected 000D; bounded child of open 002 |
 | `WO-WAL-002E` | Fail-closed local-memory first-seen/duplicate decision over protected idempotency evidence | protected complete in PR #1508 at `dcd1405b15d7aaa686ae444ed917117fcada3de0`; bounded child of open 002 |
+| `WO-WAL-002F` | Real assessor-authorized county-bound CSV API admission and parser/idempotency receipt | protected 002A-002E, protected 004F and protected 000G; bounded child of open 002 |
 | `WO-WAL-003` | Read-only multi-county TerraFusion Sync with explicit source profiles | 000 |
 | `WO-WAL-003A` | Mock-only source-profile/read-adapter contract and static command guard | protected complete in PR #1491; bounded child of open 003 |
 | `WO-WAL-003B` | Bounded mock-adapter read execution and immutable result envelope | protected complete in PR #1495; bounded child of open 003 |
@@ -88,17 +92,20 @@ Current protected launch baseline after Gate C repair PR #1484: `3651e2fb6c440f6
 | `WO-WAL-004C` | Data-free activation-prerequisite eligibility contract | protected complete in PR #1499; bounded child of open 004 |
 | `WO-WAL-004D` | Fail-closed authenticated-context to canonical county GUID binding | protected 004A plus protected 000D; bounded child of open 004 |
 | `WO-WAL-004E` | Bind authenticated persisted county GUID to exactly one canonical 39-county context | protected complete in PR #1509 at `b4c34f53a6c0251fc2df3a02974b5e7e96ef7a95`; bounded child of open 004 |
+| `WO-WAL-004F` | Wire authenticated current-request county evidence to canonical context in the real API scope | protected 004D/004E plus protected 000G; bounded child of open 004 |
 | `WO-WAL-005` | Real `/counties` Counties HUB driven by control-plane truth | 001-004 contracts stable |
 | `WO-WAL-006` | TerraForge statewide launch runtime with data-capability truth | 001-004 contracts stable; overlaps 005 |
 | `WO-WAL-007` | 39-county browser/API/adversarial launch proof | 001-006 |
 | `WO-WAL-008` | Exact production release + external assessor acceptance | 007 |
 | `WO-WAL-009` | Terminal closeout, exact identities, `COMPLETED_AND_CONSUMED` | 008 |
 
-The exact A through E waves are protected-complete. The exact executable F set is empty: no
-001F/002F/003E/003F/004F record exists, and no F contract, environment, or implementation path is
-reserved. The broad 001/002/003/004 parents remain open and route only through future evidence-backed
-exact children rather than being dispatched as monoliths. Completion of an A-E child does not
-complete its parent or satisfy the stable-contract dependencies of 005/006.
+The exact A through E waves and the protected 000F zero-dispatch boundary are complete. The
+prospective 000G barrier registers exactly 004F and 002F from current implementation evidence. Its
+verified initial executable set is 004F only; 002F remains dependency-blocked until 004F is
+protected-complete. No 001F/003E/003F record exists. The broad 001/002/003/004 parents remain open
+and route only through evidence-backed exact children rather than being dispatched as monoliths.
+Completion of a child does not complete its parent or satisfy the stable-contract dependencies of
+005/006.
 
 ## Exact construction waves
 
@@ -123,14 +130,18 @@ complete its parent or satisfy the stable-contract dependencies of 005/006.
 | `WO-WAL-001E` | R3 | `wal.public-acquisition-artifact-landing.v1` | `local-temp-public-artifact-landing-only` | No acquisition, source-authenticity inference, permanent storage, parsing, normalization, runtime, protected data or production |
 | `WO-WAL-002E` | R3 | `wal.county-upload.csv-duplicate-decision.v1` | `local-memory-csv-duplicate-decision-only` | No durable duplicate store/reservation, upload transport, authentication, persistence, quarantine, promotion or rollback |
 | `WO-WAL-004E` | R5 | `wal.authenticated-canonical-county-context.v1` | `local-auth-context-canonical-registry-fixture-only` | Canonical registry fixture only; no token auth, role/capability grant, activation, selector authority, persistence, live county resource, protected data, default county or production |
+| `WO-WAL-004F` | R5 | `wal.authenticated-canonical-county-runtime-context.v1` | `local-api-auth-context-persisted-guid-fixture-only` | API request-scope identity integration only; no capability grant, protected data, activation, deployment or production |
+| `WO-WAL-002F` | R5 | `wal.county-upload.authenticated-csv-api-admission.v1` | `local-api-synthetic-csv-intake-only` | Real authenticated in-memory admission only; no durable staging, quarantine persistence, promotion, rollback, UI or production |
 
 The exact path allowlists, machine-readable contract/environment reservations, and validation gates are canonical in
 `docs/brain/workorders/registry/work-order-registry.seed.json` and the corresponding child Work Order
 documents. Contract/environment reservations do not create credential, protected-data, external-
 system or production authority.
 
-There is no F-wave row because `WO-WAL-000F` registers zero executable F children, contracts,
-environments, and implementation paths.
+`WO-WAL-000F` remains the historical zero-dispatch boundary. `WO-WAL-000G` admits only the two rows
+above after current implementation inspection; 004F must complete before 002F becomes executable.
+The live 003 chain still requires the complete named source/credential/environment bundle, and
+public acquisition 001F remains unregistered until source bytes and provenance are observed.
 
 ## Launch terminal condition
 
