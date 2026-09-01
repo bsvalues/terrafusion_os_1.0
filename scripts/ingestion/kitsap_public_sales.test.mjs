@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import * as fs from 'node:fs';
-import { mkdir, mkdtemp, readFile, rm, stat, utimes, writeFile } from 'node:fs/promises';
+import { mkdir, mkdtemp, readFile, rm, stat, symlink, utimes, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { spawnSync } from 'node:child_process';
@@ -71,6 +71,28 @@ test('Kitsap adapter serializes overlapping package refresh writers', async () =
       /already running under PID/i
     );
     await releasePackageRefreshLock(outputPath, firstOperation);
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test('Kitsap adapter serializes real and symlinked paths to the same package', async () => {
+  const root = await mkdtemp(join(tmpdir(), 'tf-kitsap-lock-alias-'));
+  const realParent = join(root, 'real');
+  const aliasParent = join(root, 'alias');
+  const firstOperation = '123-12345678-1234-4123-8123-123456789abc';
+  const secondOperation = '456-abcdefab-cdef-4abc-8def-abcdefabcdef';
+  try {
+    await mkdir(realParent, { recursive: true });
+    await symlink(realParent, aliasParent, process.platform === 'win32' ? 'junction' : 'dir');
+    const realOutputPath = join(realParent, 'launch-data', 'washington');
+    const aliasOutputPath = join(aliasParent, 'launch-data', 'washington');
+    await acquirePackageRefreshLock(realOutputPath, firstOperation);
+    await assert.rejects(
+      acquirePackageRefreshLock(aliasOutputPath, secondOperation),
+      /already running under PID/i
+    );
+    await releasePackageRefreshLock(realOutputPath, firstOperation);
   } finally {
     await rm(root, { recursive: true, force: true });
   }

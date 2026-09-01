@@ -1,10 +1,9 @@
 #!/usr/bin/env node
 
 import { createHash, randomUUID } from 'node:crypto';
-import { execFileSync } from 'node:child_process';
+import { execFileSync, spawn } from 'node:child_process';
 import * as fs from 'node:fs';
-import { access, link, mkdir, open, readFile, rename, rm, stat } from 'node:fs/promises';
-import { createServer } from 'node:net';
+import { access, link, mkdir, open, readFile, realpath, rename, rm, stat } from 'node:fs/promises';
 import { basename, dirname, join, resolve, sep } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import XLSX from 'xlsx';
@@ -121,53 +120,104 @@ function readProcessIdentity(pid) {
   return null;
 }
 
-function refreshAcquisitionMutexAddress(outputRoot) {
-  const token = createHash('sha256').update(outputRoot).digest('hex').slice(0, 24);
-  if (process.platform === 'win32') {
-    return `\\\\.\\pipe\\terrafusion-kitsap-refresh-${token}`;
-  }
+async function canonicalizePackageOutputRoot(outputPath) {
+  const outputRoot = resolve(outputPath);
+  await mkdir(dirname(outputRoot), { recursive: true });
+  return join(await realpath(dirname(outputRoot)), basename(outputRoot));
+}
+
+function startRefreshAcquisitionMutexProcess(mutexPath) {
   if (process.platform === 'linux') {
-    return `\0terrafusion-kitsap-refresh-${token}`;
+    const helper =
+      'process.stdout.write("LOCKED\\n");process.stdin.resume();process.stdin.on("end",()=>process.exit(0));';
+    return spawn('flock', ['-x', mutexPath, process.execPath, '-e', helper], {
+      stdio: ['pipe', 'pipe', 'pipe'],
+      windowsHide: true,
+    });
   }
-  return {
-    exclusive: true,
-    host: '127.0.0.1',
-    port: 40_000 + (Number.parseInt(token.slice(0, 4), 16) % 20_000),
-  };
+  if (process.platform === 'win32') {
+    const powershell = join(
+      process.env.SystemRoot ?? 'C:\\Windows',
+      'System32',
+      'WindowsPowerShell',
+      'v1.0',
+      'powershell.exe'
+    );
+    const helper = [
+      '$stream = $null',
+      'for ($attempt = 0; $attempt -lt 200; $attempt += 1) {',
+      '  try {',
+      '    $stream = [System.IO.File]::Open($env:TF_KITSAP_MUTEX_PATH, [System.IO.FileMode]::OpenOrCreate, [System.IO.FileAccess]::ReadWrite, [System.IO.FileShare]::None)',
+      '    break',
+      '  } catch [System.IO.IOException] { Start-Sleep -Milliseconds 50 }',
+      '}',
+      'if ($null -eq $stream) { [Console]::Error.WriteLine("mutex remained busy"); exit 75 }',
+      '[Console]::Out.WriteLine("LOCKED")',
+      '[Console]::Out.Flush()',
+      '[Console]::In.ReadLine() | Out-Null',
+      '$stream.Dispose()',
+    ].join('; ');
+    return spawn(powershell, ['-NoProfile', '-NonInteractive', '-Command', helper], {
+      env: { ...process.env, TF_KITSAP_MUTEX_PATH: mutexPath },
+      stdio: ['pipe', 'pipe', 'pipe'],
+      windowsHide: true,
+    });
+  }
+  throw new Error(
+    `Kitsap package refresh has no filesystem-scoped mutex implementation for ${process.platform}.`
+  );
 }
 
 async function acquireRefreshAcquisitionMutex(outputRoot) {
-  const address = refreshAcquisitionMutexAddress(outputRoot);
-  for (let attempt = 0; attempt < 200; attempt += 1) {
-    const server = createServer();
-    try {
-      await new Promise((resolveListen, rejectListen) => {
-        const onError = error => {
-          server.off('listening', onListening);
-          rejectListen(error);
-        };
-        const onListening = () => {
-          server.off('error', onError);
-          resolveListen();
-        };
-        server.once('error', onError);
-        server.once('listening', onListening);
-        server.listen(address);
-      });
-      return server;
-    } catch (error) {
-      if (error?.code !== 'EADDRINUSE') throw error;
-      await new Promise(resolveDelay => setTimeout(resolveDelay, 50));
-    }
-  }
-  throw new Error('Kitsap package refresh acquisition mutex remained busy.');
+  const mutexPath = `${outputRoot}.refresh.acquire.lock`;
+  const child = startRefreshAcquisitionMutexProcess(mutexPath);
+  let stderr = '';
+  child.stderr.on('data', chunk => {
+    stderr += chunk.toString();
+  });
+  await new Promise((resolveReady, rejectReady) => {
+    let stdout = '';
+    const timeout = setTimeout(() => {
+      child.kill();
+      rejectReady(new Error('Kitsap package refresh acquisition mutex timed out.'));
+    }, 12_000);
+    const finish = callback => value => {
+      clearTimeout(timeout);
+      child.stdout.removeAllListeners('data');
+      child.removeAllListeners('error');
+      child.removeAllListeners('exit');
+      callback(value);
+    };
+    const resolve = finish(resolveReady);
+    const reject = finish(rejectReady);
+    child.once('error', reject);
+    child.once('exit', code =>
+      reject(
+        new Error(
+          `Kitsap package refresh acquisition mutex exited before locking (${code}): ${stderr.trim()}`
+        )
+      )
+    );
+    child.stdout.on('data', chunk => {
+      stdout += chunk.toString();
+      if (/LOCKED\r?\n/.test(stdout)) resolve(child);
+    });
+  });
+  return child;
 }
 
-async function releaseRefreshAcquisitionMutex(server) {
-  if (!server) return;
-  await new Promise((resolveClose, rejectClose) => {
-    server.close(error => (error ? rejectClose(error) : resolveClose()));
+async function releaseRefreshAcquisitionMutex(child) {
+  if (!child) return;
+  const exited = new Promise((resolveExit, rejectExit) => {
+    child.once('error', rejectExit);
+    child.once('exit', code =>
+      code === 0
+        ? resolveExit()
+        : rejectExit(new Error(`Kitsap package refresh acquisition mutex exited with ${code}.`))
+    );
   });
+  child.stdin.end('\n');
+  await exited;
 }
 
 async function readRefreshLockOwner(lockPath) {
@@ -219,7 +269,7 @@ async function restoreUnexpectedFencedLock(staleLockPath, lockPath) {
 }
 
 export async function acquirePackageRefreshLock(outputPath, operationId) {
-  const outputRoot = resolve(outputPath);
+  const outputRoot = await canonicalizePackageOutputRoot(outputPath);
   const lockPath = `${outputRoot}.refresh.lock`;
   const claimPath = `${lockPath}.claim-${operationId}.json`;
   invariant(
@@ -231,7 +281,6 @@ export async function acquirePackageRefreshLock(outputPath, operationId) {
     ownerProcessIdentity,
     'Kitsap package refresh cannot establish the current process identity.'
   );
-  await mkdir(dirname(outputRoot), { recursive: true });
   await writeDurableFile(
     claimPath,
     `${JSON.stringify({ operationId, ownerPid: process.pid, ownerProcessIdentity })}\n`
@@ -325,14 +374,14 @@ async function assertRefreshLockOwner(outputRoot, operationId) {
 }
 
 export async function releasePackageRefreshLock(outputPath, operationId) {
-  const outputRoot = resolve(outputPath);
+  const outputRoot = await canonicalizePackageOutputRoot(outputPath);
   await assertRefreshLockOwner(outputRoot, operationId);
   await rm(`${outputRoot}.refresh.lock`, { recursive: true, force: true });
   await syncDirectory(dirname(outputRoot));
 }
 
 export async function recoverInterruptedPackageRefresh(outputPath, ownerOperationId) {
-  const outputRoot = resolve(outputPath);
+  const outputRoot = await canonicalizePackageOutputRoot(outputPath);
   await assertRefreshLockOwner(outputRoot, ownerOperationId);
   const journalPath = `${outputRoot}.refresh.json`;
   if (!(await pathExists(journalPath))) return false;
@@ -779,7 +828,7 @@ async function main() {
     sourcePath && expectedSha256 && outputPath && generatedAt,
     'Usage: kitsap_public_sales.mjs <source.xlsx> <expected-sha256> <output-directory> <generated-at-iso>'
   );
-  const outputRoot = resolve(outputPath);
+  const outputRoot = await canonicalizePackageOutputRoot(outputPath);
   const operationId = `${process.pid}-${randomUUID()}`;
   await acquirePackageRefreshLock(outputRoot, operationId);
   try {
