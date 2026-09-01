@@ -381,7 +381,8 @@ pnpm --filter terrafusion-frontend test pilotapi-error-normalization.test
 - Small commits, one logical change per commit.
 - Never fix by exclusion unless the exclusion is policy-backed and documented here.
 - Policy-backed browser-acceptance exception: `frontend/tests/integration/counties-hub-timeout.spec.ts`
-  is the only file admitted from `frontend/tests/integration/`. It exercises the OS Shell
-  `/counties` route against a deliberately stalled Washington public-data request. This exception
-  does not admit sibling specs, helpers, other file types, or the directory itself; all changes to
-  the exact file remain subject to normal review and test requirements.
+  and `frontend/tests/integration/counties-hub-kitsap-public-sales.spec.ts` are the only files
+  admitted from `frontend/tests/integration/`. They exercise the OS Shell `/counties` route against
+  a deliberately stalled Washington public-data request and the county-isolated Kitsap public-sales
+  journey. This exception does not admit sibling specs, helpers, other file types, or the directory
+  itself; all changes to either exact file remain subject to normal review and test requirements.

@@ -67,4 +67,10 @@ describe('Washington public-source inventory projection', () => {
       /does not prove statewide ingestion, normalization, geometry, or endpoint runtime coverage/i,
     );
   });
+
+  it('binds Kitsap to the current official assessor origin used by the public package', () => {
+    expect(getWashingtonPublicSourceInventory('Kitsap')?.officialAssessorBaseUrl).toBe(
+      'https://www.kitsap.gov/assessor/',
+    );
+  });
 });
