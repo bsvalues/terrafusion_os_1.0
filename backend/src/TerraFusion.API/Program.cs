@@ -42,6 +42,7 @@ using TerraFusion.API.Services.Atlas;
 using TerraFusion.API.Services.Dais;
 using TerraFusion.API.Services.Dossier;
 using TerraFusion.API.Services.Gpt;
+using TerraFusion.API.Auth;
 // Conditional DB providers
 using Npgsql;
 using Microsoft.Data.Sqlite;
@@ -2250,6 +2251,7 @@ builder.Services.AddScoped<IHarrisPACSEnhancementBridge, HarrisPACSEnhancementBr
 builder.Services.AddScoped<ITerraFusionMarketplace, TerraFusionMarketplace>();
 builder.Services.AddScoped<ICountyDeploymentService, CountyDeploymentService>();
 builder.Services.AddScoped<TerraFusion.Core.Services.ICountyResolver, TerraFusion.API.Services.CountyResolver>();
+builder.Services.AddAuthenticatedCanonicalCountyContext();
 builder.Services.AddScoped<TerraFusion.Core.Interfaces.ICountyStudyService, TerraFusion.Core.Services.CountyStudyService>();
 builder.Services.AddScoped<TerraFusion.Core.Services.ICountyStudySegmentDerivationService, TerraFusion.Core.Services.CountyStudySegmentDerivationService>();
 builder.Services.AddScoped<TerraFusion.Core.Services.ICountyStudyHealthService, TerraFusion.Core.Services.CountyStudyHealthService>();
