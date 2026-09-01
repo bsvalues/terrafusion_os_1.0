@@ -5,7 +5,7 @@
 | Status | `ACTIVE_GOVERNANCE_ONLY` |
 | Parent | `WO-WAL-000` |
 | Program | Washington Assessor Launch V1 |
-| Base | `6cfc93907a3153111115ca3468990753ffb8ae6e` |
+| Base | `d8722c294037331d9f017f76efafd2dc4b8731be` |
 | Risk | R3 governance-only routing reconciliation |
 | Terminal condition | `F_RUNTIME_INTEGRATION_CHILDREN_EXACTLY_RESERVED_WITH_SYNC_WALL_PRESERVED` |
 
