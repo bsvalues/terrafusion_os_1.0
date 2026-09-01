@@ -4,6 +4,7 @@ import { createHash, randomUUID } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
 import * as fs from 'node:fs';
 import { access, link, mkdir, open, readFile, rename, rm, stat } from 'node:fs/promises';
+import { createServer } from 'node:net';
 import { basename, dirname, join, resolve, sep } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import XLSX from 'xlsx';
@@ -97,14 +98,15 @@ function readProcessIdentity(pid) {
     }
     if (process.platform === 'linux') {
       const processStat = fs.readFileSync(`/proc/${pid}/stat`, 'utf8');
+      const bootId = fs.readFileSync('/proc/sys/kernel/random/boot_id', 'utf8').trim();
       const closingParenthesis = processStat.lastIndexOf(')');
-      if (closingParenthesis < 0) return null;
+      if (closingParenthesis < 0 || !bootId) return null;
       const fieldsAfterCommand = processStat
         .slice(closingParenthesis + 2)
         .trim()
         .split(/\s+/);
       const startTicks = fieldsAfterCommand[19];
-      return startTicks ? `linux-start-ticks:${startTicks}` : null;
+      return startTicks ? `linux-boot:${bootId}:start-ticks:${startTicks}` : null;
     }
     if (process.platform === 'darwin') {
       const startedAt = execFileSync('/bin/ps', ['-o', 'lstart=', '-p', String(pid)], {
@@ -117,6 +119,55 @@ function readProcessIdentity(pid) {
     return null;
   }
   return null;
+}
+
+function refreshAcquisitionMutexAddress(outputRoot) {
+  const token = createHash('sha256').update(outputRoot).digest('hex').slice(0, 24);
+  if (process.platform === 'win32') {
+    return `\\\\.\\pipe\\terrafusion-kitsap-refresh-${token}`;
+  }
+  if (process.platform === 'linux') {
+    return `\0terrafusion-kitsap-refresh-${token}`;
+  }
+  return {
+    exclusive: true,
+    host: '127.0.0.1',
+    port: 40_000 + (Number.parseInt(token.slice(0, 4), 16) % 20_000),
+  };
+}
+
+async function acquireRefreshAcquisitionMutex(outputRoot) {
+  const address = refreshAcquisitionMutexAddress(outputRoot);
+  for (let attempt = 0; attempt < 200; attempt += 1) {
+    const server = createServer();
+    try {
+      await new Promise((resolveListen, rejectListen) => {
+        const onError = error => {
+          server.off('listening', onListening);
+          rejectListen(error);
+        };
+        const onListening = () => {
+          server.off('error', onError);
+          resolveListen();
+        };
+        server.once('error', onError);
+        server.once('listening', onListening);
+        server.listen(address);
+      });
+      return server;
+    } catch (error) {
+      if (error?.code !== 'EADDRINUSE') throw error;
+      await new Promise(resolveDelay => setTimeout(resolveDelay, 50));
+    }
+  }
+  throw new Error('Kitsap package refresh acquisition mutex remained busy.');
+}
+
+async function releaseRefreshAcquisitionMutex(server) {
+  if (!server) return;
+  await new Promise((resolveClose, rejectClose) => {
+    server.close(error => (error ? rejectClose(error) : resolveClose()));
+  });
 }
 
 async function readRefreshLockOwner(lockPath) {
@@ -186,7 +237,9 @@ export async function acquirePackageRefreshLock(outputPath, operationId) {
     `${JSON.stringify({ operationId, ownerPid: process.pid, ownerProcessIdentity })}\n`
   );
 
+  let acquisitionMutex;
   try {
+    acquisitionMutex = await acquireRefreshAcquisitionMutex(outputRoot);
     for (let attempt = 0; attempt < 4; attempt += 1) {
       try {
         await link(claimPath, lockPath);
@@ -253,6 +306,7 @@ export async function acquirePackageRefreshLock(outputPath, operationId) {
     }
     throw new Error('Kitsap package refresh lock could not be acquired.');
   } finally {
+    await releaseRefreshAcquisitionMutex(acquisitionMutex);
     await rm(claimPath, { force: true });
     await syncDirectory(dirname(lockPath));
   }
