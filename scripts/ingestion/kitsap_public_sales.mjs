@@ -3,7 +3,18 @@
 import { createHash, randomUUID } from 'node:crypto';
 import { execFileSync, spawn } from 'node:child_process';
 import * as fs from 'node:fs';
-import { access, link, mkdir, open, readFile, realpath, rename, rm, stat } from 'node:fs/promises';
+import {
+  access,
+  link,
+  mkdir,
+  open,
+  readFile,
+  readlink,
+  realpath,
+  rename,
+  rm,
+  stat,
+} from 'node:fs/promises';
 import { basename, dirname, join, resolve, sep } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import XLSX from 'xlsx';
@@ -21,9 +32,11 @@ const STATUS_SCHEMA = 'terrafusion.washington.county-status.v1';
 const DETAIL_SCHEMA = 'terrafusion.washington.county-detail.v1';
 const SHARD_SCHEMA = 'terrafusion.washington.sales-shard.v1';
 const REFRESH_JOURNAL_SCHEMA = 'terrafusion.washington.package-refresh.v1';
+const FILESYSTEM_MUTEX_PROTOCOL = 'terrafusion.filesystem-refresh-mutex.v1';
 const SHA256_PATTERN = /^[a-f\d]{64}$/;
 const OPERATION_ID_PATTERN =
   /^\d+-[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
+const heldRefreshAcquisitionMutexes = new Map();
 
 function invariant(condition, message) {
   if (!condition) throw new Error(message);
@@ -60,16 +73,6 @@ async function writeDurableFile(path, contents) {
     await handle.close();
   }
   await syncDirectory(dirname(path));
-}
-
-function isProcessRunning(pid) {
-  if (!Number.isSafeInteger(pid) || pid <= 0) return false;
-  try {
-    process.kill(pid, 0);
-    return true;
-  } catch (error) {
-    return error?.code === 'EPERM';
-  }
 }
 
 function readProcessIdentity(pid) {
@@ -127,8 +130,20 @@ async function canonicalizePackageOutputRoot(outputPath) {
     return await realpath(outputRoot);
   } catch (error) {
     if (error?.code !== 'ENOENT') throw error;
-    return join(await realpath(dirname(outputRoot)), basename(outputRoot));
   }
+  try {
+    const linkTarget = await readlink(outputRoot);
+    const resolvedTarget = resolve(dirname(outputRoot), linkTarget);
+    try {
+      return await realpath(resolvedTarget);
+    } catch (error) {
+      if (error?.code !== 'ENOENT') throw error;
+      return join(await realpath(dirname(resolvedTarget)), basename(resolvedTarget));
+    }
+  } catch (error) {
+    if (error?.code !== 'ENOENT' && error?.code !== 'EINVAL') throw error;
+  }
+  return join(await realpath(dirname(outputRoot)), basename(outputRoot));
 }
 
 function startRefreshAcquisitionMutexProcess(mutexPath) {
@@ -150,7 +165,7 @@ function startRefreshAcquisitionMutexProcess(mutexPath) {
     );
     const helper = [
       '$stream = $null',
-      'for ($attempt = 0; $attempt -lt 200; $attempt += 1) {',
+      'for ($attempt = 0; $attempt -lt 1200; $attempt += 1) {',
       '  try {',
       '    $stream = [System.IO.File]::Open($env:TF_KITSAP_MUTEX_PATH, [System.IO.FileMode]::OpenOrCreate, [System.IO.FileAccess]::ReadWrite, [System.IO.FileShare]::None)',
       '    break',
@@ -185,7 +200,7 @@ async function acquireRefreshAcquisitionMutex(outputRoot) {
     const timeout = setTimeout(() => {
       child.kill();
       rejectReady(new Error('Kitsap package refresh acquisition mutex timed out.'));
-    }, 12_000);
+    }, 60_000);
     const finish = callback => value => {
       clearTimeout(timeout);
       child.stdout.removeAllListeners('data');
@@ -252,7 +267,8 @@ function isSameRefreshLockOwner(left, right) {
   return (
     left?.operationId === right?.operationId &&
     left?.ownerPid === right?.ownerPid &&
-    left?.ownerProcessIdentity === right?.ownerProcessIdentity
+    left?.ownerProcessIdentity === right?.ownerProcessIdentity &&
+    left?.mutexProtocol === right?.mutexProtocol
   );
 }
 
@@ -293,18 +309,29 @@ export async function acquirePackageRefreshLock(outputPath, operationId) {
     ownerProcessIdentity,
     'Kitsap package refresh cannot establish the current process identity.'
   );
-  await writeDurableFile(
-    claimPath,
-    `${JSON.stringify({ operationId, ownerPid: process.pid, ownerProcessIdentity })}\n`
-  );
+  const existingMutex = heldRefreshAcquisitionMutexes.get(outputRoot);
+  invariant(!existingMutex, `Kitsap package refresh is already running under PID ${process.pid}.`);
+  heldRefreshAcquisitionMutexes.set(outputRoot, { operationId, child: null });
 
   let acquisitionMutex;
+  let lockAcquired = false;
   try {
+    await writeDurableFile(
+      claimPath,
+      `${JSON.stringify({
+        operationId,
+        ownerPid: process.pid,
+        ownerProcessIdentity,
+        mutexProtocol: FILESYSTEM_MUTEX_PROTOCOL,
+      })}\n`
+    );
     acquisitionMutex = await acquireRefreshAcquisitionMutex(outputRoot);
+    heldRefreshAcquisitionMutexes.set(outputRoot, { operationId, child: acquisitionMutex });
     for (let attempt = 0; attempt < 4; attempt += 1) {
       try {
         await link(claimPath, lockPath);
         await syncDirectory(dirname(lockPath));
+        lockAcquired = true;
         return lockPath;
       } catch (error) {
         if (!(await pathExists(lockPath))) throw error;
@@ -327,21 +354,10 @@ export async function acquirePackageRefreshLock(outputPath, operationId) {
           'Kitsap package refresh lock owner PID is invalid; the lock remains fenced.'
         );
       }
-      if (isProcessRunning(owner.ownerPid)) {
-        if (typeof owner.ownerProcessIdentity !== 'string' || !owner.ownerProcessIdentity) {
-          throw new Error(
-            'Kitsap package refresh lock process identity cannot be verified; the lock remains fenced.'
-          );
-        }
-        const observedProcessIdentity = readProcessIdentity(owner.ownerPid);
-        if (!observedProcessIdentity) {
-          throw new Error(
-            'Kitsap package refresh lock process identity is unavailable; the lock remains fenced.'
-          );
-        }
-        if (observedProcessIdentity === owner.ownerProcessIdentity) {
-          throw new Error(`Kitsap package refresh is already running under PID ${owner.ownerPid}.`);
-        }
+      if (owner.mutexProtocol !== FILESYSTEM_MUTEX_PROTOCOL) {
+        throw new Error(
+          'Kitsap package refresh legacy lock has no filesystem-mutex proof; the lock remains fenced.'
+        );
       }
 
       const staleLockPath = `${lockPath}.stale-${operationId}`;
@@ -367,9 +383,17 @@ export async function acquirePackageRefreshLock(outputPath, operationId) {
     }
     throw new Error('Kitsap package refresh lock could not be acquired.');
   } finally {
-    await releaseRefreshAcquisitionMutex(acquisitionMutex);
     await rm(claimPath, { force: true });
     await syncDirectory(dirname(lockPath));
+    if (!lockAcquired) {
+      try {
+        await releaseRefreshAcquisitionMutex(acquisitionMutex);
+      } finally {
+        if (heldRefreshAcquisitionMutexes.get(outputRoot)?.operationId === operationId) {
+          heldRefreshAcquisitionMutexes.delete(outputRoot);
+        }
+      }
+    }
   }
 }
 
@@ -387,9 +411,19 @@ async function assertRefreshLockOwner(outputRoot, operationId) {
 
 export async function releasePackageRefreshLock(outputPath, operationId) {
   const outputRoot = await canonicalizePackageOutputRoot(outputPath);
-  await assertRefreshLockOwner(outputRoot, operationId);
-  await rm(`${outputRoot}.refresh.lock`, { recursive: true, force: true });
-  await syncDirectory(dirname(outputRoot));
+  const heldMutex = heldRefreshAcquisitionMutexes.get(outputRoot);
+  invariant(
+    heldMutex?.operationId === operationId && heldMutex.child,
+    'Kitsap package refresh filesystem mutex ownership changed.'
+  );
+  try {
+    await assertRefreshLockOwner(outputRoot, operationId);
+    await rm(`${outputRoot}.refresh.lock`, { recursive: true, force: true });
+    await syncDirectory(dirname(outputRoot));
+  } finally {
+    heldRefreshAcquisitionMutexes.delete(outputRoot);
+    await releaseRefreshAcquisitionMutex(heldMutex.child);
+  }
 }
 
 export async function recoverInterruptedPackageRefresh(outputPath, ownerOperationId) {

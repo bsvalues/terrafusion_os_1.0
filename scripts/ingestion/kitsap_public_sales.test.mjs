@@ -1,7 +1,17 @@
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import * as fs from 'node:fs';
-import { mkdir, mkdtemp, readFile, rm, stat, symlink, utimes, writeFile } from 'node:fs/promises';
+import {
+  mkdir,
+  mkdtemp,
+  readFile,
+  rename,
+  rm,
+  stat,
+  symlink,
+  utimes,
+  writeFile,
+} from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { spawnSync } from 'node:child_process';
@@ -98,10 +108,11 @@ test('Kitsap adapter serializes real and symlinked paths to the same package', a
   }
 });
 
-test('Kitsap adapter canonicalizes a symlinked package root before locking', async () => {
+test('Kitsap adapter preserves mutex identity while a package-root symlink is dangling', async () => {
   const root = await mkdtemp(join(tmpdir(), 'tf-kitsap-lock-root-alias-'));
   const realOutputPath = join(root, 'real-washington');
   const aliasOutputPath = join(root, 'alias-washington');
+  const backupOutputPath = join(root, 'real-washington-backup');
   const firstOperation = '123-12345678-1234-4123-8123-123456789abc';
   const secondOperation = '456-abcdefab-cdef-4abc-8def-abcdefabcdef';
   try {
@@ -112,11 +123,13 @@ test('Kitsap adapter canonicalizes a symlinked package root before locking', asy
       process.platform === 'win32' ? 'junction' : 'dir'
     );
     await acquirePackageRefreshLock(realOutputPath, firstOperation);
+    await rename(realOutputPath, backupOutputPath);
     await assert.rejects(
       acquirePackageRefreshLock(aliasOutputPath, secondOperation),
       /already running under PID/i
     );
     await releasePackageRefreshLock(realOutputPath, firstOperation);
+    await rename(backupOutputPath, realOutputPath);
   } finally {
     await rm(root, { recursive: true, force: true });
   }
@@ -143,7 +156,7 @@ test('Kitsap adapter never replaces an unverifiable canonical lock regardless of
   }
 });
 
-test('Kitsap adapter reclaims a lock whose PID belongs to a different process instance', async () => {
+test('Kitsap adapter reclaims a completed filesystem transaction despite PID reuse', async () => {
   const root = await mkdtemp(join(tmpdir(), 'tf-kitsap-lock-pid-reuse-'));
   const outputPath = join(root, 'launch-data', 'washington');
   const lockPath = `${outputPath}.refresh.lock`;
@@ -157,6 +170,7 @@ test('Kitsap adapter reclaims a lock whose PID belongs to a different process in
         operationId: staleOperation,
         ownerPid: process.pid,
         ownerProcessIdentity: 'reused-process-instance',
+        mutexProtocol: 'terrafusion.filesystem-refresh-mutex.v1',
       })}\n`,
       'utf8'
     );
@@ -186,6 +200,7 @@ test('Kitsap adapter permits only one concurrent stale-owner reclaimer', async (
         operationId: staleOperation,
         ownerPid: process.pid,
         ownerProcessIdentity: 'reused-process-instance',
+        mutexProtocol: 'terrafusion.filesystem-refresh-mutex.v1',
       })}\n`,
       'utf8'
     );
