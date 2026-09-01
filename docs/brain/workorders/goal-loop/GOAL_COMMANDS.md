@@ -37,6 +37,34 @@ are compatibility aliases for read-only routing or loop control; they are not se
 Executable repository commands such as `corepack pnpm brain` and `corepack pnpm tf` are outside this
 operator-directive grammar and retain their own help surfaces.
 
+### /goal washington-assessor-launch-v1
+
+```
+Goal:     Launch TerraFusion OS + TerraForge for all 39 Washington assessor contexts.
+Program:  Washington Assessor Launch V1
+File:     programs/washington-assessor-launch-v1.md
+Success:  Truthful 39-county runtime and control-plane state, real governed upload, read-only Sync,
+          Counties HUB, supported county-aware TerraForge workflows, exact-candidate acceptance,
+          production rollback proof, external assessor acceptance, and terminal closeout.
+```
+
+**Current state:** Issue #1485 is ratified as
+`OWNER-WAL-V1-MISSION-AUTHORITY-20260827`. `WO-WAL-000` implementation is complete on the PR head
+and becomes canonical/effective on protected merge of PR #1486; then `WO-WAL-001`, `WO-WAL-002`,
+`WO-WAL-003`, and bounded reservation-safe portions of
+`WO-WAL-004` form the initial parallel wave. 005/006 integrate those contracts, 007 gates the exact
+release candidate, 008 performs production plus external assessor acceptance, and 009 records
+`COMPLETED_AND_CONSUMED` with no automatic successor.
+
+**Allowed loop modes:** `once`, `program`, `merge-watch`, `evidence`, `recovery`, `discovery`
+
+**Blocked:** external county-system write-back; unauthorized non-public or credentialed data;
+cross-county disclosure; silent Benton fallback; unsupported capability claims; production before
+WAL-007 exact-candidate acceptance; required-control bypass; fabricated evidence; or work outside
+Issue #1485.
+
+---
+
 ### /goal suite-repositories
 
 ```
@@ -47,7 +75,17 @@ Success:  Shared contracts are frozen, repositories are bootstrapped, bounded ex
           parity/provenance gates, and duplicate mutable ownership is retired at cutover.
 ```
 
-**Current state:** `WO-SR-009D - Dossier Workbench Canonical Evidence Read Adoption` completed in PR #1427. Exact assured head `85818a749d4268f84cf8638d991d9cef657a0d19` merged as `c7f2d78619a9eb19186c2c724876fb4d11c81b00`, proving the authenticated county-scoped frozen-contract read, same-county canonical rendering, foreign-only empty-shape non-disclosure, deterministic ordering and pagination, honest Workbench states, and disposable synthetic proof. The Development fallback, writes, custody mutation, live data, routing changes, and cutover remain denied. Decision `OWNER-SR-009D-R3-DOSSIER-WORKBENCH-CANONICAL-EVIDENCE-READ-20260807` is completed and consumed. Portfolio reconciliation is current; no parallel or successor authority is inferred.
+**Current state:** COMPLETE through `WO-SR-MISSION-COMPLETION`. Forge, Atlas, Dais, and Dossier
+protected ownership/runtime evidence is terminal. GPT reviewed runtime head
+`3bd87411966a7d2c61439f4f60a11f0cb498968f`, tree
+`e6797a83c2c47f3a62bcbfd19e544cd0ae6e5bf8`, passed manual proof run
+`33071051037` and independent review with no actionable P0/P1, then squash-merged as protected OS
+main `9ef50aa1cc608fa3aa8075f30cf349b757a31902` with exact tree equality. The
+GPT suite reviewed head `c17c4136a6d6819b687df597943dae667273b7e2` squash-merged as protected main
+`cbcbc518d25b000724712b029fed8cc4e05d8ca6`, tree
+`8f4cae82e19cf1ced8a397c2f392ab7dc13c0c85`, with exact tree equality and all required suite
+checks successful. The completed mission routes to no successor. All hard walls remain mandatory,
+and Forge WO-SR-007 remains outside this mission.
 WO-SR-005D-E1 and WO-SR-005D-E2 completed the unwired Dossier adapter and standalone parity proof.
 WO-SR-005E-A then found that the committed GPT/RAG result drops identity required by the frozen
 grounded-context contract. `WO-SR-005E-A2` completed the source-identity projection design, and

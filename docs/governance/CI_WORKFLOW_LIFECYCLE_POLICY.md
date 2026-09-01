@@ -187,21 +187,22 @@ Reference this policy: `docs/governance/CI_WORKFLOW_LIFECYCLE_POLICY.md`
 | Class | Count |
 |-------|-------|
 | REQUIRED | 3 |
-| PUSH-OPTIONAL | 49 |
-| SCHEDULED | 19 |
+| PUSH-OPTIONAL | 48 |
+| SCHEDULED | 17 |
 | MANUAL | 25 |
 | DEPRECATED | 2 |
-| **Total** | 98 |
+| **Total** | 95 |
 
 **REQUIRED** (3):
 - `core-governance-gates.yml`
 - `seal-gate-fast.yml`
 - `tier1-ui-harness.yml`
 
-**PUSH-OPTIONAL** (49):
+**PUSH-OPTIONAL** (48):
 - `accessibility.yml`
 - `accreditation-compat.yml`
 - `ai-swarm-safety.yml`
+- `atlas-canonical-staging.yml`
 - `atlas-validation.yml`
 - `autonomy-break-glass-guard.yml`
 - `autonomy-break-glass-incident-publisher.yml`
@@ -214,11 +215,11 @@ Reference this policy: `docs/governance/CI_WORKFLOW_LIFECYCLE_POLICY.md`
 - `branch-protection-snapshot.yml`
 - `build-validation.yml`
 - `canon-gates.yml`
-- `ci-cd-pipeline.yml`
 - `ci-verified.yml`
 - `ci.yml`
 - `cockpit-drift-guard.yml`
 - `county-kit-parity.yml`
+- `dais-canonical-staging.yml`
 - `deps-fast-lane.yml`
 - `designctl.yml`
 - `frontend-build-guarded.yml`
@@ -237,19 +238,17 @@ Reference this policy: `docs/governance/CI_WORKFLOW_LIFECYCLE_POLICY.md`
 - `rust-security-gates.yml`
 - `rust-verify.yml`
 - `seal-import-boundary.yml`
-- `slsa-provenance.yml`
 - `spec-gates.yml`
 - `sqlite-dev-adapter-test.yml`
 - `terra-levy-tests.yml`
 - `terraforge-kernels.yml`
-- `terrafusion-ci-cd-production.yml`
 - `terrafusion-ci.yml`
 - `testing.yml`
 - `tfctl-ci.yml`
 - `ui-governance.yml`
 - `yaml-sanity.yml`
 
-**SCHEDULED** (19):
+**SCHEDULED** (17):
 - `accessibility-audit.yml`
 - `accreditation-oracle-health.yml`
 - `autonomy-pr-lane.yml`
@@ -259,12 +258,10 @@ Reference this policy: `docs/governance/CI_WORKFLOW_LIFECYCLE_POLICY.md`
 - `external-verify.yml`
 - `governance-audit.yml`
 - `governance-import-hygiene-nightly.yml`
-- `health-check.yml`
 - `nightly.yml`
 - `oracle-health.yml`
 - `perf-skill-audit.yml`
 - `performance-budget.yml`
-- `sbom.yml`
 - `security-compliance-ci.yml`
 - `security-compliance.yml`
 - `security.yml`
@@ -275,13 +272,13 @@ Reference this policy: `docs/governance/CI_WORKFLOW_LIFECYCLE_POLICY.md`
 - `baseline-guard.yml`
 - `ci-cd-main.yml`
 - `code-intel.yml`
-- `deployment.yml`
+- `dossier-canonical-staging.yml`
 - `e2e-smoke.yml`
 - `frontend-ci-isolated.yml`
+- `gpt-canonical-staging.yml`
 - `grfe-ci.yaml`
+- `health-check.yml`
 - `infra-probe.yml`
-- `infrastructure-cicd.yml`
-- `kubernetes-infrastructure-ci.yml`
 - `manifest-contract-guard.yml`
 - `os-production-acceptance.yml`
 - `performance-regression.yml`

@@ -26,7 +26,8 @@ playbooks/runbooks, implementation patterns, then agent judgment.
 | Root agent governance | [`AGENTS.md`](../../../AGENTS.md) | Repository-wide operating defaults and protected boundaries |
 | Brain/domain governance | [`brain/packs/README.md`](../../../brain/packs/README.md) | One Brain, many knowledge packs, many isolated workers |
 | Program register | [`PROGRAM_PLAYBOOK_REGISTER.md`](PROGRAM_PLAYBOOK_REGISTER.md) | Active program/Goal/Loop/WO routing |
-| Five-suite repository program | [`five-suite-federated-repository-buildout.md`](programs/five-suite-federated-repository-buildout.md) | Contract design complete through GPT; exact R3 contract implementation authority required |
+| Washington Assessor Launch V1 | [`washington-assessor-launch-v1.md`](programs/washington-assessor-launch-v1.md) | ACTIVE under Issue #1485 / `OWNER-WAL-V1-MISSION-AUTHORITY-20260827`; finite 000-009 graph; external county sources read-only; WAL-007 exact acceptance gates WAL-008 production |
+| Five-suite repository program | [`five-suite-federated-repository-buildout.md`](programs/five-suite-federated-repository-buildout.md) | COMPLETE through `WO-SR-MISSION-COMPLETION`; terminal protected suite/runtime/rollback, duplicate-retirement, and ownership evidence reconciled; no automatic mission successor |
 | Merge authority | [`MERGE_AUTHORITY_MODEL.md`](operator/MERGE_AUTHORITY_MODEL.md) | Canonical Mode A/B/C semantics; standing Mode B applies to already-ratified in-scope delivery while protected boundaries remain Mode A |
 | Branch protection | [`.governance/main.protection.json`](../../../.governance/main.protection.json) | Normalized live-protection invariants checked by required governance tooling |
 | MAO-001A correction | [`WO-MAO-001A-authority-state-separation.md`](active/WO-MAO-001A-authority-state-separation.md) | Completed with PR #1274; separates owner authority from mutable operator state |
@@ -44,6 +45,8 @@ amendments. It proves why the amendments exist but does not grant authority.
 
 ## Unavailable Canon
 
-Root [`PATH_CANON_REGISTER.md`](../../../PATH_CANON_REGISTER.md) now records exact local path, remote,
-default branch, and scope identity for the OS, sovereign Sync, and standalone Atlas repositories.
-Cross-repository dispatch remains fail-closed unless live identity matches that register.
+Root [`PATH_CANON_REGISTER.md`](../../../PATH_CANON_REGISTER.md) records exact local path, remote,
+default branch, and scope identity for the OS, sovereign Sync, and all five standalone suite
+repositories: Forge, Atlas, Dais, Dossier, and GPT. Their protected terminal identities are governed
+by `WO-SR-MISSION-COMPLETION`. Cross-repository dispatch remains fail-closed unless live identity
+matches that register.

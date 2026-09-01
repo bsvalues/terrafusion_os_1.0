@@ -13,6 +13,7 @@ using TerraFusion.Core.Entities;
 using TerraFusion.Core.Services;
 using TerraFusion.API.DTOs;
 using TerraFusion.API.Security;
+using TerraFusion.API.Services.Dossier;
 using DataDbContext = TerraFusion.Data.TerraFusionDbContext;
 
 namespace TerraFusion.API.Controllers;
@@ -32,18 +33,24 @@ public class DossierController : ControllerBase
   private readonly ICostForgeService _costForge;
   private readonly ILogger<DossierController> _logger;
   private readonly bool _isDevelopment;
+  private readonly IDossierEvidenceRegistryReadConsumer? _evidenceRegistryReadConsumer;
+  private readonly IDossierMutationDecisionPort? _mutationPort;
   private static readonly Regex ParcelIdPattern = new("^[A-Za-z0-9._-]{1,50}$", RegexOptions.Compiled);
 
   public DossierController(
       DataDbContext db,
       ICostForgeService costForge,
       ILogger<DossierController> logger,
-      IHostEnvironment hostEnvironment)
+      IHostEnvironment hostEnvironment,
+      IDossierEvidenceRegistryReadConsumer? evidenceRegistryReadConsumer = null,
+      IDossierMutationDecisionPort? mutationPort = null)
   {
     _db = db;
     _costForge = costForge;
     _logger = logger;
     _isDevelopment = hostEnvironment.IsDevelopment();
+    _evidenceRegistryReadConsumer = evidenceRegistryReadConsumer;
+    _mutationPort = mutationPort;
   }
 
   // ── County Isolation Helper ──────────────────────────────────────
@@ -390,6 +397,7 @@ public class DossierController : ControllerBase
   [ProducesResponseType(typeof(DossierEvidenceRegistryReadResult), StatusCodes.Status200OK)]
   [ProducesResponseType(StatusCodes.Status400BadRequest)]
   [ProducesResponseType(StatusCodes.Status403Forbidden)]
+  [ProducesResponseType(StatusCodes.Status503ServiceUnavailable)]
   [ProducesResponseType(StatusCodes.Status500InternalServerError)]
   public async Task<ActionResult<DossierEvidenceRegistryReadResult>> GetEvidenceRegistryRead(
       string parcelId,
@@ -409,6 +417,13 @@ public class DossierController : ControllerBase
     var countyId = ResolveStrictAuthenticatedCountyId();
     if (countyId is null)
       return Forbid();
+
+    if (_evidenceRegistryReadConsumer is null || !_evidenceRegistryReadConsumer.IsAvailable)
+    {
+      return Problem(
+          statusCode: StatusCodes.Status503ServiceUnavailable,
+          title: "Canonical Dossier evidence registry runtime is unavailable or disabled.");
+    }
 
     var scopedQuery = _db.DossierEvidenceItems
         .AsNoTracking()
@@ -440,22 +455,30 @@ public class DossierController : ControllerBase
       TraceId = GetValidInboundCorrelationId(),
     };
 
-    try
+    var consumption = await _evidenceRegistryReadConsumer
+        .ConsumeAsync(request, total, sourcePage, HttpContext.RequestAborted)
+        .ConfigureAwait(false);
+    if (consumption.Success && !string.IsNullOrWhiteSpace(consumption.NormalizedResultJson))
     {
-      var contractJson = DossierEvidenceRegistryReadAdapter.Serialize(request, total, sourcePage);
-      return Content(contractJson, "application/json");
+      return Content(consumption.NormalizedResultJson, "application/json");
     }
-    catch (Exception exception) when (exception is ArgumentException or InvalidOperationException)
+
+    if (consumption.Failure == DossierEvidenceRegistryReadConsumerFailure.Disabled)
     {
-      _logger.LogWarning(
-          exception,
-          "Canonical Dossier evidence registry projection rejected parcel {ParcelId} for county {CountyId}",
-          parcelId,
-          countyId.Value);
       return Problem(
-          statusCode: StatusCodes.Status500InternalServerError,
-          title: "Canonical Dossier evidence registry projection failed");
+          statusCode: StatusCodes.Status503ServiceUnavailable,
+          title: "Canonical Dossier evidence registry runtime is disabled.");
     }
+
+    _logger.LogWarning(
+        "Dossier evidence registry runtime failed closed with {Failure} for parcel {ParcelId}, county {CountyId}, and trace {TraceId}.",
+        consumption.Failure,
+        parcelId,
+        countyId.Value,
+        HttpContext.TraceIdentifier);
+    return Problem(
+        statusCode: StatusCodes.Status500InternalServerError,
+        title: "Dossier evidence registry read failed contract validation.");
   }
 
   [HttpGet("evidence/{evidenceId}/chain")]
@@ -577,17 +600,42 @@ public class DossierController : ControllerBase
               ?? User.FindFirst("userId")?.Value
               ?? "unknown";
 
+    var effectiveAt = DateTimeOffset.UtcNow;
+    DossierMutationPortResult<DossierCreateNoteMutation> decision;
+    try
+    {
+      decision = await RequireMutationPort().DecideCreateNoteAsync(new DossierCreateNoteDecisionRequest
+      {
+        SchemaVersion = "1.0.0", Operation = DossierMutationOperation.createNote,
+        CommandId = Guid.NewGuid().ToString("D"), CountyId = countyId.Value.ToString("D"),
+        ParcelId = parcelId, ActorId = userId, EffectiveAt = effectiveAt,
+        TraceId = GetOrCreateCorrelationId(),
+        HostAssertions = AcceptedHostAssertions(),
+        Command = new DossierCreateNoteCommand
+        {
+          NoteId = Guid.NewGuid().ToString("D"), ExpectedVersion = 0,
+          Content = request.Content, NoteType = request.Type,
+        },
+      }, HttpContext.RequestAborted);
+    }
+    catch (DossierMutationUnavailableException ex) { return DossierRuntimeUnavailable(ex); }
+    if (decision.Decision == DossierMutationDecision.rejected)
+      return DossierRejected(DossierMutationOperation.createNote, decision.Violations);
+    var mutation = decision.Mutation!;
+
     var note = new DossierNote
     {
+      Id = Guid.Parse(mutation.NoteId),
       ParcelId = parcelId,
-      Content = request.Content,
-      NoteType = request.Type ?? "case_note",
+      Content = mutation.Content,
+      NoteType = mutation.NoteType,
       CountyId = countyId.Value,
-      CreatedBy = userId,
+      CreatedBy = mutation.CreatedBy,
+      CreatedAt = mutation.CreatedAt.UtcDateTime,
     };
 
     _db.DossierNotes.Add(note);
-    await _db.SaveChangesAsync();
+    await _db.SaveChangesAsync(HttpContext.RequestAborted);
 
     _logger.LogInformation(
         "DossierNote created: {NoteId} for parcel {ParcelId} in county {CountyId}",
@@ -1132,8 +1180,8 @@ public class DossierController : ControllerBase
   /// <summary>
   /// Real assessor document types sourced from Benton County operations
   /// and the quarantined terra-flow-production validation schema.
-  /// Each type includes accepted file extensions, retention class, and
-  /// whether the document enters the chain-of-custody on intake.
+  /// Each type includes accepted file extensions and its retention class.
+  /// Mutation and custody classification belongs to the suite-owned decision contract.
   /// </summary>
   [HttpGet("document-types")]
   public IActionResult GetDocumentTypes()
@@ -1416,47 +1464,46 @@ public class DossierController : ControllerBase
     // with real WA county assessor document types
     internal sealed record DocumentTypeEntry(
         string Type, string Label, string Description,
-        string[] AcceptedExtensions, string RetentionClass,
-        bool EntersCustodyChain);
+        string[] AcceptedExtensions, string RetentionClass);
 
     internal static readonly DocumentTypeEntry[] DocumentTypes =
     [
       new("deed", "Deed", "Property ownership transfer document",
-          [".pdf", ".tif", ".tiff"], "permanent", true),
+          [".pdf", ".tif", ".tiff"], "permanent"),
       new("mortgage", "Mortgage / Trust Deed", "Lending instrument recorded against property",
-          [".pdf", ".tif"], "permanent", true),
+          [".pdf", ".tif"], "permanent"),
       new("lien", "Lien", "Financial encumbrance against property",
-          [".pdf", ".tif"], "permanent", true),
+          [".pdf", ".tif"], "permanent"),
       new("easement", "Easement", "Right-of-way or access encumbrance",
-          [".pdf", ".tif"], "permanent", true),
+          [".pdf", ".tif"], "permanent"),
       new("plat", "Plat Map", "Recorded subdivision plat",
-          [".pdf", ".tif", ".tiff", ".dwg"], "permanent", true),
+          [".pdf", ".tif", ".tiff", ".dwg"], "permanent"),
       new("survey", "Boundary Survey", "Licensed surveyor boundary determination",
-          [".pdf", ".tif", ".dwg"], "permanent", true),
+          [".pdf", ".tif", ".dwg"], "permanent"),
       new("tax_record", "Tax Record", "Assessment roll or tax statement entry",
-          [".pdf", ".xls", ".xlsx", ".csv"], "assessment-roll-perm", true),
+          [".pdf", ".xls", ".xlsx", ".csv"], "assessment-roll-perm"),
       new("appeal", "Appeal Petition", "Board of Equalization appeal filing",
-          [".pdf", ".doc", ".docx"], "appeal-10yr", true),
+          [".pdf", ".doc", ".docx"], "appeal-10yr"),
       new("photo", "Property Photograph", "Field inspection imagery",
-          [".jpg", ".jpeg", ".png", ".tif", ".heic"], "life-of-property", false),
+          [".jpg", ".jpeg", ".png", ".tif", ".heic"], "life-of-property"),
       new("appraisal", "Appraisal / Valuation Report", "Cost, sales, or income approach worksheet",
-          [".pdf", ".xls", ".xlsx"], "working-6yr", true),
+          [".pdf", ".xls", ".xlsx"], "working-6yr"),
       new("inspection_report", "Field Inspection Report", "On-site property condition assessment",
-          [".pdf", ".doc", ".docx"], "working-6yr", true),
+          [".pdf", ".doc", ".docx"], "working-6yr"),
       new("comparable_analysis", "Comparable Sales Analysis", "Sales comparison approach documentation",
-          [".pdf", ".xls", ".xlsx"], "working-6yr", true),
+          [".pdf", ".xls", ".xlsx"], "working-6yr"),
       new("income_analysis", "Income Approach Analysis", "Rental income capitalization worksheet",
-          [".pdf", ".xls", ".xlsx"], "working-6yr", true),
+          [".pdf", ".xls", ".xlsx"], "working-6yr"),
       new("exemption", "Exemption Application", "Senior, disabled, nonprofit, or current use exemption",
-          [".pdf", ".doc", ".docx"], "exemption-6yr-post", true),
+          [".pdf", ".doc", ".docx"], "exemption-6yr-post"),
       new("permit", "Building Permit", "Construction or remodel permit documentation",
-          [".pdf", ".doc", ".docx"], "working-6yr", false),
+          [".pdf", ".doc", ".docx"], "working-6yr"),
       new("correspondence", "Correspondence", "Letters, notices, and memos",
-          [".pdf", ".doc", ".docx", ".msg"], "correspondence-6yr", false),
+          [".pdf", ".doc", ".docx", ".msg"], "correspondence-6yr"),
       new("sketch", "Property Sketch", "Floor plan or building layout drawing",
-          [".pdf", ".dwg", ".png", ".jpg"], "life-of-property", false),
+          [".pdf", ".dwg", ".png", ".jpg"], "life-of-property"),
       new("other", "Other Document", "Uncategorized supporting documentation",
-          [".pdf", ".doc", ".docx", ".jpg", ".png", ".tif"], "standard-6yr", false),
+          [".pdf", ".doc", ".docx", ".jpg", ".png", ".tif"], "standard-6yr"),
     ];
 
     // WA Secretary of State Local Government CORE Retention Schedule
@@ -1640,28 +1687,45 @@ public class DossierController : ControllerBase
     if (property is null)
       return NotFound(new { error = "Parcel not found" });
 
-    var entersCustody = BentonDocumentData.DocumentTypes
-        .FirstOrDefault(t => t.Type.Equals(request.DocumentType, StringComparison.OrdinalIgnoreCase))
-        ?.EntersCustodyChain ?? false;
+    var actor = User.Identity?.Name ?? "system";
+    var effectiveAt = DateTimeOffset.UtcNow;
+    DossierMutationPortResult<DossierRegisterDocumentMutation> decision;
+    try
+    {
+      decision = await RequireMutationPort().DecideRegisterDocumentAsync(new DossierRegisterDocumentDecisionRequest
+      {
+        SchemaVersion="1.0.0", Operation=DossierMutationOperation.registerDocument,
+        CommandId=Guid.NewGuid().ToString("D"), CountyId=countyId.Value.ToString("D"), ParcelId=parcelId,
+        ActorId=actor, EffectiveAt=effectiveAt, TraceId=GetOrCreateCorrelationId(), HostAssertions=AcceptedHostAssertions(),
+        Command=new DossierRegisterDocumentCommand
+        {
+          DocumentId=Guid.NewGuid().ToString("D"), ExpectedVersion=0, Name=request.Name,
+          DocumentType=request.DocumentType, MimeType=request.MimeType, SizeBytes=request.SizeBytes,
+          ContentHash=request.ContentHash, Description=request.Description,
+          RetentionClass=request.RetentionClass, StoragePath=request.StoragePath,
+        },
+      }, HttpContext.RequestAborted);
+    }
+    catch (DossierMutationUnavailableException ex) { return DossierRuntimeUnavailable(ex); }
+    if (decision.Decision==DossierMutationDecision.rejected) return DossierRejected(DossierMutationOperation.registerDocument,decision.Violations);
+    var mutation=decision.Mutation!;
 
     var document = new DossierDocument
     {
+      Id=Guid.Parse(mutation.DocumentId),
       ParcelId = parcelId,
-      Name = request.Name.Trim(),
-      DocumentType = request.DocumentType.Trim(),
-      MimeType = request.MimeType.Trim(),
-      SizeBytes = request.SizeBytes,
-      ContentHash = request.ContentHash?.Trim() ?? "",
-      Description = request.Description?.Trim(),
-      RetentionClass = request.RetentionClass?.Trim(),
-      StoragePath = request.StoragePath?.Trim(),
-      EntersCustodyChain = entersCustody,
+      Name = mutation.Name, DocumentType = mutation.DocumentType, Status=mutation.Status.ToString(),
+      MimeType = mutation.MimeType, SizeBytes = mutation.SizeBytes, ContentHash = mutation.ContentHash,
+      Description = mutation.Description, RetentionClass = mutation.RetentionClass,
+      StoragePath = mutation.StoragePath, EntersCustodyChain = mutation.EntersCustodyChain,
+      Version=mutation.Version,
       CountyId = countyId.Value,
-      UploadedBy = User.Identity?.Name ?? "system",
+      UploadedBy = mutation.UploadedBy, UploadedAt=mutation.UploadedAt.UtcDateTime,
+      CreatedAt=mutation.UploadedAt.UtcDateTime, UpdatedAt=mutation.UploadedAt.UtcDateTime,
     };
 
     _db.DossierDocuments.Add(document);
-    await _db.SaveChangesAsync();
+    await _db.SaveChangesAsync(HttpContext.RequestAborted);
 
     _logger.LogInformation("Document {DocumentId} registered for parcel {ParcelId}", document.Id, parcelId);
 
@@ -1735,8 +1799,6 @@ public class DossierController : ControllerBase
       return BadRequest(new { error = "Status is required" });
 
     var newStatus = request.Status.Trim().ToLowerInvariant();
-    if (newStatus is not ("active" or "sealed" or "archived"))
-      return BadRequest(new { error = "Status must be one of: active, sealed, archived" });
 
     var countyId = await ResolveCountyIdAsync();
     if (countyId is null)
@@ -1747,21 +1809,34 @@ public class DossierController : ControllerBase
     if (document is null)
       return NotFound(new { error = "Document not found" });
 
-    // Validate transition: active → sealed → archived (no backward transitions)
-    var validTransitions = new Dictionary<string, string[]>(StringComparer.OrdinalIgnoreCase)
+    DossierMutationPortResult<DossierTransitionDocumentStatusMutation> decision;
+    try
     {
-      ["active"] = new[] { "sealed", "archived" },
-      ["sealed"] = new[] { "archived" },
-      ["archived"] = Array.Empty<string>(),
-    };
-
-    if (!validTransitions.TryGetValue(document.Status, out var allowed) ||
-        !allowed.Contains(newStatus, StringComparer.OrdinalIgnoreCase))
-      return BadRequest(new { error = $"Cannot transition from '{document.Status}' to '{newStatus}'" });
-
-    document.Status = newStatus;
-    document.UpdatedAt = DateTime.UtcNow;
-    await _db.SaveChangesAsync();
+      decision=await RequireMutationPort().DecideTransitionDocumentStatusAsync(new DossierTransitionDocumentStatusDecisionRequest
+      {
+        SchemaVersion="1.0.0",Operation=DossierMutationOperation.transitionDocumentStatus,
+        CommandId=Guid.NewGuid().ToString("D"),CountyId=countyId.Value.ToString("D"),ParcelId=document.ParcelId,
+        ActorId=User.Identity?.Name??"system",EffectiveAt=DateTimeOffset.UtcNow,TraceId=GetOrCreateCorrelationId(),HostAssertions=AcceptedHostAssertions(),
+        Command=new DossierTransitionDocumentStatusCommand
+        {
+          DocumentId=document.Id.ToString("D"),ExpectedVersion=document.Version,RequestedStatus=request.Status,Reason=request.Reason,
+          Current=new DossierDocumentStateSnapshot { DocumentId=document.Id.ToString("D"),CountyId=countyId.Value.ToString("D"),ParcelId=document.ParcelId,Status=document.Status,Version=document.Version,UpdatedAt=new DateTimeOffset(DateTime.SpecifyKind(document.UpdatedAt,DateTimeKind.Utc)) },
+        },
+      },HttpContext.RequestAborted);
+    }
+    catch(DossierMutationUnavailableException ex){return DossierRuntimeUnavailable(ex);}
+    if(decision.Decision==DossierMutationDecision.rejected)return DossierRejected(DossierMutationOperation.transitionDocumentStatus,decision.Violations);
+    var mutation=decision.Mutation!;
+    document.Status=mutation.Status.ToString(); document.Version=mutation.Version; document.UpdatedAt=mutation.UpdatedAt.UtcDateTime;
+    try
+    {
+      await _db.SaveChangesAsync(HttpContext.RequestAborted);
+    }
+    catch (DbUpdateConcurrencyException exception)
+    {
+      _logger.LogWarning(exception, "Refused stale Dossier document mutation {DocumentId} in county {CountyId}", document.Id, countyId.Value);
+      return Conflict(new { error = "Document changed after the governed Dossier snapshot was read", correlationId = GetOrCreateCorrelationId() });
+    }
 
     _logger.LogInformation("Document {DocumentId} status updated to {Status}", document.Id, newStatus);
 
@@ -1864,24 +1939,40 @@ public class DossierController : ControllerBase
       return NotFound(new { error = "Parcel not found" });
 
     // Validate DocumentId if provided
+    DossierDocument? referencedDocument = null;
     if (request.DocumentId.HasValue)
     {
-      var doc = await _db.DossierDocuments
+      referencedDocument = await _db.DossierDocuments
           .AsNoTracking()
           .FirstOrDefaultAsync(d => d.Id == request.DocumentId.Value && d.CountyId == countyId.Value);
-      if (doc is null)
+      if (referencedDocument is null)
         return BadRequest(new { error = "Referenced document not found" });
     }
 
     var actor = User.Identity?.Name ?? "system";
+    var evidenceId=Guid.NewGuid(); var eventId=Guid.NewGuid(); var effectiveAt=DateTimeOffset.UtcNow;
+    var genesisHash=ComputeSha256($"evidence:{evidenceId:N}:{effectiveAt.UtcDateTime:O}:{parcelId}");
+    DossierMutationPortResult<DossierRegisterEvidenceMutation> decision;
+    try
+    {
+      decision=await RequireMutationPort().DecideRegisterEvidenceAsync(new DossierRegisterEvidenceDecisionRequest
+      {
+        SchemaVersion="1.0.0",Operation=DossierMutationOperation.registerEvidence,CommandId=Guid.NewGuid().ToString("D"),CountyId=countyId.Value.ToString("D"),ParcelId=parcelId,ActorId=actor,EffectiveAt=effectiveAt,TraceId=GetOrCreateCorrelationId(),HostAssertions=AcceptedHostAssertions(),
+        Command=new DossierRegisterEvidenceCommand
+        {
+          EvidenceId=evidenceId.ToString("D"),GenesisEventId=eventId.ToString("D"),ExpectedVersion=0,Title=request.Title,EvidenceType=request.EvidenceType,DocumentId=request.DocumentId?.ToString("D"),GenesisHash=genesisHash,
+          Document=referencedDocument is null?null:new DossierEvidenceDocumentSnapshot { DocumentId=referencedDocument.Id.ToString("D"),CountyId=referencedDocument.CountyId.ToString("D"),ParcelId=referencedDocument.ParcelId,Status=referencedDocument.Status,Version=referencedDocument.Version },
+        },
+      },HttpContext.RequestAborted);
+    }
+    catch(DossierMutationUnavailableException ex){return DossierRuntimeUnavailable(ex);}
+    if(decision.Decision==DossierMutationDecision.rejected)return DossierRejected(DossierMutationOperation.registerEvidence,decision.Violations);
+    var mutation=decision.Mutation!;
     var evidence = new DossierEvidence
     {
-      ParcelId = parcelId,
-      Title = request.Title.Trim(),
-      EvidenceType = request.EvidenceType.Trim(),
-      DocumentId = request.DocumentId,
-      CountyId = countyId.Value,
-      CreatedBy = actor,
+      Id=Guid.Parse(mutation.EvidenceId),ParcelId=parcelId,Title=mutation.Title,EvidenceType=mutation.EvidenceType,
+      DocumentId=mutation.DocumentId is null?null:Guid.Parse(mutation.DocumentId),CountyId=countyId.Value,
+      CreatedBy=mutation.CreatedBy,CreatedAt=mutation.CreatedAt.UtcDateTime,Integrity=mutation.Integrity.ToString(),Version=mutation.Version,
     };
 
     _db.DossierEvidenceItems.Add(evidence);
@@ -1889,11 +1980,9 @@ public class DossierController : ControllerBase
     // Create initial custody event
     var custodyEvent = new DossierCustodyEvent
     {
-      EvidenceId = evidence.Id,
-      Action = "created",
-      Actor = actor,
-      Hash = ComputeSha256($"evidence:{evidence.Id:N}:{evidence.CreatedAt:O}:{parcelId}"),
-      CountyId = countyId.Value,
+      Id=Guid.Parse(mutation.GenesisEvent.EventId),EvidenceId=evidence.Id,Action=mutation.GenesisEvent.Action,
+      Actor=mutation.GenesisEvent.Actor,Hash=mutation.GenesisEvent.EventHash,CountyId=countyId.Value,
+      Timestamp=mutation.GenesisEvent.Timestamp.UtcDateTime,
     };
 
     _db.DossierCustodyEvents.Add(custodyEvent);
@@ -2017,13 +2106,6 @@ public class DossierController : ControllerBase
       return BadRequest(new { error = "Action is required" });
 
     var action = request.Action.Trim().ToLowerInvariant();
-    var validActions = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
-    {
-      "verified", "transferred", "sealed", "disputed", "hash-verified", "reviewed"
-    };
-
-    if (!validActions.Contains(action))
-      return BadRequest(new { error = $"Invalid action. Must be one of: {string.Join(", ", validActions)}" });
 
     var countyId = await ResolveCountyIdAsync();
     if (countyId is null)
@@ -2039,36 +2121,50 @@ public class DossierController : ControllerBase
     // Get previous hash for chain integrity
     var previousEvent = await _db.DossierCustodyEvents
         .AsNoTracking()
-        .Where(c => c.EvidenceId == evidenceId)
+        .Where(c => c.EvidenceId == evidenceId && c.CountyId == countyId.Value)
         .OrderByDescending(c => c.Timestamp)
         .FirstOrDefaultAsync();
-
-    var newHash = ComputeSha256(
-        $"custody:{evidenceId:N}:{action}:{DateTime.UtcNow:O}:{previousEvent?.Hash ?? "genesis"}");
+    if(previousEvent is null || string.IsNullOrWhiteSpace(previousEvent.Hash))
+      return Conflict(new { error="Evidence custody chain has no canonical head" });
+    var chainLength=await _db.DossierCustodyEvents.AsNoTracking().CountAsync(c=>c.EvidenceId==evidenceId && c.CountyId==countyId.Value);
+    var effectiveAt=DateTimeOffset.UtcNow; var eventId=Guid.NewGuid();
+    var newHash=ComputeSha256($"custody:{evidenceId:N}:{action}:{effectiveAt.UtcDateTime:O}:{previousEvent.Hash}");
+    DossierMutationPortResult<DossierAppendCustodyEventMutation> decision;
+    try
+    {
+      decision=await RequireMutationPort().DecideAppendCustodyEventAsync(new DossierAppendCustodyEventDecisionRequest
+      {
+        SchemaVersion="1.0.0",Operation=DossierMutationOperation.appendCustodyEvent,CommandId=Guid.NewGuid().ToString("D"),CountyId=countyId.Value.ToString("D"),ParcelId=evidence.ParcelId,ActorId=actor,EffectiveAt=effectiveAt,TraceId=GetOrCreateCorrelationId(),HostAssertions=AcceptedHostAssertions(),
+        Command=new DossierAppendCustodyEventCommand
+        {
+          EvidenceId=evidence.Id.ToString("D"),EventId=eventId.ToString("D"),ExpectedVersion=evidence.Version,Action=request.Action,Notes=request.Notes,PreviousEventHash=previousEvent.Hash,EventHash=newHash,
+          Current=new DossierEvidenceCustodySnapshot { EvidenceId=evidence.Id.ToString("D"),CountyId=evidence.CountyId.ToString("D"),ParcelId=evidence.ParcelId,Integrity=evidence.Integrity,Version=evidence.Version,ChainLength=chainLength,LastEventHash=previousEvent.Hash,LastEventAt=new DateTimeOffset(DateTime.SpecifyKind(previousEvent.Timestamp,DateTimeKind.Utc)) },
+        },
+      },HttpContext.RequestAborted);
+    }
+    catch(DossierMutationUnavailableException ex){return DossierRuntimeUnavailable(ex);}
+    if(decision.Decision==DossierMutationDecision.rejected)return DossierRejected(DossierMutationOperation.appendCustodyEvent,decision.Violations);
+    var mutation=decision.Mutation!;
 
     var custodyEvent = new DossierCustodyEvent
     {
-      EvidenceId = evidenceId,
-      Action = action,
-      Actor = actor,
-      Hash = newHash,
-      Notes = request.Notes?.Trim(),
-      CountyId = countyId.Value,
+      Id=Guid.Parse(mutation.Event.EventId),EvidenceId=evidenceId,Action=mutation.Event.Action,
+      Actor=mutation.Event.Actor,Hash=mutation.Event.EventHash,Notes=mutation.Event.Notes,
+      CountyId=countyId.Value,Timestamp=mutation.Event.Timestamp.UtcDateTime,
     };
 
     _db.DossierCustodyEvents.Add(custodyEvent);
 
-    // Update evidence integrity based on action
-    if (action is "verified" or "hash-verified")
-      evidence.Integrity = "verified";
-    else if (action is "disputed")
-      evidence.Integrity = "disputed";
-
-    await _db.SaveChangesAsync();
-
-    var chainLength = await _db.DossierCustodyEvents
-        .AsNoTracking()
-        .CountAsync(c => c.EvidenceId == evidenceId);
+    evidence.Integrity=mutation.Integrity.ToString(); evidence.Version=mutation.Version;
+    try
+    {
+      await _db.SaveChangesAsync(HttpContext.RequestAborted);
+    }
+    catch (DbUpdateConcurrencyException exception)
+    {
+      _logger.LogWarning(exception, "Refused stale Dossier custody mutation {EvidenceId} in county {CountyId}", evidenceId, countyId.Value);
+      return Conflict(new { error = "Evidence changed after the governed Dossier snapshot was read", correlationId = GetOrCreateCorrelationId() });
+    }
 
     _logger.LogInformation("Custody event '{Action}' added to evidence {EvidenceId}", action, evidenceId);
 
@@ -2080,7 +2176,7 @@ public class DossierController : ControllerBase
       actor = custodyEvent.Actor,
       hash = custodyEvent.Hash,
       timestamp = custodyEvent.Timestamp,
-      chainLength,
+      chainLength=mutation.ChainLength,
       integrity = evidence.Integrity,
       correlationId = GetOrCreateCorrelationId(),
     });
@@ -2172,49 +2268,48 @@ public class DossierController : ControllerBase
     // Find matching persistent documents for this parcel
     var parcelDocuments = await _db.DossierDocuments
         .AsNoTracking()
-        .Where(d => d.ParcelId == parcelId && d.CountyId == countyId.Value && d.Status != "archived")
+        .Where(d => d.ParcelId == parcelId && d.CountyId == countyId.Value)
         .ToListAsync();
 
     var actor = User.Identity?.Name ?? "system";
+    DossierMutationPortResult<DossierCreatePacketMutation> decision;
+    try
+    {
+      decision=await RequireMutationPort().DecideCreatePacketAsync(new DossierCreatePacketDecisionRequest
+      {
+        SchemaVersion="1.0.0",Operation=DossierMutationOperation.createPacket,CommandId=Guid.NewGuid().ToString("D"),CountyId=countyId.Value.ToString("D"),ParcelId=parcelId,ActorId=actor,EffectiveAt=DateTimeOffset.UtcNow,TraceId=GetOrCreateCorrelationId(),HostAssertions=AcceptedHostAssertions(),
+        Command=new DossierCreatePacketCommand
+        {
+          PacketId=Guid.NewGuid().ToString("D"),ExpectedVersion=0,
+          Template=new DossierPacketTemplateSnapshot { PacketType=template.PacketType,Name=template.Name,RequiredDocumentTypes=template.RequiredDocumentTypes },
+          CurrentDocuments=parcelDocuments.Select(d=>new DossierPacketDocumentSnapshot { DocumentId=d.Id.ToString("D"),CountyId=d.CountyId.ToString("D"),ParcelId=d.ParcelId,DocumentType=d.DocumentType,Status=d.Status,Version=d.Version,UploadedAt=new DateTimeOffset(DateTime.SpecifyKind(d.UploadedAt,DateTimeKind.Utc)) }).ToArray(),
+        },
+      },HttpContext.RequestAborted);
+    }
+    catch(DossierMutationUnavailableException ex){return DossierRuntimeUnavailable(ex);}
+    if(decision.Decision==DossierMutationDecision.rejected)return DossierRejected(DossierMutationOperation.createPacket,decision.Violations);
+    var mutation=decision.Mutation!;
     var packet = new DossierPacket
     {
-      ParcelId = parcelId,
-      PacketType = template.PacketType,
-      Name = $"{template.Name} - {parcelId}",
-      CountyId = countyId.Value,
-      CreatedBy = actor,
-      TotalRequired = template.RequiredDocumentTypes.Length,
+      Id=Guid.Parse(mutation.PacketId),ParcelId=parcelId,PacketType=mutation.PacketType,Name=mutation.Name,
+      Status=mutation.Status.ToString(),CompletenessPercent=(double)mutation.CompletenessPercent,
+      SatisfiedCount=mutation.SatisfiedCount,TotalRequired=mutation.TotalRequired,CountyId=countyId.Value,
+      CreatedBy=mutation.CreatedBy,CreatedAt=mutation.CreatedAt.UtcDateTime,UpdatedAt=mutation.CreatedAt.UtcDateTime,
     };
 
-    var satisfiedCount = 0;
-    foreach (var requiredType in template.RequiredDocumentTypes)
+    foreach (var acceptedItem in mutation.Items)
     {
-      var matchingDoc = parcelDocuments
-          .FirstOrDefault(d => d.DocumentType.Equals(requiredType, StringComparison.OrdinalIgnoreCase));
-
-      var satisfied = matchingDoc is not null;
-      if (satisfied) satisfiedCount++;
-
       var item = new DossierPacketItem
       {
         PacketId = packet.Id,
-        DocumentType = requiredType,
-        DocumentId = matchingDoc?.Id,
-        Required = true,
-        Satisfied = satisfied,
-        SatisfiedAt = satisfied ? matchingDoc!.UploadedAt : null,
+        DocumentType=acceptedItem.DocumentType,
+        DocumentId=acceptedItem.DocumentId is null?null:Guid.Parse(acceptedItem.DocumentId),
+        Required=acceptedItem.Required,Satisfied=acceptedItem.Satisfied,
+        SatisfiedAt=acceptedItem.SatisfiedAt?.UtcDateTime,
       };
 
       packet.Items.Add(item);
     }
-
-    packet.SatisfiedCount = satisfiedCount;
-    packet.CompletenessPercent = packet.TotalRequired > 0
-        ? Math.Round((double)satisfiedCount / packet.TotalRequired * 100, 1)
-        : 0;
-
-    if (packet.CompletenessPercent >= 100)
-      packet.Status = "complete";
 
     _db.DossierPackets.Add(packet);
     await _db.SaveChangesAsync();
@@ -3051,4 +3146,28 @@ public class DossierController : ControllerBase
 
     return "human";
   }
+
+  private IDossierMutationDecisionPort RequireMutationPort() =>
+      _mutationPort ?? throw new DossierMutationUnavailableException(
+          "Canonical Dossier mutation runtime is unavailable.");
+
+  private static DossierMutationHostAssertions AcceptedHostAssertions() => new()
+  {
+    ActorAuthorized = true,
+    CountyExists = true,
+    ParcelExists = true,
+    PiiApproved = true,
+  };
+
+  private ObjectResult DossierRuntimeUnavailable(DossierMutationUnavailableException exception)
+  {
+    _logger.LogError(exception, "Canonical Dossier mutation runtime failed closed");
+    return StatusCode(StatusCodes.Status503ServiceUnavailable,
+        new { error = "Canonical Dossier mutation runtime unavailable", correlationId = GetOrCreateCorrelationId() });
+  }
+
+  private BadRequestObjectResult DossierRejected(
+      DossierMutationOperation operation,
+      IReadOnlyList<DossierMutationViolation> violations) =>
+      BadRequest(new { error = $"Dossier rejected {operation}", violations, correlationId = GetOrCreateCorrelationId() });
 }

@@ -8,11 +8,14 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Extensions.Logging;
+using TerraFusion.Abstractions.DTOs;
 using TerraFusion.AI.Entities;
 using TerraFusion.AI.Interfaces;
 using TerraFusion.AI.Models;
 using TerraFusion.AI.Services;
+using TerraFusion.API.Services.Gpt;
 using TerraFusion.Core.Entities;
 
 namespace TerraFusion.API.Controllers
@@ -41,6 +44,7 @@ namespace TerraFusion.API.Controllers
         private readonly ISystemGptAtlasService? _atlasService; // Phase 28
         private readonly ISystemGptAtlasLiveService? _atlasLiveService; // Phase 29
         private readonly TerraFusion.AI.Infrastructure.IServerSentEventsWriter? _sseWriter; // Phase 29
+        private readonly IGptGroundedContextConsumer? _groundedContextConsumer;
         private readonly ILogger<GPTController> _logger;
 
         public GPTController(
@@ -60,7 +64,8 @@ namespace TerraFusion.API.Controllers
             ISystemGptRagFleetService? ragFleetService = null, // Phase 27
             ISystemGptAtlasService? atlasService = null, // Phase 28
             ISystemGptAtlasLiveService? atlasLiveService = null, // Phase 29
-            TerraFusion.AI.Infrastructure.IServerSentEventsWriter? sseWriter = null) // Phase 29
+            TerraFusion.AI.Infrastructure.IServerSentEventsWriter? sseWriter = null, // Phase 29
+            IGptGroundedContextConsumer? groundedContextConsumer = null)
         {
             _configService = configService ?? throw new ArgumentNullException(nameof(configService));
             _orchestrationService = orchestrationService ?? throw new ArgumentNullException(nameof(orchestrationService));
@@ -79,6 +84,7 @@ namespace TerraFusion.API.Controllers
             _atlasService = atlasService; // Optional - Phase 28 Map-Based AI Health Atlas
             _atlasLiveService = atlasLiveService; // Optional - Phase 29 Live Telemetry
             _sseWriter = sseWriter; // Optional - Phase 29 SSE Writer
+            _groundedContextConsumer = groundedContextConsumer;
         }
 
         // Phase 26: In-memory storage for last guardrail decision per county (for diagnostics)
@@ -191,7 +197,10 @@ namespace TerraFusion.API.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error searching GPTs: {Query}", query);
+                _logger.LogError(
+                    ex,
+                    "Error searching GPT catalog with a {QueryLength}-character query",
+                    query?.Length ?? 0);
                 return StatusCode(500, new { error = "Failed to search GPTs" });
             }
         }
@@ -676,6 +685,58 @@ namespace TerraFusion.API.Controllers
                 _logger.LogError(ex, "Error getting county statistics");
                 return StatusCode(500, new { error = "Failed to retrieve statistics" });
             }
+        }
+
+        #endregion
+
+        #region Canonical Grounded Context
+
+        /// <summary>
+        /// Retrieves bounded citations through the exact hash-pinned TerraGPT suite validator.
+        /// datasetKey is the canonical form rag-dataset:{positive integer}. This route does not
+        /// perform provider generation and never returns full source text or provider metadata.
+        /// </summary>
+        [HttpPost("grounded-context")]
+        [EnableRateLimiting("ApiPolicy")]
+        public async System.Threading.Tasks.Task<ActionResult<GptGroundedContextResult>> GetGroundedContext(
+            [FromBody] GptGroundedContextRequest request,
+            CancellationToken cancellationToken = default)
+        {
+            if (_groundedContextConsumer is null)
+            {
+                return StatusCode(503, new
+                {
+                    error = "Canonical GPT grounded-context runtime is unavailable.",
+                    code = "GPT_RUNTIME_DISABLED",
+                });
+            }
+
+            var consumption = await _groundedContextConsumer.ConsumeAsync(
+                request,
+                TryGetCountyId(),
+                cancellationToken);
+            if (consumption.Success && consumption.Result is not null)
+            {
+                return Ok(consumption.Result);
+            }
+
+            var error = new
+            {
+                error = consumption.Message ?? "Canonical GPT grounded-context request failed.",
+                code = consumption.Failure.ToString(),
+                violations = consumption.Violations.Select(violation => new
+                {
+                    @class = violation.Class,
+                    message = violation.Message,
+                }),
+            };
+            return consumption.Failure switch
+            {
+                GptGroundedContextConsumerFailure.InvalidRequest
+                    or GptGroundedContextConsumerFailure.QueryRejected => BadRequest(error),
+                GptGroundedContextConsumerFailure.RuntimeRejected => UnprocessableEntity(error),
+                _ => StatusCode(503, error),
+            };
         }
 
         #endregion
@@ -2276,6 +2337,14 @@ namespace TerraFusion.API.Controllers
                 throw new InvalidOperationException("County ID not found in claims");
             }
             return countyId;
+        }
+
+        private int? TryGetCountyId()
+        {
+            var countyIdClaim = User.FindFirst("CountyId")?.Value;
+            return int.TryParse(countyIdClaim, out var countyId) && countyId > 0
+                ? countyId
+                : null;
         }
 
         private string GetUserRole()

@@ -3,7 +3,7 @@
 **Work Order:** `WO-GOAL-LOOP-MASTER-PLAYBOOK-001`
 **Status:** Active execution graph
 **Authority:** TerraFusion Brain / Work Order Operator
-**Last Updated:** 2026-08-07
+**Last Updated:** 2026-08-27
 **Base:** `origin/main` at `b5a02db1758deda45d84c0ec99adb8f31d328c7b` or later
 
 ---
@@ -91,16 +91,64 @@ automatically.
 
 ---
 
-## Active Program - Five-Suite Federated Repository Buildout
+## Active Program - Washington Assessor Launch V1
+
+| Field | Value |
+| --- | --- |
+| Goal | `GOAL-WASHINGTON-ASSESSOR-LAUNCH-V1` |
+| Loop | `LOOP-WASHINGTON-ASSESSOR-LAUNCH-V1` |
+| Program slug | `washington-assessor-launch-v1` |
+| Authority | Issue #1485 / `OWNER-WAL-V1-MISSION-AUTHORITY-20260827` |
+| Status | ACTIVE; `WO-WAL-000` completes on protected merge of PR #1486 |
+| Current | Canonical activation and exact initial-wave reservation |
+| Next | Parallel `WO-WAL-001`, `WO-WAL-002`, `WO-WAL-003`, and bounded reservation-safe portions of `WO-WAL-004` |
+| Terminal | `WO-WAL-009` records `WASHINGTON_ASSESSOR_LAUNCH_V1_COMPLETED_AND_CONSUMED` |
+
+This is the current mission-level program. It covers all 39 Washington counties and continues
+without routine owner relay through truthful public baseline runtime, real governed county upload,
+explicitly read-only multi-county TerraFusion Sync, county identity/isolation/trust, the real
+Counties HUB, county-aware TerraForge, exact-candidate integrated acceptance, production release,
+an observed external non-development-network assessor journey, and terminal closeout.
+
+Initial dependency graph:
+
+```text
+WO-WAL-000
+  -> WO-WAL-001 public baseline -----------------+
+  -> WO-WAL-002 governed upload -----------------+--> WO-WAL-005 Counties HUB --+
+  -> WO-WAL-003 read-only Sync ------------------+                               |
+  -> WO-WAL-004 bounded identity/isolation/trust +--> WO-WAL-006 TerraForge -----+
+                                                                                |
+                                                                                v
+WO-WAL-007 exact 39-county acceptance -> WO-WAL-008 production + assessor -> WO-WAL-009 closeout
+```
+
+`WO-WAL-004` may overlap 001-003 only through exact children with non-colliding path, contract, and
+environment reservations. 005 and 006 begin when the 001-004 contracts they consume are stable;
+007 gates production; 008 may deploy only the exact 007-accepted candidate; 009 creates no automatic
+successor.
+
+The external-source boundary is absolute inside this mission: PUBLIC, COUNTY_PROVIDED, and
+CONNECTED are read/import modes into TerraFusion-controlled county-scoped storage. No county PACS,
+CAMA, GIS, database, API, feed, or other external source may be mutated or written back to before a
+later explicit official-adoption decision. Stop on protected data or credentials, cross-county
+disclosure, silent Benton fallback, unsupported capability claims, failed exact-release/rollback
+proof, conflicting higher canon, or a consequential objective outside Issue #1485.
+
+Program definition: [washington-assessor-launch-v1.md](washington-assessor-launch-v1.md).
+
+---
+
+## Completed Program - Five-Suite Federated Repository Buildout
 
 | Field | Value |
 | --- | --- |
 | Goal | `GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES` |
 | Loop | `LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES` |
 | Program slug | `five-suite-federated-repository-buildout` |
-| Status | Active between cohorts; WO-SR-009D complete and authority consumed |
-| Current | Portfolio reconciliation after verified Dossier Workbench canonical evidence read adoption |
-| Next | Highest-value dependency-cleared bounded successor; no successor authority inferred |
+| Status | COMPLETE through `WO-SR-MISSION-COMPLETION` |
+| Current | Terminal governance and evidence reconciliation complete |
+| Next | No mission successor; Forge WO-SR-007 remains outside this mission |
 
 The sovereign base remains `terrafusion_os_1.0`. The five ratified suite repositories are
 `terrafusion-forge`, `terrafusion-atlas`, `terrafusion-dais`, `terrafusion-dossier`, and
@@ -208,7 +256,20 @@ transfer, or cutover follows.
 
 Program definition: [five-suite-federated-repository-buildout.md](five-suite-federated-repository-buildout.md).
 
-Current Five-Suite routing is portfolio reconciliation after WO-SR-009D. PR #1427 exact assured head `85818a749d4268f84cf8638d991d9cef657a0d19` merged as `c7f2d78619a9eb19186c2c724876fb4d11c81b00`, proving the authenticated county-scoped frozen Dossier evidence read, same-county Workbench rendering, foreign-only empty-shape non-disclosure, deterministic ordering and pagination, and honest states with disposable synthetic data. The Development fallback, writes, custody mutation, frozen-contract changes, live data, deployment, and cutover remain denied. Authority is completed and consumed; no successor is inferred.
+Five-Suite routing is terminal at `WO-SR-MISSION-COMPLETION`. Forge, Atlas, Dais, and Dossier
+suite ownership and sovereign runtime/rollback evidence are protected-main complete. GPT inert
+staging is protected at `1f0889a72497b283140fb0d0a57eed79775f9a34`; reviewed runtime head
+`3bd87411966a7d2c61439f4f60a11f0cb498968f`, tree
+`e6797a83c2c47f3a62bcbfd19e544cd0ae6e5bf8`, passed manual proof run
+`33071051037` and independent review with no actionable P0/P1, then squash-merged as protected OS
+main `9ef50aa1cc608fa3aa8075f30cf349b757a31902` with exact tree equality. The
+GPT suite reviewed head `c17c4136a6d6819b687df597943dae667273b7e2` squash-merged as protected main
+`cbcbc518d25b000724712b029fed8cc4e05d8ca6`, tree
+`8f4cae82e19cf1ced8a397c2f392ab7dc13c0c85`, with exact reviewed-tree equality; its terminal
+receipt SHA-256 is `4aa0b8ca01e0d89d327457e75ade323fe1c28651373361c42baa85a2e84ecb40`.
+Sovereign authentication, county isolation, persistence, authorization,
+provider orchestration, API, Workbench, TerraPilot, and TerraTrace remain OS responsibilities. All
+mission hard walls remain controlling; Forge WO-SR-007 remains pending outside this mission.
 
 ---
 
@@ -657,10 +718,10 @@ from program evidence.
 |-------|-------|
 | Portfolio goal | `GOAL-PORTFOLIO-OPERATOR-001` |
 | Portfolio loop | `LOOP-PORTFOLIO-OPERATOR-001` |
-| Selected program | Five-Suite Federated Repository Buildout |
-| Last completed interlock | `WO-SR-009D` Dossier Workbench canonical evidence read adoption |
-| Current WO | None; portfolio reconciliation current |
-| Next interlock | Admit only one dependency-cleared successor under existing authority, otherwise return an owner decision packet |
+| Selected program | None; portfolio reconciliation has not selected unrelated successor work |
+| Last completed interlock | `WO-SR-MISSION-COMPLETION` terminal evidence reconciliation |
+| Current WO | None; Five-Suite terminal closeout complete |
+| Next interlock | Portfolio selection outside this completed mission; Forge WO-SR-007 remains unchanged |
 
 Issue #1417 and `OWNER-SR-009B-R3-DAIS-WORKBENCH-APPEAL-READ-20260805` authorized the exact bounded
 read-only Dais adoption sequence. PR #1419 merged exact assured head

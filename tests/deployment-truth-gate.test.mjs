@@ -267,10 +267,20 @@ describe('D. CI release gate coverage', () => {
     assert.ok(hasSecurityCI, 'Security compliance CI workflow must exist');
   });
 
-  it('D6: SBOM generation workflow exists', () => {
+  it('D6: SBOM generation exists in the canonical release path', () => {
+    // Was `existsSync(sbom.yml)`. That file was the 2025 standalone estate, retired
+    // once release-compliance.yml became the canonical release path.
+    //
+    // Asserting the CAPABILITY rather than a filename is the point: a file-existence
+    // check passes on an empty file, and this one passed for as long as sbom.yml
+    // generated CycloneDX from a `requirements.txt` that is not in this repository --
+    // green while producing nothing. Supply-chain security is what the gate is for.
+    const canonical = join(WORKFLOWS, 'release-compliance.yml');
+    assert.ok(existsSync(canonical), 'Canonical release workflow must exist');
+    const content = readFileSync(canonical, 'utf8');
     assert.ok(
-      existsSync(join(WORKFLOWS, 'sbom.yml')),
-      'SBOM generation workflow must exist (supply chain security)'
+      content.includes('syft') && content.toLowerCase().includes('sbom'),
+      'SBOM generation must exist in the canonical release path (supply chain security)'
     );
   });
 

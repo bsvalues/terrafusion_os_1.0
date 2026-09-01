@@ -29,6 +29,16 @@ function fmtRatio(n: number | null | undefined): string {
   return `${(n * 100).toFixed(2)}%  (${n.toFixed(4)})`;
 }
 
+function fmtScore(n: number | null | undefined): string | null {
+  if (n == null) return null;
+  return n >= 0 && n <= 1 ? `${(n * 100).toFixed(1)}%` : n.toLocaleString();
+}
+
+function fmtToken(value: string | null | undefined): string | null {
+  if (!value) return null;
+  return value.replace(/[_-]+/g, ' ');
+}
+
 function Val({ value, isNull }: { value: string | number | null | undefined; isNull?: boolean }) {
   const display = value == null || value === '' ? null : String(value);
   if (!display || isNull) {
@@ -51,6 +61,7 @@ export function SaleDetailPanel() {
   const detailLoading = useSalesForgeStore((s) => s.detailLoading);
   const detailError   = useSalesForgeStore((s) => s.detailError);
   const clearSelection = useSalesForgeStore((s) => s.clearSelection);
+  const showLaunchEvidence = Boolean(saleDetail?.dataTrustTier);
 
   return (
     <div className="sf-detail-panel">
@@ -70,7 +81,7 @@ export function SaleDetailPanel() {
         <>
           {/* Sale facts */}
           <div className="sf-detail-section-heading">Sale facts</div>
-          <div className="sf-detail-grid">
+          <div className="sf-detail-grid" data-testid="salesforge-transaction-evidence">
             <Field label="Parcel ID"          value={saleDetail.parcelId} />
             <Field label="Address"            value={saleDetail.address} />
             <Field label="Neighborhood"       value={saleDetail.neighborhood ?? saleDetail.hood} />
@@ -78,6 +89,9 @@ export function SaleDetailPanel() {
             <Field label="Sale date"          value={fmtDate(saleDetail.saleDate)} />
             <Field label="Sale price"         value={fmtPrice(saleDetail.salePrice)} />
             <Field label="Adjusted price"     value={saleDetail.adjustedSalePrice != null ? fmtPrice(saleDetail.adjustedSalePrice) : null} />
+            <Field label="Recorder document"  value={saleDetail.documentNumber} />
+            <Field label="Grantor"             value={saleDetail.grantor} />
+            <Field label="Grantee"             value={saleDetail.grantee} />
             <Field label="Excise number"      value={saleDetail.exciseNumber} />
             <Field label="DOR sales year"     value={saleDetail.salesYear} />
             <Field label="Deed type"          value={saleDetail.rawSaleTypeCode} />
@@ -131,6 +145,36 @@ export function SaleDetailPanel() {
             <Field label="Land only sale"          value={saleDetail.landOnlySale != null ? String(saleDetail.landOnlySale) : null} />
             <Field label="Continue current use"    value={saleDetail.continueCurrentUse != null ? String(saleDetail.continueCurrentUse) : null} />
           </div>
+
+          {showLaunchEvidence && (
+            <>
+              {/* Public/reference launch evidence required for a defensible review decision. */}
+              <div className="sf-detail-section-heading">Source &amp; launch evidence</div>
+              <p className="sf-detail-evidence-note">
+                Reference evidence only — inspect source, provenance, and quality signals before
+                making a browser-local, nonofficial decision.
+              </p>
+              <div
+                className="sf-detail-grid sf-detail-evidence-grid"
+                data-testid="salesforge-source-evidence"
+              >
+                <Field label="Trust tier"               value={fmtToken(saleDetail.dataTrustTier)} />
+                <Field label="Source mode"              value={fmtToken(saleDetail.sourceMode)} />
+                <Field label="Candidate source"         value={fmtToken(saleDetail.candidateSource)} />
+                <Field label="Review status"            value={fmtToken(saleDetail.reviewStatus)} />
+                <Field label="Quality band"             value={fmtToken(saleDetail.qualityBand)} />
+                <Field label="Quality score"            value={fmtScore(saleDetail.qualityScore)} />
+                <Field label="Confidence score"         value={fmtScore(saleDetail.confidenceScore)} />
+                <Field label="Original source URL"      value={saleDetail.sourceUrl} />
+                <Field label="Resolved source URL"      value={saleDetail.sourceFinalUrl} />
+                <Field label="Payload SHA-256"          value={saleDetail.sourcePayloadSha256} />
+                <Field label="Payload evidence path"    value={saleDetail.sourcePayloadPath} />
+                <Field label="Candidate index"          value={saleDetail.candidateIndexSource} />
+                <Field label="Candidate record type"    value={fmtToken(saleDetail.candidateRecordType)} />
+                <Field label="Candidate source ordinal" value={saleDetail.candidateSourceOrdinal} />
+              </div>
+            </>
+          )}
 
           {/* Qualification */}
           <div className="sf-detail-section-heading">Qualification layers</div>

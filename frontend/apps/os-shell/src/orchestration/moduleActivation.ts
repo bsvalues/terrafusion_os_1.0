@@ -8,7 +8,7 @@
  * Pipeline:
  * 1. Normalize alias → canonical ID
  * 2. Emit telemetry (intent)
- * 3. Window resolution (focus or open)
+ * 3. Window resolution (reveal or open)
  * 4. Warm load (non-blocking)
  *
  * Invariants:
@@ -52,7 +52,7 @@ export interface ActivateModuleOptions {
   /** Source of the activation (for telemetry and behavior) */
   source: ModuleActivationSource;
   
-  /** Whether to focus existing window if module is already open. Default: true */
+  /** Whether to reveal an existing window if module is already open. Default: true */
   focusIfOpen?: boolean;
   
   /** Whether to trigger warm load after opening window. Default: true */
@@ -78,9 +78,10 @@ export interface ActivateModuleOptions {
  */
 function findExistingWindow(moduleId: string): string | null {
   const { windows } = useDesktopStore.getState();
-  const existingWindow = windows.find(
-    (w) => w.moduleId === moduleId && w.state !== 'minimized'
-  );
+  // Minimized and cross-desktop windows are still live singletons. Returning
+  // them lets activation refresh navigation metadata before revealWindow makes
+  // the exact singleton visible.
+  const existingWindow = windows.find((w) => w.moduleId === moduleId);
   return existingWindow?.id ?? null;
 }
 
@@ -123,6 +124,7 @@ function getModuleDisplayName(moduleId: string): string {
     'os-trace': 'TerraTrace',
     'os-canon': 'TerraCanon',
     'os-localops': 'TerraFusion LocalOps',
+    'sales-forge': 'SalesForge',
     // Application Constellation (Gen2 catalog)
     'income-valuation': 'Income Valuation',
     'income-forge': 'IncomeForge',
@@ -241,6 +243,7 @@ function getModuleIcon(moduleId: string): string {
     'atlas-live-view': '🗺',
     // CUForge — Current Use Program
     'cuforge': '🌾',
+    'sales-forge': '📊',
   };
 
   return icons[moduleId] ?? '📦';
@@ -278,13 +281,13 @@ function normalizeWorkbenchMetadata(
  * It handles:
  * - Alias normalization
  * - Telemetry
- * - Window deduplication (focus existing)
+ * - Window deduplication (reveal existing)
  * - Window creation
  * - Warm loading (non-blocking)
  *
  * @param moduleId - The module to activate (can be alias or canonical)
  * @param options - Activation options
- * @returns Promise that resolves when window is opened (not when load completes)
+ * @returns Promise that resolves when the window is visible (not when load completes)
  *
  * @example
  * // From Start Menu
@@ -301,7 +304,17 @@ export async function activateModule(
   moduleId: string,
   options: ActivateModuleOptions
 ): Promise<void> {
-  const { source, focusIfOpen = true, warmLoad = true, showNotification = true } = options;
+  const {
+    source,
+    focusIfOpen = true,
+    warmLoad = true,
+    showNotification = true,
+    actor = null,
+  } = options;
+  const auditIdentity = {
+    actor: actor?.userId ?? '',
+    countyId: actor?.countyId ?? '',
+  };
 
   // -------------------------------------------------------------------------
   // Step 1: Normalize alias → canonical ID
@@ -318,6 +331,7 @@ export async function activateModule(
       moduleId: canonicalId,
       source,
       reason: 'not_registered',
+      ...auditIdentity,
     });
     
     // Fail closed - no throw, just return (UI-safe)
@@ -331,6 +345,7 @@ export async function activateModule(
     moduleId: canonicalId,
     source,
     metadata,
+    ...auditIdentity,
   });
 
   // -------------------------------------------------------------------------
@@ -340,15 +355,22 @@ export async function activateModule(
 
   if (existingWindowId) {
     // Window already open
+    if (metadata) {
+      // Deep-link/context launches must replace the singleton's navigation
+      // snapshot before reveal. Merging can silently retain stale county scope.
+      useDesktopStore.getState().replaceWindowMetadata(existingWindowId, metadata);
+    }
     if (focusIfOpen) {
-      // Focus existing window
-      useDesktopStore.getState().focusWindow(existingWindowId);
+      // Explicit activation must reveal, not taskbar-toggle, the singleton.
+      useDesktopStore.getState().revealWindow(existingWindowId);
       
-      // Emit focus telemetry
+      // Emit the established focus telemetry for the revealed singleton.
       telemetry.trackEvent('module.focus', {
         moduleId: canonicalId,
         source,
         windowId: existingWindowId,
+        metadata,
+        ...auditIdentity,
       });
     }
     

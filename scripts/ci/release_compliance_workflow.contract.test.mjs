@@ -8,8 +8,15 @@ import { fileURLToPath } from 'node:url';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '../..');
 const workflow = readFileSync(join(root, '.github/workflows/release-compliance.yml'), 'utf8');
+const ciWorkflow = readFileSync(join(root, '.github/workflows/ci.yml'), 'utf8');
+const devStartScript = readFileSync(join(root, 'tools/dev/start.ps1'), 'utf8');
 const dockerignore = readFileSync(join(root, '.dockerignore'), 'utf8');
 const frontendDockerfile = readFileSync(join(root, 'frontend/Dockerfile'), 'utf8');
+const frontendNginx = readFileSync(join(root, 'frontend/nginx.conf'), 'utf8');
+const washingtonLaunchPackager = readFileSync(
+  join(root, 'scripts/ci/package_washington_launch_data.mjs'),
+  'utf8'
+);
 const backendDockerfile = readFileSync(join(root, 'backend/Dockerfile'), 'utf8');
 const trivyIgnore = readFileSync(join(root, '.trivyignore.yaml'), 'utf8');
 const backendPackages = readFileSync(join(root, 'backend/Directory.Packages.props'), 'utf8');
@@ -209,6 +216,133 @@ test('publisher creates each canonical runtime image exactly once and records di
     text,
     /name: release-image-inputs[\s\S]*release-images\.json[\s\S]*backend-runtime-license-evidence\.json/
   );
+});
+
+test('production frontend accepts only absent or complete Washington launch-data configuration', () => {
+  const text = job('sbom-compliance');
+  assert.match(frontendDockerfile, /ARG VITE_WASHINGTON_LAUNCH_MANIFEST_SHA256/);
+  assert.match(frontendDockerfile, /ARG WASHINGTON_LAUNCH_DATA_SOURCE_URL/);
+  assert.match(
+    frontendDockerfile,
+    /ENV VITE_WASHINGTON_LAUNCH_MANIFEST_SHA256=\$VITE_WASHINGTON_LAUNCH_MANIFEST_SHA256/
+  );
+  assert.match(
+    frontendDockerfile,
+    /if \[ -z "\$launch_pin" \] && \[ -z "\$launch_source" \]; then[\s\\]*echo 'Building the Washington navigation-only fallback without hosted county data'/,
+    'an absent configuration pair must retain the truthful navigation-only image'
+  );
+  assert.match(
+    frontendDockerfile,
+    /elif \[ -z "\$launch_pin" \] \|\| \[ -z "\$launch_source" \]; then[\s\\]*echo 'ERROR: VITE_WASHINGTON_LAUNCH_MANIFEST_SHA256 and WASHINGTON_LAUNCH_DATA_SOURCE_URL must be supplied together'/,
+    'partial public-data configuration must fail closed'
+  );
+  assert.match(
+    frontendDockerfile,
+    /grep -Eq '\^\[0-9a-f\]\{64\}\$'/,
+    'a configured production build must reject a malformed manifest pin'
+  );
+  assert.match(
+    text,
+    /VITE_WASHINGTON_LAUNCH_MANIFEST_SHA256=\$\{\{ vars\.VITE_WASHINGTON_LAUNCH_MANIFEST_SHA256 \}\}/
+  );
+  assert.match(
+    ciWorkflow,
+    /docker build --target production[^\n]*--build-arg VITE_WASHINGTON_LAUNCH_MANIFEST_SHA256="\$VITE_WASHINGTON_LAUNCH_MANIFEST_SHA256"[^\n]*-f frontend\/Dockerfile/
+  );
+  assert.match(
+    devStartScript,
+    /\[string\]\$WashingtonLaunchManifestSha256 = \$env:VITE_WASHINGTON_LAUNCH_MANIFEST_SHA256/
+  );
+  assert.match(
+    devStartScript,
+    /if \(\$hasManifestPin -ne \$hasPackageSource\) \{[\s\S]*must be supplied together/,
+    'quick-start must reject a partial public-data configuration'
+  );
+  assert.match(
+    devStartScript,
+    /if \(\$hasManifestPin\) \{[\s\S]*\$buildArgs \+= @\([\s\S]*"VITE_WASHINGTON_LAUNCH_MANIFEST_SHA256=\$manifestSha256"/,
+    'quick-start must add the trust pin only for a complete configured pair'
+  );
+  const composeBuild = devStartScript.indexOf('docker compose @buildArgs');
+  const composeUp = devStartScript.indexOf('docker compose @upArgs');
+  assert.ok(
+    composeBuild >= 0 && composeUp > composeBuild,
+    'quick-start must finish the selected Compose build before starting services'
+  );
+  assert.match(devStartScript, /\$upArgs = @\('[^\n]*'--no-build'\)/);
+  assert.doesNotMatch(devStartScript, /\$upArgs \+= '--build'/);
+});
+
+test('production frontend packages the public data authenticated by its Washington pin', () => {
+  const text = job('sbom-compliance');
+  const inventoryCopy = frontendDockerfile.indexOf(
+    'COPY frontend/apps/os-shell/src/lib/washingtonPublicSourceInventory.data.json'
+  );
+  const packageRun = frontendDockerfile.indexOf(
+    'node scripts/ci/package_washington_launch_data.mjs'
+  );
+  assert.ok(
+    inventoryCopy >= 0 && packageRun > inventoryCopy,
+    'the exact runtime public-source inventory must be present before package validation'
+  );
+  assert.match(frontendDockerfile, /ARG WASHINGTON_LAUNCH_DATA_SOURCE_URL/);
+  assert.match(
+    frontendDockerfile,
+    /node scripts\/ci\/package_washington_launch_data\.mjs[\s\\]*"\$WASHINGTON_LAUNCH_DATA_SOURCE_URL"[\s\\]*"\$VITE_WASHINGTON_LAUNCH_MANIFEST_SHA256"[\s\\]*\/app\/washington-launch-data/
+  );
+  assert.match(
+    frontendDockerfile,
+    /if \[ -n "\$VITE_WASHINGTON_LAUNCH_MANIFEST_SHA256" \]; then[\s\\]*node scripts\/ci\/package_washington_launch_data\.mjs/,
+    'only a configured image may package hosted Washington data'
+  );
+  assert.match(
+    frontendDockerfile,
+    /else[\s\\]*mkdir -p \/app\/washington-launch-data/,
+    'navigation-only images need an empty copyable launch-data directory'
+  );
+  assert.match(
+    frontendDockerfile,
+    /COPY --from=build \/app\/washington-launch-data \.\/launch-data\/washington\//
+  );
+  assert.match(
+    text,
+    /WASHINGTON_LAUNCH_DATA_SOURCE_URL=\$\{\{ vars\.WASHINGTON_LAUNCH_DATA_SOURCE_URL \}\}/
+  );
+  assert.match(
+    ciWorkflow,
+    /WASHINGTON_LAUNCH_DATA_SOURCE_URL: \$\{\{ vars\.WASHINGTON_LAUNCH_DATA_SOURCE_URL \}\}/
+  );
+  assert.match(
+    ciWorkflow,
+    /--build-arg WASHINGTON_LAUNCH_DATA_SOURCE_URL="\$WASHINGTON_LAUNCH_DATA_SOURCE_URL"/
+  );
+  assert.match(
+    devStartScript,
+    /\[string\]\$WashingtonLaunchDataSourceUrl = \$env:WASHINGTON_LAUNCH_DATA_SOURCE_URL/
+  );
+  assert.match(
+    devStartScript,
+    /"WASHINGTON_LAUNCH_DATA_SOURCE_URL=\$packageSourceUrl"/
+  );
+  assert.match(frontendNginx, /location \^~ \/launch-data\/washington\/[\s\S]*try_files \$uri =404;/);
+  assert.match(washingtonLaunchPackager, /credentials: 'omit'/);
+  assert.match(washingtonLaunchPackager, /redirect: 'error'/);
+  assert.match(
+    washingtonLaunchPackager,
+    /canonicalJsonSha256\(manifest\) === expectedManifestSha256/
+  );
+  assert.match(
+    washingtonLaunchPackager,
+    /canonicalJsonSha256\(status\) === manifest\.statusCanonicalJsonSha256/
+  );
+  assert.match(
+    washingtonLaunchPackager,
+    /canonicalJsonSha256\(shard\) === attestation\.canonicalJsonSha256/
+  );
+  assert.match(washingtonLaunchPackager, /assertRuntimeCompatibleCountyShard/);
+  assert.match(washingtonLaunchPackager, /bindAttestedOfficialSourceToRepository/);
+  assert.match(washingtonLaunchPackager, /requireAttestedSourcePosture/);
+  assert.match(washingtonLaunchPackager, /attestedRecordCount > 0/);
 });
 
 test('published frontend image embeds and scans browser and build dependency evidence fail closed', () => {
@@ -482,6 +616,7 @@ test('release lifecycle contracts are mandatory in PR and release CI', () => {
   const lifecycle = packageJson.scripts['test:release-lifecycle'];
   for (const required of [
     'backend_runtime_license_evidence.test.mjs',
+    'package_washington_launch_data.test.mjs',
     'release_compliance_workflow.contract.test.mjs',
     'frontend_dependency_sbom.test.mjs',
     'release_image_manifest.test.mjs',

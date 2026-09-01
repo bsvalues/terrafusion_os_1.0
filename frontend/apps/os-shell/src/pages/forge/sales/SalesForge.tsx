@@ -14,16 +14,36 @@
  *   taxYear:       number  — pre-split tax year; swaps the study year filter.
  *   segmentId:     string  — drives the "Scoped From · Segment X" chip.
  *   segmentLabel:  string  — human label for the chip (optional).
+ *   resetValuationScope: true — keep only county context and clear stale
+ *                               neighborhood/stratum/segment state.
+ *   launchContext: 'washington-counties-hub' with the public-reference trust
+ *                  tier — preserve the handoff's explicit hosted or bundled
+ *                  package posture without changing live-suite defaults.
+ *   referencePackageSource: 'hosted' | 'repository-reference' — keep package
+ *                           selection separate from the data-content posture.
  * When stratumKey is present we also switch the active tab to "ai-audit"
  * (that panel is where stratum selection becomes visible).
  */
 
-import { lazy, Suspense, useLayoutEffect } from 'react';
+import { lazy, Suspense, useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import activateModule from '@/orchestration/moduleActivation';
+import {
+  resolveWashingtonCountyStatus,
+  verifyWashingtonCountySalesShard,
+} from '@/services/washingtonCountyLaunch';
 import { useSalesForgeStore } from './salesForgeStore';
 import { RunningStatsPanel } from './components/RunningStatsPanel';
-import type { SalesForgeTab } from './salesForgeTypes';
-import { isWashingtonLaunchDataEnabled, WASHINGTON_COUNTIES } from './washingtonLaunchApi';
+import { SALESFORGE_TAX_YEAR, type SalesForgeTab } from './salesForgeTypes';
+import {
+  evictWashingtonLaunchCountyShard,
+  isWashingtonLaunchDataEnabled,
+  WASHINGTON_COUNTIES,
+} from './washingtonLaunchApi';
+import {
+  getWashingtonSalesReviewCapability,
+  parseWashingtonCountiesHubHandoff,
+  type WashingtonCountiesHubHandoff,
+} from './washingtonSalesReviewCapability';
 import { parseRollupHandoff } from '../shared/rollupHandoff';
 import './SalesForge.css';
 
@@ -54,6 +74,14 @@ const TABS: { id: SalesForgeTab; label: string; title: string }[] = [
   { id: 'code-audit',   label: 'Code Audit',      title: 'WAC code breakdown — qualifier, ratio type, exclude calc' },
   { id: 'dor-export',   label: 'DOR Export',      title: 'Preview and download DOR-certified CSV' },
 ];
+
+const WASHINGTON_LAUNCH_TABS = new Set<SalesForgeTab>([
+  'queue',
+  'neighborhoods',
+  'code-audit',
+]);
+
+const DIRECT_HOSTED_PACKAGE_VERIFICATION_TIMEOUT_MS = 15_000;
 
 function TabSpinner() {
   return <div className="sf-state" role="status">Loading…</div>;
@@ -98,6 +126,7 @@ function parseDeeplinkQuery(raw: unknown): {
 }
 
 export default function SalesForge({ metadata }: SalesForgeProps = {}) {
+  const setDataSource     = useSalesForgeStore((s) => s.setDataSource);
   const activeTab         = useSalesForgeStore((s) => s.activeTab);
   const setActiveTab      = useSalesForgeStore((s) => s.setActiveTab);
   const taxYear           = useSalesForgeStore((s) => s.taxYear);
@@ -108,27 +137,269 @@ export default function SalesForge({ metadata }: SalesForgeProps = {}) {
   const contextSegmentId    = useSalesForgeStore((s) => s.contextSegmentId);
   const contextSegmentLabel = useSalesForgeStore((s) => s.contextSegmentLabel);
   const committedFilters = useSalesForgeStore((s) => s.committedFilters);
-  const launchDataMode = isWashingtonLaunchDataEnabled();
-  const handoff = parseRollupHandoff(metadata);
+  const countiesHubHandoffRequested = metadata?.launchContext
+    === 'washington-counties-hub';
+  const countiesHubHandoff = useMemo(
+    () => parseWashingtonCountiesHubHandoff(metadata),
+    [metadata],
+  );
+  const invalidCountiesHubHandoff = countiesHubHandoffRequested
+    && countiesHubHandoff === null;
+  const referencePackageSource = countiesHubHandoff?.referencePackageSource;
+  const repositoryReferenceHandoff = referencePackageSource === 'repository-reference';
+  const hostedReferenceHandoff = countiesHubHandoff !== null
+    && referencePackageSource === 'hosted';
+  const hostedHandoffCountyCode = hostedReferenceHandoff
+    ? countiesHubHandoff?.countyCode ?? null
+    : null;
+  const directHostedLaunch = isWashingtonLaunchDataEnabled()
+    && !countiesHubHandoffRequested;
+  const [establishedHostedHandoffCountyCode, setEstablishedHostedHandoffCountyCode] =
+    useState<string | null>(null);
+  const [directHostedVerification, setDirectHostedVerification] = useState<{
+    countyCode: string | null;
+    request: WashingtonCountiesHubHandoff | null;
+    state: 'not-required' | 'pending' | 'available' | 'unavailable';
+  }>({
+    countyCode: directHostedLaunch ? committedFilters.countyCode : null,
+    request: null,
+    state: directHostedLaunch ? 'pending' : 'not-required',
+  });
+  const [directHostedVerificationAttempt, setDirectHostedVerificationAttempt] = useState(0);
+  const syntheticReferenceData = countiesHubHandoff?.referenceDataPosture
+    === 'repository_reference_demo';
+  const hostedHandoffInitializationPending = hostedReferenceHandoff
+    && establishedHostedHandoffCountyCode !== hostedHandoffCountyCode;
+  const hostedHandoffVerificationRequired = hostedReferenceHandoff
+    && countiesHubHandoff?.salesReviewAvailability !== 'unavailable';
+  const hostedVerificationCountyCode = directHostedLaunch
+    ? committedFilters.countyCode
+    : hostedHandoffVerificationRequired
+      ? hostedHandoffInitializationPending
+        ? hostedHandoffCountyCode
+        : committedFilters.countyCode
+      : null;
+  const hostedCountyVerificationRequired = hostedVerificationCountyCode !== null;
+  const hostedVerificationRequest = hostedHandoffVerificationRequired
+    ? countiesHubHandoff
+    : null;
+  const directHostedVerificationMatchesCounty = directHostedVerification.countyCode
+    === hostedVerificationCountyCode;
+  const directHostedVerificationMatchesRequest = directHostedVerification.request
+    === hostedVerificationRequest;
+  const directHostedVerificationPending = (
+    hostedHandoffInitializationPending
+    && hostedHandoffVerificationRequired
+  )
+    || (
+      hostedCountyVerificationRequired
+      && (
+        !directHostedVerificationMatchesCounty
+        || !directHostedVerificationMatchesRequest
+        || (
+          directHostedVerification.state !== 'available'
+          && directHostedVerification.state !== 'unavailable'
+        )
+      )
+    );
+  const directHostedVerificationUnavailable = hostedCountyVerificationRequired
+    && directHostedVerificationMatchesCounty
+    && directHostedVerificationMatchesRequest
+    && directHostedVerification.state === 'unavailable';
+  const hostedLaunchReady = (
+    !hostedHandoffInitializationPending
+    && hostedCountyVerificationRequired
+    && directHostedVerificationMatchesCounty
+    && directHostedVerificationMatchesRequest
+    && directHostedVerification.state === 'available'
+  );
+  const salesReviewUnavailable = invalidCountiesHubHandoff
+    || (
+      countiesHubHandoff !== null
+      && countiesHubHandoff.salesReviewAvailability === 'unavailable'
+    )
+    || directHostedVerificationPending
+    || directHostedVerificationUnavailable;
+  const hostedLaunchDataMode = directHostedLaunch || hostedReferenceHandoff;
+  const launchDataMode = hostedLaunchDataMode || repositoryReferenceHandoff;
+  const handoff = parseRollupHandoff(invalidCountiesHubHandoff ? undefined : metadata);
   const selectedCounty = WASHINGTON_COUNTIES.find((county) => county.code === committedFilters.countyCode);
+  const countyScopeLabel = selectedCounty?.name
+    ? `${selectedCounty.name} County`
+    : countiesHubHandoffRequested
+      ? countiesHubHandoff
+        ? `${countiesHubHandoff.countyName} County`
+        : 'County scope required'
+      : handoff.countyName
+        ? `${handoff.countyName} County`
+        : 'County scope required';
+  const availableTabs = launchDataMode && !salesReviewUnavailable
+    ? TABS.filter((tab) => WASHINGTON_LAUNCH_TABS.has(tab.id))
+    : salesReviewUnavailable
+      ? []
+      : TABS;
+  // Never mount a live-only panel while the header claims public-package mode.
+  const renderedActiveTab = launchDataMode && !WASHINGTON_LAUNCH_TABS.has(activeTab)
+    ? 'queue'
+    : activeTab;
+
+  // Establish the handed-off county only after its navigation scope reaches
+  // the store. The handoff itself is never treated as package attestation.
+  useLayoutEffect(() => {
+    if (!hostedReferenceHandoff || hostedHandoffCountyCode === null) {
+      setEstablishedHostedHandoffCountyCode((current) => (
+        current === null ? current : null
+      ));
+      return;
+    }
+
+    if (committedFilters.countyCode === hostedHandoffCountyCode) {
+      setEstablishedHostedHandoffCountyCode((current) => (
+        current === hostedHandoffCountyCode ? current : hostedHandoffCountyCode
+      ));
+    }
+  }, [
+    committedFilters.countyCode,
+    hostedHandoffCountyCode,
+    hostedReferenceHandoff,
+  ]);
+
+  useEffect(() => {
+    if (!hostedCountyVerificationRequired || hostedVerificationCountyCode === null) {
+      setDirectHostedVerification((current) => (
+        current.countyCode === null
+          && current.request === null
+          && current.state === 'not-required'
+          ? current
+          : { countyCode: null, request: null, state: 'not-required' }
+      ));
+      return;
+    }
+
+    const selectedCountyCode = hostedVerificationCountyCode;
+    const selectedCountyIsRegistered = WASHINGTON_COUNTIES.some(
+      (county) => county.code === selectedCountyCode,
+    );
+    const controller = new AbortController();
+    const markUnavailable = (): void => {
+      if (selectedCountyIsRegistered) {
+        evictWashingtonLaunchCountyShard(selectedCountyCode, 'hosted');
+      }
+      setDirectHostedVerification({
+        countyCode: selectedCountyCode,
+        request: hostedVerificationRequest,
+        state: 'unavailable',
+      });
+    };
+    const timeout = window.setTimeout(() => {
+      controller.abort();
+      markUnavailable();
+    }, DIRECT_HOSTED_PACKAGE_VERIFICATION_TIMEOUT_MS);
+    setDirectHostedVerification({
+      countyCode: selectedCountyCode,
+      request: hostedVerificationRequest,
+      state: 'pending',
+    });
+
+    void (async () => {
+      const resolution = await resolveWashingtonCountyStatus(controller.signal);
+      const county = resolution.packageSource === 'hosted'
+        ? resolution.counties.find(
+            (entry) => entry.countyCode === selectedCountyCode,
+          )
+        : null;
+      if (controller.signal.aborted) return;
+      if (!county) {
+        markUnavailable();
+        return;
+      }
+
+      const verifiedCounty = await verifyWashingtonCountySalesShard(
+        county,
+        controller.signal,
+      );
+      if (controller.signal.aborted) return;
+      const eligible = getWashingtonSalesReviewCapability(verifiedCounty).eligible;
+      if (!eligible && selectedCountyIsRegistered) {
+        evictWashingtonLaunchCountyShard(selectedCountyCode, 'hosted');
+      }
+      setDirectHostedVerification({
+        countyCode: selectedCountyCode,
+        request: hostedVerificationRequest,
+        state: eligible ? 'available' : 'unavailable',
+      });
+    })().catch(() => {
+      if (!controller.signal.aborted) {
+        markUnavailable();
+      }
+    }).finally(() => {
+      window.clearTimeout(timeout);
+    });
+
+    return () => {
+      window.clearTimeout(timeout);
+      controller.abort();
+    };
+  }, [
+    countiesHubHandoff,
+    directHostedVerificationAttempt,
+    hostedCountyVerificationRequired,
+    hostedVerificationCountyCode,
+    hostedVerificationRequest,
+  ]);
+
+  useLayoutEffect(() => {
+    setDataSource(
+      repositoryReferenceHandoff
+        ? 'washington-reference'
+        : hostedLaunchReady
+          ? 'washington-hosted'
+          : 'live-api',
+    );
+  }, [
+    hostedLaunchReady,
+    repositoryReferenceHandoff,
+    setDataSource,
+  ]);
+
+  useLayoutEffect(() => {
+    if (launchDataMode && activeTab !== renderedActiveTab) {
+      setActiveTab(renderedActiveTab);
+    }
+  }, [activeTab, launchDataMode, renderedActiveTab, setActiveTab]);
 
   // ── Consume County Studio handoff metadata before child fetch effects ───
   useLayoutEffect(() => {
     if (!metadata) return;
+    if (invalidCountiesHubHandoff) {
+      applyCountyStudioScope('', null);
+      setSelectedStratum(null);
+      setContextSegment(null);
+      setActiveTab('queue');
+      return;
+    }
     const parsed = parseDeeplinkQuery(metadata.deeplinkQuery);
     const stratum = handoff.stratumKey ?? parsed.stratum ?? null;
     const year = handoff.taxYear ?? parsed.year ?? null;
     const segmentId = handoff.segmentId ?? parsed.segmentId ?? null;
     const label = handoff.segmentLabel;
+    const resetValuationScope = handoff.resetValuationScope;
 
     if (handoff.countyCode) {
       applyCountyStudioScope(
         handoff.countyCode,
-        handoff.rollupScope === 'neighborhood' ? handoff.neighborhoodCode : null,
+        !resetValuationScope && handoff.rollupScope === 'neighborhood'
+          ? handoff.neighborhoodCode
+          : null,
       );
     }
 
-    if (stratum) {
+    if (resetValuationScope) {
+      setSelectedStratum(null);
+      setContextSegment(null);
+      setActiveTab('queue');
+      setTaxYear(year ?? SALESFORGE_TAX_YEAR);
+    } else if (stratum) {
       setSelectedStratum(stratum);
       setActiveTab('ai-audit');
     } else if (handoff.rollupScope === 'neighborhood' && handoff.neighborhoodCode) {
@@ -136,21 +407,23 @@ export default function SalesForge({ metadata }: SalesForgeProps = {}) {
     } else if (handoff.rollupScope === 'city') {
       setActiveTab('queue');
     }
-    if (year !== null) {
+    if (!resetValuationScope && year !== null) {
       setTaxYear(year);
     }
-    if (segmentId) {
+    if (!resetValuationScope && segmentId) {
       setContextSegment(segmentId, label);
     }
   }, [
     applyCountyStudioScope,
     handoff.countyCode,
     handoff.neighborhoodCode,
+    handoff.resetValuationScope,
     handoff.rollupScope,
     handoff.segmentId,
     handoff.segmentLabel,
     handoff.stratumKey,
     handoff.taxYear,
+    invalidCountiesHubHandoff,
     metadata,
     setActiveTab,
     setContextSegment,
@@ -198,74 +471,122 @@ export default function SalesForge({ metadata }: SalesForgeProps = {}) {
                 ← From County Studio · Segment {contextSegmentLabel ?? contextSegmentId}
               </button>
             )}
-            {handoff.rollupScope === 'city' && handoff.city && (
+            {!handoff.resetValuationScope && handoff.rollupScope === 'city' && handoff.city && (
               <span className="forge-chip forge-chip--neutral">
                 City overview · {handoff.city}
               </span>
             )}
-            {handoff.rollupScope === 'neighborhood' && handoff.neighborhoodCode && (
+            {!handoff.resetValuationScope
+              && handoff.rollupScope === 'neighborhood'
+              && handoff.neighborhoodCode && (
               <span className="forge-chip forge-chip--neutral">
                 Neighborhood · {handoff.neighborhoodName ?? handoff.neighborhoodCode}
                 {handoff.revalArea !== null ? ` · Reval ${handoff.revalArea}` : ''}
               </span>
             )}
             <span className="forge-chip forge-chip--neutral">{taxYear} study year</span>
-            <span className="forge-chip forge-chip--neutral">{selectedCounty?.name ?? handoff.countyName ?? 'County scope required'} County</span>
-            <span className="forge-chip forge-chip--success">
-              {launchDataMode ? 'Washington launch data package' : 'Live TerraFusion API'}
+            <span className="forge-chip forge-chip--neutral">{countyScopeLabel}</span>
+            <span className={`forge-chip ${salesReviewUnavailable ? 'forge-chip--warn' : 'forge-chip--success'}`}>
+              {directHostedVerificationPending
+                ? 'County context · verifying sales data'
+                : salesReviewUnavailable
+                  ? 'County context · sales data unavailable'
+                  : launchDataMode
+                    ? 'Washington launch data package'
+                    : 'Live TerraFusion API'}
             </span>
           </div>
         </div>
-        {handoff.rollupScope === 'city' && handoff.city && (
+        {!handoff.resetValuationScope && handoff.rollupScope === 'city' && handoff.city && (
           <p className="sf-header__source-note">
             County Studio handed off a city overview for {handoff.city}. Counties actually qualify and defend sales by reval area and neighborhood, so city scope remains triage-only until you narrow below the city rollup.
           </p>
         )}
-        {handoff.rollupScope === 'neighborhood' && handoff.neighborhoodCode && (
+        {!handoff.resetValuationScope
+          && handoff.rollupScope === 'neighborhood'
+          && handoff.neighborhoodCode && (
           <p className="sf-header__source-note">
             County Studio handed off neighborhood {handoff.neighborhoodName ?? handoff.neighborhoodCode}
             {handoff.revalArea !== null ? ` in reval ${handoff.revalArea}` : ''}. SalesForge is pinned to that county and neighborhood because counties track reval area and neighborhood before parcel-level action.
           </p>
         )}
-        {launchDataMode && (
+        {launchDataMode && !salesReviewUnavailable && (
           <p className="sf-header__source-note">
-            Hosted preview reads the Prometheus Washington data package: 39 counties, TerraFusion neighborhood codes, and provenance-bearing sale records.
+            Public/reference package only — not county-certified valuation truth.
+            {syntheticReferenceData
+              ? ' This workspace contains invented synthetic sales for workflow validation, not observed public sales or county records.'
+              : ''}{' '}
+            Review decisions stay browser-local and nonofficial; nothing is written back to a
+            county system. Live AI Audit, Ratio Audit, and DOR Export are unavailable in this mode.
           </p>
+        )}
+        {salesReviewUnavailable && (
+          <p className="sf-header__source-note" role="status">
+            {directHostedVerificationPending
+              ? 'TerraForge is authenticating the selected county public-data package before any sales record can load.'
+              : directHostedVerificationUnavailable
+                ? 'No authenticated hosted sales package is currently available for this county.'
+                : invalidCountiesHubHandoff
+                  ? 'The Counties Hub county handoff is invalid, so no county workflow can run.'
+                  : countiesHubHandoff?.salesReviewAvailability === 'verifying'
+                    ? 'The selected county public sales package is still being verified.'
+                    : countiesHubHandoff?.salesReviewUnavailableMessage
+                      ?? 'No governed public sales workflow is available for this county.'}{' '}
+            County context remains active, and SalesForge does not borrow another county&apos;s data.
+          </p>
+        )}
+        {directHostedVerificationUnavailable && (
+          <button
+            type="button"
+            className="forge-chip forge-chip--neutral"
+            data-testid="salesforge-retry-hosted-verification"
+            onClick={() => setDirectHostedVerificationAttempt((attempt) => attempt + 1)}
+          >
+            Retry public-data verification
+          </button>
         )}
       </header>
 
       {/* Tab bar */}
-      <nav className="sf-tabbar" aria-label="SalesForge sections">
-        {TABS.map((tab) => (
-          <button
-            key={tab.id}
-            type="button"
-            role="tab"
-            aria-selected={activeTab === tab.id}
-            className={`sf-tab ${activeTab === tab.id ? 'sf-tab--active' : ''}`}
-            onClick={() => setActiveTab(tab.id)}
-            title={tab.title}
-          >
-            {tab.label}
-          </button>
-        ))}
-      </nav>
+      {!salesReviewUnavailable && (
+        <nav className="sf-tabbar" aria-label="SalesForge sections">
+          {availableTabs.map((tab) => (
+            <button
+              key={tab.id}
+              type="button"
+              role="tab"
+              aria-selected={renderedActiveTab === tab.id}
+              className={`sf-tab ${renderedActiveTab === tab.id ? 'sf-tab--active' : ''}`}
+              onClick={() => setActiveTab(tab.id)}
+              title={tab.title}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </nav>
+      )}
 
       {/* Main layout: content + stats rail */}
-      <div className="sf-layout">
-        {/* Left: panel content */}
-        <Suspense fallback={<TabSpinner />}>
-          {activeTab === 'ai-audit'      && <AuditCommandCenter taxYear={taxYear} />}
-          {activeTab === 'queue'         && <QualificationQueuePanel />}
-          {activeTab === 'ratio-audit'   && <RatioAuditPanel />}
-          {activeTab === 'neighborhoods' && <NeighborhoodViewPanel />}
-          {activeTab === 'code-audit'    && <CodeAuditPanel />}
-          {activeTab === 'dor-export'    && <DorExportPanel />}
-        </Suspense>
+      {salesReviewUnavailable ? (
+        <div className="sf-state" data-testid="salesforge-data-unavailable" role="status">
+          No sales-review records or data-dependent tools are available in this county context.
+        </div>
+      ) : (
+        <div className="sf-layout">
+          {/* Left: panel content */}
+          <Suspense fallback={<TabSpinner />}>
+            {renderedActiveTab === 'ai-audit'      && <AuditCommandCenter taxYear={taxYear} />}
+            {renderedActiveTab === 'queue'         && <QualificationQueuePanel />}
+            {renderedActiveTab === 'ratio-audit'   && <RatioAuditPanel />}
+            {renderedActiveTab === 'neighborhoods' && <NeighborhoodViewPanel />}
+            {renderedActiveTab === 'code-audit'    && <CodeAuditPanel />}
+            {renderedActiveTab === 'dor-export'    && <DorExportPanel />}
+          </Suspense>
 
-        {/* Right: live IAAO stats rail */}
-        <RunningStatsPanel />
-      </div>
+          {/* Right: live IAAO stats rail */}
+          <RunningStatsPanel />
+        </div>
+      )}
     </div>
   );
 }

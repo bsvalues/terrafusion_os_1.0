@@ -1,7 +1,7 @@
 # Command-to-Program Map
 
 **Authority:** WO-WOE-010
-**Last Updated:** 2026-08-07
+**Last Updated:** 2026-08-27
 **Classification:** Operator Doctrine — current state snapshot
 
 This file maps every `/goal` command or command alias to its program, current next WO, blockers,
@@ -14,15 +14,16 @@ resolves.
 
 | Command / alias | Program | Next state | Blocked? | Allowed /loop modes |
 |-----------------|---------|---------|----------|---------------------|
+| `washington-assessor-launch-v1` | Washington Assessor Launch V1 | 000 implementation complete on PR head; canonical/effective on protected merge; 001/002/003 plus bounded 004 clear next | NO - owner mission authority recorded; exact reservations still required | `once`, `program`, `merge-watch`, `evidence`, `recovery`, `discovery` |
 | `codex-operator-autonomy` | Codex Operator Autonomy | CLOSED at WO-OP-AUTO-012 | YES - governing autonomy baseline merged | `once`, `evidence` |
 | `codex-operator-playbook` | Codex Operator Work Order Playbook | CLOSED at WO-CODEX-OP-009 | YES - governance capability merged | `once`, `evidence` |
 | `goal-loop-master-playbook` | Master Goal/Loop Playbook Governance | CLOSED at WO-GOAL-LOOP-MASTER-PLAYBOOK-001 | YES - governing baseline merged | `once`, `evidence` |
 | `program-status` | Master Active Program Playbook | Active program graph | NO | `once`, `evidence`, `discovery` |
-| `program-next` | Five-Suite Federated Repository Buildout | Portfolio reconciliation after completed WO-SR-009D | YES - no successor authority inferred | `once`, `evidence`, `discovery` |
-| `suite-repositories` | Five-Suite Federated Repository Buildout | Active between cohorts; WO-SR-009D complete and consumed | YES - portfolio reconciliation; no successor inferred | `once`, `evidence`, `discovery` |
+| `program-next` | Five-Suite Federated Repository Buildout | COMPLETE at `WO-SR-MISSION-COMPLETION` | NO - no successor inside the completed mission | `evidence`, `discovery` |
+| `suite-repositories` | Five-Suite Federated Repository Buildout | COMPLETE; terminal evidence record is canonical | NO - new work requires another applicable objective/authority | `evidence`, `discovery` |
 | `program-stop` | Master Playbook | NONE | YES — operator stop command | `once` |
 | `release-engineering` | Release Engineering | CLOSED at WO-REL-006 | YES - baseline closed after rollup | `once`, `evidence`, `discovery` |
-| `benton-demo` | P1 | WO-DEPLOY-BENTON-003D | YES - live-surface smoke/evidence requires authority | `once`, `merge-watch`, `evidence` |
+| `benton-demo` | P1 | WO-DEPLOY-BENTON-003D | YES - live-surface smoke/evidence requires Azure execution access | `once`, `merge-watch`, `evidence` |
 | `benton-data-quality` | P2 | Safe audit queue exhausted; new remediation requires a bounded WO | YES - protected follow-up only | `evidence`, `discovery` |
 | `backend-excellence` | P3 | CLOSED at WO-BACKEND-OE-013 | YES - program closed; owner/WOE selects any follow-up lane | `once`, `program`, `evidence`, `discovery` |
 | `backend-start` | P3 | CLOSED at WO-BACKEND-OE-013 | YES - do not restart Backend OE chain | `program` |
@@ -34,21 +35,56 @@ resolves.
 | `sync-next` | Sovereign Sync Workbook Tooling | Portfolio reconciliation | YES - no duplicate continuation | `once`, `evidence` |
 | `sync-stop` | Sovereign Sync Workbook Tooling | NONE | YES — operator stop command | `once` |
 | `property-workbench` | P4 | CLOSED at WO-WORKBENCH-011 | YES - do not restart closed Workbench evidence chain | `once`, `program`, `evidence`, `discovery` |
-| `terrapilot-maturity` | P5 | WO-TERRAPILOT-P16 (blocked; owner authorization required) | YES — live promotion remains an owner/runtime decision | `once`, `program`, `evidence`, `discovery` |
-| `terrapilot-status` | P5 | WO-TERRAPILOT-P16 (blocked; owner authorization required) | YES — parked at P15 | `evidence`, `discovery` |
+| `terrapilot-maturity` | P5 | WO-TERRAPILOT-P16 complete on protected merge; no runtime successor admitted | YES — L3/L4 implementation remains outside P16 | `once`, `program`, `evidence`, `discovery` |
+| `terrapilot-status` | P5 | WO-TERRAPILOT-P16 complete on protected merge; L2 remains current maturity | YES — no runtime successor admitted | `evidence`, `discovery` |
 | `terrapilot-stop` | P5 | NONE | YES — operator stop command | `once` |
 | `devex-hooks-status` | DevEx Hook Tooling | CLOSED at WO-DEVEX-HOOKS-006 | YES - return to portfolio loop | `evidence`, `discovery` |
 | `local-omen-status` | Cross-Project Historical Audit | WO-LOCAL-093 through WO-LOCAL-097 superseded; WO-LOCAL-098 withdrawn | YES - WilliamOS/TerraGroq is outside TerraFusion authority | `evidence`, `discovery` |
-| `core-import-status` | WO-CORE-1 Runtime Import Disposition | WO-CORE-1 | YES — owner-gated runtime import disposition | `evidence`, `discovery` |
+| `core-import-status` | WO-CORE-1 Runtime Import Disposition | CLOSED — NO IMPORT | YES — disposition complete; canonical repo scopes preserved | `evidence`, `discovery` |
 | `workbench-status` | P4 | CLOSED at WO-WORKBENCH-011 | YES - status/evidence only; new phase requires owner/WOE selection | `evidence`, `discovery` |
 | `work-order-engine` | P6 | CLOSED at WO-WOE-013 / PR #1291 | YES - report baseline complete; no successor | `once`, `evidence`, `discovery` |
 | `brain-operator` | Brain Operator System | CLOSED at WO-BRAIN-009 (PARTIAL / INTEGRATION GAP) | YES - evidence baseline complete | `once`, `evidence`, `discovery` |
 | `governed-multi-agent-operator` | Governed Multi-Agent Operator Activation | CLOSED at WO-MAO-007; next portfolio reconciliation | YES - status/evidence only; continuation envelope consumed | `once`, `evidence`, `discovery` |
-| `azure-county-runtime` | P8 | SAFE DOCS SLICE COMPLETE at WO-AZURE-003 | YES - live Azure successors blocked; return to portfolio reconciliation | `once`, `evidence`, `discovery` |
+| `azure-county-runtime` | P8 | SAFE DOCS SLICE COMPLETE at WO-AZURE-003 | YES - live Azure successors blocked on 003D evidence | `once`, `evidence`, `discovery` |
 
 ---
 
 ## Detailed Map
+
+### /goal washington-assessor-launch-v1 → Washington Assessor Launch V1
+
+**File:** [programs/washington-assessor-launch-v1.md](../programs/washington-assessor-launch-v1.md)
+
+**Authority:** Issue #1485 / `OWNER-WAL-V1-MISSION-AUTHORITY-20260827`
+
+**Success condition:** All 39 counties have truthful runtime/control-plane state; upload and Sync
+remain external-read-only; Counties HUB and supported TerraForge workflows pass exact-candidate
+acceptance; the exact release reaches production with rollback proof and an external assessor
+journey; `WO-WAL-009` records `COMPLETED_AND_CONSUMED`.
+
+| WO | Title | Status | Notes |
+| --- | --- | --- | --- |
+| WO-WAL-000 | Mission activation | IMPLEMENTATION COMPLETE; EFFECTIVE ON PROTECTED MERGE | PR #1486 canonizes owner authority and routing |
+| WO-WAL-001 | Statewide public baseline runtime | READY AFTER 000 | Isolated R4 lane |
+| WO-WAL-002 | Governed county upload intake | READY AFTER 000 | Isolated R5 lane; TerraFusion storage only |
+| WO-WAL-003 | Read-only multi-county Sync | READY AFTER 000 | Isolated R5 lane; no external DML |
+| WO-WAL-004 | County identity/isolation/trust | BOUNDED CHILDREN READY AFTER 000 | Only reservation-safe portions overlap 001-003 |
+| WO-WAL-005 | Real Counties HUB | DEPENDENCY BLOCKED | Stable 001-004 contracts required |
+| WO-WAL-006 | TerraForge statewide runtime | DEPENDENCY BLOCKED | Stable 001-004 contracts required |
+| WO-WAL-007 | 39-county acceptance | DEPENDENCY BLOCKED | Exact candidate after 001-006 |
+| WO-WAL-008 | Production and external assessor acceptance | PRODUCTION GATED | Exact WAL-007 GO required |
+| WO-WAL-009 | Terminal closeout | DEPENDENCY BLOCKED | After exact production and assessor proof |
+
+**Active stop walls in path:** external county-system write-back; unauthorized non-public or
+credentialed data; cross-county disclosure; silent Benton fallback; fabricated capability or
+readiness; production before exact WAL-007 acceptance; missing auth/HTTPS/monitoring/backup/rollback;
+conflicting higher canon; or a consequential new objective outside Issue #1485.
+
+**Recommended first move:** Merge the validated governance-only activation, then dispatch exact
+isolated children for 001, 002, 003 and non-colliding portions of 004. Do not serialize the entire
+initial wave and do not treat an individual child PR as the mission boundary.
+
+---
 
 ### /goal benton-demo → P1
 
@@ -59,21 +95,16 @@ resolves.
 |----|-------|--------|-------|
 | WO-DEPLOY-BENTON-002E | Migrations verified | CLOSED | 94 applied, 0 pending |
 | WO-DEPLOY-BENTON-003A | Local demo rehearsal | CLOSED | PR merged |
-| WO-CONFIG-BENTON-001 | Config gates aligned | CLOSED | PR #1112 auto-merge queued |
-| WO-DEPLOY-BENTON-003B | Azure preflight | **NEXT** | **Blocked: PR #1112 must merge first** |
-| WO-DEPLOY-BENTON-003C | App settings packet | QUEUED | After 003B |
-| WO-DEPLOY-BENTON-003D | Smoke slot deploy | QUEUED | SW-01 wall — deploy auth required |
-| WO-DEPLOY-BENTON-003E | Smoke validation | QUEUED | After 003D |
-| WO-DEPLOY-BENTON-003F | Demo authorization packet | QUEUED | SW-09 owner decision required |
+| WO-CONFIG-BENTON-001 | Config gates aligned | CLOSED | PR #1112 merged |
+| WO-DEPLOY-BENTON-003B | Azure preflight | CLOSED | Preflight evidence exists |
+| WO-DEPLOY-BENTON-003C | App settings packet / default demo App Service deployment | CLOSED | Evidence records live default-slot `/health` 200 and Benton demo DB connection |
+| WO-DEPLOY-BENTON-003D | Smoke slot deploy | **NEXT / ACCESS BLOCKED** | Non-production staging-slot execution authorized by current owner directive; no Azure resource execution connector available in this operator environment |
+| WO-DEPLOY-BENTON-003E | Demo operator runbook | DEPENDENCY BLOCKED | After 003D |
+| WO-DEPLOY-BENTON-003F | Deployment readiness rollup | DEPENDENCY BLOCKED | After 003D/003E; county-facing production decision remains separate |
 
-**Active stop walls in path:** SW-01 (003D), SW-09 (003F)
+**Active stop wall in path:** actual Azure resource execution/access for 003D. County-facing production remains a later explicit decision at 003F/AZURE-006.
 
-**Recommended first move:**
-```
-/goal benton-demo
-/loop merge-watch
-```
-— monitors PR #1112; once merged, advances to 003B with `/loop once`.
+**Recommended first move:** Execute WO-DEPLOY-BENTON-003D through an authorized Azure resource-access lane. Do not redo 003B or 003C.
 
 ---
 
@@ -128,7 +159,7 @@ runbooks, diagnostics, rollback, and evidence rollup are explicit enough for WOE
 
 Backend OE has no automatic next WO after OE-013. Owner/WOE must select any follow-up lane, especially
 if the work requires production deployment, secrets, county data, PACS, live DB, schema migration
-apply, TerraPilot P16, backend runtime mutation, CI wiring, or release-gate automation.
+apply, backend runtime mutation, CI wiring, or release-gate automation.
 
 ---
 
@@ -169,7 +200,7 @@ new owner/WOE-selected phase and must not rerun the closed evidence baseline cha
 | WO-TERRAPILOT-P13 | Contract-covered metadata change | COMPLETE IN PR |
 | WO-TERRAPILOT-P14 | Contract-covered metadata stop-gate rollup | COMPLETE IN PR |
 | WO-TERRAPILOT-P15 | Future promotion authorization decision packet | COMPLETE IN PR |
-| WO-TERRAPILOT-P16 | Live integration design packet | BLOCKED — owner authorization required |
+| WO-TERRAPILOT-P16 | Live integration design packet | **COMPLETE ON PROTECTED MERGE** |
 
 WO-TERRAPILOT-P11 decided that `summarize_levy_rate_components` remains a valid candidate for a
 future `contract-covered` metadata change, but it did not mutate maturity metadata. WO-TERRAPILOT-P12
@@ -177,9 +208,11 @@ recorded the exact owner-decision packet for whether to authorize that metadata 
 WO-TERRAPILOT-P13 applies only that authorized L2 / `contract-covered` metadata change while keeping
 `liveIntegration: false`. WO-TERRAPILOT-P14 is the evidence-only stop-gate rollup. WO-TERRAPILOT-P15
 records the future promotion authorization choices and the required proof before any live/backend
-promotion path. Any runtime promotion, backend integration, `liveIntegration: true` claim, deployment,
-secrets, county data, PACS, live DB access, or schema migration remains a stop wall before a separate
-owner-authorized runtime promotion WO.
+promotion path. WO-TERRAPILOT-P16 selects the exact future native TerraLevy read integration boundary
+and runtime proof contract. P16 does not implement runtime integration, change L2 metadata, or admit a
+runtime promotion Work Order. Any runtime promotion, backend integration, `liveIntegration: true`
+claim, deployment, secrets, county data, PACS, live DB access, or schema migration remains outside
+P16 and requires a separately admitted runtime Work Order.
 
 ---
 
@@ -262,12 +295,12 @@ credential, county, county-data, or future MAO execution authority.
 | WO-AZURE-001 | Azure App Service preflight | CLOSED - PR #1275 |
 | WO-AZURE-002 | App settings and secret inventory | COMPLETE - PR #1293 |
 | WO-AZURE-003 | Deployment slot strategy | COMPLETE ON MERGE - blue/green policy only |
-| WO-AZURE-004 | Observability and log capture | BLOCKED - live-smoke evidence requires authorization |
-| WO-AZURE-005 | Rollback and restart runbook | BLOCKED - live-smoke evidence requires authorization |
-| WO-AZURE-006 | County-owned production boundary packet | QUEUED — **SW-01 + SW-09 wall** |
+| WO-AZURE-004 | Observability and log capture | BLOCKED - requires 003D live-smoke evidence |
+| WO-AZURE-005 | Rollback and restart runbook | BLOCKED - requires 003D live-smoke evidence |
+| WO-AZURE-006 | County-owned production boundary packet | QUEUED — county-facing production decision after prerequisite chain |
 
-Active stop walls: live Azure access, secret values, slot/configuration/resource mutation,
-deployment, and county production. With WO-AZURE-003 complete, route to portfolio reconciliation.
+Active stop wall: actual Azure staging-slot execution/access for P1/003D. With WO-AZURE-003 complete,
+004/005 remain dependency-blocked until 003D produces live evidence.
 
 ---
 

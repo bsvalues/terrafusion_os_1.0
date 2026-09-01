@@ -25,10 +25,21 @@
  */
 
 import React from 'react';
-import { render, screen, within } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { getTerraForgeCanonicalInventory } from '../../pages/suites/terraforgeCanonicalInventory';
+import type { WashingtonCountyStatusEntry } from '../../services/washingtonCountyLaunch';
+
+const {
+  activateModuleMock,
+  resolveWashingtonCountyStatusMock,
+  verifyWashingtonCountySalesShardMock,
+} = vi.hoisted(() => ({
+  activateModuleMock: vi.fn(),
+  resolveWashingtonCountyStatusMock: vi.fn(),
+  verifyWashingtonCountySalesShardMock: vi.fn(),
+}));
 
 // ── Mocks ─────────────────────────────────────────────────────────────────────
 
@@ -49,7 +60,12 @@ vi.mock('../../stores/propertyStore', () => ({
 }));
 
 vi.mock('../../orchestration/moduleActivation', () => ({
-  activateModule: vi.fn(),
+  activateModule: activateModuleMock,
+}));
+
+vi.mock('../../services/washingtonCountyLaunch', () => ({
+  resolveWashingtonCountyStatus: resolveWashingtonCountyStatusMock,
+  verifyWashingtonCountySalesShard: verifyWashingtonCountySalesShardMock,
 }));
 
 vi.mock('../../pages/suites/SaleQualificationQueue', () => ({
@@ -70,15 +86,69 @@ vi.mock('../../pages/suites/CompsPoolBrowser', () => ({
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
-async function renderForgeSuiteHome() {
+async function renderForgeSuiteHome(metadata?: Record<string, unknown>) {
   const { default: ForgeSuiteHome } = await import(
     '../../pages/suites/ForgeSuiteHome'
   );
-  return render(
+  const rendered = render(
     <MemoryRouter>
-      <ForgeSuiteHome />
+      <ForgeSuiteHome metadata={metadata} />
     </MemoryRouter>
   );
+  return { ...rendered, ForgeSuiteHome };
+}
+
+function washingtonCountyContext(
+  overrides: Record<string, unknown> = {},
+): Record<string, unknown> {
+  return {
+    countyCode: '063',
+    countyName: 'Spokane',
+    resetValuationScope: true,
+    launchContext: 'washington-counties-hub',
+    dataTrustTier: 'public-reference-not-county-certified',
+    referencePackageSource: 'hosted',
+    referenceDataPosture: 'public_recorder_export',
+    referenceRecordCount: 12,
+    latestReferenceSaleDate: '2025-12-31',
+    salesReviewAvailability: 'available',
+    salesReviewUnavailableMessage: null,
+    ...overrides,
+  };
+}
+
+function hostedCountyStatus(
+  overrides: Partial<WashingtonCountyStatusEntry> = {},
+): WashingtonCountyStatusEntry {
+  return {
+    county: 'Spokane',
+    countyCode: '063',
+    packageIdentity: {
+      statusSchemaVersion: 'terrafusion.washington.county-status.v1',
+      statusCanonicalJsonSha256: 'a'.repeat(64),
+      generatedAt: '2026-08-28T00:00:00.000Z',
+      sourcePosture: 'public_recorder_export',
+    },
+    priority: 'statewide',
+    prometheusStatus: 'reference_ready',
+    primarySourceMode: 'public_recorder_export',
+    latestSaleDate: '2025-12-31',
+    candidateSales: 18,
+    stagedSales: 12,
+    needsReview: 4,
+    salesShardVerification: 'unverified',
+    confidence: {
+      averageQualityScore: 0.91,
+      parserStatus: 'ready',
+      rawStatus: 'observed',
+      rawDriftDetected: false,
+    },
+    staticRoutes: {
+      detail: '/launch-data/washington/counties/063.json',
+      salesShard: '/launch-data/washington/sales/by-county/063.json',
+    },
+    ...overrides,
+  };
 }
 
 // ── Tests ─────────────────────────────────────────────────────────────────────
@@ -86,6 +156,9 @@ async function renderForgeSuiteHome() {
 describe('TerraForge suite home — taxonomy contract', () => {
   beforeEach(() => {
     vi.resetModules();
+    activateModuleMock.mockReset();
+    resolveWashingtonCountyStatusMock.mockReset();
+    verifyWashingtonCountySalesShardMock.mockReset();
   });
 
   // ── Primary tier ────────────────────────────────────────────────────────────
@@ -184,6 +257,345 @@ describe('TerraForge suite home — taxonomy contract', () => {
   it('renders SaleQualificationQueue as the only panel surface', async () => {
     await renderForgeSuiteHome();
     expect(screen.getByTestId('mock-sale-qualification-queue')).toBeDefined();
+  });
+
+  it('enters any selected county context without falling back to Benton runtime data', async () => {
+    await renderForgeSuiteHome(washingtonCountyContext({
+      countyCode: '001',
+      countyName: 'Adams',
+      referenceDataPosture: 'unavailable',
+      referenceRecordCount: null,
+      latestReferenceSaleDate: null,
+      salesReviewAvailability: 'unavailable',
+      salesReviewUnavailableMessage: 'No governed public sales state is available for Adams County.',
+      officialAssessorBaseUrl: 'https://untrusted.example/adams',
+    }));
+
+    const countyContext = screen.getByTestId('forge-county-context');
+    expect(countyContext).toHaveTextContent('Adams County');
+    expect(countyContext).toHaveTextContent('WA-001');
+    expect(countyContext).toHaveTextContent(/navigation context only/i);
+    expect(countyContext).toHaveTextContent(/never fall back to Benton or another county/i);
+    const publicSourceWorkflow = within(countyContext).getByTestId(
+      'forge-public-source-workflow',
+    );
+    expect(publicSourceWorkflow).toHaveTextContent('County public-source research');
+    expect(publicSourceWorkflow).toHaveTextContent(
+      'Parcel/property search via TaxSifter; direct sales UI not yet verified in this pass',
+    );
+    expect(publicSourceWorkflow).toHaveTextContent('MapSifter/parcel detail history');
+    expect(publicSourceWorkflow).toHaveTextContent('GIS / map surface');
+    expect(publicSourceWorkflow).toHaveTextContent('MapSifter');
+    expect(publicSourceWorkflow).toHaveTextContent('Parcel transfer history');
+    expect(publicSourceWorkflow).toHaveTextContent('Source path researched');
+    expect(publicSourceWorkflow).toHaveTextContent(/does not activate a TerraFusion sales shard/i);
+    const officialSource = within(publicSourceWorkflow).getByRole('link', {
+      name: /Open Adams County public-data entry point in a new tab/i,
+    });
+    expect(officialSource).toHaveAttribute('href', 'https://co.adams.wa.us');
+    expect(officialSource).not.toHaveAttribute('href', 'https://untrusted.example/adams');
+    expect(officialSource).toHaveAttribute('target', '_blank');
+    expect(officialSource).toHaveAttribute('rel', 'noopener noreferrer');
+    expect(screen.queryByTestId('forge-stats')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('forge-calibration-desk')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('mock-sale-qualification-queue')).not.toBeInTheDocument();
+
+    const primary = screen.getByTestId('forge-primary-applications');
+    expect(within(primary).getByRole('button', { name: /SalesForge/i })).toBeDisabled();
+    expect(within(primary).getByRole('button', { name: /CompsForge/i })).toBeDisabled();
+    expect(within(primary).getByRole('button', { name: /CostForge/i })).toBeDisabled();
+    expect(within(primary).getByRole('button', { name: /Reconciliation/i })).toHaveAttribute(
+      'title',
+      'This workflow is unavailable in the selected public county context.',
+    );
+    expect(activateModuleMock).not.toHaveBeenCalled();
+  });
+
+  it('fails closed when a Counties Hub county name and code do not match', async () => {
+    await renderForgeSuiteHome(washingtonCountyContext({ countyName: 'Adams' }));
+
+    expect(screen.getByTestId('forge-county-context-invalid')).toHaveTextContent(
+      'County scope required',
+    );
+    expect(screen.getByText(/county scope invalid/i)).toBeInTheDocument();
+    expect(screen.queryByTestId('forge-runtime-status')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('forge-stats')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('forge-calibration-desk')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('mock-sale-qualification-queue')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('forge-public-source-workflow')).not.toBeInTheDocument();
+
+    const primary = screen.getByTestId('forge-primary-applications');
+    for (const button of within(primary).getAllByRole('button')) {
+      expect(button).toBeDisabled();
+    }
+    expect(activateModuleMock).not.toHaveBeenCalled();
+  });
+
+  it('re-attests an available handoff before opening exact-county public workflows', async () => {
+    const metadata = washingtonCountyContext();
+    const status = hostedCountyStatus();
+    resolveWashingtonCountyStatusMock.mockResolvedValue({
+      counties: [status],
+      packageSource: 'hosted',
+      usedRepositoryFallback: false,
+    });
+    verifyWashingtonCountySalesShardMock.mockResolvedValue({
+      ...status,
+      salesShardVerification: 'verified',
+    });
+    await renderForgeSuiteHome(metadata);
+
+    const primary = screen.getByTestId('forge-primary-applications');
+    const salesForge = within(primary).getByRole('button', { name: /SalesForge/i });
+    const compsForge = within(primary).getByRole('button', { name: /CompsForge/i });
+    await waitFor(() => {
+      expect(salesForge).toBeEnabled();
+      expect(compsForge).toBeEnabled();
+    });
+    expect(resolveWashingtonCountyStatusMock).toHaveBeenCalledTimes(1);
+    expect(verifyWashingtonCountySalesShardMock).toHaveBeenCalledTimes(1);
+    expect(within(primary).getByRole('button', { name: /CostForge/i })).toBeDisabled();
+
+    fireEvent.click(salesForge);
+    fireEvent.click(compsForge);
+
+    expect(activateModuleMock).toHaveBeenCalledWith('sales-forge', {
+      source: 'system',
+      metadata: expect.objectContaining({
+        countyCode: '063',
+        referenceRecordCount: 12,
+        salesReviewAvailability: 'available',
+      }),
+    });
+    expect(activateModuleMock).toHaveBeenCalledWith('comps-forge', {
+      source: 'system',
+      metadata: expect.objectContaining({
+        countyCode: '063',
+        referenceRecordCount: 12,
+        salesReviewAvailability: 'available',
+      }),
+    });
+  });
+
+  it('keeps county context open while attestation runs, then unlocks public workflows', async () => {
+    const pendingStatus = hostedCountyStatus();
+    resolveWashingtonCountyStatusMock.mockResolvedValue({
+      counties: [pendingStatus],
+      packageSource: 'hosted',
+      usedRepositoryFallback: false,
+    });
+    let completeVerification!: (status: WashingtonCountyStatusEntry) => void;
+    verifyWashingtonCountySalesShardMock.mockReturnValue(
+      new Promise<WashingtonCountyStatusEntry>((resolve) => {
+        completeVerification = resolve;
+      }),
+    );
+
+    await renderForgeSuiteHome(washingtonCountyContext({
+      referenceRecordCount: null,
+      latestReferenceSaleDate: null,
+      salesReviewAvailability: 'verifying',
+      salesReviewUnavailableMessage: null,
+    }));
+
+    expect(screen.getByTestId('forge-county-context')).toHaveTextContent('Spokane County');
+    expect(screen.getByTestId('forge-county-verification-pending')).toHaveTextContent(
+      /will unlock only after attestation succeeds/i,
+    );
+    const primary = screen.getByTestId('forge-primary-applications');
+    expect(within(primary).getByRole('button', { name: /SalesForge/i })).toBeDisabled();
+    expect(within(primary).getByRole('button', { name: /CompsForge/i })).toBeDisabled();
+    await waitFor(() => {
+      expect(verifyWashingtonCountySalesShardMock).toHaveBeenCalledTimes(1);
+    });
+
+    await act(async () => {
+      completeVerification({
+        ...pendingStatus,
+        salesShardVerification: 'verified',
+      });
+    });
+
+    await waitFor(() => {
+      expect(within(primary).getByRole('button', { name: /SalesForge/i })).toBeEnabled();
+      expect(within(primary).getByRole('button', { name: /CompsForge/i })).toBeEnabled();
+    });
+    expect(screen.getByTestId('forge-county-context')).toHaveTextContent(
+      /12 public\/reference sales are available/i,
+    );
+
+    fireEvent.click(within(primary).getByRole('button', { name: /SalesForge/i }));
+    expect(activateModuleMock).toHaveBeenCalledWith('sales-forge', {
+      source: 'system',
+      metadata: expect.objectContaining({
+        countyCode: '063',
+        referenceRecordCount: 12,
+        salesReviewAvailability: 'available',
+      }),
+    });
+  });
+
+  it('rejects an unproven available claim and lets the assessor retry in TerraForge', async () => {
+    const pendingStatus = hostedCountyStatus();
+    resolveWashingtonCountyStatusMock
+      .mockResolvedValueOnce({
+        counties: [],
+        packageSource: 'repository-reference',
+        usedRepositoryFallback: true,
+      })
+      .mockResolvedValueOnce({
+        counties: [pendingStatus],
+        packageSource: 'hosted',
+        usedRepositoryFallback: false,
+      });
+    verifyWashingtonCountySalesShardMock.mockResolvedValue({
+      ...pendingStatus,
+      salesShardVerification: 'verified',
+    });
+
+    await renderForgeSuiteHome(washingtonCountyContext());
+
+    const retry = await screen.findByRole('button', { name: 'Retry county sales data' });
+    const countyContext = screen.getByTestId('forge-county-context');
+    expect(countyContext).toHaveTextContent(
+      /hosted Spokane County public sales package is unavailable/i,
+    );
+    expect(countyContext).toHaveTextContent(/Source Unavailable/i);
+    expect(countyContext).not.toHaveTextContent(/Source verification pending/i);
+    const primary = screen.getByTestId('forge-primary-applications');
+    expect(within(primary).getByRole('button', { name: /SalesForge/i })).toBeDisabled();
+    expect(countyContext).not.toHaveTextContent(
+      /12 public\/reference sales are available/i,
+    );
+
+    fireEvent.click(retry);
+
+    await waitFor(() => {
+      expect(resolveWashingtonCountyStatusMock).toHaveBeenCalledTimes(2);
+      expect(within(primary).getByRole('button', { name: /SalesForge/i })).toBeEnabled();
+    });
+  });
+
+  it('ignores a superseded county verification result after the context changes', async () => {
+    const spokaneStatus = hostedCountyStatus();
+    const adamsStatus = hostedCountyStatus({
+      county: 'Adams',
+      countyCode: '001',
+      staticRoutes: {
+        detail: '/launch-data/washington/counties/001.json',
+        salesShard: '/launch-data/washington/sales/by-county/001.json',
+      },
+    });
+    resolveWashingtonCountyStatusMock.mockResolvedValue({
+      counties: [spokaneStatus, adamsStatus],
+      packageSource: 'hosted',
+      usedRepositoryFallback: false,
+    });
+    let completeSpokane!: (status: WashingtonCountyStatusEntry) => void;
+    let completeAdams!: (status: WashingtonCountyStatusEntry) => void;
+    verifyWashingtonCountySalesShardMock.mockImplementation(
+      (status: WashingtonCountyStatusEntry) => new Promise<WashingtonCountyStatusEntry>((resolve) => {
+        if (status.countyCode === '063') completeSpokane = resolve;
+        else completeAdams = resolve;
+      }),
+    );
+    const pending = {
+      referenceRecordCount: null,
+      latestReferenceSaleDate: null,
+      salesReviewAvailability: 'verifying',
+      salesReviewUnavailableMessage: null,
+    };
+
+    const rendered = await renderForgeSuiteHome(washingtonCountyContext(pending));
+    const RerenderedForgeSuiteHome = rendered.ForgeSuiteHome;
+    await waitFor(() => expect(verifyWashingtonCountySalesShardMock).toHaveBeenCalledTimes(1));
+    rendered.rerender(
+      <MemoryRouter>
+        <RerenderedForgeSuiteHome metadata={washingtonCountyContext({
+          ...pending,
+          countyCode: '001',
+          countyName: 'Adams',
+        })} />
+      </MemoryRouter>,
+    );
+    await waitFor(() => expect(verifyWashingtonCountySalesShardMock).toHaveBeenCalledTimes(2));
+
+    await act(async () => {
+      completeAdams({ ...adamsStatus, salesShardVerification: 'verified' });
+    });
+    await waitFor(() => {
+      expect(screen.getByTestId('forge-county-context')).toHaveTextContent('Adams County');
+    });
+
+    await act(async () => {
+      completeSpokane({ ...spokaneStatus, salesShardVerification: 'verified' });
+    });
+    expect(screen.getByTestId('forge-county-context')).toHaveTextContent('Adams County');
+    expect(screen.getByTestId('forge-county-context')).not.toHaveTextContent('Spokane County');
+  });
+
+  it('re-attests a refreshed request even when the county identity is unchanged', async () => {
+    const spokaneStatus = hostedCountyStatus();
+    resolveWashingtonCountyStatusMock.mockResolvedValue({
+      counties: [spokaneStatus],
+      packageSource: 'hosted',
+      usedRepositoryFallback: false,
+    });
+    const completeVerification: Array<(status: WashingtonCountyStatusEntry) => void> = [];
+    verifyWashingtonCountySalesShardMock.mockImplementation(
+      () => new Promise<WashingtonCountyStatusEntry>((resolve) => {
+        completeVerification.push(resolve);
+      }),
+    );
+    const pending = {
+      referenceRecordCount: null,
+      latestReferenceSaleDate: null,
+      salesReviewAvailability: 'verifying',
+      salesReviewUnavailableMessage: null,
+    };
+
+    const rendered = await renderForgeSuiteHome(washingtonCountyContext(pending));
+    const RerenderedForgeSuiteHome = rendered.ForgeSuiteHome;
+    await waitFor(() => expect(completeVerification).toHaveLength(1));
+
+    await act(async () => {
+      completeVerification[0]!({ ...spokaneStatus, salesShardVerification: 'verified' });
+    });
+    const primary = screen.getByTestId('forge-primary-applications');
+    await waitFor(() => {
+      expect(within(primary).getByRole('button', { name: /SalesForge/i })).toBeEnabled();
+    });
+
+    const refreshLayoutStates: boolean[] = [];
+    function RefreshLayoutProbe() {
+      React.useLayoutEffect(() => {
+        const salesForgeButton = Array.from(
+          document.querySelectorAll<HTMLButtonElement>(
+            '[data-testid="forge-primary-applications"] button',
+          ),
+        ).find((button) => button.textContent?.includes('SalesForge'));
+        refreshLayoutStates.push(salesForgeButton?.disabled ?? false);
+      }, []);
+      return null;
+    }
+
+    rendered.rerender(
+      <MemoryRouter>
+        <RerenderedForgeSuiteHome metadata={washingtonCountyContext(pending)} />
+        <RefreshLayoutProbe />
+      </MemoryRouter>,
+    );
+    expect(refreshLayoutStates).toEqual([true]);
+    await waitFor(() => expect(completeVerification).toHaveLength(2));
+    expect(within(primary).getByRole('button', { name: /SalesForge/i })).toBeDisabled();
+    expect(screen.getByTestId('forge-county-verification-pending')).toBeInTheDocument();
+
+    await act(async () => {
+      completeVerification[1]!({ ...spokaneStatus, salesShardVerification: 'verified' });
+    });
+    await waitFor(() => {
+      expect(within(primary).getByRole('button', { name: /SalesForge/i })).toBeEnabled();
+    });
   });
 
   // ── Banned cards (legacy resurrection tests) ────────────────────────────────

@@ -50,6 +50,9 @@ public class DossierDocument
 
   public bool EntersCustodyChain { get; set; }
 
+  /// <summary>Suite-governed optimistic mutation version.</summary>
+  public long Version { get; set; } = 1;
+
   public Guid CountyId { get; set; }
   public County County { get; set; } = null!;
 

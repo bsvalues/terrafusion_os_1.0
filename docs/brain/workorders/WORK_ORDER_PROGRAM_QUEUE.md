@@ -1,8 +1,8 @@
 # Work Order Program Queue (Current State)
 
 **Version:** 1.0
-**Date:** 2026-08-20
-**Authority:** OWNER-TF-STANDING-OPERATOR-AUTHORITY
+**Date:** 2026-08-28
+**Authority:** `OWNER-WAL-V1-MISSION-AUTHORITY-20260827` plus `OWNER-TF-STANDING-OPERATOR-AUTHORITY`
 **Classification:** Operator Doctrine — live cross-program queue snapshot
 
 > This file is the **current-state** view. Structural program definitions live in
@@ -11,9 +11,53 @@
 
 ---
 
-## Active Goal
+## Active Washington Assessor Launch V1 Goal
 
-The Five-Suite Federated Repository Buildout is between cohorts at portfolio reconciliation. WO-SR-009D completed in PR #1427: exact assured head `85818a749d4268f84cf8638d991d9cef657a0d19` merged as `c7f2d78619a9eb19186c2c724876fb4d11c81b00`. The authenticated frozen-contract Dossier read, same-county rendering, foreign-only empty-shape non-disclosure, deterministic pagination, honest UI states, and disposable synthetic proof passed. Decision `OWNER-SR-009D-R3-DOSSIER-WORKBENCH-CANONICAL-EVIDENCE-READ-20260807` is completed and consumed. No successor authority is inferred; writes, custody mutation, frozen-contract changes, live data, deployment, and cutover remain denied.
+Washington Assessor Launch V1 is active under Issue #1485 and
+`OWNER-WAL-V1-MISSION-AUTHORITY-20260827`. `WO-WAL-000` completed through protected main in PR
+#1486. The exact A, B, C, and D waves are protected-complete through PRs #1488-#1491,
+#1493-#1496, #1498-#1501, and #1503-#1506. `WO-WAL-000E` now reconciles the D evidence and
+prospectively registers exactly `WO-WAL-001E`, `WO-WAL-002E`, and `WO-WAL-004E`. The broad parents
+remain active but are not complete or directly dispatched by this routing.
+
+The E reservations remain bounded: 001E owns only an atomic local-temporary landing receipt for one
+already-verified public artifact; 002E owns only an in-memory first-seen/duplicate decision over
+protected idempotency evidence; and 004E owns only a local authenticated persisted-GUID to canonical
+39-county context binding. No 003E is registered. A live Sync continuation requires the named
+county/source/system, an authorized read-only credential or role and secret-store reference, the
+permitted execution/network environment, data classification/handling requirements, and a
+source-side no-DML evidence method.
+
+The candidate registry models the state that will exist after its protected merge. It is not itself
+dispatch authority while present only on a PR branch: E-child execution requires re-reading this
+state from protected main and verifying the WO-WAL-000E merge commit is in protected-main history.
+
+The program continues through 39-county runtime truth, governed county upload, read-only
+multi-county Sync, county identity/isolation/trust, the real Counties HUB, county-aware TerraForge,
+integrated 39-county release-candidate acceptance, exact production release, an observed external
+assessor journey, and terminal closeout. External county sources remain read-only; production is
+blocked until `WO-WAL-007` accepts the exact release candidate; no individual PR or child WO is the
+mission boundary.
+
+---
+
+## Completed Five-Suite Goal
+
+The Five-Suite Federated Repository Buildout is terminal under
+`OWNER-FIVE-SUITE-FEDERATED-COMPLETION-20260826` and `WO-SR-MISSION-COMPLETION`.
+Forge, Atlas, Dais, and Dossier protected suite ownership and sovereign runtime/rollback evidence are
+recorded exactly in the terminal Work Order. GPT inert staging is protected at
+`1f0889a72497b283140fb0d0a57eed79775f9a34`; runtime reviewed head
+`3bd87411966a7d2c61439f4f60a11f0cb498968f`, tree
+`e6797a83c2c47f3a62bcbfd19e544cd0ae6e5bf8`, passed manual proof run
+`33071051037` and independent review with no actionable P0/P1, then squash-merged as protected OS
+main `9ef50aa1cc608fa3aa8075f30cf349b757a31902` with exact tree equality. This
+terminal closeout also records GPT suite protected main
+`cbcbc518d25b000724712b029fed8cc4e05d8ca6`, tree
+`8f4cae82e19cf1ced8a397c2f392ab7dc13c0c85`, exact reviewed-tree equality, and receipt SHA-256
+`4aa0b8ca01e0d89d327457e75ade323fe1c28651373361c42baa85a2e84ecb40`. The mission hard walls
+remain binding. Forge repository packet
+`operations/work-orders/WO-SR-007-forge-release-artifact.md` remains pending outside this mission.
 
 The prior `WO-SR-009C` completed before this activation. PR #1424 merged exact assured head
 `e70548cb4938da92b2c0b254d71c5361aa10a6ed` as
@@ -112,6 +156,45 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 
 ## Program Queues
 
+### washington-assessor-launch-v1 (`GOAL-WASHINGTON-ASSESSOR-LAUNCH-V1` / `LOOP-WASHINGTON-ASSESSOR-LAUNCH-V1`)
+
+| WO | State | Notes |
+| --- | --- | --- |
+| **WO-WAL-000 Mission Activation** | **COMPLETE ON PROTECTED MERGE / PR #1486** | Canonize Issue #1485, register the finite mission, validate governance, and clear the initial construction wave |
+| **WO-WAL-000A Initial Exact Child Reservations** | **COMPLETE ON PROTECTED MERGE / R3** | Seven exact governance files; add typed reservation schema/registry truth and fail-closed planner reconciliation for the four initial children |
+| **WO-WAL-000B A-Wave Reconciliation and Next Exact Child Reservations** | **COMPLETE / PR #1492 / R3** | Protected merge `b740c3dad`; record A-wave completion and register the B children |
+| **WO-WAL-000C B-Wave Reconciliation and Next Exact Child Reservations** | **COMPLETE / PROTECTED MERGE `474161f93` / R3** | Ten exact governance files; recorded B-wave protected completion and registered the four C children |
+| **WO-WAL-000D C-Wave Reconciliation and Next Exact Child Reservations** | **COMPLETE / PR #1502 / R3** | Protected merge `f21cfa6f6`; recorded C-wave completion and registered the four D children |
+| **WO-WAL-000E D-Wave Reconciliation and Exact E-Wave Reservations** | **ACTIVE; COMPLETE ONLY ON PROTECTED MERGE / R3** | Ten exact governance files; record D-wave completion, register exactly 001E/002E/004E, and retain the 003 live-source authority wall |
+| **WO-WAL-001 Statewide Public Baseline Runtime Completion** | **OPEN; EXACT CHILD ROUTING / R4** | Parent remains open; prove truthful source-to-rows-to-runtime state for all 39 counties with provenance, freshness, capability truth, and no Benton fallback |
+| **WO-WAL-001A Public Baseline Ledger Contract** | **COMPLETE / PR #1489** | Three exact files; deterministic 39-county registry-only ledger under `wal.public-baseline-ledger.v1`; local temp only, no network/database and no runtime inference |
+| **WO-WAL-001B Public Acquisition Artifact Receipt Contract** | **COMPLETE / PR #1493 / R2** | Protected merge `d54d1722f`; immutable public-artifact receipt evidence with no runtime inference |
+| **WO-WAL-001C Public Acquisition Receipt Ledger** | **COMPLETE / PR #1498 / R2** | Protected merge `cfbb64713`; 39 canonical immutable receipt rows and explicit gaps under `wal.public-acquisition-receipt-ledger.v1` |
+| **WO-WAL-001D Public Artifact Byte Verification** | **COMPLETE / PR #1504 / R2** | Protected merge `9b1379a5d`; exact bounded byte/hash/length agreement proved without source-authenticity or runtime inference |
+| **WO-WAL-001E Verified Public Artifact Temp Landing** | **READY AFTER 000E MERGE / R3** | Three exact files; atomic isolated local-temp landing receipt for already-verified public bytes; no acquisition, permanent storage, runtime, or protected data |
+| **WO-WAL-002 Governed County Upload Intake** | **OPEN; EXACT CHILD ROUTING / R5** | Parent remains open; authenticated county-bound upload, validation, quarantine, lineage, idempotency, atomic promotion, and rollback are not completed by its parser child |
+| **WO-WAL-002A Streaming CSV Parser Harness** | **COMPLETE / PR #1490** | Three exact files; bounded strict UTF-8 in-memory parser under `wal.county-upload.csv-parser.v1`; no upload/auth/persistence behavior |
+| **WO-WAL-002B Declared CSV Intake Envelope** | **COMPLETE / PR #1494 / R3** | Protected merge `43fb4e239`; declared CSV/content evidence with no auth, county binding, API or persistence |
+| **WO-WAL-002C Canonical County-Bound CSV Intake** | **COMPLETE / PR #1500 / R5** | Protected merge `22d00eda8`; same-county `COUNTY_PROVIDED` protected-operation binding around one in-memory CSV envelope |
+| **WO-WAL-002D County CSV Idempotency Identity** | **COMPLETE / PR #1506 / R3** | Protected merge `f4480bdb5`; deterministic bounded identity proved with no duplicate store or decision |
+| **WO-WAL-002E County CSV Duplicate Decision** | **READY AFTER 000E MERGE / R3** | Three exact files; local-memory first-seen/duplicate decision with no persistence, transport, quarantine, or promotion |
+| **WO-WAL-003 Read-Only Multi-County TerraFusion Sync** | **OPEN; EXACT CHILD ROUTING / R5** | Parent remains open; real source profiles, checkpoints, lineage, drift handling and observed zero external DML require later exact children |
+| **WO-WAL-003A Read-Only Source Adapter Contract** | **COMPLETE / PR #1491** | Four exact files; mock-only `wal.source-profile.v1` and `wal.external-readonly.v1`; no live source or observed no-DML claim |
+| **WO-WAL-003B Bounded Read Execution Envelope** | **COMPLETE / PR #1495 / R3** | Protected merge `3992e89f6`; one guarded mock-adapter execution with no live source or credential |
+| **WO-WAL-003C ADO Read Adapter Contract** | **COMPLETE / PR #1501 / R4** | Protected merge `0374caafd`; fake-ADO reader-only single execution and bounded page composition |
+| **WO-WAL-003D Profile-Bound Fake ADO Connection Session** | **COMPLETE / PR #1505 / R4** | Protected merge `9155856c2`; fake-only single session proved; live-source continuation remains behind the explicit read-only credential/no-DML authority wall and no 003E is registered |
+| **WO-WAL-004 County Identity, Isolation, Trust and Activation Boundary** | **OPEN; EXACT CHILD ROUTING / R5** | Parent remains open; only the canonical identity/claim-authority foundation is admitted, not trust/activation or cross-surface integration |
+| **WO-WAL-004A Canonical Washington County Authority Contract** | **COMPLETE / PR #1488** | Six exact files; `wal.county-identity.v1` and `wal.county-authority.v1` over synthetic in-memory rows/claims with no default county |
+| **WO-WAL-004B County Data Mode and Authority Boundary Contract** | **COMPLETE / PR #1496 / R5** | Protected merge `4fde39015`; pure same-county visibility/operation predicate with no activation or integration |
+| **WO-WAL-004C County Data Activation Prerequisite Contract** | **COMPLETE / PR #1499 / R5** | Protected merge `da2443068`; data-free per-mode evidence eligibility with no activation, adoption, persistence or integration |
+| **WO-WAL-004D Authenticated County Authority Binding** | **COMPLETE / PR #1503 / R5** | Protected merge `d7f22442e`; authenticated exact persisted county GUID equality proved without grant or activation |
+| **WO-WAL-004E Authenticated Canonical County Context** | **READY AFTER 000E MERGE / R5** | Three exact files; bind authenticated persisted GUID to one canonical 39-county fixture context; no authentication, activation, persistence, default county, or production |
+| **WO-WAL-005 Real 39-County Counties HUB** | **BLOCKED ON STABLE 001-004 CONTRACTS / R4** | Build `/counties` from real control-plane truth for PUBLIC, COUNTY_PROVIDED, CONNECTED, provenance, freshness and capability state |
+| **WO-WAL-006 TerraForge Statewide Launch Runtime** | **BLOCKED ON STABLE 001-004 CONTRACTS / R4** | Run county-aware supported workflows, disclose trust/source state, and withhold unsupported modules without silent fallback |
+| **WO-WAL-007 39-County End-to-End Launch Proof** | **BLOCKED ON 001-006 / R4** | Accept one exact candidate through all-county API/browser coverage, representative source-family journeys, rollback and adversarial isolation proof |
+| **WO-WAL-008 Production Release and External Assessor Acceptance** | **BLOCKED ON WAL-007 GO / R5** | Deploy only the exact accepted candidate with auth, HTTPS, monitoring, backup/rollback, release identity and a non-development-network assessor journey |
+| **WO-WAL-009 Terminal Launch Closeout** | **BLOCKED ON 008 / R3** | Record exact URL/release/rollback/proof/acceptance identities and consume the mission as `COMPLETED_AND_CONSUMED`; no automatic successor |
+
 ### five-suite-federated-repository-buildout (`GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES` / `LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES`)
 | WO | State | Notes |
 | --- | --- | --- |
@@ -167,7 +250,7 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | WO-SR-006A Forge Standalone Kernel Artifact and Shadow-Consumer Gate | DONE / R3 | Exact Forge commit built locally; disposable hash-pinned shadow proof passed; no GitHub credential, runtime switch, deployment, publication, or source retirement |
 | WO-SR-006B Forge Local Runtime-Selection and Rollback Rehearsal Gate | DONE / R3 / AUTHORITY CONSUMED | PR #1380 proved process-local Forge selection, typed fail-closed behavior, and sovereign rollback through the real client/host boundary; no persistent switch or cutover |
 | WO-SR-006C Forge Non-Production Persistent Runtime Adoption and Rollback Gate | DONE / R3 / AUTHORITY CONSUMED | PR #1383 proved disposable Forge selection across two host starts and sovereign rollback in a third; no canonical configuration or cutover |
-| WO-SR-006 Forge Canonical Runtime Ownership Cutover | DONE / R4 / FORGE ONLY / AUTHORITY CONSUMED | Sovereign PR #1386 and Forge PR #4 completed local manifest-bound cutover, fail-closed proof, duplicate valuation-source retirement, cost-kernel preservation, rollback, and cross-repository finalization |
+| WO-SR-006 Forge Canonical Runtime Ownership Cutover | DONE / R4 / FORGE ONLY / AUTHORITY CONSUMED | Sovereign PR #1386 and Forge PR #4 completed local manifest-bound cutover, fail-closed proof, duplicate sovereign valuation-source retirement, cost-kernel preservation, rollback, and cross-repository finalization |
 | WO-SR-007A Atlas Local Sovereign Shadow Projection Proof | COMPLETE / R3 | PR #1389 merged 13-case exact-commit local proof as `3ff78dee1`; terminal closeout consumes authority; no runtime adoption or Atlas mutation |
 | WO-SR-007B-P Atlas Runtime Adoption Boundary Preparation | COMPLETE / R2 | No Atlas runtime host or consumer exists; exact unwired process-host R3 boundary defined without source or runtime changes |
 | WO-SR-007B Atlas Unwired Projection Process Host Foundation | COMPLETE / R3 / AUTHORITY CONSUMED | PR #1393 merged the exact unwired host as `d2bb8d6e1`; build 0/0 and 33 focused tests passed; no DI, runtime consumer, Atlas mutation, deployment, or cutover |
@@ -183,6 +266,27 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | **WO-TF-POST-DAIS-001 Post-Dais Portfolio Reconciliation** | **DONE / R2** | PR #1421 selected and bounded WO-SR-009C |
 | **WO-SR-009C Atlas Workbench Canonical Projection Adoption** | **DONE / R3 / AUTHORITY CONSUMED** | PR #1424 merged as `b5a02db17`; canonical Polygon, truthful unavailable, and cross-county non-disclosure proven; default Disabled, no Point, live provider, or cutover |
 | **WO-SR-009D Dossier Workbench Canonical Evidence Read Adoption** | **DONE / R3 / AUTHORITY CONSUMED** | PR #1427 exact head `85818a749` merged as `c7f2d7861`; same-county frozen read, foreign-only non-disclosure, honest Workbench states, no writes/custody/live data |
+| **WO-SR-007C Atlas Canonical Artifact Staging** | **DONE / R3 / PR #1464** | Exact head `848546a3d` merged as `5a328e728`; all eight protected contexts passed and 10/10 review threads resolved |
+| **WO-SR-007D Atlas Persistent Local Runtime Adoption** | **DONE / R4 / PR #1465** | Merge `4fcbfbd05`; source-tree Development `LocalExact`; published Development disabled; exact startup/per-invocation provenance; real A/B/restored starts; Disabled rollback; 89/89 focused tests |
+| **Atlas Standalone Canonical Ownership Finalization** | **DONE / R2 / Atlas PR #4** | Exact head `8c2d4d870` merged as `708fc5c319`; protected suite main verified; module bytes unchanged |
+| **WO-SR-010A Dais Canonical Artifact Staging** | **DONE / R3 / PR #1466** | Exact head `88e7454b2` merged as `5182742d7`; all checks green, review resolved, protected main verified |
+| **WO-SR-010B Dais Persistent Exact Runtime Adoption** | **DONE / R4 / PR #1467** | Exact head `b24f263ac` merged as `54f9e4b41`; real controller consumer, exact runtime, persistent Development selection, observed rollback, 120/120 focused tests |
+| **WO-SR-010C Dais Appeal Mutation Contract Freeze** | **DONE / R3 / PR #1468** | Exact head `377ed29b8` merged as `527442205`; protected main verified |
+| **WO-SR-010D Dais Appeal Mutation Canonical Source** | **DONE / R3 / Dais PR #6** | Protected Dais merge `8a9cfc608`; exact module/schema/source-manifest identities established |
+| **WO-SR-010E Dais Appeal Mutation Canonical Staging** | **DONE / R3 / PR #1470** | Protected merge `153103c4f`; fixed ignored slot, exact protected Git blobs and provenance, nonempty backup, failure rollback, physically observed rollback |
+| **WO-SR-010F Dais Truthful Sovereign Retirement** | **DONE / R3 / PR #1469** | Protected merge `acf4abc59`; four unsupported or fabricated sovereign routes now fail truthfully with no semantic success, service/audit call, or mutation |
+| **WO-SR-010H Dais Frontend Availability Retirement** | **DONE / R3 / PR #1473** | Protected merge `6291e58b1`; unsupported BOE scheduling CTA, handler, and capability exposure removed while read-only hearing surfaces remain |
+| **WO-SR-010G Dais Persistent Exact Mutation Runtime Adoption** | **DONE / R4 / PR #1471** | Protected merge `f14fc4999`; exact Dais mutation runtime, concurrency, tamper, recovery custody, Disabled rollback, restoration, and truthful OS persistence/orchestration boundary proven |
+| **WO-SR-011A Dossier Canonical Artifact Staging** | **DONE / R3 / PR #1474** | Protected merge `aec4f1e18`; exact protected Dossier Git blobs, generated provenance, exact inventory, production refusal, backup-content/hash proof, and observed whole-slot rollback; runtime remains Disabled |
+| **WO-SR-011B Dossier Persistent Exact Read Runtime Adoption** | **DONE / R4 / PR #1477** | Protected merge `d82a2d363`; exact suite-owned read semantics execute on the real authenticated county-scoped sovereign path; persistent Development LocalExact, production refusal, tamper fail-closed, and physical rollback proven |
+| **WO-SR-011D Dossier Mutation Decision Contract Freeze** | **DONE / R3 / PR #1475** | Protected merge `7cb96bf2e`; provider-neutral note/document/evidence/custody/packet decision boundary frozen with synthetic proof; no mutation performed |
+| **WO-SR-011F Dossier Mutation Canonical Staging** | **DONE / R3 / PR #1479** | Protected merge `807a46aad`; exact suite artifact identities, nonempty rollback contents/hashes, physical rollback and adopted restoration proven |
+| **WO-SR-011G Dossier Six-Operation Mutation Runtime** | **DONE / R4 / PR #1481** | Protected merge `5680f1de6`, tree `0ecb43c8`; six operations, isolation/concurrency, fail-closed refusal and rollback/restoration proven |
+| **WO-SR-011I Dossier Duplicate Reference Retirement** | **DONE / R3 / PR #1482** | Protected merge `65ddfe994`, tree `b9860d53`; duplicate custody classification retired; suite terminal main `4a109acef` |
+| **WO-SR-012A GPT Portability and Provenance** | **DONE / R3 / GPT PR #5** | Protected GPT merge `550b50f27`; exact LF-stable execution manifest pins module/schema/source-manifest blob, length, and SHA identities |
+| **WO-SR-012B GPT Canonical Artifact Staging** | **DONE / R3** | Protected OS merge `1f0889a72`, tree `4e24afd3`; exact inert staging and rollback verified |
+| **WO-SR-012C GPT Grounded-Context Runtime Adoption** | **DONE / R4 / PR #1480** | Reviewed head `3bd874119` squash-merged as protected main `9ef50aa1c`, tree `e6797a83` exact equality; manual proof run `33071051037` success; 8/8 required plus broader first-party checks success; zero threads |
+| **WO-SR-MISSION-COMPLETION** | **COMPLETE / GOVERNANCE** | Terminal suite/runtime/rollback/retirement evidence reconciled, including GPT suite protected main `cbcbc518d2`, tree `8f4cae82`, and terminal receipt SHA-256 `4aa0b8ca01e0d89d327457e75ade323fe1c28651373361c42baa85a2e84ecb40` |
 
 ### portfolio-operator (`GOAL-PORTFOLIO-OPERATOR-001` / `LOOP-PORTFOLIO-OPERATOR-001`)
 | WO | State | Notes |
@@ -242,7 +346,9 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 |----|-------|-------|
 | WO-DEPLOY-BENTON-002 / 003A / 003B / 003C | DONE | App Service + DB live; /health green |
 | WO-CONFIG-BENTON-001 | DONE | #1112 merged |
-| WO-DEPLOY-BENTON-003D Post-Provision Smoke / Evidence Rollup | NEXT (if authorized) | Touches live surface |
+| WO-DEPLOY-BENTON-003D Post-Provision Smoke / Evidence Rollup | **NEXT / ACCESS BLOCKED** | Non-production smoke is authorized; this operator environment has no Azure resource execution connector |
+| WO-DEPLOY-BENTON-003E Demo Operator Runbook | DEPENDENCY BLOCKED | Requires 003D live evidence |
+| WO-DEPLOY-BENTON-003F Deployment Readiness Evidence Rollup | DEPENDENCY BLOCKED | Requires 003D/003E; county-facing production authorization remains a later decision |
 | Production launch / county go-live | WALL | **SW-04** |
 
 ### benton-data-quality  (`/goal benton-data-quality`)
@@ -277,7 +383,7 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 |----|-------|-------|
 | WO-TERRAPILOT-P1 Tool Maturity Matrix | DONE/PARTIAL | — |
 | WO-TERRAPILOT-P2 through P15 | DONE / parked baseline | Green contract does not claim live integration |
-| WO-TERRAPILOT-P16 | PARKED | Design-only strategic direction gate for `summarize_levy_rate_components`; L3/L4 require later runtime/promotion authority |
+| WO-TERRAPILOT-P16 | **COMPLETE ON PROTECTED MERGE** | Exact native TerraLevy `districts-overview` read boundary selected; L2 remains current and no runtime/L3/L4 Work Order is admitted |
 
 ### work-order-engine  (`/goal work-order-engine`)
 | WO | State |
@@ -305,25 +411,26 @@ closes the program as `PASS_WITH_GAPS` and consumes the envelope on protected me
 | WO-AZURE-001 App Service preflight | DONE | PR #1275; committed evidence only, no live access |
 | WO-AZURE-002 App settings and secret inventory | DONE | PR #1293; key names, source classes, storage posture, ownership, and protected gaps |
 | WO-AZURE-003 Deployment slot strategy | DONE ON MERGE | Blue/green policy from committed evidence only; no slot inspection, creation, configuration, swap, or deployment |
-| WO-AZURE-004 Observability and log capture | DEPENDENCY BLOCKED | Requires authorized 003D live-smoke evidence |
-| WO-AZURE-005 Rollback and restart runbook | DEPENDENCY BLOCKED | Requires authorized 003D live-smoke evidence |
-| WO-AZURE-006 County-owned production boundary packet | PARKED | Explicit owner / production authority gate |
+| WO-AZURE-004 Observability and log capture | DEPENDENCY BLOCKED | Requires 003D live-smoke evidence |
+| WO-AZURE-005 Rollback and restart runbook | DEPENDENCY BLOCKED | Requires 003D live-smoke evidence |
+| WO-AZURE-006 County-owned production boundary packet | DEPENDENCY BLOCKED | Requires P1/003F and AZURE-004/005 before the explicit county-facing production decision |
 
 ---
 
 ## Global Walls In Effect — Wall Ledger (per [AUTONOMOUS_CONTINUATION_GATE.md](AUTONOMOUS_CONTINUATION_GATE.md) §3)
 
-*(Updated 2026-07-23 by WO-PORTFOLIO-014 post-contract-freeze reconciliation; every prior wall remains in effect and the five-suite extraction and p8-management-dashboard walls are added below so this canonical ledger carries the full authorization backlog)*
+*(Updated 2026-08-26; completed dispositions are removed from the wall set rather than repeatedly re-authorized.)*
 
 | Program | Parked WO | Wall | Reason | Evidence |
 |---------|-----------|------|--------|----------|
 | benton-data-quality | any new backfill, entitlement mutation, sync pass, or PACS follow-up | SW-02 / SW-03 / SW-08 | safe audit, credentialed verification, and duplicate cleanup are complete; further work is protected | `WO_DATA_BENTON_{EVIDENCE_ROLLUP,QUARANTINE_001,DUPE_001B}_*` |
-| terrapilot-maturity | first-tool L3 promotion | SW-01 / SW-09 / SW-10 | deploy Node runtime + integrate | `WO_TERRAPILOT_P3_P6_*` |
-| benton-demo | DEPLOY-BENTON-003D live smoke / evidence | SW-01 / SW-04 | live deployment and go-live boundary | `programs/benton-demo-deployment.md` |
+| terrapilot-maturity | first-tool L3 promotion | separate runtime WO required | P16 design is complete on protected merge; runtime implementation and L3/L4 promotion are not admitted by P16 | `WO-TERRAPILOT-P16-LIVE-INTEGRATION-DESIGN.md` |
+| benton-demo | DEPLOY-BENTON-003D live smoke / evidence | Azure execution access / SW-04 for later production | non-production 003D smoke is authorized; this operator environment lacks Azure resource execution access; county go-live remains separate | `programs/benton-demo-deployment.md` |
 | cross-project-historical-audit | WO-LOCAL-093 through WO-LOCAL-097 superseded; WO-LOCAL-098 withdrawn | project authority boundary | WilliamOS/TerraGroq surfaces are not executable TerraFusion work | `evidence/WO-PORTFOLIO-013-CROSS-PROJECT-SCOPE-CORRECTION.md` |
-| runtime-import-disposition | WO-CORE-1 | SW-05 / sovereign boundary | explicit import disposition required | `programs/ACTIVE_PROGRAM_PLAYBOOK.md` |
-| azure-county-runtime | WO-AZURE-004 through WO-AZURE-006 | SW-01 / SW-03 / SW-04 | safe docs slice ends at WO-AZURE-003; remaining work needs live evidence, credentials, deployment, or county authority | `programs/azure-county-runtime.md` |
+| azure-county-runtime | WO-AZURE-004 through WO-AZURE-006 | 003D dependency / later county authority | 004/005 require live 003D evidence; 006 requires the completed P1/P8 chain before county-facing decision | `programs/azure-county-runtime.md` |
 | p8-management-dashboard | authenticated verification; county release | SW-03 ; SW-04 / SW-10 | safe dashboard slice complete; authenticated verify and county release need live/credentialed and deployment authority | `programs/p8-management-dashboard.md` |
+
+**Completed disposition removed from wall ledger:** `WO-CORE-1` = `NO IMPORT`; historical Sync PR #133 closed without merge and current canonical repository scopes preserved.
 
 **Current execution result (WO-SR-009C, 2026-08-07):**
 `ATLAS_COUNTY_SCOPED_CANONICAL_PROJECTION_REACHABLE_IN_WORKBENCH_NO_LIVE_PROVIDER_OR_CUTOVER`.

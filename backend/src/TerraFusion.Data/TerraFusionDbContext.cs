@@ -724,6 +724,7 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
       entity.Property(e => e.Description).HasMaxLength(500);
       entity.Property(e => e.RetentionClass).HasMaxLength(50);
       entity.Property(e => e.UploadedBy).HasMaxLength(200);
+      entity.Property(e => e.Version).IsConcurrencyToken();
       entity.HasOne(e => e.County).WithMany().HasForeignKey(e => e.CountyId);
       entity.HasIndex(e => new { e.CountyId, e.ParcelId });
       entity.HasIndex(e => new { e.CountyId, e.DocumentType });
@@ -738,6 +739,7 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
       entity.Property(e => e.EvidenceType).IsRequired().HasMaxLength(50);
       entity.Property(e => e.Integrity).IsRequired().HasMaxLength(20);
       entity.Property(e => e.CreatedBy).HasMaxLength(200);
+      entity.Property(e => e.Version).IsConcurrencyToken();
       entity.HasOne(e => e.County).WithMany().HasForeignKey(e => e.CountyId);
       entity.HasOne(e => e.Document).WithMany().HasForeignKey(e => e.DocumentId).IsRequired(false);
       entity.HasIndex(e => new { e.CountyId, e.ParcelId });

@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
+using TerraFusion.Core.Counties;
 using TerraFusion.Core.Interfaces;
 using TerraFusion.Core.Services;
 
@@ -8,8 +9,8 @@ namespace TerraFusion.API.Services;
 
 /// <summary>
 /// Default implementation of <see cref="ICountyResolver"/>.
-/// Caches county Guid ↔ Name lookups in memory for 5 minutes. The county table
-/// is small (~39 WA counties) and changes rarely — caching is free.
+/// Caches persisted county GUIDs and canonical Washington identity mappings in
+/// memory for 5 minutes. Unknown or ambiguous identity never selects a default.
 /// </summary>
 public class CountyResolver : ICountyResolver
 {
@@ -47,28 +48,40 @@ public class CountyResolver : ICountyResolver
         if (Guid.TryParse(input, out var guid) && lookup.IdSet.Contains(guid))
             return guid;
 
-        // Precedence 2: name match, case-insensitive.
-        if (lookup.NameToId.TryGetValue(input, out var byName))
-            return byName;
-
-        // Precedence 3: county slug, e.g. "benton-wa" -> "Benton".
-        var slugName = TryGetCountyNameFromSlug(input);
-        if (slugName is not null && lookup.NameToId.TryGetValue(slugName, out var bySlug))
-            return bySlug;
+        // Precedence 2: a canonical Washington key, slug, name, FIPS or alias
+        // may resolve only when exactly one internally consistent persisted row
+        // represents that canonical identity. Preserve the established slug
+        // compatibility path while validating it through the canonical registry.
+        var canonicalInput = TryGetCountyNameFromSlug(input) ?? input;
+        if (WashingtonCountyRegistry.TryResolve(canonicalInput, out var county)
+            && lookup.CanonicalKeyToId.TryGetValue(county.Key, out var canonicalId))
+            return canonicalId;
 
         return null;
     }
 
     private static string? TryGetCountyNameFromSlug(string input)
     {
-        var parts = input.Split('-', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-        if (parts.Length < 2 || !string.Equals(parts[^1], "wa", StringComparison.OrdinalIgnoreCase))
+        var parts = input.Split(
+            '-',
+            StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        if (parts.Length < 2)
+        {
             return null;
+        }
 
-        return string.Join(
-            ' ',
-            parts[..^1].Select(part =>
-                char.ToUpperInvariant(part[0]) + part[1..].ToLowerInvariant()));
+        var hasWashingtonPrefix =
+            string.Equals(parts[0], "wa", StringComparison.OrdinalIgnoreCase);
+        var hasWashingtonSuffix =
+            string.Equals(parts[^1], "wa", StringComparison.OrdinalIgnoreCase);
+        if (!hasWashingtonPrefix && !hasWashingtonSuffix)
+        {
+            return null;
+        }
+
+        return WashingtonCountyRegistry.TryResolve(input, out var county)
+            ? county.Name
+            : null;
     }
 
     private async Task<CountyLookup> GetLookupAsync(CancellationToken ct)
@@ -78,16 +91,28 @@ public class CountyResolver : ICountyResolver
 
         var rows = await _db.Counties
             .AsNoTracking()
-            .Select(c => new { c.Id, c.Name })
+            .Select(c => new { c.Id, c.Name, c.State, c.FipsCode })
             .ToListAsync(ct);
+
+        var canonicalRows = rows
+            .Where(row => string.Equals(row.State, "WA", StringComparison.OrdinalIgnoreCase))
+            .Select(row => new
+            {
+                row.Id,
+                Identity = ResolveConsistentIdentity(row.Name, row.FipsCode),
+            })
+            .Where(row => row.Identity is not null)
+            .GroupBy(row => row.Identity!.Key, StringComparer.OrdinalIgnoreCase)
+            .Where(group => group.Count() == 1)
+            .ToDictionary(
+                group => group.Key,
+                group => group.Single().Id,
+                StringComparer.OrdinalIgnoreCase);
 
         var lookup = new CountyLookup
         {
-            IdSet = rows.Select(r => r.Id).ToHashSet(),
-            NameToId = rows.ToDictionary(
-                r => r.Name,
-                r => r.Id,
-                StringComparer.OrdinalIgnoreCase),
+            IdSet = canonicalRows.Values.ToHashSet(),
+            CanonicalKeyToId = canonicalRows,
         };
 
         // The shared IMemoryCache is configured with a SizeLimit in Program.cs,
@@ -99,13 +124,37 @@ public class CountyResolver : ICountyResolver
             AbsoluteExpirationRelativeToNow = CacheTtl,
             Size = 1,
         });
-        _logger.LogDebug("[CountyResolver] Cached lookup for {Count} counties", rows.Count);
+        _logger.LogDebug(
+            "[CountyResolver] Cached {RowCount} county rows with {CanonicalCount} unambiguous Washington identities",
+            rows.Count,
+            canonicalRows.Count);
         return lookup;
+    }
+
+    private static WashingtonCountyIdentity? ResolveConsistentIdentity(string name, string? fipsCode)
+    {
+        if (string.IsNullOrWhiteSpace(name) ||
+            !WashingtonCountyRegistry.TryResolve(name, out var byName))
+        {
+            return null;
+        }
+
+        if (string.IsNullOrWhiteSpace(fipsCode))
+        {
+            return byName;
+        }
+
+        if (!WashingtonCountyRegistry.TryResolve(fipsCode, out var byFips))
+        {
+            return null;
+        }
+
+        return byName == byFips ? byName : null;
     }
 
     private sealed class CountyLookup
     {
         public required HashSet<Guid> IdSet { get; init; }
-        public required Dictionary<string, Guid> NameToId { get; init; }
+        public required Dictionary<string, Guid> CanonicalKeyToId { get; init; }
     }
 }

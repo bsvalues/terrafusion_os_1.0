@@ -18,7 +18,8 @@ import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 // Use vi.hoisted so mock variables are available when vi.mock factories run
 const {
   mockOpenWindow,
-  mockFocusWindow,
+  mockRevealWindow,
+  mockReplaceWindowMetadata,
   mockGetWindows,
   mockLoadModule,
   mockGetLoadState,
@@ -27,7 +28,8 @@ const {
   mockTrackEvent,
 } = vi.hoisted(() => ({
   mockOpenWindow: vi.fn().mockReturnValue('window-123'),
-  mockFocusWindow: vi.fn(),
+  mockRevealWindow: vi.fn(),
+  mockReplaceWindowMetadata: vi.fn(),
   mockGetWindows: vi.fn().mockReturnValue([]),
   mockLoadModule: vi.fn().mockResolvedValue(undefined),
   mockGetLoadState: vi.fn().mockReturnValue({ status: 'idle' }),
@@ -50,7 +52,8 @@ vi.mock('../../stores/desktopStore', () => ({
     getState: () => ({
       windows: mockGetWindows(),
       openWindow: mockOpenWindow,
-      focusWindow: mockFocusWindow,
+      revealWindow: mockRevealWindow,
+      replaceWindowMetadata: mockReplaceWindowMetadata,
     }),
   },
 }));
@@ -95,7 +98,8 @@ import {
 
 function resetAllMocks() {
   mockOpenWindow.mockClear().mockReturnValue('window-123');
-  mockFocusWindow.mockClear();
+  mockRevealWindow.mockClear();
+  mockReplaceWindowMetadata.mockClear();
   mockGetWindows.mockClear().mockReturnValue([]);
   mockLoadModule.mockClear().mockResolvedValue(undefined);
   mockGetLoadState.mockClear().mockReturnValue({ status: 'idle' });
@@ -115,9 +119,10 @@ function resetAllMocks() {
 
 function simulateExistingWindow(
   moduleId: string,
-  windowId: string = 'existing-window-456'
+  windowId: string = 'existing-window-456',
+  state: 'normal' | 'minimized' = 'normal',
 ) {
-  mockGetWindows.mockReturnValue([{ id: windowId, moduleId, state: 'normal' }]);
+  mockGetWindows.mockReturnValue([{ id: windowId, moduleId, state }]);
 }
 
 // ============================================================================
@@ -176,6 +181,27 @@ describe('moduleActivation', () => {
       );
     });
 
+    it('attributes module.activate telemetry to the authenticated actor and county', async () => {
+      await activateModule('costforge', {
+        source: 'start_menu',
+        actor: {
+          userId: 'assessor-7',
+          countyId: 'wa-063',
+          roles: ['assessor'],
+        },
+      });
+
+      expect(mockTrackEvent).toHaveBeenCalledWith(
+        'module.activate',
+        expect.objectContaining({
+          moduleId: 'costforge',
+          source: 'start_menu',
+          actor: 'assessor-7',
+          countyId: 'wa-063',
+        })
+      );
+    });
+
     it('opens exactly one window per activation', async () => {
       await activateModule('terra-gaia', { source: 'route' });
 
@@ -223,11 +249,11 @@ describe('moduleActivation', () => {
   });
 
   // --------------------------------------------------------------------------
-  // Focus Behavior (Window Already Open)
+  // Existing Window Reveal Behavior
   // --------------------------------------------------------------------------
 
-  describe('focus behavior', () => {
-    it('focuses existing window instead of opening new one', async () => {
+  describe('existing window reveal behavior', () => {
+    it('reveals existing window instead of opening new one', async () => {
       // Simulate costforge already open
       simulateExistingWindow('costforge', 'existing-costforge-window');
 
@@ -236,12 +262,12 @@ describe('moduleActivation', () => {
       // Should NOT open new window
       expect(mockOpenWindow).not.toHaveBeenCalled();
 
-      // Should focus existing window
-      expect(mockFocusWindow).toHaveBeenCalledTimes(1);
-      expect(mockFocusWindow).toHaveBeenCalledWith('existing-costforge-window');
+      // Should reveal the existing singleton without taskbar-toggle semantics
+      expect(mockRevealWindow).toHaveBeenCalledTimes(1);
+      expect(mockRevealWindow).toHaveBeenCalledWith('existing-costforge-window');
     });
 
-    it('does not trigger a new load when focusing existing window', async () => {
+    it('does not trigger a new load when revealing an existing window', async () => {
       simulateExistingWindow('costforge');
 
       await activateModule('costforge', { source: 'start_menu' });
@@ -250,16 +276,65 @@ describe('moduleActivation', () => {
       expect(mockLoadModule).not.toHaveBeenCalled();
     });
 
-    it('emits module.focus telemetry when focusing existing window', async () => {
+    it('refreshes deep-link metadata before revealing an existing window', async () => {
+      simulateExistingWindow('costforge', 'existing-costforge-window');
+      const metadata = { countyCode: '063', countyName: 'Spokane' };
+
+      await activateModule('costforge', { source: 'system', metadata });
+
+      expect(mockReplaceWindowMetadata).toHaveBeenCalledWith(
+        'existing-costforge-window',
+        metadata,
+      );
+      expect(mockReplaceWindowMetadata.mock.invocationCallOrder[0]).toBeLessThan(
+        mockRevealWindow.mock.invocationCallOrder[0],
+      );
+    });
+
+    it('refreshes metadata before restoring a minimized singleton window', async () => {
+      simulateExistingWindow('costforge', 'minimized-costforge-window', 'minimized');
+      const metadata = { countyCode: '063', countyName: 'Spokane' };
+
+      await activateModule('costforge', { source: 'system', metadata });
+
+      expect(mockReplaceWindowMetadata).toHaveBeenCalledWith(
+        'minimized-costforge-window',
+        metadata,
+      );
+      expect(mockRevealWindow).toHaveBeenCalledWith('minimized-costforge-window');
+      expect(mockOpenWindow).not.toHaveBeenCalled();
+      expect(mockReplaceWindowMetadata.mock.invocationCallOrder[0]).toBeLessThan(
+        mockRevealWindow.mock.invocationCallOrder[0],
+      );
+    });
+
+    it('does not rewrite existing window metadata for a context-free activation', async () => {
       simulateExistingWindow('costforge');
 
-      await activateModule('costforge', { source: 'desktop' });
+      await activateModule('costforge', { source: 'start_menu' });
+
+      expect(mockReplaceWindowMetadata).not.toHaveBeenCalled();
+    });
+
+    it('emits module.focus telemetry when revealing an existing window', async () => {
+      simulateExistingWindow('costforge');
+
+      await activateModule('costforge', {
+        source: 'desktop',
+        actor: {
+          userId: 'assessor-7',
+          countyId: 'wa-063',
+          roles: ['assessor'],
+        },
+      });
 
       expect(mockTrackEvent).toHaveBeenCalledWith(
         'module.focus',
         expect.objectContaining({
           moduleId: 'costforge',
           source: 'desktop',
+          actor: 'assessor-7',
+          countyId: 'wa-063',
         })
       );
     });
@@ -272,8 +347,8 @@ describe('moduleActivation', () => {
         focusIfOpen: false,
       });
 
-      // Should NOT focus existing window
-      expect(mockFocusWindow).not.toHaveBeenCalled();
+      // Should NOT reveal existing window
+      expect(mockRevealWindow).not.toHaveBeenCalled();
       // Should NOT open new window either (module already active)
       expect(mockOpenWindow).not.toHaveBeenCalled();
     });
@@ -293,8 +368,8 @@ describe('moduleActivation', () => {
 
       // Should still only have 1 openWindow call total
       expect(mockOpenWindow).toHaveBeenCalledTimes(1);
-      // Should have focused instead
-      expect(mockFocusWindow).toHaveBeenCalledTimes(1);
+      // Should have revealed instead
+      expect(mockRevealWindow).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -317,7 +392,14 @@ describe('moduleActivation', () => {
     });
 
     it('emits module.reject telemetry for unregistered module', async () => {
-      await activateModule('nonexistent-module', { source: 'desktop' });
+      await activateModule('nonexistent-module', {
+        source: 'desktop',
+        actor: {
+          userId: 'assessor-7',
+          countyId: 'wa-063',
+          roles: ['assessor'],
+        },
+      });
 
       expect(mockTrackEvent).toHaveBeenCalledWith(
         'module.reject',
@@ -325,6 +407,8 @@ describe('moduleActivation', () => {
           moduleId: 'nonexistent-module',
           reason: 'not_registered',
           source: 'desktop',
+          actor: 'assessor-7',
+          countyId: 'wa-063',
         })
       );
     });

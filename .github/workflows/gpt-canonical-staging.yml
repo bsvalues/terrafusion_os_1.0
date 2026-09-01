@@ -1,0 +1,101 @@
+name: Gpt Canonical Staging Guards
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  staging-offline-guards:
+    name: gpt-staging-offline-guards
+    runs-on: windows-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout sovereign source
+        uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+          sparse-checkout: |
+            .github
+            .governance
+            backend
+            docs/brain/workorders
+            scripts
+            tests
+            tools
+
+      - name: Prove parser and fail-closed guards without sibling-repository credentials
+        shell: pwsh
+        run: |
+          $runnerWorkRoot = Split-Path -Parent (Split-Path -Parent $env:GITHUB_WORKSPACE)
+          $proofRoot = Join-Path $runnerWorkRoot "tf-gpt-staging-$env:GITHUB_RUN_ID-$env:GITHUB_RUN_ATTEMPT"
+          ./tests/gpt-staging-identity.ps1 -ProofRootBase $proofRoot -OfflineGuardsOnly
+
+  runtime-adoption:
+    name: gpt-runtime-adoption
+    runs-on: windows-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout sovereign source without credentials
+        uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+          sparse-checkout: |
+            .github
+            .governance
+            backend
+            docs/brain/workorders
+            scripts
+            tests
+            tools
+
+      - name: Install .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Install Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Materialize hash-pinned GPT artifact from immutable CI fixtures
+        shell: pwsh
+        run: |
+          $fixtureRoot = Join-Path $env:GITHUB_WORKSPACE 'backend/tests/TerraFusion.Unit.Tests/Gpt/Fixtures'
+          $slot = Join-Path $env:GITHUB_WORKSPACE '.terrafusion/runtime/gpt/grounded-context'
+          New-Item -ItemType Directory -Path $slot -Force | Out-Null
+          Copy-Item -LiteralPath (Join-Path $fixtureRoot 'project-gpt-grounded-context.mjs') `
+            -Destination (Join-Path $slot 'project-gpt-grounded-context.mjs')
+          Copy-Item -LiteralPath (Join-Path $fixtureRoot 'gpt.grounded-context.v1.schema.json') `
+            -Destination (Join-Path $slot 'gpt.grounded-context.v1.schema.json')
+          $manifestBase64 = (Get-Content -Raw -LiteralPath (Join-Path $fixtureRoot 'manifest.json.base64')).Trim()
+          [IO.File]::WriteAllBytes(
+            (Join-Path $slot 'manifest.json'),
+            [Convert]::FromBase64String($manifestBase64))
+          $expected = @{
+            'project-gpt-grounded-context.mjs' = @(8578, 'cd2c6111ab0843d321bea8da5eff77cee89eaa1c721d93489d1985c6820f1beb')
+            'gpt.grounded-context.v1.schema.json' = @(3555, 'da9a923e2ef92f63a728edcb19d726a9a29ceb39203464dbe6ee426e94a69019')
+            'manifest.json' = @(1685, 'f29c38f994edc434881e9d71de861e49c2ae300dcb0c1b3082fe206cf4a2ee75')
+          }
+          foreach ($entry in $expected.GetEnumerator()) {
+            $path = Join-Path $slot $entry.Key
+            if ((Get-Item -LiteralPath $path).Length -ne $entry.Value[0] -or
+                (Get-FileHash -LiteralPath $path -Algorithm SHA256).Hash.ToLowerInvariant() -cne $entry.Value[1]) {
+              throw "GPT_CI_FIXTURE_IDENTITY_MISMATCH: $($entry.Key)"
+            }
+          }
+
+      - name: Prove exact runtime, adoption, rollback, tamper refusal, and consumer boundary
+        shell: pwsh
+        env:
+          TERRAFUSION_GPT_RUNTIME_PROOF_ROOT: ${{ github.workspace }}
+          TERRAFUSION_GPT_RUNTIME_PROOF_REQUIRED: "1"
+        run: |
+          dotnet test backend/tests/TerraFusion.Unit.Tests/TerraFusion.Unit.Tests.csproj `
+            --configuration Release `
+            --filter 'FullyQualifiedName~GptGroundedContext' `
+            --logger 'console;verbosity=normal'

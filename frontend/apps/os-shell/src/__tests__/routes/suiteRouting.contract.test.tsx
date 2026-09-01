@@ -33,6 +33,18 @@ beforeAll(() => {
 });
 
 describe('Suite routing source contract — Router.tsx', () => {
+  describe('CountiesHub', () => {
+    it('is lazy-imported from components/CountiesHub', () => {
+      expect(routerSource).toMatch(
+        /lazy\s*\(\s*\(\)\s*=>\s*import\s*\(\s*['"]\.\/components\/CountiesHub['"]\s*\)\s*\)/,
+      );
+    });
+
+    it('is used in the canonical /counties route', () => {
+      expect(routerSource).toContain("path='counties' element={<CountiesHub />}");
+    });
+  });
+
   describe('ForgeSuiteHome', () => {
     it('is lazy-imported from pages/suites/ForgeSuiteHome', () => {
       expect(routerSource).toMatch(

@@ -39,6 +39,16 @@
       "type": "string",
       "minLength": 1
     },
+    "goalId": {
+      "type": "string",
+      "pattern": "^GOAL-[A-Z0-9][A-Z0-9-]*$",
+      "description": "Optional canonical program-goal identity used for exact mission authority matching."
+    },
+    "loopId": {
+      "type": "string",
+      "pattern": "^LOOP-[A-Z0-9][A-Z0-9-]*$",
+      "description": "Optional canonical program-loop identity used for exact mission authority matching."
+    },
     "riskClass": {
       "$ref": "#/$defs/riskClass"
     },
@@ -69,6 +79,25 @@
         "$ref": "#/$defs/pathPattern"
       },
       "default": []
+    },
+    "contractReservations": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/contractReservationIdentifier"
+      },
+      "uniqueItems": true,
+      "description": "Optional exact machine-readable contract reservations. When present, planners must reconcile candidate contract claims exactly."
+    },
+    "environmentReservations": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/reservationIdentifier"
+      },
+      "uniqueItems": true,
+      "description": "Optional exact machine-readable environment reservations. When present, planners must reconcile candidate environment claims exactly."
+    },
+    "dispatchGuard": {
+      "$ref": "#/$defs/dispatchGuard"
     },
     "blockedFiles": {
       "type": "array",
@@ -149,6 +178,16 @@
         "cancelled"
       ]
     },
+    "reservationIdentifier": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]*$",
+      "description": "Normalized exact contract or environment reservation identifier."
+    },
+    "contractReservationIdentifier": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]*(\\.[a-z0-9][a-z0-9-]*)+\\.v[1-9][0-9]*$",
+      "description": "Normalized dot-delimited versioned contract identifier."
+    },
     "dependencyStatus": {
       "type": "string",
       "enum": ["required", "satisfied", "blocked", "deferred", "unknown"]
@@ -174,6 +213,20 @@
         },
         "notes": {
           "type": "string"
+        }
+      }
+    },
+    "dispatchGuard": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "ref"],
+      "properties": {
+        "type": {
+          "const": "protected_ref_head"
+        },
+        "ref": {
+          "type": "string",
+          "const": "refs/remotes/origin/main"
         }
       }
     },

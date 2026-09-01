@@ -20,6 +20,8 @@ function record(id, overrides = {}) {
     title: id,
     program: 'Test',
     goal: 'test',
+    goalId: 'GOAL-TEST',
+    loopId: 'LOOP-TEST',
     riskClass: 'R1',
     status: 'ready',
     dependencies: [],
@@ -29,7 +31,7 @@ function record(id, overrides = {}) {
     evidenceRequired: [],
     evidenceProduced: [],
     validationGates: [],
-    stopConditions: [{ type: 'scope_boundary' }],
+    stopConditions: [{ type: 'scope_boundary', description: 'Stay inside the test scope.' }],
     nextCandidates: [],
     ...overrides,
   };
@@ -46,12 +48,24 @@ function optionsFor(records, overrides = {}) {
       .map(item => [
         item.id,
         [
-          {
-            id: `${item.id}-PATH`,
+          ...item.allowedFiles.map((value, index) => ({
+            id: `${item.id}-PATH-${index + 1}`,
             kind: 'path',
-            value: item.allowedFiles[0],
+            value,
             status: 'active',
-          },
+          })),
+          ...(item.contractReservations ?? []).map((value, index) => ({
+            id: `${item.id}-CONTRACT-${index + 1}`,
+            kind: 'contract',
+            value,
+            status: 'active',
+          })),
+          ...(item.environmentReservations ?? []).map((value, index) => ({
+            id: `${item.id}-ENVIRONMENT-${index + 1}`,
+            kind: 'environment',
+            value,
+            status: 'active',
+          })),
         ],
       ])
   );
@@ -73,6 +87,22 @@ function protectedPathDecision(workOrderId, authorizedFiles, overrides = {}) {
     authority_class: 'R3-bounded-protected-path',
     authorized_files: authorizedFiles,
     effective_base_sha: 'a'.repeat(40),
+    expires_at: '2026-08-17T23:59:59Z',
+    ...overrides,
+  };
+}
+
+function missionDecision(rootRecord, overrides = {}) {
+  return {
+    id: `OWNER-${rootRecord.id}-MISSION-TEST`,
+    work_order: rootRecord.id,
+    program: rootRecord.program,
+    goal: rootRecord.goalId,
+    loop: rootRecord.loopId,
+    status: 'active',
+    authority_class: 'R5-bounded-mission',
+    authorized_repositories: ['bsvalues/terrafusion_os_1.0'],
+    child_work_order_policy: { fresh_owner_decision_required: false },
     expires_at: '2026-08-17T23:59:59Z',
     ...overrides,
   };
@@ -446,6 +476,767 @@ describe('wo-wave-plan', () => {
       planWaves(registry(records), rules, options).excludedWorkOrders[0].reasons[0],
       /protected-resource-reservation:environment:production/
     );
+  });
+
+  it('inherits exact protected child authority from one registered terminal mission root', () => {
+    const mission = record('WO-MISSION-000', {
+      program: 'Mission',
+      goalId: 'GOAL-MISSION',
+      loopId: 'LOOP-MISSION',
+      status: 'complete',
+    });
+    const child = record('WO-MISSION-001', {
+      program: 'Mission',
+      goalId: 'GOAL-MISSION',
+      loopId: 'LOOP-MISSION',
+      riskClass: 'R4',
+      dependencies: [{ id: mission.id, status: 'satisfied' }],
+      allowedFiles: ['backend/src/Mission.cs'],
+    });
+    const grandchild = record('WO-MISSION-002', {
+      program: 'Mission',
+      goalId: 'GOAL-MISSION',
+      loopId: 'LOOP-MISSION',
+      riskClass: 'R4',
+      dependencies: [{ id: child.id, status: 'required' }],
+      allowedFiles: ['frontend/src/mission.ts'],
+    });
+    const records = [mission, child, grandchild];
+    const decision = missionDecision(mission);
+    const options = optionsFor(records, {
+      authority: 'R5',
+      maxWorkers: 2,
+      now: '2026-07-17T12:00:00Z',
+      ownerDecisions: { decisions: [decision] },
+    });
+
+    const plan = planWaves(registry(records), rules, options);
+
+    assert.deepEqual(plan.initialExecutableSet, [child.id]);
+    assert.deepEqual(
+      plan.waves.map(wave => wave.workOrders.map(item => item.workOrderId)),
+      [[child.id], [grandchild.id]]
+    );
+    assert.match(plan.waves[0].workOrders[0].explanation, new RegExp(decision.id));
+    assert.match(plan.waves[1].workOrders[0].explanation, new RegExp(decision.id));
+  });
+
+  it('dispatches a WAL-like R5 protected-system child only after exact mission reservations pass', () => {
+    const mission = record('WO-WAL-000', {
+      program: 'Washington Assessor Launch V1',
+      goalId: 'GOAL-WASHINGTON-ASSESSOR-LAUNCH-V1',
+      loopId: 'LOOP-WASHINGTON-ASSESSOR-LAUNCH-V1',
+      status: 'complete',
+    });
+    const child = record('WO-WAL-002', {
+      program: mission.program,
+      goalId: mission.goalId,
+      loopId: mission.loopId,
+      riskClass: 'R5',
+      dependencies: [{ id: mission.id, status: 'satisfied' }],
+      allowedSystems: [
+        {
+          name: 'Authenticated county-bound backend runtime and frontend upload quarantine',
+        },
+      ],
+      blockedSystems: [
+        {
+          name: 'External county writes, production deployment, and secrets mutation',
+        },
+      ],
+      allowedFiles: [
+        'backend/src/TerraFusion.API/Services/UploadService.cs',
+        'frontend/src/services/upload.ts',
+      ],
+      contractReservations: [
+        'wal.county-upload.csv-parser.v1',
+        'wal.sql-source-profile.v1',
+      ],
+      environmentReservations: ['local-memory-stream-only'],
+    });
+    const decision = missionDecision(mission);
+    const baseOptions = {
+      authority: 'R5',
+      now: '2026-07-17T12:00:00Z',
+      ownerDecisions: { decisions: [decision] },
+    };
+    const admitted = optionsFor([mission, child], baseOptions);
+
+    const plan = planWaves(
+      registry([mission, child]),
+      rules,
+      admitted
+    );
+    assert.deepEqual(plan.initialExecutableSet, [child.id]);
+    assert.deepEqual(plan.excludedWorkOrders, [
+      {
+        workOrderId: mission.id,
+        reasons: ['terminal-status'],
+        explanation: 'Excluded: terminal-status.',
+      },
+    ]);
+    assert.match(plan.waves[0].workOrders[0].explanation, new RegExp(decision.id));
+    assert.deepEqual(
+      plan.waves[0].workOrders[0].reservations
+        .filter(reservation => reservation.kind === 'contract')
+        .map(reservation => reservation.value),
+      ['wal.county-upload.csv-parser.v1', 'wal.sql-source-profile.v1']
+    );
+
+    const noAuthority = optionsFor([mission, child], {
+      authority: 'R5',
+      now: baseOptions.now,
+      ownerDecisions: { decisions: [] },
+    });
+    assert.match(
+      planWaves(registry([mission, child]), rules, noAuthority).excludedWorkOrders.find(
+        item => item.workOrderId === child.id
+      ).reasons[0],
+      /missing-protected-path-authority/
+    );
+
+    for (const environment of [
+      'production',
+      'live-county-db',
+      'county-sql-credential',
+      'secret-store',
+    ]) {
+      const deniedEnvironment = optionsFor([mission, child], baseOptions);
+      deniedEnvironment.reservations.candidateReservations[child.id].push({
+        id: `WO-WAL-002-${environment}`,
+        kind: 'environment',
+        value: environment,
+        scope: 'exact',
+        status: 'active',
+      });
+      assert.match(
+        planWaves(registry([mission, child]), rules, deniedEnvironment).excludedWorkOrders.find(
+          item => item.workOrderId === child.id
+        ).reasons[0],
+        new RegExp(`protected-resource-reservation:environment:${environment}`)
+      );
+    }
+  });
+
+  it('reconciles protected WAL D children, admits the exact bounded E set, and retains the Sync authority wall', () => {
+    const actualRegistry = JSON.parse(
+      fs.readFileSync(
+        path.join(root, 'docs/brain/workorders/registry/work-order-registry.seed.json'),
+        'utf8'
+      )
+    );
+    const actualOwnerDecisions = JSON.parse(
+      fs.readFileSync(path.join(root, '.governance/owner-decisions.json'), 'utf8')
+    );
+    const predecessorIds = ['WO-WAL-001D', 'WO-WAL-002D', 'WO-WAL-003D', 'WO-WAL-004D'];
+    const childIds = ['WO-WAL-001E', 'WO-WAL-002E', 'WO-WAL-004E'];
+    const selectedIds = new Set([
+      'WO-WAL-000',
+      'WO-WAL-000A',
+      'WO-WAL-000B',
+      'WO-WAL-000C',
+      'WO-WAL-000D',
+      'WO-WAL-000E',
+      'WO-WAL-001A',
+      'WO-WAL-002A',
+      'WO-WAL-003A',
+      'WO-WAL-004A',
+      'WO-WAL-001B',
+      'WO-WAL-002B',
+      'WO-WAL-003B',
+      'WO-WAL-004B',
+      'WO-WAL-001C',
+      'WO-WAL-002C',
+      'WO-WAL-003C',
+      'WO-WAL-004C',
+      ...predecessorIds,
+      ...childIds,
+      'WO-WAL-005',
+      'WO-WAL-006',
+    ]);
+    const actualRecords = actualRegistry.records.filter(item => selectedIds.has(item.id));
+    const children = childIds.map(id => actualRecords.find(item => item.id === id));
+    assert.ok(children.every(Boolean));
+    assert.equal(
+      children.find(item => item.id === 'WO-WAL-004E').validationGates[0].command,
+      'dotnet test backend/tests/TerraFusion.Unit.Tests/TerraFusion.Unit.Tests.csproj --filter FullyQualifiedName~AuthenticatedCanonicalCountyContextTests && git diff --check && exact changed-path audit'
+    );
+
+    const schema = JSON.parse(
+      fs.readFileSync(
+        path.join(root, 'docs/brain/workorders/schema/work-order.schema.json'),
+        'utf8'
+      )
+    );
+    const validate = new Ajv2020({ allErrors: true, strict: false }).compile(schema);
+    for (const item of [
+      actualRecords.find(record => record.id === 'WO-WAL-000E'),
+      ...predecessorIds.map(id => actualRecords.find(record => record.id === id)),
+      ...children,
+    ]) {
+      assert.equal(validate(item), true, `${item.id}: ${JSON.stringify(validate.errors)}`);
+    }
+    assert.equal(validate({ ...children[0], contractReservations: ['production'] }), false);
+    assert.equal(validate({ ...children[0], contractReservations: null }), false);
+    assert.equal(validate({ ...children[0], environmentReservations: null }), false);
+    assert.equal(
+      validate({
+        ...children[0],
+        contractReservations: [
+          children[0].contractReservations[0],
+          children[0].contractReservations[0],
+        ],
+      }),
+      false
+    );
+    assert.equal(
+      validate({
+        ...children[0],
+        environmentReservations: [
+          children[0].environmentReservations[0],
+          children[0].environmentReservations[0],
+        ],
+      }),
+      false
+    );
+
+    const baseOptions = optionsFor(actualRecords, {
+      authority: 'R5',
+      maxWorkers: 3,
+      now: '2026-08-28T20:00:00Z',
+      ownerDecisions: actualOwnerDecisions,
+      verifiedDispatchRefs: ['refs/remotes/origin/main'],
+    });
+    const unverifiedPlan = planWaves(registry(actualRecords), rules, {
+      ...baseOptions,
+      verifiedDispatchRefs: [],
+    });
+    assert.deepEqual(unverifiedPlan.initialExecutableSet, []);
+    for (const childId of childIds) {
+      assert.ok(
+        unverifiedPlan.excludedWorkOrders
+          .find(item => item.workOrderId === childId)
+          ?.reasons.includes('dispatch-source-unverified:refs/remotes/origin/main')
+      );
+    }
+    const exactPlan = planWaves(registry(actualRecords), rules, baseOptions);
+    assert.deepEqual(
+      [...exactPlan.initialExecutableSet].sort(),
+      [...childIds].sort(),
+      JSON.stringify(
+        exactPlan.excludedWorkOrders.filter(item => childIds.includes(item.workOrderId))
+      )
+    );
+    for (const predecessorId of predecessorIds) {
+      assert.equal(actualRecords.find(item => item.id === predecessorId).status, 'complete');
+      assert.ok(
+        exactPlan.excludedWorkOrders
+          .find(item => item.workOrderId === predecessorId)
+          .reasons.includes('terminal-status')
+      );
+    }
+    for (const field of ['allowedFiles', 'contractReservations', 'environmentReservations']) {
+      const reservations = [...predecessorIds.map(id => actualRecords.find(item => item.id === id)), ...children]
+        .flatMap(item => item[field]);
+      assert.equal(new Set(reservations).size, reservations.length, `${field} must not collide`);
+    }
+    assert.deepEqual(
+      actualRegistry.records.find(item => item.id === 'WO-WAL-000').nextCandidates.map(item => item.id),
+      childIds
+    );
+    for (const parentId of ['WO-WAL-001', 'WO-WAL-002', 'WO-WAL-004']) {
+      assert.equal(actualRegistry.records.find(item => item.id === parentId).status, 'ready');
+      assert.equal(
+        actualRegistry.records.find(item => item.id === parentId).nextCandidates[0].id,
+        `${parentId}E`
+      );
+    }
+    const syncParent = actualRegistry.records.find(item => item.id === 'WO-WAL-003');
+    assert.equal(syncParent.status, 'ready');
+    assert.ok(syncParent.nextCandidates.every(item => item.id !== 'WO-WAL-003E'));
+    assert.equal(actualRegistry.records.some(item => item.id === 'WO-WAL-003E'), false);
+    assert.deepEqual(
+      actualRecords.find(item => item.id === 'WO-WAL-003D').nextCandidates,
+      []
+    );
+    assert.match(
+      actualRecords
+        .find(item => item.id === 'WO-WAL-000E')
+        .stopConditions.find(item => item.type === 'authority_wall').description,
+      /named county\/source\/system.*read-only credential or role.*secret-store reference.*execution\/network environment.*data classification\/handling.*source-side no-DML evidence method/
+    );
+    assert.match(
+      actualRecords.find(item => item.id === 'WO-WAL-001D').validationGates[0].evidence[0],
+      /9b1379a5dc1112bba3d836fd4f38dcba254c132b.*07d5737cf49be7010d8a94e31a20572987c2ffa3.*d1dcc7f2c1ed8bd0104890d2081b550b040c34b1/
+    );
+    assert.match(
+      actualRecords.find(item => item.id === 'WO-WAL-002D').validationGates[0].evidence[0],
+      /f4480bdb5213a406a77bc40b3f1c3d2be799e6e3.*6cb27bb3d202cc1ab8a334694ee7410826a18da0.*ea45e5b03135252e34cfc2cf5ec705b3f331951e/
+    );
+    assert.match(
+      actualRecords.find(item => item.id === 'WO-WAL-003D').validationGates[0].evidence[0],
+      /9155856c2d970f3d772c3f7790f91e017fb47dd8.*d006d3567a4a7e9da43e014e021b5cf81f976e39.*cc8a3fd1a9c648b07a0f7516df1f51b398433c10/
+    );
+    assert.match(
+      actualRecords.find(item => item.id === 'WO-WAL-004D').validationGates[0].evidence[0],
+      /d7f22442e95d91effea79c14667a9b2b00094f8d.*a4fd7d86594bd597f9839fe108051bbdabb09e3c/
+    );
+    for (const blockedId of ['WO-WAL-005', 'WO-WAL-006']) {
+      assert.equal(actualRecords.find(item => item.id === blockedId).status, 'blocked');
+      assert.ok(
+        exactPlan.excludedWorkOrders
+          .find(item => item.workOrderId === blockedId)
+          .reasons.includes('blocked-status')
+      );
+    }
+
+    function assertDenied(child, mutate, pattern) {
+      const denied = structuredClone(baseOptions);
+      mutate(denied.reservations.candidateReservations[child.id]);
+      const exclusion = planWaves(registry(actualRecords), rules, denied).excludedWorkOrders.find(
+        item => item.workOrderId === child.id
+      );
+      assert.ok(exclusion, `${child.id} should be excluded`);
+      assert.match(exclusion.reasons.join('\n'), pattern);
+    }
+
+    for (const child of children) {
+      for (const allowedFile of child.allowedFiles) {
+        assertDenied(
+          child,
+          claims =>
+            claims.splice(
+              claims.findIndex(claim => claim.kind === 'path' && claim.value === allowedFile),
+              1
+            ),
+          /missing path reservation/
+        );
+      }
+      assertDenied(
+        child,
+        claims => {
+          const pathClaim = claims.find(claim => claim.kind === 'path');
+          claims.push({ ...pathClaim, id: `${child.id}-DUPLICATE-PATH` });
+        },
+        /duplicate path reservation/
+      );
+      assertDenied(
+        child,
+        claims => {
+          claims.find(claim => claim.kind === 'path').scope = 'subtree';
+        },
+        /path scope mismatch/
+      );
+      assertDenied(
+        child,
+        claims =>
+          claims.push({
+            id: `${child.id}-EXTRA-PATH`,
+            kind: 'path',
+            value: 'docs/brain/workorders/active/WO-WAL-EXTRA.md',
+          }),
+        /extra path reservation/
+      );
+      assertDenied(
+        child,
+        claims =>
+          claims.splice(
+            claims.findIndex(claim => claim.kind === 'contract'),
+            1
+          ),
+        /missing contract reservation/
+      );
+      assertDenied(
+        child,
+        claims =>
+          claims.splice(
+            claims.findIndex(claim => claim.kind === 'environment'),
+            1
+          ),
+        /missing environment reservation/
+      );
+      assertDenied(
+        child,
+        claims =>
+          claims.push({
+            id: `${child.id}-EXTRA-CONTRACT`,
+            kind: 'contract',
+            value: 'wal.extra-reservation.v1',
+          }),
+        /extra contract reservation wal\.extra-reservation\.v1/
+      );
+      assertDenied(
+        child,
+        claims =>
+          claims.push({
+            id: `${child.id}-EXTRA-ENVIRONMENT`,
+            kind: 'environment',
+            value: 'local-extra-only',
+          }),
+        /extra environment reservation local-extra-only/
+      );
+      assertDenied(
+        child,
+        claims => {
+          claims.find(claim => claim.kind === 'environment').kind = 'contract';
+        },
+        /cross-kind reservation/
+      );
+      assertDenied(
+        child,
+        claims => {
+          claims.find(claim => claim.kind === 'contract').kind = 'environment';
+        },
+        /cross-kind reservation/
+      );
+      assertDenied(
+        child,
+        claims =>
+          claims.push({
+            id: `${child.id}-PRODUCTION-AS-CONTRACT`,
+            kind: 'contract',
+            value: 'production',
+          }),
+        /protected-resource-reservation:contract:production/
+      );
+      assertDenied(
+        child,
+        claims =>
+          claims.push({
+            id: `${child.id}-LIVE-COUNTY`,
+            kind: 'environment',
+            value: 'live-county-db',
+          }),
+        /protected-resource-reservation:environment:live-county-db/
+      );
+    }
+
+    const registryRelabel = actualRecords.map(item =>
+      item.id === children[0].id ? { ...item, contractReservations: ['production'] } : item
+    );
+    const registryRelabelOptions = optionsFor(registryRelabel, {
+      authority: 'R5',
+      maxWorkers: 3,
+      now: '2026-08-28T20:00:00Z',
+      ownerDecisions: actualOwnerDecisions,
+      verifiedDispatchRefs: ['refs/remotes/origin/main'],
+    });
+    assert.match(
+      planWaves(registry(registryRelabel), rules, registryRelabelOptions).excludedWorkOrders.find(
+        item => item.workOrderId === children[0].id
+      ).reasons[0],
+      /must be a versioned contract identifier/
+    );
+
+    for (const field of ['contractReservations', 'environmentReservations']) {
+      const nullTypedRecords = actualRecords.map(item =>
+        item.id === children[0].id ? { ...item, [field]: null } : item
+      );
+      const nullTypedOptions = optionsFor(nullTypedRecords, {
+        authority: 'R5',
+        maxWorkers: 3,
+        now: '2026-08-28T20:00:00Z',
+        ownerDecisions: actualOwnerDecisions,
+        verifiedDispatchRefs: ['refs/remotes/origin/main'],
+      });
+      assert.match(
+        planWaves(registry(nullTypedRecords), rules, nullTypedOptions).excludedWorkOrders.find(
+          item => item.workOrderId === children[0].id
+        ).reasons[0],
+        new RegExp(`${field} must be an array`)
+      );
+    }
+  });
+
+  it('preserves non-protected legacy contract and environment claims without typed fields', () => {
+    const legacy = record('WO-LEGACY-001', {
+      allowedFiles: ['docs/legacy/**', 'scripts/legacy/**'],
+    });
+    const admitted = optionsFor([legacy]);
+    admitted.reservations.candidateReservations[legacy.id].pop();
+    admitted.reservations.candidateReservations[legacy.id][0].value = 'docs/legacy/file.md';
+    admitted.reservations.candidateReservations[legacy.id].push(
+      { id: 'LEGACY-CONTRACT', kind: 'contract', value: 'wal.safe-parser.v1' },
+      { id: 'LEGACY-ENVIRONMENT', kind: 'environment', value: 'local-only' }
+    );
+    assert.deepEqual(planWaves(registry([legacy]), rules, admitted).initialExecutableSet, [
+      legacy.id,
+    ]);
+
+    const relabeled = structuredClone(admitted);
+    relabeled.reservations.candidateReservations[legacy.id].push({
+      id: 'LEGACY-PRODUCTION-AS-CONTRACT',
+      kind: 'contract',
+      value: 'production',
+    });
+    assert.match(
+      planWaves(registry([legacy]), rules, relabeled).excludedWorkOrders.find(
+        item => item.workOrderId === legacy.id
+      ).reasons[0],
+      /protected-resource-reservation:contract:production/
+    );
+  });
+
+  it('fails closed when mission-child identity or ancestry is not exact', () => {
+    const mission = record('WO-MISSION-010', {
+      program: 'Mission',
+      goalId: 'GOAL-MISSION',
+      loopId: 'LOOP-MISSION',
+      status: 'complete',
+    });
+    const baseChild = record('WO-MISSION-011', {
+      program: 'Mission',
+      goalId: 'GOAL-MISSION',
+      loopId: 'LOOP-MISSION',
+      riskClass: 'R4',
+      dependencies: [{ id: mission.id, status: 'satisfied' }],
+      allowedFiles: ['backend/src/Mission.cs'],
+    });
+    const cases = [
+      {
+        name: 'policy true',
+        decision: { child_work_order_policy: { fresh_owner_decision_required: true } },
+      },
+      { name: 'policy absent', decision: { child_work_order_policy: undefined } },
+      { name: 'repository absent', decision: { authorized_repositories: [] } },
+      { name: 'program mismatch', child: { program: 'Other' } },
+      { name: 'goal mismatch', child: { goalId: 'GOAL-OTHER' } },
+      { name: 'goal missing', child: { goalId: undefined } },
+      { name: 'loop mismatch', child: { loopId: 'LOOP-OTHER' } },
+      { name: 'loop missing', child: { loopId: undefined } },
+      { name: 'not a descendant', child: { dependencies: [] } },
+      {
+        name: 'root nonterminal',
+        root: { status: 'in_progress' },
+        child: { dependencies: [{ id: mission.id, status: 'required' }] },
+      },
+      { name: 'root missing', decision: { work_order: 'WO-MISSION-099' } },
+      { name: 'inactive', decision: { status: 'completed' } },
+    ];
+
+    for (const testCase of cases) {
+      const root = { ...mission, ...(testCase.root ?? {}) };
+      const child = { ...baseChild, ...(testCase.child ?? {}) };
+      const decision = missionDecision(root, testCase.decision ?? {});
+      const records = [root, child];
+      const options = optionsFor(records, {
+        authority: 'R5',
+        now: '2026-07-17T12:00:00Z',
+        ownerDecisions: { decisions: [decision] },
+      });
+      const plan = planWaves(registry(records), rules, options);
+      const excluded = plan.excludedWorkOrders.find(item => item.workOrderId === child.id);
+      assert.ok(excluded, testCase.name);
+      assert.ok(
+        excluded.reasons.includes(`missing-protected-path-authority:${child.id}`),
+        `${testCase.name}: ${excluded.reasons.join(', ')}`
+      );
+    }
+  });
+
+  it('rejects a transitive dependency path that crosses another mission identity', () => {
+    const mission = record('WO-MISSION-015', {
+      program: 'Mission',
+      goalId: 'GOAL-MISSION',
+      loopId: 'LOOP-MISSION',
+      status: 'complete',
+    });
+    const foreignBridge = record('WO-MISSION-016', {
+      program: 'Other',
+      goalId: 'GOAL-OTHER',
+      loopId: 'LOOP-OTHER',
+      status: 'complete',
+      dependencies: [{ id: mission.id, status: 'satisfied' }],
+    });
+    const child = record('WO-MISSION-017', {
+      program: 'Mission',
+      goalId: 'GOAL-MISSION',
+      loopId: 'LOOP-MISSION',
+      riskClass: 'R4',
+      dependencies: [{ id: foreignBridge.id, status: 'satisfied' }],
+      allowedFiles: ['backend/src/Mission.cs'],
+    });
+    const records = [mission, foreignBridge, child];
+    const options = optionsFor(records, {
+      authority: 'R5',
+      now: '2026-07-17T12:00:00Z',
+      ownerDecisions: { decisions: [missionDecision(mission)] },
+    });
+
+    const plan = planWaves(registry(records), rules, options);
+
+    assert.ok(
+      plan.excludedWorkOrders
+        .find(item => item.workOrderId === child.id)
+        .reasons.includes(`missing-protected-path-authority:${child.id}`)
+    );
+  });
+
+  it('fails closed on expired, insufficient, or conflicting mission authority', () => {
+    const mission = record('WO-MISSION-020', {
+      program: 'Mission',
+      goalId: 'GOAL-MISSION',
+      loopId: 'LOOP-MISSION',
+      status: 'complete',
+    });
+    const child = record('WO-MISSION-021', {
+      program: 'Mission',
+      goalId: 'GOAL-MISSION',
+      loopId: 'LOOP-MISSION',
+      riskClass: 'R4',
+      dependencies: [{ id: mission.id, status: 'satisfied' }],
+      allowedFiles: ['backend/src/Mission.cs'],
+    });
+    const cases = [
+      {
+        decisions: [missionDecision(mission, { expires_at: '2026-07-17T11:59:59Z' })],
+        expected: /expired-protected-path-authority/,
+      },
+      {
+        decisions: [missionDecision(mission, { authority_class: 'R3-bounded-mission' })],
+        expected: /insufficient-protected-path-authority/,
+      },
+      {
+        decisions: [
+          missionDecision(mission),
+          missionDecision(mission, { id: 'OWNER-WO-MISSION-020-MISSION-SECOND' }),
+        ],
+        expected: /conflicting-protected-path-authority/,
+      },
+    ];
+
+    for (const testCase of cases) {
+      const records = [mission, child];
+      const options = optionsFor(records, {
+        authority: 'R5',
+        now: '2026-07-17T12:00:00Z',
+        ownerDecisions: { decisions: testCase.decisions },
+      });
+      assert.match(
+        planWaves(registry(records), rules, options).excludedWorkOrders.find(
+          item => item.workOrderId === child.id
+        ).reasons[0],
+        testCase.expected
+      );
+    }
+  });
+
+  it('prefers an exact child decision over inherited mission authority', () => {
+    const mission = record('WO-MISSION-030', {
+      program: 'Mission',
+      goalId: 'GOAL-MISSION',
+      loopId: 'LOOP-MISSION',
+      status: 'complete',
+    });
+    const child = record('WO-MISSION-031', {
+      program: 'Mission',
+      goalId: 'GOAL-MISSION',
+      loopId: 'LOOP-MISSION',
+      riskClass: 'R3',
+      dependencies: [{ id: mission.id, status: 'satisfied' }],
+      allowedFiles: ['backend/src/Mission.cs'],
+    });
+    const exact = protectedPathDecision(child.id, child.allowedFiles);
+    const records = [mission, child];
+    const options = optionsFor(records, {
+      authority: 'R5',
+      now: '2026-07-17T12:00:00Z',
+      ownerDecisions: { decisions: [missionDecision(mission), exact] },
+    });
+
+    const plan = planWaves(registry(records), rules, options);
+
+    assert.deepEqual(plan.initialExecutableSet, [child.id]);
+    assert.match(plan.waves[0].workOrders[0].explanation, new RegExp(exact.id));
+  });
+
+  it('keeps mission child paths and reservations exact and protected environments denied', () => {
+    const mission = record('WO-MISSION-040', {
+      program: 'Mission',
+      goalId: 'GOAL-MISSION',
+      loopId: 'LOOP-MISSION',
+      status: 'complete',
+    });
+    const child = record('WO-MISSION-041', {
+      program: 'Mission',
+      goalId: 'GOAL-MISSION',
+      loopId: 'LOOP-MISSION',
+      riskClass: 'R4',
+      dependencies: [{ id: mission.id, status: 'satisfied' }],
+      allowedFiles: ['backend/src/Mission.cs'],
+    });
+    const ownerDecisions = { decisions: [missionDecision(mission)] };
+    const baseOptions = {
+      authority: 'R5',
+      now: '2026-07-17T12:00:00Z',
+      ownerDecisions,
+    };
+
+    const subtree = { ...child, allowedFiles: ['backend/src/**'] };
+    assert.match(
+      planWaves(
+        registry([mission, subtree]),
+        rules,
+        optionsFor([mission, subtree], baseOptions)
+      ).excludedWorkOrders.find(item => item.workOrderId === child.id).reasons[0],
+      /non-exact-protected-path-scope/
+    );
+
+    const outside = optionsFor([mission, child], baseOptions);
+    outside.reservations.candidateReservations[child.id][0].value = 'backend/src/Other.cs';
+    assert.match(
+      planWaves(registry([mission, child]), rules, outside).excludedWorkOrders.find(
+        item => item.workOrderId === child.id
+      ).reasons[0],
+      /outside declared allowedFiles/
+    );
+
+    const secondProtectedFile = {
+      ...child,
+      allowedFiles: [...child.allowedFiles, 'frontend/src/Mission.ts'],
+    };
+    const missingExactReservation = optionsFor([mission, secondProtectedFile], baseOptions);
+    missingExactReservation.reservations.candidateReservations[child.id].pop();
+    assert.match(
+      planWaves(
+        registry([mission, secondProtectedFile]),
+        rules,
+        missingExactReservation
+      ).excludedWorkOrders.find(item => item.workOrderId === child.id).reasons[0],
+      /missing-exact-protected-path-reservation:frontend\/src\/mission\.ts/
+    );
+
+    const environment = optionsFor([mission, child], baseOptions);
+    environment.reservations.candidateReservations[child.id] = [
+      { id: 'PROD', kind: 'environment', value: 'production', scope: 'exact' },
+    ];
+    assert.match(
+      planWaves(registry([mission, child]), rules, environment).excludedWorkOrders.find(
+        item => item.workOrderId === child.id
+      ).reasons[0],
+      /protected-resource-reservation:environment:production/
+    );
+  });
+
+  it('validates optional mission routing identities against the Work Order schema', () => {
+    const schema = JSON.parse(
+      fs.readFileSync(
+        path.join(root, 'docs/brain/workorders/schema/work-order.schema.json'),
+        'utf8'
+      )
+    );
+    const validate = new Ajv2020({ allErrors: true, strict: false }).compile(schema);
+    const missionChild = record('WO-MISSION-050', {
+      program: 'Mission',
+      goal: 'Execute the exact mission child.',
+      goalId: 'GOAL-MISSION',
+      loopId: 'LOOP-MISSION',
+      allowedFiles: ['backend/src/Mission.cs'],
+    });
+
+    assert.equal(validate(missionChild), true, JSON.stringify(validate.errors));
+    assert.equal(validate({ ...missionChild, goalId: 'mission' }), false);
+    assert.equal(validate({ ...missionChild, loopId: 'mission' }), false);
   });
 
   it('reconciles path claims with declared scope and blocks denied CI/deployment declarations', () => {

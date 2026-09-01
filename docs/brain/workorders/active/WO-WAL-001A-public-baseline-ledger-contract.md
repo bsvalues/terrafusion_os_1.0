@@ -1,0 +1,112 @@
+# WO-WAL-001A — Public Baseline Ledger Contract
+
+| Field | Value |
+| --- | --- |
+| Status | `COMPLETE_ON_PROTECTED_MAIN` |
+| Protected merge | PR `#1489`, merge `b4b57e7c318fe9beb3c7b37eafafa4d84fbd199e` |
+| Parent | `WO-WAL-001` |
+| Program | Washington Assessor Launch V1 |
+| Base | `0aba8ff60d09f526b6aa0a8aaf85fd4fc7957778` |
+| Risk | R2 bounded public-data truth tooling |
+| Contract reservation | `wal.public-baseline-ledger.v1` |
+| Environment reservation | `local-temp-only` |
+
+## Objective
+
+Define and implement a deterministic 39-county public-baseline ledger that consumes the existing
+Washington coverage proof without converting source discovery or acquisition readiness into claims
+of landed data, runtime registration, freshness, provenance, or launch capability.
+
+This child is a contract/tooling slice only. It does not acquire data or complete the parent Work
+Order's runtime outcome.
+
+## Exact Reservations
+
+Only these repository-relative paths may change:
+
+- `docs/brain/workorders/active/WO-WAL-001A-public-baseline-ledger-contract.md`
+- `scripts/truth/wal-public-baseline-ledger.mjs`
+- `scripts/truth/wal-public-baseline-ledger.test.mjs`
+
+Reserved contract: `wal.public-baseline-ledger.v1`.
+
+Reserved environment: `local-temp-only`. Validation may read repository fixtures and write temporary
+files under the operating system's temporary directory. It may not use live network access, a
+database, county credentials, or committed generated evidence.
+
+## Input and Output Contract
+
+The default input is
+`os-platform/core/pilot/evidence/washington-39-county-coverage.latest.json`. The tool may also accept
+an explicit local JSON input path for fixture-driven validation.
+
+The output is canonical UTF-8 JSON with one trailing newline and exactly one row for each of the 39
+expected Washington counties, in canonical county order. Without `--output`, the tool writes to
+stdout. An explicit `--output` must resolve strictly inside the operating system's temporary
+directory; the temporary-directory root itself and every sibling, prefix-similar, repository, or
+other path fail closed. The output parent must already exist, its real filesystem path must remain
+inside the canonical temporary root, and the final path must be new and must not be a symbolic link
+or junction. Creation is exclusive and uses no-follow protection when the platform exposes it; the
+opened file is identity-checked before and after content is written, and failed validation truncates
+the opened descriptor before identity-checked cleanup. Windows alternate-data-stream targets are
+denied explicitly. Each row keeps these state families separate:
+
+1. source inventory and acquisition readiness copied from the existing proof;
+2. landed parcel/sales row evidence;
+3. parcel/sales runtime-registration evidence;
+4. freshness and provenance evidence;
+5. explicit source/data/runtime gaps;
+6. silent Benton-fallback evidence.
+
+Because this child consumes source-registry evidence only, every runtime-dependent field starts in an
+explicit `not_observed` or zero state. A row marked `adapter-ready`, with a source URL, or with a known
+acquisition family remains unlanded and runtime-unregistered until another evidence source proves
+otherwise.
+
+## Invariants
+
+- The input must contain all and only the canonical 39 Washington counties.
+- Duplicate, missing, or unexpected county rows fail closed.
+- Output ordering and bytes are stable for equivalent input.
+- Source inventory/acquisition readiness never implies landed rows, runtime registration, freshness,
+  provenance completeness, or launch capability.
+- A non-Benton county can never inherit Benton source or runtime evidence.
+- A non-Benton county cannot emit Benton-bearing source-inventory or acquisition-readiness metadata,
+  including registry status, acquisition family, or priority.
+- Missing observations are explicit gaps, not fabricated zero-risk readiness.
+- The tool performs no network or database access and writes only to stdout or an explicitly selected
+  new file strictly inside the operating system's real temporary-directory boundary.
+
+## Denials
+
+- no live public-source probing or scraping;
+- no county, PACS, SQL, credential, secret, or protected-data access;
+- no data ingestion, normalization, staging, promotion, quarantine, or rollback;
+- no runtime endpoint probing or runtime-readiness certification;
+- no inference from `adapter-ready`, source-found, or acquisition-family metadata to landed/runtime
+  state;
+- no Benton fallback, demo-row substitution, or seeded county counts presented as observed runtime;
+- no database, backend, frontend, package, lockfile, workflow, deployment, or production change;
+- no committed file under `generated/**`.
+
+## Validation
+
+- `node --test scripts/truth/wal-public-baseline-ledger.test.mjs`
+- `node scripts/truth/wal-public-baseline-ledger.mjs --output <path-strictly-inside-os-temp>`
+- verify exactly 39 rows and deterministic bytes across repeated executions;
+- adversarial duplicate-county, missing-county, unexpected-county, readiness-inference, and Benton-
+  fallback tests;
+- adversarial output-containment tests proving repository/generated, temporary-root, and
+  prefix-similar sibling paths are rejected without creating the requested file;
+- real-filesystem containment tests proving escaping directory symlinks or Windows junctions, final
+  links/reparse points, existing targets, and Windows alternate data streams fail closed while
+  ordinary nested-temp output succeeds;
+- adversarial Benton-contamination tests covering emitted source inventory and acquisition readiness;
+- `git diff --check`;
+- changed-path audit proving only the three exact reservations changed.
+
+## Completion
+
+This child is complete when the deterministic ledger contract and focused tests pass. Its output is a
+truthful starting ledger for later WO-WAL-001 acquisition/runtime children; it is not evidence that
+WO-WAL-001's terminal condition has been reached.

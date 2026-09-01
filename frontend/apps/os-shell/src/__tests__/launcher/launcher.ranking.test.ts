@@ -429,6 +429,34 @@ describe('Launcher Ranking', () => {
       expect(suitesSection!.items.some((i) => i.intent === 'standalone')).toBe(true);
     });
 
+    it('operational_modules_are_not_classified_as_suites', () => {
+      const countiesHubItem: LauncherItem = {
+        ...MOCK_ITEMS[5],
+        id: 'counties',
+        label: 'Counties HUB',
+        description: 'Washington assessor county workspace',
+        route: '/counties',
+        moduleId: 'counties',
+        keywords: ['counties', 'washington', 'assessor'],
+        a11yLabel: 'Counties HUB - Open the Washington assessor county workspace',
+      };
+      const sections = buildSectionsForEmptyQuery(
+        [...MOCK_ITEMS, countiesHubItem],
+        EMPTY_CONTEXT
+      );
+      const suitesSection = sections.find((section) => section.id === 'suites');
+      const operationsSection = sections.find((section) => section.id === 'operations');
+
+      expect(operationsSection).toMatchObject({ label: 'Operational Apps' });
+      expect(operationsSection?.items).toContainEqual(countiesHubItem);
+      expect(suitesSection?.items).not.toContainEqual(countiesHubItem);
+      expect(sections.map((section) => section.id)).toEqual([
+        'suites',
+        'operations',
+        'system',
+      ]);
+    });
+
     it('system_section_contains_system_items', () => {
       const sections = buildSectionsForEmptyQuery(MOCK_ITEMS, EMPTY_CONTEXT);
       const systemSection = sections.find((s) => s.id === 'system');

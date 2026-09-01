@@ -47,8 +47,8 @@
  *  26. run_income_valuation      → POST /api/costforge/income-approach/calculate-valuation
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.submitAuditFindingRealHandler = exports.checkLevyComplianceRealHandler = exports.auditRollSummaryRealHandler = exports.initiateTaxSaleRealHandler = exports.summarizeCollectionStatsRealHandler = exports.createInstallmentPlanRealHandler = exports.checkDelinquencyStatusRealHandler = exports.recordPaymentRealHandler = exports.explainTaxBreakdownRealHandler = exports.getTaxStatementRealHandler = exports.summarizeParcelRecordingsRealHandler = exports.releaseLienRealHandler = exports.recordDocumentRealHandler = exports.explainRecordingFeesRealHandler = exports.getTitleChainRealHandler = exports.searchRecordedDocumentsRealHandler = exports.escalateTaskRealHandler = exports.getQueueStatisticsRealHandler = exports.queueNoticeForMailingRealHandler = exports.signOffCertificationStepRealHandler = exports.getCertificationProgressRealHandler = exports.scheduleBoeHearingRealHandler = exports.fileAppealRealHandler = exports.processExemptionRenewalRealHandler = exports.checkExemptionEligibilityRealHandler = exports.calculateDepreciationRealHandler = exports.runIncomeValuationRealHandler = exports.calculatePiltPaymentRealHandler = exports.assembleBoePacketRealHandler = exports.generateCommissionerMemoRealHandler = exports.synthesizeEvidenceRealHandler = exports.draftNoticeRealHandler = exports.draftBoeAppealResponseRealHandler = exports.draftAppealResponseRealHandler = exports.draftValueChangeNoticeRealHandler = exports.explainSeniorExemptionRealHandler = exports.summarizeDossierRealHandler = exports.checkCertStatusRealHandler = exports.assignTaskRealHandler = exports.summarizeSalesCompsRealHandler = exports.explainModelResultsRealHandler = exports.queryParcelLayersRealHandler = exports.addDossierNoteRealHandler = exports.summarizeParcelCasefileRealHandler = exports.compareAssessedValueHistoryRealHandler = exports.explainModelInputsRealHandler = exports.summarizeLevyRateRealHandler = exports.routeToParcelHandler = exports.explainValueChangeHandler = exports.runValuationModelHandler = void 0;
-exports.generateComplianceReportRealHandler = exports.reconcileCrossOfficeRealHandler = void 0;
+exports.reconcileCrossOfficeRealHandler = exports.submitAuditFindingRealHandler = exports.checkLevyComplianceRealHandler = exports.auditRollSummaryRealHandler = exports.initiateTaxSaleRealHandler = exports.summarizeCollectionStatsRealHandler = exports.createInstallmentPlanRealHandler = exports.checkDelinquencyStatusRealHandler = exports.recordPaymentRealHandler = exports.explainTaxBreakdownRealHandler = exports.getTaxStatementRealHandler = exports.summarizeParcelRecordingsRealHandler = exports.releaseLienRealHandler = exports.recordDocumentRealHandler = exports.explainRecordingFeesRealHandler = exports.getTitleChainRealHandler = exports.searchRecordedDocumentsRealHandler = exports.escalateTaskRealHandler = exports.getQueueStatisticsRealHandler = exports.queueNoticeForMailingRealHandler = exports.signOffCertificationStepRealHandler = exports.getCertificationProgressRealHandler = exports.fileAppealRealHandler = exports.processExemptionRenewalRealHandler = exports.checkExemptionEligibilityRealHandler = exports.calculateDepreciationRealHandler = exports.runIncomeValuationRealHandler = exports.calculatePiltPaymentRealHandler = exports.assembleBoePacketRealHandler = exports.generateCommissionerMemoRealHandler = exports.synthesizeEvidenceRealHandler = exports.draftNoticeRealHandler = exports.draftBoeAppealResponseRealHandler = exports.draftAppealResponseRealHandler = exports.draftValueChangeNoticeRealHandler = exports.explainSeniorExemptionRealHandler = exports.summarizeDossierRealHandler = exports.checkCertStatusRealHandler = exports.assignTaskRealHandler = exports.summarizeSalesCompsRealHandler = exports.explainModelResultsRealHandler = exports.queryParcelLayersRealHandler = exports.addDossierNoteRealHandler = exports.summarizeParcelCasefileRealHandler = exports.compareAssessedValueHistoryRealHandler = exports.explainModelInputsRealHandler = exports.summarizeLevyRateRealHandler = exports.routeToParcelHandler = exports.explainValueChangeHandler = exports.runValuationModelHandler = void 0;
+exports.generateComplianceReportRealHandler = void 0;
 exports.createSearchTraceHandler = createSearchTraceHandler;
 exports.createRequestTraceRedactionHandler = createRequestTraceRedactionHandler;
 exports.registerR1Handlers = registerR1Handlers;
@@ -1005,29 +1005,6 @@ const fileAppealRealHandler = async (params, context, _tool) => {
 };
 exports.fileAppealRealHandler = fileAppealRealHandler;
 // ============================================================================
-// R2.9 — Handler 30: schedule_boe_hearing
-// Write-high. Schedules a BOE hearing with panel assignment.
-// Endpoint: POST /api/dais/appeals/{appealId}/hearings
-// ============================================================================
-const scheduleBoeHearingRealHandler = async (params, context, _tool) => {
-    assertCountyMatch(params.county, context.countyId);
-    const { token } = await (0, pilotAuth_js_1.acquirePilotToken)();
-    const raw = await (0, backendClient_js_1.backendPost)(`/api/dais/appeals/${encodeURIComponent(params.appealId)}/hearings`, {
-        requestedDate: params.requestedDate,
-        panelMembers: params.panelMembers ?? [],
-        countyId: context.countyId,
-    }, { token });
-    const data = (0, backendClient_js_1.unwrapBackend)(raw, 'BOE hearing scheduling failed');
-    return {
-        hearingId: data.hearingId ?? `HRG-${Date.now()}`,
-        appealId: params.appealId,
-        scheduledDate: data.scheduledDate ?? params.requestedDate,
-        panelSize: data.panelSize ?? (params.panelMembers?.length ?? 3),
-        payloadRef: `dais://${context.countyId}/appeals/${params.appealId}/hearings/${data.hearingId ?? 'latest'}`,
-    };
-};
-exports.scheduleBoeHearingRealHandler = scheduleBoeHearingRealHandler;
-// ============================================================================
 // R2.9 — Handler 31: get_certification_progress
 // Read-only. Gets assessment roll certification progress with checklist.
 // Endpoint: GET /api/dais/certification/{county}/{taxYear}/progress
@@ -1598,11 +1575,10 @@ function registerR1Handlers(runner, traceService) {
     runner.registerHandler('calculate_pilt_payment', exports.calculatePiltPaymentRealHandler);
     runner.registerHandler('run_income_valuation', exports.runIncomeValuationRealHandler);
     runner.registerHandler('calculate_depreciation', exports.calculateDepreciationRealHandler);
-    // R2.9 TerraDais Hardening handlers (9)
+    // R2.9 TerraDais Hardening handlers (8)
     runner.registerHandler('check_exemption_eligibility', exports.checkExemptionEligibilityRealHandler);
     runner.registerHandler('process_exemption_renewal', exports.processExemptionRenewalRealHandler);
     runner.registerHandler('file_appeal', exports.fileAppealRealHandler);
-    runner.registerHandler('schedule_boe_hearing', exports.scheduleBoeHearingRealHandler);
     runner.registerHandler('get_certification_progress', exports.getCertificationProgressRealHandler);
     runner.registerHandler('sign_off_certification_step', exports.signOffCertificationStepRealHandler);
     runner.registerHandler('queue_notice_for_mailing', exports.queueNoticeForMailingRealHandler);

@@ -38,6 +38,10 @@ using TerraFusion.Sync.Workbench.Transforms.Sales;
 using TerraFusion.API.Services.SpecLock;
 using TerraFusion.API.Services.Marketplace;
 using TerraFusion.API.Services.Telemetry;
+using TerraFusion.API.Services.Atlas;
+using TerraFusion.API.Services.Dais;
+using TerraFusion.API.Services.Dossier;
+using TerraFusion.API.Services.Gpt;
 // Conditional DB providers
 using Npgsql;
 using Microsoft.Data.Sqlite;
@@ -1737,30 +1741,14 @@ builder.Services.AddScoped<
     TerraFusion.Core.GIS.ArcGisRest.IParcelGeometryReader,
     TerraFusion.Data.Services.GisTf.ParcelGeometryReader>();
 
-// WO-SR-009C: canonical Atlas projection is opt-in and local-only. Disabled mode
-// registers neither the process host nor its consumer, so an unconfigured host
-// cannot become reachable through the API by accident.
-var atlasProjectionSection = builder.Configuration.GetSection(
-    TerraFusion.API.Configuration.AtlasProjectionOptions.SectionName);
-builder.Services.Configure<TerraFusion.API.Configuration.AtlasProjectionOptions>(
-    atlasProjectionSection);
-var atlasProjectionOptions = atlasProjectionSection
-    .Get<TerraFusion.API.Configuration.AtlasProjectionOptions>()
-    ?? new TerraFusion.API.Configuration.AtlasProjectionOptions();
-if (atlasProjectionOptions.Mode == TerraFusion.API.Configuration.AtlasProjectionMode.LocalExact)
-{
-    builder.Services.AddSingleton<TerraFusion.API.Services.Atlas.IAtlasProjectionProcessHost>(_ =>
-        new TerraFusion.API.Services.Atlas.AtlasProjectionProcessHost(
-            atlasProjectionOptions.NodeExecutablePath,
-            TimeSpan.FromSeconds(atlasProjectionOptions.TimeoutSeconds)));
-    builder.Services.AddScoped<
-        TerraFusion.API.Services.Atlas.IAtlasParcelIdentityResolver,
-        TerraFusion.API.Services.Atlas.AtlasParcelIdentityResolver>();
-    builder.Services.AddScoped<
-        TerraFusion.API.Services.Atlas.IAtlasParcelCountyScopeVerifier,
-        TerraFusion.API.Services.Atlas.AtlasParcelCountyScopeVerifier>();
-    builder.Services.AddScoped<TerraFusion.API.Services.Atlas.AtlasProjectionConsumer>();
-}
+// WO-SR-007D: Development persistently selects the exact Atlas-owned projection
+// artifact. Registration resolves the fixed ignored slot, verifies its manifest
+// and bytes at startup, and wraps every invocation with the same verifier.
+builder.Services.AddAtlasProjectionRuntime(builder.Configuration, builder.Environment);
+builder.Services.AddDaisAppealWorkflowRuntime(builder.Configuration, builder.Environment);
+builder.Services.AddDossierEvidenceRegistryReadRuntime(builder.Configuration, builder.Environment);
+builder.Services.AddDaisAppealMutationRuntime(builder.Configuration, builder.Environment);
+builder.Services.AddDossierMutationRuntime(builder.Configuration, builder.Environment);
 
 // Slice S1: PACS sale raw landing — drains an IPacsSaleSource into
 // legacy_pacs_raw.sale with provenance and writes the four S1
@@ -2444,6 +2432,7 @@ builder.Services.AddScoped<TerraFusion.AI.Interfaces.IEmbeddingService>(sp =>
     }
 }
 builder.Services.AddScoped<TerraFusion.AI.Interfaces.IRAGService, TerraFusion.AI.Services.RAGService>();
+builder.Services.AddGptGroundedContextRuntime(builder.Configuration, builder.Environment);
 
 // Phase 15.4: SystemGPT Health Evaluator for Herald threshold-based alerts
 builder.Services.AddSingleton<TerraFusion.AI.Services.ISystemGptHealthEvaluator, TerraFusion.AI.Services.SystemGptHealthEvaluator>();

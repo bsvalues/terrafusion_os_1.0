@@ -95,7 +95,7 @@ else
   if [ -n "$PM" ]; then
     log "INFO: Installing frontend dependencies..."
     if [ "$PM" = "pnpm" ]; then
-      install_cmd=(pnpm --dir "$ROOT_DIR" install --frozen-lockfile --filter "./frontend..." --child-concurrency=1)
+      install_cmd=(pnpm --dir "$ROOT_DIR" --filter "terrafusion-frontend..." --fail-if-no-match install --frozen-lockfile --child-concurrency=1)
     else
       install_cmd=(npm install)
     fi

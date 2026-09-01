@@ -22,6 +22,14 @@ namespace TerraFusion.AI.Interfaces
         Task<float[]> GenerateEmbeddingAsync(string text, string model = "text-embedding-3-small");
 
         /// <summary>
+        /// Generate an embedding using a configured real provider. Implementations must fail
+        /// closed when only a simulated or fallback embedding is available.
+        /// </summary>
+        Task<float[]> GenerateProviderEmbeddingAsync(
+            string text,
+            string model = "text-embedding-3-small");
+
+        /// <summary>
         /// Generate embeddings for multiple texts in batch (more efficient)
         /// </summary>
         /// <param name="texts">List of texts to embed</param>

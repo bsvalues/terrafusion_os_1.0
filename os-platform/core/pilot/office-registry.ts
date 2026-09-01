@@ -30,7 +30,7 @@ const OFFICE_DEFINITIONS: readonly OfficeDefinition[] = [
       'get_workflow_status', 'list_pending_permits', 'assign_appraiser_task',
       'generate_assessment_notice', 'draft_value_change_notice', 'check_exemption_eligibility',
       'assemble_boe_packet', 'draft_boe_appeal_response',
-      'process_exemption_renewal', 'file_appeal', 'schedule_boe_hearing',
+      'process_exemption_renewal', 'file_appeal',
       'get_certification_progress', 'sign_off_certification_step',
       'queue_notice_for_mailing', 'get_queue_statistics', 'escalate_task',
       'summarize_dossier', 'synthesize_evidence', 'generate_narrative',

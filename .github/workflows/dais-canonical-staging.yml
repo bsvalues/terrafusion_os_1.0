@@ -1,0 +1,39 @@
+name: Dais Canonical Staging Guards
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/dais-canonical-staging.yml'
+      - '.gitignore'
+      - 'backend/src/TerraFusion.API/Configuration/DaisAppealWorkflowOptions.cs'
+      - 'backend/src/TerraFusion.API/Configuration/DaisAppealMutationOptions.cs'
+      - 'scripts/bootstrap/Stage-DaisAppealWorkflowModule.ps1'
+      - 'scripts/bootstrap/Stage-DaisAppealMutationModule.ps1'
+      - 'tests/dais-staging-identity.ps1'
+      - 'tests/dais-appeal-mutation-staging-identity.ps1'
+
+permissions:
+  contents: read
+
+jobs:
+  staging-offline-guards:
+    name: dais-staging-offline-guards
+    runs-on: windows-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout sovereign source
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Prove parser and fail-closed origin without sibling-repository credentials
+        shell: pwsh
+        run: ./tests/dais-staging-identity.ps1 -OfflineGuardsOnly
+
+      - name: Prove mutation parser and fail-closed origin without sibling-repository credentials
+        shell: pwsh
+        run: ./tests/dais-appeal-mutation-staging-identity.ps1 -OfflineGuardsOnly

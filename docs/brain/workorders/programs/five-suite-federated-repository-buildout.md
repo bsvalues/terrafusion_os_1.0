@@ -4,7 +4,8 @@
 
 **Loop:** `LOOP-FIVE-SUITE-FEDERATED-REPOSITORIES`
 
-**Status:** Active between cohorts; WO-SR-009D complete and authority consumed; portfolio reconciliation current
+**Status:** COMPLETE by `WO-SR-MISSION-COMPLETION`; terminal protected suite/runtime/rollback and
+ownership evidence is reconciled
 
 ## Ratified topology
 
@@ -92,6 +93,26 @@ county contexts, audit spines, deployment control planes, or contract authoritie
 | WO-TF-POST-DAIS-001 | Reconcile authoritative post-Dais portfolio state and admit one successor | Complete R2; PR #1421 merged and selected WO-SR-009C |
 | WO-SR-009C | Make the canonical county-scoped Atlas projection reachable in the Property Workbench | Complete R3; PR #1424 merged exact assured head `e70548cb4` as `b5a02db17`; authority consumed; no Point, live provider, or cutover |
 | WO-SR-009D | Make the frozen county-scoped Dossier evidence registry read reachable in the Property Workbench | Complete R3; PR #1427 exact assured head `85818a749` merged as `c7f2d7861`; authority consumed; no writes, custody mutation, live data, or cutover |
+| WO-SR-007C | Stage the exact Atlas canonical artifact with provenance and executed rollback | Complete R3; PR #1464 exact head `848546a3d` merged as `5a328e728`; protected main verified |
+| WO-SR-007D | Persist and prove the exact Atlas local runtime with rollback | Complete R4; sovereign PR #1465 merged as `4fcbfbd05`; Atlas ownership PR #4 merged as `708fc5c31`; both protected mains verified |
+| WO-SR-010A | Stage the exact Dais canonical module and frozen schema with provenance and rollback | Complete R3; PR #1466 exact head `88e7454b2` merged as `5182742d7`, protected main verified |
+| WO-SR-010B | Adopt the exact Dais module/schema as the persistent real Development runtime gate and execute rollback | Complete R4; PR #1467 exact head `b24f263ac` merged as `54f9e4b41`; protected main verified |
+| WO-SR-010C | Freeze the minimal Dais-owned appeal creation-default and lifecycle-transition decision boundary | Complete R3; sovereign PR #1468 merged as `527442205` |
+| WO-SR-010D | Establish the exact Dais-owned appeal-mutation canonical source | Complete R3; Dais PR #6 merged as `8a9cfc608` |
+| WO-SR-010E | Stage the exact Dais mutation module/schema with provenance and observed rollback | Complete R3; PR #1470 exact head `dfce1f5f1` merged as `153103c4f`; protected main verified |
+| WO-SR-010F | Retire fabricated sovereign appeal grounds, timeline, evidence-checklist, and hearing-schedule behavior | Complete R3; PR #1469 exact head `17f2f3fa1` merged as `acf4abc59`; protected main verified |
+| WO-SR-010G | Adopt the exact Dais mutation decision as the persistent real Development runtime, enforce stale-write conflict, and execute rollback | Complete R4; PR #1471 merged as `f14fc4999`; protected main verified |
+| WO-SR-010H | Retire the unsupported PropertyDais hearing-scheduling offer and prove no offered frontend write path | Complete R3; PR #1473 exact head `b6a011620` merged as `6291e58b1`; protected main verified |
+| WO-SR-011A | Stage the exact Dossier evidence-registry read artifact with provenance and rollback | Complete R3; PR #1474 merged as `aec4f1e18`; protected main verified; runtime remains Disabled |
+| WO-SR-011B | Adopt the exact Dossier read decision on the persistent authenticated, county-scoped sovereign path | Complete R4; PR #1477 merged as `d82a2d363`; protected main verified |
+| WO-SR-011D | Freeze the provider-neutral Dossier note/document/evidence/custody/packet mutation-decision boundary | Complete R3; PR #1475 merged as `7cb96bf2e`; protected main verified; no mutation performed |
+| WO-SR-011F | Stage the exact Dossier mutation-decision artifact and execute rollback | Complete R3; PR #1479 merged as `807a46aad`; protected main verified |
+| WO-SR-011G | Adopt the Dossier six-operation mutation runtime and execute rollback | Complete R4; PR #1481 merged as `5680f1de6`, tree `0ecb43c8`; protected main verified |
+| WO-SR-011I | Retire duplicate sovereign custody-classification reference ownership | Complete R3; PR #1482 merged as `65ddfe994`, tree `b9860d53`; Dossier terminal suite repair merged as `4a109acef` |
+| WO-SR-012A | Make GPT execution artifacts LF-portable and publish an exact execution manifest | Complete R3; GPT PR #5 merged as `550b50f27`; protected main verified |
+| WO-SR-012B | Stage the exact GPT grounded-context artifact with provenance and rollback | Complete R3; protected OS merge `1f0889a72`, tree `4e24afd3`; inert rollback proof verified |
+| WO-SR-012C | Adopt the exact GPT grounded-context runtime and execute rollback | Complete R4; reviewed head `3bd874119` merged as protected OS main `9ef50aa1c`, tree `e6797a83` exact equality; manual proof run `33071051037` and required first-party assurance passed |
+| WO-SR-MISSION-COMPLETION | Reconcile exact protected runtime, rollback, duplicate-retirement and suite-ownership evidence | Complete; terminal protected evidence reconciled across the OS and all five suite repositories |
 
 ## Extraction and provenance policy
 
@@ -317,3 +338,49 @@ adapter and tests remain unchanged, and all live-provider, protected-resource, d
 routing, and legacy-anonymous-path denials remain intact.
 
 Issue #1426 activated `WO-SR-009D` under `OWNER-SR-009D-R3-DOSSIER-WORKBENCH-CANONICAL-EVIDENCE-READ-20260807` at exact base `6622ca14e93d6a853c9629308e37a42620c0e08f`. PR #1427 then merged exact assured head `85818a749d4268f84cf8638d991d9cef657a0d19` as `c7f2d78619a9eb19186c2c724876fb4d11c81b00`. The real API and existing Property Dossier tab prove the authenticated frozen-contract read, same-county rendering, foreign-only empty-shape non-disclosure, deterministic ordering and pagination, honest states, and disposable synthetic journey. The route never uses the Development fallback. Evidence/custody writes, frozen contract or adapter changes, entities, migrations, persistence, live data, protected resources, routing/tab changes, deployment, and cutover remain denied. The authority is completed and consumed; portfolio reconciliation is current and no successor is inferred.
+
+On 2026-08-26 the owner issued `OWNER-FIVE-SUITE-FEDERATED-COMPLETION-20260826`, converting the
+between-cohort program into continuous bounded execution through its already-ratified terminal
+condition. The decision authorizes exact child Work Orders without per-child owner relay while
+preserving the recorded hard walls. `WO-SR-007C` completed as protected-main merge
+`5a328e728852dc2bb933d704d0daa5c54750728c`. Atlas runtime PR #1465 then merged as
+`4fcbfbd0585122f67f640b1b76786b7629f28e1f`, and Atlas suite PR #4 finalized ownership as
+`708fc5c31988405f9ca2cba7ebea7bb9d1fec3a6`, tree
+`d986cc31da0077adb3a133bd1fa6d44bb2a79acc`; both protected mains were verified. `WO-SR-010A`
+then passed exact-head assurance in PR #1466 and merged as
+`5182742d756cea6a939bb12489e660d83b9593b6`. `WO-SR-010B` then passed its exact protected checks
+and merged reviewed head `b24f263ac84fd5403d8fb1ed6e3ba18c511aafbb` as
+`54f9e4b411fb886bd592226067928f024b02285b`. Sovereign mutation-contract PR #1468 merged as
+`52744220509a54b6544e0fa193b6d09e8d93c159`, and Dais PR #6 established the exact canonical
+decision source as `8a9cfc608bcda835126db2054bb7ba7ecf185275`. `WO-SR-010E` staged those exact
+bytes in PR #1470, merged as `153103c4f5356219c142ccfe88174c2c6477e54d`. `WO-SR-010F` then
+truthfully retired four fabricated or unsupported sovereign behaviors in PR #1469, merged as
+`acf4abc5959f468c6a43a00b09cead5d55679795`. `WO-SR-010G` adopted the staged mutation boundary,
+retired duplicate OS lifecycle judgment, proved stale-write conflict and exact Disabled rollback,
+and left only sovereign integration/persistence responsibilities in protected merge
+`f14fc4999f650ed4bbff2633813be6b57ec4bfbc`. `WO-SR-010H` removed the
+unsupported frontend scheduling offer in protected merge
+`6291e58b11626ad04bdc89e736be89b2a574261c`. Dais is terminal. `WO-SR-011A` staged the exact
+protected Dossier evidence-registry read artifact with provenance, production refusal, and observed
+whole-slot rollback in protected merge `aec4f1e18b619730842c828e4f1c93ecd18d64b2` while runtime
+remains Disabled. `WO-SR-011B` persistently adopted that exact read runtime in protected merge
+`d82a2d3638a722fa541836abbd5c4ab45f8e060d`. `WO-SR-011D` froze the additive
+provider-neutral mutation boundary at `7cb96bf2ea5efea7caccae6d6e8c9f81f672412e`.
+Mutation staging then merged at `807a46aad94e5bc8a36d7974130d482e49a73d2b`; six-operation
+runtime adoption merged at `5680f1de637e9e39d702c4cf6f708edee7bd00f3`; and duplicate
+custody-classification retirement merged at `65ddfe9948b02c0cd6089fc95c83e48885cc92ab`.
+Dossier terminal ownership is protected at suite main
+`4a109acef12804f89c894f8f139034bf975c0811`, tree
+`eedad9c4e8b5c3f30d33f5e58a2856b896f7ae86`. GPT inert staging merged at
+`1f0889a72497b283140fb0d0a57eed79775f9a34`; its runtime reviewed head
+`3bd87411966a7d2c61439f4f60a11f0cb498968f`, tree
+`e6797a83c2c47f3a62bcbfd19e544cd0ae6e5bf8`, passed manual proof workflow run
+`33071051037` and independent review with no actionable P0/P1, then squash-merged as protected OS
+main `9ef50aa1cc608fa3aa8075f30cf349b757a31902` with exact tree equality.
+GPT suite reviewed head `c17c4136a6d6819b687df597943dae667273b7e2` squash-merged as protected main
+`cbcbc518d25b000724712b029fed8cc4e05d8ca6`, tree
+`8f4cae82e19cf1ced8a397c2f392ab7dc13c0c85`, with exact reviewed-tree equality. All required
+suite-ci, contract-compat and governance-gate checks passed with zero threads. The 8,737-byte
+terminal receipt at `operations/evidence/receipts/WO-SR-012D-gpt-runtime-adoption.json` has SHA-256
+`4aa0b8ca01e0d89d327457e75ade323fe1c28651373361c42baa85a2e84ecb40`.
+`WO-SR-MISSION-COMPLETION` is the terminal record.

@@ -11,6 +11,7 @@ import {
   TERMINAL_STATUSES,
   compareCandidates,
   scoreRecord,
+  verifiedDispatchRefs,
 } from './wo-query.mjs';
 
 const DEFAULT_REGISTRY = 'docs/brain/workorders/registry/work-order-registry.seed.json';
@@ -31,6 +32,7 @@ const BLOCKING_RESERVATION_STATUSES = new Set(['active']);
 const NONBLOCKING_RESERVATION_STATUSES = new Set(['released', 'handed_off']);
 const PATH_META = /[*?[\]]/;
 const WORK_ORDER_ID = /^WO-[A-Z0-9]+-[A-Z0-9-]+$/;
+const VERSIONED_CONTRACT = /^[a-z0-9][a-z0-9-]*(\.[a-z0-9][a-z0-9-]*)+\.v[1-9][0-9]*$/;
 const PROTECTED_PATH_RESERVATIONS = [
   { kind: 'path', value: '.github', scope: 'subtree' },
   { kind: 'path', value: 'applications', scope: 'subtree' },
@@ -226,7 +228,7 @@ function reservationsOverlap(left, right) {
   return reservationCovers(left, right.value) || reservationCovers(right, left.value);
 }
 
-function protectedReservationReason(reservation) {
+function protectedReservationReason(reservation, declaredContracts = new Set()) {
   if (
     reservation.kind === 'path' &&
     PROTECTED_PATH_RESERVATIONS.some(protectedPath =>
@@ -235,54 +237,156 @@ function protectedReservationReason(reservation) {
   ) {
     return `protected-path-reservation:${reservation.value}`;
   }
-  if (reservation.kind !== 'path' && PROTECTED_RESOURCE.test(reservation.value)) {
+  if (reservation.kind === 'environment' && PROTECTED_RESOURCE.test(reservation.value)) {
+    return `protected-resource-reservation:${reservation.kind}:${reservation.value}`;
+  }
+  if (
+    reservation.kind === 'contract' &&
+    PROTECTED_RESOURCE.test(reservation.value) &&
+    !declaredContracts.has(reservation.value)
+  ) {
     return `protected-resource-reservation:${reservation.kind}:${reservation.value}`;
   }
   return null;
 }
 
-function protectedPathAuthority(record, protectedPaths, ownerDecisions, authority, now) {
+function isRegisteredDependencyDescendant(record, rootId, recordById, identity) {
+  if (!recordById.has(rootId) || record.id === rootId) return false;
+  const visited = new Set();
+
+  function reachesRoot(workOrderId) {
+    if (workOrderId === rootId) return true;
+    if (visited.has(workOrderId)) return false;
+    visited.add(workOrderId);
+    const current = recordById.get(workOrderId);
+    if (
+      !current ||
+      current.program !== identity.program ||
+      current.goalId !== identity.goalId ||
+      current.loopId !== identity.loopId
+    ) {
+      return false;
+    }
+    return (current?.dependencies ?? []).some(dependency => reachesRoot(dependency.id));
+  }
+
+  return reachesRoot(record.id);
+}
+
+function missionDecisionMatches(decision, record, recordById) {
+  if (decision?.child_work_order_policy?.fresh_owner_decision_required !== false) return false;
+  if (typeof record.goalId !== 'string' || typeof record.loopId !== 'string') return false;
+  const rootRecord = recordById.get(decision.work_order);
+  if (!rootRecord || !PROJECTED_COMPLETION_STATUSES.has(rootRecord.status)) return false;
+  if (typeof rootRecord.goalId !== 'string' || typeof rootRecord.loopId !== 'string') return false;
+  if (
+    decision.program !== record.program ||
+    decision.program !== rootRecord.program ||
+    decision.goal !== record.goalId ||
+    decision.goal !== rootRecord.goalId ||
+    decision.loop !== record.loopId ||
+    decision.loop !== rootRecord.loopId
+  ) {
+    return false;
+  }
+  if (!Array.isArray(decision.authorized_repositories)) return false;
+  let repositories;
+  try {
+    repositories = decision.authorized_repositories.map((repository, index) =>
+      normalizeIdentifier(repository, `${decision.id}.authorized_repositories[${index}]`)
+    );
+  } catch {
+    return false;
+  }
+  if (!repositories.includes(CANONICAL_REPOSITORY)) return false;
+  return isRegisteredDependencyDescendant(record, decision.work_order, recordById, {
+    program: decision.program,
+    goalId: decision.goal,
+    loopId: decision.loop,
+  });
+}
+
+function validateAuthorityDecision(decision, record, authority, now) {
+  const authorityMatch = /^R([0-5])(?:-|$)/i.exec(decision.authority_class ?? '');
+  if (!authorityMatch) return `invalid-protected-path-authority-class:${decision.id}`;
+  const decisionRisk = `R${authorityMatch[1]}`;
+  if (
+    RISK_ORDER.indexOf(decisionRisk) < RISK_ORDER.indexOf(record.riskClass) ||
+    RISK_ORDER.indexOf(decisionRisk) > RISK_ORDER.indexOf(authority)
+  ) {
+    return `insufficient-protected-path-authority:${decision.id}`;
+  }
+
+  if (decision.expires_at != null) {
+    const expiresAt = Date.parse(decision.expires_at);
+    if (!Number.isFinite(expiresAt)) {
+      return `invalid-protected-path-authority-expiry:${decision.id}`;
+    }
+    if (expiresAt <= now) return `expired-protected-path-authority:${decision.id}`;
+  }
+  return null;
+}
+
+function protectedPathAuthority(
+  record,
+  protectedPaths,
+  ownerDecisions,
+  authority,
+  now,
+  recordById
+) {
   if (protectedPaths.length === 0) return { decisionId: null, exactFiles: new Set() };
   if (!ownerDecisions || !Array.isArray(ownerDecisions.decisions)) {
     return { reason: 'invalid-protected-path-authority-register' };
   }
 
-  const matching = ownerDecisions.decisions.filter(
+  const directMatching = ownerDecisions.decisions.filter(
     decision => decision?.work_order === record.id && decision?.status === 'active'
   );
-  if (matching.length === 0) return { reason: `missing-protected-path-authority:${record.id}` };
-  if (matching.length > 1) {
+  if (directMatching.length > 1) {
     return {
-      reason: `conflicting-protected-path-authority:${matching
+      reason: `conflicting-protected-path-authority:${directMatching
         .map(decision => decision.id ?? 'unknown')
         .sort()
         .join(',')}`,
     };
   }
 
-  const decision = matching[0];
-  const authorityMatch = /^R([0-5])(?:-|$)/i.exec(decision.authority_class ?? '');
-  if (!authorityMatch) return { reason: `invalid-protected-path-authority-class:${decision.id}` };
-  const decisionRisk = `R${authorityMatch[1]}`;
-  if (
-    RISK_ORDER.indexOf(decisionRisk) < RISK_ORDER.indexOf(record.riskClass) ||
-    RISK_ORDER.indexOf(decisionRisk) > RISK_ORDER.indexOf(authority)
-  ) {
-    return { reason: `insufficient-protected-path-authority:${decision.id}` };
+  const inheritedMatching =
+    directMatching.length === 0
+      ? ownerDecisions.decisions.filter(
+          decision =>
+            decision?.status === 'active' && missionDecisionMatches(decision, record, recordById)
+        )
+      : [];
+  if (inheritedMatching.length > 1) {
+    return {
+      reason: `conflicting-protected-path-authority:${inheritedMatching
+        .map(decision => decision.id ?? 'unknown')
+        .sort()
+        .join(',')}`,
+    };
   }
+  const decision = directMatching[0] ?? inheritedMatching[0];
+  if (!decision) return { reason: `missing-protected-path-authority:${record.id}` };
+  const decisionReason = validateAuthorityDecision(decision, record, authority, now);
+  if (decisionReason) return { reason: decisionReason };
 
-  if (decision.expires_at != null) {
-    const expiresAt = Date.parse(decision.expires_at);
-    if (!Number.isFinite(expiresAt)) {
-      return { reason: `invalid-protected-path-authority-expiry:${decision.id}` };
+  const exactFiles = new Set();
+  const inherited = directMatching.length === 0;
+  if (inherited) {
+    for (const protectedPath of protectedPaths) {
+      if (protectedPath.scope !== 'exact') {
+        return { reason: `non-exact-protected-path-scope:${protectedPath.value}` };
+      }
+      exactFiles.add(protectedPath.value);
     }
-    if (expiresAt <= now) return { reason: `expired-protected-path-authority:${decision.id}` };
+    return { decisionId: decision.id, exactFiles };
   }
 
   if (!Array.isArray(decision.authorized_files)) {
     return { reason: `invalid-protected-path-authority-files:${decision.id}` };
   }
-  const exactFiles = new Set();
   try {
     for (const [index, value] of decision.authorized_files.entries()) {
       const normalized = normalizePath(value, `${decision.id}.authorized_files[${index}]`);
@@ -319,6 +423,46 @@ function allowedPathReservations(record) {
   });
 }
 
+function typedReservationExpectations(record) {
+  const hasContracts = Object.hasOwn(record, 'contractReservations');
+  const hasEnvironments = Object.hasOwn(record, 'environmentReservations');
+  if (!hasContracts && !hasEnvironments) return null;
+
+  function normalizeExpected(values, field, kind) {
+    if (!Object.hasOwn(record, field)) return [];
+    if (!Array.isArray(values)) throw new Error(`${record.id}.${field} must be an array`);
+    const normalized = values.map((value, index) => {
+      const exact = normalizeIdentifier(value, `${record.id}.${field}[${index}]`);
+      if (value !== exact) {
+        throw new Error(`${record.id}.${field}[${index}] must already be normalized`);
+      }
+      if (kind === 'contract' && !VERSIONED_CONTRACT.test(exact)) {
+        throw new Error(`${record.id}.${field}[${index}] must be a versioned contract identifier`);
+      }
+      return exact;
+    });
+    if (new Set(normalized).size !== normalized.length) {
+      throw new Error(`${record.id}.${field} must contain unique ${kind} identifiers`);
+    }
+    return normalized;
+  }
+
+  const contracts = normalizeExpected(
+    record.contractReservations,
+    'contractReservations',
+    'contract'
+  );
+  const environments = normalizeExpected(
+    record.environmentReservations,
+    'environmentReservations',
+    'environment'
+  );
+  return {
+    contracts: new Set(contracts),
+    environments: new Set(environments),
+  };
+}
+
 function reservationWithinAllowedPath(reservation, allowedPath) {
   if (reservation.kind !== 'path') return true;
   if (allowedPath.scope === 'exact') {
@@ -339,6 +483,13 @@ function reservationKey(reservation) {
 
 function candidateReservations(record, reservationInput, allowedPaths) {
   const repository = normalizeIdentifier(reservationInput?.repository, 'reservations.repository');
+  const expected = typedReservationExpectations(record);
+  const expectedPaths = expected
+    ? new Map(allowedPaths.map(allowedPath => [allowedPath.value, allowedPath]))
+    : null;
+  if (expectedPaths && expectedPaths.size !== allowedPaths.length) {
+    throw new Error(`${record.id}.allowedFiles must contain unique normalized paths`);
+  }
   const declared = reservationInput?.candidateReservations?.[record.id] ?? [];
   if (!Array.isArray(declared) || declared.length === 0) {
     throw new Error(
@@ -351,6 +502,8 @@ function candidateReservations(record, reservationInput, allowedPaths) {
       repository,
     })
   );
+  const seenTypedClaims = new Set();
+  const seenPathClaims = new Set();
   for (const reservation of normalized) {
     if (reservation.status !== 'active') {
       throw new Error(`${record.id} candidate reservation ${reservation.id} must be active`);
@@ -368,13 +521,69 @@ function candidateReservations(record, reservationInput, allowedPaths) {
         `${record.id} candidate reservation ${reservation.id} is bound to ${reservation.workOrderId}`
       );
     }
-    if (
-      reservation.kind === 'path' &&
-      !allowedPaths.some(allowedPath => reservationWithinAllowedPath(reservation, allowedPath))
-    ) {
-      throw new Error(
-        `${record.id} candidate reservation ${reservation.id} is outside declared allowedFiles`
-      );
+    if (reservation.kind === 'path') {
+      if (expectedPaths) {
+        const expectedPath = expectedPaths.get(reservation.value);
+        if (!expectedPath) {
+          throw new Error(`${record.id} extra path reservation ${reservation.value}`);
+        }
+        if (reservation.scope !== expectedPath.scope) {
+          throw new Error(
+            `${record.id} path scope mismatch for ${reservation.value}: expected ${expectedPath.scope}, received ${reservation.scope}`
+          );
+        }
+        const key = `${reservation.value}:${reservation.scope}`;
+        if (seenPathClaims.has(key)) {
+          throw new Error(`${record.id} duplicate path reservation ${reservation.value}`);
+        }
+        seenPathClaims.add(key);
+      } else if (
+        !allowedPaths.some(allowedPath => reservationWithinAllowedPath(reservation, allowedPath))
+      ) {
+        throw new Error(
+          `${record.id} candidate reservation ${reservation.id} is outside declared allowedFiles`
+        );
+      }
+    }
+    if (reservation.kind === 'contract' || reservation.kind === 'environment') {
+      const expectedKind =
+        reservation.kind === 'contract' ? expected?.contracts : expected?.environments;
+      const oppositeKind =
+        reservation.kind === 'contract' ? expected?.environments : expected?.contracts;
+      if (oppositeKind?.has(reservation.value)) {
+        throw new Error(
+          `${record.id} cross-kind reservation ${reservation.value} claimed as ${reservation.kind}`
+        );
+      }
+      const protectedReason = protectedReservationReason(reservation, expected?.contracts);
+      if (protectedReason) throw new Error(protectedReason);
+      if (expected && !expectedKind.has(reservation.value)) {
+        throw new Error(`${record.id} extra ${reservation.kind} reservation ${reservation.value}`);
+      }
+      const key = `${reservation.kind}:${reservation.value}`;
+      if (seenTypedClaims.has(key)) {
+        throw new Error(
+          `${record.id} duplicate ${reservation.kind} reservation ${reservation.value}`
+        );
+      }
+      seenTypedClaims.add(key);
+    }
+  }
+  if (expected) {
+    for (const allowedPath of allowedPaths) {
+      if (!seenPathClaims.has(`${allowedPath.value}:${allowedPath.scope}`)) {
+        throw new Error(`${record.id} missing path reservation ${allowedPath.value}`);
+      }
+    }
+    for (const [kind, values] of [
+      ['contract', expected.contracts],
+      ['environment', expected.environments],
+    ]) {
+      for (const value of values) {
+        if (!seenTypedClaims.has(`${kind}:${value}`)) {
+          throw new Error(`${record.id} missing ${kind} reservation ${value}`);
+        }
+      }
     }
   }
   const unique = new Map(normalized.map(reservation => [reservationKey(reservation), reservation]));
@@ -478,8 +687,8 @@ function chooseMaximumConflictFree(candidates, maxWorkers, searchNodeLimit) {
   return { selected: best, searchNodes: visited };
 }
 
-function staticExclusions(record, rules, authority) {
-  return scoreRecord(record, rules, authority).hardExclusions.filter(
+function staticExclusions(record, rules, authority, options) {
+  return scoreRecord(record, rules, authority, options).hardExclusions.filter(
     reason => reason !== 'dependency-not-cleared'
   );
 }
@@ -573,8 +782,12 @@ function planWaves(registry, rules, options = {}) {
   const plannable = [];
 
   for (const record of records) {
+    const scoredExclusions = staticExclusions(record, rules, authority, {
+      verifiedDispatchRefs: options.verifiedDispatchRefs,
+    });
+    const protectedSystemRequired = scoredExclusions.includes('protected-system-required');
     const reasons = [
-      ...staticExclusions(record, rules, authority),
+      ...scoredExclusions.filter(reason => reason !== 'protected-system-required'),
       ...dependencyContradictions(record, recordById),
     ];
     if (!WORK_ORDER_ID.test(record.id)) reasons.push('invalid-work-order-id');
@@ -603,15 +816,17 @@ function planWaves(registry, rules, options = {}) {
 
     let reservations;
     let protectedAuthority;
+    let protectedAllowedPaths;
     try {
       const allowedPaths = allowedPathReservations(record);
-      const protectedAllowedPaths = allowedPaths.filter(protectedReservationReason);
+      protectedAllowedPaths = allowedPaths.filter(protectedReservationReason);
       protectedAuthority = protectedPathAuthority(
         record,
         protectedAllowedPaths,
         ownerDecisions,
         authority,
-        now
+        now,
+        recordById
       );
       if (protectedAuthority.reason) {
         const reason = protectedAuthority.reason;
@@ -632,9 +847,10 @@ function planWaves(registry, rules, options = {}) {
       });
       continue;
     }
+    const declaredContracts = typedReservationExpectations(record)?.contracts;
     const protectedReason = reservations
       .map(reservation => {
-        const reason = protectedReservationReason(reservation);
+        const reason = protectedReservationReason(reservation, declaredContracts);
         if (!reason) return null;
         if (
           reservation.kind === 'path' &&
@@ -651,6 +867,36 @@ function planWaves(registry, rules, options = {}) {
         workOrderId: record.id,
         reasons: [protectedReason],
         explanation: `Excluded: ${protectedReason}.`,
+      });
+      continue;
+    }
+    const missingExactProtectedReservation = protectedAllowedPaths
+      .map(protectedPath => protectedPath.value)
+      .sort()
+      .find(
+        protectedPath =>
+          !reservations.some(
+            reservation =>
+              reservation.kind === 'path' &&
+              reservation.scope === 'exact' &&
+              reservation.value === protectedPath
+          )
+      );
+    if (missingExactProtectedReservation) {
+      const reason = `missing-exact-protected-path-reservation:${missingExactProtectedReservation}`;
+      excluded.push({
+        workOrderId: record.id,
+        reasons: [reason],
+        explanation: `Excluded: ${reason}.`,
+      });
+      continue;
+    }
+    if (protectedSystemRequired && !protectedAuthority.decisionId) {
+      const reason = 'protected-system-required';
+      excluded.push({
+        workOrderId: record.id,
+        reasons: [reason],
+        explanation: `Excluded: ${reason}.`,
       });
       continue;
     }
@@ -809,6 +1055,7 @@ if (path.resolve(fileURLToPath(import.meta.url)) === path.resolve(process.argv[1
       searchNodeLimit: args.searchNodeLimit,
       reservations,
       ownerDecisions,
+      verifiedDispatchRefs: verifiedDispatchRefs(root, registry, args.registry),
     });
     console.log(args.json ? JSON.stringify(plan, null, 2) : printText(plan));
   } catch (error) {

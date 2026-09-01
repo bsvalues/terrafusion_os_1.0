@@ -3,7 +3,7 @@ name: Release Lane Guard (No Auto-Approve, No Rogue Prod)
 on:
   pull_request:
     paths:
-      - ".github/workflows/**"
+      - '.github/workflows/**'
 
 permissions:
   contents: read
@@ -14,7 +14,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: "Guard: forbid terraform -auto-approve in workflows"
+      - name: 'Guard: forbid terraform -auto-approve in workflows'
         run: |
           set -euo pipefail
           hits="$(grep -RIn --include="*.yml" --include="*.yaml" "terraform apply.*-auto-approve" .github/workflows | grep -v ".github/workflows/release-lane-guard.yml" || true)"
@@ -24,17 +24,12 @@ jobs:
             exit 1
           fi
 
-      - name: "Guard: only release-lane.yml may reference production in deprecated lanes"
+      - name: 'Guard: only release-lane.yml may reference production in deprecated lanes'
         run: |
           set -euo pipefail
           deprecated_lanes=(
-            ".github/workflows/infrastructure-cicd.yml"
-            ".github/workflows/terrafusion-ci-cd-production.yml"
             ".github/workflows/ci-cd-main.yml"
-            ".github/workflows/ci-cd-pipeline.yml"
             ".github/workflows/ci-verified.yml"
-            ".github/workflows/deployment.yml"
-            ".github/workflows/kubernetes-infrastructure-ci.yml"
           )
 
           offenders=""
@@ -50,17 +45,12 @@ jobs:
             exit 1
           fi
 
-      - name: "Guard: deprecated lanes must be workflow_dispatch-only"
+      - name: 'Guard: deprecated lanes must be workflow_dispatch-only'
         run: |
           set -euo pipefail
           deprecated_lanes=(
-            ".github/workflows/infrastructure-cicd.yml"
-            ".github/workflows/terrafusion-ci-cd-production.yml"
             ".github/workflows/ci-cd-main.yml"
-            ".github/workflows/ci-cd-pipeline.yml"
             ".github/workflows/ci-verified.yml"
-            ".github/workflows/deployment.yml"
-            ".github/workflows/kubernetes-infrastructure-ci.yml"
           )
 
           offenders=""

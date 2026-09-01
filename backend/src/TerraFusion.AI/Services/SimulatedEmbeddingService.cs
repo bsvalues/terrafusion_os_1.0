@@ -40,6 +40,12 @@ namespace TerraFusion.AI.Services
             return GenerateDeterministicEmbedding(text, dimension);
         }
 
+        public Task<float[]> GenerateProviderEmbeddingAsync(
+            string text,
+            string model = "text-embedding-3-small") =>
+            Task.FromException<float[]>(new InvalidOperationException(
+                "A provider-backed embedding is unavailable."));
+
         public async Task<List<float[]>> GenerateBatchEmbeddingsAsync(
             IEnumerable<string> texts,
             string model = "text-embedding-3-small")

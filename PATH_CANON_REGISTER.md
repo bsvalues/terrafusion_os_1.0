@@ -8,9 +8,9 @@
 | `bsvalues/terrafusion-os` | `C:\Users\bsval\terrafusion-os` | `github.com/bsvalues/terrafusion-os` | `main` | Sovereign Sync workbook tooling and contract estate |
 | `bsvalues/terrafusion-forge` | `D:\terrafusion-forge` | `git@github.com:bsvalues/terrafusion-forge.git` | `main` | Standalone Forge suite product source, valuation-kernel parity, and evidence |
 | `bsvalues/terrafusion-atlas` | `C:\Users\bsval\terrafusion-atlas` | `github.com/bsvalues/terrafusion-atlas` | `main` | Standalone Atlas suite product source, contract compatibility, and evidence |
-| `bsvalues/terrafusion-dais` | `D:\terrafusion-dais` | `github.com/bsvalues/terrafusion-dais` | `main` | Standalone Dais suite bootstrap, future product source, contract compatibility, and evidence |
-| `bsvalues/terrafusion-dossier` | `D:\terrafusion-dossier` | `github.com/bsvalues/terrafusion-dossier` | `main` | Standalone Dossier suite bootstrap, future product source, contract compatibility, and evidence |
-| `bsvalues/terrafusion-gpt` | `D:\terrafusion-gpt` | `github.com/bsvalues/terrafusion-gpt` | `main` | Standalone GPT suite bootstrap, future product source, contract compatibility, and evidence |
+| `bsvalues/terrafusion-dais` | `D:\terrafusion-dais` | `github.com/bsvalues/terrafusion-dais` | `main` | Standalone Dais suite product source, contract compatibility, and evidence |
+| `bsvalues/terrafusion-dossier` | `D:\terrafusion-dossier` | `github.com/bsvalues/terrafusion-dossier` | `main` | Standalone Dossier suite product and canonical evidence/records capability source, contract compatibility, and evidence |
+| `bsvalues/terrafusion-gpt` | `D:\terrafusion-gpt` | `github.com/bsvalues/terrafusion-gpt` | `main` | Standalone GPT suite product and canonical governed AI/RAG capability source, contract compatibility, and evidence |
 
 ## Routing Rule
 
@@ -44,23 +44,33 @@ On 2026-07-17, `C:\Users\bsval\terrafusion-os` resolved to remote
 `d9fa661e1c19f9d8eac93094a76ed68f6c0de9f6`. That head already contains WO-SYNC-132 through
 WO-SYNC-155, including the program closeout.
 
-On 2026-07-21, `C:\Users\bsval\terrafusion-atlas` resolved to remote
-`https://github.com/bsvalues/terrafusion-atlas.git`, default branch `main`, at `origin/main`
-`a1669e09636743ac18c2525db69e20346a0f408b`. Cross-repository Atlas workers must branch from an
-isolated worktree attached to this canonical repository; the shared checkout is a read-only
-synchronization surface.
+On 2026-08-26, authenticated fetch independently resolved `bsvalues/terrafusion-atlas` commit
+`6736a53980c73d2b503ec71a440ad8e02aa43782` as the exact source of
+`src/spatial-read/project-atlas-feature.mjs` (917 bytes, SHA-256
+`3ef3d5cfc666f8a27a17510572a376b71d33fa29e796ff79b70abe7e7752ae46`). Sovereign PR #1464
+merged exact head `848546a3d5e82ed3694720e47623b965c704511c` as
+`5a328e728852dc2bb933d704d0daa5c54750728c`, establishing the fixed manifest-bound staging and
+rollback slot. `WO-SR-007D` completed exact Development runtime adoption in sovereign PR #1465,
+merged as `4fcbfbd0585122f67f640b1b76786b7629f28e1f`; Atlas PR #4 finalized standalone ownership as
+`708fc5c31988405f9ca2cba7ebea7bb9d1fec3a6`, tree
+`d986cc31da0077adb3a133bd1fa6d44bb2a79acc`. Both protected mains were verified. The shared suite
+checkout remains read-only and cross-repository Atlas workers still require isolated worktrees.
 
-On 2026-07-27, `D:\terrafusion-dais` resolved to remote
-`git@github.com:bsvalues/terrafusion-dais.git`, default branch `main`, at `origin/main`
-`29a34b0feeab32984a4dedf1af853239993b4a26`. GitHub reports the repository as private.
-Cross-repository Dais workers must branch from an isolated worktree attached to this canonical
-repository; the shared checkout is a read-only synchronization surface. Dais PR #3 at head
+The registered `D:\terrafusion-dais` path remains the stable dispatch canon. On 2026-08-26, the
+mission's isolated read-only synchronization clone independently resolved canonical remote
+`github.com/bsvalues/terrafusion-dais`, default branch `main`, at protected head
+`6932bbbf014cf70d7362e070a1dad2a8a680ad47`. The governed stager does not trust a local path: it
+validates the remote identity, checks out that exact commit with line-ending conversion disabled,
+and verifies the module, schema, and source-manifest bytes before publication. Cross-repository Dais
+workers still require isolated branches or worktrees; synchronization checkouts remain read-only.
+Dais PR #3 at head
 `be1a7676fc79f13d7cd3a3516cafa0ad7f3d624f` merged as
 `4ed92e35d3debc4a43b127087703a1e2bc731203` and is recorded as historically unratified. Corrective
 Dais PR #4 at head `93ee267f3258e8989a5acf27fc40c5bb0d24f695` merged as
-`29a34b0feeab32984a4dedf1af853239993b4a26`, which is the current Dais `origin/main`. The final
-capability classification is `RETAINED_PURE_UNWIRED_F1`; no runtime, provider, persistence,
-publication, deployment, or protected-resource authority follows from the retained module.
+`29a34b0feeab32984a4dedf1af853239993b4a26`; later protected-main maintenance produced the pinned
+`6932bbbf` identity. The retained capability remains pure and provider-neutral. Runtime adoption is
+authorized only through the current Five-Suite mission and the fixed OS-managed artifact boundary;
+provider, persistence, deployment, production, and protected-resource work remain denied.
 
 On 2026-07-27, `D:\terrafusion-gpt` resolved to remote
 `git@github.com:bsvalues/terrafusion-gpt.git`, default branch `main`, at `origin/main`
@@ -85,3 +95,26 @@ Dossier PR #3 at head `a185278fa1171927951e47dbdd3cb27275b21eef` merged as
 `7558cfebfeea0c7b536251769b1d779c4558a763`, which is the current Dossier `origin/main`. The final
 capability classification is `RETAINED_PURE_UNWIRED_F1`; no runtime, custody, persistence, provider,
 deployment, or protected-resource authority follows from the retained module.
+
+## Five-Suite Terminal Verification (2026-08-27)
+
+The repository paths above remain dispatch canon, while protected source ownership is terminally
+recorded by `WO-SR-MISSION-COMPLETION` at Forge
+`d7aff95257f29e0d1a7d301703d1cdc744f7690e` (tree
+`dac66c3bd0bf0cc6822e010b71801a9b8b1b9482`), Atlas
+`708fc5c31988405f9ca2cba7ebea7bb9d1fec3a6` (tree
+`d986cc31da0077adb3a133bd1fa6d44bb2a79acc`), Dais
+`ad5d1a36534ac8ce94024b3bc66ecf976d5c55bb` (tree
+`37c97cf6d723d4d673b5c4ae2ee495f3bd086959`), and Dossier
+`4a109acef12804f89c894f8f139034bf975c0811` (tree
+`eedad9c4e8b5c3f30d33f5e58a2856b896f7ae86`). GPT reviewed OS candidate
+`3bd87411966a7d2c61439f4f60a11f0cb498968f`, tree
+`e6797a83c2c47f3a62bcbfd19e544cd0ae6e5bf8`, passed manual proof run
+`33071051037` and independent review with no actionable P0/P1, then squash-merged as protected OS
+main `9ef50aa1cc608fa3aa8075f30cf349b757a31902` with exact tree equality. GPT suite
+reviewed head `c17c4136a6d6819b687df597943dae667273b7e2` then squash-merged as protected main
+`cbcbc518d25b000724712b029fed8cc4e05d8ca6`, tree
+`8f4cae82e19cf1ced8a397c2f392ab7dc13c0c85`, with exact reviewed-tree equality. The terminal
+receipt is `operations/evidence/receipts/WO-SR-012D-gpt-runtime-adoption.json` (8,737 bytes;
+SHA-256 `4aa0b8ca01e0d89d327457e75ade323fe1c28651373361c42baa85a2e84ecb40`). No stale
+synchronization-path head is authoritative over those observations.

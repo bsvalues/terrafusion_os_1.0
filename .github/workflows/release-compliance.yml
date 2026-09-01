@@ -176,6 +176,8 @@ jobs:
           tags: ${{ steps.images.outputs.frontend }}:${{ github.sha }}
           build-args: |
             VITE_BUILD_SHA=${{ github.sha }}
+            VITE_WASHINGTON_LAUNCH_MANIFEST_SHA256=${{ vars.VITE_WASHINGTON_LAUNCH_MANIFEST_SHA256 }}
+            WASHINGTON_LAUNCH_DATA_SOURCE_URL=${{ vars.WASHINGTON_LAUNCH_DATA_SOURCE_URL }}
           labels: |
             org.opencontainers.image.revision=${{ github.sha }}
       - name: Bind published digest references

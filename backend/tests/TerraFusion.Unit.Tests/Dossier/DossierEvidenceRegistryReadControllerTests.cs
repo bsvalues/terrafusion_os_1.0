@@ -1,3 +1,4 @@
+using System.Data.Common;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Reflection;
@@ -8,12 +9,15 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using TerraFusion.Abstractions.DTOs;
+using TerraFusion.API.Configuration;
 using TerraFusion.API.Controllers;
 using TerraFusion.API.Security;
+using TerraFusion.API.Services.Dossier;
 using TerraFusion.Core.Entities;
 using TerraFusion.Core.Services;
 using TerraFusion.Unit.Tests.R1Week5;
@@ -112,6 +116,68 @@ public sealed class DossierEvidenceRegistryReadControllerTests
     result.Result.Should().BeOfType<BadRequestObjectResult>();
   }
 
+  [Theory]
+  [InlineData(false)]
+  [InlineData(true)]
+  public async Task UnavailableOrDisabledRuntimeReturnsServiceUnavailableWithoutDatabaseExecution(
+      bool includeDisabledConsumer)
+  {
+    await using var connection = new SqliteConnection("Data Source=:memory:");
+    await connection.OpenAsync();
+    var interceptor = new RejectingCommandInterceptor();
+    var options = new DbContextOptionsBuilder<DataDbContext>()
+        .UseSqlite(connection)
+        .AddInterceptors(interceptor)
+        .Options;
+    await using var db = new DataDbContext(
+        options,
+        Mock.Of<Microsoft.Extensions.Configuration.IConfiguration>());
+    var consumer = includeDisabledConsumer ? new DisabledConsumer() : null;
+    var controller = CreateController(
+        db,
+        CountyA.ToString("D"),
+        includeConsumer: includeDisabledConsumer,
+        consumer: consumer);
+
+    var result = await controller.GetEvidenceRegistryRead("P-100");
+
+    var problem = result.Result.Should().BeOfType<ObjectResult>().Subject;
+    problem.StatusCode.Should().Be(StatusCodes.Status503ServiceUnavailable);
+    interceptor.CommandCount.Should().Be(0);
+    if (consumer is not null)
+      consumer.CallCount.Should().Be(0);
+  }
+
+  [Fact]
+  public async Task CanonicalRouteUsesRuntimeConsumerWithExactScopedPage()
+  {
+    await using var db = CreateDbContext();
+    var evidence = Evidence(
+        CountyA,
+        "P-100",
+        "30303030-3030-4030-8030-303030303030",
+        "2026-08-01T10:00:00Z");
+    db.DossierEvidenceItems.Add(evidence);
+    await db.SaveChangesAsync();
+    var consumer = new RecordingConsumer();
+    var controller = CreateController(
+        db,
+        CountyA.ToString("D"),
+        correlationId: "exact-runtime-trace",
+        consumer: consumer);
+
+    var result = await controller.GetEvidenceRegistryRead("P-100");
+
+    var content = result.Result.Should().BeOfType<ContentResult>().Subject;
+    content.Content.Should().Be("{\"canonicalRuntime\":true}");
+    consumer.CallCount.Should().Be(1);
+    consumer.Request!.CountyId.Should().Be(CountyA.ToString("D"));
+    consumer.Request.ParcelId.Should().Be("P-100");
+    consumer.Request.TraceId.Should().Be("exact-runtime-trace");
+    consumer.Total.Should().Be(1);
+    consumer.SourcePage.Should().ContainSingle().Which.Id.Should().Be(evidence.Id);
+  }
+
   [Fact]
   public async Task SameCountyReadIsOrderedPagedAndCorrelated()
   {
@@ -189,6 +255,7 @@ public sealed class DossierEvidenceRegistryReadControllerTests
           "CountyId" TEXT NOT NULL,
           "CreatedBy" TEXT NOT NULL,
           "CreatedAt" TEXT NOT NULL,
+          "Version" INTEGER NOT NULL DEFAULT 1,
           FOREIGN KEY ("CountyId") REFERENCES "Counties" ("Id") ON DELETE CASCADE
         );
         """);
@@ -319,14 +386,18 @@ public sealed class DossierEvidenceRegistryReadControllerTests
       DataDbContext db,
       Guid? countyId,
       string environmentName = "Production",
-      string? correlationId = null) =>
-      CreateController(db, countyId?.ToString("D"), environmentName, correlationId);
+      string? correlationId = null,
+      bool includeConsumer = true,
+      IDossierEvidenceRegistryReadConsumer? consumer = null) =>
+      CreateController(db, countyId?.ToString("D"), environmentName, correlationId, includeConsumer, consumer);
 
   private static DossierController CreateController(
       DataDbContext db,
       string? countyClaim,
       string environmentName = "Production",
-      string? correlationId = null)
+      string? correlationId = null,
+      bool includeConsumer = true,
+      IDossierEvidenceRegistryReadConsumer? consumer = null)
   {
     var claims = countyClaim is null
         ? Array.Empty<Claim>()
@@ -344,10 +415,103 @@ public sealed class DossierEvidenceRegistryReadControllerTests
         db,
         Mock.Of<ICostForgeService>(),
         NullLogger<DossierController>.Instance,
-        host.Object)
+        host.Object,
+        includeConsumer ? consumer ?? new AdapterBackedConsumer() : null)
     {
       ControllerContext = new ControllerContext { HttpContext = context },
     };
     return controller;
+  }
+
+  private sealed class AdapterBackedConsumer : IDossierEvidenceRegistryReadConsumer
+  {
+    public bool IsAvailable => true;
+
+    public Task<DossierEvidenceRegistryReadConsumerResult> ConsumeAsync(
+        DossierEvidenceRegistryReadRequest request,
+        int total,
+        IReadOnlyList<DossierEvidence> sourcePage,
+        CancellationToken cancellationToken = default)
+    {
+      try
+      {
+        var resultJson = TerraFusion.API.Adapters.DossierEvidenceRegistryReadAdapter.Serialize(
+            request,
+            total,
+            sourcePage);
+        return Task.FromResult(DossierEvidenceRegistryReadConsumerResult.Accepted(
+            resultJson,
+            DossierEvidenceRegistryReadOptions.ExpectedModuleSha256,
+            DossierEvidenceRegistryReadOptions.ExpectedModuleSha256,
+            DossierEvidenceRegistryReadOptions.ExpectedSchemaSha256,
+            DossierEvidenceRegistryReadOptions.ExpectedSchemaSha256));
+      }
+      catch (Exception exception) when (
+          exception is ArgumentException or InvalidOperationException or JsonException)
+      {
+        return Task.FromResult(DossierEvidenceRegistryReadConsumerResult.Failed(
+            DossierEvidenceRegistryReadConsumerFailure.InvalidRequest,
+            exception.Message));
+      }
+    }
+  }
+
+  private sealed class RecordingConsumer : IDossierEvidenceRegistryReadConsumer
+  {
+    public bool IsAvailable => true;
+
+    public int CallCount { get; private set; }
+    public DossierEvidenceRegistryReadRequest? Request { get; private set; }
+    public int Total { get; private set; }
+    public IReadOnlyList<DossierEvidence> SourcePage { get; private set; } = [];
+
+    public Task<DossierEvidenceRegistryReadConsumerResult> ConsumeAsync(
+        DossierEvidenceRegistryReadRequest request,
+        int total,
+        IReadOnlyList<DossierEvidence> sourcePage,
+        CancellationToken cancellationToken = default)
+    {
+      CallCount++;
+      Request = request;
+      Total = total;
+      SourcePage = sourcePage;
+      return Task.FromResult(DossierEvidenceRegistryReadConsumerResult.Accepted(
+          "{\"canonicalRuntime\":true}",
+          DossierEvidenceRegistryReadOptions.ExpectedModuleSha256,
+          DossierEvidenceRegistryReadOptions.ExpectedModuleSha256,
+          DossierEvidenceRegistryReadOptions.ExpectedSchemaSha256,
+          DossierEvidenceRegistryReadOptions.ExpectedSchemaSha256));
+    }
+  }
+
+  private sealed class DisabledConsumer : IDossierEvidenceRegistryReadConsumer
+  {
+    public bool IsAvailable => false;
+    public int CallCount { get; private set; }
+
+    public Task<DossierEvidenceRegistryReadConsumerResult> ConsumeAsync(
+        DossierEvidenceRegistryReadRequest request,
+        int total,
+        IReadOnlyList<DossierEvidence> sourcePage,
+        CancellationToken cancellationToken = default)
+    {
+      CallCount++;
+      throw new InvalidOperationException("A disabled runtime must not be invoked.");
+    }
+  }
+
+  private sealed class RejectingCommandInterceptor : DbCommandInterceptor
+  {
+    public int CommandCount { get; private set; }
+
+    public override ValueTask<InterceptionResult<DbDataReader>> ReaderExecutingAsync(
+        DbCommand command,
+        CommandEventData eventData,
+        InterceptionResult<DbDataReader> result,
+        CancellationToken cancellationToken = default)
+    {
+      CommandCount++;
+      throw new InvalidOperationException("A disabled runtime must not execute a database command.");
+    }
   }
 }
