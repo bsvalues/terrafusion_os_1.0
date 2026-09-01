@@ -2,7 +2,7 @@
 
 | Field | Value |
 | --- | --- |
-| Status | `IMPLEMENTED_PENDING_PROTECTED_REVIEW` |
+| Status | `PROTECTED_COMPLETE` |
 | Program | Washington Assessor Launch V1 |
 | Parent | `WO-WAL-002` |
 | Base | `984018696738e437c91e5d197899e29e3867a2fd` |
@@ -101,6 +101,9 @@ and zero skips, and all build outputs remained inside the disposable containers.
 
 ## Completion
 
-This child reaches its terminal only after the exact implementation and evidence are independently
-reviewed and merged through protected main. Until then this branch is implementation evidence only.
-The broad parent remains open regardless of this bounded child's result.
+PR #1508 reached protected main at merge
+`dcd1405b15d7aaa686ae444ed917117fcada3de0`. Integrated head
+`6dd01433b41db83ca73d1572e82e5910a0f3d7e5` contains reviewed head
+`a63ebf4f3a4c12a0c75499a9adb63ef1269a6dfe`. This completes only the bounded local-memory
+duplicate decision. The broad parent remains open; durable intake behavior and later authority are
+not implied.

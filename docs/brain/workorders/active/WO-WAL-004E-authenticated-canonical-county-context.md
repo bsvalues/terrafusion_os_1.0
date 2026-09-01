@@ -2,7 +2,7 @@
 
 | Field | Value |
 | --- | --- |
-| Status | `IMPLEMENTED_VALIDATED_LOCALLY` |
+| Status | `PROTECTED_COMPLETE` |
 | Parent | `WO-WAL-004` |
 | Program | Washington Assessor Launch V1 |
 | Base | `984018696738e437c91e5d197899e29e3867a2fd` |
@@ -93,5 +93,8 @@ resolver cancellation/exception propagation, and the sealed Core-only surface.
 
 ## Completion
 
-Local validation proves only the exact reserved deterministic fixture contract. Canonical completion
-requires the reviewed implementation to reach protected main through the governed PR path.
+PR #1509 reached protected main at merge
+`b4c34f53a6c0251fc2df3a02974b5e7e96ef7a95` from reviewed head
+`6bee954e460fb1bf2d4541afa1e23e455f6a269d`. This completes only the exact reserved deterministic
+fixture contract; it does not complete `WO-WAL-004` or grant authentication, activation, protected
+data, live county resource, or production authority.
