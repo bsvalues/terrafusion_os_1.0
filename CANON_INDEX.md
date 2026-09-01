@@ -18,6 +18,15 @@ independent authority hierarchy.
 [`ADR-EXEC-001`](docs/adr/ADR-EXEC-001-governance-authority-hierarchy.md) defines the complete
 conflict-resolution semantics and mechanical-enforcement boundary.
 
+## Ratified Architecture Decisions
+
+- [`ADR-0016`](docs/adr/ADR-0016-washington-statewide-federated-deployment-topology.md) is the
+  controlling physical deployment topology for Washington TerraFusion: federated statewide
+  multi-tenancy by default, scalable deployment stamps/cells, strong county-specific data and
+  identity isolation, county-local TerraFusion Edge/Sync for connected legacy systems, and a
+  supported Sovereign County deployment profile. A later owner-ratified ADR is required to
+  supersede this topology.
+
 ## Subordinate Registers
 
 - [`PATH_CANON_REGISTER.md`](PATH_CANON_REGISTER.md) is the repository-identity register for
