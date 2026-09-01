@@ -2,7 +2,7 @@
 
 | Field | Value |
 | --- | --- |
-| Status | `IMPLEMENTED_PENDING_PROTECTED_REVIEW` |
+| Status | `PROTECTED_COMPLETE` |
 | Parent | `WO-WAL-001` |
 | Program | Washington Assessor Launch V1 |
 | Base | `984018696738e437c91e5d197899e29e3867a2fd` |
@@ -137,7 +137,11 @@ seam.
 
 ## Completion boundary
 
-This Work Order is implemented only on its isolated branch until protected review and merge. Its
-narrow terminal proves a bounded observed temporary landing receipt, not public-source authenticity,
-durable storage, parsed rows, normalized data, runtime integration, capability, launch readiness,
-or completion of `WO-WAL-001`.
+PR #1510 reached protected main at merge
+`1144599ac99e20312d38b83ab71457519f6b8181`. Integrated head
+`9840c7bb61f156058bc09abd815ac13b94a571b2` contains the reviewed chain
+`14699d30f5ed279275063afca497fe0b3f5a1429`,
+`b2bb8ccd1b5745308753c8283000542bb8e03d94`, and
+`84074763641303be5716fede344dae9a0f6be6d0`. This completes only the narrow terminal: a bounded
+observed temporary landing receipt, not public-source authenticity, durable storage, parsed rows,
+normalized data, runtime integration, capability, launch readiness, or `WO-WAL-001`.

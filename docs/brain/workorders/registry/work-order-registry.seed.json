@@ -1,8 +1,8 @@
 {
   "schemaVersion": "0.1.0",
-  "generatedBy": "WO-WAL-000E D-wave reconciliation and exact E-wave reservations",
-  "generatedAt": "2026-08-28T12:16:28Z",
-  "description": "The completed Five-Suite mission remains terminal. Washington Assessor Launch V1 is the active owner mission; its protected-complete A, B, C and D waves advance to exact reservation-safe 001E, 002E and 004E children while broad parents remain open, WAL-005/006 remain blocked and live-source 003 continuation remains authority-blocked.",
+  "generatedBy": "WO-WAL-000F E-wave reconciliation and F-wave authority gates",
+  "generatedAt": "2026-08-28T20:00:00Z",
+  "description": "The completed Five-Suite mission remains terminal. Washington Assessor Launch V1 is the active owner mission; its protected-complete A through E waves currently yield no executable F child while broad parents 001-004 remain open, WAL-005/006 remain blocked and live-source 003 continuation remains authority-blocked.",
   "records": [
     {
       "id": "WO-WOE-000",
@@ -11530,11 +11530,7 @@
       "evidenceProduced": [{ "kind": "file", "location": "docs/brain/workorders/evidence/WO-WAL-000-DEEP-DIVE-LAUNCH-REVIEW.md", "summary": "Measured launch truth, finite dependency graph and hard boundaries." }],
       "validationGates": [{ "name": "WAL activation governance", "command": "JSON parse, work-order schema/query, canon, governance, formatting and exact changed-path checks", "required": true, "result": "not_run" }],
       "stopConditions": [{ "type": "authority_wall", "description": "Stop on any Issue #1485 hard wall, conflicting higher canon, failed required control or substantive unresolved review." }],
-      "nextCandidates": [
-        { "id": "WO-WAL-001E", "reason": "Protected-complete 001D clears exact verified public artifact temporary landing after WO-WAL-000E.", "riskClass": "R3", "blocked": false },
-        { "id": "WO-WAL-002E", "reason": "Protected-complete 002D clears exact local-memory duplicate decision after WO-WAL-000E.", "riskClass": "R3", "blocked": false },
-        { "id": "WO-WAL-004E", "reason": "Protected-complete 004D clears exact authenticated canonical 39-county context after WO-WAL-000E.", "riskClass": "R5", "blocked": false }
-      ],
+      "nextCandidates": [],
       "authority": { "mayWrite": true, "mayCommit": true, "mayPush": true, "mayOpenPr": true, "mayMarkReady": true, "mayMerge": true, "mayCleanup": true, "notes": "Issue #1485 mission authority plus standing protected-PR lifecycle authority; activation is governance-only." },
       "provenance": { "createdAt": "2026-08-27T17:00:00Z", "source": "Issue #1485 and PR #1486 based on a1f6fd66d2cff6e3dc7f62ebc00311974951dc90.", "schemaVersion": "0.1.0" }
     },
@@ -11746,13 +11742,49 @@
         { "type": "scope_boundary", "description": "Stop before any implementation file or environment outside the exact governance reservation." },
         { "type": "authority_wall", "description": "Do not register or execute a 003E live-source continuation without the named county/source/system, authorized read-only credential or role and secret-store reference, permitted execution/network environment, data classification/handling and source-side no-DML evidence method." }
       ],
-      "nextCandidates": [
-        { "id": "WO-WAL-001E", "reason": "Protected-complete 001D clears exact verified public artifact temporary landing.", "riskClass": "R3", "blocked": false },
-        { "id": "WO-WAL-002E", "reason": "Protected-complete 002D clears exact bounded local-memory duplicate decision.", "riskClass": "R3", "blocked": false },
-        { "id": "WO-WAL-004E", "reason": "Protected-complete 004D clears exact authenticated canonical 39-county context.", "riskClass": "R5", "blocked": false }
+      "nextCandidates": [],
+      "authority": { "mayWrite": true, "mayCommit": true, "mayPush": false, "mayOpenPr": false, "mayMarkReady": true, "mayMerge": false, "mayCleanup": true, "notes": "Issue #1485 supplied bounded governance decomposition authority. PR #1507 protected merge 984018696738e437c91e5d197899e29e3867a2fd made the three E reservations canonical; this completed record creates no later-child authority." },
+      "provenance": { "createdAt": "2026-08-28T12:16:28Z", "updatedAt": "2026-08-28T20:00:00Z", "source": "PR #1507 protected merge 984018696738e437c91e5d197899e29e3867a2fd, protected PRs #1503-#1506 and OWNER-WAL-V1-MISSION-AUTHORITY-20260827.", "schemaVersion": "0.1.0" }
+    },
+    {
+      "id": "WO-WAL-000F",
+      "title": "E-Wave Reconciliation and F-Wave Authority Gates",
+      "program": "Washington Assessor Launch V1",
+      "goalId": "GOAL-WASHINGTON-ASSESSOR-LAUNCH-V1",
+      "loopId": "LOOP-WASHINGTON-ASSESSOR-LAUNCH-V1",
+      "goal": "Record protected completion of the bounded E children, register zero executable F children and preserve the live-source Sync authority wall.",
+      "riskClass": "R3",
+      "status": "complete",
+      "dependencies": [
+        { "id": "WO-WAL-001E", "status": "satisfied", "notes": "PR #1510 protected merge 1144599ac99e20312d38b83ab71457519f6b8181; integrated head 9840c7bb61f156058bc09abd815ac13b94a571b2 contains reviewed chain 14699d30f5ed279275063afca497fe0b3f5a1429, b2bb8ccd1b5745308753c8283000542bb8e03d94 and 84074763641303be5716fede344dae9a0f6be6d0." },
+        { "id": "WO-WAL-002E", "status": "satisfied", "notes": "PR #1508 protected merge dcd1405b15d7aaa686ae444ed917117fcada3de0; integrated head 6dd01433b41db83ca73d1572e82e5910a0f3d7e5 contains reviewed head a63ebf4f3a4c12a0c75499a9adb63ef1269a6dfe." },
+        { "id": "WO-WAL-004E", "status": "satisfied", "notes": "PR #1509 protected merge b4c34f53a6c0251fc2df3a02974b5e7e96ef7a95 contains reviewed head 6bee954e460fb1bf2d4541afa1e23e455f6a269d." }
       ],
-      "authority": { "mayWrite": true, "mayCommit": true, "mayPush": false, "mayOpenPr": false, "mayMarkReady": true, "mayMerge": false, "mayCleanup": true, "notes": "Issue #1485 supplies bounded governance decomposition authority. This record models prospective post-merge canonical state; neither completion nor E-child execution clearance is effective until the commit is read from protected main and its merge is verified in protected-main history." },
-      "provenance": { "createdAt": "2026-08-28T12:16:28Z", "source": "Protected PRs #1503-#1506 and OWNER-WAL-V1-MISSION-AUTHORITY-20260827.", "schemaVersion": "0.1.0" }
+      "allowedSystems": [{ "name": "Governance-only E-wave lifecycle reconciliation, zero-child F-wave result and exact Sync authority-wall preservation" }],
+      "blockedSystems": [{ "name": "F-child implementation or reservation, live county access, credentials, secrets, network, external county systems, protected data, source-side no-DML claims and production" }],
+      "allowedFiles": [
+        "docs/brain/workorders/active/WO-WAL-000F-e-wave-reconciliation-and-f-wave-authority-gates.md",
+        "docs/brain/workorders/active/WO-WAL-000E-d-wave-reconciliation-and-e-wave-reservations.md",
+        "docs/brain/workorders/active/WO-WAL-001E-verified-public-artifact-temp-landing.md",
+        "docs/brain/workorders/active/WO-WAL-002E-county-csv-duplicate-decision.md",
+        "docs/brain/workorders/active/WO-WAL-004E-authenticated-canonical-county-context.md",
+        "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
+        "docs/brain/workorders/programs/washington-assessor-launch-v1.md",
+        "docs/brain/workorders/registry/work-order-registry.seed.json",
+        "docs/brain/workorders/tools/wo-wave-plan.test.mjs"
+      ],
+      "contractReservations": [],
+      "environmentReservations": [],
+      "evidenceRequired": [{ "kind": "command", "description": "Registry/schema validation, local ancestry proof, verified and unverified empty executable F sets, E terminal exclusion, exact absent-child and authority-wall assertions, collision/drift denial and exact nine-path audit." }],
+      "validationGates": [{ "name": "WAL F-wave no-dispatch governance", "command": "focused wave-plan tests, registry JSON/schema validation, local ancestry with GIT_NO_LAZY_FETCH=1, git diff --check and exact nine-path audit", "required": true, "result": "pass", "evidence": ["Terminal result E_WAVE_PROTECTED_COMPLETE_NO_EXECUTABLE_F_CHILD_AND_AUTHORITY_WALLS_RECORDED; canonical only when this validated governance commit reaches protected main."] }],
+      "stopConditions": [
+        { "type": "scope_boundary", "description": "Stop before any implementation file, contract, environment or child registration outside the exact governance reservation." },
+        { "type": "authority_wall", "description": "Do not register or execute a 003E or later live-source continuation without the named county/source/system, authorized read-only credential or role and secret-store reference, permitted execution/network environment, data classification/handling and source-side no-DML evidence method." },
+        { "type": "protected_data", "description": "No live county access, credential, secret value, protected data or source-system mutation is authorized." }
+      ],
+      "nextCandidates": [],
+      "authority": { "mayWrite": true, "mayCommit": true, "mayPush": false, "mayOpenPr": false, "mayMarkReady": true, "mayMerge": false, "mayCleanup": true, "notes": "Issue #1485 permits this exact governance reconciliation only. The record registers no executable F child and creates no live-source, credential, protected-data, environment or production authority." },
+      "provenance": { "createdAt": "2026-08-28T20:00:00Z", "source": "Protected PRs #1508-#1510 and OWNER-WAL-V1-MISSION-AUTHORITY-20260827; prospective canonical state until protected merge.", "schemaVersion": "0.1.0" }
     },
     {
       "id": "WO-WAL-001",
@@ -11769,7 +11801,7 @@
       "evidenceRequired": [{ "kind": "file", "description": "Machine-readable 39-county runtime ledger plus representative source, lineage, rows, runtime and no-Benton-fallback proof." }],
       "validationGates": [{ "name": "39-county public runtime truth", "command": "truth inventory, runtime registration, candidate-set, row-path, lineage and representative adapter/runtime tests", "required": true, "result": "not_run" }],
       "stopConditions": [{ "type": "scope_boundary", "description": "Exact executing child must record non-colliding path, contract and environment reservations before its first write." }, { "type": "protected_data", "description": "Stop on any source that is not demonstrably lawful and public." }],
-      "nextCandidates": [{ "id": "WO-WAL-001E", "reason": "Continue through exact verified public artifact temporary landing after protected-complete 001D and protected WO-WAL-000E.", "riskClass": "R3", "blocked": false }, { "id": "WO-WAL-005", "reason": "Counties HUB consumes the stable public-baseline contract only after the parent completes.", "riskClass": "R4", "blocked": true }, { "id": "WO-WAL-006", "reason": "TerraForge capability truth consumes observed public inputs only after the parent completes.", "riskClass": "R4", "blocked": true }],
+      "nextCandidates": [{ "id": "WO-WAL-005", "reason": "Counties HUB consumes the stable public-baseline contract only after the parent completes.", "riskClass": "R4", "blocked": true }, { "id": "WO-WAL-006", "reason": "TerraForge capability truth consumes observed public inputs only after the parent completes.", "riskClass": "R4", "blocked": true }],
       "authority": { "mayWrite": true, "mayCommit": true, "mayPush": true, "mayOpenPr": true, "mayMarkReady": true, "mayMerge": true, "mayCleanup": true, "notes": "Mission child scope under Issue #1485; exact child reservations and evidence remain mandatory." },
       "provenance": { "createdAt": "2026-08-27T17:00:00Z", "source": "WO-WAL-001 and OWNER-WAL-V1-MISSION-AUTHORITY-20260827.", "schemaVersion": "0.1.0" }
     },
@@ -11886,8 +11918,8 @@
       "loopId": "LOOP-WASHINGTON-ASSESSOR-LAUNCH-V1",
       "goal": "Atomically land one already-verified bounded public artifact into isolated local temporary storage and return a deterministic landing receipt.",
       "riskClass": "R3",
-      "status": "ready",
-      "dependencies": [{ "id": "WO-WAL-001D", "status": "satisfied", "notes": "PR #1504 protected merge 9b1379a5dc1112bba3d836fd4f38dcba254c132b supplies exact byte/hash/length verification." }, { "id": "WO-WAL-000E", "status": "satisfied", "notes": "Exact reservation clearance is effective only on protected merge." }],
+      "status": "complete",
+      "dependencies": [{ "id": "WO-WAL-001D", "status": "satisfied", "notes": "PR #1504 protected merge 9b1379a5dc1112bba3d836fd4f38dcba254c132b supplies exact byte/hash/length verification." }, { "id": "WO-WAL-000E", "status": "satisfied", "notes": "PR #1507 protected merge 984018696738e437c91e5d197899e29e3867a2fd supplied exact reservation clearance." }],
       "allowedSystems": [{ "name": "Atomic isolated local-temporary landing and receipt for one already-verified bounded public artifact" }, { "name": "Contract reservation wal.public-acquisition-artifact-landing.v1" }, { "name": "Environment reservation local-temp-public-artifact-landing-only" }],
       "blockedSystems": [{ "name": "Network acquisition, source authenticity, permanent storage, parsing, normalization, runtime registration, protected data, credential, external system and production" }],
       "allowedFiles": ["docs/brain/workorders/active/WO-WAL-001E-verified-public-artifact-temp-landing.md", "scripts/truth/wal-public-acquisition-artifact-landing.mjs", "scripts/truth/wal-public-acquisition-artifact-landing.test.mjs"],
@@ -11895,11 +11927,11 @@
       "environmentReservations": ["local-temp-public-artifact-landing-only"],
       "dispatchGuard": { "type": "protected_ref_head", "ref": "refs/remotes/origin/main" },
       "evidenceRequired": [{ "kind": "command", "description": "Focused tests prove verified-input binding, bounded atomic local-temp creation, exact bytes and receipt identity, cleanup/refusal behavior and no permanent/runtime/protected-data inference." }],
-      "validationGates": [{ "name": "WAL verified public artifact temporary landing", "command": "node --check scripts/truth/wal-public-acquisition-artifact-landing.mjs && node --check scripts/truth/wal-public-acquisition-artifact-landing.test.mjs && node --test scripts/truth/wal-public-acquisition-artifact-landing.test.mjs && git diff --check && exact changed-path audit", "required": true, "result": "not_run" }],
+      "validationGates": [{ "name": "WAL verified public artifact temporary landing", "command": "node --check scripts/truth/wal-public-acquisition-artifact-landing.mjs && node --check scripts/truth/wal-public-acquisition-artifact-landing.test.mjs && node --test scripts/truth/wal-public-acquisition-artifact-landing.test.mjs && git diff --check && exact changed-path audit", "required": true, "result": "pass", "evidence": ["PR #1510 protected merge 1144599ac99e20312d38b83ab71457519f6b8181; integrated head 9840c7bb61f156058bc09abd815ac13b94a571b2 contains reviewed chain 14699d30f5ed279275063afca497fe0b3f5a1429, b2bb8ccd1b5745308753c8283000542bb8e03d94 and 84074763641303be5716fede344dae9a0f6be6d0."] }],
       "stopConditions": [{ "type": "scope_boundary", "description": "Stop before acquisition, permanent storage, parsing, normalization, runtime registration or any file, contract or environment outside the exact reservations." }, { "type": "protected_data", "description": "No non-public artifact, credential, county system or protected data is authorized." }],
-      "nextCandidates": [{ "id": "WO-WAL-001", "reason": "Return to the still-open parent for lawful acquisition, authenticity, provenance/freshness, normalization and runtime truth; temporary landing does not complete it.", "riskClass": "R4", "blocked": true }],
+      "nextCandidates": [],
       "authority": { "mayWrite": true, "mayCommit": true, "mayPush": true, "mayOpenPr": true, "mayMarkReady": true, "mayMerge": true, "mayCleanup": true, "notes": "Issue #1485 permits this exact R3 local-temporary public-artifact child; it creates no acquisition, protected-data, external-system, permanent-storage or production authority." },
-      "provenance": { "createdAt": "2026-08-28T12:16:28Z", "source": "WO-WAL-001, protected WO-WAL-001D, WO-WAL-000E and OWNER-WAL-V1-MISSION-AUTHORITY-20260827.", "schemaVersion": "0.1.0" }
+      "provenance": { "createdAt": "2026-08-28T12:16:28Z", "updatedAt": "2026-08-28T20:00:00Z", "source": "PR #1510 protected merge 1144599ac99e20312d38b83ab71457519f6b8181, integrated head 9840c7bb61f156058bc09abd815ac13b94a571b2 and reviewed fix chain under OWNER-WAL-V1-MISSION-AUTHORITY-20260827.", "schemaVersion": "0.1.0" }
     },
     {
       "id": "WO-WAL-002",
@@ -11916,7 +11948,7 @@
       "evidenceRequired": [{ "kind": "file", "description": "Observed accepted, quarantined, duplicate/idempotent, cross-county denied and rollback upload receipts." }],
       "validationGates": [{ "name": "governed upload acceptance", "command": "authentication/county binding, format, size, mapping, quarantine, lineage, idempotency, atomic promotion, denial and rollback tests", "required": true, "result": "not_run" }],
       "stopConditions": [{ "type": "scope_boundary", "description": "Exact executing child must record non-colliding path, contract and environment reservations before its first write." }, { "type": "protected_data", "description": "Live county files or credentials require an already-authorized source and protected handling; the mission cannot fabricate them." }],
-      "nextCandidates": [{ "id": "WO-WAL-002E", "reason": "Continue through exact local-memory duplicate decision after protected-complete 002D and protected WO-WAL-000E.", "riskClass": "R3", "blocked": false }, { "id": "WO-WAL-005", "reason": "Counties HUB exposes truthful upload state only after the parent completes.", "riskClass": "R4", "blocked": true }, { "id": "WO-WAL-007", "reason": "Integrated acceptance requires a deep governed-upload journey after the parent completes.", "riskClass": "R4", "blocked": true }],
+      "nextCandidates": [{ "id": "WO-WAL-005", "reason": "Counties HUB exposes truthful upload state only after the parent completes.", "riskClass": "R4", "blocked": true }, { "id": "WO-WAL-007", "reason": "Integrated acceptance requires a deep governed-upload journey after the parent completes.", "riskClass": "R4", "blocked": true }],
       "authority": { "mayWrite": true, "mayCommit": true, "mayPush": true, "mayOpenPr": true, "mayMarkReady": true, "mayMerge": true, "mayCleanup": true, "notes": "Mission child scope under Issue #1485; no external-system write-back and exact child reservations required." },
       "provenance": { "createdAt": "2026-08-27T17:00:00Z", "source": "WO-WAL-002 and OWNER-WAL-V1-MISSION-AUTHORITY-20260827.", "schemaVersion": "0.1.0" }
     },
@@ -12033,8 +12065,8 @@
       "loopId": "LOOP-WASHINGTON-ASSESSOR-LAUNCH-V1",
       "goal": "Return one fail-closed first-seen or duplicate decision from bounded caller-supplied in-memory CSV idempotency evidence without durable state.",
       "riskClass": "R3",
-      "status": "ready",
-      "dependencies": [{ "id": "WO-WAL-002D", "status": "satisfied", "notes": "PR #1506 protected merge f4480bdb5213a406a77bc40b3f1c3d2be799e6e3 supplies deterministic county/dataset/content idempotency identity." }, { "id": "WO-WAL-000E", "status": "satisfied", "notes": "Exact reservation clearance is effective only on protected merge." }],
+      "status": "complete",
+      "dependencies": [{ "id": "WO-WAL-002D", "status": "satisfied", "notes": "PR #1506 protected merge f4480bdb5213a406a77bc40b3f1c3d2be799e6e3 supplies deterministic county/dataset/content idempotency identity." }, { "id": "WO-WAL-000E", "status": "satisfied", "notes": "PR #1507 protected merge 984018696738e437c91e5d197899e29e3867a2fd supplied exact reservation clearance." }],
       "allowedSystems": [{ "name": "Linearizable bounded local-memory first-seen versus duplicate decision over protected CSV idempotency evidence, permitting only a private bounded in-process synchronization primitive" }, { "name": "Contract reservation wal.county-upload.csv-duplicate-decision.v1" }, { "name": "Environment reservation local-memory-csv-duplicate-decision-only" }],
       "blockedSystems": [{ "name": "Durable or external reservations, distributed or external locks, durable duplicate state, upload transport, authentication, persistence, staging, quarantine, promotion, rollback, protected data and production" }],
       "allowedFiles": ["docs/brain/workorders/active/WO-WAL-002E-county-csv-duplicate-decision.md", "backend/src/TerraFusion.Core/Import/CountyCsvIntakeDuplicateDecision.cs", "backend/tests/TerraFusion.Unit.Tests/Import/CountyCsvIntakeDuplicateDecisionTests.cs"],
@@ -12042,11 +12074,11 @@
       "environmentReservations": ["local-memory-csv-duplicate-decision-only"],
       "dispatchGuard": { "type": "protected_ref_head", "ref": "refs/remotes/origin/main" },
       "evidenceRequired": [{ "kind": "command", "description": "Focused tests prove exact idempotency identity consumption, deterministic first-seen/duplicate outcomes, fail-closed malformed or contradictory evidence, immutability and no durable store seam." }],
-      "validationGates": [{ "name": "WAL county CSV duplicate decision", "command": "dotnet test backend/tests/TerraFusion.Unit.Tests/TerraFusion.Unit.Tests.csproj --filter FullyQualifiedName~CountyCsvIntakeDuplicateDecisionTests && git diff --check && exact changed-path audit", "required": true, "result": "not_run" }],
+      "validationGates": [{ "name": "WAL county CSV duplicate decision", "command": "dotnet test backend/tests/TerraFusion.Unit.Tests/TerraFusion.Unit.Tests.csproj --filter FullyQualifiedName~CountyCsvIntakeDuplicateDecisionTests && git diff --check && exact changed-path audit", "required": true, "result": "pass", "evidence": ["PR #1508 protected merge dcd1405b15d7aaa686ae444ed917117fcada3de0; integrated head 6dd01433b41db83ca73d1572e82e5910a0f3d7e5 contains reviewed head a63ebf4f3a4c12a0c75499a9adb63ef1269a6dfe."] }],
       "stopConditions": [{ "type": "scope_boundary", "description": "Stop before durable duplicate state, transport, authentication, persistence, quarantine, promotion, rollback or any file, contract or environment outside the exact reservations." }, { "type": "protected_data", "description": "No live county file, credential, identity provider, source system or protected data is authorized." }],
-      "nextCandidates": [{ "id": "WO-WAL-002", "reason": "Return to the still-open parent for authenticated transport, durable duplicate state, lineage, quarantine, promotion, rollback, API and UI; the in-memory decision does not complete it.", "riskClass": "R5", "blocked": true }],
+      "nextCandidates": [],
       "authority": { "mayWrite": true, "mayCommit": true, "mayPush": true, "mayOpenPr": true, "mayMarkReady": true, "mayMerge": true, "mayCleanup": true, "notes": "Issue #1485 permits this exact R3 local-memory duplicate-decision child; it creates no durable store, authentication, protected-data, persistence or production authority." },
-      "provenance": { "createdAt": "2026-08-28T12:16:28Z", "source": "WO-WAL-002, protected WO-WAL-002D, WO-WAL-000E and OWNER-WAL-V1-MISSION-AUTHORITY-20260827.", "schemaVersion": "0.1.0" }
+      "provenance": { "createdAt": "2026-08-28T12:16:28Z", "updatedAt": "2026-08-28T20:00:00Z", "source": "PR #1508 protected merge dcd1405b15d7aaa686ae444ed917117fcada3de0, integrated head 6dd01433b41db83ca73d1572e82e5910a0f3d7e5 and reviewed head a63ebf4f3a4c12a0c75499a9adb63ef1269a6dfe under OWNER-WAL-V1-MISSION-AUTHORITY-20260827.", "schemaVersion": "0.1.0" }
     },
     {
       "id": "WO-WAL-003",
@@ -12189,7 +12221,7 @@
       "validationGates": [{ "name": "county identity and isolation", "command": "API, Sync, HUB, TerraForge and relevant Workbench identity/isolation/trust tests", "required": true, "result": "not_run" }],
       "stopConditions": [{ "type": "dependency_blocked", "description": "Before dispatch, decompose into exact reservation-safe children that do not collide with WO-WAL-001, 002 or 003." }, { "type": "protected_data", "description": "Stop on any unauthorized county data or credential boundary." }],
       "blockers": [{ "id": "WAL-004-EXACT-RESERVATIONS", "type": "dependency", "description": "Exact path, contract and environment reservations must be defined per bounded child before execution.", "status": "resolved", "requiredAuthority": "OWNER-WAL-V1-MISSION-AUTHORITY-20260827 child decomposition" }],
-      "nextCandidates": [{ "id": "WO-WAL-004E", "reason": "Continue through exact authenticated canonical 39-county context after protected-complete 004D and protected WO-WAL-000E.", "riskClass": "R5", "blocked": false }, { "id": "WO-WAL-005", "reason": "Counties HUB requires all stable identity/isolation/trust contracts after the parent completes.", "riskClass": "R4", "blocked": true }, { "id": "WO-WAL-006", "reason": "TerraForge requires all stable identity/isolation/trust contracts after the parent completes.", "riskClass": "R4", "blocked": true }],
+      "nextCandidates": [{ "id": "WO-WAL-005", "reason": "Counties HUB requires all stable identity/isolation/trust contracts after the parent completes.", "riskClass": "R4", "blocked": true }, { "id": "WO-WAL-006", "reason": "TerraForge requires all stable identity/isolation/trust contracts after the parent completes.", "riskClass": "R4", "blocked": true }],
       "authority": { "mayWrite": true, "mayCommit": true, "mayPush": true, "mayOpenPr": true, "mayMarkReady": true, "mayMerge": true, "mayCleanup": true, "notes": "Mission child decomposition is authorized, but this broad parent is not mechanically dispatchable until exact bounded reservations exist." },
       "provenance": { "createdAt": "2026-08-27T17:00:00Z", "source": "WO-WAL-004 and OWNER-WAL-V1-MISSION-AUTHORITY-20260827.", "schemaVersion": "0.1.0" }
     },
@@ -12309,8 +12341,8 @@
       "loopId": "LOOP-WASHINGTON-ASSESSOR-LAUNCH-V1",
       "goal": "Bind an authenticated persisted county GUID to exactly one canonical Washington 39-county context and fail closed on every mismatch.",
       "riskClass": "R5",
-      "status": "ready",
-      "dependencies": [{ "id": "WO-WAL-004D", "status": "satisfied", "notes": "PR #1503 protected merge d7f22442e95d91effea79c14667a9b2b00094f8d supplies exact authenticated persisted county GUID binding." }, { "id": "WO-WAL-000E", "status": "satisfied", "notes": "Exact reservation clearance is effective only on protected merge." }],
+      "status": "complete",
+      "dependencies": [{ "id": "WO-WAL-004D", "status": "satisfied", "notes": "PR #1503 protected merge d7f22442e95d91effea79c14667a9b2b00094f8d supplies exact authenticated persisted county GUID binding." }, { "id": "WO-WAL-000E", "status": "satisfied", "notes": "PR #1507 protected merge 984018696738e437c91e5d197899e29e3867a2fd supplied exact reservation clearance." }],
       "allowedSystems": [{ "name": "Local authenticated persisted-GUID binding to exactly one canonical Washington 39-county registry fixture context; this reserves no live county resource" }, { "name": "Contract reservation wal.authenticated-canonical-county-context.v1" }, { "name": "Environment reservation local-auth-context-canonical-registry-fixture-only" }],
       "blockedSystems": [{ "name": "Token authentication, role/capability grant, activation, route/body/header authority, controller/DI integration, persistence, protected/live data, credential, production and default county" }],
       "allowedFiles": ["docs/brain/workorders/active/WO-WAL-004E-authenticated-canonical-county-context.md", "backend/src/TerraFusion.Core/Counties/AuthenticatedCanonicalCountyContext.cs", "backend/tests/TerraFusion.Unit.Tests/Counties/AuthenticatedCanonicalCountyContextTests.cs"],
@@ -12318,11 +12350,11 @@
       "environmentReservations": ["local-auth-context-canonical-registry-fixture-only"],
       "dispatchGuard": { "type": "protected_ref_head", "ref": "refs/remotes/origin/main" },
       "evidenceRequired": [{ "kind": "command", "description": "Focused tests prove exact authenticated persisted-GUID and canonical 39-county context agreement, unknown/malformed/cross-county/default refusal, immutability and no grant or activation inference." }],
-      "validationGates": [{ "name": "WAL authenticated canonical county context", "command": "dotnet test backend/tests/TerraFusion.Unit.Tests/TerraFusion.Unit.Tests.csproj --filter FullyQualifiedName~AuthenticatedCanonicalCountyContextTests && git diff --check && exact changed-path audit", "required": true, "result": "not_run" }],
+      "validationGates": [{ "name": "WAL authenticated canonical county context", "command": "dotnet test backend/tests/TerraFusion.Unit.Tests/TerraFusion.Unit.Tests.csproj --filter FullyQualifiedName~AuthenticatedCanonicalCountyContextTests && git diff --check && exact changed-path audit", "required": true, "result": "pass", "evidence": ["PR #1509 protected merge b4c34f53a6c0251fc2df3a02974b5e7e96ef7a95 contains reviewed head 6bee954e460fb1bf2d4541afa1e23e455f6a269d."] }],
       "stopConditions": [{ "type": "scope_boundary", "description": "Stop before token authentication, role/capability grant, activation/trust integration, persistence or any file, contract or environment outside the exact reservations." }, { "type": "protected_data", "description": "No live identity provider, credential, county system or protected data is authorized." }],
-      "nextCandidates": [{ "id": "WO-WAL-004", "reason": "Return to the still-open parent for trust/activation integration and adversarial cross-surface isolation; canonical context alone does not complete it.", "riskClass": "R5", "blocked": true }],
+      "nextCandidates": [],
       "authority": { "mayWrite": true, "mayCommit": true, "mayPush": true, "mayOpenPr": true, "mayMarkReady": true, "mayMerge": true, "mayCleanup": true, "notes": "Issue #1485 permits this exact R5 local authenticated canonical-context fixture child; it creates no authentication, grant, activation, protected-data, integration or production authority." },
-      "provenance": { "createdAt": "2026-08-28T12:16:28Z", "source": "WO-WAL-004, protected WO-WAL-004D, WO-WAL-000E and OWNER-WAL-V1-MISSION-AUTHORITY-20260827.", "schemaVersion": "0.1.0" }
+      "provenance": { "createdAt": "2026-08-28T12:16:28Z", "updatedAt": "2026-08-28T20:00:00Z", "source": "PR #1509 protected merge b4c34f53a6c0251fc2df3a02974b5e7e96ef7a95 and reviewed head 6bee954e460fb1bf2d4541afa1e23e455f6a269d under OWNER-WAL-V1-MISSION-AUTHORITY-20260827.", "schemaVersion": "0.1.0" }
     },
     {
       "id": "WO-WAL-005",
