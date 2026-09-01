@@ -623,6 +623,12 @@ function candidateSourceForDisplay(source: string | null): string | null {
 }
 
 function toQueueItem(sale: LaunchSaleRecord): SaleQueueItem {
+  const grossLivingArea = firstComparableNumber([
+    sale.grossLivingArea,
+    sale.buildingSquareFeet,
+    sale.gla,
+  ]);
+  const yearBuilt = firstComparableNumber([sale.yearBuilt]);
   return applyDecision({
     saleId: sale.saleId,
     county: sale.county,
@@ -632,7 +638,7 @@ function toQueueItem(sale: LaunchSaleRecord): SaleQueueItem {
     saleDate: sale.saleDate ?? '',
     salePrice: sale.salePrice ?? 0,
     adjustedSalePrice: sale.adjustedSalePrice,
-    gla: null,
+    gla: grossLivingArea,
     hood: sale.neighborhoodCode,
     propertyType: sale.useCode,
     rawSaleQualifier: null,
@@ -644,8 +650,8 @@ function toQueueItem(sale: LaunchSaleRecord): SaleQueueItem {
     rawFinancingCode: null,
     rawAdjReason: null,
     rawComment: sale.saleNote,
-    slLivingArea: null,
-    slYearBuilt: null,
+    slLivingArea: grossLivingArea,
+    slYearBuilt: yearBuilt,
     salesYear: sale.saleYear,
     qualificationRecommendation: recommendationFor(sale),
     recommendationReason: recommendationReasonFor(sale),
@@ -682,7 +688,7 @@ function toDetail(sale: LaunchSaleRecord): SaleDetail {
     slLandAcres: typeof sale.acres === 'number' ? sale.acres : Number.parseFloat(String(sale.acres ?? '')) || null,
     slLandSqft: null,
     lotSizeSqft: null,
-    yearBuilt: null,
+    yearBuilt: firstComparableNumber([sale.yearBuilt]),
     bedrooms: null,
     bathrooms: null,
     condition: null,
