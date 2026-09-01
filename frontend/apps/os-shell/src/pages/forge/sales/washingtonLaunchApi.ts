@@ -691,7 +691,7 @@ function toDetail(sale: LaunchSaleRecord): SaleDetail {
     yearBuilt: firstComparableNumber([sale.yearBuilt]),
     bedrooms: null,
     bathrooms: null,
-    condition: null,
+    condition: firstComparableString([sale.condition, sale.propertyCondition]),
     qualityGrade: null,
     rawRatioCd: null,
     rawRatioCdReason: null,

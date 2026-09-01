@@ -317,6 +317,7 @@ describe('Washington launch shard county isolation', () => {
         ...saleRecord('Kitsap', '035', 'kitsap-dwelling-sale'),
         grossLivingArea: 2_150,
         yearBuilt: 1998,
+        condition: 'AV',
       }],
     }, '035', 'hosted');
     const filters = { ...SPOKANE_FILTERS, countyCode: '035' };
@@ -336,6 +337,7 @@ describe('Washington launch shard county isolation', () => {
       slLivingArea: 2_150,
       slYearBuilt: 1998,
       yearBuilt: 1998,
+      condition: 'AV',
     });
   });
 

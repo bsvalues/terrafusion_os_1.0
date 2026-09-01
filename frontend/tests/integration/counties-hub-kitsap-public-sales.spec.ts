@@ -52,6 +52,15 @@ test('uses the authenticated Kitsap public-sales package without lending it to a
   await expect(salesForge.getByTestId('salesforge-data-unavailable')).toHaveCount(0);
   await expect(salesForge.getByRole('tab', { name: 'Queue', exact: true })).toBeVisible();
 
+  const firstSaleRow = salesForge
+    .getByRole('table', { name: 'Sale qualification queue' })
+    .getByRole('row')
+    .nth(1);
+  await expect(firstSaleRow).toContainText('9000-006-408-0006', { timeout: 20_000 });
+  await firstSaleRow.click();
+  const conditionField = salesForge.locator('.sf-detail-field').filter({ hasText: 'Condition' });
+  await expect(conditionField).toContainText('AV');
+
   await page.goto('/counties');
   await expect(page.getByRole('option')).toHaveCount(39, { timeout: 20_000 });
 

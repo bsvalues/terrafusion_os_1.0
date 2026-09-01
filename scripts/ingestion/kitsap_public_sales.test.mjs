@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import * as fs from 'node:fs';
-import { mkdtemp, readFile, rm } from 'node:fs/promises';
+import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { spawnSync } from 'node:child_process';
@@ -118,6 +118,20 @@ test('Kitsap adapter stages only valid official rows with county-scoped public p
       assertRuntimeCompatibleCountyShard(shard, '035', 'Kitsap');
       assertRuntimeCompatibleCountyDetail(detail, status.counties[0], GENERATED_AT);
     });
+
+    const staleMarkerPath = join(outputPath, 'stale-package-marker.txt');
+    await writeFile(staleMarkerPath, 'must be replaced', 'utf8');
+    const refreshResult = spawnSync(
+      process.execPath,
+      [SCRIPT_PATH, workbookPath, workbookSha256, outputPath, GENERATED_AT],
+      { encoding: 'utf8' }
+    );
+    assert.equal(refreshResult.status, 0, refreshResult.stderr);
+    await assert.rejects(readFile(staleMarkerPath, 'utf8'), error => error?.code === 'ENOENT');
+    const refreshedShard = JSON.parse(
+      await readFile(join(outputPath, 'sales/by-county/035.json'), 'utf8')
+    );
+    assert.equal(refreshedShard.records.length, 2);
   } finally {
     await rm(root, { recursive: true, force: true });
   }

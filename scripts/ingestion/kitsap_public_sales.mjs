@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { createHash } from 'node:crypto';
+import { createHash, randomUUID } from 'node:crypto';
 import * as fs from 'node:fs';
 import { mkdir, readFile, rename, rm, writeFile } from 'node:fs/promises';
 import { basename, dirname, join, resolve } from 'node:path';
@@ -337,10 +337,12 @@ async function main() {
   };
 
   const outputRoot = resolve(outputPath);
-  const temporaryRoot = `${outputRoot}.tmp-${process.pid}`;
-  await rm(temporaryRoot, { recursive: true, force: true });
+  const operationId = `${process.pid}-${randomUUID()}`;
+  const temporaryRoot = `${outputRoot}.tmp-${operationId}`;
+  const backupRoot = `${outputRoot}.bak-${operationId}`;
   await mkdir(dirname(outputRoot), { recursive: true });
   await mkdir(temporaryRoot, { recursive: false });
+  let movedExistingOutput = false;
   try {
     await writeJson(join(temporaryRoot, 'manifest.json'), manifest);
     await writeJson(join(temporaryRoot, 'counties/status.json'), status);
@@ -361,9 +363,30 @@ async function main() {
       quarantine,
       omittedFields: ['owner', 'grantor', 'grantee', 'buyer', 'seller'],
     });
-    await rename(temporaryRoot, outputRoot);
+    try {
+      await rename(outputRoot, backupRoot);
+      movedExistingOutput = true;
+    } catch (error) {
+      if (error?.code !== 'ENOENT') throw error;
+    }
+    try {
+      await rename(temporaryRoot, outputRoot);
+    } catch (error) {
+      if (movedExistingOutput) {
+        await rename(backupRoot, outputRoot);
+        movedExistingOutput = false;
+      }
+      throw error;
+    }
+    if (movedExistingOutput) {
+      movedExistingOutput = false;
+      await rm(backupRoot, { recursive: true, force: true });
+    }
   } catch (error) {
     await rm(temporaryRoot, { recursive: true, force: true });
+    if (movedExistingOutput) {
+      await rename(backupRoot, outputRoot);
+    }
     throw error;
   }
 
