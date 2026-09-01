@@ -26,7 +26,9 @@ const WASHINGTON_SALES_SHARD_PATH_PREFIX = '/launch-data/washington/sales/by-cou
 
 interface WashingtonCountyShardVerificationAttempt {
   active: boolean;
+  ownershipChanged: Promise<void>;
   previous: WashingtonCountyShardVerificationAttempt | null;
+  signalOwnershipChanged: () => void;
 }
 
 const washingtonCountyShardVerificationAttempts =
@@ -40,6 +42,45 @@ function nearestActiveWashingtonCountyShardVerificationAttempt(
     candidate = candidate.previous;
   }
   return candidate;
+}
+
+function createWashingtonCountyShardVerificationAttempt(
+  previous: WashingtonCountyShardVerificationAttempt | null,
+): WashingtonCountyShardVerificationAttempt {
+  let signalOwnershipChanged = (): void => {};
+  const ownershipChanged = new Promise<void>((resolve) => {
+    signalOwnershipChanged = resolve;
+  });
+  return {
+    active: true,
+    ownershipChanged,
+    previous,
+    signalOwnershipChanged,
+  };
+}
+
+async function waitForWashingtonCountyShardVerificationOwnershipChange(
+  attempt: WashingtonCountyShardVerificationAttempt,
+  callerSignal?: AbortSignal,
+): Promise<void> {
+  if (callerSignal?.aborted) throw abortErrorForSignal(callerSignal);
+  if (!callerSignal) {
+    await attempt.ownershipChanged;
+    return;
+  }
+
+  let rejectForAbort: (() => void) | null = null;
+  const aborted = new Promise<never>((_resolve, reject) => {
+    rejectForAbort = () => reject(abortErrorForSignal(callerSignal));
+    callerSignal.addEventListener('abort', rejectForAbort, { once: true });
+  });
+  try {
+    await Promise.race([attempt.ownershipChanged, aborted]);
+  } finally {
+    if (rejectForAbort) {
+      callerSignal.removeEventListener('abort', rejectForAbort);
+    }
+  }
 }
 
 function createWashingtonRequestAbortError(): Error {
@@ -244,10 +285,9 @@ export async function verifyWashingtonCountySalesShard(
   county: WashingtonCountyStatusEntry,
   signal?: AbortSignal,
 ): Promise<WashingtonCountyStatusEntry> {
-  const attempt: WashingtonCountyShardVerificationAttempt = {
-    active: true,
-    previous: washingtonCountyShardVerificationAttempts.get(county.countyCode) ?? null,
-  };
+  const attempt = createWashingtonCountyShardVerificationAttempt(
+    washingtonCountyShardVerificationAttempts.get(county.countyCode) ?? null,
+  );
   washingtonCountyShardVerificationAttempts.set(county.countyCode, attempt);
   const isCurrentAttempt = (): boolean =>
     washingtonCountyShardVerificationAttempts.get(county.countyCode) === attempt;
@@ -258,6 +298,7 @@ export async function verifyWashingtonCountySalesShard(
     );
     if (previousAttempt) {
       washingtonCountyShardVerificationAttempts.set(county.countyCode, previousAttempt);
+      previousAttempt.signalOwnershipChanged();
     } else {
       washingtonCountyShardVerificationAttempts.delete(county.countyCode);
     }
@@ -287,13 +328,17 @@ export async function verifyWashingtonCountySalesShard(
         salesShardVerification: 'unavailable',
       };
     }
-    if (!isCurrentAttempt()) {
-      return {
-        ...county,
-        salesShardVerification: 'unavailable',
-      };
-    }
     if (verification.state === 'verified') {
+      if (!isCurrentAttempt()) {
+        await waitForWashingtonCountyShardVerificationOwnershipChange(attempt, signal);
+      }
+      if (!isCurrentAttempt()) {
+        return {
+          ...county,
+          salesShardVerification: 'unavailable',
+        };
+      }
+      verification.commit();
       return {
         ...county,
         stagedSales: verification.stagedSales,
@@ -315,6 +360,9 @@ export async function verifyWashingtonCountySalesShard(
     attempt.active = false;
     if (isCurrentAttempt()) {
       washingtonCountyShardVerificationAttempts.delete(county.countyCode);
+      nearestActiveWashingtonCountyShardVerificationAttempt(
+        attempt.previous,
+      )?.signalOwnershipChanged();
     }
   }
 }

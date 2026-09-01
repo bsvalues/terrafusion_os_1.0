@@ -14,7 +14,7 @@ import { getViteEnv } from '@/env/getViteEnv';
 import {
   evictWashingtonLaunchCountyShard,
   isWashingtonLaunchDataEnabled,
-  validateAndCacheAttestedWashingtonLaunchCountyShard,
+  validateAttestedWashingtonLaunchCountyShard,
   WASHINGTON_LAUNCH_MANIFEST_SCHEMA,
   WASHINGTON_COUNTIES,
   type WashingtonLaunchSalesShardAttestation,
@@ -89,6 +89,7 @@ export type WashingtonSalesReviewHostedShardVerification =
       stagedSales: number;
       latestSaleDate: string | null;
       needsReview: number;
+      commit: () => void;
     }
   | { state: 'unavailable' };
 
@@ -686,15 +687,20 @@ export async function verifyWashingtonSalesReviewHostedShard(
       return unavailable();
     }
     if (signal?.aborted) throw abortErrorForSignal(signal);
-    if (!isCurrentAttempt()) {
-      return { state: 'unavailable' };
-    }
-    const summary = validateAndCacheAttestedWashingtonLaunchCountyShard(
+    const candidate = validateAttestedWashingtonLaunchCountyShard(
       payload,
       input.countyCode,
       'hosted',
     );
-    return { state: 'verified', ...summary };
+    return {
+      state: 'verified',
+      stagedSales: candidate.stagedSales,
+      latestSaleDate: candidate.latestSaleDate,
+      needsReview: candidate.needsReview,
+      commit: () => {
+        candidate.commit();
+      },
+    };
   } catch (error) {
     if (signal?.aborted) throw error;
     return unavailable();
