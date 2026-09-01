@@ -2,7 +2,7 @@
 
 import { createHash, randomUUID } from 'node:crypto';
 import * as fs from 'node:fs';
-import { access, mkdir, readFile, rename, rm, writeFile } from 'node:fs/promises';
+import { access, mkdir, open, readFile, rename, rm } from 'node:fs/promises';
 import { basename, dirname, join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import XLSX from 'xlsx';
@@ -37,8 +37,97 @@ async function pathExists(path) {
   }
 }
 
-export async function recoverInterruptedPackageRefresh(outputPath) {
+async function syncDirectory(path) {
+  let handle;
+  try {
+    handle = await open(path, 'r');
+    await handle.sync();
+  } catch (error) {
+    if (!['EACCES', 'EISDIR', 'ENOTSUP', 'EPERM'].includes(error?.code)) throw error;
+  } finally {
+    await handle?.close();
+  }
+}
+
+async function writeDurableFile(path, contents) {
+  const handle = await open(path, 'wx', 0o644);
+  try {
+    await handle.writeFile(contents, 'utf8');
+    await handle.sync();
+  } finally {
+    await handle.close();
+  }
+  await syncDirectory(dirname(path));
+}
+
+function isProcessRunning(pid) {
+  if (!Number.isSafeInteger(pid) || pid <= 0) return false;
+  try {
+    process.kill(pid, 0);
+    return true;
+  } catch (error) {
+    return error?.code === 'EPERM';
+  }
+}
+
+export async function acquirePackageRefreshLock(outputPath, operationId) {
   const outputRoot = resolve(outputPath);
+  const lockPath = `${outputRoot}.refresh.lock`;
+  invariant(OPERATION_ID_PATTERN.test(operationId), 'Kitsap package refresh operation ID is invalid.');
+  await mkdir(dirname(outputRoot), { recursive: true });
+
+  for (let attempt = 0; attempt < 4; attempt += 1) {
+    try {
+      await writeDurableFile(
+        lockPath,
+        `${JSON.stringify({ operationId, ownerPid: process.pid })}\n`
+      );
+      return lockPath;
+    } catch (error) {
+      if (error?.code !== 'EEXIST') throw error;
+    }
+
+    let owner = null;
+    try {
+      owner = JSON.parse(await readFile(lockPath, 'utf8'));
+    } catch (error) {
+      if (error?.code === 'ENOENT') continue;
+      if (!(error instanceof SyntaxError)) throw error;
+    }
+    if (isProcessRunning(owner?.ownerPid)) {
+      throw new Error(`Kitsap package refresh is already running under PID ${owner.ownerPid}.`);
+    }
+    const staleLockPath = `${lockPath}.stale-${operationId}`;
+    try {
+      await rename(lockPath, staleLockPath);
+      await syncDirectory(dirname(lockPath));
+      await rm(staleLockPath, { force: true });
+      await syncDirectory(dirname(lockPath));
+    } catch (error) {
+      if (error?.code !== 'ENOENT') throw error;
+    }
+  }
+  throw new Error('Kitsap package refresh lock could not be acquired.');
+}
+
+async function assertRefreshLockOwner(outputRoot, operationId) {
+  const lock = JSON.parse(await readFile(`${outputRoot}.refresh.lock`, 'utf8'));
+  invariant(
+    lock?.operationId === operationId && lock.ownerPid === process.pid,
+    'Kitsap package refresh lock ownership changed.'
+  );
+}
+
+export async function releasePackageRefreshLock(outputPath, operationId) {
+  const outputRoot = resolve(outputPath);
+  await assertRefreshLockOwner(outputRoot, operationId);
+  await rm(`${outputRoot}.refresh.lock`, { force: true });
+  await syncDirectory(dirname(outputRoot));
+}
+
+export async function recoverInterruptedPackageRefresh(outputPath, ownerOperationId) {
+  const outputRoot = resolve(outputPath);
+  await assertRefreshLockOwner(outputRoot, ownerOperationId);
   const journalPath = `${outputRoot}.refresh.json`;
   if (!(await pathExists(journalPath))) return false;
 
@@ -64,6 +153,7 @@ export async function recoverInterruptedPackageRefresh(outputPath) {
   await rm(backupRoot, { recursive: true, force: true });
   await rm(temporaryRoot, { recursive: true, force: true });
   await rm(journalPath, { force: true });
+  await syncDirectory(dirname(outputRoot));
   return true;
 }
 
@@ -218,15 +308,10 @@ function topNeighborhoodCodes(records) {
 
 async function writeJson(path, value) {
   await mkdir(dirname(path), { recursive: true });
-  await writeFile(path, `${JSON.stringify(value)}\n`, { flag: 'wx', mode: 0o644 });
+  await writeDurableFile(path, `${JSON.stringify(value)}\n`);
 }
 
-async function main() {
-  const [sourcePath, expectedSha256, outputPath, generatedAt] = process.argv.slice(2);
-  invariant(
-    sourcePath && expectedSha256 && outputPath && generatedAt,
-    'Usage: kitsap_public_sales.mjs <source.xlsx> <expected-sha256> <output-directory> <generated-at-iso>'
-  );
+async function generatePackage(sourcePath, expectedSha256, outputRoot, generatedAt, operationId) {
   invariant(SHA256_PATTERN.test(expectedSha256), 'Expected workbook SHA-256 is invalid.');
   invariant(
     new Date(generatedAt).toISOString() === generatedAt,
@@ -379,10 +464,6 @@ async function main() {
     },
   };
 
-  const outputRoot = resolve(outputPath);
-  await mkdir(dirname(outputRoot), { recursive: true });
-  await recoverInterruptedPackageRefresh(outputRoot);
-  const operationId = `${process.pid}-${randomUUID()}`;
   const temporaryRoot = `${outputRoot}.tmp-${operationId}`;
   const backupRoot = `${outputRoot}.bak-${operationId}`;
   const journalPath = `${outputRoot}.refresh.json`;
@@ -409,26 +490,31 @@ async function main() {
       quarantine,
       omittedFields: ['owner', 'grantor', 'grantee', 'buyer', 'seller'],
     });
-    await writeFile(
+    await syncDirectory(temporaryRoot);
+    await writeDurableFile(
       temporaryJournalPath,
-      `${JSON.stringify({ schemaVersion: REFRESH_JOURNAL_SCHEMA, operationId })}\n`,
-      { flag: 'wx', mode: 0o644 }
+      `${JSON.stringify({ schemaVersion: REFRESH_JOURNAL_SCHEMA, operationId })}\n`
     );
     await rename(temporaryJournalPath, journalPath);
+    await syncDirectory(dirname(outputRoot));
     journalPublished = true;
     try {
       await rename(outputRoot, backupRoot);
     } catch (error) {
       if (error?.code !== 'ENOENT') throw error;
     }
+    await syncDirectory(dirname(outputRoot));
     await rename(temporaryRoot, outputRoot);
+    await syncDirectory(dirname(outputRoot));
     await rm(backupRoot, { recursive: true, force: true });
+    await syncDirectory(dirname(outputRoot));
     await rm(journalPath, { force: true });
+    await syncDirectory(dirname(outputRoot));
     journalPublished = false;
   } catch (error) {
     await rm(temporaryJournalPath, { force: true });
     if (journalPublished) {
-      await recoverInterruptedPackageRefresh(outputRoot);
+      await recoverInterruptedPackageRefresh(outputRoot, operationId);
     } else {
       await rm(temporaryRoot, { recursive: true, force: true });
     }
@@ -452,6 +538,23 @@ async function main() {
       2
     )
   );
+}
+
+async function main() {
+  const [sourcePath, expectedSha256, outputPath, generatedAt] = process.argv.slice(2);
+  invariant(
+    sourcePath && expectedSha256 && outputPath && generatedAt,
+    'Usage: kitsap_public_sales.mjs <source.xlsx> <expected-sha256> <output-directory> <generated-at-iso>'
+  );
+  const outputRoot = resolve(outputPath);
+  const operationId = `${process.pid}-${randomUUID()}`;
+  await acquirePackageRefreshLock(outputRoot, operationId);
+  try {
+    await recoverInterruptedPackageRefresh(outputRoot, operationId);
+    await generatePackage(sourcePath, expectedSha256, outputRoot, generatedAt, operationId);
+  } finally {
+    await releasePackageRefreshLock(outputRoot, operationId);
+  }
 }
 
 if (process.argv[1] && pathToFileURL(resolve(process.argv[1])).href === import.meta.url) {

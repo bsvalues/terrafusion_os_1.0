@@ -12,7 +12,10 @@ import {
   assertRuntimeCompatibleCountyDetail,
   assertRuntimeCompatibleCountyShard,
 } from '../ci/package_washington_launch_data.mjs';
-import { recoverInterruptedPackageRefresh } from './kitsap_public_sales.mjs';
+import {
+  acquirePackageRefreshLock,
+  releasePackageRefreshLock,
+} from './kitsap_public_sales.mjs';
 
 XLSX.set_fs(fs);
 
@@ -40,13 +43,40 @@ test('Kitsap adapter restores the prior package after an interrupted refresh', a
       'utf8'
     );
 
-    assert.equal(await recoverInterruptedPackageRefresh(outputPath), true);
+    const result = spawnSync(
+      process.execPath,
+      [SCRIPT_PATH, join(root, 'missing.xlsx'), '0'.repeat(64), outputPath, GENERATED_AT],
+      { encoding: 'utf8' }
+    );
+    assert.notEqual(result.status, 0);
+    assert.match(result.stderr, /missing\.xlsx|ENOENT/);
     assert.deepEqual(JSON.parse(await readFile(join(outputPath, 'manifest.json'), 'utf8')), {
       package: 'prior',
     });
     await assert.rejects(readFile(backupPath), error => error?.code === 'ENOENT');
     await assert.rejects(readFile(temporaryPath), error => error?.code === 'ENOENT');
     await assert.rejects(readFile(journalPath), error => error?.code === 'ENOENT');
+    await assert.rejects(
+      readFile(`${outputPath}.refresh.lock`),
+      error => error?.code === 'ENOENT'
+    );
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test('Kitsap adapter serializes overlapping package refresh writers', async () => {
+  const root = await mkdtemp(join(tmpdir(), 'tf-kitsap-lock-'));
+  const outputPath = join(root, 'launch-data', 'washington');
+  const firstOperation = '123-12345678-1234-4123-8123-123456789abc';
+  const secondOperation = '456-abcdefab-cdef-4abc-8def-abcdefabcdef';
+  try {
+    await acquirePackageRefreshLock(outputPath, firstOperation);
+    await assert.rejects(
+      acquirePackageRefreshLock(outputPath, secondOperation),
+      /already running under PID/i
+    );
+    await releasePackageRefreshLock(outputPath, firstOperation);
   } finally {
     await rm(root, { recursive: true, force: true });
   }
