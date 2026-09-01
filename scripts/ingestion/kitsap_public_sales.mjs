@@ -2,7 +2,7 @@
 
 import { createHash, randomUUID } from 'node:crypto';
 import * as fs from 'node:fs';
-import { access, mkdir, open, readFile, rename, rm } from 'node:fs/promises';
+import { access, mkdir, open, readFile, rename, rm, stat } from 'node:fs/promises';
 import { basename, dirname, join, resolve, sep } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import XLSX from 'xlsx';
@@ -70,6 +70,19 @@ function isProcessRunning(pid) {
   }
 }
 
+async function readRefreshLockOwner(lockPath) {
+  const ownerPath = join(lockPath, 'owner.json');
+  for (let attempt = 0; attempt < 40; attempt += 1) {
+    try {
+      return JSON.parse(await readFile(ownerPath, 'utf8'));
+    } catch (error) {
+      if (error?.code !== 'ENOENT' && !(error instanceof SyntaxError)) throw error;
+      await new Promise(resolveDelay => setTimeout(resolveDelay, 50));
+    }
+  }
+  return null;
+}
+
 export async function acquirePackageRefreshLock(outputPath, operationId) {
   const outputRoot = resolve(outputPath);
   const lockPath = `${outputRoot}.refresh.lock`;
@@ -77,31 +90,47 @@ export async function acquirePackageRefreshLock(outputPath, operationId) {
   await mkdir(dirname(outputRoot), { recursive: true });
 
   for (let attempt = 0; attempt < 4; attempt += 1) {
+    let claimedLock = false;
     try {
+      await mkdir(lockPath, { recursive: false });
+      claimedLock = true;
+      await syncDirectory(dirname(lockPath));
       await writeDurableFile(
-        lockPath,
+        join(lockPath, 'owner.json'),
         `${JSON.stringify({ operationId, ownerPid: process.pid })}\n`
       );
+      await syncDirectory(lockPath);
       return lockPath;
     } catch (error) {
+      if (claimedLock) {
+        await rm(lockPath, { recursive: true, force: true });
+        await syncDirectory(dirname(lockPath));
+        throw error;
+      }
       if (error?.code !== 'EEXIST') throw error;
     }
 
-    let owner = null;
-    try {
-      owner = JSON.parse(await readFile(lockPath, 'utf8'));
-    } catch (error) {
-      if (error?.code === 'ENOENT') continue;
-      if (!(error instanceof SyntaxError)) throw error;
-    }
+    const owner = await readRefreshLockOwner(lockPath);
     if (isProcessRunning(owner?.ownerPid)) {
       throw new Error(`Kitsap package refresh is already running under PID ${owner.ownerPid}.`);
+    }
+    if (!owner) {
+      let lockAgeMs;
+      try {
+        lockAgeMs = Date.now() - (await stat(lockPath)).mtimeMs;
+      } catch (error) {
+        if (error?.code === 'ENOENT') continue;
+        throw error;
+      }
+      if (lockAgeMs < 5_000) {
+        throw new Error('Kitsap package refresh lock owner is still initializing.');
+      }
     }
     const staleLockPath = `${lockPath}.stale-${operationId}`;
     try {
       await rename(lockPath, staleLockPath);
       await syncDirectory(dirname(lockPath));
-      await rm(staleLockPath, { force: true });
+      await rm(staleLockPath, { recursive: true, force: true });
       await syncDirectory(dirname(lockPath));
     } catch (error) {
       if (error?.code !== 'ENOENT') throw error;
@@ -111,7 +140,9 @@ export async function acquirePackageRefreshLock(outputPath, operationId) {
 }
 
 async function assertRefreshLockOwner(outputRoot, operationId) {
-  const lock = JSON.parse(await readFile(`${outputRoot}.refresh.lock`, 'utf8'));
+  const lock = JSON.parse(
+    await readFile(join(`${outputRoot}.refresh.lock`, 'owner.json'), 'utf8')
+  );
   invariant(
     lock?.operationId === operationId && lock.ownerPid === process.pid,
     'Kitsap package refresh lock ownership changed.'
@@ -121,7 +152,7 @@ async function assertRefreshLockOwner(outputRoot, operationId) {
 export async function releasePackageRefreshLock(outputPath, operationId) {
   const outputRoot = resolve(outputPath);
   await assertRefreshLockOwner(outputRoot, operationId);
-  await rm(`${outputRoot}.refresh.lock`, { force: true });
+  await rm(`${outputRoot}.refresh.lock`, { recursive: true, force: true });
   await syncDirectory(dirname(outputRoot));
 }
 

@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import * as fs from 'node:fs';
-import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
+import { mkdir, mkdtemp, readFile, rm, stat, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { spawnSync } from 'node:child_process';
@@ -77,6 +77,23 @@ test('Kitsap adapter serializes overlapping package refresh writers', async () =
       /already running under PID/i
     );
     await releasePackageRefreshLock(outputPath, firstOperation);
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test('Kitsap adapter never reclaims lock metadata that is still initializing', async () => {
+  const root = await mkdtemp(join(tmpdir(), 'tf-kitsap-lock-init-'));
+  const outputPath = join(root, 'launch-data', 'washington');
+  const lockPath = `${outputPath}.refresh.lock`;
+  const operationId = '456-abcdefab-cdef-4abc-8def-abcdefabcdef';
+  try {
+    await mkdir(lockPath, { recursive: true });
+    await assert.rejects(
+      acquirePackageRefreshLock(outputPath, operationId),
+      /lock owner is still initializing/i
+    );
+    assert.equal((await stat(lockPath)).isDirectory(), true);
   } finally {
     await rm(root, { recursive: true, force: true });
   }
