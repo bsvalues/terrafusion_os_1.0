@@ -537,7 +537,8 @@ export async function publishWhatcomPackage(
     const status = {
       schemaVersion: STATUS_SCHEMA,
       generatedAt,
-      sourcePosture: 'mixed_public_assessor_sources',
+      sourcePosture:
+        retained.statusEntries.length > 0 ? 'mixed_public_assessor_sources' : SOURCE_MODE,
       counties: [...retained.statusEntries, whatcom.statusEntry].sort((left, right) =>
         left.countyCode.localeCompare(right.countyCode)
       ),

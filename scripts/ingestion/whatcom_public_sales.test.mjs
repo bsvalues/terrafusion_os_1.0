@@ -350,6 +350,21 @@ test('preserves retained counties future-sale review count in the combined manif
   assert.equal(manifest.summary.futureSaleDateRecords, 1);
 });
 
+test('reports the single official source posture for standalone Whatcom publication', async t => {
+  const fixture = await createFixture();
+  const outputPath = join(fixture.directory, 'standalone', 'washington');
+  t.after(() => rm(fixture.directory, { recursive: true, force: true }));
+  await publishWhatcomPackage(fixture.directory, outputPath, GENERATED_AT, fixture.configPath);
+  const manifest = JSON.parse(await readFile(join(outputPath, 'manifest.json'), 'utf8'));
+  const status = JSON.parse(await readFile(join(outputPath, 'counties', 'status.json'), 'utf8'));
+  assert.equal(status.sourcePosture, 'public_assessor_qualified_sales_csv');
+  assert.equal(manifest.sourcePosture, status.sourcePosture);
+  assert.deepEqual(
+    status.counties.map(county => county.countyCode),
+    ['073']
+  );
+});
+
 test('rejects a tampered retained county shard before re-attesting it', async t => {
   const fixture = await createFixture();
   const outputPath = join(fixture.directory, 'launch-data', 'washington');
