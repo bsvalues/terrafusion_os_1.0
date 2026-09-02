@@ -16,6 +16,7 @@ import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { spawnSync } from 'node:child_process';
 import test from 'node:test';
+import { pathToFileURL } from 'node:url';
 import XLSX from 'xlsx';
 
 import {
@@ -38,6 +39,19 @@ XLSX.set_fs(fs);
 
 const GENERATED_AT = '2026-08-26T17:48:16.000Z';
 const SCRIPT_PATH = resolve('scripts/ingestion/kitsap_public_sales.mjs');
+
+test('Kitsap adapter preserves Excel calendar dates across host time zones', () => {
+  const moduleUrl = pathToFileURL(SCRIPT_PATH).href;
+  const code = `import { canonicalSaleDate } from ${JSON.stringify(moduleUrl)}; process.stdout.write(canonicalSaleDate(new Date(2026, 6, 15)));`;
+  for (const timezone of ['America/Los_Angeles', 'Pacific/Kiritimati']) {
+    const result = spawnSync(process.execPath, ['--input-type=module', '-e', code], {
+      encoding: 'utf8',
+      env: { ...process.env, TZ: timezone },
+    });
+    assert.equal(result.status, 0, result.stderr);
+    assert.equal(result.stdout, '2026-07-15', `calendar date changed in ${timezone}`);
+  }
+});
 
 test('Kitsap adapter uses native filesystem mutex commands on Linux and macOS', () => {
   const helperScript = 'process.stdout.write("LOCKED\\n")';

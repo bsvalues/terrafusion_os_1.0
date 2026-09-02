@@ -888,9 +888,13 @@ function nullableNumber(value) {
   return Number.isFinite(parsed) ? parsed : null;
 }
 
-function canonicalSaleDate(value) {
+export function canonicalSaleDate(value) {
   if (value instanceof Date && Number.isFinite(value.getTime())) {
-    return value.toISOString().slice(0, 10);
+    return [
+      String(value.getFullYear()).padStart(4, '0'),
+      String(value.getMonth() + 1).padStart(2, '0'),
+      String(value.getDate()).padStart(2, '0'),
+    ].join('-');
   }
   if (typeof value === 'number') {
     const parsed = XLSX.SSF.parse_date_code(value);
