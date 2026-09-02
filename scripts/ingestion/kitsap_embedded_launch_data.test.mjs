@@ -9,7 +9,7 @@ import {
 } from '../ci/package_washington_launch_data.mjs';
 
 const PACKAGE_ROOT = 'frontend/apps/os-shell/public/launch-data/washington';
-const EXPECTED_MANIFEST_SHA256 = '7ffcff8afb2efe23560c40d53af444daeadd49d861e776d784ce6a5af63f5d5c';
+const EXPECTED_MANIFEST_SHA256 = '47af51118cb011eb50e87c456c650fcc7018bbb6ea05e56a25c08a502c0bf25b';
 
 function canonicalizeJson(value) {
   if (value === null || typeof value === 'boolean' || typeof value === 'string') {
@@ -30,7 +30,7 @@ function canonicalSha256(value) {
   return createHash('sha256').update(canonicalizeJson(value)).digest('hex');
 }
 
-test('embedded Chelan, Clark, Kitsap, Pierce, Skagit, Snohomish, and Whatcom packages are digest-bound, county-isolated, public-only, and runtime-compatible', async () => {
+test('embedded Chelan, Clark, Kitsap, Pierce, Skagit, Snohomish, Thurston, and Whatcom packages are digest-bound, county-isolated, public-only, and runtime-compatible', async () => {
   const manifest = JSON.parse(await readFile(`${PACKAGE_ROOT}/manifest.json`, 'utf8'));
   const status = JSON.parse(await readFile(`${PACKAGE_ROOT}/counties/status.json`, 'utf8'));
   const kitsapDetail = JSON.parse(await readFile(`${PACKAGE_ROOT}/counties/035.json`, 'utf8'));
@@ -73,6 +73,13 @@ test('embedded Chelan, Clark, Kitsap, Pierce, Skagit, Snohomish, and Whatcom pac
   const snohomishReceipt = JSON.parse(
     await readFile(`${PACKAGE_ROOT}/receipts/snohomish-source.json`, 'utf8')
   );
+  const thurstonDetail = JSON.parse(await readFile(`${PACKAGE_ROOT}/counties/067.json`, 'utf8'));
+  const thurstonShard = JSON.parse(
+    await readFile(`${PACKAGE_ROOT}/sales/by-county/067.json`, 'utf8')
+  );
+  const thurstonReceipt = JSON.parse(
+    await readFile(`${PACKAGE_ROOT}/receipts/thurston-source.json`, 'utf8')
+  );
   const whatcomDetail = JSON.parse(await readFile(`${PACKAGE_ROOT}/counties/073.json`, 'utf8'));
   const whatcomShard = JSON.parse(
     await readFile(`${PACKAGE_ROOT}/sales/by-county/073.json`, 'utf8')
@@ -85,7 +92,7 @@ test('embedded Chelan, Clark, Kitsap, Pierce, Skagit, Snohomish, and Whatcom pac
   assert.equal(manifestDigest, EXPECTED_MANIFEST_SHA256);
   assert.deepEqual(
     status.counties.map(county => county.countyCode),
-    ['007', '011', '035', '053', '057', '061', '073']
+    ['007', '011', '035', '053', '057', '061', '067', '073']
   );
   assert.equal(status.counties[0].stagedSales, 908);
   assert.equal(status.counties[1].stagedSales, 5_476);
@@ -93,7 +100,8 @@ test('embedded Chelan, Clark, Kitsap, Pierce, Skagit, Snohomish, and Whatcom pac
   assert.equal(status.counties[3].stagedSales, 12_738);
   assert.equal(status.counties[4].stagedSales, 3_877);
   assert.equal(status.counties[5].stagedSales, 21_792);
-  assert.equal(status.counties[6].stagedSales, 5_109);
+  assert.equal(status.counties[6].stagedSales, 9_552);
+  assert.equal(status.counties[7].stagedSales, 5_109);
   assert.equal(chelanShard.countyCode, '007');
   assert.equal(chelanShard.records.length, 908);
   assert.equal(chelanShard.summary.reviewRecords, 132);
@@ -333,6 +341,54 @@ test('embedded Chelan, Clark, Kitsap, Pierce, Skagit, Snohomish, and Whatcom pac
     ),
     true
   );
+  assert.equal(thurstonShard.countyCode, '067');
+  assert.equal(thurstonShard.records.length, 9_552);
+  assert.equal(thurstonShard.summary.latestSaleDate, '2026-07-29');
+  assert.equal(thurstonShard.summary.reviewRecords, 0);
+  assert.equal(thurstonReceipt.candidateSales, 10_211);
+  assert.equal(thurstonReceipt.stagedSales, 9_552);
+  assert.equal(thurstonReceipt.quarantinedSales, 659);
+  assert.deepEqual(thurstonReceipt.saleValidityAuthority, {
+    table: 'PAR_SALES',
+    column: 'SALE_VRFY',
+    code: 'AA',
+    description: 'SALE-VALID',
+  });
+  assert.equal(thurstonReceipt.quarantine.multiParcelSales, 623);
+  assert.equal(thurstonReceipt.quarantine.missingSitusAddress, 36);
+  assert.equal(
+    thurstonShard.records.every(
+      record =>
+        record.county === 'Thurston' &&
+        record.countyCode === '067' &&
+        record.grantor === null &&
+        record.grantee === null &&
+        record.owner === undefined &&
+        record.mailingAddress === undefined &&
+        record.legalDescription === undefined &&
+        record.buyer === undefined &&
+        record.seller === undefined &&
+        record.verificationCode === undefined &&
+        record.flags.needsReview === false &&
+        record.reviewStatus === 'ready' &&
+        record.saleDate >= thurstonReceipt.sourceDateRange.start &&
+        record.saleDate <= thurstonReceipt.sourceDateRange.end &&
+        (record.yearBuilt === null || record.yearBuilt <= record.saleYear)
+    ),
+    true
+  );
+  const thurstonSourceDigests = new Set(thurstonReceipt.sources.map(source => source.sha256));
+  assert.equal(
+    thurstonShard.records.every(
+      record =>
+        thurstonSourceDigests.has(record.provenance.sourcePayloadSha256) &&
+        record.provenance.componentRows.length === 1 &&
+        record.provenance.componentRows.every(component =>
+          thurstonSourceDigests.has(component.sourcePayloadSha256)
+        )
+    ),
+    true
+  );
   const skagitSourceDigests = new Set(skagitReceipt.sources.map(source => source.sha256));
   assert.equal(
     skagitShard.records.every(
@@ -393,6 +449,7 @@ test('embedded Chelan, Clark, Kitsap, Pierce, Skagit, Snohomish, and Whatcom pac
   assert.equal(attestations.get('053').canonicalJsonSha256, canonicalSha256(pierceShard));
   assert.equal(attestations.get('057').canonicalJsonSha256, canonicalSha256(skagitShard));
   assert.equal(attestations.get('061').canonicalJsonSha256, canonicalSha256(snohomishShard));
+  assert.equal(attestations.get('067').canonicalJsonSha256, canonicalSha256(thurstonShard));
   assert.equal(attestations.get('073').canonicalJsonSha256, canonicalSha256(whatcomShard));
   assert.doesNotThrow(() => {
     assertRuntimeCompatibleCountyShard(chelanShard, '007', 'Chelan');
@@ -407,7 +464,9 @@ test('embedded Chelan, Clark, Kitsap, Pierce, Skagit, Snohomish, and Whatcom pac
     assertRuntimeCompatibleCountyDetail(skagitDetail, status.counties[4], manifest.generatedAt);
     assertRuntimeCompatibleCountyShard(snohomishShard, '061', 'Snohomish');
     assertRuntimeCompatibleCountyDetail(snohomishDetail, status.counties[5], manifest.generatedAt);
+    assertRuntimeCompatibleCountyShard(thurstonShard, '067', 'Thurston');
+    assertRuntimeCompatibleCountyDetail(thurstonDetail, status.counties[6], manifest.generatedAt);
     assertRuntimeCompatibleCountyShard(whatcomShard, '073', 'Whatcom');
-    assertRuntimeCompatibleCountyDetail(whatcomDetail, status.counties[6], manifest.generatedAt);
+    assertRuntimeCompatibleCountyDetail(whatcomDetail, status.counties[7], manifest.generatedAt);
   });
 });

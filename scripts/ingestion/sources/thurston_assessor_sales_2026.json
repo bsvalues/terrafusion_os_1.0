@@ -1,0 +1,23 @@
+{
+  "schemaVersion": "terrafusion.washington.public-source-set.v1",
+  "county": "Thurston",
+  "countyCode": "067",
+  "officialSourceBaseUrl": "https://www.co.thurston.wa.us",
+  "indexUrl": "https://www.thurstoncountywa.gov/assessor-database-extracts",
+  "publishedLabel": "Thurston County Assessor APTE extract downloaded 2026-09-02",
+  "sourceDateRange": {
+    "start": "2024-01-01",
+    "end": "2026-07-29"
+  },
+  "sources": [
+    {
+      "key": "assessor",
+      "archiveFile": "thurston-apte.zip",
+      "file": "apte.accdb",
+      "url": "https://map.co.thurston.wa.us/assessors/apte.zip",
+      "finalUrl": "https://map.co.thurston.wa.us/assessors/apte.zip",
+      "archiveSha256": "0f2b339e560261513025db018205d51745ff1f91c67d5f7c590beff6d20a1fa6",
+      "sha256": "b6bd14caa51394d2f3527defd478090e5d2002d278ae4aac0bf7ff45671c6771"
+    }
+  ]
+}
