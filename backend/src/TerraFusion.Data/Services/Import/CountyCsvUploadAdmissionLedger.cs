@@ -37,20 +37,27 @@ public sealed class CountyCsvUploadAdmissionLedger : ICountyCsvUploadAdmissionLe
     {
         cancellationToken.ThrowIfCancellationRequested();
 
-        if (!TryValidate(request, out var evidence, out var denialCode))
+        if (!TryValidate(
+                request,
+                out var evidence,
+                out var claimedDocumentSnapshot,
+                out var denialCode))
         {
             return Denied(denialCode);
         }
 
-        var byteBindingDenial = await RevalidateAdmittedContentAsync(
+        var contentRevalidation = await RevalidateAdmittedContentAsync(
                 request!.AdmittedContent,
                 request.IntakeReceipt!,
+                claimedDocumentSnapshot,
                 cancellationToken)
             .ConfigureAwait(false);
-        if (byteBindingDenial != CountyCsvUploadAdmissionDenialCode.None)
+        if (contentRevalidation.DenialCode != CountyCsvUploadAdmissionDenialCode.None)
         {
-            return Denied(byteBindingDenial);
+            return Denied(contentRevalidation.DenialCode);
         }
+
+        evidence = evidence with { AcceptedRowCount = contentRevalidation.AcceptedRowCount };
 
         await using var dbContext = await _dbContextFactory
             .CreateDbContextAsync(cancellationToken)
@@ -165,9 +172,11 @@ public sealed class CountyCsvUploadAdmissionLedger : ICountyCsvUploadAdmissionLe
     private static bool TryValidate(
         CountyCsvUploadAdmissionRequest? request,
         out AdmissionEvidence evidence,
+        out CountyCsvDocument claimedDocumentSnapshot,
         out CountyCsvUploadAdmissionDenialCode denialCode)
     {
         evidence = null!;
+        claimedDocumentSnapshot = null!;
         denialCode = CountyCsvUploadAdmissionDenialCode.InvalidApiContract;
 
         if (request is null
@@ -244,6 +253,12 @@ public sealed class CountyCsvUploadAdmissionLedger : ICountyCsvUploadAdmissionLe
         }
 
         var intakeReceipt = receipt.IntakeReceipt;
+        if (!TrySnapshotDocument(intakeReceipt.Document, out claimedDocumentSnapshot))
+        {
+            denialCode = CountyCsvUploadAdmissionDenialCode.InvalidDocumentEvidence;
+            return false;
+        }
+
         if (!IsSafeCsvDeclaration(
                 intakeReceipt.FileName,
                 intakeReceipt.Format,
@@ -257,14 +272,13 @@ public sealed class CountyCsvUploadAdmissionLedger : ICountyCsvUploadAdmissionLe
         if (!IsLowercaseSha256(content.Sha256)
             || content.ByteLength <= 0
             || content.ByteLength > ICountyCsvUploadAdmissionLedger.MaximumAuthenticatedCsvUploadBytes
-            || content.ByteLength != intakeReceipt.Document.InputBytes)
+            || content.ByteLength != claimedDocumentSnapshot.InputBytes)
         {
             denialCode = CountyCsvUploadAdmissionDenialCode.InvalidContentEvidence;
             return false;
         }
 
-        var document = intakeReceipt.Document;
-        if (!HasValidDocumentEvidence(document))
+        if (!HasValidDocumentEvidence(claimedDocumentSnapshot))
         {
             denialCode = CountyCsvUploadAdmissionDenialCode.InvalidDocumentEvidence;
             return false;
@@ -324,7 +338,7 @@ public sealed class CountyCsvUploadAdmissionLedger : ICountyCsvUploadAdmissionLe
             intakeReceipt.MediaType,
             content.Sha256,
             content.ByteLength,
-            document.Rows.Count,
+            claimedDocumentSnapshot.Rows.Count,
             identity.IdempotencyKey,
             request.ApiAdmissionContractId);
         denialCode = CountyCsvUploadAdmissionDenialCode.None;
@@ -352,15 +366,17 @@ public sealed class CountyCsvUploadAdmissionLedger : ICountyCsvUploadAdmissionLe
         && string.Equals(format, "csv", StringComparison.Ordinal)
         && string.Equals(mediaType, "text/csv", StringComparison.Ordinal);
 
-    private static async Task<CountyCsvUploadAdmissionDenialCode> RevalidateAdmittedContentAsync(
+    private static async Task<ContentRevalidationResult> RevalidateAdmittedContentAsync(
         ReadOnlyMemory<byte> admittedContent,
         CountyCsvCountyBoundIntakeReceipt claimedReceipt,
+        CountyCsvDocument claimedDocumentSnapshot,
         CancellationToken cancellationToken)
     {
         var claimedIntake = claimedReceipt.IntakeReceipt;
         if (admittedContent.Length != claimedIntake.Content.ByteLength)
         {
-            return CountyCsvUploadAdmissionDenialCode.InvalidContentEvidence;
+            return ContentRevalidationResult.Denied(
+                CountyCsvUploadAdmissionDenialCode.InvalidContentEvidence);
         }
 
         cancellationToken.ThrowIfCancellationRequested();
@@ -371,7 +387,8 @@ public sealed class CountyCsvUploadAdmissionLedger : ICountyCsvUploadAdmissionLe
                 claimedIntake.Content.Sha256,
                 StringComparison.Ordinal))
         {
-            return CountyCsvUploadAdmissionDenialCode.InvalidContentEvidence;
+            return ContentRevalidationResult.Denied(
+                CountyCsvUploadAdmissionDenialCode.InvalidContentEvidence);
         }
 
         CountyCsvCountyBoundIntakeReceipt regeneratedReceipt;
@@ -407,14 +424,57 @@ public sealed class CountyCsvUploadAdmissionLedger : ICountyCsvUploadAdmissionLe
                 or CountyCsvIntakeException
                 or CountyCsvCountyBoundIntakeException)
         {
-            return CountyCsvUploadAdmissionDenialCode.InvalidDocumentEvidence;
+            return ContentRevalidationResult.Denied(
+                CountyCsvUploadAdmissionDenialCode.InvalidDocumentEvidence);
         }
 
         return DocumentsMatch(
                 regeneratedReceipt.IntakeReceipt.Document,
-                claimedIntake.Document)
-            ? CountyCsvUploadAdmissionDenialCode.None
-            : CountyCsvUploadAdmissionDenialCode.InvalidDocumentEvidence;
+                claimedDocumentSnapshot)
+            ? ContentRevalidationResult.Accepted(
+                regeneratedReceipt.IntakeReceipt.Document.Rows.Count)
+            : ContentRevalidationResult.Denied(
+                CountyCsvUploadAdmissionDenialCode.InvalidDocumentEvidence);
+    }
+
+    private static bool TrySnapshotDocument(
+        CountyCsvDocument document,
+        out CountyCsvDocument snapshot)
+    {
+        snapshot = null!;
+        try
+        {
+            if (document.Headers is null || document.Rows is null)
+            {
+                return false;
+            }
+
+            var headers = document.Headers.ToArray();
+            var rows = new IReadOnlyList<string>[document.Rows.Count];
+            for (var index = 0; index < rows.Length; index++)
+            {
+                var row = document.Rows[index];
+                if (row is null)
+                {
+                    return false;
+                }
+
+                rows[index] = Array.AsReadOnly(row.ToArray());
+            }
+
+            snapshot = new CountyCsvDocument(
+                Array.AsReadOnly(headers),
+                Array.AsReadOnly(rows),
+                document.InputBytes);
+            return true;
+        }
+        catch (Exception exception) when (
+            exception is ArgumentException
+                or InvalidOperationException
+                or IndexOutOfRangeException)
+        {
+            return false;
+        }
     }
 
     private static bool DocumentsMatch(CountyCsvDocument regenerated, CountyCsvDocument claimed)
@@ -508,6 +568,18 @@ public sealed class CountyCsvUploadAdmissionLedger : ICountyCsvUploadAdmissionLe
             CountyCsvUploadAdmissionDisposition.Denied,
             denialCode,
             null);
+
+    private sealed record ContentRevalidationResult(
+        CountyCsvUploadAdmissionDenialCode DenialCode,
+        int AcceptedRowCount)
+    {
+        public static ContentRevalidationResult Accepted(int acceptedRowCount) =>
+            new(CountyCsvUploadAdmissionDenialCode.None, acceptedRowCount);
+
+        public static ContentRevalidationResult Denied(
+            CountyCsvUploadAdmissionDenialCode denialCode) =>
+            new(denialCode, 0);
+    }
 
     private sealed record AdmissionEvidence(
         Guid CountyId,

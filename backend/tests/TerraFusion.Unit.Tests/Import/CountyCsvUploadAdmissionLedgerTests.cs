@@ -444,6 +444,48 @@ public sealed class CountyCsvUploadAdmissionLedgerTests
     }
 
     [Fact]
+    public async Task AdmitAsync_DeniesDocumentRowsMutatedWhileAdmittedContentIsSnapshotted()
+    {
+        await using var database = await TestDatabase.CreateAsync((Benton, BentonId));
+        var request = await CreateRequestAsync(Benton, BentonId, "assessor-1");
+        var originalDocument = request.IntakeReceipt!.IntakeReceipt.Document;
+        var mutableRows = new List<IReadOnlyList<string>>
+        {
+            originalDocument.Rows[0],
+        };
+        var claimedDocument = originalDocument with { Rows = mutableRows };
+        var claimedReceipt = request.IntakeReceipt with
+        {
+            IntakeReceipt = request.IntakeReceipt.IntakeReceipt with
+            {
+                Document = claimedDocument,
+            },
+        };
+        using var content = new CallbackMemoryManager(
+            request.AdmittedContent.ToArray(),
+            () => mutableRows.Add(originalDocument.Rows[1]));
+        var mutableRequest = request with
+        {
+            IntakeReceipt = claimedReceipt,
+            AdmittedContent = content.Memory,
+        };
+
+        var result = await new CountyCsvUploadAdmissionLedger(database.CreateFactory())
+            .AdmitAsync(mutableRequest);
+
+        Assert.Equal(CountyCsvUploadAdmissionDisposition.Denied, result.Disposition);
+        Assert.Equal(
+            CountyCsvUploadAdmissionDenialCode.InvalidDocumentEvidence,
+            result.DenialCode);
+        Assert.Null(result.Batch);
+        Assert.Equal(2, content.GetSpanCalls);
+
+        await using var verificationContext = database.CreateContext();
+        Assert.Equal(0, await verificationContext.CountyCsvUploadBatches.CountAsync());
+        Assert.Equal(0, await verificationContext.AuditLogs.CountAsync());
+    }
+
+    [Fact]
     public async Task AdmissionHasNoSyncOrPacsWriteSeam()
     {
         await using var database = await TestDatabase.CreateAsync((Benton, BentonId));
@@ -760,6 +802,36 @@ public sealed class CountyCsvUploadAdmissionLedgerTests
             Interlocked.Increment(ref _getSpanCalls) <= 2
                 ? original
                 : parserEquivalentAlternative;
+
+        public override MemoryHandle Pin(int elementIndex = 0) =>
+            throw new NotSupportedException();
+
+        public override void Unpin()
+        {
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+        }
+    }
+
+    private sealed class CallbackMemoryManager(
+        byte[] content,
+        Action onSecondGetSpan) : MemoryManager<byte>
+    {
+        private int _getSpanCalls;
+
+        public int GetSpanCalls => Volatile.Read(ref _getSpanCalls);
+
+        public override Span<byte> GetSpan()
+        {
+            if (Interlocked.Increment(ref _getSpanCalls) == 2)
+            {
+                onSecondGetSpan();
+            }
+
+            return content;
+        }
 
         public override MemoryHandle Pin(int elementIndex = 0) =>
             throw new NotSupportedException();
