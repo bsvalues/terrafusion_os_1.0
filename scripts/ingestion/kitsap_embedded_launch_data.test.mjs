@@ -9,7 +9,7 @@ import {
 } from '../ci/package_washington_launch_data.mjs';
 
 const PACKAGE_ROOT = 'frontend/apps/os-shell/public/launch-data/washington';
-const EXPECTED_MANIFEST_SHA256 = 'd838a6fe1e106cf870a8307d3c8cb21e908e4fa283533069afa8557400930f17';
+const EXPECTED_MANIFEST_SHA256 = '96734f8ca86bad7be62afa83cb8197e7762634057d8b167ff06ec4252cdf3ca7';
 
 function canonicalizeJson(value) {
   if (value === null || typeof value === 'boolean' || typeof value === 'string') {
@@ -30,7 +30,7 @@ function canonicalSha256(value) {
   return createHash('sha256').update(canonicalizeJson(value)).digest('hex');
 }
 
-test('embedded Chelan, Kitsap, and Whatcom packages are digest-bound, county-isolated, public-only, and runtime-compatible', async () => {
+test('embedded Chelan, Clark, Kitsap, and Whatcom packages are digest-bound, county-isolated, public-only, and runtime-compatible', async () => {
   const manifest = JSON.parse(await readFile(`${PACKAGE_ROOT}/manifest.json`, 'utf8'));
   const status = JSON.parse(await readFile(`${PACKAGE_ROOT}/counties/status.json`, 'utf8'));
   const kitsapDetail = JSON.parse(await readFile(`${PACKAGE_ROOT}/counties/035.json`, 'utf8'));
@@ -47,6 +47,11 @@ test('embedded Chelan, Kitsap, and Whatcom packages are digest-bound, county-iso
   const chelanReceipt = JSON.parse(
     await readFile(`${PACKAGE_ROOT}/receipts/chelan-source.json`, 'utf8')
   );
+  const clarkDetail = JSON.parse(await readFile(`${PACKAGE_ROOT}/counties/011.json`, 'utf8'));
+  const clarkShard = JSON.parse(await readFile(`${PACKAGE_ROOT}/sales/by-county/011.json`, 'utf8'));
+  const clarkReceipt = JSON.parse(
+    await readFile(`${PACKAGE_ROOT}/receipts/clark-source.json`, 'utf8')
+  );
   const whatcomDetail = JSON.parse(await readFile(`${PACKAGE_ROOT}/counties/073.json`, 'utf8'));
   const whatcomShard = JSON.parse(
     await readFile(`${PACKAGE_ROOT}/sales/by-county/073.json`, 'utf8')
@@ -59,11 +64,12 @@ test('embedded Chelan, Kitsap, and Whatcom packages are digest-bound, county-iso
   assert.equal(manifestDigest, EXPECTED_MANIFEST_SHA256);
   assert.deepEqual(
     status.counties.map(county => county.countyCode),
-    ['007', '035', '073']
+    ['007', '011', '035', '073']
   );
   assert.equal(status.counties[0].stagedSales, 908);
-  assert.equal(status.counties[1].stagedSales, 24_585);
-  assert.equal(status.counties[2].stagedSales, 5_109);
+  assert.equal(status.counties[1].stagedSales, 5_476);
+  assert.equal(status.counties[2].stagedSales, 24_585);
+  assert.equal(status.counties[3].stagedSales, 5_109);
   assert.equal(chelanShard.countyCode, '007');
   assert.equal(chelanShard.records.length, 908);
   assert.equal(chelanShard.summary.reviewRecords, 132);
@@ -125,6 +131,61 @@ test('embedded Chelan, Kitsap, and Whatcom packages are digest-bound, county-iso
   assert.equal(chelanReceipt.quarantinedSales, 0);
   assert.equal(chelanReceipt.consolidation.componentRowsConsolidated, 77);
   assert.equal(chelanReceipt.consolidation.multiComponentTransactions, 43);
+  assert.equal(clarkShard.countyCode, '011');
+  assert.equal(clarkShard.records.length, 5_476);
+  assert.equal(clarkShard.summary.reviewRecords, 0);
+  assert.equal(clarkReceipt.candidateSales, 5_482);
+  assert.equal(clarkReceipt.stagedSales, 5_476);
+  assert.equal(clarkReceipt.quarantinedSales, 6);
+  assert.equal(clarkReceipt.quarantine.exactDuplicateRows, 6);
+  assert.equal(clarkShard.records.filter(record => record.yearBuilt !== null).length, 5_373);
+  assert.equal(clarkShard.records.filter(record => record.grossLivingArea !== null).length, 5_373);
+  assert.equal(clarkShard.records.filter(record => record.lotSizeSqft !== null).length, 5_105);
+  assert.equal(clarkShard.records.filter(record => record.qualityGrade !== null).length, 5_373);
+  assert.equal(
+    clarkShard.records.every(record => record.situsZip === null),
+    true
+  );
+  const firstClarkSale = clarkShard.records.find(record => record.parcelNumber === '986046773');
+  assert.equal(firstClarkSale.situsAddress, '18505 NE 78TH WAY VANCOUVER, WA 98682');
+  assert.equal(firstClarkSale.qualityGrade, 'Good');
+  assert.equal(firstClarkSale.acres, 0.2317);
+  assert.equal(firstClarkSale.lotSizeSqft, 10_092);
+  for (const parcelNumber of ['228329000', '986066723']) {
+    const postConstructionSale = clarkShard.records.find(
+      record => record.parcelNumber === parcelNumber
+    );
+    assert.equal(postConstructionSale.yearBuilt, null);
+    assert.equal(postConstructionSale.grossLivingArea, null);
+    assert.equal(postConstructionSale.qualityGrade, null);
+    assert.equal(postConstructionSale.useCode, null);
+  }
+  assert.equal(
+    clarkShard.records.filter(record => record.adjustedSalePrice !== null).length,
+    5_476
+  );
+  assert.equal(
+    clarkShard.records.every(
+      record =>
+        record.countyCode === '011' &&
+        record.grantor === null &&
+        record.grantee === null &&
+        record.owner === undefined &&
+        record.buyer === undefined &&
+        record.seller === undefined &&
+        (record.yearBuilt === null ||
+          (Number.isInteger(record.yearBuilt) &&
+            record.yearBuilt >= 1700 &&
+            record.yearBuilt <= record.saleYear))
+    ),
+    true
+  );
+  assert.equal(
+    clarkShard.records.every(
+      record => record.provenance.sourcePayloadSha256 === clarkReceipt.sources[0].sha256
+    ),
+    true
+  );
   assert.equal(kitsapShard.countyCode, '035');
   assert.equal(kitsapShard.records.length, 24_585);
   assert.equal(
@@ -172,14 +233,17 @@ test('embedded Chelan, Kitsap, and Whatcom packages are digest-bound, county-iso
     manifest.salesShardAttestations.map(attestation => [attestation.countyCode, attestation])
   );
   assert.equal(attestations.get('007').canonicalJsonSha256, canonicalSha256(chelanShard));
+  assert.equal(attestations.get('011').canonicalJsonSha256, canonicalSha256(clarkShard));
   assert.equal(attestations.get('035').canonicalJsonSha256, canonicalSha256(kitsapShard));
   assert.equal(attestations.get('073').canonicalJsonSha256, canonicalSha256(whatcomShard));
   assert.doesNotThrow(() => {
     assertRuntimeCompatibleCountyShard(chelanShard, '007', 'Chelan');
     assertRuntimeCompatibleCountyDetail(chelanDetail, status.counties[0], manifest.generatedAt);
+    assertRuntimeCompatibleCountyShard(clarkShard, '011', 'Clark');
+    assertRuntimeCompatibleCountyDetail(clarkDetail, status.counties[1], manifest.generatedAt);
     assertRuntimeCompatibleCountyShard(kitsapShard, '035', 'Kitsap');
-    assertRuntimeCompatibleCountyDetail(kitsapDetail, status.counties[1], manifest.generatedAt);
+    assertRuntimeCompatibleCountyDetail(kitsapDetail, status.counties[2], manifest.generatedAt);
     assertRuntimeCompatibleCountyShard(whatcomShard, '073', 'Whatcom');
-    assertRuntimeCompatibleCountyDetail(whatcomDetail, status.counties[2], manifest.generatedAt);
+    assertRuntimeCompatibleCountyDetail(whatcomDetail, status.counties[3], manifest.generatedAt);
   });
 });

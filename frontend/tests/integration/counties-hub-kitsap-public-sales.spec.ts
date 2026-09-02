@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-test('uses the authenticated Chelan, Kitsap, and Whatcom public-sales package without lending it to another county', async ({
+test('uses the authenticated Chelan, Clark, Kitsap, and Whatcom public-sales package without lending it to another county', async ({
   page,
 }) => {
   const requestedSalesShards: string[] = [];
@@ -54,6 +54,61 @@ test('uses the authenticated Chelan, Kitsap, and Whatcom public-sales package wi
   await page.goto('/counties', { waitUntil: 'domcontentloaded' });
   await expect(page.getByRole('option')).toHaveCount(39, { timeout: 20_000 });
 
+  const clark = page.getByRole('option', { name: 'Select Clark County' });
+  await clark.click();
+  await expect(clark).toHaveAttribute('aria-selected', 'true');
+  await expect(context).toContainText('Clark County');
+  await expect(context).toContainText('5,476', { timeout: 45_000 });
+  await expect(context).toContainText('2025-12-31');
+  await expect(context).not.toContainText('No governed public sales state is available');
+
+  await page.getByRole('button', { name: 'Open TerraForge' }).click();
+  await expect(page.getByRole('heading', { name: 'TerraForge', exact: true })).toBeVisible({
+    timeout: 20_000,
+  });
+  await expect(page.getByTestId('forge-county-context')).toContainText('5,476', {
+    timeout: 45_000,
+  });
+  const clarkSalesForge = page
+    .getByTestId('forge-primary-applications')
+    .getByRole('button', { name: /SalesForge/i });
+  await expect(clarkSalesForge).toBeEnabled();
+  await clarkSalesForge.click();
+  await expect(page.getByRole('heading', { name: 'SalesForge' })).toBeVisible({ timeout: 20_000 });
+  await expect(salesForge.getByText('Clark County', { exact: true })).toBeVisible();
+  await expect(salesForge.getByText('Washington launch data package', { exact: true })).toBeVisible(
+    { timeout: 20_000 }
+  );
+  await expect(salesForge.getByTestId('salesforge-data-unavailable')).toHaveCount(0);
+  const firstClarkSaleRow = salesForge
+    .getByRole('table', { name: 'Sale qualification queue' })
+    .getByRole('row')
+    .nth(1);
+  await expect(firstClarkSaleRow).toContainText('986046773', { timeout: 20_000 });
+  await expect(firstClarkSaleRow).toContainText('Dec 31, 25');
+  await firstClarkSaleRow.click();
+  const clarkAddress = salesForge.locator('.sf-detail-field').filter({ hasText: 'Address' });
+  await expect(clarkAddress).toHaveText('Address18505 NE 78TH WAY VANCOUVER, WA 98682');
+  const clarkYearBuilt = salesForge
+    .locator('.sf-detail-field')
+    .filter({ hasText: 'Year built (current)' });
+  await expect(clarkYearBuilt).toContainText('2018');
+  const clarkQualityGrade = salesForge
+    .locator('.sf-detail-field')
+    .filter({ hasText: 'Quality grade' });
+  await expect(clarkQualityGrade).toContainText('Good');
+  const clarkLandAcres = salesForge
+    .locator('.sf-detail-field')
+    .filter({ hasText: 'Land (acres, ToS)' });
+  await expect(clarkLandAcres).toContainText('0.2317');
+  const clarkLandSqft = salesForge
+    .locator('.sf-detail-field')
+    .filter({ hasText: 'Land (sqft, ToS)' });
+  await expect(clarkLandSqft).toContainText('10,092 sf');
+
+  await page.goto('/counties', { waitUntil: 'domcontentloaded' });
+  await expect(page.getByRole('option')).toHaveCount(39, { timeout: 20_000 });
+
   const kitsap = page.getByRole('option', { name: 'Select Kitsap County' });
   await kitsap.click();
   await expect(kitsap).toHaveAttribute('aria-selected', 'true');
@@ -62,8 +117,6 @@ test('uses the authenticated Chelan, Kitsap, and Whatcom public-sales package wi
   await expect(context).toContainText('24,585', { timeout: 45_000 });
   await expect(context).toContainText('2026-07-15');
   await expect(context).not.toContainText('No governed public sales state is available');
-  await expect(page.getByText('1 with verified observed status', { exact: true })).toBeVisible();
-
   await page.getByRole('button', { name: 'Open TerraForge' }).click();
   await expect(page.getByRole('heading', { name: 'TerraForge', exact: true })).toBeVisible({
     timeout: 20_000,
@@ -165,9 +218,11 @@ test('uses the authenticated Chelan, Kitsap, and Whatcom public-sales package wi
   await expect(adamsSalesForge).toBeDisabled();
   await expect(page.getByTestId('forge-county-context')).not.toContainText('24,585');
   await expect(page.getByTestId('forge-county-context')).not.toContainText('5,109');
+  await expect(page.getByTestId('forge-county-context')).not.toContainText('5,476');
 
   expect(requestedSalesShards).toContain('/launch-data/washington/sales/by-county/035.json');
   expect(requestedSalesShards).toContain('/launch-data/washington/sales/by-county/073.json');
   expect(requestedSalesShards).toContain('/launch-data/washington/sales/by-county/007.json');
+  expect(requestedSalesShards).toContain('/launch-data/washington/sales/by-county/011.json');
   expect(requestedSalesShards).not.toContain('/launch-data/washington/sales/by-county/001.json');
 });

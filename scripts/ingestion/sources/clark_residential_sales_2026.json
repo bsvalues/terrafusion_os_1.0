@@ -1,0 +1,23 @@
+{
+  "schemaVersion": "terrafusion.washington.public-source-set.v1",
+  "county": "Clark",
+  "countyCode": "011",
+  "officialSourceBaseUrl": "https://clark.wa.gov/assessor",
+  "indexUrl": "https://clark.wa.gov/assessor/residential-property-sales-information",
+  "publishedLabel": "2026",
+  "sourceDateRange": {
+    "start": "2024-01-11",
+    "end": "2025-12-31"
+  },
+  "sources": [
+    {
+      "key": "residential",
+      "archiveFile": "web-area-sales-csv.zip",
+      "file": "Web Area Sales CSV.csv",
+      "url": "https://clark.wa.gov/media/document/228661",
+      "finalUrl": "https://clark.wa.gov/sites/default/files/media/document/2026-06/web-area-sales-csv.zip",
+      "archiveSha256": "4b37496b52c4ce5030d591d8d0126226690838c4f0e503d7d352093859dca5e9",
+      "sha256": "ba6310212d148cad510e7043abb4becbf123c62e4e685afcd87d144612bd8ecb"
+    }
+  ]
+}
