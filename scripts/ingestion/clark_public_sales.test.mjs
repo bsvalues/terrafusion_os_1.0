@@ -81,7 +81,7 @@ async function createFixture({ duplicate = false, postSaleYear = false, future =
       'Year Built': postSaleYear ? '2025' : '',
       'Parcel Size (Sq Ft)': '10092',
       'Parcel Size (Acres)': '0',
-      'Main and Upper Living Area': '0',
+      'Main and Upper Living Area': postSaleYear ? '1200' : '0',
       'Parcel Address': '',
     }),
   ];
@@ -150,6 +150,8 @@ test('builds a public-only Clark package and quarantines exact duplicate rows', 
   assert.equal(first.grossLivingArea, 1800);
   assert.equal(first.yearBuilt, 2020);
   assert.equal(second.yearBuilt, null);
+  assert.equal(second.useCode, null);
+  assert.equal(second.qualityGrade, null);
   assert.equal(second.lotSizeSqft, 10_092);
   assert.equal(second.acres, 0.2317);
   assert.equal(second.grossLivingArea, null);

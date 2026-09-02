@@ -9,7 +9,7 @@ import {
 } from '../ci/package_washington_launch_data.mjs';
 
 const PACKAGE_ROOT = 'frontend/apps/os-shell/public/launch-data/washington';
-const EXPECTED_MANIFEST_SHA256 = 'b4faa34493b68ef98216dcae532f1c9b094a239eb97eafd7718191ba9718d1ab';
+const EXPECTED_MANIFEST_SHA256 = '96734f8ca86bad7be62afa83cb8197e7762634057d8b167ff06ec4252cdf3ca7';
 
 function canonicalizeJson(value) {
   if (value === null || typeof value === 'boolean' || typeof value === 'string') {
@@ -139,9 +139,9 @@ test('embedded Chelan, Clark, Kitsap, and Whatcom packages are digest-bound, cou
   assert.equal(clarkReceipt.quarantinedSales, 6);
   assert.equal(clarkReceipt.quarantine.exactDuplicateRows, 6);
   assert.equal(clarkShard.records.filter(record => record.yearBuilt !== null).length, 5_373);
-  assert.equal(clarkShard.records.filter(record => record.grossLivingArea !== null).length, 5_375);
+  assert.equal(clarkShard.records.filter(record => record.grossLivingArea !== null).length, 5_373);
   assert.equal(clarkShard.records.filter(record => record.lotSizeSqft !== null).length, 5_105);
-  assert.equal(clarkShard.records.filter(record => record.qualityGrade !== null).length, 5_375);
+  assert.equal(clarkShard.records.filter(record => record.qualityGrade !== null).length, 5_373);
   assert.equal(
     clarkShard.records.every(record => record.situsZip === null),
     true
@@ -149,6 +149,17 @@ test('embedded Chelan, Clark, Kitsap, and Whatcom packages are digest-bound, cou
   const firstClarkSale = clarkShard.records.find(record => record.parcelNumber === '986046773');
   assert.equal(firstClarkSale.situsAddress, '18505 NE 78TH WAY VANCOUVER, WA 98682');
   assert.equal(firstClarkSale.qualityGrade, 'Good');
+  assert.equal(firstClarkSale.acres, 0.2317);
+  assert.equal(firstClarkSale.lotSizeSqft, 10_092);
+  for (const parcelNumber of ['228329000', '986066723']) {
+    const postConstructionSale = clarkShard.records.find(
+      record => record.parcelNumber === parcelNumber
+    );
+    assert.equal(postConstructionSale.yearBuilt, null);
+    assert.equal(postConstructionSale.grossLivingArea, null);
+    assert.equal(postConstructionSale.qualityGrade, null);
+    assert.equal(postConstructionSale.useCode, null);
+  }
   assert.equal(
     clarkShard.records.filter(record => record.adjustedSalePrice !== null).length,
     5_476

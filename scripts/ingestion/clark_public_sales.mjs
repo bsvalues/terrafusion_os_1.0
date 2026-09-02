@@ -222,6 +222,11 @@ function mapRecord(row, source, ordinal, generatedAt) {
   const acres = reportedAcres
     ?? (lotSizeSqft === null ? null : Math.round((lotSizeSqft / 43_560) * 10_000) / 10_000);
   const neighborhoodCode = nullableString(row['Assessment Group']);
+  const reportedYearBuilt = nullableString(row['Year Built']);
+  const parsedYearBuilt = reportedYearBuilt && /^\d+$/.test(reportedYearBuilt)
+    ? Number(reportedYearBuilt)
+    : null;
+  const dwellingExistedAtSale = parsedYearBuilt === null || parsedYearBuilt <= saleYear;
 
   return {
     saleId: `WA-${COUNTY_CODE}-${identityDigest.slice(0, 32)}`,
@@ -237,7 +242,7 @@ function mapRecord(row, source, ordinal, generatedAt) {
     situsAddress: situs.streetAddress,
     situsCity: situs.city,
     situsZip: situs.zip,
-    useCode: nullableString(row['Building Type']),
+    useCode: dwellingExistedAtSale ? nullableString(row['Building Type']) : null,
     acres,
     grantor: null,
     grantee: null,
@@ -250,16 +255,15 @@ function mapRecord(row, source, ordinal, generatedAt) {
     qualityScore: 1,
     qualityBand: 'official_assessor_validated_sale',
     reviewStatus: 'ready',
-    grossLivingArea: nullablePositiveNumber(
-      row['Main and Upper Living Area'],
-      'main and upper living area'
-    ),
+    grossLivingArea: dwellingExistedAtSale
+      ? nullablePositiveNumber(row['Main and Upper Living Area'], 'main and upper living area')
+      : null,
     lotSizeSqft,
-    yearBuilt: validYearBuilt(row['Year Built'], saleYear),
+    yearBuilt: dwellingExistedAtSale ? validYearBuilt(row['Year Built'], saleYear) : null,
     bedrooms: null,
     bathrooms: null,
     condition: null,
-    qualityGrade: nullableString(row['Quality']),
+    qualityGrade: dwellingExistedAtSale ? nullableString(row['Quality']) : null,
     provenance: {
       sourceUrl: source.url,
       sourceFinalUrl: source.finalUrl,
