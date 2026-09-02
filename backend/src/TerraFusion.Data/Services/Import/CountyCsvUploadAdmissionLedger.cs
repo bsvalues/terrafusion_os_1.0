@@ -455,11 +455,7 @@ public sealed class CountyCsvUploadAdmissionLedger : ICountyCsvUploadAdmissionLe
             shape = new ClaimedDocumentShape(headerCount, rowCount, document.InputBytes);
             return true;
         }
-        catch (Exception exception) when (
-            exception is ArgumentException
-                or InvalidOperationException
-                or IndexOutOfRangeException
-                or NotSupportedException)
+        catch (Exception exception) when (IsNonFatalCollectionAccessException(exception))
         {
             return false;
         }
@@ -522,15 +518,16 @@ public sealed class CountyCsvUploadAdmissionLedger : ICountyCsvUploadAdmissionLe
 
             return true;
         }
-        catch (Exception exception) when (
-            exception is ArgumentException
-                or InvalidOperationException
-                or IndexOutOfRangeException
-                or NotSupportedException)
+        catch (Exception exception) when (IsNonFatalCollectionAccessException(exception))
         {
             return false;
         }
     }
+
+    private static bool IsNonFatalCollectionAccessException(Exception exception) =>
+        exception is not OutOfMemoryException
+            and not StackOverflowException
+            and not AccessViolationException;
 
     private static bool IsLowercaseSha256(string? value) =>
         value is { Length: 64 }

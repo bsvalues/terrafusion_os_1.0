@@ -579,6 +579,56 @@ public sealed class CountyCsvUploadAdmissionLedgerTests
     }
 
     [Fact]
+    public async Task AdmitAsync_DeniesArbitraryClaimedCollectionAccessFailures()
+    {
+        await using var database = await TestDatabase.CreateAsync((Benton, BentonId));
+        var request = await CreateRequestAsync(Benton, BentonId, "assessor-1");
+        var originalDocument = request.IntakeReceipt!.IntakeReceipt.Document;
+        var hostileDocuments = new[]
+        {
+            originalDocument with
+            {
+                Headers = new ThrowingReadOnlyList<string>(
+                    originalDocument.Headers.Count,
+                    throwOnCount: true),
+            },
+            originalDocument with
+            {
+                Headers = new ThrowingReadOnlyList<string>(
+                    originalDocument.Headers.Count,
+                    throwOnCount: false),
+            },
+        };
+        var ledger = new CountyCsvUploadAdmissionLedger(database.CreateFactory());
+
+        foreach (var hostileDocument in hostileDocuments)
+        {
+            var hostileRequest = request with
+            {
+                IntakeReceipt = request.IntakeReceipt with
+                {
+                    IntakeReceipt = request.IntakeReceipt.IntakeReceipt with
+                    {
+                        Document = hostileDocument,
+                    },
+                },
+            };
+
+            var result = await ledger.AdmitAsync(hostileRequest);
+
+            Assert.Equal(CountyCsvUploadAdmissionDisposition.Denied, result.Disposition);
+            Assert.Equal(
+                CountyCsvUploadAdmissionDenialCode.InvalidDocumentEvidence,
+                result.DenialCode);
+            Assert.Null(result.Batch);
+        }
+
+        await using var verificationContext = database.CreateContext();
+        Assert.Equal(0, await verificationContext.CountyCsvUploadBatches.CountAsync());
+        Assert.Equal(0, await verificationContext.AuditLogs.CountAsync());
+    }
+
+    [Fact]
     public async Task AdmissionHasNoSyncOrPacsWriteSeam()
     {
         await using var database = await TestDatabase.CreateAsync((Benton, BentonId));
@@ -973,6 +1023,23 @@ public sealed class CountyCsvUploadAdmissionLedgerTests
 
         public IEnumerator<T> GetEnumerator() =>
             throw new InvalidOperationException("Aggregate evidence must not be enumerated.");
+
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() =>
+            GetEnumerator();
+    }
+
+    private sealed class ThrowingReadOnlyList<T>(int count, bool throwOnCount) : IReadOnlyList<T>
+    {
+        public int Count =>
+            throwOnCount
+                ? throw new TimeoutException("synthetic untrusted Count failure")
+                : count;
+
+        public T this[int index] =>
+            throw new TimeoutException("synthetic untrusted indexer failure");
+
+        public IEnumerator<T> GetEnumerator() =>
+            throw new TimeoutException("synthetic untrusted enumeration failure");
 
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() =>
             GetEnumerator();
