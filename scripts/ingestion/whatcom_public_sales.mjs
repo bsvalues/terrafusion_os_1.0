@@ -61,6 +61,11 @@ function finiteNumber(value, label, { positive = false } = {}) {
   return parsed;
 }
 
+function nullableFiniteNumber(value, label) {
+  const normalized = nullableString(value);
+  return normalized === null ? null : finiteNumber(normalized, label);
+}
+
 function canonicalSaleDate(value) {
   const normalized = String(value ?? '').trim();
   invariant(/^\d{4}-\d{2}-\d{2}$/.test(normalized), 'Whatcom sale date is not YYYY-MM-DD.');
@@ -142,12 +147,7 @@ export function parseWhatcomCsv(text) {
 }
 
 function saleIdentity(row) {
-  return [
-    row['Property ID'],
-    row['Sale Date'],
-    row['Sale Price'],
-    row['Parcel Number/Geo ID'],
-  ]
+  return [row['Property ID'], row['Sale Date'], row['Sale Price'], row['Parcel Number/Geo ID']]
     .map(value => String(value ?? '').trim())
     .join('|');
 }
@@ -168,7 +168,10 @@ function mapRecord(candidate, generatedAt) {
   const situsAddress = nullableString(row['Situs Address']);
   invariant(parcelNumber, 'Whatcom source row has no parcel/Geo ID.');
   invariant(propertyId, 'Whatcom source row has no property ID.');
-  invariant(['K', 'L', 'M', 'Q'].includes(saleTypeCode), 'Whatcom source row has an unknown sale type.');
+  invariant(
+    ['K', 'L', 'M', 'Q'].includes(saleTypeCode),
+    'Whatcom source row has an unknown sale type.'
+  );
   invariant(saleDate <= generatedAt.slice(0, 10), 'Whatcom source row is future-dated.');
 
   const identity = saleIdentity(row);
@@ -189,7 +192,7 @@ function mapRecord(candidate, generatedAt) {
     situsCity: parseSitusCity(situsAddress),
     situsZip: null,
     useCode: nullableString(row['DOR State Code']),
-    acres: finiteNumber(row['Site Size'], 'site size'),
+    acres: nullableFiniteNumber(row['Site Size'], 'site size'),
     grantor: null,
     grantee: null,
     saleNote: `Official qualified sale type ${saleTypeCode}`,
@@ -237,8 +240,9 @@ function topNeighborhoodCodes(records) {
   }
   return Object.fromEntries(
     [...counts.entries()]
-      .sort(([leftCode, leftCount], [rightCode, rightCount]) =>
-        rightCount - leftCount || leftCode.localeCompare(rightCode)
+      .sort(
+        ([leftCode, leftCount], [rightCode, rightCount]) =>
+          rightCount - leftCount || leftCode.localeCompare(rightCode)
       )
       .slice(0, 25)
   );
@@ -248,8 +252,14 @@ async function readSourceConfig(configPath = SOURCE_CONFIG_PATH) {
   const config = JSON.parse(await readFile(configPath, 'utf8'));
   invariant(isRecord(config), 'Whatcom source-set config is not an object.');
   invariant(config.schemaVersion === SOURCE_SET_SCHEMA, 'Whatcom source-set schema is invalid.');
-  invariant(config.county === COUNTY && config.countyCode === COUNTY_CODE, 'Whatcom source-set county is invalid.');
-  invariant(Array.isArray(config.sources) && config.sources.length === 8, 'Whatcom source-set must name eight official CSV files.');
+  invariant(
+    config.county === COUNTY && config.countyCode === COUNTY_CODE,
+    'Whatcom source-set county is invalid.'
+  );
+  invariant(
+    Array.isArray(config.sources) && config.sources.length === 8,
+    'Whatcom source-set must name eight official CSV files.'
+  );
   const officialSource = new URL(config.officialSourceBaseUrl);
   invariant(
     officialSource.protocol === 'https:' &&
@@ -271,11 +281,26 @@ async function readSourceConfig(configPath = SOURCE_CONFIG_PATH) {
   const files = new Set();
   for (const source of config.sources) {
     invariant(isRecord(source), 'Whatcom source-set entry is invalid.');
-    invariant(typeof source.key === 'string' && source.key.length > 0, 'Whatcom source key is invalid.');
-    invariant(typeof source.file === 'string' && basename(source.file) === source.file, 'Whatcom source file is invalid.');
-    invariant(typeof source.url === 'string' && new URL(source.url).origin === officialOrigin, 'Whatcom source URL is outside the official county origin.');
-    invariant(typeof source.sha256 === 'string' && SHA256_PATTERN.test(source.sha256), 'Whatcom source SHA-256 is invalid.');
-    invariant(!keys.has(source.key) && !files.has(source.file), 'Whatcom source-set contains duplicate identity.');
+    invariant(
+      typeof source.key === 'string' && source.key.length > 0,
+      'Whatcom source key is invalid.'
+    );
+    invariant(
+      typeof source.file === 'string' && basename(source.file) === source.file,
+      'Whatcom source file is invalid.'
+    );
+    invariant(
+      typeof source.url === 'string' && new URL(source.url).origin === officialOrigin,
+      'Whatcom source URL is outside the official county origin.'
+    );
+    invariant(
+      typeof source.sha256 === 'string' && SHA256_PATTERN.test(source.sha256),
+      'Whatcom source SHA-256 is invalid.'
+    );
+    invariant(
+      !keys.has(source.key) && !files.has(source.file),
+      'Whatcom source-set contains duplicate identity.'
+    );
     keys.add(source.key);
     files.add(source.file);
   }
@@ -294,7 +319,9 @@ export async function buildWhatcomCountyPackage(
   const config = await readSourceConfig(configPath);
   const candidates = [];
   const sourceReceipts = [];
-  for (const source of [...config.sources].sort((left, right) => left.key.localeCompare(right.key))) {
+  for (const source of [...config.sources].sort((left, right) =>
+    left.key.localeCompare(right.key)
+  )) {
     const sourcePath = resolve(sourceDirectory, source.file);
     invariant(
       sourcePath.startsWith(`${resolve(sourceDirectory)}${sep}`),
@@ -302,7 +329,10 @@ export async function buildWhatcomCountyPackage(
     );
     const bytes = await readFile(sourcePath);
     const observedSha256 = createHash('sha256').update(bytes).digest('hex');
-    invariant(observedSha256 === source.sha256, `Whatcom source ${source.file} does not match its expected SHA-256.`);
+    invariant(
+      observedSha256 === source.sha256,
+      `Whatcom source ${source.file} does not match its expected SHA-256.`
+    );
     const rows = parseWhatcomCsv(bytes.toString('utf8'));
     rows.forEach((row, rowIndex) => {
       candidates.push({ row, source, ordinal: rowIndex + 2 });
@@ -335,7 +365,9 @@ export async function buildWhatcomCountyPackage(
     duplicates.set(identity, sources);
   }
 
-  const records = [...uniqueCandidates.values()].map(candidate => mapRecord(candidate, generatedAt));
+  const records = [...uniqueCandidates.values()].map(candidate =>
+    mapRecord(candidate, generatedAt)
+  );
   invariant(
     records.every(
       record =>
@@ -463,20 +495,19 @@ export async function publishWhatcomPackage(
       schemaVersion: STATUS_SCHEMA,
       generatedAt,
       sourcePosture: 'mixed_public_assessor_sources',
-      counties: [
-        ...retained.statusEntries,
-        whatcom.statusEntry,
-      ].sort((left, right) => left.countyCode.localeCompare(right.countyCode)),
+      counties: [...retained.statusEntries, whatcom.statusEntry].sort((left, right) =>
+        left.countyCode.localeCompare(right.countyCode)
+      ),
     };
-    const attestations = [
-      ...retained.attestations,
-      whatcom.attestation,
-    ].sort((left, right) => left.countyCode.localeCompare(right.countyCode));
+    const attestations = [...retained.attestations, whatcom.attestation].sort((left, right) =>
+      left.countyCode.localeCompare(right.countyCode)
+    );
 
     for (const attestation of attestations) {
-      const shard = attestation.countyCode === COUNTY_CODE
-        ? whatcom.shard
-        : retained.shards.get(attestation.countyCode);
+      const shard =
+        attestation.countyCode === COUNTY_CODE
+          ? whatcom.shard
+          : retained.shards.get(attestation.countyCode);
       invariant(shard, `Existing Washington shard ${attestation.countyCode} is missing.`);
       invariant(
         canonicalJsonSha256(shard) === attestation.canonicalJsonSha256,
@@ -484,13 +515,17 @@ export async function publishWhatcomPackage(
       );
     }
 
-    let recordsWithNeighborhoodCode = 0;
-    for (const attestation of attestations) {
-      const shard = attestation.countyCode === COUNTY_CODE
-        ? whatcom.shard
-        : retained.shards.get(attestation.countyCode);
-      recordsWithNeighborhoodCode += shard.summary.recordsWithNeighborhoodCode;
-    }
+    const shards = new Map(retained.shards);
+    shards.set(COUNTY_CODE, whatcom.shard);
+    const recordsWithNeighborhoodCode = [...shards.values()].reduce(
+      (total, shard) => total + shard.summary.recordsWithNeighborhoodCode,
+      0
+    );
+    const futureSaleDateRecords = [...shards.values()].reduce(
+      (total, shard) =>
+        total + shard.records.filter(record => record.flags?.futureSaleDate === true).length,
+      0
+    );
     const manifest = {
       schemaVersion: MANIFEST_SCHEMA,
       statusSchemaVersion: STATUS_SCHEMA,
@@ -501,13 +536,16 @@ export async function publishWhatcomPackage(
       summary: {
         counties: status.counties.length,
         rawLanded: status.counties.length,
-        parserReady: status.counties.filter(county => county.confidence?.parserStatus === 'ready').length,
+        parserReady: status.counties.filter(county => county.confidence?.parserStatus === 'ready')
+          .length,
         candidateSales: status.counties.reduce((total, county) => total + county.candidateSales, 0),
         stagedSales: status.counties.reduce((total, county) => total + county.stagedSales, 0),
         needsReview: status.counties.reduce((total, county) => total + county.needsReview, 0),
-        prometheusNeedsReview: status.counties.filter(county => county.prometheusStatus === 'needs_review').length,
+        prometheusNeedsReview: status.counties.filter(
+          county => county.prometheusStatus === 'needs_review'
+        ).length,
         recordsWithNeighborhoodCode,
-        futureSaleDateRecords: 0,
+        futureSaleDateRecords,
         criticalContradictions: 0,
         garfieldExceptions: 0,
         bentonCityAsNeighborhoodRecords: 0,
@@ -521,16 +559,22 @@ export async function publishWhatcomPackage(
     await writeJson(join('receipts', 'whatcom-source.json'), whatcom.receipt);
   });
 
-  console.log(JSON.stringify({
-    county: COUNTY,
-    countyCode: COUNTY_CODE,
-    manifestCanonicalJsonSha256: manifestDigest,
-    candidateSales: whatcom.receipt.candidateSales,
-    stagedSales: whatcom.receipt.stagedSales,
-    quarantinedSales: whatcom.receipt.quarantinedSales,
-    latestSaleDate: whatcom.shard.summary.latestSaleDate,
-    outputPath: resolve(outputPath),
-  }, null, 2));
+  console.log(
+    JSON.stringify(
+      {
+        county: COUNTY,
+        countyCode: COUNTY_CODE,
+        manifestCanonicalJsonSha256: manifestDigest,
+        candidateSales: whatcom.receipt.candidateSales,
+        stagedSales: whatcom.receipt.stagedSales,
+        quarantinedSales: whatcom.receipt.quarantinedSales,
+        latestSaleDate: whatcom.shard.summary.latestSaleDate,
+        outputPath: resolve(outputPath),
+      },
+      null,
+      2
+    )
+  );
 }
 
 async function main() {

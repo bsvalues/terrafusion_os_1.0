@@ -66,11 +66,19 @@ function row(index, overrides = {}) {
   return HEADERS.map(header => values[header]);
 }
 
-async function createFixture({ duplicate = false, conflict = false, future = false } = {}) {
+async function createFixture({
+  duplicate = false,
+  conflict = false,
+  future = false,
+  blankSiteSize = false,
+  invalidSiteSize = false,
+} = {}) {
   const directory = await mkdtemp(join(tmpdir(), 'whatcom-public-sales-'));
   const sources = [];
   for (const [index, key] of SOURCE_KEYS.entries()) {
     let sourceRow = row(index + 1);
+    if (blankSiteSize && index === 0) sourceRow = row(index + 1, { 'Site Size': '' });
+    if (invalidSiteSize && index === 0) sourceRow = row(index + 1, { 'Site Size': 'unknown' });
     if (duplicate && index === 1) sourceRow = row(1);
     if (conflict && index === 1) {
       sourceRow = row(1, { 'Situs Address': 'DIFFERENT ADDRESS, BELLINGHAM' });
@@ -99,6 +107,141 @@ async function createFixture({ duplicate = false, conflict = false, future = fal
   const configPath = join(directory, 'sources.json');
   await writeFile(configPath, `${JSON.stringify(config, null, 2)}\n`, 'utf8');
   return { directory, configPath };
+}
+
+async function writeRetainedKitsapPackage(
+  outputPath,
+  { tampered = false, futureSaleDate = false } = {}
+) {
+  const priorGeneratedAt = '2026-09-01T00:00:00.000Z';
+  const shard = {
+    schemaVersion: 'terrafusion.washington.sales-shard.v1',
+    generatedAt: priorGeneratedAt,
+    county: 'Kitsap',
+    countyCode: '035',
+    summary: {
+      records: 1,
+      latestSaleDate: '2025-08-01',
+      reviewRecords: futureSaleDate ? 1 : 0,
+      recordsWithNeighborhoodCode: 1,
+      topNeighborhoodCodes: [{ neighborhoodCode: '100', records: 1 }],
+    },
+    records: [{ saleId: 'kitsap-retained-sale', flags: { futureSaleDate } }],
+  };
+  const status = {
+    schemaVersion: 'terrafusion.washington.county-status.v1',
+    generatedAt: priorGeneratedAt,
+    sourcePosture: 'public_assessor_official_workbook',
+    counties: [
+      {
+        county: 'Kitsap',
+        countyCode: '035',
+        priority: 'washington_assessor_launch',
+        prometheusStatus: 'public_data_ready',
+        primarySourceMode: 'public_assessor_official_workbook',
+        latestSaleDate: '2025-08-01',
+        candidateSales: 1,
+        stagedSales: 1,
+        needsReview: futureSaleDate ? 1 : 0,
+        confidence: {
+          averageQualityScore: 1,
+          parserStatus: 'ready',
+          rawStatus: 'official_workbook_verified',
+          rawDriftDetected: false,
+        },
+        staticRoutes: {
+          detail: '/launch-data/washington/counties/035.json',
+          salesShard: '/launch-data/washington/sales/by-county/035.json',
+        },
+      },
+    ],
+  };
+  const manifest = {
+    schemaVersion: 'terrafusion.washington.launch-manifest.v1',
+    statusSchemaVersion: status.schemaVersion,
+    statusCanonicalJsonSha256: canonicalJsonSha256(status),
+    generatedAt: priorGeneratedAt,
+    sourcePosture: status.sourcePosture,
+    salesShardAttestations: [
+      {
+        algorithm: 'SHA-256',
+        canonicalJsonSha256: canonicalJsonSha256(shard),
+        county: 'Kitsap',
+        countyCode: '035',
+        officialSourceBaseUrl: 'https://www.kitsap.gov/assessor',
+        route: '/launch-data/washington/sales/by-county/035.json',
+        sourcePayloadSha256: ['a'.repeat(64)],
+        sourcePosture: 'public_assessor_official_workbook',
+      },
+    ],
+    summary: {
+      counties: 1,
+      rawLanded: 1,
+      parserReady: 1,
+      candidateSales: 1,
+      stagedSales: 1,
+      needsReview: futureSaleDate ? 1 : 0,
+      prometheusNeedsReview: 0,
+      recordsWithNeighborhoodCode: 1,
+      futureSaleDateRecords: futureSaleDate ? 1 : 0,
+      criticalContradictions: 0,
+      garfieldExceptions: 0,
+      bentonCityAsNeighborhoodRecords: 0,
+    },
+  };
+  await mkdir(join(outputPath, 'counties'), { recursive: true });
+  await mkdir(join(outputPath, 'sales', 'by-county'), { recursive: true });
+  await mkdir(join(outputPath, 'receipts'), { recursive: true });
+  await writeFile(join(outputPath, 'manifest.json'), `${JSON.stringify(manifest, null, 2)}\n`);
+  await writeFile(
+    join(outputPath, 'counties', 'status.json'),
+    `${JSON.stringify(status, null, 2)}\n`
+  );
+  await writeFile(
+    join(outputPath, 'counties', '035.json'),
+    `${JSON.stringify(
+      {
+        schemaVersion: 'terrafusion.washington.county-detail.v1',
+        generatedAt: priorGeneratedAt,
+        county: 'Kitsap',
+        countyCode: '035',
+        operationalState: {
+          primarySourceMode: 'public_assessor_official_workbook',
+          prometheusStatus: 'public_data_ready',
+        },
+        summary: { records: 1, latestSaleDate: '2025-08-01' },
+        salesRoute: '/launch-data/washington/sales/by-county/035.json',
+      },
+      null,
+      2
+    )}\n`
+  );
+  await writeFile(
+    join(outputPath, 'sales', 'by-county', '035.json'),
+    `${JSON.stringify(
+      {
+        ...shard,
+        records: tampered
+          ? [{ saleId: 'tampered-sale', flags: { futureSaleDate } }]
+          : shard.records,
+      },
+      null,
+      2
+    )}\n`
+  );
+  await writeFile(
+    join(outputPath, 'receipts', 'kitsap-source.json'),
+    `${JSON.stringify(
+      {
+        schemaVersion: 'terrafusion.washington.public-source-receipt.v1',
+        generatedAt: priorGeneratedAt,
+        county: 'Kitsap',
+        countyCode: '035',
+      },
+      null,
+      2
+    )}\n`
+  );
 }
 
 test('parses strict CSV with quoted commas and escaped quotes', () => {
@@ -152,109 +295,41 @@ test('rejects a changed official payload before parsing it', async t => {
   );
 });
 
+test('preserves unavailable acreage as null and rejects malformed acreage', async t => {
+  const blank = await createFixture({ blankSiteSize: true });
+  const malformed = await createFixture({ invalidSiteSize: true });
+  t.after(async () => {
+    await Promise.all([
+      rm(blank.directory, { recursive: true, force: true }),
+      rm(malformed.directory, { recursive: true, force: true }),
+    ]);
+  });
+  const result = await buildWhatcomCountyPackage(blank.directory, GENERATED_AT, blank.configPath);
+  assert.equal(
+    result.shard.records.find(record => record.parcelNumber.endsWith('0001')).acres,
+    null
+  );
+  await assert.rejects(
+    buildWhatcomCountyPackage(malformed.directory, GENERATED_AT, malformed.configPath),
+    /invalid site size/
+  );
+});
+
+test('preserves retained counties future-sale review count in the combined manifest', async t => {
+  const fixture = await createFixture();
+  const outputPath = join(fixture.directory, 'launch-data', 'washington');
+  t.after(() => rm(fixture.directory, { recursive: true, force: true }));
+  await writeRetainedKitsapPackage(outputPath, { futureSaleDate: true });
+  await publishWhatcomPackage(fixture.directory, outputPath, GENERATED_AT, fixture.configPath);
+  const manifest = JSON.parse(await readFile(join(outputPath, 'manifest.json'), 'utf8'));
+  assert.equal(manifest.summary.futureSaleDateRecords, 1);
+});
+
 test('rejects a tampered retained county shard before re-attesting it', async t => {
   const fixture = await createFixture();
   const outputPath = join(fixture.directory, 'launch-data', 'washington');
   t.after(() => rm(fixture.directory, { recursive: true, force: true }));
-  const priorGeneratedAt = '2026-09-01T00:00:00.000Z';
-  const shard = {
-    schemaVersion: 'terrafusion.washington.sales-shard.v1',
-    generatedAt: priorGeneratedAt,
-    county: 'Kitsap',
-    countyCode: '035',
-    summary: {
-      records: 1,
-      latestSaleDate: '2025-08-01',
-      reviewRecords: 0,
-      recordsWithNeighborhoodCode: 1,
-      topNeighborhoodCodes: [{ neighborhoodCode: '100', records: 1 }],
-    },
-    records: [{ saleId: 'kitsap-retained-sale', flags: { futureSaleDate: false } }],
-  };
-  const status = {
-    schemaVersion: 'terrafusion.washington.county-status.v1',
-    generatedAt: priorGeneratedAt,
-    sourcePosture: 'public_assessor_official_workbook',
-    counties: [{
-      county: 'Kitsap',
-      countyCode: '035',
-      priority: 'washington_assessor_launch',
-      prometheusStatus: 'public_data_ready',
-      primarySourceMode: 'public_assessor_official_workbook',
-      latestSaleDate: '2025-08-01',
-      candidateSales: 1,
-      stagedSales: 1,
-      needsReview: 0,
-      confidence: {
-        averageQualityScore: 1,
-        parserStatus: 'ready',
-        rawStatus: 'official_workbook_verified',
-        rawDriftDetected: false,
-      },
-      staticRoutes: {
-        detail: '/launch-data/washington/counties/035.json',
-        salesShard: '/launch-data/washington/sales/by-county/035.json',
-      },
-    }],
-  };
-  const manifest = {
-    schemaVersion: 'terrafusion.washington.launch-manifest.v1',
-    statusSchemaVersion: status.schemaVersion,
-    statusCanonicalJsonSha256: canonicalJsonSha256(status),
-    generatedAt: priorGeneratedAt,
-    sourcePosture: status.sourcePosture,
-    salesShardAttestations: [{
-      algorithm: 'SHA-256',
-      canonicalJsonSha256: canonicalJsonSha256(shard),
-      county: 'Kitsap',
-      countyCode: '035',
-      officialSourceBaseUrl: 'https://www.kitsap.gov/assessor',
-      route: '/launch-data/washington/sales/by-county/035.json',
-      sourcePayloadSha256: ['a'.repeat(64)],
-      sourcePosture: 'public_assessor_official_workbook',
-    }],
-    summary: {
-      counties: 1,
-      rawLanded: 1,
-      parserReady: 1,
-      candidateSales: 1,
-      stagedSales: 1,
-      needsReview: 0,
-      prometheusNeedsReview: 0,
-      recordsWithNeighborhoodCode: 1,
-      futureSaleDateRecords: 0,
-      criticalContradictions: 0,
-      garfieldExceptions: 0,
-      bentonCityAsNeighborhoodRecords: 0,
-    },
-  };
-  await mkdir(join(outputPath, 'counties'), { recursive: true });
-  await mkdir(join(outputPath, 'sales', 'by-county'), { recursive: true });
-  await mkdir(join(outputPath, 'receipts'), { recursive: true });
-  await writeFile(join(outputPath, 'manifest.json'), `${JSON.stringify(manifest, null, 2)}\n`);
-  await writeFile(join(outputPath, 'counties', 'status.json'), `${JSON.stringify(status, null, 2)}\n`);
-  await writeFile(join(outputPath, 'counties', '035.json'), `${JSON.stringify({
-    schemaVersion: 'terrafusion.washington.county-detail.v1',
-    generatedAt: priorGeneratedAt,
-    county: 'Kitsap',
-    countyCode: '035',
-    operationalState: {
-      primarySourceMode: 'public_assessor_official_workbook',
-      prometheusStatus: 'public_data_ready',
-    },
-    summary: { records: 1, latestSaleDate: '2025-08-01' },
-    salesRoute: '/launch-data/washington/sales/by-county/035.json',
-  }, null, 2)}\n`);
-  await writeFile(join(outputPath, 'sales', 'by-county', '035.json'), `${JSON.stringify({
-    ...shard,
-    records: [{ saleId: 'tampered-sale', flags: { futureSaleDate: false } }],
-  }, null, 2)}\n`);
-  await writeFile(join(outputPath, 'receipts', 'kitsap-source.json'), `${JSON.stringify({
-    schemaVersion: 'terrafusion.washington.public-source-receipt.v1',
-    generatedAt: priorGeneratedAt,
-    county: 'Kitsap',
-    countyCode: '035',
-  }, null, 2)}\n`);
+  await writeRetainedKitsapPackage(outputPath, { tampered: true });
 
   await assert.rejects(
     publishWhatcomPackage(fixture.directory, outputPath, GENERATED_AT, fixture.configPath),
