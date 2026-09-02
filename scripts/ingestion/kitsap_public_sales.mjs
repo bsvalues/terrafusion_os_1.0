@@ -11,7 +11,6 @@ import {
   readFile,
   readlink,
   realpath,
-  rename,
   rm,
   stat,
 } from 'node:fs/promises';
@@ -157,7 +156,7 @@ function startRefreshAcquisitionMutexProcess(mutexPath) {
       'rl.on("line",async line=>{',
       'if(line==="RELEASE"){process.exit(0);return}',
       'let command',
-      'try{command=JSON.parse(line);if(command.op==="rename")await fs.rename(command.source,command.target);else if(command.op==="renameIfExists")try{await fs.rename(command.source,command.target)}catch(error){if(error.code!=="ENOENT")throw error}else if(command.op==="rm")await fs.rm(command.path,{recursive:Boolean(command.recursive),force:Boolean(command.force)});else throw new Error("unsupported mutation");process.stdout.write(JSON.stringify({id:command.id,ok:true})+"\\n")}catch(error){process.stdout.write(JSON.stringify({id:command?.id,ok:false,message:error.message,code:error.code??null})+"\\n")}',
+      'try{command=JSON.parse(line);let result=null;if(command.op==="rename")await fs.rename(command.source,command.target);else if(command.op==="renameIfExists")try{await fs.rename(command.source,command.target)}catch(error){if(error.code!=="ENOENT")throw error}else if(command.op==="restoreFenced"){try{await fs.access(command.target);result=false}catch(error){if(error.code!=="ENOENT")throw error;await fs.rename(command.source,command.target);result=true}}else if(command.op==="rm")await fs.rm(command.path,{recursive:Boolean(command.recursive),force:Boolean(command.force)});else if(command.op==="delay")await new Promise(resolve=>setTimeout(resolve,command.milliseconds));else throw new Error("unsupported mutation");process.stdout.write(JSON.stringify({id:command.id,ok:true,result})+"\\n")}catch(error){process.stdout.write(JSON.stringify({id:command?.id,ok:false,message:error.message,code:error.code??null})+"\\n")}',
       '})',
     ].join(';');
     return spawn('flock', ['-F', '-x', mutexPath, process.execPath, '-e', helper], {
@@ -187,16 +186,21 @@ function startRefreshAcquisitionMutexProcess(mutexPath) {
       'while (($line = [Console]::In.ReadLine()) -ne $null) {',
       '  if ($line -eq "RELEASE") { break }',
       '  $command = $null',
+      '  $result = $null',
       '  try {',
       '    $command = $line | ConvertFrom-Json',
       '    if ($command.op -eq "rename") {',
       '      if ([System.IO.Directory]::Exists($command.source)) { [System.IO.Directory]::Move($command.source, $command.target) } elseif ([System.IO.File]::Exists($command.source)) { [System.IO.File]::Move($command.source, $command.target) } else { throw "source path does not exist" }',
       '    } elseif ($command.op -eq "renameIfExists") {',
       '      if ([System.IO.Directory]::Exists($command.source)) { [System.IO.Directory]::Move($command.source, $command.target) } elseif ([System.IO.File]::Exists($command.source)) { [System.IO.File]::Move($command.source, $command.target) }',
+      '    } elseif ($command.op -eq "restoreFenced") {',
+      '      if ([System.IO.Directory]::Exists($command.target) -or [System.IO.File]::Exists($command.target)) { $result = $false } elseif ([System.IO.Directory]::Exists($command.source)) { [System.IO.Directory]::Move($command.source, $command.target); $result = $true } elseif ([System.IO.File]::Exists($command.source)) { [System.IO.File]::Move($command.source, $command.target); $result = $true } else { throw "fenced source path does not exist" }',
       '    } elseif ($command.op -eq "rm") {',
       '      if ([System.IO.Directory]::Exists($command.path)) { [System.IO.Directory]::Delete($command.path, [bool]$command.recursive) } elseif ([System.IO.File]::Exists($command.path)) { [System.IO.File]::Delete($command.path) } elseif (-not [bool]$command.force) { throw "path does not exist" }',
+      '    } elseif ($command.op -eq "delay") {',
+      '      Start-Sleep -Milliseconds ([int]$command.milliseconds)',
       '    } else { throw "unsupported mutation" }',
-      '    [Console]::Out.WriteLine((@{ id = $command.id; ok = $true } | ConvertTo-Json -Compress))',
+      '    [Console]::Out.WriteLine((@{ id = $command.id; ok = $true; result = $result } | ConvertTo-Json -Compress))',
       '  } catch {',
       '    [Console]::Out.WriteLine((@{ id = $command.id; ok = $false; message = $_.Exception.Message } | ConvertTo-Json -Compress))',
       '  }',
@@ -265,10 +269,14 @@ function monitorRefreshAcquisitionMutex(outputRoot, operationId, child) {
   const markLost = detail => {
     if (!state.releasing && !state.lostError) {
       state.lostError = new Error(`Kitsap package refresh filesystem mutex was lost${detail}.`);
-      for (const pending of state.pendingCommands.values()) pending.reject(state.lostError);
+      for (const pending of state.pendingCommands.values()) {
+        clearTimeout(pending.timeout);
+        pending.reject(state.lostError);
+      }
       state.pendingCommands.clear();
     }
   };
+  state.markLost = markLost;
   state.lines = createInterface({ input: child.stdout });
   state.lines.on('line', line => {
     let response;
@@ -282,7 +290,7 @@ function monitorRefreshAcquisitionMutex(outputRoot, operationId, child) {
     if (!pending) return;
     state.pendingCommands.delete(response.id);
     clearTimeout(pending.timeout);
-    if (response.ok) pending.resolve();
+    if (response.ok) pending.resolve(response.result);
     else {
       const error = new Error(`Kitsap package refresh filesystem mutation failed: ${response.message}`);
       if (response.code) error.code = response.code;
@@ -297,15 +305,15 @@ function monitorRefreshAcquisitionMutex(outputRoot, operationId, child) {
   return state;
 }
 
-async function runRefreshMutexMutation(outputRoot, operationId, mutation) {
+async function runRefreshMutexMutation(outputRoot, operationId, mutation, timeoutMs = 60_000) {
   const state = assertRefreshAcquisitionMutexHeld(outputRoot, operationId);
   const id = state.nextCommandId;
   state.nextCommandId += 1;
-  await new Promise((resolveMutation, rejectMutation) => {
+  const result = await new Promise((resolveMutation, rejectMutation) => {
     const timeout = setTimeout(() => {
-      state.pendingCommands.delete(id);
-      rejectMutation(new Error('Kitsap package refresh filesystem mutation timed out.'));
-    }, 60_000);
+      state.markLost(' after a filesystem mutation timed out');
+      state.child.kill();
+    }, timeoutMs);
     state.pendingCommands.set(id, {
       resolve: resolveMutation,
       reject: rejectMutation,
@@ -319,6 +327,7 @@ async function runRefreshMutexMutation(outputRoot, operationId, mutation) {
     });
   });
   assertRefreshAcquisitionMutexHeld(outputRoot, operationId);
+  return result;
 }
 
 function assertRefreshAcquisitionMutexHeld(outputRoot, operationId) {
@@ -382,18 +391,15 @@ function isSameRefreshLockOwner(left, right) {
   );
 }
 
-async function restoreUnexpectedFencedLock(staleLockPath, lockPath) {
+async function restoreUnexpectedFencedLock(outputRoot, operationId, staleLockPath, lockPath) {
   try {
-    const staleStat = await stat(staleLockPath);
-    if (staleStat.isDirectory()) {
-      if (await pathExists(lockPath)) return false;
-      await rename(staleLockPath, lockPath);
-    } else {
-      await link(staleLockPath, lockPath);
-      await rm(staleLockPath, { force: true });
-    }
+    const restored = await runRefreshMutexMutation(outputRoot, operationId, {
+      op: 'restoreFenced',
+      source: staleLockPath,
+      target: lockPath,
+    });
     await syncDirectory(dirname(lockPath));
-    return true;
+    return restored;
   } catch (error) {
     if (
       ['EACCES', 'EEXIST', 'EISDIR', 'ENOENT', 'ENOTDIR', 'ENOTEMPTY', 'EPERM'].includes(
@@ -472,7 +478,11 @@ export async function acquirePackageRefreshLock(outputPath, operationId) {
 
       const staleLockPath = `${lockPath}.stale-${operationId}`;
       try {
-        await rename(lockPath, staleLockPath);
+        await runRefreshMutexMutation(outputRoot, operationId, {
+          op: 'rename',
+          source: lockPath,
+          target: staleLockPath,
+        });
         await syncDirectory(dirname(lockPath));
       } catch (error) {
         if (error?.code === 'ENOENT') continue;
@@ -481,14 +491,24 @@ export async function acquirePackageRefreshLock(outputPath, operationId) {
 
       const fencedOwner = await readRefreshLockOwner(staleLockPath);
       if (!isSameRefreshLockOwner(fencedOwner, owner)) {
-        const restored = await restoreUnexpectedFencedLock(staleLockPath, lockPath);
+        const restored = await restoreUnexpectedFencedLock(
+          outputRoot,
+          operationId,
+          staleLockPath,
+          lockPath
+        );
         throw new Error(
           restored
             ? 'Kitsap package refresh lock changed during stale-owner fencing and was restored.'
             : 'Kitsap package refresh lock changed during stale-owner fencing and remains fenced.'
         );
       }
-      await rm(staleLockPath, { recursive: true, force: true });
+      await runRefreshMutexMutation(outputRoot, operationId, {
+        op: 'rm',
+        path: staleLockPath,
+        recursive: true,
+        force: true,
+      });
       await syncDirectory(dirname(lockPath));
     }
     throw new Error('Kitsap package refresh lock could not be acquired.');
@@ -530,6 +550,16 @@ export async function terminatePackageRefreshMutexForTest(outputPath, operationI
   });
   state.child.kill();
   await exited;
+}
+
+export async function timeoutPackageRefreshMutexForTest(outputPath, operationId) {
+  const outputRoot = await canonicalizePackageOutputRoot(outputPath);
+  await runRefreshMutexMutation(
+    outputRoot,
+    operationId,
+    { op: 'delay', milliseconds: 200 },
+    10
+  );
 }
 
 export async function assertPackageRefreshLockHeld(outputPath, operationId) {

@@ -27,6 +27,7 @@ import {
   assertPackageRefreshLockHeld,
   releasePackageRefreshLock,
   terminatePackageRefreshMutexForTest,
+  timeoutPackageRefreshMutexForTest,
 } from './kitsap_public_sales.mjs';
 
 XLSX.set_fs(fs);
@@ -101,6 +102,26 @@ test('Kitsap adapter fails closed when its filesystem mutex helper exits', async
     await assert.rejects(
       assertPackageRefreshLockHeld(outputPath, operationId),
       /filesystem mutex was lost|filesystem mutex ownership changed/i
+    );
+    await assert.rejects(
+      releasePackageRefreshLock(outputPath, operationId),
+      /filesystem mutex was lost|acquisition mutex exited/i
+    );
+    assert.equal((await stat(`${outputPath}.refresh.lock`)).isFile(), true);
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test('Kitsap adapter treats a filesystem mutation timeout as terminal mutex loss', async () => {
+  const root = await mkdtemp(join(tmpdir(), 'tf-kitsap-lock-helper-timeout-'));
+  const outputPath = join(root, 'launch-data', 'washington');
+  const operationId = '123-12345678-1234-4123-8123-123456789abc';
+  try {
+    await acquirePackageRefreshLock(outputPath, operationId);
+    await assert.rejects(
+      timeoutPackageRefreshMutexForTest(outputPath, operationId),
+      /filesystem mutex was lost.*mutation timed out/i
     );
     await assert.rejects(
       releasePackageRefreshLock(outputPath, operationId),
