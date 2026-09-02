@@ -354,16 +354,45 @@ async function releaseRefreshAcquisitionMutex(child) {
     );
     return;
   }
-  const exited = new Promise((resolveExit, rejectExit) => {
-    child.once('error', rejectExit);
-    child.once('exit', code =>
-      code === 0
-        ? resolveExit()
-        : rejectExit(new Error(`Kitsap package refresh acquisition mutex exited with ${code}.`))
-    );
-  });
-  child.stdin.end('RELEASE\n');
-  await exited;
+  const waitForExit = timeoutMs =>
+    new Promise((resolveExit, rejectExit) => {
+      if (child.exitCode !== null || child.signalCode !== null) {
+        resolveExit({ code: child.exitCode, signal: child.signalCode });
+        return;
+      }
+      let timeout;
+      const cleanup = () => {
+        clearTimeout(timeout);
+        child.removeListener('error', onError);
+        child.removeListener('exit', onExit);
+      };
+      const onError = error => {
+        cleanup();
+        rejectExit(error);
+      };
+      const onExit = (code, signal) => {
+        cleanup();
+        resolveExit({ code, signal });
+      };
+      timeout = setTimeout(() => {
+        cleanup();
+        resolveExit(null);
+      }, timeoutMs);
+      child.once('error', onError);
+      child.once('exit', onExit);
+    });
+
+  if (!child.killed) child.stdin.end('RELEASE\n');
+  let exit = await waitForExit(5_000);
+  if (!exit) {
+    child.kill('SIGKILL');
+    exit = await waitForExit(5_000);
+  }
+  invariant(exit, 'Kitsap package refresh acquisition mutex did not terminate after escalation.');
+  invariant(
+    exit.code === 0 && exit.signal === null,
+    `Kitsap package refresh acquisition mutex exited with ${exit.code ?? 'null'} (${exit.signal ?? 'no signal'}).`
+  );
 }
 
 async function readRefreshLockOwner(lockPath) {

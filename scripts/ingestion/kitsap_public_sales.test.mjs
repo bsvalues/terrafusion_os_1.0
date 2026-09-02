@@ -123,10 +123,12 @@ test('Kitsap adapter treats a filesystem mutation timeout as terminal mutex loss
       timeoutPackageRefreshMutexForTest(outputPath, operationId),
       /filesystem mutex was lost.*mutation timed out/i
     );
+    const releaseStartedAt = Date.now();
     await assert.rejects(
       releasePackageRefreshLock(outputPath, operationId),
       /filesystem mutex was lost|acquisition mutex exited/i
     );
+    assert.ok(Date.now() - releaseStartedAt < 5_000, 'mutex-loss cleanup must remain bounded');
     assert.equal((await stat(`${outputPath}.refresh.lock`)).isFile(), true);
   } finally {
     await rm(root, { recursive: true, force: true });
