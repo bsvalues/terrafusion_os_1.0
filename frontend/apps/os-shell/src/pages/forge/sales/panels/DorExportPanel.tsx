@@ -8,6 +8,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { getSalesForgeCountyScope, useSalesForgeStore } from '../salesForgeStore';
 import { apiFetch } from '../../../../lib/apiBase';
 import type { SaleQueueItem } from '../salesForgeTypes';
+import { formatSaleDate } from '../salesForgeDate';
 
 // DOR CSV columns — certified submission format
 const DOR_COLUMNS: { key: keyof SaleQueueItem | string; label: string }[] = [
@@ -61,12 +62,7 @@ function fmtPrice(n: number | null | undefined): string {
 }
 
 function fmtDate(iso: string | null | undefined): string {
-  if (!iso) return '—';
-  try {
-    return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: '2-digit' });
-  } catch {
-    return iso;
-  }
+  return formatSaleDate(iso, { month: 'short', day: 'numeric', year: '2-digit' });
 }
 
 function fmtRatio(n: number | null | undefined): string {

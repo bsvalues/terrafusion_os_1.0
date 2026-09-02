@@ -872,8 +872,125 @@ function canonicalizeJson(value) {
   throw new Error('Kitsap launch package contains a non-JSON value.');
 }
 
-function canonicalJsonSha256(value) {
+export function canonicalJsonSha256(value) {
   return createHash('sha256').update(canonicalizeJson(value)).digest('hex');
+}
+
+async function listJsonArtifacts(root, current = '') {
+  const entries = await readdir(join(root, current), { withFileTypes: true });
+  const paths = [];
+  for (const entry of entries) {
+    const relativePath = join(current, entry.name);
+    if (entry.isDirectory()) {
+      paths.push(...(await listJsonArtifacts(root, relativePath)));
+    } else if (entry.isFile() && entry.name.endsWith('.json')) {
+      paths.push(relativePath);
+    }
+  }
+  return paths.sort();
+}
+
+export async function loadVerifiedRetainedWashingtonPackage(
+  outputRoot,
+  replacedCountyCode,
+  generatedAt,
+  replacedRelativePaths = []
+) {
+  if (!(await pathExists(outputRoot))) {
+    return { artifacts: new Map(), attestations: [], shards: new Map(), statusEntries: [] };
+  }
+
+  const existingEntries = await readdir(outputRoot);
+  if (existingEntries.length === 0) {
+    return { artifacts: new Map(), attestations: [], shards: new Map(), statusEntries: [] };
+  }
+
+  invariant(
+    (await pathExists(join(outputRoot, 'manifest.json'))) &&
+      (await pathExists(join(outputRoot, 'counties', 'status.json'))),
+    'Existing Washington output is incomplete; expected manifest.json and counties/status.json.'
+  );
+
+  const manifest = JSON.parse(await readFile(join(outputRoot, 'manifest.json'), 'utf8'));
+  const status = JSON.parse(await readFile(join(outputRoot, 'counties', 'status.json'), 'utf8'));
+  invariant(manifest.schemaVersion === MANIFEST_SCHEMA, 'Existing Washington manifest schema is invalid.');
+  invariant(status.schemaVersion === STATUS_SCHEMA, 'Existing Washington status schema is invalid.');
+  invariant(
+    manifest.statusCanonicalJsonSha256 === canonicalJsonSha256(status),
+    'Existing Washington status digest does not match its manifest.'
+  );
+  invariant(Array.isArray(status.counties), 'Existing Washington status has no county list.');
+  invariant(Array.isArray(manifest.salesShardAttestations), 'Existing Washington manifest has no attestations.');
+
+  const replacementPaths = new Set([
+    'manifest.json',
+    join('counties', 'status.json'),
+    join('counties', `${replacedCountyCode}.json`),
+    join('sales', 'by-county', `${replacedCountyCode}.json`),
+    ...replacedRelativePaths,
+  ]);
+  const artifacts = new Map();
+  for (const relativePath of await listJsonArtifacts(outputRoot)) {
+    if (!replacementPaths.has(relativePath)) {
+      artifacts.set(relativePath, JSON.parse(await readFile(join(outputRoot, relativePath), 'utf8')));
+    }
+  }
+
+  const retainedStatusEntries = status.counties.filter(
+    county => county.countyCode !== replacedCountyCode
+  );
+  const statusByCounty = new Map(
+    retainedStatusEntries.map(county => [county.countyCode, county])
+  );
+  const attestations = [];
+  const shards = new Map();
+  for (const attestation of manifest.salesShardAttestations) {
+    if (attestation.countyCode === replacedCountyCode) continue;
+    const countyStatus = statusByCounty.get(attestation.countyCode);
+    invariant(countyStatus, `Retained Washington county ${attestation.countyCode} has no status entry.`);
+    const shardPath = join('sales', 'by-county', `${attestation.countyCode}.json`);
+    const detailPath = join('counties', `${attestation.countyCode}.json`);
+    const originalShard = artifacts.get(shardPath);
+    const originalDetail = artifacts.get(detailPath);
+    invariant(originalShard && originalDetail, `Retained Washington county ${attestation.countyCode} is incomplete.`);
+    invariant(
+      canonicalJsonSha256(originalShard) === attestation.canonicalJsonSha256,
+      `Retained Washington shard ${attestation.countyCode} does not match its existing attestation.`
+    );
+    invariant(
+      originalShard.generatedAt === manifest.generatedAt &&
+        originalDetail.generatedAt === manifest.generatedAt &&
+        originalShard.countyCode === attestation.countyCode &&
+        originalDetail.countyCode === attestation.countyCode &&
+        originalShard.county === countyStatus.county &&
+        originalDetail.county === countyStatus.county,
+      `Retained Washington county ${attestation.countyCode} has inconsistent release identity.`
+    );
+    const shard = { ...originalShard, generatedAt };
+    const detail = { ...originalDetail, generatedAt };
+    artifacts.set(shardPath, shard);
+    artifacts.set(detailPath, detail);
+    shards.set(attestation.countyCode, shard);
+    attestations.push({
+      ...attestation,
+      canonicalJsonSha256: canonicalJsonSha256(shard),
+    });
+  }
+  invariant(
+    attestations.length === retainedStatusEntries.length,
+    'Retained Washington status and shard attestations do not cover the same counties.'
+  );
+  for (const [relativePath, artifact] of artifacts) {
+    if (
+      typeof artifact === 'object' &&
+      artifact !== null &&
+      !Array.isArray(artifact) &&
+      Object.hasOwn(artifact, 'generatedAt')
+    ) {
+      artifacts.set(relativePath, { ...artifact, generatedAt });
+    }
+  }
+  return { artifacts, attestations, shards, statusEntries: retainedStatusEntries };
 }
 
 function nullableString(value) {
@@ -1030,6 +1147,105 @@ async function writeJson(path, value, stagingRoot) {
   await syncDirectoryChain(dirname(path), stagingRoot);
 }
 
+async function publishPackageAtomically(outputRoot, operationId, populate) {
+  invariant(typeof populate === 'function', 'Package refresh requires a staging writer.');
+  const temporaryRoot = `${outputRoot}.tmp-${operationId}`;
+  const backupRoot = `${outputRoot}.bak-${operationId}`;
+  const journalPath = `${outputRoot}.refresh.json`;
+  const temporaryJournalPath = `${journalPath}.tmp-${operationId}`;
+  await mkdir(temporaryRoot, { recursive: false });
+  let journalPublished = false;
+  try {
+    await populate({
+      outputRoot,
+      temporaryRoot,
+      writeJson: (relativePath, value) => {
+        const stagedPath = resolve(temporaryRoot, relativePath);
+        invariant(
+          stagedPath.startsWith(`${temporaryRoot}${sep}`),
+          'Washington launch package write escaped its staging root.'
+        );
+        return writeJson(stagedPath, value, temporaryRoot);
+      },
+    });
+    await syncDirectory(temporaryRoot);
+    await assertRefreshLockOwner(outputRoot, operationId);
+    await writeDurableFile(
+      temporaryJournalPath,
+      `${JSON.stringify({ schemaVersion: REFRESH_JOURNAL_SCHEMA, operationId })}\n`
+    );
+    await assertRefreshLockOwner(outputRoot, operationId);
+    await runRefreshMutexMutation(outputRoot, operationId, {
+      op: 'rename',
+      source: temporaryJournalPath,
+      target: journalPath,
+    });
+    journalPublished = true;
+    await syncDirectory(dirname(outputRoot));
+    await assertRefreshLockOwner(outputRoot, operationId);
+    try {
+      await runRefreshMutexMutation(outputRoot, operationId, {
+        op: 'renameIfExists',
+        source: outputRoot,
+        target: backupRoot,
+      });
+    } catch (error) {
+      if (error?.code !== 'ENOENT') throw error;
+    }
+    await syncDirectory(dirname(outputRoot));
+    await assertRefreshLockOwner(outputRoot, operationId);
+    await runRefreshMutexMutation(outputRoot, operationId, {
+      op: 'rename',
+      source: temporaryRoot,
+      target: outputRoot,
+    });
+    await syncDirectory(dirname(outputRoot));
+    await runRefreshMutexMutation(outputRoot, operationId, {
+      op: 'rm',
+      path: backupRoot,
+      recursive: true,
+      force: true,
+    });
+    await syncDirectory(dirname(outputRoot));
+    await runRefreshMutexMutation(outputRoot, operationId, {
+      op: 'rm',
+      path: journalPath,
+      recursive: false,
+      force: true,
+    });
+    await syncDirectory(dirname(outputRoot));
+    journalPublished = false;
+  } catch (error) {
+    await cleanUpFailedPackageRefresh(
+      outputRoot,
+      operationId,
+      temporaryRoot,
+      temporaryJournalPath,
+      journalPublished
+    );
+    throw error;
+  }
+}
+
+/**
+ * Extend or rebuild the complete Washington launch package under the same
+ * cross-platform mutex and crash-recovery protocol used by the Kitsap source.
+ * The callback can only publish through the durable, staging-root-confined
+ * JSON writer supplied here; the visible package swaps as one directory.
+ */
+export async function publishWashingtonLaunchPackage(outputPath, populate) {
+  const outputRoot = await canonicalizePackageOutputRoot(outputPath);
+  const operationId = `${process.pid}-${randomUUID()}`;
+  await acquirePackageRefreshLock(outputRoot, operationId);
+  try {
+    await recoverInterruptedPackageRefresh(outputRoot, operationId);
+    await publishPackageAtomically(outputRoot, operationId, populate);
+  } finally {
+    await releasePackageRefreshLock(outputRoot, operationId);
+  }
+  return outputRoot;
+}
+
 async function generatePackage(sourcePath, expectedSha256, outputRoot, generatedAt, operationId) {
   invariant(SHA256_PATTERN.test(expectedSha256), 'Expected workbook SHA-256 is invalid.');
   invariant(
@@ -1113,30 +1329,23 @@ async function generatePackage(sourcePath, expectedSha256, outputRoot, generated
     },
     records,
   };
-  const status = {
-    schemaVersion: STATUS_SCHEMA,
-    generatedAt,
-    sourcePosture: SOURCE_MODE,
-    counties: [
-      {
-        county: COUNTY,
-        countyCode: COUNTY_CODE,
-        priority: 'washington_assessor_launch',
-        prometheusStatus: 'public_data_ready',
-        primarySourceMode: SOURCE_MODE,
-        latestSaleDate,
-        candidateSales,
-        stagedSales: records.length,
-        needsReview,
-        confidence: {
-          averageQualityScore: 1,
-          parserStatus: 'ready',
-          rawStatus: 'official_workbook_verified',
-          rawDriftDetected: false,
-        },
-        staticRoutes: { detail: detailRoute, salesShard: salesRoute },
-      },
-    ],
+  const statusEntry = {
+    county: COUNTY,
+    countyCode: COUNTY_CODE,
+    priority: 'washington_assessor_launch',
+    prometheusStatus: 'public_data_ready',
+    primarySourceMode: SOURCE_MODE,
+    latestSaleDate,
+    candidateSales,
+    stagedSales: records.length,
+    needsReview,
+    confidence: {
+      averageQualityScore: 1,
+      parserStatus: 'ready',
+      rawStatus: 'official_workbook_verified',
+      rawDriftDetected: false,
+    },
+    staticRoutes: { detail: detailRoute, salesShard: salesRoute },
   };
   const detail = {
     schemaVersion: DETAIL_SCHEMA,
@@ -1150,138 +1359,104 @@ async function generatePackage(sourcePath, expectedSha256, outputRoot, generated
     summary: { records: records.length, latestSaleDate },
     salesRoute,
   };
-  const manifest = {
-    schemaVersion: MANIFEST_SCHEMA,
-    statusSchemaVersion: STATUS_SCHEMA,
-    statusCanonicalJsonSha256: canonicalJsonSha256(status),
-    generatedAt,
+  const attestation = {
+    algorithm: 'SHA-256',
+    canonicalJsonSha256: canonicalJsonSha256(shard),
+    county: COUNTY,
+    countyCode: COUNTY_CODE,
+    officialSourceBaseUrl: SOURCE_BASE_URL,
+    route: salesRoute,
+    sourcePayloadSha256: [payloadSha256],
     sourcePosture: SOURCE_MODE,
-    salesShardAttestations: [
-      {
-        algorithm: 'SHA-256',
-        canonicalJsonSha256: canonicalJsonSha256(shard),
-        county: COUNTY,
-        countyCode: COUNTY_CODE,
-        officialSourceBaseUrl: SOURCE_BASE_URL,
-        route: salesRoute,
-        sourcePayloadSha256: [payloadSha256],
-        sourcePosture: SOURCE_MODE,
-      },
-    ],
-    summary: {
-      counties: 1,
-      rawLanded: 1,
-      parserReady: 1,
-      candidateSales,
-      stagedSales: records.length,
-      needsReview,
-      prometheusNeedsReview: 0,
-      recordsWithNeighborhoodCode,
-      futureSaleDateRecords,
-      criticalContradictions: 0,
-      garfieldExceptions: 0,
-      bentonCityAsNeighborhoodRecords: 0,
-    },
   };
 
-  const temporaryRoot = `${outputRoot}.tmp-${operationId}`;
-  const backupRoot = `${outputRoot}.bak-${operationId}`;
-  const journalPath = `${outputRoot}.refresh.json`;
-  const temporaryJournalPath = `${journalPath}.tmp-${operationId}`;
-  await mkdir(temporaryRoot, { recursive: false });
-  let journalPublished = false;
-  try {
-    await writeJson(join(temporaryRoot, 'manifest.json'), manifest, temporaryRoot);
-    await writeJson(join(temporaryRoot, 'counties/status.json'), status, temporaryRoot);
-    await writeJson(join(temporaryRoot, `counties/${COUNTY_CODE}.json`), detail, temporaryRoot);
-    await writeJson(
-      join(temporaryRoot, `sales/by-county/${COUNTY_CODE}.json`),
-      shard,
-      temporaryRoot
-    );
-    await writeJson(
-      join(temporaryRoot, 'receipts/kitsap-source.json'),
-      {
-        schemaVersion: 'terrafusion.washington.public-source-receipt.v1',
-        county: COUNTY,
-        countyCode: COUNTY_CODE,
-        generatedAt,
-        sourceUrl: SOURCE_URL,
-        sourcePayloadPath: basename(sourcePath),
-        sourcePayloadBytes: workbookBytes.byteLength,
-        sourcePayloadSha256: payloadSha256,
-        candidateSales,
-        stagedSales: records.length,
-        quarantinedSales,
-        quarantine,
-        omittedFields: ['owner', 'grantor', 'grantee', 'buyer', 'seller'],
-      },
-      temporaryRoot
-    );
-    await syncDirectory(temporaryRoot);
-    await assertRefreshLockOwner(outputRoot, operationId);
-    await writeDurableFile(
-      temporaryJournalPath,
-      `${JSON.stringify({ schemaVersion: REFRESH_JOURNAL_SCHEMA, operationId })}\n`
-    );
-    await assertRefreshLockOwner(outputRoot, operationId);
-    await runRefreshMutexMutation(outputRoot, operationId, {
-      op: 'rename',
-      source: temporaryJournalPath,
-      target: journalPath,
-    });
-    journalPublished = true;
-    await syncDirectory(dirname(outputRoot));
-    await assertRefreshLockOwner(outputRoot, operationId);
-    try {
-      await runRefreshMutexMutation(outputRoot, operationId, {
-        op: 'renameIfExists',
-        source: outputRoot,
-        target: backupRoot,
-      });
-    } catch (error) {
-      if (error?.code !== 'ENOENT') throw error;
-    }
-    await syncDirectory(dirname(outputRoot));
-    await assertRefreshLockOwner(outputRoot, operationId);
-    await runRefreshMutexMutation(outputRoot, operationId, {
-      op: 'rename',
-      source: temporaryRoot,
-      target: outputRoot,
-    });
-    await syncDirectory(dirname(outputRoot));
-    await runRefreshMutexMutation(outputRoot, operationId, {
-      op: 'rm',
-      path: backupRoot,
-      recursive: true,
-      force: true,
-    });
-    await syncDirectory(dirname(outputRoot));
-    await runRefreshMutexMutation(outputRoot, operationId, {
-      op: 'rm',
-      path: journalPath,
-      recursive: false,
-      force: true,
-    });
-    await syncDirectory(dirname(outputRoot));
-    journalPublished = false;
-  } catch (error) {
-    await cleanUpFailedPackageRefresh(
+  let publishedManifest = null;
+  await publishPackageAtomically(outputRoot, operationId, async ({ writeJson }) => {
+    const retained = await loadVerifiedRetainedWashingtonPackage(
       outputRoot,
-      operationId,
-      temporaryRoot,
-      temporaryJournalPath,
-      journalPublished
+      COUNTY_CODE,
+      generatedAt,
+      [join('receipts', 'kitsap-source.json')]
     );
-    throw error;
-  }
+    for (const [relativePath, artifact] of retained.artifacts) {
+      await writeJson(relativePath, artifact);
+    }
+    const status = {
+      schemaVersion: STATUS_SCHEMA,
+      generatedAt,
+      sourcePosture:
+        retained.statusEntries.length > 0 ? 'mixed_public_assessor_sources' : SOURCE_MODE,
+      counties: [...retained.statusEntries, statusEntry].sort((left, right) =>
+        left.countyCode.localeCompare(right.countyCode)
+      ),
+    };
+    const attestations = [...retained.attestations, attestation].sort((left, right) =>
+      left.countyCode.localeCompare(right.countyCode)
+    );
+    const shards = new Map(retained.shards);
+    shards.set(COUNTY_CODE, shard);
+    const totalNeighborhoodRecords = [...shards.values()].reduce(
+      (total, countyShard) => total + countyShard.summary.recordsWithNeighborhoodCode,
+      0
+    );
+    const totalFutureSaleDateRecords = [...shards.values()].reduce(
+      (total, countyShard) =>
+        total + countyShard.records.filter(record => record.flags?.futureSaleDate === true).length,
+      0
+    );
+    const manifest = {
+      schemaVersion: MANIFEST_SCHEMA,
+      statusSchemaVersion: STATUS_SCHEMA,
+      statusCanonicalJsonSha256: canonicalJsonSha256(status),
+      generatedAt,
+      sourcePosture: status.sourcePosture,
+      salesShardAttestations: attestations,
+      summary: {
+        counties: status.counties.length,
+        rawLanded: status.counties.length,
+        parserReady: status.counties.filter(county => county.confidence?.parserStatus === 'ready')
+          .length,
+        candidateSales: status.counties.reduce((total, county) => total + county.candidateSales, 0),
+        stagedSales: status.counties.reduce((total, county) => total + county.stagedSales, 0),
+        needsReview: status.counties.reduce((total, county) => total + county.needsReview, 0),
+        prometheusNeedsReview: status.counties.filter(
+          county => county.prometheusStatus === 'needs_review'
+        ).length,
+        recordsWithNeighborhoodCode: totalNeighborhoodRecords,
+        futureSaleDateRecords: totalFutureSaleDateRecords,
+        criticalContradictions: 0,
+        garfieldExceptions: 0,
+        bentonCityAsNeighborhoodRecords: 0,
+      },
+    };
+    publishedManifest = manifest;
+    await writeJson('manifest.json', manifest);
+    await writeJson('counties/status.json', status);
+    await writeJson(`counties/${COUNTY_CODE}.json`, detail);
+    await writeJson(`sales/by-county/${COUNTY_CODE}.json`, shard);
+    await writeJson('receipts/kitsap-source.json', {
+      schemaVersion: 'terrafusion.washington.public-source-receipt.v1',
+      county: COUNTY,
+      countyCode: COUNTY_CODE,
+      generatedAt,
+      sourceUrl: SOURCE_URL,
+      sourcePayloadPath: basename(sourcePath),
+      sourcePayloadBytes: workbookBytes.byteLength,
+      sourcePayloadSha256: payloadSha256,
+      candidateSales,
+      stagedSales: records.length,
+      quarantinedSales,
+      quarantine,
+      omittedFields: ['owner', 'grantor', 'grantee', 'buyer', 'seller'],
+    });
+  });
 
   console.log(
     JSON.stringify(
       {
         county: COUNTY,
         countyCode: COUNTY_CODE,
-        manifestCanonicalJsonSha256: canonicalJsonSha256(manifest),
+        manifestCanonicalJsonSha256: canonicalJsonSha256(publishedManifest),
         sourcePayloadSha256: payloadSha256,
         candidateSales,
         stagedSales: records.length,

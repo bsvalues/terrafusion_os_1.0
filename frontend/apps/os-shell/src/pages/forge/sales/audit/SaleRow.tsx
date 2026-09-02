@@ -1,6 +1,7 @@
 // frontend/apps/os-shell/src/pages/forge/sales/audit/SaleRow.tsx
 import React from 'react';
 import type { StratumSale } from '../../../../services/forge/salesAuditApi';
+import { formatSaleDate } from '../salesForgeDate';
 
 interface Props {
   sale: StratumSale;
@@ -45,7 +46,7 @@ export function SaleRow({ sale, selected, highlighted, onCheck, onDecisionChange
       </td>
       <td className="px-3 py-1.5 text-xs text-slate-300 font-mono">{sale.parcelId}</td>
       <td className="px-3 py-1.5 text-xs text-slate-400">
-        {sale.saleDate ? new Date(sale.saleDate).toLocaleDateString() : '—'}
+        {formatSaleDate(sale.saleDate)}
       </td>
       <td className="px-3 py-1.5 text-xs text-slate-300 text-right">
         ${(sale.salePrice / 1000).toFixed(0)}k

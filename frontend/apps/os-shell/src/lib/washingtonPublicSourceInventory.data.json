@@ -366,7 +366,7 @@
     {
       "county": "Whatcom",
       "countyCode": "073",
-      "officialAssessorBaseUrl": "https://www.co.whatcom.wa.us",
+      "officialAssessorBaseUrl": "https://www.whatcomcounty.us/177/Assessor",
       "primarySalesSource": "Sales Search + Neighborhood Market Study & Valuation Sales Data",
       "fallbackSource": "Interactive Tax Parcel Viewer + Property Data Downloads",
       "acquisitionFamily": "Direct sales search",

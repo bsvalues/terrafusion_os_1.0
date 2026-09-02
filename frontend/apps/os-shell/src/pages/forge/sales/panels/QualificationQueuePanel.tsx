@@ -10,13 +10,10 @@ import { SaleDetailPanel } from '../components/SaleDetailPanel';
 import { QualDecisionButtons } from '../components/QualDecisionButtons';
 import { QUEUE_PAGE_SIZE } from '../salesForgeTypes';
 import type { SaleQueueItem, QueueTab } from '../salesForgeTypes';
+import { formatSaleDate } from '../salesForgeDate';
 
 function fmtDate(iso: string): string {
-  try {
-    return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: '2-digit' });
-  } catch {
-    return iso;
-  }
+  return formatSaleDate(iso, { month: 'short', day: 'numeric', year: '2-digit' });
 }
 
 function fmtPrice(n: number | null): string {

@@ -26,6 +26,7 @@ import {
 import {
   acquirePackageRefreshLock,
   assertPackageRefreshLockHeld,
+  canonicalJsonSha256,
   failDirectorySyncAfterForTest,
   preserveFailedRefreshArtifactsAfterMutexLossForTest,
   recoverInterruptedPackageRefresh,
@@ -484,6 +485,7 @@ test('Kitsap adapter stages only valid official rows with county-scoped public p
     const workbookPath = join(root, 'Residential_Sales_2021-2026.xlsx');
     const outputPath = join(root, 'launch-data', 'washington');
     await createFixtureWorkbook(workbookPath);
+    await mkdir(outputPath, { recursive: true });
     const workbookBytes = await readFile(workbookPath);
     const workbookSha256 = createHash('sha256').update(workbookBytes).digest('hex');
 
@@ -532,11 +534,106 @@ test('Kitsap adapter stages only valid official rows with county-scoped public p
       assertRuntimeCompatibleCountyDetail(detail, status.counties[0], GENERATED_AT);
     });
 
+    const retainedGeneratedAt = GENERATED_AT;
+    const retainedShard = {
+      schemaVersion: 'terrafusion.washington.sales-shard.v1',
+      generatedAt: retainedGeneratedAt,
+      county: 'Whatcom',
+      countyCode: '073',
+      summary: {
+        records: 1,
+        latestSaleDate: '2025-07-31',
+        reviewRecords: 0,
+        recordsWithNeighborhoodCode: 1,
+        topNeighborhoodCodes: [{ neighborhoodCode: '6110013000', records: 1 }],
+      },
+      records: [{ saleId: 'whatcom-retained-sale', flags: { futureSaleDate: false } }],
+    };
+    const retainedDetail = {
+      schemaVersion: 'terrafusion.washington.county-detail.v1',
+      generatedAt: retainedGeneratedAt,
+      county: 'Whatcom',
+      countyCode: '073',
+      operationalState: {
+        primarySourceMode: 'public_assessor_qualified_sales_csv',
+        prometheusStatus: 'public_data_ready',
+      },
+      summary: { records: 1, latestSaleDate: '2025-07-31' },
+      salesRoute: '/launch-data/washington/sales/by-county/073.json',
+    };
+    const retainedStatus = {
+      county: 'Whatcom',
+      countyCode: '073',
+      priority: 'washington_assessor_launch',
+      prometheusStatus: 'public_data_ready',
+      primarySourceMode: 'public_assessor_qualified_sales_csv',
+      latestSaleDate: '2025-07-31',
+      candidateSales: 1,
+      stagedSales: 1,
+      needsReview: 0,
+      confidence: {
+        averageQualityScore: 1,
+        parserStatus: 'ready',
+        rawStatus: 'official_csv_verified',
+        rawDriftDetected: false,
+      },
+      staticRoutes: {
+        detail: '/launch-data/washington/counties/073.json',
+        salesShard: '/launch-data/washington/sales/by-county/073.json',
+      },
+    };
+    const combinedStatus = {
+      ...status,
+      sourcePosture: 'mixed_public_assessor_sources',
+      counties: [...status.counties, retainedStatus],
+    };
+    const combinedManifest = {
+      ...manifest,
+      statusCanonicalJsonSha256: canonicalJsonSha256(combinedStatus),
+      sourcePosture: combinedStatus.sourcePosture,
+      salesShardAttestations: [
+        ...manifest.salesShardAttestations,
+        {
+          algorithm: 'SHA-256',
+          canonicalJsonSha256: canonicalJsonSha256(retainedShard),
+          county: 'Whatcom',
+          countyCode: '073',
+          officialSourceBaseUrl: 'https://www.whatcomcounty.us/177/Assessor',
+          route: '/launch-data/washington/sales/by-county/073.json',
+          sourcePayloadSha256: ['f'.repeat(64)],
+          sourcePosture: 'public_assessor_qualified_sales_csv',
+        },
+      ],
+      summary: {
+        ...manifest.summary,
+        counties: 2,
+        rawLanded: 2,
+        parserReady: 2,
+        candidateSales: manifest.summary.candidateSales + 1,
+        stagedSales: manifest.summary.stagedSales + 1,
+        recordsWithNeighborhoodCode: manifest.summary.recordsWithNeighborhoodCode + 1,
+      },
+    };
+    await mkdir(join(outputPath, 'counties'), { recursive: true });
+    await mkdir(join(outputPath, 'sales', 'by-county'), { recursive: true });
+    await mkdir(join(outputPath, 'receipts'), { recursive: true });
+    await writeFile(join(outputPath, 'manifest.json'), `${JSON.stringify(combinedManifest, null, 2)}\n`);
+    await writeFile(join(outputPath, 'counties', 'status.json'), `${JSON.stringify(combinedStatus, null, 2)}\n`);
+    await writeFile(join(outputPath, 'counties', '073.json'), `${JSON.stringify(retainedDetail, null, 2)}\n`);
+    await writeFile(join(outputPath, 'sales', 'by-county', '073.json'), `${JSON.stringify(retainedShard, null, 2)}\n`);
+    await writeFile(join(outputPath, 'receipts', 'whatcom-source.json'), `${JSON.stringify({
+      schemaVersion: 'terrafusion.washington.public-source-receipt.v1',
+      county: 'Whatcom',
+      countyCode: '073',
+      generatedAt: retainedGeneratedAt,
+    }, null, 2)}\n`);
+
     const staleMarkerPath = join(outputPath, 'stale-package-marker.txt');
     await writeFile(staleMarkerPath, 'must be replaced', 'utf8');
+    const refreshGeneratedAt = '2026-08-27T17:48:16.000Z';
     const refreshResult = spawnSync(
       process.execPath,
-      [SCRIPT_PATH, workbookPath, workbookSha256, outputPath, GENERATED_AT],
+      [SCRIPT_PATH, workbookPath, workbookSha256, outputPath, refreshGeneratedAt],
       { encoding: 'utf8' }
     );
     assert.equal(refreshResult.status, 0, refreshResult.stderr);
@@ -545,6 +642,25 @@ test('Kitsap adapter stages only valid official rows with county-scoped public p
       await readFile(join(outputPath, 'sales/by-county/035.json'), 'utf8')
     );
     assert.equal(refreshedShard.records.length, 4);
+    const refreshedManifest = JSON.parse(await readFile(join(outputPath, 'manifest.json'), 'utf8'));
+    const refreshedStatus = JSON.parse(await readFile(join(outputPath, 'counties/status.json'), 'utf8'));
+    const preservedWhatcomShard = JSON.parse(
+      await readFile(join(outputPath, 'sales/by-county/073.json'), 'utf8')
+    );
+    assert.deepEqual(refreshedStatus.counties.map(county => county.countyCode), ['035', '073']);
+    assert.deepEqual(
+      refreshedManifest.salesShardAttestations.map(attestation => attestation.countyCode),
+      ['035', '073']
+    );
+    assert.equal(
+      refreshedManifest.salesShardAttestations[1].canonicalJsonSha256,
+      canonicalJsonSha256(preservedWhatcomShard)
+    );
+    assert.equal(preservedWhatcomShard.generatedAt, refreshGeneratedAt);
+    assert.equal(
+      JSON.parse(await readFile(join(outputPath, 'receipts/whatcom-source.json'), 'utf8')).generatedAt,
+      refreshGeneratedAt
+    );
   } finally {
     await rm(root, { recursive: true, force: true });
   }

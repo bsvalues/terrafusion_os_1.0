@@ -9,15 +9,12 @@ import { getSalesForgeCountyScope, useSalesForgeStore } from '../salesForgeStore
 import { QualDecisionButtons } from '../components/QualDecisionButtons';
 import { apiFetch } from '../../../../lib/apiBase';
 import { SALESFORGE_STATISTICS_CONTRACT, type SaleQueueItem } from '../salesForgeTypes';
+import { formatSaleDate } from '../salesForgeDate';
 
 type SortDir = 'asc' | 'desc';
 
 function fmtDate(iso: string): string {
-  try {
-    return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: '2-digit' });
-  } catch {
-    return iso;
-  }
+  return formatSaleDate(iso, { month: 'short', day: 'numeric', year: '2-digit' });
 }
 
 function fmtPrice(n: number | null | undefined): string {

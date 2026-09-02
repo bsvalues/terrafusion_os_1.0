@@ -6,6 +6,7 @@
 
 import { useSalesForgeStore } from '../salesForgeStore';
 import { QualDecisionButtons } from './QualDecisionButtons';
+import { formatSaleDate } from '../salesForgeDate';
 
 function fmtPrice(n: number | null | undefined): string {
   return n == null ? '—' : `$${n.toLocaleString()}`;
@@ -16,12 +17,7 @@ function fmtNum(n: number | null | undefined): string {
 }
 
 function fmtDate(iso: string | null | undefined): string {
-  if (!iso) return '—';
-  try {
-    return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-  } catch {
-    return iso;
-  }
+  return formatSaleDate(iso, { month: 'short', day: 'numeric', year: 'numeric' });
 }
 
 function fmtRatio(n: number | null | undefined): string {

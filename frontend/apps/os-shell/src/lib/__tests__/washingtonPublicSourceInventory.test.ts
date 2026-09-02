@@ -73,4 +73,10 @@ describe('Washington public-source inventory projection', () => {
       'https://www.kitsap.gov/assessor/',
     );
   });
+
+  it('binds Whatcom to the official assessor origin that publishes the qualified-sales CSVs', () => {
+    expect(getWashingtonPublicSourceInventory('Whatcom')?.officialAssessorBaseUrl).toBe(
+      'https://www.whatcomcounty.us/177/Assessor',
+    );
+  });
 });
