@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.Configuration;
 using TerraFusion.Core.Entities;
+using TerraFusion.Core.Entities.Import;
 using TerraFusion.Core.Entities.Pacs;
 using TerraFusion.Core.Entities.Sync;
 using TerraFusion.Core.Entities.Sync.Mapping;
@@ -11,6 +12,7 @@ using TerraFusion.Core.Entities.Forge;
 using TerraFusion.Core.Models;
 using TerraFusion.Core.Interfaces;
 using TerraFusion.Data.Configurations;
+using TerraFusion.Data.Configurations.Import;
 using TerraFusion.Data.Configurations.Sync;
 using TerraFusion.Data.Configurations.Sync.Mapping;
 using TerraFusion.Data.Configurations.Sync.Profile;
@@ -37,6 +39,9 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
   public DbSet<TaxLevy> TaxLevies { get; set; }
   public DbSet<GovernmentUser> GovernmentUsers { get; set; }
   public DbSet<AuditLog> AuditLogs { get; set; }
+
+  // WAL upload-only durable admission ledger (no bytes, staging, promotion, or PACS state)
+  public DbSet<CountyCsvUploadBatch> CountyCsvUploadBatches { get; set; }
 
   // WS-1 Forge Cost Reference — TF-native valuation reference data (county-scoped, versioned, audit-stamped)
   public DbSet<CostFactorSet> CostFactorSets { get; set; }
@@ -983,6 +988,9 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
     modelBuilder.ApplyConfiguration(new CertificationStepConfiguration());
     modelBuilder.ApplyConfiguration(new NoticeConfiguration());
     modelBuilder.ApplyConfiguration(new QueueItemConfiguration());
+
+    // WAL upload-only durable admission ledger
+    modelBuilder.ApplyConfiguration(new CountyCsvUploadBatchConfiguration());
 
     // R3 Sync Spine
     modelBuilder.ApplyConfiguration(new SyncBatchConfiguration());
