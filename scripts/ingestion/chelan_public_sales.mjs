@@ -94,10 +94,14 @@ function nullableFiniteNumber(value, label) {
   return nullableString(value) === null ? null : finiteNumber(value, label);
 }
 
-function canonicalSaleDate(value) {
+export function canonicalSaleDate(value) {
   if (value instanceof Date) {
     invariant(Number.isFinite(value.getTime()), 'Chelan sale date is invalid.');
-    return value.toISOString().slice(0, 10);
+    return [
+      String(value.getFullYear()).padStart(4, '0'),
+      String(value.getMonth() + 1).padStart(2, '0'),
+      String(value.getDate()).padStart(2, '0'),
+    ].join('-');
   }
   const normalized = String(value ?? '').trim();
   const match = /^(\d{4})[-/](\d{2})[-/](\d{2})$/.exec(normalized);
@@ -268,9 +272,13 @@ async function readSourceConfig(configPath = SOURCE_CONFIG_PATH) {
     official.protocol === 'https:' && !official.username && !official.password,
     'Chelan official source must be credential-free HTTPS.'
   );
+  const indexUrl = new URL(config.indexUrl);
   invariant(
-    new URL(config.indexUrl).origin === official.origin,
-    'Chelan source index is outside the official origin.'
+    indexUrl.protocol === 'https:' &&
+      !indexUrl.username &&
+      !indexUrl.password &&
+      indexUrl.origin === official.origin,
+    'Chelan source index must be credential-free HTTPS on the official origin.'
   );
   const start = canonicalSaleDate(config.sourceDateRange?.start);
   const end = canonicalSaleDate(config.sourceDateRange?.end);
@@ -286,9 +294,13 @@ async function readSourceConfig(configPath = SOURCE_CONFIG_PATH) {
       typeof source.file === 'string' && basename(source.file) === source.file,
       'Chelan source filename is invalid.'
     );
+    const sourceUrl = new URL(source.url);
     invariant(
-      new URL(source.url).origin === official.origin,
-      'Chelan source URL is outside the official origin.'
+      sourceUrl.protocol === 'https:' &&
+        !sourceUrl.username &&
+        !sourceUrl.password &&
+        sourceUrl.origin === official.origin,
+      'Chelan source URL must be credential-free HTTPS on the official origin.'
     );
     invariant(SHA256_PATTERN.test(source.sha256), 'Chelan source SHA-256 is invalid.');
     invariant(

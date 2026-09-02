@@ -1,13 +1,21 @@
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import fs from 'node:fs';
-import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
+import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import test from 'node:test';
 import XLSX from 'xlsx';
 
-import { buildChelanCountyPackage, parseChelanWorkbook } from './chelan_public_sales.mjs';
+import {
+  buildChelanCountyPackage,
+  canonicalSaleDate,
+  parseChelanWorkbook,
+} from './chelan_public_sales.mjs';
+import {
+  canonicalJsonSha256,
+  loadVerifiedRetainedWashingtonPackage,
+} from './kitsap_public_sales.mjs';
 
 XLSX.set_fs(fs);
 
@@ -140,7 +148,7 @@ async function fixture({ conflict = false } = {}) {
   };
   const configPath = join(directory, 'sources.json');
   await writeFile(configPath, `${JSON.stringify(config, null, 2)}\n`);
-  return { directory, configPath };
+  return { directory, config, configPath };
 }
 
 test('strips buyer and seller at the XLS parser boundary', () => {
@@ -149,6 +157,20 @@ test('strips buyer and seller at the XLS parser boundary', () => {
   assert.equal('Buyer' in rows[0], false);
   assert.equal('Seller' in rows[0], false);
   assert.doesNotMatch(JSON.stringify(rows), /PRIVATE (BUYER|SELLER)/);
+});
+
+test('preserves native Excel calendar dates in a positive-offset time zone', () => {
+  const previousTimeZone = process.env.TZ;
+  process.env.TZ = 'Asia/Kolkata';
+  try {
+    const nativeDate = new Date(2026, 0, 4);
+    const [parsed] = parseChelanWorkbook(workbookBytes([sourceRow(1, { Sale_Date: nativeDate })]));
+    assert.equal(parsed.Sale_Date instanceof Date, true);
+    assert.equal(canonicalSaleDate(parsed.Sale_Date), '2026-01-04');
+  } finally {
+    if (previousTimeZone === undefined) delete process.env.TZ;
+    else process.env.TZ = previousTimeZone;
+  }
 });
 
 test('consolidates component rows and marks official reject codes for review', async t => {
@@ -200,5 +222,59 @@ test('rejects source digest drift before workbook parsing', async t => {
   await assert.rejects(
     buildChelanCountyPackage(data.directory, GENERATED_AT, data.configPath),
     /does not match its expected SHA-256/
+  );
+});
+
+test('rejects credentials in index and monthly source URLs without reflecting them', async t => {
+  const data = await fixture();
+  t.after(() => rm(data.directory, { recursive: true, force: true }));
+  for (const field of ['index', 'source']) {
+    const config = structuredClone(data.config);
+    if (field === 'index')
+      config.indexUrl = 'https://private-user:private-secret@co.chelan.wa.us/assessor';
+    else
+      config.sources[0].url =
+        'https://private-user:private-secret@co.chelan.wa.us/files/assessor/2026-01.xls';
+    await writeFile(data.configPath, `${JSON.stringify(config, null, 2)}\n`);
+    await assert.rejects(
+      buildChelanCountyPackage(data.directory, GENERATED_AT, data.configPath),
+      error => {
+        assert.match(error.message, /credential-free HTTPS/);
+        assert.doesNotMatch(error.message, /private-(user|secret)/);
+        return true;
+      }
+    );
+  }
+});
+
+test('rejects generation identities older than the retained Washington package', async t => {
+  const outputRoot = await mkdtemp(join(tmpdir(), 'chelan-monotonic-package-'));
+  t.after(() => rm(outputRoot, { recursive: true, force: true }));
+  const retainedGeneratedAt = '2026-09-02T05:46:07.877Z';
+  const status = {
+    schemaVersion: 'terrafusion.washington.county-status.v1',
+    generatedAt: retainedGeneratedAt,
+    sourcePosture: 'public_assessor_official_workbook',
+    counties: [],
+  };
+  const manifest = {
+    schemaVersion: 'terrafusion.washington.launch-manifest.v1',
+    statusSchemaVersion: status.schemaVersion,
+    statusCanonicalJsonSha256: canonicalJsonSha256(status),
+    generatedAt: retainedGeneratedAt,
+    sourcePosture: status.sourcePosture,
+    salesShardAttestations: [],
+    summary: {},
+  };
+  await mkdir(join(outputRoot, 'counties'), { recursive: true });
+  await writeFile(join(outputRoot, 'manifest.json'), `${JSON.stringify(manifest, null, 2)}\n`);
+  await writeFile(
+    join(outputRoot, 'counties', 'status.json'),
+    `${JSON.stringify(status, null, 2)}\n`
+  );
+
+  await assert.rejects(
+    loadVerifiedRetainedWashingtonPackage(outputRoot, '007', '2026-09-01T18:00:00.000Z'),
+    /cannot precede the existing Washington package/
   );
 });
