@@ -37,6 +37,7 @@ public sealed record CountyCsvUploadAdmissionRequest(
     string ApiAdmissionContractId,
     AuthenticatedCanonicalCountyContextResult? CountyContext,
     CountyCsvCountyBoundIntakeReceipt? IntakeReceipt,
+    ReadOnlyMemory<byte> AdmittedContent,
     CountyCsvIntakeIdempotencyIdentity? Identity);
 
 public sealed record CountyCsvUploadAdmissionResult(

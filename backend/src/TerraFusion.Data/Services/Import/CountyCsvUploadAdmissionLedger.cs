@@ -1,3 +1,4 @@
+using System.Security.Cryptography;
 using Microsoft.EntityFrameworkCore;
 using TerraFusion.Core.Counties;
 using TerraFusion.Core.Entities.Import;
@@ -38,6 +39,16 @@ public sealed class CountyCsvUploadAdmissionLedger : ICountyCsvUploadAdmissionLe
         if (!TryValidate(request, out var evidence, out var denialCode))
         {
             return Denied(denialCode);
+        }
+
+        var byteBindingDenial = await RevalidateAdmittedContentAsync(
+                request!.AdmittedContent,
+                request.IntakeReceipt!,
+                cancellationToken)
+            .ConfigureAwait(false);
+        if (byteBindingDenial != CountyCsvUploadAdmissionDenialCode.None)
+        {
+            return Denied(byteBindingDenial);
         }
 
         await using var dbContext = await _dbContextFactory
@@ -298,6 +309,86 @@ public sealed class CountyCsvUploadAdmissionLedger : ICountyCsvUploadAdmissionLe
         && fileName.Length > ".csv".Length
         && string.Equals(format, "csv", StringComparison.Ordinal)
         && string.Equals(mediaType, "text/csv", StringComparison.Ordinal);
+
+    private static async Task<CountyCsvUploadAdmissionDenialCode> RevalidateAdmittedContentAsync(
+        ReadOnlyMemory<byte> admittedContent,
+        CountyCsvCountyBoundIntakeReceipt claimedReceipt,
+        CancellationToken cancellationToken)
+    {
+        var claimedIntake = claimedReceipt.IntakeReceipt;
+        if (admittedContent.Length != claimedIntake.Content.ByteLength
+            || !string.Equals(
+                Convert.ToHexString(SHA256.HashData(admittedContent.Span)).ToLowerInvariant(),
+                claimedIntake.Content.Sha256,
+                StringComparison.Ordinal))
+        {
+            return CountyCsvUploadAdmissionDenialCode.InvalidContentEvidence;
+        }
+
+        CountyCsvCountyBoundIntakeReceipt regeneratedReceipt;
+        try
+        {
+            var intake = new CountyCsvCountyBoundIntake(
+                new CountyCsvParserOptions
+                {
+                    Delimiter = ',',
+                    MaxInputBytes = ICountyCsvUploadAdmissionLedger
+                        .MaximumAuthenticatedCsvUploadBytes,
+                    MaxDataRows = MaximumDataRows,
+                    MaxFieldsPerRow = MaximumFieldsPerRow,
+                    MaxCharactersPerField = MaximumCharactersPerField,
+                });
+            regeneratedReceipt = await intake.AdmitAsync(
+                    new CountyCsvCountyBoundIntakeRequest(
+                        claimedReceipt.Binding.County,
+                        claimedReceipt.Binding.County,
+                        claimedReceipt.Binding.Dataset,
+                        new CountyCsvIntakeDeclaration
+                        {
+                            FileName = claimedIntake.FileName,
+                            Format = claimedIntake.Format,
+                            MediaType = claimedIntake.MediaType,
+                        },
+                        admittedContent),
+                    cancellationToken)
+                .ConfigureAwait(false);
+        }
+        catch (Exception exception) when (
+            exception is CountyCsvParseException
+                or CountyCsvIntakeException
+                or CountyCsvCountyBoundIntakeException)
+        {
+            return CountyCsvUploadAdmissionDenialCode.InvalidDocumentEvidence;
+        }
+
+        return DocumentsMatch(
+                regeneratedReceipt.IntakeReceipt.Document,
+                claimedIntake.Document)
+            ? CountyCsvUploadAdmissionDenialCode.None
+            : CountyCsvUploadAdmissionDenialCode.InvalidDocumentEvidence;
+    }
+
+    private static bool DocumentsMatch(CountyCsvDocument regenerated, CountyCsvDocument claimed)
+    {
+        if (regenerated.InputBytes != claimed.InputBytes
+            || !regenerated.Headers.SequenceEqual(claimed.Headers, StringComparer.Ordinal)
+            || regenerated.Rows.Count != claimed.Rows.Count)
+        {
+            return false;
+        }
+
+        for (var index = 0; index < regenerated.Rows.Count; index++)
+        {
+            if (!regenerated.Rows[index].SequenceEqual(
+                    claimed.Rows[index],
+                    StringComparer.Ordinal))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
 
     private static bool HasValidDocumentEvidence(CountyCsvDocument document)
     {

@@ -248,6 +248,13 @@ public sealed class CountyCsvUploadAdmissionLedgerTests
             (
                 valid with
                 {
+                    AdmittedContent = Encoding.UTF8.GetBytes(
+                        "parcel_id,owner\n1,Eve\n2,Grace\n"),
+                },
+                CountyCsvUploadAdmissionDenialCode.InvalidContentEvidence),
+            (
+                valid with
+                {
                     IntakeReceipt = receipt with { ContractId = "wrong-intake-contract" },
                 },
                 CountyCsvUploadAdmissionDenialCode.InvalidReceipt),
@@ -266,6 +273,27 @@ public sealed class CountyCsvUploadAdmissionLedgerTests
                                         Array.AsReadOnly(new[] { "1", "Ada" }),
                                     }),
                                 intakeReceipt.Document.InputBytes),
+                        },
+                    },
+                },
+                CountyCsvUploadAdmissionDenialCode.InvalidDocumentEvidence),
+            (
+                valid with
+                {
+                    IntakeReceipt = receipt with
+                    {
+                        IntakeReceipt = intakeReceipt with
+                        {
+                            Document = intakeReceipt.Document with
+                            {
+                                Rows = Array.AsReadOnly<IReadOnlyList<string>>(
+                                    new[]
+                                    {
+                                        Array.AsReadOnly(new[] { "1", "Ada" }),
+                                        Array.AsReadOnly(new[] { "2", "Grace" }),
+                                        Array.AsReadOnly(new[] { "3", "Katherine" }),
+                                    }),
+                            },
                         },
                     },
                 },
@@ -511,6 +539,7 @@ public sealed class CountyCsvUploadAdmissionLedgerTests
             ICountyCsvUploadAdmissionLedger.AuthenticatedCsvApiAdmissionContractId,
             context,
             receipt,
+            bytes,
             CountyCsvIntakeIdempotency.Create(receipt));
     }
 
