@@ -33,6 +33,8 @@ const DETAIL_SCHEMA = 'terrafusion.washington.county-detail.v1';
 const SHARD_SCHEMA = 'terrafusion.washington.sales-shard.v1';
 const REFRESH_JOURNAL_SCHEMA = 'terrafusion.washington.package-refresh.v1';
 const FILESYSTEM_MUTEX_PROTOCOL = 'terrafusion.filesystem-refresh-mutex.v1';
+const WINDOWS_DIRECTORY_FLUSH_TYPE =
+  'using System; using System.ComponentModel; using Microsoft.Win32.SafeHandles; using System.Runtime.InteropServices; public static class TerraFusionDirectoryDurability { [DllImport("kernel32.dll", CharSet=CharSet.Unicode, SetLastError=true)] static extern SafeFileHandle CreateFileW(string path, uint access, uint share, IntPtr security, uint creation, uint flags, IntPtr template); [DllImport("kernel32.dll", SetLastError=true)] static extern bool FlushFileBuffers(SafeFileHandle handle); public static void Flush(string path) { using (var handle = CreateFileW(path, 0x40000000, 0x7, IntPtr.Zero, 3, 0x02000000, IntPtr.Zero)) { if (handle.IsInvalid) throw new Win32Exception(Marshal.GetLastWin32Error()); if (!FlushFileBuffers(handle)) throw new Win32Exception(Marshal.GetLastWin32Error()); } } }';
 const SHA256_PATTERN = /^[a-f\d]{64}$/;
 const OPERATION_ID_PATTERN =
   /^\d+-[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
@@ -53,12 +55,56 @@ async function pathExists(path) {
 }
 
 async function syncDirectory(path) {
+  if (process.platform === 'win32') {
+    const canonicalPath = resolve(path);
+    const heldEntry = [...heldRefreshAcquisitionMutexes.entries()].find(
+      ([outputRoot, state]) =>
+        state?.child &&
+        !state.releasing &&
+        !state.lostError &&
+        (canonicalPath === dirname(outputRoot) ||
+          canonicalPath === outputRoot ||
+          canonicalPath.startsWith(`${outputRoot}${sep}`))
+    );
+    if (heldEntry) {
+      const [outputRoot, state] = heldEntry;
+      await runRefreshMutexMutation(outputRoot, state.operationId, {
+        op: 'syncDir',
+        path: canonicalPath,
+      });
+      return;
+    }
+    const powershell = join(
+      process.env.SystemRoot ?? 'C:\\Windows',
+      'System32',
+      'WindowsPowerShell',
+      'v1.0',
+      'powershell.exe'
+    );
+    execFileSync(
+      powershell,
+      [
+        '-NoProfile',
+        '-NonInteractive',
+        '-Command',
+        'Add-Type -TypeDefinition $env:TF_DIRECTORY_FLUSH_TYPE; [TerraFusionDirectoryDurability]::Flush($env:TF_DIRECTORY_TO_FLUSH)',
+      ],
+      {
+        env: {
+          ...process.env,
+          TF_DIRECTORY_FLUSH_TYPE: WINDOWS_DIRECTORY_FLUSH_TYPE,
+          TF_DIRECTORY_TO_FLUSH: canonicalPath,
+        },
+        stdio: ['ignore', 'ignore', 'pipe'],
+        windowsHide: true,
+      }
+    );
+    return;
+  }
   let handle;
   try {
     handle = await open(path, 'r');
     await handle.sync();
-  } catch (error) {
-    if (!['EACCES', 'EISDIR', 'ENOTSUP', 'EPERM'].includes(error?.code)) throw error;
   } finally {
     await handle?.close();
   }
@@ -173,6 +219,7 @@ function startRefreshAcquisitionMutexProcess(mutexPath) {
       'powershell.exe'
     );
     const helper = [
+      'Add-Type -TypeDefinition $env:TF_DIRECTORY_FLUSH_TYPE',
       '$stream = $null',
       'for ($attempt = 0; $attempt -lt 1200; $attempt += 1) {',
       '  try {',
@@ -199,6 +246,8 @@ function startRefreshAcquisitionMutexProcess(mutexPath) {
       '      if ([System.IO.Directory]::Exists($command.path)) { [System.IO.Directory]::Delete($command.path, [bool]$command.recursive) } elseif ([System.IO.File]::Exists($command.path)) { [System.IO.File]::Delete($command.path) } elseif (-not [bool]$command.force) { throw "path does not exist" }',
       '    } elseif ($command.op -eq "delay") {',
       '      Start-Sleep -Milliseconds ([int]$command.milliseconds)',
+      '    } elseif ($command.op -eq "syncDir") {',
+      '      [TerraFusionDirectoryDurability]::Flush($command.path)',
       '    } else { throw "unsupported mutation" }',
       '    [Console]::Out.WriteLine((@{ id = $command.id; ok = $true; result = $result } | ConvertTo-Json -Compress))',
       '  } catch {',
@@ -209,7 +258,11 @@ function startRefreshAcquisitionMutexProcess(mutexPath) {
       '$stream.Dispose()',
     ].join('; ');
     return spawn(powershell, ['-NoProfile', '-NonInteractive', '-Command', helper], {
-      env: { ...process.env, TF_KITSAP_MUTEX_PATH: mutexPath },
+      env: {
+        ...process.env,
+        TF_DIRECTORY_FLUSH_TYPE: WINDOWS_DIRECTORY_FLUSH_TYPE,
+        TF_KITSAP_MUTEX_PATH: mutexPath,
+      },
       stdio: ['pipe', 'pipe', 'pipe'],
       windowsHide: true,
     });
