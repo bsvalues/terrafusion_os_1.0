@@ -71,7 +71,7 @@ test('uses the authenticated Kitsap and Whatcom public-sales package without len
   await expect(whatcom).toHaveAttribute('aria-selected', 'true');
 
   await expect(page.getByTestId('selected-county-context')).toContainText('Whatcom County');
-  await expect(page.getByTestId('selected-county-context')).toContainText('5,111', {
+  await expect(page.getByTestId('selected-county-context')).toContainText('5,109', {
     timeout: 45_000,
   });
   await expect(page.getByTestId('selected-county-context')).toContainText('2025-07-31');
@@ -83,7 +83,7 @@ test('uses the authenticated Kitsap and Whatcom public-sales package without len
   await expect(page.getByRole('heading', { name: 'TerraForge', exact: true })).toBeVisible({
     timeout: 20_000,
   });
-  await expect(page.getByTestId('forge-county-context')).toContainText('5,111', {
+  await expect(page.getByTestId('forge-county-context')).toContainText('5,109', {
     timeout: 45_000,
   });
   const whatcomSalesForge = page
@@ -127,7 +127,7 @@ test('uses the authenticated Kitsap and Whatcom public-sales package without len
     .getByRole('button', { name: /SalesForge/i });
   await expect(adamsSalesForge).toBeDisabled();
   await expect(page.getByTestId('forge-county-context')).not.toContainText('24,585');
-  await expect(page.getByTestId('forge-county-context')).not.toContainText('5,111');
+  await expect(page.getByTestId('forge-county-context')).not.toContainText('5,109');
 
   expect(requestedSalesShards).toContain('/launch-data/washington/sales/by-county/035.json');
   expect(requestedSalesShards).toContain('/launch-data/washington/sales/by-county/073.json');

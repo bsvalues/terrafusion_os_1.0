@@ -10,7 +10,7 @@ import {
 
 const PACKAGE_ROOT = 'frontend/apps/os-shell/public/launch-data/washington';
 const EXPECTED_MANIFEST_SHA256 =
-  '85d6eb4aa797c04b619043324600a257768c51856e7312fbd5a2003e010660ae';
+  '73f352ee3793a94db64a0d74acf3134666ab204de6f6b800357b8b22638f2184';
 
 function canonicalizeJson(value) {
   if (value === null || typeof value === 'boolean' || typeof value === 'string') {
@@ -45,7 +45,7 @@ test('embedded Kitsap and Whatcom packages are digest-bound, county-isolated, pu
   assert.equal(manifestDigest, EXPECTED_MANIFEST_SHA256);
   assert.deepEqual(status.counties.map(county => county.countyCode), ['035', '073']);
   assert.equal(status.counties[0].stagedSales, 24_585);
-  assert.equal(status.counties[1].stagedSales, 5_111);
+  assert.equal(status.counties[1].stagedSales, 5_109);
   assert.equal(kitsapShard.countyCode, '035');
   assert.equal(kitsapShard.records.length, 24_585);
   assert.equal(
@@ -63,7 +63,7 @@ test('embedded Kitsap and Whatcom packages are digest-bound, county-isolated, pu
     true
   );
   assert.equal(whatcomShard.countyCode, '073');
-  assert.equal(whatcomShard.records.length, 5_111);
+  assert.equal(whatcomShard.records.length, 5_109);
   assert.equal(
     whatcomShard.records.every(
       record =>
@@ -84,8 +84,10 @@ test('embedded Kitsap and Whatcom packages are digest-bound, county-isolated, pu
     true
   );
   assert.equal(whatcomReceipt.candidateSales, 5_123);
-  assert.equal(whatcomReceipt.stagedSales, 5_111);
-  assert.equal(whatcomReceipt.quarantinedSales, 12);
+  assert.equal(whatcomReceipt.stagedSales, 5_109);
+  assert.equal(whatcomReceipt.quarantinedSales, 14);
+  assert.equal(whatcomReceipt.quarantine.exactDuplicateRows, 12);
+  assert.equal(whatcomReceipt.quarantine.conflictingSaleRows, 2);
   assert.equal(manifest.statusCanonicalJsonSha256, canonicalSha256(status));
   const attestations = new Map(
     manifest.salesShardAttestations.map(attestation => [attestation.countyCode, attestation])

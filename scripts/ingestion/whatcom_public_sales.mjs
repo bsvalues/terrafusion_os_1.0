@@ -147,7 +147,18 @@ export function parseWhatcomCsv(text) {
 }
 
 function saleIdentity(row) {
-  return [row['Property ID'], row['Sale Date'], row['Sale Price'], row['Parcel Number/Geo ID']]
+  return [
+    row['Property ID'],
+    row['Sale Date'],
+    finiteNumber(row['Sale Price'], 'sale price', { positive: true }),
+    row['Parcel Number/Geo ID'],
+  ]
+    .map(value => String(value ?? '').trim())
+    .join('|');
+}
+
+function saleCollisionIdentity(row) {
+  return [row['Property ID'], row['Sale Date'], row['Parcel Number/Geo ID']]
     .map(value => String(value ?? '').trim())
     .join('|');
 }
@@ -347,9 +358,31 @@ export async function buildWhatcomCountyPackage(
     });
   }
 
+  const collisionGroups = new Map();
+  for (const candidate of candidates) {
+    const identity = saleCollisionIdentity(candidate.row);
+    const group = collisionGroups.get(identity) ?? [];
+    group.push(candidate);
+    collisionGroups.set(identity, group);
+  }
+  const conflictingSaleGroups = new Map();
+  const conflictingCandidates = new Set();
+  for (const [identity, group] of collisionGroups) {
+    const prices = new Set(
+      group.map(candidate =>
+        finiteNumber(candidate.row['Sale Price'], 'sale price', { positive: true })
+      )
+    );
+    if (prices.size < 2) continue;
+    conflictingSaleGroups.set(identity, { group, prices });
+    group.forEach(candidate => conflictingCandidates.add(candidate));
+  }
+
   const uniqueCandidates = new Map();
   const duplicates = new Map();
+  let exactDuplicateRows = 0;
   for (const candidate of candidates) {
+    if (conflictingCandidates.has(candidate)) continue;
     const identity = saleIdentity(candidate.row);
     const previous = uniqueCandidates.get(identity);
     if (!previous) {
@@ -363,6 +396,7 @@ export async function buildWhatcomCountyPackage(
     const sources = duplicates.get(identity) ?? new Set([previous.source.key]);
     sources.add(candidate.source.key);
     duplicates.set(identity, sources);
+    exactDuplicateRows += 1;
   }
 
   const records = [...uniqueCandidates.values()].map(candidate =>
@@ -388,7 +422,8 @@ export async function buildWhatcomCountyPackage(
   }
 
   const candidateSales = candidates.length;
-  const duplicateSales = candidateSales - records.length;
+  const conflictingSaleRows = conflictingCandidates.size;
+  const quarantinedSales = exactDuplicateRows + conflictingSaleRows;
   const recordsWithNeighborhoodCode = records.filter(record => record.neighborhoodCode).length;
   const latestSaleDate = records[0].saleDate;
   const salesRoute = `/launch-data/washington/sales/by-county/${COUNTY_CODE}.json`;
@@ -416,7 +451,7 @@ export async function buildWhatcomCountyPackage(
     latestSaleDate,
     candidateSales,
     stagedSales: records.length,
-    needsReview: duplicateSales,
+    needsReview: quarantinedSales,
     confidence: {
       averageQualityScore: 1,
       parserStatus: 'ready',
@@ -457,13 +492,21 @@ export async function buildWhatcomCountyPackage(
     sourceDateRange: config.sourceDateRange,
     candidateSales,
     stagedSales: records.length,
-    quarantinedSales: duplicateSales,
+    quarantinedSales,
     quarantine: {
-      exactDuplicateRows: duplicateSales,
+      exactDuplicateRows,
       duplicateIdentities: [...duplicates.entries()].map(([identity, sourceKeys]) => ({
         identitySha256: createHash('sha256').update(identity).digest('hex'),
         sourceKeys: [...sourceKeys].sort(),
       })),
+      conflictingSaleRows,
+      conflictingSaleIdentities: [...conflictingSaleGroups.entries()].map(
+        ([identity, { group, prices }]) => ({
+          identitySha256: createHash('sha256').update(identity).digest('hex'),
+          sourceKeys: [...new Set(group.map(candidate => candidate.source.key))].sort(),
+          observedSalePrices: [...prices].sort((left, right) => left - right),
+        })
+      ),
     },
     sources: sourceReceipts,
     omittedFields: ['owner', 'grantor', 'grantee', 'buyer', 'seller'],

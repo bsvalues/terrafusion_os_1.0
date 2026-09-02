@@ -72,6 +72,7 @@ async function createFixture({
   future = false,
   blankSiteSize = false,
   invalidSiteSize = false,
+  priceConflict = false,
 } = {}) {
   const directory = await mkdtemp(join(tmpdir(), 'whatcom-public-sales-'));
   const sources = [];
@@ -80,6 +81,7 @@ async function createFixture({
     if (blankSiteSize && index === 0) sourceRow = row(index + 1, { 'Site Size': '' });
     if (invalidSiteSize && index === 0) sourceRow = row(index + 1, { 'Site Size': 'unknown' });
     if (duplicate && index === 1) sourceRow = row(1);
+    if (priceConflict && index === 1) sourceRow = row(1, { 'Sale Price': '999999' });
     if (conflict && index === 1) {
       sourceRow = row(1, { 'Situs Address': 'DIFFERENT ADDRESS, BELLINGHAM' });
     }
@@ -312,6 +314,29 @@ test('preserves unavailable acreage as null and rejects malformed acreage', asyn
   await assert.rejects(
     buildWhatcomCountyPackage(malformed.directory, GENERATED_AT, malformed.configPath),
     /invalid site size/
+  );
+});
+
+test('quarantines conflicting prices for the same parcel, property, and sale date', async t => {
+  const fixture = await createFixture({ priceConflict: true });
+  t.after(() => rm(fixture.directory, { recursive: true, force: true }));
+  const result = await buildWhatcomCountyPackage(
+    fixture.directory,
+    GENERATED_AT,
+    fixture.configPath
+  );
+  assert.equal(result.receipt.candidateSales, 8);
+  assert.equal(result.receipt.stagedSales, 6);
+  assert.equal(result.receipt.quarantinedSales, 2);
+  assert.equal(result.receipt.quarantine.exactDuplicateRows, 0);
+  assert.equal(result.receipt.quarantine.conflictingSaleRows, 2);
+  assert.deepEqual(
+    result.receipt.quarantine.conflictingSaleIdentities[0].observedSalePrices,
+    [300001, 999999]
+  );
+  assert.equal(
+    result.shard.records.some(record => record.parcelNumber.endsWith('0001')),
+    false
   );
 });
 
