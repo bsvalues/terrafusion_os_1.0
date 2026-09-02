@@ -154,7 +154,7 @@ test('uses the authenticated Chelan, Clark, Kitsap, Pierce, and Whatcom public-s
   await pierce.click();
   await expect(pierce).toHaveAttribute('aria-selected', 'true');
   await expect(context).toContainText('Pierce County');
-  await expect(context).toContainText('13,517', { timeout: 45_000 });
+  await expect(context).toContainText('12,738', { timeout: 45_000 });
   await expect(context).toContainText('2026-08-05');
   await expect(context).not.toContainText('No governed public sales state is available');
 
@@ -162,7 +162,7 @@ test('uses the authenticated Chelan, Clark, Kitsap, Pierce, and Whatcom public-s
   await expect(page.getByRole('heading', { name: 'TerraForge', exact: true })).toBeVisible({
     timeout: 20_000,
   });
-  await expect(page.getByTestId('forge-county-context')).toContainText('13,517', {
+  await expect(page.getByTestId('forge-county-context')).toContainText('12,738', {
     timeout: 45_000,
   });
   const pierceSalesForge = page
@@ -258,7 +258,7 @@ test('uses the authenticated Chelan, Clark, Kitsap, Pierce, and Whatcom public-s
   await expect(page.getByTestId('forge-county-context')).not.toContainText('24,585');
   await expect(page.getByTestId('forge-county-context')).not.toContainText('5,109');
   await expect(page.getByTestId('forge-county-context')).not.toContainText('5,476');
-  await expect(page.getByTestId('forge-county-context')).not.toContainText('13,517');
+  await expect(page.getByTestId('forge-county-context')).not.toContainText('12,738');
 
   expect(requestedSalesShards).toContain('/launch-data/washington/sales/by-county/035.json');
   expect(requestedSalesShards).toContain('/launch-data/washington/sales/by-county/073.json');

@@ -84,9 +84,11 @@ async function createFixture() {
       saleRow({ etn: '20260818004', parcel: '1000000004', excludeReason: 'Improved after sale' }),
       saleRow({ etn: '20260818005', parcel: '1000000005', price: '0.00' }),
       saleRow({ etn: '20230818001', parcel: '1000000006', date: '08/18/2023' }),
+      saleRow({ etn: '20260818007', parcel: '1000000007' }),
+      saleRow({ etn: '20260818007', parcel: '1000000008' }),
     ].join('\r\n') + '\r\n';
   const taxes =
-    Array.from({ length: 6 }, (_, index) =>
+    Array.from({ length: 8 }, (_, index) =>
       taxRow(`100000000${index + 1}`, `${index + 1} TEST AVE TACOMA WA 98402`)
     ).join('\r\n') + '\r\n';
   await Promise.all([
@@ -146,18 +148,27 @@ test('publishes only valid, confirmed, non-excluded sales and never retains name
     fixture.configPath
   );
 
-  assert.equal(result.receipt.candidateSales, 5);
+  assert.equal(result.receipt.candidateSales, 7);
   assert.equal(result.receipt.stagedSales, 1);
-  assert.equal(result.receipt.quarantinedSales, 4);
+  assert.equal(result.receipt.quarantinedSales, 6);
   assert.deepEqual(
     {
       invalidSales: result.receipt.quarantine.invalidSales,
       unconfirmedSales: result.receipt.quarantine.unconfirmedSales,
       assessorExcludedSales: result.receipt.quarantine.assessorExcludedSales,
       nonPositiveSalePrice: result.receipt.quarantine.nonPositiveSalePrice,
+      multiParcelSales: result.receipt.quarantine.multiParcelSales,
     },
-    { invalidSales: 1, unconfirmedSales: 1, assessorExcludedSales: 1, nonPositiveSalePrice: 1 }
+    {
+      invalidSales: 1,
+      unconfirmedSales: 1,
+      assessorExcludedSales: 1,
+      nonPositiveSalePrice: 1,
+      multiParcelSales: 2,
+    }
   );
+  assert.equal(result.receipt.quarantine.multiParcelTransactions.length, 1);
+  assert.equal(result.receipt.quarantine.multiParcelTransactions[0].parcelCount, 2);
   const [record] = result.shard.records;
   assert.equal(record.county, 'Pierce');
   assert.equal(record.countyCode, '053');

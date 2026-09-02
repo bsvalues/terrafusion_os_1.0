@@ -107,6 +107,10 @@ function canonicalIdentity(row, saleDate, salePrice) {
   return [row[0], row[2], saleDate, salePrice].map(value => String(value).trim()).join('|');
 }
 
+function canonicalTransactionIdentity(row, saleDate) {
+  return [row[0], saleDate].map(value => String(value).trim()).join('|');
+}
+
 function validateOfficialUrl(value, label) {
   let url;
   try {
@@ -323,17 +327,46 @@ export async function buildPierceCountyPackage(
     unconfirmedSales: 0,
     assessorExcludedSales: 0,
     nonPositiveSalePrice: 0,
+    multiParcelSales: 0,
   };
   const excludedReasons = new Map();
   const records = [];
-  let candidateSales = 0;
+  const candidates = [];
 
   for (const [index, row] of saleRows.entries()) {
     const saleDate = canonicalPierceSaleDate(row[3]);
     invariant(saleDate <= generatedDate, 'Pierce source contains a future-dated sale.');
     if (saleDate < config.sourceDateRange.start || saleDate > config.sourceDateRange.end) continue;
-    candidateSales += 1;
     const salePrice = positiveNumber(row[4]);
+    candidates.push({ row, ordinal: index + 1, saleDate, salePrice });
+  }
+  const candidateSales = candidates.length;
+  const transactionParcels = new Map();
+  for (const { row, saleDate, salePrice } of candidates) {
+    if (
+      salePrice === null ||
+      row[8] !== '1' ||
+      row[9] !== '1' ||
+      nullableString(row[10]) !== null
+    ) {
+      continue;
+    }
+    const parcelNumber = nullableString(row[2]);
+    const documentNumber = nullableString(row[0]);
+    invariant(
+      parcelNumber && documentNumber,
+      'Pierce eligible sale is missing its parcel or recording identity.'
+    );
+    const transactionIdentity = canonicalTransactionIdentity(row, saleDate);
+    const parcels = transactionParcels.get(transactionIdentity) ?? new Set();
+    parcels.add(parcelNumber);
+    transactionParcels.set(transactionIdentity, parcels);
+  }
+  const multiParcelTransactions = new Map(
+    [...transactionParcels.entries()].filter(([, parcels]) => parcels.size > 1)
+  );
+
+  for (const { row, ordinal, saleDate, salePrice } of candidates) {
     const identity = canonicalIdentity(row, saleDate, salePrice ?? row[4]);
     const previous = seen.get(identity);
     if (previous) {
@@ -346,7 +379,7 @@ export async function buildPierceCountyPackage(
       duplicateIdentities.set(digest, (duplicateIdentities.get(digest) ?? 0) + 1);
       continue;
     }
-    seen.set(identity, { row, ordinal: index + 1 });
+    seen.set(identity, { row, ordinal });
 
     if (salePrice === null) {
       quarantine.nonPositiveSalePrice += 1;
@@ -366,10 +399,15 @@ export async function buildPierceCountyPackage(
       excludedReasons.set(excludeReason, (excludedReasons.get(excludeReason) ?? 0) + 1);
       continue;
     }
+    const transactionIdentity = canonicalTransactionIdentity(row, saleDate);
+    if (multiParcelTransactions.has(transactionIdentity)) {
+      quarantine.multiParcelSales += 1;
+      continue;
+    }
     const parcelNumber = nullableString(row[2]);
     const taxAccount = parcelNumber ? accounts.get(parcelNumber) : null;
     invariant(taxAccount, `Pierce staged sale has no tax-account join for parcel ${parcelNumber}.`);
-    records.push(mapRecord(row, index + 1, saleDate, salePrice, saleSource, taxSource, taxAccount));
+    records.push(mapRecord(row, ordinal, saleDate, salePrice, saleSource, taxSource, taxAccount));
   }
 
   records.sort(
@@ -463,6 +501,12 @@ export async function buildPierceCountyPackage(
       excludedReasons: Object.fromEntries(
         [...excludedReasons.entries()].sort(([left], [right]) => left.localeCompare(right))
       ),
+      multiParcelTransactions: [...multiParcelTransactions.entries()]
+        .map(([identity, parcels]) => ({
+          identitySha256: createHash('sha256').update(identity).digest('hex'),
+          parcelCount: parcels.size,
+        }))
+        .sort((left, right) => left.identitySha256.localeCompare(right.identitySha256)),
       conflictingSaleRows: 0,
       conflictingSaleIdentities: [],
     },

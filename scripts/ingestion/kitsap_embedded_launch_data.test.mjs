@@ -9,7 +9,7 @@ import {
 } from '../ci/package_washington_launch_data.mjs';
 
 const PACKAGE_ROOT = 'frontend/apps/os-shell/public/launch-data/washington';
-const EXPECTED_MANIFEST_SHA256 = 'c9ad1a21e88a9a8e6ccc9f5a940836abde89908acc5167a2c47f3542538a29c6';
+const EXPECTED_MANIFEST_SHA256 = '7c93e8395a5c57d0347f33f1d5ac76da3f094818e3987a425f21ed4ea57f314c';
 
 function canonicalizeJson(value) {
   if (value === null || typeof value === 'boolean' || typeof value === 'string') {
@@ -76,7 +76,7 @@ test('embedded Chelan, Clark, Kitsap, Pierce, and Whatcom packages are digest-bo
   assert.equal(status.counties[0].stagedSales, 908);
   assert.equal(status.counties[1].stagedSales, 5_476);
   assert.equal(status.counties[2].stagedSales, 24_585);
-  assert.equal(status.counties[3].stagedSales, 13_517);
+  assert.equal(status.counties[3].stagedSales, 12_738);
   assert.equal(status.counties[4].stagedSales, 5_109);
   assert.equal(chelanShard.countyCode, '007');
   assert.equal(chelanShard.records.length, 908);
@@ -211,15 +211,17 @@ test('embedded Chelan, Clark, Kitsap, Pierce, and Whatcom packages are digest-bo
     true
   );
   assert.equal(pierceShard.countyCode, '053');
-  assert.equal(pierceShard.records.length, 13_517);
+  assert.equal(pierceShard.records.length, 12_738);
   assert.equal(pierceShard.summary.reviewRecords, 0);
   assert.equal(pierceReceipt.candidateSales, 41_321);
-  assert.equal(pierceReceipt.stagedSales, 13_517);
-  assert.equal(pierceReceipt.quarantinedSales, 27_804);
+  assert.equal(pierceReceipt.stagedSales, 12_738);
+  assert.equal(pierceReceipt.quarantinedSales, 28_583);
   assert.equal(pierceReceipt.quarantine.invalidSales, 10_608);
   assert.equal(pierceReceipt.quarantine.unconfirmedSales, 16_366);
   assert.equal(pierceReceipt.quarantine.assessorExcludedSales, 808);
   assert.equal(pierceReceipt.quarantine.nonPositiveSalePrice, 22);
+  assert.equal(pierceReceipt.quarantine.multiParcelSales, 779);
+  assert.equal(pierceReceipt.quarantine.multiParcelTransactions.length, 324);
   assert.equal(
     pierceShard.records.every(
       record =>
