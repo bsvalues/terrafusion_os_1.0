@@ -1,3 +1,4 @@
+using System.Buffers;
 using System.Data.Common;
 using System.Reflection;
 using System.Text;
@@ -424,6 +425,25 @@ public sealed class CountyCsvUploadAdmissionLedgerTests
     }
 
     [Fact]
+    public async Task AdmitAsync_SnapshotsAliasableContentOnceBeforeHashAndReparse()
+    {
+        await using var database = await TestDatabase.CreateAsync((Benton, BentonId));
+        var request = await CreateRequestAsync(Benton, BentonId, "assessor-1");
+        var carriageReturnEquivalent = Encoding.UTF8.GetBytes(
+            "parcel_id,owner\r1,Ada\r2,Grace\r");
+        using var content = new AlternatingMemoryManager(
+            request.AdmittedContent.ToArray(),
+            carriageReturnEquivalent);
+        var aliasableRequest = request with { AdmittedContent = content.Memory };
+
+        var result = await new CountyCsvUploadAdmissionLedger(database.CreateFactory())
+            .AdmitAsync(aliasableRequest);
+
+        Assert.Equal(CountyCsvUploadAdmissionDisposition.FirstSeen, result.Disposition);
+        Assert.Equal(2, content.GetSpanCalls);
+    }
+
+    [Fact]
     public async Task AdmissionHasNoSyncOrPacsWriteSeam()
     {
         await using var database = await TestDatabase.CreateAsync((Benton, BentonId));
@@ -725,6 +745,31 @@ public sealed class CountyCsvUploadAdmissionLedgerTests
             }
 
             return base.SavingChangesAsync(eventData, result, cancellationToken);
+        }
+    }
+
+    private sealed class AlternatingMemoryManager(
+        byte[] original,
+        byte[] parserEquivalentAlternative) : MemoryManager<byte>
+    {
+        private int _getSpanCalls;
+
+        public int GetSpanCalls => Volatile.Read(ref _getSpanCalls);
+
+        public override Span<byte> GetSpan() =>
+            Interlocked.Increment(ref _getSpanCalls) <= 2
+                ? original
+                : parserEquivalentAlternative;
+
+        public override MemoryHandle Pin(int elementIndex = 0) =>
+            throw new NotSupportedException();
+
+        public override void Unpin()
+        {
+        }
+
+        protected override void Dispose(bool disposing)
+        {
         }
     }
 

@@ -1,3 +1,4 @@
+using System.Data;
 using System.Security.Cryptography;
 using Microsoft.EntityFrameworkCore;
 using TerraFusion.Core.Counties;
@@ -54,6 +55,10 @@ public sealed class CountyCsvUploadAdmissionLedger : ICountyCsvUploadAdmissionLe
         await using var dbContext = await _dbContextFactory
             .CreateDbContextAsync(cancellationToken)
             .ConfigureAwait(false);
+        await using var transaction = await dbContext.Database
+            .BeginTransactionAsync(IsolationLevel.Serializable, cancellationToken)
+            .ConfigureAwait(false);
+
         if (!await MatchesPersistedCanonicalCountyAsync(
                 dbContext,
                 evidence.CountyId,
@@ -71,12 +76,9 @@ public sealed class CountyCsvUploadAdmissionLedger : ICountyCsvUploadAdmissionLe
             .ConfigureAwait(false);
         if (existing is not null)
         {
+            await transaction.CommitAsync(cancellationToken).ConfigureAwait(false);
             return ResolveExisting(existing, evidence);
         }
-
-        await using var transaction = await dbContext.Database
-            .BeginTransactionAsync(cancellationToken)
-            .ConfigureAwait(false);
 
         var batch = evidence.CreateBatch(
             Guid.NewGuid(),
@@ -98,6 +100,19 @@ public sealed class CountyCsvUploadAdmissionLedger : ICountyCsvUploadAdmissionLe
             await using var winnerContext = await _dbContextFactory
                 .CreateDbContextAsync(CancellationToken.None)
                 .ConfigureAwait(false);
+            await using var winnerTransaction = await winnerContext.Database
+                .BeginTransactionAsync(IsolationLevel.Serializable, CancellationToken.None)
+                .ConfigureAwait(false);
+            if (!await MatchesPersistedCanonicalCountyAsync(
+                    winnerContext,
+                    evidence.CountyId,
+                    evidence.County,
+                    CancellationToken.None)
+                .ConfigureAwait(false))
+            {
+                return Denied(CountyCsvUploadAdmissionDenialCode.CountyMismatch);
+            }
+
             var winner = await FindByIdempotencyKeyAsync(
                     winnerContext,
                     evidence.IdempotencyKey,
@@ -105,6 +120,9 @@ public sealed class CountyCsvUploadAdmissionLedger : ICountyCsvUploadAdmissionLe
                 .ConfigureAwait(false);
             if (winner is not null)
             {
+                await winnerTransaction
+                    .CommitAsync(CancellationToken.None)
+                    .ConfigureAwait(false);
                 return ResolveExisting(winner, evidence);
             }
 
@@ -340,9 +358,16 @@ public sealed class CountyCsvUploadAdmissionLedger : ICountyCsvUploadAdmissionLe
         CancellationToken cancellationToken)
     {
         var claimedIntake = claimedReceipt.IntakeReceipt;
-        if (admittedContent.Length != claimedIntake.Content.ByteLength
-            || !string.Equals(
-                Convert.ToHexString(SHA256.HashData(admittedContent.Span)).ToLowerInvariant(),
+        if (admittedContent.Length != claimedIntake.Content.ByteLength)
+        {
+            return CountyCsvUploadAdmissionDenialCode.InvalidContentEvidence;
+        }
+
+        cancellationToken.ThrowIfCancellationRequested();
+        var contentSnapshot = admittedContent.ToArray();
+        cancellationToken.ThrowIfCancellationRequested();
+        if (!string.Equals(
+                Convert.ToHexString(SHA256.HashData(contentSnapshot)).ToLowerInvariant(),
                 claimedIntake.Content.Sha256,
                 StringComparison.Ordinal))
         {
@@ -373,7 +398,7 @@ public sealed class CountyCsvUploadAdmissionLedger : ICountyCsvUploadAdmissionLe
                             Format = claimedIntake.Format,
                             MediaType = claimedIntake.MediaType,
                         },
-                        admittedContent),
+                        contentSnapshot),
                     cancellationToken)
                 .ConfigureAwait(false);
         }
