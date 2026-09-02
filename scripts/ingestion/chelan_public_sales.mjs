@@ -94,6 +94,11 @@ function nullableFiniteNumber(value, label) {
   return nullableString(value) === null ? null : finiteNumber(value, label);
 }
 
+function validYearBuilt(value, label, saleYear) {
+  const year = nullableFiniteNumber(value, label);
+  return year !== null && Number.isInteger(year) && year >= 1700 && year <= saleYear ? year : null;
+}
+
 function credentialFreeHttpsUrl(value, label) {
   let parsed;
   try {
@@ -182,6 +187,14 @@ function optionalUnanimousNumber(group, header, label) {
   return present.length > 0 && present.every(value => value === present[0]) ? present[0] : null;
 }
 
+function optionalUnanimousYearBuilt(group, saleYear) {
+  const values = group.map(candidate =>
+    validYearBuilt(candidate.row['Year Built'], 'year built', saleYear)
+  );
+  const present = values.filter(value => value !== null);
+  return present.length > 0 && present.every(value => value === present[0]) ? present[0] : null;
+}
+
 function situsAddress(row) {
   return (
     [row.situs_num, row.situs_street_prefx, row.situs_street, row.situs_street_sufix]
@@ -196,6 +209,7 @@ function mapTransaction(group, generatedAt) {
   const identity = transactionIdentity(first.row);
   const identityDigest = createHash('sha256').update(identity).digest('hex');
   const saleDate = canonicalSaleDate(first.row.Sale_Date);
+  const saleYear = Number(saleDate.slice(0, 4));
   invariant(saleDate <= generatedAt.slice(0, 10), 'Chelan transaction is future-dated.');
   const parcelNumber = unanimous(group, 'geo_id', 'parcel number');
   const propertyId = unanimous(group, 'prop_id', 'property ID');
@@ -219,7 +233,7 @@ function mapTransaction(group, generatedAt) {
     countyCode: COUNTY_CODE,
     parcelNumber,
     saleDate,
-    saleYear: Number(saleDate.slice(0, 4)),
+    saleYear,
     salePrice,
     adjustedSalePrice: null,
     documentNumber: unanimous(group, 'Auditor_File_#', 'auditor file number'),
@@ -242,7 +256,7 @@ function mapTransaction(group, generatedAt) {
     reviewStatus: needsReview ? 'review_required' : 'ready',
     grossLivingArea: unanimous(group, 'living_area', 'living area', nullableFiniteNumber),
     lotSizeSqft: null,
-    yearBuilt: unanimous(group, 'Year Built', 'year built', nullableFiniteNumber),
+    yearBuilt: optionalUnanimousYearBuilt(group, saleYear),
     bedrooms: optionalUnanimousNumber(group, 'Bedrooms', 'bedrooms'),
     bathrooms: optionalUnanimousNumber(group, 'Bathrooms', 'bathrooms'),
     condition: null,

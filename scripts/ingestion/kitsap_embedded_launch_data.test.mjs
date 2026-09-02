@@ -9,7 +9,7 @@ import {
 } from '../ci/package_washington_launch_data.mjs';
 
 const PACKAGE_ROOT = 'frontend/apps/os-shell/public/launch-data/washington';
-const EXPECTED_MANIFEST_SHA256 = '46e30904d37fa475e3f0c28ce1420d0522801bd80a3b62954e260f54bf67bfef';
+const EXPECTED_MANIFEST_SHA256 = 'd838a6fe1e106cf870a8307d3c8cb21e908e4fa283533069afa8557400930f17';
 
 function canonicalizeJson(value) {
   if (value === null || typeof value === 'boolean' || typeof value === 'string') {
@@ -67,6 +67,18 @@ test('embedded Chelan, Kitsap, and Whatcom packages are digest-bound, county-iso
   assert.equal(chelanShard.countyCode, '007');
   assert.equal(chelanShard.records.length, 908);
   assert.equal(chelanShard.summary.reviewRecords, 132);
+  assert.equal(
+    chelanShard.records.every(
+      record =>
+        record.yearBuilt === null ||
+        (Number.isInteger(record.yearBuilt) &&
+          record.yearBuilt >= 1700 &&
+          record.yearBuilt <= record.saleYear)
+    ),
+    true
+  );
+  assert.equal(chelanShard.records.filter(record => record.bedrooms !== null).length, 495);
+  assert.equal(chelanShard.records.filter(record => record.bathrooms !== null).length, 498);
   assert.equal(
     chelanShard.records.every(
       record =>

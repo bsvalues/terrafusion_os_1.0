@@ -110,7 +110,11 @@ function workbookBytes(rows) {
   return XLSX.write(workbook, { type: 'buffer', bookType: 'xls' });
 }
 
-async function fixture({ conflict = false, crossSourceComponent = false } = {}) {
+async function fixture({
+  conflict = false,
+  crossSourceComponent = false,
+  invalidYearBuilt = false,
+} = {}) {
   const directory = await mkdtemp(join(tmpdir(), 'chelan-public-sales-'));
   const sources = [];
   for (let month = 1; month <= 7; month += 1) {
@@ -132,6 +136,11 @@ async function fixture({ conflict = false, crossSourceComponent = false } = {}) 
           Sale_Price: conflict ? 999999 : 300001,
         })
       );
+    }
+    if (invalidYearBuilt && month === 1) {
+      rows.forEach(row => {
+        row['Year Built'] = 0;
+      });
     }
     if (month === 2 && !crossSourceComponent) rows[0].Reject_Code = '2';
     const bytes = workbookBytes(rows);
@@ -206,6 +215,27 @@ test('consolidates component rows and marks official reject codes for review', a
     true
   );
   assert.doesNotMatch(JSON.stringify(result), /PRIVATE (BUYER|SELLER)/);
+});
+
+test('normalizes impossible official year-built values to unavailable', async t => {
+  const data = await fixture({ invalidYearBuilt: true });
+  t.after(() => rm(data.directory, { recursive: true, force: true }));
+  const result = await buildChelanCountyPackage(data.directory, GENERATED_AT, data.configPath);
+  const invalid = result.shard.records.find(record => record.parcelNumber === 'G1');
+  const valid = result.shard.records.find(record => record.parcelNumber === 'G2');
+
+  assert.equal(invalid.yearBuilt, null);
+  assert.equal(valid.yearBuilt, 1995);
+  assert.equal(
+    result.shard.records.every(
+      record =>
+        record.yearBuilt === null ||
+        (Number.isInteger(record.yearBuilt) &&
+          record.yearBuilt >= 1700 &&
+          record.yearBuilt <= record.saleYear)
+    ),
+    true
+  );
 });
 
 test('quarantines all rows in a transaction with conflicting prices', async t => {

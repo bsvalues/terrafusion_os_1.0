@@ -3,7 +3,7 @@ import { defineConfig, devices } from '@playwright/test';
 const PORT = process.env.VITE_PORT || '5173';
 const BASE_URL = `http://localhost:${PORT}`;
 const WASHINGTON_MANIFEST_SHA256 =
-  '46e30904d37fa475e3f0c28ce1420d0522801bd80a3b62954e260f54bf67bfef';
+  'd838a6fe1e106cf870a8307d3c8cb21e908e4fa283533069afa8557400930f17';
 
 export default defineConfig({
   testDir: '../../tests/integration',
