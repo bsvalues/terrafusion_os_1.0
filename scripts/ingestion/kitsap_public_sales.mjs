@@ -201,8 +201,24 @@ async function canonicalizePackageOutputRoot(outputPath) {
   return join(await realpath(dirname(outputRoot)), basename(outputRoot));
 }
 
+export function refreshMutexCommandForPlatform(platform, mutexPath, helperScript) {
+  if (platform === 'linux') {
+    return {
+      command: 'flock',
+      args: ['-F', '-x', mutexPath, process.execPath, '-e', helperScript],
+    };
+  }
+  if (platform === 'darwin') {
+    return {
+      command: '/usr/bin/lockf',
+      args: ['-k', mutexPath, process.execPath, '-e', helperScript],
+    };
+  }
+  return null;
+}
+
 function startRefreshAcquisitionMutexProcess(mutexPath) {
-  if (process.platform === 'linux') {
+  if (process.platform === 'linux' || process.platform === 'darwin') {
     const helper = [
       'const fs=require("node:fs/promises")',
       'const readline=require("node:readline")',
@@ -214,7 +230,8 @@ function startRefreshAcquisitionMutexProcess(mutexPath) {
       'try{command=JSON.parse(line);let result=null;if(command.op==="rename")await fs.rename(command.source,command.target);else if(command.op==="renameIfExists")try{await fs.rename(command.source,command.target)}catch(error){if(error.code!=="ENOENT")throw error}else if(command.op==="restoreFenced"){try{await fs.access(command.target);result=false}catch(error){if(error.code!=="ENOENT")throw error;await fs.rename(command.source,command.target);result=true}}else if(command.op==="rm")await fs.rm(command.path,{recursive:Boolean(command.recursive),force:Boolean(command.force)});else if(command.op==="delay")await new Promise(resolve=>setTimeout(resolve,command.milliseconds));else throw new Error("unsupported mutation");process.stdout.write(JSON.stringify({id:command.id,ok:true,result})+"\\n")}catch(error){process.stdout.write(JSON.stringify({id:command?.id,ok:false,message:error.message,code:error.code??null})+"\\n")}',
       '})',
     ].join(';');
-    return spawn('flock', ['-F', '-x', mutexPath, process.execPath, '-e', helper], {
+    const command = refreshMutexCommandForPlatform(process.platform, mutexPath, helper);
+    return spawn(command.command, command.args, {
       stdio: ['pipe', 'pipe', 'pipe'],
       windowsHide: true,
     });
@@ -918,6 +935,7 @@ function mapRecord(sheetName, row, ordinal, payloadSha256, generatedAt) {
 
   const neighborhoodCode = nullableString(row.Nbrhd);
   const generatedDate = generatedAt.slice(0, 10);
+  const futureSaleDate = saleDate > generatedDate;
   const isDwelling = sheetName === 'Dwellings';
   return {
     saleId: makeSaleId(sheetName, row, ordinal),
@@ -945,7 +963,7 @@ function mapRecord(sheetName, row, ordinal, payloadSha256, generatedAt) {
     confidenceScore: 1,
     qualityScore: 1,
     qualityBand: 'official_valid_sale',
-    reviewStatus: 'ready',
+    reviewStatus: futureSaleDate ? 'needs_review' : 'ready',
     grossLivingArea: isDwelling ? nullableNumber(row['Living area']) : null,
     lotSizeSqft: null,
     yearBuilt: isDwelling ? nullableNumber(row['Yr blt']) : null,
@@ -964,8 +982,8 @@ function mapRecord(sheetName, row, ordinal, payloadSha256, generatedAt) {
     },
     flags: {
       duplicateRisk: false,
-      needsReview: false,
-      futureSaleDate: saleDate > generatedDate,
+      needsReview: futureSaleDate,
+      futureSaleDate,
       manualException: false,
     },
   };
@@ -1063,12 +1081,13 @@ async function generatePackage(sourcePath, expectedSha256, outputRoot, generated
   invariant(records.length > 0, 'Official Kitsap workbook produced no valid public sales.');
 
   const latestSaleDate = records[0].saleDate;
-  const needsReview = candidateSales - records.length;
+  const quarantinedSales = candidateSales - records.length;
   const neighborhoodCounts = topNeighborhoodCodes(records);
   const recordsWithNeighborhoodCode = records.filter(
     record => record.neighborhoodCode !== null
   ).length;
   const futureSaleDateRecords = records.filter(record => record.flags.futureSaleDate).length;
+  const needsReview = quarantinedSales + futureSaleDateRecords;
   const salesRoute = `/launch-data/washington/sales/by-county/${COUNTY_CODE}.json`;
   const detailRoute = `/launch-data/washington/counties/${COUNTY_CODE}.json`;
 
@@ -1080,7 +1099,7 @@ async function generatePackage(sourcePath, expectedSha256, outputRoot, generated
     summary: {
       records: records.length,
       latestSaleDate,
-      reviewRecords: 0,
+      reviewRecords: futureSaleDateRecords,
       recordsWithNeighborhoodCode,
       topNeighborhoodCodes: neighborhoodCounts,
     },
@@ -1185,7 +1204,7 @@ async function generatePackage(sourcePath, expectedSha256, outputRoot, generated
         sourcePayloadSha256: payloadSha256,
         candidateSales,
         stagedSales: records.length,
-        quarantinedSales: needsReview,
+        quarantinedSales,
         quarantine,
         omittedFields: ['owner', 'grantor', 'grantee', 'buyer', 'seller'],
       },
@@ -1258,7 +1277,7 @@ async function generatePackage(sourcePath, expectedSha256, outputRoot, generated
         sourcePayloadSha256: payloadSha256,
         candidateSales,
         stagedSales: records.length,
-        quarantinedSales: needsReview,
+        quarantinedSales,
         latestSaleDate,
         outputRoot,
       },

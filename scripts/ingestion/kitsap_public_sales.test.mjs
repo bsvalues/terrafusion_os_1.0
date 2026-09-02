@@ -28,6 +28,7 @@ import {
   failDirectorySyncAfterForTest,
   preserveFailedRefreshArtifactsAfterMutexLossForTest,
   recoverInterruptedPackageRefresh,
+  refreshMutexCommandForPlatform,
   releasePackageRefreshLock,
   terminatePackageRefreshMutexForTest,
   timeoutPackageRefreshMutexForTest,
@@ -37,6 +38,18 @@ XLSX.set_fs(fs);
 
 const GENERATED_AT = '2026-08-26T17:48:16.000Z';
 const SCRIPT_PATH = resolve('scripts/ingestion/kitsap_public_sales.mjs');
+
+test('Kitsap adapter uses native filesystem mutex commands on Linux and macOS', () => {
+  const helperScript = 'process.stdout.write("LOCKED\\n")';
+  assert.deepEqual(refreshMutexCommandForPlatform('linux', '/tmp/kitsap.lock', helperScript), {
+    command: 'flock',
+    args: ['-F', '-x', '/tmp/kitsap.lock', process.execPath, '-e', helperScript],
+  });
+  assert.deepEqual(refreshMutexCommandForPlatform('darwin', '/tmp/kitsap.lock', helperScript), {
+    command: '/usr/bin/lockf',
+    args: ['-k', '/tmp/kitsap.lock', process.execPath, '-e', helperScript],
+  });
+});
 
 test('Kitsap adapter restores the prior package after an interrupted refresh', async () => {
   const root = await mkdtemp(join(tmpdir(), 'tf-kitsap-recovery-'));
@@ -412,6 +425,11 @@ async function createFixtureWorkbook(path) {
     XLSX.utils.json_to_sheet([
       fixtureRow(),
       fixtureRow({
+        'REET no.': '2026EX00004',
+        'Tax parcel no.': '1234-000-001-0004',
+        'Sale Dt': new Date('2026-09-01T00:00:00.000Z'),
+      }),
+      fixtureRow({
         'REET no.': '2026EX00002',
         'Tax parcel no.': '1234-000-001-0002',
         Validity: 'With other property',
@@ -463,16 +481,21 @@ test('Kitsap adapter stages only valid official rows with county-scoped public p
 
     assert.equal(status.counties.length, 1);
     assert.equal(status.counties[0].countyCode, '035');
-    assert.equal(status.counties[0].candidateSales, 3);
-    assert.equal(status.counties[0].stagedSales, 2);
-    assert.equal(status.counties[0].needsReview, 1);
-    assert.equal(shard.records.length, 2);
+    assert.equal(status.counties[0].candidateSales, 4);
+    assert.equal(status.counties[0].stagedSales, 3);
+    assert.equal(status.counties[0].needsReview, 2);
+    assert.equal(shard.records.length, 3);
+    assert.equal(shard.summary.reviewRecords, 1);
     assert.equal(shard.records[0].countyCode, '035');
     assert.equal(shard.records[0].grantor, null);
     assert.equal(shard.records[0].grantee, null);
     assert.equal(shard.records[0].provenance.sourcePayloadSha256, workbookSha256);
     assert.equal(receipt.omittedFields.includes('owner'), true);
     assert.equal(receipt.quarantinedSales, 1);
+    const futureSale = shard.records.find(record => record.documentNumber === '2026EX00004');
+    assert.equal(futureSale.reviewStatus, 'needs_review');
+    assert.equal(futureSale.flags.futureSaleDate, true);
+    assert.equal(futureSale.flags.needsReview, true);
     assert.equal(manifest.salesShardAttestations[0].countyCode, '035');
     assert.equal(manifest.salesShardAttestations[0].sourcePayloadSha256[0], workbookSha256);
     assert.doesNotThrow(() => {
@@ -492,7 +515,7 @@ test('Kitsap adapter stages only valid official rows with county-scoped public p
     const refreshedShard = JSON.parse(
       await readFile(join(outputPath, 'sales/by-county/035.json'), 'utf8')
     );
-    assert.equal(refreshedShard.records.length, 2);
+    assert.equal(refreshedShard.records.length, 3);
   } finally {
     await rm(root, { recursive: true, force: true });
   }
