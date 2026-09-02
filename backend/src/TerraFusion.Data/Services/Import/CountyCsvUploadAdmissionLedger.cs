@@ -6,8 +6,8 @@ using TerraFusion.Core.Import;
 namespace TerraFusion.Data.Services.Import;
 
 /// <summary>
-/// EF-backed upload admission ledger. The explicit transaction covers both entity persistence and
-/// TerraFusionDbContext's second audit-log save, so neither can commit without the other.
+/// EF-backed upload admission ledger. Each operation owns a dedicated context, and its explicit
+/// transaction covers both entity persistence and TerraFusionDbContext's second audit-log save.
 /// </summary>
 public sealed class CountyCsvUploadAdmissionLedger : ICountyCsvUploadAdmissionLedger
 {
@@ -17,14 +17,15 @@ public sealed class CountyCsvUploadAdmissionLedger : ICountyCsvUploadAdmissionLe
     private const int MaximumFieldsPerRow = 512;
     private const int MaximumCharactersPerField = 65_536;
 
-    private readonly TerraFusionDbContext _dbContext;
+    private readonly IDbContextFactory<TerraFusionDbContext> _dbContextFactory;
     private readonly TimeProvider _timeProvider;
 
     public CountyCsvUploadAdmissionLedger(
-        TerraFusionDbContext dbContext,
+        IDbContextFactory<TerraFusionDbContext> dbContextFactory,
         TimeProvider? timeProvider = null)
     {
-        _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+        _dbContextFactory = dbContextFactory
+            ?? throw new ArgumentNullException(nameof(dbContextFactory));
         _timeProvider = timeProvider ?? TimeProvider.System;
     }
 
@@ -39,7 +40,11 @@ public sealed class CountyCsvUploadAdmissionLedger : ICountyCsvUploadAdmissionLe
             return Denied(denialCode);
         }
 
+        await using var dbContext = await _dbContextFactory
+            .CreateDbContextAsync(cancellationToken)
+            .ConfigureAwait(false);
         var existing = await FindByIdempotencyKeyAsync(
+                dbContext,
                 evidence.IdempotencyKey,
                 cancellationToken)
             .ConfigureAwait(false);
@@ -48,28 +53,32 @@ public sealed class CountyCsvUploadAdmissionLedger : ICountyCsvUploadAdmissionLe
             return ResolveExisting(existing, evidence);
         }
 
-        var trackedState = CaptureTrackedState();
-        await using var transaction = await _dbContext.Database
+        await using var transaction = await dbContext.Database
             .BeginTransactionAsync(cancellationToken)
             .ConfigureAwait(false);
 
         var batch = evidence.CreateBatch(
             Guid.NewGuid(),
             _timeProvider.GetUtcNow());
-        _dbContext.CountyCsvUploadBatches.Add(batch);
+        dbContext.CountyCsvUploadBatches.Add(batch);
 
         try
         {
-            await _dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+            await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
             await transaction.CommitAsync(cancellationToken).ConfigureAwait(false);
 
             return Accepted(CountyCsvUploadAdmissionDisposition.FirstSeen, batch);
         }
         catch (DbUpdateException updateException)
         {
-            await RollbackAndRestoreAsync(transaction, trackedState).ConfigureAwait(false);
+            await transaction.RollbackAsync(CancellationToken.None).ConfigureAwait(false);
+            dbContext.ChangeTracker.Clear();
 
+            await using var winnerContext = await _dbContextFactory
+                .CreateDbContextAsync(CancellationToken.None)
+                .ConfigureAwait(false);
             var winner = await FindByIdempotencyKeyAsync(
+                    winnerContext,
                     evidence.IdempotencyKey,
                     CancellationToken.None)
                 .ConfigureAwait(false);
@@ -84,83 +93,21 @@ public sealed class CountyCsvUploadAdmissionLedger : ICountyCsvUploadAdmissionLe
         }
         catch
         {
-            await RollbackAndRestoreAsync(transaction, trackedState).ConfigureAwait(false);
+            await transaction.RollbackAsync(CancellationToken.None).ConfigureAwait(false);
             throw;
         }
     }
 
-    private async Task<CountyCsvUploadBatch?> FindByIdempotencyKeyAsync(
+    private static async Task<CountyCsvUploadBatch?> FindByIdempotencyKeyAsync(
+        TerraFusionDbContext dbContext,
         string idempotencyKey,
         CancellationToken cancellationToken) =>
-        await _dbContext.CountyCsvUploadBatches
+        await dbContext.CountyCsvUploadBatches
             .AsNoTracking()
             .SingleOrDefaultAsync(
                 batch => batch.IdempotencyKey == idempotencyKey,
                 cancellationToken)
             .ConfigureAwait(false);
-
-    private IReadOnlyList<TrackedEntryState> CaptureTrackedState() =>
-        _dbContext.ChangeTracker
-            .Entries()
-            .Select(entry => new TrackedEntryState(
-                entry.Entity,
-                entry.State,
-                entry.CurrentValues.Clone(),
-                entry.OriginalValues.Clone(),
-                entry.Properties
-                    .Where(property => property.IsModified)
-                    .Select(property => property.Metadata.Name)
-                    .ToHashSet(StringComparer.Ordinal)))
-            .ToArray();
-
-    private async Task RollbackAndRestoreAsync(
-        Microsoft.EntityFrameworkCore.Storage.IDbContextTransaction transaction,
-        IReadOnlyList<TrackedEntryState> trackedState)
-    {
-        try
-        {
-            await transaction.RollbackAsync(CancellationToken.None).ConfigureAwait(false);
-        }
-        finally
-        {
-            RestoreTrackedState(trackedState);
-        }
-    }
-
-    private void RestoreTrackedState(IReadOnlyList<TrackedEntryState> trackedState)
-    {
-        var preexistingEntities = new HashSet<object>(
-            trackedState.Select(snapshot => snapshot.Entity),
-            ReferenceEqualityComparer.Instance);
-
-        foreach (var entry in _dbContext.ChangeTracker.Entries().ToArray())
-        {
-            if (!preexistingEntities.Contains(entry.Entity))
-            {
-                entry.State = EntityState.Detached;
-            }
-        }
-
-        foreach (var snapshot in trackedState)
-        {
-            var entry = _dbContext.Entry(snapshot.Entity);
-            entry.State = EntityState.Unchanged;
-            entry.CurrentValues.SetValues(snapshot.CurrentValues);
-            entry.OriginalValues.SetValues(snapshot.OriginalValues);
-
-            if (snapshot.State == EntityState.Modified)
-            {
-                foreach (var propertyName in snapshot.ModifiedProperties)
-                {
-                    entry.Property(propertyName).IsModified = true;
-                }
-            }
-            else
-            {
-                entry.State = snapshot.State;
-            }
-        }
-    }
 
     private static bool TryValidate(
         CountyCsvUploadAdmissionRequest? request,
@@ -391,7 +338,7 @@ public sealed class CountyCsvUploadAdmissionLedger : ICountyCsvUploadAdmissionLe
         && value.Length <= MaximumCharactersPerField
         && value.All(character =>
             (!char.IsControl(character) || character is '\t' or '\r' or '\n')
-            && character is not '\uFFFE' and not '\uFFFF');
+            && character is not '\uFEFF' and not '\uFFFE' and not '\uFFFF');
 
     private static bool IsLowercaseSha256(string? value) =>
         value is { Length: 64 }
@@ -421,13 +368,6 @@ public sealed class CountyCsvUploadAdmissionLedger : ICountyCsvUploadAdmissionLe
             CountyCsvUploadAdmissionDisposition.Denied,
             denialCode,
             null);
-
-    private sealed record TrackedEntryState(
-        object Entity,
-        EntityState State,
-        Microsoft.EntityFrameworkCore.ChangeTracking.PropertyValues CurrentValues,
-        Microsoft.EntityFrameworkCore.ChangeTracking.PropertyValues OriginalValues,
-        IReadOnlySet<string> ModifiedProperties);
 
     private sealed record AdmissionEvidence(
         Guid CountyId,

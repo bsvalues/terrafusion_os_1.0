@@ -40,7 +40,7 @@ public sealed class CountyCsvUploadAdmissionLedgerTests
         var request = await CreateRequestAsync(Benton, BentonId, "assessor-1");
         await using var context = database.CreateContext();
         var ledger = new CountyCsvUploadAdmissionLedger(
-            context,
+            database.CreateFactory(),
             new FixedTimeProvider(ReceivedAt));
 
         var result = await ledger.AdmitAsync(request);
@@ -87,14 +87,14 @@ public sealed class CountyCsvUploadAdmissionLedgerTests
 
         await using (var firstContext = database.CreateContext())
         {
-            var first = await new CountyCsvUploadAdmissionLedger(firstContext)
+            var first = await new CountyCsvUploadAdmissionLedger(database.CreateFactory())
                 .AdmitAsync(request);
             firstBatchId = Assert.IsType<CountyCsvUploadBatch>(first.Batch).BatchId;
         }
 
         await using (var restartedContext = database.CreateContext())
         {
-            var duplicate = await new CountyCsvUploadAdmissionLedger(restartedContext)
+            var duplicate = await new CountyCsvUploadAdmissionLedger(database.CreateFactory())
                 .AdmitAsync(request);
 
             Assert.Equal(CountyCsvUploadAdmissionDisposition.Duplicate, duplicate.Disposition);
@@ -109,10 +109,8 @@ public sealed class CountyCsvUploadAdmissionLedgerTests
     {
         await using var database = await TestDatabase.CreateAsync((Benton, BentonId));
         var request = await CreateRequestAsync(Benton, BentonId, "parallel-assessor");
-        await using var firstContext = database.CreateContext();
-        await using var secondContext = database.CreateContext();
-        var firstLedger = new CountyCsvUploadAdmissionLedger(firstContext);
-        var secondLedger = new CountyCsvUploadAdmissionLedger(secondContext);
+        var firstLedger = new CountyCsvUploadAdmissionLedger(database.CreateFactory());
+        var secondLedger = new CountyCsvUploadAdmissionLedger(database.CreateFactory());
 
         var results = await Task.WhenAll(
             firstLedger.AdmitAsync(request),
@@ -139,7 +137,7 @@ public sealed class CountyCsvUploadAdmissionLedgerTests
         var firstRequest = await CreateRequestAsync(Benton, BentonId, "assessor-1");
         var contradictory = await CreateRequestAsync(Benton, BentonId, "assessor-2");
         await using var context = database.CreateContext();
-        var ledger = new CountyCsvUploadAdmissionLedger(context);
+        var ledger = new CountyCsvUploadAdmissionLedger(database.CreateFactory());
 
         var first = await ledger.AdmitAsync(firstRequest);
         var collision = await ledger.AdmitAsync(contradictory);
@@ -160,7 +158,7 @@ public sealed class CountyCsvUploadAdmissionLedgerTests
         var benton = await CreateRequestAsync(Benton, BentonId, "benton-assessor");
         var franklin = await CreateRequestAsync(Franklin, FranklinId, "franklin-assessor");
         await using var context = database.CreateContext();
-        var ledger = new CountyCsvUploadAdmissionLedger(context);
+        var ledger = new CountyCsvUploadAdmissionLedger(database.CreateFactory());
 
         var first = await ledger.AdmitAsync(benton);
         var second = await ledger.AdmitAsync(franklin);
@@ -275,6 +273,21 @@ public sealed class CountyCsvUploadAdmissionLedgerTests
             (
                 valid with
                 {
+                    IntakeReceipt = receipt with
+                    {
+                        IntakeReceipt = intakeReceipt with
+                        {
+                            Document = intakeReceipt.Document with
+                            {
+                                Headers = Array.AsReadOnly(new[] { "parcel_id\uFEFF", "owner" }),
+                            },
+                        },
+                    },
+                },
+                CountyCsvUploadAdmissionDenialCode.InvalidDocumentEvidence),
+            (
+                valid with
+                {
                     Identity = valid.Identity! with
                     {
                         IdempotencyKey = new string('0', 64),
@@ -284,7 +297,7 @@ public sealed class CountyCsvUploadAdmissionLedgerTests
         };
 
         await using var context = database.CreateContext();
-        var ledger = new CountyCsvUploadAdmissionLedger(context);
+        var ledger = new CountyCsvUploadAdmissionLedger(database.CreateFactory());
         foreach (var (request, expectedDenial) in cases)
         {
             var result = await ledger.AdmitAsync(request);
@@ -307,7 +320,7 @@ public sealed class CountyCsvUploadAdmissionLedgerTests
         cancellation.Cancel();
 
         await Assert.ThrowsAnyAsync<OperationCanceledException>(
-            () => new CountyCsvUploadAdmissionLedger(context)
+            () => new CountyCsvUploadAdmissionLedger(database.CreateFactory())
                 .AdmitAsync(request, cancellation.Token));
 
         Assert.Equal(0, await context.CountyCsvUploadBatches.CountAsync());
@@ -315,48 +328,64 @@ public sealed class CountyCsvUploadAdmissionLedgerTests
     }
 
     [Fact]
-    public async Task AdmitAsync_AuditSaveFailureRollsBackBatchAndPreservesUnrelatedTrackedState()
+    public async Task AdmitAsync_AuditSaveFailureRollsBackTheDedicatedBatchTransaction()
     {
         await using var database = await TestDatabase.CreateAsync((Benton, BentonId));
         var request = await CreateRequestAsync(Benton, BentonId, "assessor-1");
-        await using (var failingContext = database.CreateContext(new FailSecondSaveInterceptor()))
-        {
-            var modifiedCounty = await failingContext.Counties.SingleAsync(
-                county => county.Id == BentonId);
-            var originalCountyName = modifiedCounty.Name;
-            modifiedCounty.Name = "Pending Benton name";
-            var unrelatedCountyId = Guid.Parse("00000000-0000-0000-0000-000000000099");
-            var unrelatedCounty = new TerraFusion.Core.Entities.County
-            {
-                Id = unrelatedCountyId,
-                Name = "Unrelated pending county",
-                State = "WA",
-                FipsCode = "99999",
-            };
-            failingContext.Counties.Add(unrelatedCounty);
+        var factory = database.CreateFactory(new FailSecondSaveInterceptor());
 
-            var exception = await Assert.ThrowsAsync<InvalidOperationException>(
-                () => new CountyCsvUploadAdmissionLedger(failingContext).AdmitAsync(request));
+        var exception = await Assert.ThrowsAsync<InvalidOperationException>(
+            () => new CountyCsvUploadAdmissionLedger(factory).AdmitAsync(request));
 
-            Assert.Equal("synthetic audit persistence failure", exception.Message);
-            Assert.Equal(EntityState.Added, failingContext.Entry(unrelatedCounty).State);
-            Assert.Equal(EntityState.Modified, failingContext.Entry(modifiedCounty).State);
-            Assert.Equal("Pending Benton name", modifiedCounty.Name);
-            Assert.Equal(
-                originalCountyName,
-                failingContext.Entry(modifiedCounty).Property(county => county.Name).OriginalValue);
-            Assert.True(failingContext.Entry(modifiedCounty).Property(county => county.Name).IsModified);
-            Assert.Empty(failingContext.ChangeTracker.Entries<CountyCsvUploadBatch>());
-            Assert.Empty(failingContext.ChangeTracker.Entries<TerraFusion.Core.Entities.AuditLog>());
-        }
+        Assert.Equal("synthetic audit persistence failure", exception.Message);
 
         await using var verificationContext = database.CreateContext();
         Assert.Equal(0, await verificationContext.CountyCsvUploadBatches.CountAsync());
         Assert.Equal(0, await verificationContext.AuditLogs.CountAsync());
+    }
+
+    [Fact]
+    public async Task AdmitAsync_SuccessDoesNotCommitUnrelatedCallerTrackedState()
+    {
+        await using var database = await TestDatabase.CreateAsync((Benton, BentonId));
+        var request = await CreateRequestAsync(Benton, BentonId, "assessor-1");
+        await using var callerContext = database.CreateContext();
+        var modifiedCounty = await callerContext.Counties.SingleAsync(county => county.Id == BentonId);
+        var originalCountyName = modifiedCounty.Name;
+        modifiedCounty.Name = "Pending Benton name";
+        var unrelatedCountyId = Guid.Parse("00000000-0000-0000-0000-000000000099");
+        var unrelatedCounty = new TerraFusion.Core.Entities.County
+        {
+            Id = unrelatedCountyId,
+            Name = "Unrelated pending county",
+            State = "WA",
+            FipsCode = "99999",
+        };
+        callerContext.Counties.Add(unrelatedCounty);
+
+        var result = await new CountyCsvUploadAdmissionLedger(database.CreateFactory())
+            .AdmitAsync(request);
+
+        Assert.Equal(CountyCsvUploadAdmissionDisposition.FirstSeen, result.Disposition);
+        Assert.Equal(EntityState.Added, callerContext.Entry(unrelatedCounty).State);
+        Assert.Equal(EntityState.Modified, callerContext.Entry(modifiedCounty).State);
+        Assert.Equal("Pending Benton name", modifiedCounty.Name);
+        Assert.Equal(
+            originalCountyName,
+            callerContext.Entry(modifiedCounty).Property(county => county.Name).OriginalValue);
+        Assert.True(callerContext.Entry(modifiedCounty).Property(county => county.Name).IsModified);
+
+        await using var verificationContext = database.CreateContext();
+        Assert.Equal(1, await verificationContext.CountyCsvUploadBatches.CountAsync());
+        Assert.Equal(1, await verificationContext.AuditLogs.CountAsync());
+        Assert.Equal(originalCountyName, await verificationContext.Counties
+            .Where(county => county.Id == BentonId)
+            .Select(county => county.Name)
+            .SingleAsync());
         Assert.Equal(
             0,
             await verificationContext.Counties.CountAsync(
-                county => county.Id == Guid.Parse("00000000-0000-0000-0000-000000000099")));
+                county => county.Id == unrelatedCountyId));
     }
 
     [Fact]
@@ -366,7 +395,8 @@ public sealed class CountyCsvUploadAdmissionLedgerTests
         var request = await CreateRequestAsync(Benton, BentonId, "assessor-1");
         await using var context = database.CreateContext();
 
-        var result = await new CountyCsvUploadAdmissionLedger(context).AdmitAsync(request);
+        var result = await new CountyCsvUploadAdmissionLedger(database.CreateFactory())
+            .AdmitAsync(request);
 
         Assert.Equal(CountyCsvUploadAdmissionDisposition.FirstSeen, result.Disposition);
         Assert.DoesNotContain(
@@ -375,7 +405,7 @@ public sealed class CountyCsvUploadAdmissionLedgerTests
                 && (entityNamespace.Contains(".Sync", StringComparison.Ordinal)
                     || entityNamespace.Contains(".Pacs", StringComparison.Ordinal)));
         Assert.Equal(
-            new[] { typeof(TimeProvider), typeof(TerraFusionDbContext) },
+            new[] { typeof(IDbContextFactory<TerraFusionDbContext>), typeof(TimeProvider) },
             typeof(CountyCsvUploadAdmissionLedger)
                 .GetFields(BindingFlags.Instance | BindingFlags.NonPublic)
                 .Select(field => field.FieldType)
@@ -583,7 +613,26 @@ public sealed class CountyCsvUploadAdmissionLedgerTests
         public TerraFusionDbContext CreateContext(IInterceptor? interceptor = null) =>
             _temporary.CreateContext(interceptor);
 
+        public IDbContextFactory<TerraFusionDbContext> CreateFactory(
+            IInterceptor? interceptor = null) =>
+            new TestContextFactory(this, interceptor);
+
         public ValueTask DisposeAsync() => _temporary.DisposeAsync();
+    }
+
+    private sealed class TestContextFactory(
+        TestDatabase database,
+        IInterceptor? interceptor = null) : IDbContextFactory<TerraFusionDbContext>
+    {
+        public TerraFusionDbContext CreateDbContext() =>
+            database.CreateContext(interceptor);
+
+        public Task<TerraFusionDbContext> CreateDbContextAsync(
+            CancellationToken cancellationToken = default)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            return Task.FromResult(CreateDbContext());
+        }
     }
 
     private sealed class TemporaryDatabaseFile : IAsyncDisposable
