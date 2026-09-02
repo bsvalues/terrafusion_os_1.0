@@ -12,8 +12,10 @@
 recorded as `OWNER-WAL-V1-MISSION-AUTHORITY-20260827`. The A through E construction waves and the
 zero-dispatch F reconciliation are protected-complete. `WO-WAL-000G` is protected-complete in PR
 #1531, and `WO-WAL-004F` is protected-complete in PR #1535 at
-`54e0df259c1712b156260b1b5d24444611906e2b`. The governance-only 000H reconciliation records that
-evidence and releases exactly 002F when this reconciliation reaches protected main.
+`54e0df259c1712b156260b1b5d24444611906e2b`. Protected 000H then released 002F in PR #1536 at
+`d4f5879a8668f8b84c993c848fe6dabf1ba876bb`, and protected 002F completed in PR #1537 at
+`378c2a47264a707d8b7a3de9882120577e9c9fb0`. The governance-only 000I reconciliation records that
+evidence and releases exactly 002G when this reconciliation reaches protected main.
 Broad parents 001-004 remain open, 005/006 remain blocked, and the 003 live-source continuation
 remains behind its exact authority wall.
 
@@ -70,6 +72,7 @@ Current protected launch baseline after Gate C repair PR #1484: `3651e2fb6c440f6
 | `WO-WAL-000F` | Reconcile protected E-wave completion and record zero executable F children while preserving authority walls | protected-complete 001E/002E/004E; complete only on protected merge |
 | `WO-WAL-000G` | Register exact authenticated county-context runtime integration followed by real CSV API admission | protected 000F plus current protected-main implementation evidence; complete only on protected merge |
 | `WO-WAL-000H` | Verify protected 004F completion and explicitly release 002F from blocked to ready | protected-complete 004F plus protected 000G; complete only on protected merge |
+| `WO-WAL-000I` | Verify protected 002F completion, record the durable-seam audit, and release exact 002G | protected-complete 002F plus protected 000H; complete only on protected merge |
 | `WO-WAL-001` | 39-county public-baseline acquisition → normalization → landed runtime truth | 000 |
 | `WO-WAL-001A` | Deterministic 39-county source-registry ledger contract; no runtime inference | protected complete in PR #1489; bounded child of open 001 |
 | `WO-WAL-001B` | Deterministic public acquisition artifact receipt evidence; no landing/runtime inference | protected complete in PR #1493; bounded child of open 001 |
@@ -83,6 +86,7 @@ Current protected launch baseline after Gate C repair PR #1484: `3651e2fb6c440f6
 | `WO-WAL-002D` | Deterministic county/dataset/content CSV idempotency identity | protected 002A/002B/002C plus protected 000D; bounded child of open 002 |
 | `WO-WAL-002E` | Fail-closed local-memory first-seen/duplicate decision over protected idempotency evidence | protected complete in PR #1508 at `dcd1405b15d7aaa686ae444ed917117fcada3de0`; bounded child of open 002 |
 | `WO-WAL-002F` | Real assessor-authorized county-bound CSV API admission and parser/idempotency receipt | protected 002A-002E, protected 004F and protected 000H; bounded child of open 002 |
+| `WO-WAL-002G` | Upload-specific durable admission ledger with atomic idempotency and immutable provenance | protected-complete 002F plus protected 000I; bounded child of open 002 |
 | `WO-WAL-003` | Read-only multi-county TerraFusion Sync with explicit source profiles | 000 |
 | `WO-WAL-003A` | Mock-only source-profile/read-adapter contract and static command guard | protected complete in PR #1491; bounded child of open 003 |
 | `WO-WAL-003B` | Bounded mock-adapter read execution and immutable result envelope | protected complete in PR #1495; bounded child of open 003 |
@@ -103,9 +107,10 @@ Current protected launch baseline after Gate C repair PR #1484: `3651e2fb6c440f6
 | `WO-WAL-009` | Terminal closeout, exact identities, `COMPLETED_AND_CONSUMED` | 008 |
 
 The exact A through E waves and the protected 000F zero-dispatch boundary are complete. Protected
-000G registered exactly 004F, 000H, and 002F from implementation evidence. Protected 004F is now
-complete; this 000H reconciliation changes 002F from blocked to ready only on its own protected
-merge. No 001F/003E/003F record exists. The broad 001/002/003/004 parents remain open and route only
+000G registered exactly 004F, 000H, and 002F from implementation evidence. Protected 004F, 000H,
+and 002F are complete. This 000I reconciliation records exact 002F completion and registers only
+the upload-specific durable admission-ledger child 002G. No 001F/003E/003F record exists. The broad
+001/002/003/004 parents remain open and route only
 through evidence-backed exact children rather than being dispatched as monoliths. Completion of a
 child does not complete its parent or satisfy the stable-contract dependencies of 005/006.
 
@@ -134,6 +139,7 @@ child does not complete its parent or satisfy the stable-contract dependencies o
 | `WO-WAL-004E` | R5 | `wal.authenticated-canonical-county-context.v1` | `local-auth-context-canonical-registry-fixture-only` | Canonical registry fixture only; no token auth, role/capability grant, activation, selector authority, persistence, live county resource, protected data, default county or production |
 | `WO-WAL-004F` | R5 | `wal.authenticated-canonical-county-runtime-context.v1` | `local-api-auth-context-persisted-guid-fixture-only` | API request-scope identity integration only; no capability grant, protected data, activation, deployment or production |
 | `WO-WAL-002F` | R5 | `wal.county-upload.authenticated-csv-api-admission.v1` | `local-api-synthetic-csv-intake-only` | Real authenticated in-memory admission only; no durable staging, quarantine persistence, promotion, rollback, UI or production |
+| `WO-WAL-002G` | R5 | `wal.county-upload.durable-admission-ledger.v1` | `local-efcore-synthetic-csv-ledger-only` | Upload-specific batch provenance and atomic durable idempotency only; no API wiring, file bytes, staging rows, quarantine, promotion, rollback, live database or production |
 
 The exact path allowlists, machine-readable contract/environment reservations, and validation gates are canonical in
 `docs/brain/workorders/registry/work-order-registry.seed.json` and the corresponding child Work Order
@@ -142,8 +148,9 @@ system or production authority.
 
 `WO-WAL-000F` remains the historical zero-dispatch boundary. Protected `WO-WAL-000G` admitted the
 004F product row plus the governance-only 000H protected release boundary. 004F reached protected
-main in PR #1535. This 000H reconciliation explicitly changes 002F from blocked to ready, effective
-only when the reconciliation itself reaches protected main.
+main in PR #1535, 000H in PR #1536, and 002F in PR #1537. This 000I reconciliation records exact
+002F completion and registers 002G as the next exact product child, effective only when 000I itself
+reaches protected main.
 The live 003 chain still requires the complete named source/credential/environment bundle, and
 public acquisition 001F remains unregistered until source bytes and provenance are observed.
 

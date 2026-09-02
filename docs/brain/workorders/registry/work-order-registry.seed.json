@@ -1,8 +1,8 @@
 {
   "schemaVersion": "0.1.0",
-  "generatedBy": "WO-WAL-000H upload admission release reconciliation",
-  "generatedAt": "2026-09-01T22:21:19Z",
-  "description": "The completed Five-Suite mission remains terminal. Washington Assessor Launch V1 is the active owner mission; protected 004F is complete and this reconciliation releases exactly 002F on protected merge while broad parents 001-004 remain open, WAL-005/006 remain blocked and live-source 003 continuation remains authority-blocked.",
+  "generatedBy": "WO-WAL-000I durable upload ledger release reconciliation",
+  "generatedAt": "2026-09-01T23:42:25Z",
+  "description": "The completed Five-Suite mission remains terminal. Washington Assessor Launch V1 is the active owner mission; protected 002F is complete and this reconciliation releases exactly upload-specific durable admission-ledger child 002G on protected merge while broad parents 001-004 remain open, WAL-005/006 remain blocked and live-source 003 continuation remains authority-blocked.",
   "records": [
     {
       "id": "WO-WOE-000",
@@ -11866,6 +11866,44 @@
       "provenance": { "createdAt": "2026-09-01T20:30:00Z", "updatedAt": "2026-09-01T22:09:37Z", "source": "WO-WAL-000G, PR #1531 P1 remediation, PR #1535 protected merge 54e0df259c1712b156260b1b5d24444611906e2b and OWNER-WAL-V1-MISSION-AUTHORITY-20260827; this complete state becomes canonical only on the protected merge of the exact 000H reconciliation.", "schemaVersion": "0.1.0" }
     },
     {
+      "id": "WO-WAL-000I",
+      "title": "Durable Upload Ledger Release Reconciliation",
+      "program": "Washington Assessor Launch V1",
+      "goalId": "GOAL-WASHINGTON-ASSESSOR-LAUNCH-V1",
+      "loopId": "LOOP-WASHINGTON-ASSESSOR-LAUNCH-V1",
+      "goal": "Verify protected 002F exact completion, preserve its bounded truth and release one upload-specific durable admission-ledger child through a governance-only protected boundary.",
+      "riskClass": "R3",
+      "status": "complete",
+      "dependencies": [
+        { "id": "WO-WAL-000H", "status": "satisfied", "notes": "PR #1536 protected merge d4f5879a8668f8b84c993c848fe6dabf1ba876bb released exact 002F." },
+        { "id": "WO-WAL-002F", "status": "satisfied", "notes": "PR #1537 merged exact reviewed head 29631d4f7725f2a99eb26d967a7dde30f82ab7ac from base d4f5879a8668f8b84c993c848fe6dabf1ba876bb as protected commit 378c2a47264a707d8b7a3de9882120577e9c9fb0 after all required checks passed.", "evidence": ["https://github.com/bsvalues/terrafusion_os_1.0/pull/1537", "protected-main:378c2a47264a707d8b7a3de9882120577e9c9fb0"] }
+      ],
+      "allowedSystems": [{ "name": "Governance-only exact 002F completion verification, upload persistence seam audit and exact 002G reservation/release" }],
+      "blockedSystems": [{ "name": "Any product implementation, entity, service, migration, model snapshot, database, controller, county file, credential, protected data, external source, Sync continuation, deployment, production or broad parent completion" }],
+      "allowedFiles": [
+        "docs/brain/workorders/active/WO-WAL-000I-durable-upload-ledger-release-reconciliation.md",
+        "docs/brain/workorders/active/WO-WAL-002F-authenticated-county-csv-api-admission.md",
+        "docs/brain/workorders/active/WO-WAL-002G-durable-county-csv-admission-ledger.md",
+        "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
+        "docs/brain/workorders/programs/washington-assessor-launch-v1.md",
+        "docs/brain/workorders/registry/work-order-registry.seed.json",
+        "docs/brain/workorders/tools/wo-wave-plan.test.mjs"
+      ],
+      "contractReservations": [],
+      "environmentReservations": [],
+      "dispatchGuard": { "type": "protected_ref_head", "ref": "refs/remotes/origin/main" },
+      "evidenceRequired": [{ "kind": "command", "description": "Verify protected 002F exact merge/parent/tree/check/path/contract/environment/terminal evidence, prove the upload-specific durable seam, and prove exact 002G reservation/release with seven-path governance scope." }],
+      "validationGates": [{ "name": "WAL durable upload ledger release reconciliation", "command": "protected 002F evidence verification, registry/schema and transition tests, protected-ref dispatch proof, reservation collision proof, git diff --check and exact seven-path audit", "required": true, "result": "pass", "evidence": ["PR #1537 protected merge 378c2a47264a707d8b7a3de9882120577e9c9fb0 verified at origin/main with exact base d4f5879a8668f8b84c993c848fe6dabf1ba876bb, reviewed head 29631d4f7725f2a99eb26d967a7dde30f82ab7ac, equal tree 04912a5769b368c14bef3c8dfee68e1ee297d5f4 and exactly two changed paths.", "All required PR #1537 product, governance, migration, SQLite, frontend, backend, evidence, security, warning, seal, Vitest and canonical .NET gates passed; current-head Codex review reported no major issue.", "002F contract wal.county-upload.authenticated-csv-api-admission.v1, environment local-api-synthetic-csv-intake-only and terminal AUTHENTICATED_SAME_COUNTY_CSV_API_ADMISSION_REAL_RECEIPT_PROVEN verified.", "Protected source audit found no upload-specific durable entity; existing SyncBatch/SyncRecord/SyncQuarantine and sync_bridge.load_batch semantics are excluded from 002G.", "Registry/schema and planner transition tests prove pre-000I 002G absence and post-000I exact 002G release; canonical only when this seven-path reconciliation reaches protected main."] }],
+      "stopConditions": [
+        { "type": "dependency_blocked", "description": "Stop unless WO-WAL-002F is complete on verified protected main with exact evidence." },
+        { "type": "scope_boundary", "description": "Stop before any implementation file or action outside the exact seven governance paths." },
+        { "type": "protected_data", "description": "No live county file, source, credential, secret value or protected data is authorized." }
+      ],
+      "nextCandidates": [{ "id": "WO-WAL-002G", "reason": "Protected 000I releases the exact upload-specific durable admission ledger after protected 002F.", "riskClass": "R5", "blocked": false }],
+      "authority": { "mayWrite": true, "mayCommit": true, "mayPush": true, "mayOpenPr": true, "mayMarkReady": true, "mayMerge": true, "mayCleanup": true, "notes": "Issue #1485 explicitly permits exact child decomposition and this governance-only protected-boundary reconciliation. It creates no product, protected-data, deployment or production authority." },
+      "provenance": { "createdAt": "2026-09-01T23:42:25Z", "source": "WO-WAL-002, PR #1537 protected merge 378c2a47264a707d8b7a3de9882120577e9c9fb0, protected upload persistence seam audit and OWNER-WAL-V1-MISSION-AUTHORITY-20260827; this complete state becomes canonical only on the protected merge of the exact 000I reconciliation.", "schemaVersion": "0.1.0" }
+    },
+    {
       "id": "WO-WAL-001",
       "title": "Statewide Public Baseline Runtime Completion",
       "program": "Washington Assessor Launch V1",
@@ -12167,7 +12205,7 @@
       "loopId": "LOOP-WASHINGTON-ASSESSOR-LAUNCH-V1",
       "goal": "Replace the fabricated anonymous upload response with assessor-authorized canonical-county CSV admission and a real protected parser/idempotency receipt.",
       "riskClass": "R5",
-      "status": "ready",
+      "status": "complete",
       "dependencies": [
         { "id": "WO-WAL-002E", "status": "satisfied", "notes": "Protected 002A-002E provides bounded CSV syntax, envelope, same-county binding, idempotency identity and duplicate decision." },
         { "id": "WO-WAL-004F", "status": "satisfied", "notes": "PR #1535 protected merge 54e0df259c1712b156260b1b5d24444611906e2b supplies authenticated canonical request-county context; selector authority remains denied.", "evidence": ["https://github.com/bsvalues/terrafusion_os_1.0/pull/1535"] },
@@ -12181,11 +12219,37 @@
       "environmentReservations": ["local-api-synthetic-csv-intake-only"],
       "dispatchGuard": { "type": "protected_ref_head", "ref": "refs/remotes/origin/main" },
       "evidenceRequired": [{ "kind": "command", "description": "Focused controller tests prove assessor authorization, canonical request-county binding, Parcels/Sales admission, real parser/hash/row/idempotency evidence, duplicate behavior and uniform fail-closed malformed/cross-authority denial." }],
-      "validationGates": [{ "name": "WAL authenticated CSV API admission", "command": "dotnet test backend/TerraFusion.API.Tests/TerraFusion.API.Tests.csproj --filter FullyQualifiedName~DataImportControllerTests && git diff --check && exact changed-path audit", "required": true, "result": "not_run" }],
+      "validationGates": [{ "name": "WAL authenticated CSV API admission", "command": "dotnet test backend/TerraFusion.API.Tests/TerraFusion.API.Tests.csproj --filter FullyQualifiedName~DataImportControllerTests && git diff --check && exact changed-path audit", "required": true, "result": "pass", "evidence": ["PR #1537 merged reviewed head 29631d4f7725f2a99eb26d967a7dde30f82ab7ac from protected base d4f5879a8668f8b84c993c848fe6dabf1ba876bb as 378c2a47264a707d8b7a3de9882120577e9c9fb0 at 2026-09-01T23:42:25Z.", "Protected merge tree 04912a5769b368c14bef3c8dfee68e1ee297d5f4 equals the reviewed-head tree and changes exactly the controller and focused controller-test paths.", "All required exact-head checks passed, current-head Codex review reported no major issue, and the earlier cache-initialization race thread was fixed and resolved.", "Local proof passed 19/19 focused tests, API Release build with zero warnings/errors, git diff --check and exact two-path audit."] }],
       "stopConditions": [{ "type": "scope_boundary", "description": "Stop before durable persistence, quarantine storage, promotion, rollback, UI or any file, contract or environment outside the exact reservations." }, { "type": "protected_data", "description": "Use synthetic CSV fixtures only; no live county file, credential, source system or protected data is authorized." }],
-      "nextCandidates": [],
+      "nextCandidates": [{ "id": "WO-WAL-000I", "reason": "Verify this exact protected completion and release the upload-specific durable admission ledger through the governance-only protected boundary.", "riskClass": "R3", "blocked": false }],
       "authority": { "mayWrite": true, "mayCommit": true, "mayPush": true, "mayOpenPr": true, "mayMarkReady": true, "mayMerge": true, "mayCleanup": true, "notes": "Issue #1485 permits this exact real API admission child after protected 004F. It creates no durable storage, external-system, protected-data, deployment or production authority." },
-      "provenance": { "createdAt": "2026-09-01T19:30:00Z", "updatedAt": "2026-09-01T22:09:37Z", "source": "WO-WAL-002, protected 002A-002E, PR #1531 protected 000G, PR #1535 protected 004F and the exact 000H release reconciliation under OWNER-WAL-V1-MISSION-AUTHORITY-20260827; ready becomes canonical only on protected 000H merge.", "schemaVersion": "0.1.0" }
+      "provenance": { "createdAt": "2026-09-01T19:30:00Z", "updatedAt": "2026-09-01T23:42:25Z", "source": "WO-WAL-002, protected 002A-002E, protected 000G/004F/000H and PR #1537 protected merge 378c2a47264a707d8b7a3de9882120577e9c9fb0 under OWNER-WAL-V1-MISSION-AUTHORITY-20260827.", "schemaVersion": "0.1.0" }
+    },
+    {
+      "id": "WO-WAL-002G",
+      "title": "Durable County CSV Admission Ledger",
+      "program": "Washington Assessor Launch V1",
+      "goalId": "GOAL-WASHINGTON-ASSESSOR-LAUNCH-V1",
+      "loopId": "LOOP-WASHINGTON-ASSESSOR-LAUNCH-V1",
+      "goal": "Persist one upload-specific county CSV admission batch with atomic durable idempotency and immutable actor/file/parser/content provenance.",
+      "riskClass": "R5",
+      "status": "ready",
+      "dependencies": [
+        { "id": "WO-WAL-002F", "status": "satisfied", "notes": "PR #1537 protected merge 378c2a47264a707d8b7a3de9882120577e9c9fb0 supplies authenticated canonical-county CSV admission and real parser/idempotency evidence." },
+        { "id": "WO-WAL-000I", "status": "satisfied", "notes": "The exact 002G reservation and release become authoritative only when the governance-only 000I reconciliation reaches protected main." }
+      ],
+      "allowedSystems": [{ "name": "Upload-specific county CSV batch entity, EF configuration, ledger abstraction and EF implementation, database-enforced atomic idempotency, exact migration/model snapshot and disposable SQLite proof" }, { "name": "Contract reservation wal.county-upload.durable-admission-ledger.v1" }, { "name": "Environment reservation local-efcore-synthetic-csv-ledger-only" }],
+      "blockedSystems": [{ "name": "Existing Sync/PACS batch tables, controller or DI wiring, uploaded byte/blob storage, staging rows, mapping, quarantine rows, promotion, trust/capability state, progress UI, rollback execution, external county systems, credentials, protected files, live database, deployment and production" }],
+      "allowedFiles": ["docs/brain/workorders/active/WO-WAL-002G-durable-county-csv-admission-ledger.md", "backend/src/TerraFusion.Core/Entities/Import/CountyCsvUploadBatch.cs", "backend/src/TerraFusion.Core/Import/CountyCsvUploadAdmissionLedger.cs", "backend/src/TerraFusion.Data/Configurations/Import/CountyCsvUploadBatchConfiguration.cs", "backend/src/TerraFusion.Data/Services/Import/CountyCsvUploadAdmissionLedger.cs", "backend/src/TerraFusion.Data/TerraFusionDbContext.cs", "backend/src/TerraFusion.Data/Migrations/20260902000000_WAL002GCountyCsvUploadAdmissionLedger.cs", "backend/src/TerraFusion.Data/Migrations/TerraFusionDbContextModelSnapshot.cs", "backend/tests/TerraFusion.Unit.Tests/Import/CountyCsvUploadAdmissionLedgerTests.cs"],
+      "contractReservations": ["wal.county-upload.durable-admission-ledger.v1"],
+      "environmentReservations": ["local-efcore-synthetic-csv-ledger-only"],
+      "dispatchGuard": { "type": "protected_ref_head", "ref": "refs/remotes/origin/main" },
+      "evidenceRequired": [{ "kind": "command", "description": "Focused disposable-SQLite tests prove first-seen persistence, duplicate-after-restart, parallel convergence, contradictory collision denial, county/actor/dataset/content/contract refusal, cancellation, migration up/down rollback and zero external-system seam." }],
+      "validationGates": [{ "name": "WAL durable county CSV admission ledger", "command": "dotnet test backend/tests/TerraFusion.Unit.Tests/TerraFusion.Unit.Tests.csproj --filter FullyQualifiedName~CountyCsvUploadAdmissionLedgerTests && dotnet build backend/src/TerraFusion.Data/TerraFusion.Data.csproj -c Release && migration/model proof && git diff --check && exact changed-path audit", "required": true, "result": "not_run" }],
+      "stopConditions": [{ "type": "scope_boundary", "description": "Stop before API/DI wiring, uploaded bytes, staging, quarantine, promotion, rollback execution or any file, contract or environment outside the exact reservations." }, { "type": "protected_data", "description": "Use synthetic CSV-derived scalar evidence and disposable SQLite only; no live county file, credential, source system, protected data or live database is authorized." }],
+      "nextCandidates": [],
+      "authority": { "mayWrite": true, "mayCommit": true, "mayPush": true, "mayOpenPr": true, "mayMarkReady": true, "mayMerge": true, "mayCleanup": true, "notes": "Issue #1485 explicitly permits authenticated upload persistence, lineage, idempotency and exact child decomposition. This child is limited to an upload-specific durable ledger and local migration proof." },
+      "provenance": { "createdAt": "2026-09-01T23:42:25Z", "source": "WO-WAL-002, PR #1537 protected 002F, protected durable-seam audit and the exact 000I reconciliation under OWNER-WAL-V1-MISSION-AUTHORITY-20260827; ready becomes canonical only on protected 000I merge.", "schemaVersion": "0.1.0" }
     },
     {
       "id": "WO-WAL-003",
