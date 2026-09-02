@@ -1258,6 +1258,35 @@ describe('Washington assessor reference package', () => {
     );
   });
 
+  it('keeps an unpinned build navigation-only even when package routes are present', async () => {
+    const hostedShard = hostedPublicSalesShard();
+    const manifest = await hostedManifest(hostedShard);
+    vi.stubEnv('VITE_WASHINGTON_LAUNCH_MANIFEST_SHA256', '');
+    const fetchMock = vi.fn()
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => hostedEligibleStatus(),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => manifest,
+      });
+    vi.stubGlobal('fetch', fetchMock);
+
+    const resolution = await resolveWashingtonCountyStatus();
+    const spokane = resolution.counties[0];
+    expect(spokane).toBeDefined();
+    if (!spokane) throw new Error('Hosted Spokane status is missing.');
+
+    await expect(verifyWashingtonCountySalesShard(spokane)).resolves.toMatchObject({
+      countyCode: '063',
+      salesShardVerification: 'unavailable',
+    });
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+
   it('rejects displayed status fields that are not bound by the pinned manifest', async () => {
     const attestedStatus = hostedEligibleStatus();
     const alteredStatus = {

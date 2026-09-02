@@ -25,9 +25,10 @@ function invalidConfiguration(message: string): never {
  * independently validates the build-pinned manifest and county shard digests.
  *
  * An entirely unconfigured development runtime remains available in truthful
- * navigation-only mode. A partially configured or unsafe bridge fails at
- * server startup instead of silently presenting the synthetic repository
- * fixture as assessor-ready data.
+ * navigation-only mode. A valid pin without a source URL explicitly
+ * authenticates the tracked same-origin package for local acceptance; adding a
+ * source URL opts into the credential-free HTTPS bridge. Unsafe inputs fail at
+ * startup instead of silently presenting data as assessor-ready.
  */
 export function resolveWashingtonLaunchDataProxy(
   environment: WashingtonLaunchDataProxyEnvironment
@@ -39,16 +40,12 @@ export function resolveWashingtonLaunchDataProxy(
 
   if (!manifestSha256 && !sourceUrl) return undefined;
 
-  if (!sourceUrl) {
-    invalidConfiguration(
-      'WASHINGTON_LAUNCH_DATA_SOURCE_URL is required when a manifest pin is set.'
-    );
-  }
   if (!WASHINGTON_LAUNCH_MANIFEST_SHA256_PATTERN.test(manifestSha256)) {
     invalidConfiguration(
       'VITE_WASHINGTON_LAUNCH_MANIFEST_SHA256 must be a 64-character SHA-256 digest.'
     );
   }
+  if (!sourceUrl) return undefined;
 
   let parsedSourceUrl: URL;
   try {

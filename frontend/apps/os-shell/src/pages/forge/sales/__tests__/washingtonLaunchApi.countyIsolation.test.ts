@@ -310,6 +310,37 @@ describe('Washington launch shard county isolation', () => {
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
+  it('preserves official dwelling characteristics in SalesForge queue and detail projections', async () => {
+    validateAndCacheAttestedWashingtonLaunchCountyShard({
+      ...countyShard('Kitsap', '035', ['kitsap-dwelling-sale']),
+      records: [{
+        ...saleRecord('Kitsap', '035', 'kitsap-dwelling-sale'),
+        grossLivingArea: 2_150,
+        yearBuilt: 1998,
+        condition: 'AV',
+      }],
+    }, '035', 'hosted');
+    const filters = { ...SPOKANE_FILTERS, countyCode: '035' };
+
+    const [queue, detail] = await Promise.all([
+      fetchWashingtonLaunchQueue(2025, 'all', 1, 25, filters),
+      fetchWashingtonLaunchSaleDetail('kitsap-dwelling-sale', filters),
+    ]);
+
+    expect(queue.items[0]).toMatchObject({
+      gla: 2_150,
+      slLivingArea: 2_150,
+      slYearBuilt: 1998,
+    });
+    expect(detail).toMatchObject({
+      gla: 2_150,
+      slLivingArea: 2_150,
+      slYearBuilt: 1998,
+      yearBuilt: 1998,
+      condition: 'AV',
+    });
+  });
+
   it('rejects a shard whose declared county does not match the requested county', async () => {
     expect(() => validateAndCacheAttestedWashingtonLaunchCountyShard({
       schemaVersion: '1.0.0',

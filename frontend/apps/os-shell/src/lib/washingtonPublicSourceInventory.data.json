@@ -176,7 +176,7 @@
     {
       "county": "Kitsap",
       "countyCode": "035",
-      "officialAssessorBaseUrl": "https://www.kitsapgov.com",
+      "officialAssessorBaseUrl": "https://www.kitsap.gov/assessor/",
       "primarySalesSource": "Parcel Details sales history + Sales Data / prior-year residential sales",
       "fallbackSource": "Auditor deed search + weekly downloadable assessor TXT data",
       "acquisitionFamily": "Parcel transfer history / open data export",

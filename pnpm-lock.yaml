@@ -317,6 +317,9 @@ importers:
       wait-on:
         specifier: 9.0.3
         version: 9.0.3
+      xlsx:
+        specifier: https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz
+        version: https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz
       yargs:
         specifier: ^17.7.2
         version: 17.7.2

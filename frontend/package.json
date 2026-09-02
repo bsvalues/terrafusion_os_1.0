@@ -153,6 +153,7 @@
     "test:ipc": "vitest run apps/os-shell/src/ipc --passWithNoTests",
     "test:all": "npm run test:unit && npm run test:integration",
     "test:e2e": "playwright test",
+    "test:e2e:kitsap-public-sales": "playwright test --config apps/os-shell/playwright.kitsap-public-sales.config.ts",
     "test:e2e:county-studio": "playwright test tests/integration/county-studio-atlas-flow.spec.ts",
     "lint": "eslint apps/os-shell/src tests --ext .ts,.tsx,.js,.jsx",
     "lint:fix": "eslint apps/os-shell/src tests --ext .ts,.tsx,.js,.jsx --fix",

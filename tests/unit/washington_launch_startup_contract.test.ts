@@ -13,6 +13,14 @@ describe('Washington assessor startup posture', () => {
     expect(frontendDockerfile).toMatch(
       /else[\s\\]*mkdir -p \/app\/washington-launch-data/
     );
+    const copyFrontend = frontendDockerfile.indexOf('COPY frontend/ frontend/');
+    const removeTrackedPackage = frontendDockerfile.indexOf(
+      'RUN rm -rf /app/frontend/apps/os-shell/public/launch-data/washington'
+    );
+    const buildFrontend = frontendDockerfile.indexOf('pnpm exec vite build --outDir /app/dist');
+    expect(copyFrontend).toBeGreaterThanOrEqual(0);
+    expect(removeTrackedPackage).toBeGreaterThan(copyFrontend);
+    expect(buildFrontend).toBeGreaterThan(removeTrackedPackage);
     expect(devStartScript).toContain("$washingtonLaunchMode = 'navigation-only'");
 
     const baseBuild = devStartScript.indexOf('$buildArgs = @(');
