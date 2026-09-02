@@ -969,7 +969,7 @@ describe('wo-wave-plan', () => {
     }
   });
 
-  it('reconciles protected WAL runtime integration and releases only the exact upload child', () => {
+  it('reconciles protected WAL upload admission and releases only the durable ledger child', () => {
     const actualRegistry = JSON.parse(
       fs.readFileSync(
         path.join(root, 'docs/brain/workorders/registry/work-order-registry.seed.json'),
@@ -981,24 +981,28 @@ describe('wo-wave-plan', () => {
     );
     const reconciliation = actualRegistry.records.find(item => item.id === 'WO-WAL-000G');
     const releaseReconciliation = actualRegistry.records.find(item => item.id === 'WO-WAL-000H');
+    const durableReconciliation = actualRegistry.records.find(item => item.id === 'WO-WAL-000I');
     const identityChild = actualRegistry.records.find(item => item.id === 'WO-WAL-004F');
     const uploadChild = actualRegistry.records.find(item => item.id === 'WO-WAL-002F');
+    const durableChild = actualRegistry.records.find(item => item.id === 'WO-WAL-002G');
     const forbiddenIds = ['WO-WAL-001F', 'WO-WAL-003E', 'WO-WAL-003F'];
     const selectedIds = new Set([
       'WO-WAL-000',
       'WO-WAL-000F',
       'WO-WAL-000G',
       'WO-WAL-000H',
+      'WO-WAL-000I',
       'WO-WAL-002E',
       'WO-WAL-004D',
       'WO-WAL-004E',
       'WO-WAL-004F',
       'WO-WAL-002F',
+      'WO-WAL-002G',
       'WO-WAL-005',
       'WO-WAL-006',
     ]);
     const recordById = new Map(actualRegistry.records.map(item => [item.id, item]));
-    const dependencyQueue = [uploadChild.id];
+    const dependencyQueue = [durableChild.id];
     const traversedDependencies = new Set();
     while (dependencyQueue.length > 0) {
       const id = dependencyQueue.shift();
@@ -1010,7 +1014,10 @@ describe('wo-wave-plan', () => {
       }
     }
     const selectedRecords = actualRegistry.records.filter(item => selectedIds.has(item.id));
-    const preReleaseRecords = structuredClone(selectedRecords);
+    const preDurableRecords = selectedRecords.filter(
+      item => ![durableReconciliation.id, durableChild.id].includes(item.id)
+    );
+    const preReleaseRecords = structuredClone(preDurableRecords);
     const preReleaseReconciliation = preReleaseRecords.find(
       item => item.id === releaseReconciliation.id
     );
@@ -1068,7 +1075,7 @@ describe('wo-wave-plan', () => {
       identityChild.nextCandidates.map(item => item.id),
       [releaseReconciliation.id]
     );
-    assert.equal(uploadChild.status, 'ready');
+    assert.equal(uploadChild.status, 'complete');
     assert.deepEqual(uploadChild.contractReservations, [
       'wal.county-upload.authenticated-csv-api-admission.v1',
     ]);
@@ -1084,6 +1091,37 @@ describe('wo-wave-plan', () => {
     assert.ok(
       uploadChild.dependencies.some(
         item => item.id === releaseReconciliation.id && item.status === 'satisfied'
+      )
+    );
+    assert.deepEqual(
+      uploadChild.nextCandidates.map(item => item.id),
+      [durableReconciliation.id]
+    );
+    assert.equal(durableReconciliation.status, 'complete');
+    assert.deepEqual(durableReconciliation.contractReservations, []);
+    assert.deepEqual(durableReconciliation.environmentReservations, []);
+    assert.equal(durableReconciliation.allowedFiles.length, 7);
+    assert.ok(
+      durableReconciliation.dependencies.some(
+        item => item.id === uploadChild.id && item.status === 'satisfied'
+      )
+    );
+    assert.deepEqual(
+      durableReconciliation.nextCandidates.map(item => item.id),
+      [durableChild.id]
+    );
+    assert.equal(durableChild.status, 'ready');
+    assert.deepEqual(durableChild.contractReservations, [
+      'wal.county-upload.durable-admission-ledger.v1',
+    ]);
+    assert.deepEqual(durableChild.environmentReservations, [
+      'local-efcore-synthetic-csv-ledger-only',
+    ]);
+    assert.equal(durableChild.allowedFiles.length, 9);
+    assert.equal(new Set(durableChild.allowedFiles).size, 9);
+    assert.ok(
+      durableChild.dependencies.some(
+        item => item.id === durableReconciliation.id && item.status === 'satisfied'
       )
     );
     assert.equal(
@@ -1102,7 +1140,14 @@ describe('wo-wave-plan', () => {
       )
     );
     const validate = new Ajv2020({ allErrors: true, strict: false }).compile(schema);
-    for (const id of ['WO-WAL-000G', 'WO-WAL-000H', 'WO-WAL-004F', 'WO-WAL-002F']) {
+    for (const id of [
+      'WO-WAL-000G',
+      'WO-WAL-000H',
+      'WO-WAL-000I',
+      'WO-WAL-004F',
+      'WO-WAL-002F',
+      'WO-WAL-002G',
+    ]) {
       const item = actualRegistry.records.find(record => record.id === id);
       assert.equal(validate(item), true, `${id}: ${JSON.stringify(validate.errors)}`);
     }
@@ -1126,10 +1171,17 @@ describe('wo-wave-plan', () => {
       /named county\/source\/system.*read-only credential or role.*secret-store reference.*execution\/network environment.*data classification\/handling.*source-side no-DML evidence method/
     );
 
-    const releaseOptions = optionsFor(selectedRecords, {
+    const durableOptions = optionsFor(selectedRecords, {
       authority: 'R5',
       maxWorkers: 2,
-      now: '2026-09-01T22:10:00Z',
+      now: '2026-09-01T23:43:00Z',
+      ownerDecisions: actualOwnerDecisions,
+      verifiedDispatchRefs: ['refs/remotes/origin/main'],
+    });
+    const preDurableOptions = optionsFor(preDurableRecords, {
+      authority: 'R5',
+      maxWorkers: 2,
+      now: '2026-09-01T23:42:25Z',
       ownerDecisions: actualOwnerDecisions,
       verifiedDispatchRefs: ['refs/remotes/origin/main'],
     });
@@ -1140,14 +1192,19 @@ describe('wo-wave-plan', () => {
       ownerDecisions: actualOwnerDecisions,
       verifiedDispatchRefs: ['refs/remotes/origin/main'],
     });
-    const releasedPlan = planWaves(registry(selectedRecords), rules, releaseOptions);
+    const durablePlan = planWaves(registry(selectedRecords), rules, durableOptions);
+    const preDurablePlan = planWaves(
+      registry(preDurableRecords),
+      rules,
+      preDurableOptions
+    );
     const preReleasePlan = planWaves(
       registry(preReleaseRecords),
       rules,
       preReleaseOptions
     );
     const unverifiedPlan = planWaves(registry(selectedRecords), rules, {
-      ...releaseOptions,
+      ...durableOptions,
       verifiedDispatchRefs: [],
     });
     assert.deepEqual(
@@ -1159,14 +1216,17 @@ describe('wo-wave-plan', () => {
         )
       )
     );
+    assert.deepEqual(preDurablePlan.initialExecutableSet, []);
+    assert.equal(preDurableRecords.some(item => item.id === durableChild.id), false);
+    assert.equal(preDurableRecords.some(item => item.id === durableReconciliation.id), false);
     assert.deepEqual(
-      releasedPlan.initialExecutableSet,
-      [uploadChild.id],
-      JSON.stringify(releasedPlan.excludedWorkOrders.find(item => item.workOrderId === uploadChild.id))
+      durablePlan.initialExecutableSet,
+      [durableChild.id],
+      JSON.stringify(durablePlan.excludedWorkOrders.find(item => item.workOrderId === durableChild.id))
     );
     assert.deepEqual(
-      releasedPlan.waves[0].workOrders.map(item => item.workOrderId),
-      [uploadChild.id]
+      durablePlan.waves[0].workOrders.map(item => item.workOrderId),
+      [durableChild.id]
     );
     assert.equal(
       preReleasePlan.waves
@@ -1179,13 +1239,15 @@ describe('wo-wave-plan', () => {
       'WO-WAL-000F',
       'WO-WAL-000G',
       'WO-WAL-000H',
+      'WO-WAL-000I',
       'WO-WAL-002E',
+      'WO-WAL-002F',
       'WO-WAL-004D',
       'WO-WAL-004E',
       'WO-WAL-004F',
     ]) {
       assert.ok(
-        releasedPlan.excludedWorkOrders
+        durablePlan.excludedWorkOrders
           .find(item => item.workOrderId === id)
           .reasons.includes('terminal-status')
       );
@@ -1195,11 +1257,11 @@ describe('wo-wave-plan', () => {
     );
     assert.ok(blockedUpload.reasons.includes('blocked-status'), JSON.stringify(blockedUpload));
 
-    const missingPath = structuredClone(releaseOptions);
-    missingPath.reservations.candidateReservations[uploadChild.id].shift();
+    const missingPath = structuredClone(durableOptions);
+    missingPath.reservations.candidateReservations[durableChild.id].shift();
     assert.match(
       planWaves(registry(selectedRecords), rules, missingPath).excludedWorkOrders.find(
-        item => item.workOrderId === uploadChild.id
+        item => item.workOrderId === durableChild.id
       ).reasons.join('\n'),
       /missing path reservation/
     );
@@ -1208,11 +1270,11 @@ describe('wo-wave-plan', () => {
       { id: 'DRIFT-CONTRACT', kind: 'contract', value: 'wal.unregistered-f-child.v1' },
       { id: 'DRIFT-ENVIRONMENT', kind: 'environment', value: 'local-unregistered-f-child' },
     ]) {
-      const drifted = structuredClone(releaseOptions);
-      drifted.reservations.candidateReservations[uploadChild.id].push(extra);
+      const drifted = structuredClone(durableOptions);
+      drifted.reservations.candidateReservations[durableChild.id].push(extra);
       assert.match(
         planWaves(registry(selectedRecords), rules, drifted).excludedWorkOrders.find(
-          item => item.workOrderId === uploadChild.id
+          item => item.workOrderId === durableChild.id
         ).reasons.join('\n'),
         /extra (contract|environment) reservation/
       );

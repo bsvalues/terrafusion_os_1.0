@@ -2,7 +2,7 @@
 
 | Field | Value |
 | --- | --- |
-| Status | `READY_ON_PROTECTED_000H_MERGE` |
+| Status | `COMPLETE_ON_PROTECTED_MERGE_378C2A472` |
 | Parent | `WO-WAL-002` |
 | Program | Washington Assessor Launch V1 |
 | Risk | R5 authenticated upload API admission |
@@ -16,7 +16,7 @@ Replace the fabricated anonymous upload response with a real assessor-authorized
 admission that derives county authority from protected `WO-WAL-004F`, binds the Parcels or Sales
 dataset, and consumes the protected 002A-002E validation and duplicate-decision contracts. This
 ready state becomes authoritative only when protected `WO-WAL-000H` merges; the prior protected
-registry remains blocked until then.
+registry remains blocked until then. PR #1537 protected completion is recorded by `WO-WAL-000I`.
 
 ## Exact reservations
 
@@ -51,6 +51,24 @@ actions may not be represented as real by this child.
 - all refusal cases above, including route/body/header county tampering absence;
 - exact receipt evidence from parser and duplicate contracts, cancellation, and no external write;
 - focused controller tests, API compile, exact three-path audit, and `git diff --check`.
+
+## Protected completion evidence
+
+- PR #1537 merged exact reviewed head `29631d4f7725f2a99eb26d967a7dde30f82ab7ac`
+  from protected 000H base `d4f5879a8668f8b84c993c848fe6dabf1ba876bb` as
+  `378c2a47264a707d8b7a3de9882120577e9c9fb0` at `2026-09-01T23:42:25Z`.
+- The protected merge tree exactly equals the reviewed-head tree and changes only the controller and
+  focused controller-test paths; the pre-registered Work Order document remained unchanged.
+- All required exact-head checks completed successfully. Local terminal proof passed 19/19 focused
+  tests, the API Release build with zero warnings/errors, and the exact path/diff audits.
+- The current-request cache initialization race found during review was fixed before merge; the
+  eight-way activation regression and current-head review verified the serialized shared decision.
+
+## Continuation
+
+`WO-WAL-000I` verifies this protected completion and releases exactly the upload-specific durable
+admission-ledger child `WO-WAL-002G`. No broad parent or later persistence claim follows directly
+from this product merge.
 
 ## Completion
 
