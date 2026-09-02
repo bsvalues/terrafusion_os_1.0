@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-test('uses the authenticated Chelan, Clark, Kitsap, Pierce, and Whatcom public-sales package without lending it to another county', async ({
+test('uses the authenticated Chelan, Clark, Kitsap, Pierce, Skagit, and Whatcom public-sales package without lending it to another county', async ({
   page,
 }) => {
   const requestedSalesShards: string[] = [];
@@ -189,6 +189,45 @@ test('uses the authenticated Chelan, Clark, Kitsap, Pierce, and Whatcom public-s
   await page.goto('/counties', { waitUntil: 'domcontentloaded' });
   await expect(page.getByRole('option')).toHaveCount(39, { timeout: 20_000 });
 
+  const skagit = page.getByRole('option', { name: 'Select Skagit County' });
+  await skagit.click();
+  await expect(skagit).toHaveAttribute('aria-selected', 'true');
+  await expect(context).toContainText('Skagit County');
+  await expect(context).toContainText('3,877', { timeout: 45_000 });
+  await expect(context).toContainText('2026-08-26');
+  await expect(context).not.toContainText('No governed public sales state is available');
+
+  await page.getByRole('button', { name: 'Open TerraForge' }).click();
+  await expect(page.getByRole('heading', { name: 'TerraForge', exact: true })).toBeVisible({
+    timeout: 20_000,
+  });
+  await expect(page.getByTestId('forge-county-context')).toContainText('3,877', {
+    timeout: 45_000,
+  });
+  const skagitSalesForge = page
+    .getByTestId('forge-primary-applications')
+    .getByRole('button', { name: /SalesForge/i });
+  await expect(skagitSalesForge).toBeEnabled();
+  await skagitSalesForge.click();
+  await expect(page.getByRole('heading', { name: 'SalesForge' })).toBeVisible({ timeout: 20_000 });
+  await expect(salesForge.getByText('Skagit County', { exact: true })).toBeVisible();
+  await expect(salesForge.getByTestId('salesforge-data-unavailable')).toHaveCount(0);
+  const firstSkagitSaleRow = salesForge
+    .getByRole('table', { name: 'Sale qualification queue' })
+    .getByRole('row')
+    .nth(1);
+  await expect(firstSkagitSaleRow).toContainText('P125708', { timeout: 20_000 });
+  await expect(firstSkagitSaleRow).toContainText('Dec 31, 25');
+  await expect(firstSkagitSaleRow).toContainText('$520k');
+  await firstSkagitSaleRow.click();
+  const skagitAddress = salesForge.locator('.sf-detail-field').filter({ hasText: 'Address' });
+  await expect(skagitAddress).toContainText('214 DALLAS STREET, MOUNT VERNON, 98274');
+  const skagitDeedType = salesForge.locator('.sf-detail-field').filter({ hasText: 'Deed type' });
+  await expect(skagitDeedType).toContainText('WARRANTY DEED');
+
+  await page.goto('/counties', { waitUntil: 'domcontentloaded' });
+  await expect(page.getByRole('option')).toHaveCount(39, { timeout: 20_000 });
+
   const whatcom = page.getByRole('option', { name: 'Select Whatcom County' });
   await whatcom.click();
   await expect(whatcom).toHaveAttribute('aria-selected', 'true');
@@ -259,11 +298,13 @@ test('uses the authenticated Chelan, Clark, Kitsap, Pierce, and Whatcom public-s
   await expect(page.getByTestId('forge-county-context')).not.toContainText('5,109');
   await expect(page.getByTestId('forge-county-context')).not.toContainText('5,476');
   await expect(page.getByTestId('forge-county-context')).not.toContainText('12,738');
+  await expect(page.getByTestId('forge-county-context')).not.toContainText('3,877');
 
   expect(requestedSalesShards).toContain('/launch-data/washington/sales/by-county/035.json');
   expect(requestedSalesShards).toContain('/launch-data/washington/sales/by-county/073.json');
   expect(requestedSalesShards).toContain('/launch-data/washington/sales/by-county/007.json');
   expect(requestedSalesShards).toContain('/launch-data/washington/sales/by-county/011.json');
   expect(requestedSalesShards).toContain('/launch-data/washington/sales/by-county/053.json');
+  expect(requestedSalesShards).toContain('/launch-data/washington/sales/by-county/057.json');
   expect(requestedSalesShards).not.toContain('/launch-data/washington/sales/by-county/001.json');
 });

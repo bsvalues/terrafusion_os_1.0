@@ -1,0 +1,32 @@
+{
+  "schemaVersion": "terrafusion.washington.public-source-set.v1",
+  "county": "Skagit",
+  "countyCode": "057",
+  "officialSourceBaseUrl": "https://skagitcounty.net",
+  "indexUrl": "https://www.skagitcounty.net/Reporting/DataDownloads/",
+  "publishedLabel": "Skagit County assessment data downloads 2026-09-02",
+  "sourceDateRange": {
+    "start": "2024-01-01",
+    "end": "2026-09-02"
+  },
+  "sources": [
+    {
+      "key": "sale",
+      "archiveFile": "Sales.zip",
+      "file": "Sales.txt",
+      "url": "https://www.skagitcounty.net/Assessor/Documents/DataDownloads/Sales.zip",
+      "finalUrl": "https://www.skagitcounty.net/Assessor/Documents/DataDownloads/Sales.zip",
+      "archiveSha256": "cd41ba40d4417552f9d0697bee216fe9090727f5c3742c4542d1e0a5d60e5728",
+      "sha256": "333279c05ed719e4beb2c9d71e1c0e194c774b56a194ad7475875b019e222a8a"
+    },
+    {
+      "key": "assessor",
+      "archiveFile": "AssessorData.zip",
+      "file": "AssessorData.txt",
+      "url": "https://www.skagitcounty.net/Assessor/Documents/DataDownloads/AssessorData.zip",
+      "finalUrl": "https://www.skagitcounty.net/Assessor/Documents/DataDownloads/AssessorData.zip",
+      "archiveSha256": "b5ec850f665fbdf735ee860c4a345f6d330328942e111d5ef058b74b04b66985",
+      "sha256": "9be5ee3ca13461f4231aad82916955e51ae353ec7594b944a035d8d36a14c6d8"
+    }
+  ]
+}
