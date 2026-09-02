@@ -219,7 +219,8 @@ function mapRecord(row, source, ordinal, generatedAt) {
   const situs = parseSitusAddress(row['Parcel Address']);
   const lotSizeSqft = nullablePositiveNumber(row['Parcel Size (Sq Ft)'], 'parcel square feet');
   const reportedAcres = nullablePositiveNumber(row['Parcel Size (Acres)'], 'parcel acres');
-  const acres = reportedAcres ?? (lotSizeSqft === null ? null : lotSizeSqft / 43_560);
+  const acres = reportedAcres
+    ?? (lotSizeSqft === null ? null : Math.round((lotSizeSqft / 43_560) * 10_000) / 10_000);
   const neighborhoodCode = nullableString(row['Assessment Group']);
 
   return {

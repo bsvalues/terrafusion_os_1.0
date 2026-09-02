@@ -97,6 +97,14 @@ test('uses the authenticated Chelan, Clark, Kitsap, and Whatcom public-sales pac
     .locator('.sf-detail-field')
     .filter({ hasText: 'Quality grade' });
   await expect(clarkQualityGrade).toContainText('Good');
+  const clarkLandAcres = salesForge
+    .locator('.sf-detail-field')
+    .filter({ hasText: 'Land (acres, ToS)' });
+  await expect(clarkLandAcres).toContainText('0.2317');
+  const clarkLandSqft = salesForge
+    .locator('.sf-detail-field')
+    .filter({ hasText: 'Land (sqft, ToS)' });
+  await expect(clarkLandSqft).toContainText('10,092 sf');
 
   await page.goto('/counties', { waitUntil: 'domcontentloaded' });
   await expect(page.getByRole('option')).toHaveCount(39, { timeout: 20_000 });

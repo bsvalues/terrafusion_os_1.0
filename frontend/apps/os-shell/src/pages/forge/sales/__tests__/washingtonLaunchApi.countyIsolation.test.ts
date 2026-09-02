@@ -322,6 +322,7 @@ describe('Washington launch shard county isolation', () => {
         bathrooms: 2.5,
         condition: 'AV',
         qualityGrade: 'Good',
+        lotSizeSqft: 10_092,
       }],
     }, '035', 'hosted');
     const filters = { ...SPOKANE_FILTERS, countyCode: '035' };
@@ -346,8 +347,10 @@ describe('Washington launch shard county isolation', () => {
       bathrooms: 2.5,
       condition: 'AV',
       qualityGrade: 'Good',
+      slLandSqft: 10_092,
+      lotSizeSqft: 10_092,
     });
-    expect(compsPool.items[0]).toMatchObject({ qualityGrade: 'Good' });
+    expect(compsPool.items[0]).toMatchObject({ qualityGrade: 'Good', lotSizeSqft: 10_092 });
   });
 
   it('rejects a shard whose declared county does not match the requested county', async () => {
