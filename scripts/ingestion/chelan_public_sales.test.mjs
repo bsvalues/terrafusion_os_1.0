@@ -110,14 +110,21 @@ function workbookBytes(rows) {
   return XLSX.write(workbook, { type: 'buffer', bookType: 'xls' });
 }
 
-async function fixture({ conflict = false } = {}) {
+async function fixture({ conflict = false, crossSourceComponent = false } = {}) {
   const directory = await mkdtemp(join(tmpdir(), 'chelan-public-sales-'));
   const sources = [];
   for (let month = 1; month <= 7; month += 1) {
     const key = `2026-${String(month).padStart(2, '0')}`;
     const file = `${key}.xls`;
-    const rows = [sourceRow(month)];
-    if (month === 1) {
+    const rows = [
+      crossSourceComponent && month === 2
+        ? sourceRow(1, { Bedrooms: 3, Bathrooms: 2 })
+        : sourceRow(
+            month,
+            crossSourceComponent && month === 1 ? { Bedrooms: null, Bathrooms: null } : {}
+          ),
+    ];
+    if (month === 1 && !crossSourceComponent) {
       rows.push(
         sourceRow(1, {
           Garage_Area: 700,
@@ -126,7 +133,7 @@ async function fixture({ conflict = false } = {}) {
         })
       );
     }
-    if (month === 2) rows[0].Reject_Code = '2';
+    if (month === 2 && !crossSourceComponent) rows[0].Reject_Code = '2';
     const bytes = workbookBytes(rows);
     await writeFile(join(directory, file), bytes);
     sources.push({
@@ -215,6 +222,29 @@ test('quarantines all rows in a transaction with conflicting prices', async t =>
   );
 });
 
+test('binds mapped values to every contributing source row', async t => {
+  const data = await fixture({ crossSourceComponent: true });
+  t.after(() => rm(data.directory, { recursive: true, force: true }));
+  const result = await buildChelanCountyPackage(data.directory, GENERATED_AT, data.configPath);
+  const consolidated = result.shard.records.find(record => record.parcelNumber === 'G1');
+
+  assert.equal(consolidated.bedrooms, 3);
+  assert.deepEqual(
+    consolidated.provenance.componentRows.map(component => component.sourceKey),
+    ['2026-01', '2026-02']
+  );
+  assert.deepEqual(
+    consolidated.provenance.componentRows.map(component => component.candidateIndexSource),
+    ['2026-01.xls#row:2', '2026-02.xls#row:2']
+  );
+  assert.equal(
+    consolidated.provenance.componentRows.every(component =>
+      /^[a-f\d]{64}$/.test(component.sourcePayloadSha256)
+    ),
+    true
+  );
+});
+
 test('rejects source digest drift before workbook parsing', async t => {
   const data = await fixture();
   t.after(() => rm(data.directory, { recursive: true, force: true }));
@@ -280,6 +310,24 @@ test('sanitizes malformed credential-bearing URL parse failures', async t => {
   );
 });
 
+test('rejects query and fragment secrets before public provenance publication', async t => {
+  const data = await fixture();
+  t.after(() => rm(data.directory, { recursive: true, force: true }));
+  for (const suffix of ['?token=private-secret', '#private-secret']) {
+    const config = structuredClone(data.config);
+    config.sources[0].url = `${config.sources[0].url}${suffix}`;
+    await writeFile(data.configPath, `${JSON.stringify(config, null, 2)}\n`);
+    await assert.rejects(
+      buildChelanCountyPackage(data.directory, GENERATED_AT, data.configPath),
+      error => {
+        assert.match(error.message, /without a query or fragment/);
+        assert.doesNotMatch(error.message, /private-secret/);
+        return true;
+      }
+    );
+  }
+});
+
 test('rejects generation identities older than the retained Washington package', async t => {
   const outputRoot = await mkdtemp(join(tmpdir(), 'chelan-monotonic-package-'));
   t.after(() => rm(outputRoot, { recursive: true, force: true }));
@@ -309,5 +357,17 @@ test('rejects generation identities older than the retained Washington package',
   await assert.rejects(
     loadVerifiedRetainedWashingtonPackage(outputRoot, '007', '2026-09-01T18:00:00.000Z'),
     /cannot precede the existing Washington package/
+  );
+
+  status.generatedAt = '2026-09-02T06:46:07.877Z';
+  manifest.statusCanonicalJsonSha256 = canonicalJsonSha256(status);
+  await writeFile(join(outputRoot, 'manifest.json'), `${JSON.stringify(manifest, null, 2)}\n`);
+  await writeFile(
+    join(outputRoot, 'counties', 'status.json'),
+    `${JSON.stringify(status, null, 2)}\n`
+  );
+  await assert.rejects(
+    loadVerifiedRetainedWashingtonPackage(outputRoot, '007', '2026-09-02T06:00:00.000Z'),
+    /status and manifest release identities do not match/
   );
 });

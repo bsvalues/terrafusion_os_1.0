@@ -9,7 +9,7 @@ import {
 } from '../ci/package_washington_launch_data.mjs';
 
 const PACKAGE_ROOT = 'frontend/apps/os-shell/public/launch-data/washington';
-const EXPECTED_MANIFEST_SHA256 = '7acadc93e6dd6ba78732c426a22b5b815f25c5f0c68843ff1abed091b32e0bd3';
+const EXPECTED_MANIFEST_SHA256 = '46e30904d37fa475e3f0c28ce1420d0522801bd80a3b62954e260f54bf67bfef';
 
 function canonicalizeJson(value) {
   if (value === null || typeof value === 'boolean' || typeof value === 'string') {
@@ -85,6 +85,27 @@ test('embedded Chelan, Kitsap, and Whatcom packages are digest-bound, county-iso
       chelanSourceDigests.has(record.provenance.sourcePayloadSha256)
     ),
     true
+  );
+  assert.equal(
+    chelanShard.records.every(
+      record =>
+        Array.isArray(record.provenance.componentRows) &&
+        record.provenance.componentRows.length >= 1 &&
+        record.provenance.componentRows.every(
+          component =>
+            chelanSourceDigests.has(component.sourcePayloadSha256) &&
+            !new URL(component.sourceUrl).search &&
+            !new URL(component.sourceUrl).hash
+        )
+    ),
+    true
+  );
+  assert.equal(
+    chelanShard.records.reduce(
+      (total, record) => total + record.provenance.componentRows.length - 1,
+      0
+    ),
+    77
   );
   assert.equal(chelanReceipt.candidateSales, 985);
   assert.equal(chelanReceipt.stagedSales, 908);

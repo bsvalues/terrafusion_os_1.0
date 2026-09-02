@@ -102,8 +102,12 @@ function credentialFreeHttpsUrl(value, label) {
     throw new Error(`${label} must be valid credential-free HTTPS.`);
   }
   invariant(
-    parsed.protocol === 'https:' && !parsed.username && !parsed.password,
-    `${label} must be credential-free HTTPS.`
+    parsed.protocol === 'https:' &&
+      !parsed.username &&
+      !parsed.password &&
+      !parsed.search &&
+      !parsed.hash,
+    `${label} must be credential-free HTTPS without a query or fragment.`
   );
   return parsed;
 }
@@ -251,6 +255,13 @@ function mapTransaction(group, generatedAt) {
       candidateIndexSource: `${first.source.file}#row:${first.ordinal}`,
       candidateRecordType: 'official-monthly-assessor-sale',
       candidateSourceOrdinal: first.ordinal,
+      componentRows: group.map(candidate => ({
+        sourceKey: candidate.source.key,
+        sourceUrl: candidate.source.url,
+        sourcePayloadPath: candidate.source.file,
+        sourcePayloadSha256: candidate.source.sha256,
+        candidateIndexSource: `${candidate.source.file}#row:${candidate.ordinal}`,
+      })),
     },
     flags: { duplicateRisk: false, needsReview, futureSaleDate: false, manualException: false },
   };
