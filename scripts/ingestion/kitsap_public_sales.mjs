@@ -872,7 +872,7 @@ function canonicalizeJson(value) {
   throw new Error('Kitsap launch package contains a non-JSON value.');
 }
 
-function canonicalJsonSha256(value) {
+export function canonicalJsonSha256(value) {
   return createHash('sha256').update(canonicalizeJson(value)).digest('hex');
 }
 
@@ -1030,6 +1030,105 @@ async function writeJson(path, value, stagingRoot) {
   await syncDirectoryChain(dirname(path), stagingRoot);
 }
 
+async function publishPackageAtomically(outputRoot, operationId, populate) {
+  invariant(typeof populate === 'function', 'Package refresh requires a staging writer.');
+  const temporaryRoot = `${outputRoot}.tmp-${operationId}`;
+  const backupRoot = `${outputRoot}.bak-${operationId}`;
+  const journalPath = `${outputRoot}.refresh.json`;
+  const temporaryJournalPath = `${journalPath}.tmp-${operationId}`;
+  await mkdir(temporaryRoot, { recursive: false });
+  let journalPublished = false;
+  try {
+    await populate({
+      outputRoot,
+      temporaryRoot,
+      writeJson: (relativePath, value) => {
+        const stagedPath = resolve(temporaryRoot, relativePath);
+        invariant(
+          stagedPath.startsWith(`${temporaryRoot}${sep}`),
+          'Washington launch package write escaped its staging root.'
+        );
+        return writeJson(stagedPath, value, temporaryRoot);
+      },
+    });
+    await syncDirectory(temporaryRoot);
+    await assertRefreshLockOwner(outputRoot, operationId);
+    await writeDurableFile(
+      temporaryJournalPath,
+      `${JSON.stringify({ schemaVersion: REFRESH_JOURNAL_SCHEMA, operationId })}\n`
+    );
+    await assertRefreshLockOwner(outputRoot, operationId);
+    await runRefreshMutexMutation(outputRoot, operationId, {
+      op: 'rename',
+      source: temporaryJournalPath,
+      target: journalPath,
+    });
+    journalPublished = true;
+    await syncDirectory(dirname(outputRoot));
+    await assertRefreshLockOwner(outputRoot, operationId);
+    try {
+      await runRefreshMutexMutation(outputRoot, operationId, {
+        op: 'renameIfExists',
+        source: outputRoot,
+        target: backupRoot,
+      });
+    } catch (error) {
+      if (error?.code !== 'ENOENT') throw error;
+    }
+    await syncDirectory(dirname(outputRoot));
+    await assertRefreshLockOwner(outputRoot, operationId);
+    await runRefreshMutexMutation(outputRoot, operationId, {
+      op: 'rename',
+      source: temporaryRoot,
+      target: outputRoot,
+    });
+    await syncDirectory(dirname(outputRoot));
+    await runRefreshMutexMutation(outputRoot, operationId, {
+      op: 'rm',
+      path: backupRoot,
+      recursive: true,
+      force: true,
+    });
+    await syncDirectory(dirname(outputRoot));
+    await runRefreshMutexMutation(outputRoot, operationId, {
+      op: 'rm',
+      path: journalPath,
+      recursive: false,
+      force: true,
+    });
+    await syncDirectory(dirname(outputRoot));
+    journalPublished = false;
+  } catch (error) {
+    await cleanUpFailedPackageRefresh(
+      outputRoot,
+      operationId,
+      temporaryRoot,
+      temporaryJournalPath,
+      journalPublished
+    );
+    throw error;
+  }
+}
+
+/**
+ * Extend or rebuild the complete Washington launch package under the same
+ * cross-platform mutex and crash-recovery protocol used by the Kitsap source.
+ * The callback can only publish through the durable, staging-root-confined
+ * JSON writer supplied here; the visible package swaps as one directory.
+ */
+export async function publishWashingtonLaunchPackage(outputPath, populate) {
+  const outputRoot = await canonicalizePackageOutputRoot(outputPath);
+  const operationId = `${process.pid}-${randomUUID()}`;
+  await acquirePackageRefreshLock(outputRoot, operationId);
+  try {
+    await recoverInterruptedPackageRefresh(outputRoot, operationId);
+    await publishPackageAtomically(outputRoot, operationId, populate);
+  } finally {
+    await releasePackageRefreshLock(outputRoot, operationId);
+  }
+  return outputRoot;
+}
+
 async function generatePackage(sourcePath, expectedSha256, outputRoot, generatedAt, operationId) {
   invariant(SHA256_PATTERN.test(expectedSha256), 'Expected workbook SHA-256 is invalid.');
   invariant(
@@ -1184,24 +1283,12 @@ async function generatePackage(sourcePath, expectedSha256, outputRoot, generated
     },
   };
 
-  const temporaryRoot = `${outputRoot}.tmp-${operationId}`;
-  const backupRoot = `${outputRoot}.bak-${operationId}`;
-  const journalPath = `${outputRoot}.refresh.json`;
-  const temporaryJournalPath = `${journalPath}.tmp-${operationId}`;
-  await mkdir(temporaryRoot, { recursive: false });
-  let journalPublished = false;
-  try {
-    await writeJson(join(temporaryRoot, 'manifest.json'), manifest, temporaryRoot);
-    await writeJson(join(temporaryRoot, 'counties/status.json'), status, temporaryRoot);
-    await writeJson(join(temporaryRoot, `counties/${COUNTY_CODE}.json`), detail, temporaryRoot);
-    await writeJson(
-      join(temporaryRoot, `sales/by-county/${COUNTY_CODE}.json`),
-      shard,
-      temporaryRoot
-    );
-    await writeJson(
-      join(temporaryRoot, 'receipts/kitsap-source.json'),
-      {
+  await publishPackageAtomically(outputRoot, operationId, async ({ writeJson }) => {
+    await writeJson('manifest.json', manifest);
+    await writeJson('counties/status.json', status);
+    await writeJson(`counties/${COUNTY_CODE}.json`, detail);
+    await writeJson(`sales/by-county/${COUNTY_CODE}.json`, shard);
+    await writeJson('receipts/kitsap-source.json', {
         schemaVersion: 'terrafusion.washington.public-source-receipt.v1',
         county: COUNTY,
         countyCode: COUNTY_CODE,
@@ -1215,66 +1302,8 @@ async function generatePackage(sourcePath, expectedSha256, outputRoot, generated
         quarantinedSales,
         quarantine,
         omittedFields: ['owner', 'grantor', 'grantee', 'buyer', 'seller'],
-      },
-      temporaryRoot
-    );
-    await syncDirectory(temporaryRoot);
-    await assertRefreshLockOwner(outputRoot, operationId);
-    await writeDurableFile(
-      temporaryJournalPath,
-      `${JSON.stringify({ schemaVersion: REFRESH_JOURNAL_SCHEMA, operationId })}\n`
-    );
-    await assertRefreshLockOwner(outputRoot, operationId);
-    await runRefreshMutexMutation(outputRoot, operationId, {
-      op: 'rename',
-      source: temporaryJournalPath,
-      target: journalPath,
-    });
-    journalPublished = true;
-    await syncDirectory(dirname(outputRoot));
-    await assertRefreshLockOwner(outputRoot, operationId);
-    try {
-      await runRefreshMutexMutation(outputRoot, operationId, {
-        op: 'renameIfExists',
-        source: outputRoot,
-        target: backupRoot,
       });
-    } catch (error) {
-      if (error?.code !== 'ENOENT') throw error;
-    }
-    await syncDirectory(dirname(outputRoot));
-    await assertRefreshLockOwner(outputRoot, operationId);
-    await runRefreshMutexMutation(outputRoot, operationId, {
-      op: 'rename',
-      source: temporaryRoot,
-      target: outputRoot,
-    });
-    await syncDirectory(dirname(outputRoot));
-    await runRefreshMutexMutation(outputRoot, operationId, {
-      op: 'rm',
-      path: backupRoot,
-      recursive: true,
-      force: true,
-    });
-    await syncDirectory(dirname(outputRoot));
-    await runRefreshMutexMutation(outputRoot, operationId, {
-      op: 'rm',
-      path: journalPath,
-      recursive: false,
-      force: true,
-    });
-    await syncDirectory(dirname(outputRoot));
-    journalPublished = false;
-  } catch (error) {
-    await cleanUpFailedPackageRefresh(
-      outputRoot,
-      operationId,
-      temporaryRoot,
-      temporaryJournalPath,
-      journalPublished
-    );
-    throw error;
-  }
+  });
 
   console.log(
     JSON.stringify(

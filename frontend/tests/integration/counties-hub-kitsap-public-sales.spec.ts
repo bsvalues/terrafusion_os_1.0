@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-test('uses the authenticated Kitsap public-sales package without lending it to another county', async ({
+test('uses the authenticated Kitsap and Whatcom public-sales package without lending it to another county', async ({
   page,
 }) => {
   const requestedSalesShards: string[] = [];
@@ -12,7 +12,7 @@ test('uses the authenticated Kitsap public-sales package without lending it to a
     }
   });
 
-  await page.goto('/counties');
+  await page.goto('/counties', { waitUntil: 'domcontentloaded' });
 
   await expect(page.getByRole('heading', { name: 'Washington Counties Hub' })).toBeVisible({
     timeout: 20_000,
@@ -63,7 +63,50 @@ test('uses the authenticated Kitsap public-sales package without lending it to a
   const conditionField = salesForge.locator('.sf-detail-field').filter({ hasText: 'Condition' });
   await expect(conditionField).toContainText('AV');
 
-  await page.goto('/counties');
+  await page.goto('/counties', { waitUntil: 'domcontentloaded' });
+  await expect(page.getByRole('option')).toHaveCount(39, { timeout: 20_000 });
+
+  const whatcom = page.getByRole('option', { name: 'Select Whatcom County' });
+  await whatcom.click();
+  await expect(whatcom).toHaveAttribute('aria-selected', 'true');
+
+  await expect(page.getByTestId('selected-county-context')).toContainText('Whatcom County');
+  await expect(page.getByTestId('selected-county-context')).toContainText('5,111', {
+    timeout: 45_000,
+  });
+  await expect(page.getByTestId('selected-county-context')).toContainText('2025-07-31');
+  await expect(page.getByTestId('selected-county-context')).not.toContainText(
+    'No governed public sales state is available'
+  );
+
+  await page.getByRole('button', { name: 'Open TerraForge' }).click();
+  await expect(page.getByRole('heading', { name: 'TerraForge', exact: true })).toBeVisible({
+    timeout: 20_000,
+  });
+  await expect(page.getByTestId('forge-county-context')).toContainText('5,111', {
+    timeout: 45_000,
+  });
+  const whatcomSalesForge = page
+    .getByTestId('forge-primary-applications')
+    .getByRole('button', { name: /SalesForge/i });
+  await expect(whatcomSalesForge).toBeEnabled();
+  await whatcomSalesForge.click();
+
+  await expect(page.getByRole('heading', { name: 'SalesForge' })).toBeVisible({ timeout: 20_000 });
+  await expect(salesForge.getByText('Whatcom County', { exact: true })).toBeVisible();
+  await expect(
+    salesForge.getByText('Washington launch data package', { exact: true })
+  ).toBeVisible();
+  await expect(salesForge.getByTestId('salesforge-data-unavailable')).toHaveCount(0);
+  const firstWhatcomSaleRow = salesForge
+    .getByRole('table', { name: 'Sale qualification queue' })
+    .getByRole('row')
+    .nth(1);
+  await expect(firstWhatcomSaleRow).toContainText('3802121755000159', { timeout: 20_000 });
+  await expect(firstWhatcomSaleRow).toContainText('Jul 31, 25');
+  await expect(firstWhatcomSaleRow).toContainText('$323k');
+
+  await page.goto('/counties', { waitUntil: 'domcontentloaded' });
   await expect(page.getByRole('option')).toHaveCount(39, { timeout: 20_000 });
 
   const adams = page.getByRole('option', { name: 'Select Adams County' });
@@ -84,7 +127,9 @@ test('uses the authenticated Kitsap public-sales package without lending it to a
     .getByRole('button', { name: /SalesForge/i });
   await expect(adamsSalesForge).toBeDisabled();
   await expect(page.getByTestId('forge-county-context')).not.toContainText('24,585');
+  await expect(page.getByTestId('forge-county-context')).not.toContainText('5,111');
 
   expect(requestedSalesShards).toContain('/launch-data/washington/sales/by-county/035.json');
+  expect(requestedSalesShards).toContain('/launch-data/washington/sales/by-county/073.json');
   expect(requestedSalesShards).not.toContain('/launch-data/washington/sales/by-county/001.json');
 });

@@ -2,12 +2,13 @@ import { defineConfig, devices } from '@playwright/test';
 
 const PORT = process.env.VITE_PORT || '5173';
 const BASE_URL = `http://localhost:${PORT}`;
-const KITSAP_MANIFEST_SHA256 = 'ed6475da4961a801e46dbfa95b2d67d6982140ec5e64f71b57af4d402a5688f1';
+const WASHINGTON_MANIFEST_SHA256 =
+  '85d6eb4aa797c04b619043324600a257768c51856e7312fbd5a2003e010660ae';
 
 export default defineConfig({
   testDir: '../../tests/integration',
   testMatch: 'counties-hub-kitsap-public-sales.spec.ts',
-  timeout: 60_000,
+  timeout: 180_000,
   fullyParallel: false,
   forbidOnly: true,
   retries: 0,
@@ -42,7 +43,7 @@ export default defineConfig({
     stderr: 'pipe',
     env: {
       VITE_DEV_PREVIEW_BYPASS_AUTH: 'true',
-      VITE_WASHINGTON_LAUNCH_MANIFEST_SHA256: KITSAP_MANIFEST_SHA256,
+      VITE_WASHINGTON_LAUNCH_MANIFEST_SHA256: WASHINGTON_MANIFEST_SHA256,
     },
   },
 });

@@ -1,0 +1,62 @@
+{
+  "schemaVersion": "terrafusion.washington.public-source-set.v1",
+  "county": "Whatcom",
+  "countyCode": "073",
+  "officialSourceBaseUrl": "https://www.whatcomcounty.us/177/Assessor",
+  "indexUrl": "https://www.whatcomcounty.us/4274/Neighborhood-Market-Study-Valuation-Sale",
+  "publishedLabel": "2025",
+  "sourceDateRange": {
+    "start": "2024-01-01",
+    "end": "2025-07-31"
+  },
+  "sources": [
+    {
+      "key": "bellingham",
+      "file": "bellingham.csv",
+      "url": "https://www.whatcomcounty.us/DocumentCenter/View/103929/valuation-sales-2024-01-01-to-2025-07-31-bellingham",
+      "sha256": "72ca45951238427a4eecc55e8a2ab8ccf9c93fcb7064275cf174072df9617d89"
+    },
+    {
+      "key": "blaine",
+      "file": "blaine.csv",
+      "url": "https://www.whatcomcounty.us/DocumentCenter/View/103930/valuation-sales-2024-01-01-to-2025-07-31-blaine",
+      "sha256": "e884d067f384db12a6531f0d8baa978f70c5495492b5df9bd572ff37c90e3dda"
+    },
+    {
+      "key": "commercial",
+      "file": "commercial.csv",
+      "url": "https://www.whatcomcounty.us/DocumentCenter/View/103931/valuation-sales-2024-01-01-to-2025-07-31-commercial",
+      "sha256": "4c6fc57000367f81954545b93fcf36b2fefbd047ddaf04298598352989dc5032"
+    },
+    {
+      "key": "ferndale",
+      "file": "ferndale.csv",
+      "url": "https://www.whatcomcounty.us/DocumentCenter/View/103932/valuation-sales-2024-01-01-to-2025-07-31-ferndale",
+      "sha256": "9b754fa3728a796f81f942a68db3f7415cce8ff1d2ecda336179570dee4c689f"
+    },
+    {
+      "key": "lynden",
+      "file": "lynden.csv",
+      "url": "https://www.whatcomcounty.us/DocumentCenter/View/103933/valuation-sales-2024-01-01-to-2025-07-31-lynden",
+      "sha256": "98381fb103603f3180eb8272289785662e2d032256986a521cf92a39eb71db80"
+    },
+    {
+      "key": "meridian",
+      "file": "meridian.csv",
+      "url": "https://www.whatcomcounty.us/DocumentCenter/View/103934/valuation-sales-2024-01-01-to-2025-07-31-meridian",
+      "sha256": "86c087f87b1a0068fdb66a9e84376fdb3c089c987465603537ba41cdd2043b9e"
+    },
+    {
+      "key": "mt-baker-concrete-sedro",
+      "file": "mt-baker-concrete-sedro.csv",
+      "url": "https://www.whatcomcounty.us/DocumentCenter/View/103935/valuation-sales-2024-01-01-to-2025-07-31-mt-baker-concrete-sedro",
+      "sha256": "2a6707066bfc61ca2db33fa99f9ac43c27a13f1bc5faa7b085c34803b7b8867d"
+    },
+    {
+      "key": "nooksack",
+      "file": "nooksack.csv",
+      "url": "https://www.whatcomcounty.us/DocumentCenter/View/103936/valuation-sales-2024-01-01-to-2025-07-31-nooksack",
+      "sha256": "3009ba8d5eed27eef3cc6346482df5c44abf7ac2a9ae0a706fe5da16299a58ab"
+    }
+  ]
+}
