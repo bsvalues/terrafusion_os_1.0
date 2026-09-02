@@ -48,6 +48,7 @@ public sealed class CountyCsvUploadAdmissionLedger : ICountyCsvUploadAdmissionLe
             return ResolveExisting(existing, evidence);
         }
 
+        var trackedState = CaptureTrackedState();
         await using var transaction = await _dbContext.Database
             .BeginTransactionAsync(cancellationToken)
             .ConfigureAwait(false);
@@ -66,7 +67,7 @@ public sealed class CountyCsvUploadAdmissionLedger : ICountyCsvUploadAdmissionLe
         }
         catch (DbUpdateException updateException)
         {
-            await RollbackAndClearAsync(transaction).ConfigureAwait(false);
+            await RollbackAndRestoreAsync(transaction, trackedState).ConfigureAwait(false);
 
             var winner = await FindByIdempotencyKeyAsync(
                     evidence.IdempotencyKey,
@@ -83,7 +84,7 @@ public sealed class CountyCsvUploadAdmissionLedger : ICountyCsvUploadAdmissionLe
         }
         catch
         {
-            await RollbackAndClearAsync(transaction).ConfigureAwait(false);
+            await RollbackAndRestoreAsync(transaction, trackedState).ConfigureAwait(false);
             throw;
         }
     }
@@ -98,8 +99,23 @@ public sealed class CountyCsvUploadAdmissionLedger : ICountyCsvUploadAdmissionLe
                 cancellationToken)
             .ConfigureAwait(false);
 
-    private async Task RollbackAndClearAsync(
-        Microsoft.EntityFrameworkCore.Storage.IDbContextTransaction transaction)
+    private IReadOnlyList<TrackedEntryState> CaptureTrackedState() =>
+        _dbContext.ChangeTracker
+            .Entries()
+            .Select(entry => new TrackedEntryState(
+                entry.Entity,
+                entry.State,
+                entry.CurrentValues.Clone(),
+                entry.OriginalValues.Clone(),
+                entry.Properties
+                    .Where(property => property.IsModified)
+                    .Select(property => property.Metadata.Name)
+                    .ToHashSet(StringComparer.Ordinal)))
+            .ToArray();
+
+    private async Task RollbackAndRestoreAsync(
+        Microsoft.EntityFrameworkCore.Storage.IDbContextTransaction transaction,
+        IReadOnlyList<TrackedEntryState> trackedState)
     {
         try
         {
@@ -107,7 +123,42 @@ public sealed class CountyCsvUploadAdmissionLedger : ICountyCsvUploadAdmissionLe
         }
         finally
         {
-            _dbContext.ChangeTracker.Clear();
+            RestoreTrackedState(trackedState);
+        }
+    }
+
+    private void RestoreTrackedState(IReadOnlyList<TrackedEntryState> trackedState)
+    {
+        var preexistingEntities = new HashSet<object>(
+            trackedState.Select(snapshot => snapshot.Entity),
+            ReferenceEqualityComparer.Instance);
+
+        foreach (var entry in _dbContext.ChangeTracker.Entries().ToArray())
+        {
+            if (!preexistingEntities.Contains(entry.Entity))
+            {
+                entry.State = EntityState.Detached;
+            }
+        }
+
+        foreach (var snapshot in trackedState)
+        {
+            var entry = _dbContext.Entry(snapshot.Entity);
+            entry.State = EntityState.Unchanged;
+            entry.CurrentValues.SetValues(snapshot.CurrentValues);
+            entry.OriginalValues.SetValues(snapshot.OriginalValues);
+
+            if (snapshot.State == EntityState.Modified)
+            {
+                foreach (var propertyName in snapshot.ModifiedProperties)
+                {
+                    entry.Property(propertyName).IsModified = true;
+                }
+            }
+            else
+            {
+                entry.State = snapshot.State;
+            }
         }
     }
 
@@ -205,7 +256,7 @@ public sealed class CountyCsvUploadAdmissionLedger : ICountyCsvUploadAdmissionLe
         var content = intakeReceipt.Content;
         if (!IsLowercaseSha256(content.Sha256)
             || content.ByteLength <= 0
-            || content.ByteLength > int.MaxValue
+            || content.ByteLength > ICountyCsvUploadAdmissionLedger.MaximumAuthenticatedCsvUploadBytes
             || content.ByteLength != intakeReceipt.Document.InputBytes)
         {
             denialCode = CountyCsvUploadAdmissionDenialCode.InvalidContentEvidence;
@@ -370,6 +421,13 @@ public sealed class CountyCsvUploadAdmissionLedger : ICountyCsvUploadAdmissionLe
             CountyCsvUploadAdmissionDisposition.Denied,
             denialCode,
             null);
+
+    private sealed record TrackedEntryState(
+        object Entity,
+        EntityState State,
+        Microsoft.EntityFrameworkCore.ChangeTracking.PropertyValues CurrentValues,
+        Microsoft.EntityFrameworkCore.ChangeTracking.PropertyValues OriginalValues,
+        IReadOnlySet<string> ModifiedProperties);
 
     private sealed record AdmissionEvidence(
         Guid CountyId,

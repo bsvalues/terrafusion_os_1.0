@@ -56,6 +56,10 @@ public interface ICountyCsvUploadAdmissionLedger
   public const string AuthenticatedCsvApiAdmissionContractId =
       "wal.county-upload.authenticated-csv-api-admission.v1";
 
+  // The protected predecessor API admits at most 10 MiB. Receipt-shaped values reconstructed
+  // outside that boundary must not be able to widen its authority at the durable ledger.
+  public const long MaximumAuthenticatedCsvUploadBytes = 10L * 1024L * 1024L;
+
   Task<CountyCsvUploadAdmissionResult> AdmitAsync(
       CountyCsvUploadAdmissionRequest? request,
       CancellationToken cancellationToken = default);

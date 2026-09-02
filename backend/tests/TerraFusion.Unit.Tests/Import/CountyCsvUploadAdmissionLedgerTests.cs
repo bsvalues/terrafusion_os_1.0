@@ -189,6 +189,23 @@ public sealed class CountyCsvUploadAdmissionLedgerTests
             "franklin-assessor");
         var receipt = valid.IntakeReceipt!;
         var intakeReceipt = receipt.IntakeReceipt;
+        var oversizedIntakeReceipt = intakeReceipt with
+        {
+            Content = intakeReceipt.Content with
+            {
+                ByteLength = ICountyCsvUploadAdmissionLedger.MaximumAuthenticatedCsvUploadBytes + 1,
+            },
+            Document = intakeReceipt.Document with
+            {
+                InputBytes = ICountyCsvUploadAdmissionLedger.MaximumAuthenticatedCsvUploadBytes + 1,
+            },
+        };
+        var oversizedReceipt = receipt with { IntakeReceipt = oversizedIntakeReceipt };
+        var oversizedRequest = valid with
+        {
+            IntakeReceipt = oversizedReceipt,
+            Identity = CountyCsvIntakeIdempotency.Create(oversizedReceipt),
+        };
         var cases = new[]
         {
             (
@@ -226,6 +243,9 @@ public sealed class CountyCsvUploadAdmissionLedgerTests
                         },
                     },
                 },
+                CountyCsvUploadAdmissionDenialCode.InvalidContentEvidence),
+            (
+                oversizedRequest,
                 CountyCsvUploadAdmissionDenialCode.InvalidContentEvidence),
             (
                 valid with
@@ -295,21 +315,48 @@ public sealed class CountyCsvUploadAdmissionLedgerTests
     }
 
     [Fact]
-    public async Task AdmitAsync_AuditSaveFailureRollsBackTheBatchTransaction()
+    public async Task AdmitAsync_AuditSaveFailureRollsBackBatchAndPreservesUnrelatedTrackedState()
     {
         await using var database = await TestDatabase.CreateAsync((Benton, BentonId));
         var request = await CreateRequestAsync(Benton, BentonId, "assessor-1");
         await using (var failingContext = database.CreateContext(new FailSecondSaveInterceptor()))
         {
+            var modifiedCounty = await failingContext.Counties.SingleAsync(
+                county => county.Id == BentonId);
+            var originalCountyName = modifiedCounty.Name;
+            modifiedCounty.Name = "Pending Benton name";
+            var unrelatedCountyId = Guid.Parse("00000000-0000-0000-0000-000000000099");
+            var unrelatedCounty = new TerraFusion.Core.Entities.County
+            {
+                Id = unrelatedCountyId,
+                Name = "Unrelated pending county",
+                State = "WA",
+                FipsCode = "99999",
+            };
+            failingContext.Counties.Add(unrelatedCounty);
+
             var exception = await Assert.ThrowsAsync<InvalidOperationException>(
                 () => new CountyCsvUploadAdmissionLedger(failingContext).AdmitAsync(request));
 
             Assert.Equal("synthetic audit persistence failure", exception.Message);
+            Assert.Equal(EntityState.Added, failingContext.Entry(unrelatedCounty).State);
+            Assert.Equal(EntityState.Modified, failingContext.Entry(modifiedCounty).State);
+            Assert.Equal("Pending Benton name", modifiedCounty.Name);
+            Assert.Equal(
+                originalCountyName,
+                failingContext.Entry(modifiedCounty).Property(county => county.Name).OriginalValue);
+            Assert.True(failingContext.Entry(modifiedCounty).Property(county => county.Name).IsModified);
+            Assert.Empty(failingContext.ChangeTracker.Entries<CountyCsvUploadBatch>());
+            Assert.Empty(failingContext.ChangeTracker.Entries<TerraFusion.Core.Entities.AuditLog>());
         }
 
         await using var verificationContext = database.CreateContext();
         Assert.Equal(0, await verificationContext.CountyCsvUploadBatches.CountAsync());
         Assert.Equal(0, await verificationContext.AuditLogs.CountAsync());
+        Assert.Equal(
+            0,
+            await verificationContext.Counties.CountAsync(
+                county => county.Id == Guid.Parse("00000000-0000-0000-0000-000000000099")));
     }
 
     [Fact]
