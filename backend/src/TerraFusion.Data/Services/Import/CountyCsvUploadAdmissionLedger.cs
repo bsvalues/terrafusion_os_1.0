@@ -449,17 +449,39 @@ public sealed class CountyCsvUploadAdmissionLedger : ICountyCsvUploadAdmissionLe
                 return false;
             }
 
-            var headers = document.Headers.ToArray();
-            var rows = new IReadOnlyList<string>[document.Rows.Count];
+            var headerCount = document.Headers.Count;
+            var rowCount = document.Rows.Count;
+            if (headerCount is <= 0 or > MaximumFieldsPerRow
+                || rowCount is < 0 or > MaximumDataRows)
+            {
+                return false;
+            }
+
+            var headers = new string[headerCount];
+            for (var index = 0; index < headers.Length; index++)
+            {
+                headers[index] = document.Headers[index];
+            }
+
+            var rows = new IReadOnlyList<string>[rowCount];
             for (var index = 0; index < rows.Length; index++)
             {
                 var row = document.Rows[index];
-                if (row is null)
+                if (row is null
+                    || row.Count < 0
+                    || row.Count > MaximumFieldsPerRow
+                    || row.Count != headerCount)
                 {
                     return false;
                 }
 
-                rows[index] = Array.AsReadOnly(row.ToArray());
+                var fields = new string[row.Count];
+                for (var fieldIndex = 0; fieldIndex < fields.Length; fieldIndex++)
+                {
+                    fields[fieldIndex] = row[fieldIndex];
+                }
+
+                rows[index] = Array.AsReadOnly(fields);
             }
 
             snapshot = new CountyCsvDocument(

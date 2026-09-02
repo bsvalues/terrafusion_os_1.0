@@ -486,6 +486,57 @@ public sealed class CountyCsvUploadAdmissionLedgerTests
     }
 
     [Fact]
+    public async Task AdmitAsync_DeniesOversizedDocumentCollectionCountsBeforeCopying()
+    {
+        await using var database = await TestDatabase.CreateAsync((Benton, BentonId));
+        var request = await CreateRequestAsync(Benton, BentonId, "assessor-1");
+        var originalDocument = request.IntakeReceipt!.IntakeReceipt.Document;
+        var hostileDocuments = new[]
+        {
+            originalDocument with
+            {
+                Headers = new OversizedCountReadOnlyList<string>(),
+            },
+            originalDocument with
+            {
+                Rows = new OversizedCountReadOnlyList<IReadOnlyList<string>>(),
+            },
+            originalDocument with
+            {
+                Rows = Array.AsReadOnly<IReadOnlyList<string>>(
+                    new[] { new OversizedCountReadOnlyList<string>() }),
+            },
+        };
+        var ledger = new CountyCsvUploadAdmissionLedger(database.CreateFactory());
+
+        foreach (var hostileDocument in hostileDocuments)
+        {
+            var hostileRequest = request with
+            {
+                IntakeReceipt = request.IntakeReceipt with
+                {
+                    IntakeReceipt = request.IntakeReceipt.IntakeReceipt with
+                    {
+                        Document = hostileDocument,
+                    },
+                },
+            };
+
+            var result = await ledger.AdmitAsync(hostileRequest);
+
+            Assert.Equal(CountyCsvUploadAdmissionDisposition.Denied, result.Disposition);
+            Assert.Equal(
+                CountyCsvUploadAdmissionDenialCode.InvalidDocumentEvidence,
+                result.DenialCode);
+            Assert.Null(result.Batch);
+        }
+
+        await using var verificationContext = database.CreateContext();
+        Assert.Equal(0, await verificationContext.CountyCsvUploadBatches.CountAsync());
+        Assert.Equal(0, await verificationContext.AuditLogs.CountAsync());
+    }
+
+    [Fact]
     public async Task AdmissionHasNoSyncOrPacsWriteSeam()
     {
         await using var database = await TestDatabase.CreateAsync((Benton, BentonId));
@@ -843,6 +894,20 @@ public sealed class CountyCsvUploadAdmissionLedgerTests
         protected override void Dispose(bool disposing)
         {
         }
+    }
+
+    private sealed class OversizedCountReadOnlyList<T> : IReadOnlyList<T>
+    {
+        public int Count => int.MaxValue;
+
+        public T this[int index] =>
+            throw new InvalidOperationException("Oversized evidence must not be indexed.");
+
+        public IEnumerator<T> GetEnumerator() =>
+            throw new InvalidOperationException("Oversized evidence must not be enumerated.");
+
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() =>
+            GetEnumerator();
     }
 
     private sealed class FixedTimeProvider(DateTimeOffset value) : TimeProvider
