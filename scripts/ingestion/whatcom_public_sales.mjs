@@ -1,11 +1,12 @@
 #!/usr/bin/env node
 
 import { createHash } from 'node:crypto';
-import { readdir, readFile } from 'node:fs/promises';
-import { basename, join, relative, resolve, sep } from 'node:path';
+import { readFile } from 'node:fs/promises';
+import { basename, join, resolve, sep } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import {
   canonicalJsonSha256,
+  loadVerifiedRetainedWashingtonPackage,
   publishWashingtonLaunchPackage,
 } from './kitsap_public_sales.mjs';
 
@@ -438,22 +439,6 @@ export async function buildWhatcomCountyPackage(
   return { config, shard, statusEntry, detail, attestation, receipt };
 }
 
-async function listExistingJson(relativeRoot, current = '') {
-  const directory = join(relativeRoot, current);
-  const entries = await readdir(directory, { withFileTypes: true });
-  const paths = [];
-  for (const entry of entries) {
-    const relativePath = join(current, entry.name);
-    if (entry.isDirectory()) {
-      paths.push(...(await listExistingJson(relativeRoot, relativePath)));
-    } else {
-      invariant(entry.isFile() && entry.name.endsWith('.json'), `Unexpected launch package artifact ${relativePath}.`);
-      paths.push(relativePath);
-    }
-  }
-  return paths.sort();
-}
-
 export async function publishWhatcomPackage(
   sourceDirectory,
   outputPath,
@@ -461,59 +446,17 @@ export async function publishWhatcomPackage(
   configPath = SOURCE_CONFIG_PATH
 ) {
   const whatcom = await buildWhatcomCountyPackage(sourceDirectory, generatedAt, configPath);
-  const replacedPaths = new Set([
-    'manifest.json',
-    join('counties', 'status.json'),
-    join('counties', `${COUNTY_CODE}.json`),
-    join('sales', 'by-county', `${COUNTY_CODE}.json`),
-    join('receipts', 'whatcom-source.json'),
-  ]);
 
   let manifestDigest = null;
   await publishWashingtonLaunchPackage(outputPath, async ({ outputRoot, writeJson }) => {
-    const existingManifest = JSON.parse(await readFile(join(outputRoot, 'manifest.json'), 'utf8'));
-    const existingStatus = JSON.parse(await readFile(join(outputRoot, 'counties', 'status.json'), 'utf8'));
-    invariant(existingManifest.schemaVersion === MANIFEST_SCHEMA, 'Existing Washington manifest schema is invalid.');
-    invariant(existingStatus.schemaVersion === STATUS_SCHEMA, 'Existing Washington status schema is invalid.');
-    invariant(
-      existingManifest.statusCanonicalJsonSha256 === canonicalJsonSha256(existingStatus),
-      'Existing Washington status digest does not match its manifest.'
+    const retained = await loadVerifiedRetainedWashingtonPackage(
+      outputRoot,
+      COUNTY_CODE,
+      generatedAt,
+      [join('receipts', 'whatcom-source.json')]
     );
-    invariant(Array.isArray(existingStatus.counties), 'Existing Washington status has no county list.');
-    invariant(Array.isArray(existingManifest.salesShardAttestations), 'Existing Washington manifest has no attestations.');
-
-    const retainedCountyArtifacts = new Map();
-    const retainedAttestations = [];
-    for (const attestation of existingManifest.salesShardAttestations) {
-      if (attestation.countyCode === COUNTY_CODE) continue;
-      const shard = {
-        ...JSON.parse(
-          await readFile(
-            join(outputRoot, 'sales', 'by-county', `${attestation.countyCode}.json`),
-            'utf8'
-          )
-        ),
-        generatedAt,
-      };
-      const detail = {
-        ...JSON.parse(
-          await readFile(join(outputRoot, 'counties', `${attestation.countyCode}.json`), 'utf8')
-        ),
-        generatedAt,
-      };
-      retainedCountyArtifacts.set(attestation.countyCode, { detail, shard });
-      replacedPaths.add(join('counties', `${attestation.countyCode}.json`));
-      replacedPaths.add(join('sales', 'by-county', `${attestation.countyCode}.json`));
-      retainedAttestations.push({
-        ...attestation,
-        canonicalJsonSha256: canonicalJsonSha256(shard),
-      });
-    }
-
-    const existingPaths = await listExistingJson(outputRoot);
-    for (const relativePath of existingPaths) {
-      if (replacedPaths.has(relativePath)) continue;
-      await writeJson(relativePath, JSON.parse(await readFile(join(outputRoot, relativePath), 'utf8')));
+    for (const [relativePath, artifact] of retained.artifacts) {
+      await writeJson(relativePath, artifact);
     }
 
     const status = {
@@ -521,19 +464,19 @@ export async function publishWhatcomPackage(
       generatedAt,
       sourcePosture: 'mixed_public_assessor_sources',
       counties: [
-        ...existingStatus.counties.filter(county => county.countyCode !== COUNTY_CODE),
+        ...retained.statusEntries,
         whatcom.statusEntry,
       ].sort((left, right) => left.countyCode.localeCompare(right.countyCode)),
     };
     const attestations = [
-      ...retainedAttestations,
+      ...retained.attestations,
       whatcom.attestation,
     ].sort((left, right) => left.countyCode.localeCompare(right.countyCode));
 
     for (const attestation of attestations) {
       const shard = attestation.countyCode === COUNTY_CODE
         ? whatcom.shard
-        : retainedCountyArtifacts.get(attestation.countyCode)?.shard;
+        : retained.shards.get(attestation.countyCode);
       invariant(shard, `Existing Washington shard ${attestation.countyCode} is missing.`);
       invariant(
         canonicalJsonSha256(shard) === attestation.canonicalJsonSha256,
@@ -545,7 +488,7 @@ export async function publishWhatcomPackage(
     for (const attestation of attestations) {
       const shard = attestation.countyCode === COUNTY_CODE
         ? whatcom.shard
-        : retainedCountyArtifacts.get(attestation.countyCode).shard;
+        : retained.shards.get(attestation.countyCode);
       recordsWithNeighborhoodCode += shard.summary.recordsWithNeighborhoodCode;
     }
     const manifest = {
@@ -576,10 +519,6 @@ export async function publishWhatcomPackage(
     await writeJson(join('counties', `${COUNTY_CODE}.json`), whatcom.detail);
     await writeJson(join('sales', 'by-county', `${COUNTY_CODE}.json`), whatcom.shard);
     await writeJson(join('receipts', 'whatcom-source.json'), whatcom.receipt);
-    for (const [countyCode, artifacts] of retainedCountyArtifacts) {
-      await writeJson(join('counties', `${countyCode}.json`), artifacts.detail);
-      await writeJson(join('sales', 'by-county', `${countyCode}.json`), artifacts.shard);
-    }
   });
 
   console.log(JSON.stringify({
