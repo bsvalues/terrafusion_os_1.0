@@ -102,6 +102,10 @@ test('Kitsap adapter fails closed when its filesystem mutex helper exits', async
       assertPackageRefreshLockHeld(outputPath, operationId),
       /filesystem mutex was lost|filesystem mutex ownership changed/i
     );
+    await assert.rejects(
+      releasePackageRefreshLock(outputPath, operationId),
+      /filesystem mutex was lost|acquisition mutex exited/i
+    );
     assert.equal((await stat(`${outputPath}.refresh.lock`)).isFile(), true);
   } finally {
     await rm(root, { recursive: true, force: true });

@@ -16,6 +16,7 @@ import {
   stat,
 } from 'node:fs/promises';
 import { basename, dirname, join, resolve, sep } from 'node:path';
+import { createInterface } from 'node:readline';
 import { pathToFileURL } from 'node:url';
 import XLSX from 'xlsx';
 
@@ -148,9 +149,18 @@ async function canonicalizePackageOutputRoot(outputPath) {
 
 function startRefreshAcquisitionMutexProcess(mutexPath) {
   if (process.platform === 'linux') {
-    const helper =
-      'process.stdout.write("LOCKED\\n");process.stdin.resume();process.stdin.on("end",()=>process.exit(0));';
-    return spawn('flock', ['-x', mutexPath, process.execPath, '-e', helper], {
+    const helper = [
+      'const fs=require("node:fs/promises")',
+      'const readline=require("node:readline")',
+      'const rl=readline.createInterface({input:process.stdin})',
+      'process.stdout.write("LOCKED\\n")',
+      'rl.on("line",async line=>{',
+      'if(line==="RELEASE"){process.exit(0);return}',
+      'let command',
+      'try{command=JSON.parse(line);if(command.op==="rename")await fs.rename(command.source,command.target);else if(command.op==="renameIfExists")try{await fs.rename(command.source,command.target)}catch(error){if(error.code!=="ENOENT")throw error}else if(command.op==="rm")await fs.rm(command.path,{recursive:Boolean(command.recursive),force:Boolean(command.force)});else throw new Error("unsupported mutation");process.stdout.write(JSON.stringify({id:command.id,ok:true})+"\\n")}catch(error){process.stdout.write(JSON.stringify({id:command?.id,ok:false,message:error.message,code:error.code??null})+"\\n")}',
+      '})',
+    ].join(';');
+    return spawn('flock', ['-F', '-x', mutexPath, process.execPath, '-e', helper], {
       stdio: ['pipe', 'pipe', 'pipe'],
       windowsHide: true,
     });
@@ -174,7 +184,24 @@ function startRefreshAcquisitionMutexProcess(mutexPath) {
       'if ($null -eq $stream) { [Console]::Error.WriteLine("mutex remained busy"); exit 75 }',
       '[Console]::Out.WriteLine("LOCKED")',
       '[Console]::Out.Flush()',
-      '[Console]::In.ReadLine() | Out-Null',
+      'while (($line = [Console]::In.ReadLine()) -ne $null) {',
+      '  if ($line -eq "RELEASE") { break }',
+      '  $command = $null',
+      '  try {',
+      '    $command = $line | ConvertFrom-Json',
+      '    if ($command.op -eq "rename") {',
+      '      if ([System.IO.Directory]::Exists($command.source)) { [System.IO.Directory]::Move($command.source, $command.target) } elseif ([System.IO.File]::Exists($command.source)) { [System.IO.File]::Move($command.source, $command.target) } else { throw "source path does not exist" }',
+      '    } elseif ($command.op -eq "renameIfExists") {',
+      '      if ([System.IO.Directory]::Exists($command.source)) { [System.IO.Directory]::Move($command.source, $command.target) } elseif ([System.IO.File]::Exists($command.source)) { [System.IO.File]::Move($command.source, $command.target) }',
+      '    } elseif ($command.op -eq "rm") {',
+      '      if ([System.IO.Directory]::Exists($command.path)) { [System.IO.Directory]::Delete($command.path, [bool]$command.recursive) } elseif ([System.IO.File]::Exists($command.path)) { [System.IO.File]::Delete($command.path) } elseif (-not [bool]$command.force) { throw "path does not exist" }',
+      '    } else { throw "unsupported mutation" }',
+      '    [Console]::Out.WriteLine((@{ id = $command.id; ok = $true } | ConvertTo-Json -Compress))',
+      '  } catch {',
+      '    [Console]::Out.WriteLine((@{ id = $command.id; ok = $false; message = $_.Exception.Message } | ConvertTo-Json -Compress))',
+      '  }',
+      '  [Console]::Out.Flush()',
+      '}',
       '$stream.Dispose()',
     ].join('; ');
     return spawn(powershell, ['-NoProfile', '-NonInteractive', '-Command', helper], {
@@ -232,18 +259,66 @@ function monitorRefreshAcquisitionMutex(outputRoot, operationId, child) {
     child,
     releasing: false,
     lostError: null,
+    nextCommandId: 1,
+    pendingCommands: new Map(),
   };
   const markLost = detail => {
     if (!state.releasing && !state.lostError) {
       state.lostError = new Error(`Kitsap package refresh filesystem mutex was lost${detail}.`);
+      for (const pending of state.pendingCommands.values()) pending.reject(state.lostError);
+      state.pendingCommands.clear();
     }
   };
+  state.lines = createInterface({ input: child.stdout });
+  state.lines.on('line', line => {
+    let response;
+    try {
+      response = JSON.parse(line);
+    } catch {
+      markLost(' because its mutation response was invalid');
+      return;
+    }
+    const pending = state.pendingCommands.get(response.id);
+    if (!pending) return;
+    state.pendingCommands.delete(response.id);
+    clearTimeout(pending.timeout);
+    if (response.ok) pending.resolve();
+    else {
+      const error = new Error(`Kitsap package refresh filesystem mutation failed: ${response.message}`);
+      if (response.code) error.code = response.code;
+      pending.reject(error);
+    }
+  });
   child.once('error', error => markLost(`: ${error.message}`));
   child.once('exit', (code, signal) =>
     markLost(` (exit ${code ?? 'null'}, signal ${signal ?? 'none'})`)
   );
   heldRefreshAcquisitionMutexes.set(outputRoot, state);
   return state;
+}
+
+async function runRefreshMutexMutation(outputRoot, operationId, mutation) {
+  const state = assertRefreshAcquisitionMutexHeld(outputRoot, operationId);
+  const id = state.nextCommandId;
+  state.nextCommandId += 1;
+  await new Promise((resolveMutation, rejectMutation) => {
+    const timeout = setTimeout(() => {
+      state.pendingCommands.delete(id);
+      rejectMutation(new Error('Kitsap package refresh filesystem mutation timed out.'));
+    }, 60_000);
+    state.pendingCommands.set(id, {
+      resolve: resolveMutation,
+      reject: rejectMutation,
+      timeout,
+    });
+    state.child.stdin.write(`${JSON.stringify({ id, ...mutation })}\n`, error => {
+      if (!error) return;
+      clearTimeout(timeout);
+      state.pendingCommands.delete(id);
+      rejectMutation(error);
+    });
+  });
+  assertRefreshAcquisitionMutexHeld(outputRoot, operationId);
 }
 
 function assertRefreshAcquisitionMutexHeld(outputRoot, operationId) {
@@ -263,10 +338,10 @@ function assertRefreshAcquisitionMutexHeld(outputRoot, operationId) {
 
 async function releaseRefreshAcquisitionMutex(child) {
   if (!child) return;
-  if (child.exitCode !== null) {
+  if (child.exitCode !== null || child.signalCode !== null) {
     invariant(
-      child.exitCode === 0,
-      `Kitsap package refresh acquisition mutex exited with ${child.exitCode}.`
+      child.exitCode === 0 && child.signalCode === null,
+      `Kitsap package refresh acquisition mutex exited with ${child.exitCode ?? 'null'} (${child.signalCode ?? 'no signal'}).`
     );
     return;
   }
@@ -278,7 +353,7 @@ async function releaseRefreshAcquisitionMutex(child) {
         : rejectExit(new Error(`Kitsap package refresh acquisition mutex exited with ${code}.`))
     );
   });
-  child.stdin.end('\n');
+  child.stdin.end('RELEASE\n');
   await exited;
 }
 
@@ -471,7 +546,12 @@ export async function releasePackageRefreshLock(outputPath, operationId) {
   );
   try {
     await assertRefreshLockOwner(outputRoot, operationId);
-    await rm(`${outputRoot}.refresh.lock`, { recursive: true, force: true });
+    await runRefreshMutexMutation(outputRoot, operationId, {
+      op: 'rm',
+      path: `${outputRoot}.refresh.lock`,
+      recursive: true,
+      force: true,
+    });
     await syncDirectory(dirname(outputRoot));
   } finally {
     heldMutex.releasing = true;
@@ -497,18 +577,41 @@ export async function recoverInterruptedPackageRefresh(outputPath, ownerOperatio
   const backupRoot = `${outputRoot}.bak-${journal.operationId}`;
   if (!(await pathExists(outputRoot))) {
     if (await pathExists(backupRoot)) {
-      await rename(backupRoot, outputRoot);
+      await runRefreshMutexMutation(outputRoot, ownerOperationId, {
+        op: 'rename',
+        source: backupRoot,
+        target: outputRoot,
+      });
     } else if (await pathExists(temporaryRoot)) {
-      await rename(temporaryRoot, outputRoot);
+      await runRefreshMutexMutation(outputRoot, ownerOperationId, {
+        op: 'rename',
+        source: temporaryRoot,
+        target: outputRoot,
+      });
     } else {
       throw new Error('Kitsap package refresh cannot recover its published package.');
     }
     await syncDirectory(dirname(outputRoot));
   }
 
-  await rm(backupRoot, { recursive: true, force: true });
-  await rm(temporaryRoot, { recursive: true, force: true });
-  await rm(journalPath, { force: true });
+  await runRefreshMutexMutation(outputRoot, ownerOperationId, {
+    op: 'rm',
+    path: backupRoot,
+    recursive: true,
+    force: true,
+  });
+  await runRefreshMutexMutation(outputRoot, ownerOperationId, {
+    op: 'rm',
+    path: temporaryRoot,
+    recursive: true,
+    force: true,
+  });
+  await runRefreshMutexMutation(outputRoot, ownerOperationId, {
+    op: 'rm',
+    path: journalPath,
+    recursive: false,
+    force: true,
+  });
   await syncDirectory(dirname(outputRoot));
   return true;
 }
@@ -876,22 +979,44 @@ async function generatePackage(sourcePath, expectedSha256, outputRoot, generated
       `${JSON.stringify({ schemaVersion: REFRESH_JOURNAL_SCHEMA, operationId })}\n`
     );
     await assertRefreshLockOwner(outputRoot, operationId);
-    await rename(temporaryJournalPath, journalPath);
+    await runRefreshMutexMutation(outputRoot, operationId, {
+      op: 'rename',
+      source: temporaryJournalPath,
+      target: journalPath,
+    });
     await syncDirectory(dirname(outputRoot));
     journalPublished = true;
     await assertRefreshLockOwner(outputRoot, operationId);
     try {
-      await rename(outputRoot, backupRoot);
+      await runRefreshMutexMutation(outputRoot, operationId, {
+        op: 'renameIfExists',
+        source: outputRoot,
+        target: backupRoot,
+      });
     } catch (error) {
       if (error?.code !== 'ENOENT') throw error;
     }
     await syncDirectory(dirname(outputRoot));
     await assertRefreshLockOwner(outputRoot, operationId);
-    await rename(temporaryRoot, outputRoot);
+    await runRefreshMutexMutation(outputRoot, operationId, {
+      op: 'rename',
+      source: temporaryRoot,
+      target: outputRoot,
+    });
     await syncDirectory(dirname(outputRoot));
-    await rm(backupRoot, { recursive: true, force: true });
+    await runRefreshMutexMutation(outputRoot, operationId, {
+      op: 'rm',
+      path: backupRoot,
+      recursive: true,
+      force: true,
+    });
     await syncDirectory(dirname(outputRoot));
-    await rm(journalPath, { force: true });
+    await runRefreshMutexMutation(outputRoot, operationId, {
+      op: 'rm',
+      path: journalPath,
+      recursive: false,
+      force: true,
+    });
     await syncDirectory(dirname(outputRoot));
     journalPublished = false;
   } catch (error) {
