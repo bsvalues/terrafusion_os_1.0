@@ -9,7 +9,7 @@ import {
 } from '../ci/package_washington_launch_data.mjs';
 
 const PACKAGE_ROOT = 'frontend/apps/os-shell/public/launch-data/washington';
-const EXPECTED_MANIFEST_SHA256 = '10a2696c9aa040f550f6d056b7fe074fc77cdbf027004b079ccef1b22eac1664';
+const EXPECTED_MANIFEST_SHA256 = 'ab711318efc3898c8f40452519b41e05b007cb5f848cfeeaa6bcf2dcd9dcc778';
 
 function canonicalizeJson(value) {
   if (value === null || typeof value === 'boolean' || typeof value === 'string') {
@@ -141,6 +141,14 @@ test('embedded Chelan, Clark, Kitsap, and Whatcom packages are digest-bound, cou
   assert.equal(clarkShard.records.filter(record => record.yearBuilt !== null).length, 5_373);
   assert.equal(clarkShard.records.filter(record => record.grossLivingArea !== null).length, 5_375);
   assert.equal(clarkShard.records.filter(record => record.lotSizeSqft !== null).length, 5_105);
+  assert.equal(clarkShard.records.filter(record => record.qualityGrade !== null).length, 5_375);
+  assert.equal(
+    clarkShard.records.every(record => record.situsZip === null),
+    true
+  );
+  const firstClarkSale = clarkShard.records.find(record => record.parcelNumber === '986046773');
+  assert.equal(firstClarkSale.situsAddress, '18505 NE 78TH WAY VANCOUVER, WA 98682');
+  assert.equal(firstClarkSale.qualityGrade, 'Good');
   assert.equal(
     clarkShard.records.filter(record => record.adjustedSalePrice !== null).length,
     5_476

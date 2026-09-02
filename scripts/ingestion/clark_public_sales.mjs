@@ -186,11 +186,13 @@ function canonicalIdentity(row) {
 function parseSitusAddress(value) {
   const address = nullableString(value);
   if (!address) return { streetAddress: null, city: null, zip: null };
-  const stateZip = /,\s*WA\s+(\d{5})(?:-\d{4})?\s*$/i.exec(address);
   return {
     streetAddress: address,
     city: null,
-    zip: stateZip?.[1] ?? null,
+    // Clark publishes one undivided address string that already includes state
+    // and ZIP. Keep that value lossless and do not publish a second ZIP field,
+    // which the SalesForge display adapter would append again.
+    zip: null,
   };
 }
 

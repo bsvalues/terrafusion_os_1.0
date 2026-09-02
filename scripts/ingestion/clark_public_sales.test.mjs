@@ -146,7 +146,7 @@ test('builds a public-only Clark package and quarantines exact duplicate rows', 
   assert.equal(first.adjustedSalePrice, 510_000);
   assert.equal(first.situsAddress, '1 TEST AVE VANCOUVER, WA 98660');
   assert.equal(first.situsCity, null);
-  assert.equal(first.situsZip, '98660');
+  assert.equal(first.situsZip, null);
   assert.equal(first.grossLivingArea, 1800);
   assert.equal(first.yearBuilt, 2020);
   assert.equal(second.yearBuilt, null);

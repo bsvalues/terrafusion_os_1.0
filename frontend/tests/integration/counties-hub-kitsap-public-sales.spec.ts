@@ -88,11 +88,15 @@ test('uses the authenticated Chelan, Clark, Kitsap, and Whatcom public-sales pac
   await expect(firstClarkSaleRow).toContainText('Dec 31, 25');
   await firstClarkSaleRow.click();
   const clarkAddress = salesForge.locator('.sf-detail-field').filter({ hasText: 'Address' });
-  await expect(clarkAddress).toContainText('18505 NE 78TH WAY VANCOUVER, WA 98682');
+  await expect(clarkAddress).toHaveText('Address18505 NE 78TH WAY VANCOUVER, WA 98682');
   const clarkYearBuilt = salesForge
     .locator('.sf-detail-field')
     .filter({ hasText: 'Year built (current)' });
   await expect(clarkYearBuilt).toContainText('2018');
+  const clarkQualityGrade = salesForge
+    .locator('.sf-detail-field')
+    .filter({ hasText: 'Quality grade' });
+  await expect(clarkQualityGrade).toContainText('Good');
 
   await page.goto('/counties', { waitUntil: 'domcontentloaded' });
   await expect(page.getByRole('option')).toHaveCount(39, { timeout: 20_000 });

@@ -7,6 +7,7 @@ import type { CommittedFilters } from '../salesForgeTypes';
 import {
   evictWashingtonLaunchCountyShard,
   fetchWashingtonLaunchCodeAudit,
+  fetchWashingtonLaunchCompsPool,
   fetchWashingtonLaunchNeighborhoodStats,
   fetchWashingtonLaunchVerifiedComparableSales,
   fetchWashingtonLaunchQueue,
@@ -320,13 +321,15 @@ describe('Washington launch shard county isolation', () => {
         bedrooms: 3,
         bathrooms: 2.5,
         condition: 'AV',
+        qualityGrade: 'Good',
       }],
     }, '035', 'hosted');
     const filters = { ...SPOKANE_FILTERS, countyCode: '035' };
 
-    const [queue, detail] = await Promise.all([
+    const [queue, detail, compsPool] = await Promise.all([
       fetchWashingtonLaunchQueue(2025, 'all', 1, 25, filters),
       fetchWashingtonLaunchSaleDetail('kitsap-dwelling-sale', filters),
+      fetchWashingtonLaunchCompsPool({ countyCode: '035', page: 1, pageSize: 25 }),
     ]);
 
     expect(queue.items[0]).toMatchObject({
@@ -342,7 +345,9 @@ describe('Washington launch shard county isolation', () => {
       bedrooms: 3,
       bathrooms: 2.5,
       condition: 'AV',
+      qualityGrade: 'Good',
     });
+    expect(compsPool.items[0]).toMatchObject({ qualityGrade: 'Good' });
   });
 
   it('rejects a shard whose declared county does not match the requested county', async () => {
