@@ -1,0 +1,32 @@
+{
+  "schemaVersion": "terrafusion.washington.public-source-set.v1",
+  "county": "Pierce",
+  "countyCode": "053",
+  "officialSourceBaseUrl": "https://www.co.pierce.wa.us",
+  "indexUrl": "https://online.co.pierce.wa.us/cfapps/atr/datamart/downloads.cfm",
+  "publishedLabel": "Weekly extract 2026-08-28",
+  "sourceDateRange": {
+    "start": "2024-01-01",
+    "end": "2026-08-18"
+  },
+  "sources": [
+    {
+      "key": "sale",
+      "archiveFile": "sale.zip",
+      "file": "sale.txt",
+      "url": "https://online.co.pierce.wa.us/datamart/sale.zip",
+      "finalUrl": "https://online.co.pierce.wa.us/datamart/sale.zip",
+      "archiveSha256": "0801aa1fcb27c89c73e5ec7b552e3301fe3429a2a65917a479c1120328a1816f",
+      "sha256": "54e1448f51b70c6d98e74655706317b1ec10ea19634c7a225d8d07a6500eea7e"
+    },
+    {
+      "key": "tax_account",
+      "archiveFile": "tax_account.zip",
+      "file": "tax_account.txt",
+      "url": "https://online.co.pierce.wa.us/datamart/tax_account.zip",
+      "finalUrl": "https://online.co.pierce.wa.us/datamart/tax_account.zip",
+      "archiveSha256": "2f1096984ae2a4711a4a91a31f115ee4a01c5f9c8e1cad0d5800e38b68ff0c41",
+      "sha256": "ebc7a5dc1a64b2d39ccf2869297c552dd1300c2bea27363f4ad42ff0af6db776"
+    }
+  ]
+}

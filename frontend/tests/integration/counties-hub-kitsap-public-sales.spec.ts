@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-test('uses the authenticated Chelan, Clark, Kitsap, and Whatcom public-sales package without lending it to another county', async ({
+test('uses the authenticated Chelan, Clark, Kitsap, Pierce, and Whatcom public-sales package without lending it to another county', async ({
   page,
 }) => {
   const requestedSalesShards: string[] = [];
@@ -150,6 +150,45 @@ test('uses the authenticated Chelan, Clark, Kitsap, and Whatcom public-sales pac
   await page.goto('/counties', { waitUntil: 'domcontentloaded' });
   await expect(page.getByRole('option')).toHaveCount(39, { timeout: 20_000 });
 
+  const pierce = page.getByRole('option', { name: 'Select Pierce County' });
+  await pierce.click();
+  await expect(pierce).toHaveAttribute('aria-selected', 'true');
+  await expect(context).toContainText('Pierce County');
+  await expect(context).toContainText('13,517', { timeout: 45_000 });
+  await expect(context).toContainText('2026-08-05');
+  await expect(context).not.toContainText('No governed public sales state is available');
+
+  await page.getByRole('button', { name: 'Open TerraForge' }).click();
+  await expect(page.getByRole('heading', { name: 'TerraForge', exact: true })).toBeVisible({
+    timeout: 20_000,
+  });
+  await expect(page.getByTestId('forge-county-context')).toContainText('13,517', {
+    timeout: 45_000,
+  });
+  const pierceSalesForge = page
+    .getByTestId('forge-primary-applications')
+    .getByRole('button', { name: /SalesForge/i });
+  await expect(pierceSalesForge).toBeEnabled();
+  await pierceSalesForge.click();
+  await expect(page.getByRole('heading', { name: 'SalesForge' })).toBeVisible({ timeout: 20_000 });
+  await expect(salesForge.getByText('Pierce County', { exact: true })).toBeVisible();
+  await expect(salesForge.getByTestId('salesforge-data-unavailable')).toHaveCount(0);
+  const firstPierceSaleRow = salesForge
+    .getByRole('table', { name: 'Sale qualification queue' })
+    .getByRole('row')
+    .nth(1);
+  await expect(firstPierceSaleRow).toContainText('9210000130', { timeout: 20_000 });
+  await expect(firstPierceSaleRow).toContainText('Dec 31, 25');
+  await expect(firstPierceSaleRow).toContainText('$610k');
+  await firstPierceSaleRow.click();
+  const pierceAddress = salesForge.locator('.sf-detail-field').filter({ hasText: 'Address' });
+  await expect(pierceAddress).toContainText('824 S 28TH ST');
+  const pierceDeedType = salesForge.locator('.sf-detail-field').filter({ hasText: 'Deed type' });
+  await expect(pierceDeedType).toContainText('Statutory Warranty Deed');
+
+  await page.goto('/counties', { waitUntil: 'domcontentloaded' });
+  await expect(page.getByRole('option')).toHaveCount(39, { timeout: 20_000 });
+
   const whatcom = page.getByRole('option', { name: 'Select Whatcom County' });
   await whatcom.click();
   await expect(whatcom).toHaveAttribute('aria-selected', 'true');
@@ -219,10 +258,12 @@ test('uses the authenticated Chelan, Clark, Kitsap, and Whatcom public-sales pac
   await expect(page.getByTestId('forge-county-context')).not.toContainText('24,585');
   await expect(page.getByTestId('forge-county-context')).not.toContainText('5,109');
   await expect(page.getByTestId('forge-county-context')).not.toContainText('5,476');
+  await expect(page.getByTestId('forge-county-context')).not.toContainText('13,517');
 
   expect(requestedSalesShards).toContain('/launch-data/washington/sales/by-county/035.json');
   expect(requestedSalesShards).toContain('/launch-data/washington/sales/by-county/073.json');
   expect(requestedSalesShards).toContain('/launch-data/washington/sales/by-county/007.json');
   expect(requestedSalesShards).toContain('/launch-data/washington/sales/by-county/011.json');
+  expect(requestedSalesShards).toContain('/launch-data/washington/sales/by-county/053.json');
   expect(requestedSalesShards).not.toContain('/launch-data/washington/sales/by-county/001.json');
 });

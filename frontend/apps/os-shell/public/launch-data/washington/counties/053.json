@@ -1,0 +1,1 @@
+{"schemaVersion":"terrafusion.washington.county-detail.v1","generatedAt":"2026-09-02T18:04:03.547Z","county":"Pierce","countyCode":"053","operationalState":{"primarySourceMode":"public_assessor_weekly_datamart","prometheusStatus":"public_data_ready"},"summary":{"records":13517,"latestSaleDate":"2026-08-05"},"salesRoute":"/launch-data/washington/sales/by-county/053.json"}
