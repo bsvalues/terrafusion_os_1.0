@@ -14,8 +14,10 @@ zero-dispatch F reconciliation are protected-complete. `WO-WAL-000G` is protecte
 #1531, and `WO-WAL-004F` is protected-complete in PR #1535 at
 `54e0df259c1712b156260b1b5d24444611906e2b`. Protected 000H then released 002F in PR #1536 at
 `d4f5879a8668f8b84c993c848fe6dabf1ba876bb`, and protected 002F completed in PR #1537 at
-`378c2a47264a707d8b7a3de9882120577e9c9fb0`. The governance-only 000I reconciliation records that
-evidence and releases exactly 002G when this reconciliation reaches protected main.
+`378c2a47264a707d8b7a3de9882120577e9c9fb0`. Governance-only 000I completed in PR #1538 at
+`276362d26c02a930d5375c633842a3cc110468af`, and protected 002G completed in PR #1539 at
+`151ff376eff2ea2108579b0ac2f0e3d365460d0b`. The governance-only 000J reconciliation records that
+evidence and releases exactly 002H when this reconciliation reaches protected main.
 Broad parents 001-004 remain open, 005/006 remain blocked, and the 003 live-source continuation
 remains behind its exact authority wall.
 
@@ -73,6 +75,7 @@ Current protected launch baseline after Gate C repair PR #1484: `3651e2fb6c440f6
 | `WO-WAL-000G` | Register exact authenticated county-context runtime integration followed by real CSV API admission | protected 000F plus current protected-main implementation evidence; complete only on protected merge |
 | `WO-WAL-000H` | Verify protected 004F completion and explicitly release 002F from blocked to ready | protected-complete 004F plus protected 000G; complete only on protected merge |
 | `WO-WAL-000I` | Verify protected 002F completion, record the durable-seam audit, and release exact 002G | protected-complete 002F plus protected 000H; complete only on protected merge |
+| `WO-WAL-000J` | Verify protected 002G completion, record the API/DI seam audit, and release exact 002H | protected-complete 002G plus protected 000I; complete only on protected merge |
 | `WO-WAL-001` | 39-county public-baseline acquisition → normalization → landed runtime truth | 000 |
 | `WO-WAL-001A` | Deterministic 39-county source-registry ledger contract; no runtime inference | protected complete in PR #1489; bounded child of open 001 |
 | `WO-WAL-001B` | Deterministic public acquisition artifact receipt evidence; no landing/runtime inference | protected complete in PR #1493; bounded child of open 001 |
@@ -87,6 +90,7 @@ Current protected launch baseline after Gate C repair PR #1484: `3651e2fb6c440f6
 | `WO-WAL-002E` | Fail-closed local-memory first-seen/duplicate decision over protected idempotency evidence | protected complete in PR #1508 at `dcd1405b15d7aaa686ae444ed917117fcada3de0`; bounded child of open 002 |
 | `WO-WAL-002F` | Real assessor-authorized county-bound CSV API admission and parser/idempotency receipt | protected 002A-002E, protected 004F and protected 000H; bounded child of open 002 |
 | `WO-WAL-002G` | Upload-specific durable admission ledger with atomic idempotency and immutable provenance | protected-complete 002F plus protected 000I; bounded child of open 002 |
+| `WO-WAL-002H` | Adopt the protected durable ledger in the authenticated upload API and return persisted batch identity | protected-complete 002G plus protected 000J; bounded child of open 002 |
 | `WO-WAL-003` | Read-only multi-county TerraFusion Sync with explicit source profiles | 000 |
 | `WO-WAL-003A` | Mock-only source-profile/read-adapter contract and static command guard | protected complete in PR #1491; bounded child of open 003 |
 | `WO-WAL-003B` | Bounded mock-adapter read execution and immutable result envelope | protected complete in PR #1495; bounded child of open 003 |
@@ -108,8 +112,8 @@ Current protected launch baseline after Gate C repair PR #1484: `3651e2fb6c440f6
 
 The exact A through E waves and the protected 000F zero-dispatch boundary are complete. Protected
 000G registered exactly 004F, 000H, and 002F from implementation evidence. Protected 004F, 000H,
-and 002F are complete. This 000I reconciliation records exact 002F completion and registers only
-the upload-specific durable admission-ledger child 002G. No 001F/003E/003F record exists. The broad
+002F, 000I and 002G are complete. This 000J reconciliation records exact 002G completion and
+registers only the authenticated durable API-adoption child 002H. No 001F/003E/003F record exists. The broad
 001/002/003/004 parents remain open and route only
 through evidence-backed exact children rather than being dispatched as monoliths. Completion of a
 child does not complete its parent or satisfy the stable-contract dependencies of 005/006.
@@ -140,6 +144,7 @@ child does not complete its parent or satisfy the stable-contract dependencies o
 | `WO-WAL-004F` | R5 | `wal.authenticated-canonical-county-runtime-context.v1` | `local-api-auth-context-persisted-guid-fixture-only` | API request-scope identity integration only; no capability grant, protected data, activation, deployment or production |
 | `WO-WAL-002F` | R5 | `wal.county-upload.authenticated-csv-api-admission.v1` | `local-api-synthetic-csv-intake-only` | Real authenticated in-memory admission only; no durable staging, quarantine persistence, promotion, rollback, UI or production |
 | `WO-WAL-002G` | R5 | `wal.county-upload.durable-admission-ledger.v1` | `local-efcore-synthetic-csv-ledger-only` | Upload-specific batch provenance and atomic durable idempotency only; no API wiring, file bytes, staging rows, quarantine, promotion, rollback, live database or production |
+| `WO-WAL-002H` | R5 | `wal.county-upload.authenticated-durable-csv-api-admission.v1` | `local-api-disposable-efcore-durable-admission-only` | Authenticated durable API admission and persisted batch receipt only; no uploaded bytes, staging, quarantine, promotion, rollback, live database or production |
 
 The exact path allowlists, machine-readable contract/environment reservations, and validation gates are canonical in
 `docs/brain/workorders/registry/work-order-registry.seed.json` and the corresponding child Work Order
@@ -148,9 +153,9 @@ system or production authority.
 
 `WO-WAL-000F` remains the historical zero-dispatch boundary. Protected `WO-WAL-000G` admitted the
 004F product row plus the governance-only 000H protected release boundary. 004F reached protected
-main in PR #1535, 000H in PR #1536, and 002F in PR #1537. This 000I reconciliation records exact
-002F completion and registers 002G as the next exact product child, effective only when 000I itself
-reaches protected main.
+main in PR #1535, 000H in PR #1536, 002F in PR #1537, 000I in PR #1538 and 002G in PR #1539. This
+000J reconciliation records exact 002G completion and registers 002H as the next exact product
+child, effective only when 000J itself reaches protected main.
 The live 003 chain still requires the complete named source/credential/environment bundle, and
 public acquisition 001F remains unregistered until source bytes and provenance are observed.
 

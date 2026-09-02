@@ -2,7 +2,7 @@
 
 | Field | Value |
 | --- | --- |
-| Status | `READY_ON_PROTECTED_000I_MERGE` |
+| Status | `COMPLETE_ON_PROTECTED_MERGE_OF_PR_1539` |
 | Parent | `WO-WAL-002` |
 | Program | Washington Assessor Launch V1 |
 | Risk | R5 upload-specific county-scoped persistence and migration foundation |
@@ -68,3 +68,19 @@ completion of `WO-WAL-002` is authorized. Existing Sync/PACS tables and vocabula
 Completion establishes only a durable upload admission batch ledger and atomic idempotency boundary.
 API adoption, staging, row validation/quarantine, promotion, lineage through canonical runtime,
 rollback, UI, and parent completion remain later exact children.
+
+## Protected completion evidence
+
+- PR #1539 merged reviewed head `3e4caa76bf1f1a6413783a8b755ac184fecf18bd` from protected
+  base `f2894278a93c15d9d6fe481b925d38e234bb9845` as
+  `151ff376eff2ea2108579b0ac2f0e3d365460d0b` at `2026-09-02T04:28:52Z`.
+- Protected merge tree `94df6471ad9d9a59632b69f4bc1073250591bd68` exactly equals the
+  reviewed-head tree and changes exactly the eight implementation/test paths reserved by this
+  Work Order; this pre-registered document remained unchanged in the product PR.
+- All ten protected required contexts passed. Exact-head review completed after all thirteen prior
+  threads were resolved, with no new thread.
+- Local proof passed 17/17 focused ledger tests and 121/121 Import-namespace tests. Uploaded bytes
+  are not persisted, and API/DI adoption remains outside this completed child's boundary.
+
+The next candidate is the governance-only `WO-WAL-000J` reconciliation. No API successor becomes
+executable until that reconciliation reaches protected main.

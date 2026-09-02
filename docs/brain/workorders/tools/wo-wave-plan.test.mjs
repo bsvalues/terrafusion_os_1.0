@@ -969,7 +969,7 @@ describe('wo-wave-plan', () => {
     }
   });
 
-  it('reconciles protected WAL upload admission and releases only the durable ledger child', () => {
+  it('reconciles protected WAL durable admission and releases only the durable API child', () => {
     const actualRegistry = JSON.parse(
       fs.readFileSync(
         path.join(root, 'docs/brain/workorders/registry/work-order-registry.seed.json'),
@@ -982,9 +982,11 @@ describe('wo-wave-plan', () => {
     const reconciliation = actualRegistry.records.find(item => item.id === 'WO-WAL-000G');
     const releaseReconciliation = actualRegistry.records.find(item => item.id === 'WO-WAL-000H');
     const durableReconciliation = actualRegistry.records.find(item => item.id === 'WO-WAL-000I');
+    const apiReconciliation = actualRegistry.records.find(item => item.id === 'WO-WAL-000J');
     const identityChild = actualRegistry.records.find(item => item.id === 'WO-WAL-004F');
     const uploadChild = actualRegistry.records.find(item => item.id === 'WO-WAL-002F');
     const durableChild = actualRegistry.records.find(item => item.id === 'WO-WAL-002G');
+    const durableApiChild = actualRegistry.records.find(item => item.id === 'WO-WAL-002H');
     const forbiddenIds = ['WO-WAL-001F', 'WO-WAL-003E', 'WO-WAL-003F'];
     const selectedIds = new Set([
       'WO-WAL-000',
@@ -992,17 +994,19 @@ describe('wo-wave-plan', () => {
       'WO-WAL-000G',
       'WO-WAL-000H',
       'WO-WAL-000I',
+      'WO-WAL-000J',
       'WO-WAL-002E',
       'WO-WAL-004D',
       'WO-WAL-004E',
       'WO-WAL-004F',
       'WO-WAL-002F',
       'WO-WAL-002G',
+      'WO-WAL-002H',
       'WO-WAL-005',
       'WO-WAL-006',
     ]);
     const recordById = new Map(actualRegistry.records.map(item => [item.id, item]));
-    const dependencyQueue = [durableChild.id];
+    const dependencyQueue = [durableApiChild.id];
     const traversedDependencies = new Set();
     while (dependencyQueue.length > 0) {
       const id = dependencyQueue.shift();
@@ -1015,8 +1019,24 @@ describe('wo-wave-plan', () => {
     }
     const selectedRecords = actualRegistry.records.filter(item => selectedIds.has(item.id));
     const preDurableRecords = selectedRecords.filter(
-      item => ![durableReconciliation.id, durableChild.id].includes(item.id)
+      item =>
+        ![
+          durableReconciliation.id,
+          durableChild.id,
+          apiReconciliation.id,
+          durableApiChild.id,
+        ].includes(item.id)
     );
+    const preApiRecords = structuredClone(
+      selectedRecords.filter(
+        item => ![apiReconciliation.id, durableApiChild.id].includes(item.id)
+      )
+    );
+    const preApiDurable = preApiRecords.find(item => item.id === durableChild.id);
+    preApiDurable.status = 'ready';
+    preApiDurable.validationGates[0].result = 'not_run';
+    delete preApiDurable.validationGates[0].evidence;
+    preApiDurable.nextCandidates = [];
     const preReleaseRecords = structuredClone(preDurableRecords);
     const preReleaseReconciliation = preReleaseRecords.find(
       item => item.id === releaseReconciliation.id
@@ -1110,7 +1130,7 @@ describe('wo-wave-plan', () => {
       durableReconciliation.nextCandidates.map(item => item.id),
       [durableChild.id]
     );
-    assert.equal(durableChild.status, 'ready');
+    assert.equal(durableChild.status, 'complete');
     assert.deepEqual(durableChild.contractReservations, [
       'wal.county-upload.durable-admission-ledger.v1',
     ]);
@@ -1122,6 +1142,36 @@ describe('wo-wave-plan', () => {
     assert.ok(
       durableChild.dependencies.some(
         item => item.id === durableReconciliation.id && item.status === 'satisfied'
+      )
+    );
+    assert.deepEqual(durableChild.nextCandidates.map(item => item.id), [apiReconciliation.id]);
+    assert.equal(durableChild.validationGates[0].result, 'pass');
+    assert.equal(apiReconciliation.status, 'complete');
+    assert.deepEqual(apiReconciliation.contractReservations, []);
+    assert.deepEqual(apiReconciliation.environmentReservations, []);
+    assert.equal(apiReconciliation.allowedFiles.length, 7);
+    assert.equal(new Set(apiReconciliation.allowedFiles).size, 7);
+    assert.ok(
+      apiReconciliation.dependencies.some(
+        item => item.id === durableChild.id && item.status === 'satisfied'
+      )
+    );
+    assert.deepEqual(
+      apiReconciliation.nextCandidates.map(item => item.id),
+      [durableApiChild.id]
+    );
+    assert.equal(durableApiChild.status, 'ready');
+    assert.deepEqual(durableApiChild.contractReservations, [
+      'wal.county-upload.authenticated-durable-csv-api-admission.v1',
+    ]);
+    assert.deepEqual(durableApiChild.environmentReservations, [
+      'local-api-disposable-efcore-durable-admission-only',
+    ]);
+    assert.equal(durableApiChild.allowedFiles.length, 6);
+    assert.equal(new Set(durableApiChild.allowedFiles).size, 6);
+    assert.ok(
+      durableApiChild.dependencies.some(
+        item => item.id === apiReconciliation.id && item.status === 'satisfied'
       )
     );
     assert.equal(
@@ -1144,9 +1194,11 @@ describe('wo-wave-plan', () => {
       'WO-WAL-000G',
       'WO-WAL-000H',
       'WO-WAL-000I',
+      'WO-WAL-000J',
       'WO-WAL-004F',
       'WO-WAL-002F',
       'WO-WAL-002G',
+      'WO-WAL-002H',
     ]) {
       const item = actualRegistry.records.find(record => record.id === id);
       assert.equal(validate(item), true, `${id}: ${JSON.stringify(validate.errors)}`);
@@ -1171,10 +1223,17 @@ describe('wo-wave-plan', () => {
       /named county\/source\/system.*read-only credential or role.*secret-store reference.*execution\/network environment.*data classification\/handling.*source-side no-DML evidence method/
     );
 
-    const durableOptions = optionsFor(selectedRecords, {
+    const durableApiOptions = optionsFor(selectedRecords, {
       authority: 'R5',
       maxWorkers: 2,
-      now: '2026-09-01T23:43:00Z',
+      now: '2026-09-02T04:29:00Z',
+      ownerDecisions: actualOwnerDecisions,
+      verifiedDispatchRefs: ['refs/remotes/origin/main'],
+    });
+    const preApiOptions = optionsFor(preApiRecords, {
+      authority: 'R5',
+      maxWorkers: 2,
+      now: '2026-09-02T04:28:52Z',
       ownerDecisions: actualOwnerDecisions,
       verifiedDispatchRefs: ['refs/remotes/origin/main'],
     });
@@ -1192,7 +1251,12 @@ describe('wo-wave-plan', () => {
       ownerDecisions: actualOwnerDecisions,
       verifiedDispatchRefs: ['refs/remotes/origin/main'],
     });
-    const durablePlan = planWaves(registry(selectedRecords), rules, durableOptions);
+    const durableApiPlan = planWaves(
+      registry(selectedRecords),
+      rules,
+      durableApiOptions
+    );
+    const preApiPlan = planWaves(registry(preApiRecords), rules, preApiOptions);
     const preDurablePlan = planWaves(
       registry(preDurableRecords),
       rules,
@@ -1204,7 +1268,7 @@ describe('wo-wave-plan', () => {
       preReleaseOptions
     );
     const unverifiedPlan = planWaves(registry(selectedRecords), rules, {
-      ...durableOptions,
+      ...durableApiOptions,
       verifiedDispatchRefs: [],
     });
     assert.deepEqual(
@@ -1220,12 +1284,25 @@ describe('wo-wave-plan', () => {
     assert.equal(preDurableRecords.some(item => item.id === durableChild.id), false);
     assert.equal(preDurableRecords.some(item => item.id === durableReconciliation.id), false);
     assert.deepEqual(
-      durablePlan.initialExecutableSet,
+      preApiPlan.initialExecutableSet,
       [durableChild.id],
-      JSON.stringify(durablePlan.excludedWorkOrders.find(item => item.workOrderId === durableChild.id))
+      JSON.stringify(preApiPlan.excludedWorkOrders.find(item => item.workOrderId === durableChild.id))
     );
     assert.deepEqual(
-      durablePlan.waves[0].workOrders.map(item => item.workOrderId),
+      durableApiPlan.initialExecutableSet,
+      [durableApiChild.id],
+      JSON.stringify(
+        durableApiPlan.excludedWorkOrders.find(
+          item => item.workOrderId === durableApiChild.id
+        )
+      )
+    );
+    assert.deepEqual(
+      durableApiPlan.waves[0].workOrders.map(item => item.workOrderId),
+      [durableApiChild.id]
+    );
+    assert.deepEqual(
+      preApiPlan.waves[0].workOrders.map(item => item.workOrderId),
       [durableChild.id]
     );
     assert.equal(
@@ -1240,14 +1317,16 @@ describe('wo-wave-plan', () => {
       'WO-WAL-000G',
       'WO-WAL-000H',
       'WO-WAL-000I',
+      'WO-WAL-000J',
       'WO-WAL-002E',
       'WO-WAL-002F',
+      'WO-WAL-002G',
       'WO-WAL-004D',
       'WO-WAL-004E',
       'WO-WAL-004F',
     ]) {
       assert.ok(
-        durablePlan.excludedWorkOrders
+        durableApiPlan.excludedWorkOrders
           .find(item => item.workOrderId === id)
           .reasons.includes('terminal-status')
       );
@@ -1257,11 +1336,11 @@ describe('wo-wave-plan', () => {
     );
     assert.ok(blockedUpload.reasons.includes('blocked-status'), JSON.stringify(blockedUpload));
 
-    const missingPath = structuredClone(durableOptions);
-    missingPath.reservations.candidateReservations[durableChild.id].shift();
+    const missingPath = structuredClone(durableApiOptions);
+    missingPath.reservations.candidateReservations[durableApiChild.id].shift();
     assert.match(
       planWaves(registry(selectedRecords), rules, missingPath).excludedWorkOrders.find(
-        item => item.workOrderId === durableChild.id
+        item => item.workOrderId === durableApiChild.id
       ).reasons.join('\n'),
       /missing path reservation/
     );
@@ -1270,11 +1349,11 @@ describe('wo-wave-plan', () => {
       { id: 'DRIFT-CONTRACT', kind: 'contract', value: 'wal.unregistered-f-child.v1' },
       { id: 'DRIFT-ENVIRONMENT', kind: 'environment', value: 'local-unregistered-f-child' },
     ]) {
-      const drifted = structuredClone(durableOptions);
-      drifted.reservations.candidateReservations[durableChild.id].push(extra);
+      const drifted = structuredClone(durableApiOptions);
+      drifted.reservations.candidateReservations[durableApiChild.id].push(extra);
       assert.match(
         planWaves(registry(selectedRecords), rules, drifted).excludedWorkOrders.find(
-          item => item.workOrderId === durableChild.id
+          item => item.workOrderId === durableApiChild.id
         ).reasons.join('\n'),
         /extra (contract|environment) reservation/
       );
