@@ -163,10 +163,15 @@ function saleCollisionIdentity(row) {
     .join('|');
 }
 
-function parseSitusCity(address) {
-  if (!address) return null;
-  const separator = address.lastIndexOf(',');
-  return separator >= 0 ? nullableString(address.slice(separator + 1)) : null;
+function parseSitusAddress(address) {
+  const canonicalAddress = nullableString(address);
+  if (!canonicalAddress) return { streetAddress: null, city: null };
+  const separator = canonicalAddress.lastIndexOf(',');
+  if (separator < 0) return { streetAddress: canonicalAddress, city: null };
+  return {
+    streetAddress: nullableString(canonicalAddress.slice(0, separator)) ?? canonicalAddress,
+    city: nullableString(canonicalAddress.slice(separator + 1)),
+  };
 }
 
 function mapRecord(candidate, generatedAt) {
@@ -176,7 +181,7 @@ function mapRecord(candidate, generatedAt) {
   const parcelNumber = nullableString(row['Parcel Number/Geo ID']);
   const propertyId = nullableString(row['Property ID']);
   const saleTypeCode = nullableString(row['Sale Type Code']);
-  const situsAddress = nullableString(row['Situs Address']);
+  const situs = parseSitusAddress(row['Situs Address']);
   invariant(parcelNumber, 'Whatcom source row has no parcel/Geo ID.');
   invariant(propertyId, 'Whatcom source row has no property ID.');
   invariant(
@@ -198,9 +203,9 @@ function mapRecord(candidate, generatedAt) {
     salePrice,
     adjustedSalePrice: null,
     documentNumber: null,
-    deedType: null,
-    situsAddress,
-    situsCity: parseSitusCity(situsAddress),
+    deedType: saleTypeCode,
+    situsAddress: situs.streetAddress,
+    situsCity: situs.city,
     situsZip: null,
     useCode: nullableString(row['DOR State Code']),
     acres: nullableFiniteNumber(row['Site Size'], 'site size'),

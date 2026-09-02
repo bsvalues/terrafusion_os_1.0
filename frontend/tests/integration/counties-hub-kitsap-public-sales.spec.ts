@@ -50,7 +50,7 @@ test('uses the authenticated Kitsap and Whatcom public-sales package without len
   await expect(salesForge.getByText('Kitsap County', { exact: true })).toBeVisible();
   await expect(
     salesForge.getByText('Washington launch data package', { exact: true })
-  ).toBeVisible();
+  ).toBeVisible({ timeout: 20_000 });
   await expect(salesForge.getByTestId('salesforge-data-unavailable')).toHaveCount(0);
   await expect(salesForge.getByRole('tab', { name: 'Queue', exact: true })).toBeVisible();
 
@@ -96,7 +96,7 @@ test('uses the authenticated Kitsap and Whatcom public-sales package without len
   await expect(salesForge.getByText('Whatcom County', { exact: true })).toBeVisible();
   await expect(
     salesForge.getByText('Washington launch data package', { exact: true })
-  ).toBeVisible();
+  ).toBeVisible({ timeout: 20_000 });
   await expect(salesForge.getByTestId('salesforge-data-unavailable')).toHaveCount(0);
   const firstWhatcomSaleRow = salesForge
     .getByRole('table', { name: 'Sale qualification queue' })
@@ -105,6 +105,12 @@ test('uses the authenticated Kitsap and Whatcom public-sales package without len
   await expect(firstWhatcomSaleRow).toContainText('3802121755000159', { timeout: 20_000 });
   await expect(firstWhatcomSaleRow).toContainText('Jul 31, 25');
   await expect(firstWhatcomSaleRow).toContainText('$323k');
+  await firstWhatcomSaleRow.click();
+  const whatcomAddress = salesForge.locator('.sf-detail-field').filter({ hasText: 'Address' });
+  await expect(whatcomAddress).toContainText('4247 WINTERGREEN LN #209, BELLINGHAM');
+  await expect(whatcomAddress).not.toContainText('BELLINGHAM, BELLINGHAM');
+  const whatcomSaleType = salesForge.locator('.sf-detail-field').filter({ hasText: 'Deed type' });
+  await expect(whatcomSaleType).toContainText('Q');
 
   await page.goto('/counties', { waitUntil: 'domcontentloaded' });
   await expect(page.getByRole('option')).toHaveCount(39, { timeout: 20_000 });

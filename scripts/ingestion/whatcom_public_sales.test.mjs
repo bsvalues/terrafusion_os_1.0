@@ -272,6 +272,10 @@ test('builds a county-isolated, public-only package and quarantines exact overla
   assert.equal(result.shard.records.length, 7);
   assert.equal(result.statusEntry.countyCode, '073');
   assert.equal(result.attestation.sourcePayloadSha256.length, 8);
+  const mappedSale = result.shard.records.find(record => record.parcelNumber.endsWith('0001'));
+  assert.equal(mappedSale.situsAddress, '1 TEST AVE');
+  assert.equal(mappedSale.situsCity, 'BELLINGHAM');
+  assert.equal(mappedSale.deedType, 'Q');
   assert.equal(
     result.shard.records.every(
       record =>
