@@ -280,6 +280,46 @@ function startRefreshAcquisitionMutexProcess(mutexPath) {
   );
 }
 
+function waitForRefreshMutexExit(child, timeoutMs) {
+  return new Promise((resolveExit, rejectExit) => {
+    if (child.exitCode !== null || child.signalCode !== null) {
+      resolveExit({ code: child.exitCode, signal: child.signalCode });
+      return;
+    }
+    let timeout;
+    const cleanup = () => {
+      clearTimeout(timeout);
+      child.removeListener('error', onError);
+      child.removeListener('exit', onExit);
+    };
+    const onError = error => {
+      cleanup();
+      rejectExit(error);
+    };
+    const onExit = (code, signal) => {
+      cleanup();
+      resolveExit({ code, signal });
+    };
+    timeout = setTimeout(() => {
+      cleanup();
+      resolveExit(null);
+    }, timeoutMs);
+    child.once('error', onError);
+    child.once('exit', onExit);
+  });
+}
+
+async function terminateRefreshMutexChild(child) {
+  child.kill();
+  let exit = await waitForRefreshMutexExit(child, 5_000);
+  if (!exit) {
+    child.kill('SIGKILL');
+    exit = await waitForRefreshMutexExit(child, 5_000);
+  }
+  invariant(exit, 'Kitsap package refresh acquisition mutex did not terminate after escalation.');
+  return exit;
+}
+
 async function acquireRefreshAcquisitionMutex(outputRoot) {
   const mutexPath = `${outputRoot}.refresh.acquire.lock`;
   const child = startRefreshAcquisitionMutexProcess(mutexPath);
@@ -289,30 +329,43 @@ async function acquireRefreshAcquisitionMutex(outputRoot) {
   });
   await new Promise((resolveReady, rejectReady) => {
     let stdout = '';
-    const timeout = setTimeout(() => {
-      child.kill();
-      rejectReady(new Error('Kitsap package refresh acquisition mutex timed out.'));
-    }, 60_000);
-    const finish = callback => value => {
+    let settled = false;
+    const cleanup = () => {
       clearTimeout(timeout);
       child.stdout.removeAllListeners('data');
-      child.removeAllListeners('error');
-      child.removeAllListeners('exit');
+      child.removeListener('error', onError);
+      child.removeListener('exit', onExit);
+    };
+    const settle = (callback, value) => {
+      if (settled) return;
+      settled = true;
+      cleanup();
       callback(value);
     };
-    const resolve = finish(resolveReady);
-    const reject = finish(rejectReady);
-    child.once('error', reject);
-    child.once('exit', code =>
-      reject(
+    const onError = error => settle(rejectReady, error);
+    const onExit = code =>
+      settle(
+        rejectReady,
         new Error(
           `Kitsap package refresh acquisition mutex exited before locking (${code}): ${stderr.trim()}`
         )
-      )
-    );
+      );
+    const timeout = setTimeout(async () => {
+      if (settled) return;
+      settled = true;
+      cleanup();
+      try {
+        await terminateRefreshMutexChild(child);
+        rejectReady(new Error('Kitsap package refresh acquisition mutex timed out.'));
+      } catch (error) {
+        rejectReady(error);
+      }
+    }, 60_000);
+    child.once('error', onError);
+    child.once('exit', onExit);
     child.stdout.on('data', chunk => {
       stdout += chunk.toString();
-      if (/LOCKED\r?\n/.test(stdout)) resolve(child);
+      if (/LOCKED\r?\n/.test(stdout)) settle(resolveReady, child);
     });
   });
   return child;
@@ -415,39 +468,11 @@ async function releaseRefreshAcquisitionMutex(child) {
     );
     return;
   }
-  const waitForExit = timeoutMs =>
-    new Promise((resolveExit, rejectExit) => {
-      if (child.exitCode !== null || child.signalCode !== null) {
-        resolveExit({ code: child.exitCode, signal: child.signalCode });
-        return;
-      }
-      let timeout;
-      const cleanup = () => {
-        clearTimeout(timeout);
-        child.removeListener('error', onError);
-        child.removeListener('exit', onExit);
-      };
-      const onError = error => {
-        cleanup();
-        rejectExit(error);
-      };
-      const onExit = (code, signal) => {
-        cleanup();
-        resolveExit({ code, signal });
-      };
-      timeout = setTimeout(() => {
-        cleanup();
-        resolveExit(null);
-      }, timeoutMs);
-      child.once('error', onError);
-      child.once('exit', onExit);
-    });
-
   if (!child.killed) child.stdin.end('RELEASE\n');
-  let exit = await waitForExit(5_000);
+  let exit = await waitForRefreshMutexExit(child, 5_000);
   if (!exit) {
     child.kill('SIGKILL');
-    exit = await waitForExit(5_000);
+    exit = await waitForRefreshMutexExit(child, 5_000);
   }
   invariant(exit, 'Kitsap package refresh acquisition mutex did not terminate after escalation.');
   invariant(
