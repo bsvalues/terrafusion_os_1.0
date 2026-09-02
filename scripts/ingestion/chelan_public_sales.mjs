@@ -94,6 +94,20 @@ function nullableFiniteNumber(value, label) {
   return nullableString(value) === null ? null : finiteNumber(value, label);
 }
 
+function credentialFreeHttpsUrl(value, label) {
+  let parsed;
+  try {
+    parsed = new URL(value);
+  } catch {
+    throw new Error(`${label} must be valid credential-free HTTPS.`);
+  }
+  invariant(
+    parsed.protocol === 'https:' && !parsed.username && !parsed.password,
+    `${label} must be credential-free HTTPS.`
+  );
+  return parsed;
+}
+
 export function canonicalSaleDate(value) {
   if (value instanceof Date) {
     invariant(Number.isFinite(value.getTime()), 'Chelan sale date is invalid.');
@@ -267,18 +281,11 @@ async function readSourceConfig(configPath = SOURCE_CONFIG_PATH) {
     Array.isArray(config.sources) && config.sources.length === 7,
     'Chelan source-set must name seven monthly files.'
   );
-  const official = new URL(config.officialSourceBaseUrl);
+  const official = credentialFreeHttpsUrl(config.officialSourceBaseUrl, 'Chelan official source');
+  const indexUrl = credentialFreeHttpsUrl(config.indexUrl, 'Chelan source index');
   invariant(
-    official.protocol === 'https:' && !official.username && !official.password,
-    'Chelan official source must be credential-free HTTPS.'
-  );
-  const indexUrl = new URL(config.indexUrl);
-  invariant(
-    indexUrl.protocol === 'https:' &&
-      !indexUrl.username &&
-      !indexUrl.password &&
-      indexUrl.origin === official.origin,
-    'Chelan source index must be credential-free HTTPS on the official origin.'
+    indexUrl.origin === official.origin,
+    'Chelan source index must be on the official origin.'
   );
   const start = canonicalSaleDate(config.sourceDateRange?.start);
   const end = canonicalSaleDate(config.sourceDateRange?.end);
@@ -294,13 +301,10 @@ async function readSourceConfig(configPath = SOURCE_CONFIG_PATH) {
       typeof source.file === 'string' && basename(source.file) === source.file,
       'Chelan source filename is invalid.'
     );
-    const sourceUrl = new URL(source.url);
+    const sourceUrl = credentialFreeHttpsUrl(source.url, 'Chelan source URL');
     invariant(
-      sourceUrl.protocol === 'https:' &&
-        !sourceUrl.username &&
-        !sourceUrl.password &&
-        sourceUrl.origin === official.origin,
-      'Chelan source URL must be credential-free HTTPS on the official origin.'
+      sourceUrl.origin === official.origin,
+      'Chelan source URL must be on the official origin.'
     );
     invariant(SHA256_PATTERN.test(source.sha256), 'Chelan source SHA-256 is invalid.');
     invariant(
@@ -310,7 +314,7 @@ async function readSourceConfig(configPath = SOURCE_CONFIG_PATH) {
     keys.add(source.key);
     files.add(source.file);
   }
-  return config;
+  return { ...config, sourceDateRange: { start, end } };
 }
 
 export async function buildChelanCountyPackage(

@@ -247,6 +247,39 @@ test('rejects credentials in index and monthly source URLs without reflecting th
   }
 });
 
+test('uses canonicalized slash-form source date-range bounds', async t => {
+  const data = await fixture();
+  t.after(() => rm(data.directory, { recursive: true, force: true }));
+  const config = structuredClone(data.config);
+  config.sourceDateRange = { start: '2026/01/01', end: '2026/01/31' };
+  await writeFile(data.configPath, `${JSON.stringify(config, null, 2)}\n`);
+
+  const result = await buildChelanCountyPackage(data.directory, GENERATED_AT, data.configPath);
+  assert.deepEqual(result.config.sourceDateRange, {
+    start: '2026-01-01',
+    end: '2026-01-31',
+  });
+  assert.equal(result.shard.records.length, 7);
+});
+
+test('sanitizes malformed credential-bearing URL parse failures', async t => {
+  const data = await fixture();
+  t.after(() => rm(data.directory, { recursive: true, force: true }));
+  const config = structuredClone(data.config);
+  config.sources[0].url = 'https://private-user:private-secret@%';
+  await writeFile(data.configPath, `${JSON.stringify(config, null, 2)}\n`);
+
+  await assert.rejects(
+    buildChelanCountyPackage(data.directory, GENERATED_AT, data.configPath),
+    error => {
+      assert.match(error.message, /valid credential-free HTTPS/);
+      assert.equal(Object.hasOwn(error, 'input'), false);
+      assert.doesNotMatch(`${error.message}\n${error.stack}`, /private-(user|secret)/);
+      return true;
+    }
+  );
+});
+
 test('rejects generation identities older than the retained Washington package', async t => {
   const outputRoot = await mkdtemp(join(tmpdir(), 'chelan-monotonic-package-'));
   t.after(() => rm(outputRoot, { recursive: true, force: true }));
