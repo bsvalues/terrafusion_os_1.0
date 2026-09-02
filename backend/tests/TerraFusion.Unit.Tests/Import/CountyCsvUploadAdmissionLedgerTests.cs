@@ -236,6 +236,25 @@ public sealed class CountyCsvUploadAdmissionLedgerTests
             (
                 valid with
                 {
+                    IntakeReceipt = receipt with
+                    {
+                        IntakeReceipt = intakeReceipt with
+                        {
+                            Document = new CountyCsvDocument(
+                                Array.AsReadOnly(new[] { "Id", " id " }),
+                                Array.AsReadOnly<IReadOnlyList<string>>(
+                                    new[]
+                                    {
+                                        Array.AsReadOnly(new[] { "1", "Ada" }),
+                                    }),
+                                intakeReceipt.Document.InputBytes),
+                        },
+                    },
+                },
+                CountyCsvUploadAdmissionDenialCode.InvalidDocumentEvidence),
+            (
+                valid with
+                {
                     Identity = valid.Identity! with
                     {
                         IdempotencyKey = new string('0', 64),

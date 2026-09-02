@@ -15,6 +15,7 @@ public sealed class CountyCsvUploadAdmissionLedger : ICountyCsvUploadAdmissionLe
     private const int MaximumFileNameCharacters = 255;
     private const int MaximumDataRows = 100_000;
     private const int MaximumFieldsPerRow = 512;
+    private const int MaximumCharactersPerField = 65_536;
 
     private readonly TerraFusionDbContext _dbContext;
     private readonly TimeProvider _timeProvider;
@@ -212,12 +213,7 @@ public sealed class CountyCsvUploadAdmissionLedger : ICountyCsvUploadAdmissionLe
         }
 
         var document = intakeReceipt.Document;
-        if (document.Headers is null
-            || document.Headers.Count is <= 0 or > MaximumFieldsPerRow
-            || document.Headers.Any(header => string.IsNullOrWhiteSpace(header))
-            || document.Rows is null
-            || document.Rows.Count > MaximumDataRows
-            || document.Rows.Any(row => row is null || row.Count != document.Headers.Count))
+        if (!HasValidDocumentEvidence(document))
         {
             denialCode = CountyCsvUploadAdmissionDenialCode.InvalidDocumentEvidence;
             return false;
@@ -304,6 +300,47 @@ public sealed class CountyCsvUploadAdmissionLedger : ICountyCsvUploadAdmissionLe
         && fileName.Length > ".csv".Length
         && string.Equals(format, "csv", StringComparison.Ordinal)
         && string.Equals(mediaType, "text/csv", StringComparison.Ordinal);
+
+    private static bool HasValidDocumentEvidence(CountyCsvDocument document)
+    {
+        if (document.Headers is null
+            || document.Headers.Count is <= 0 or > MaximumFieldsPerRow
+            || document.Rows is null
+            || document.Rows.Count > MaximumDataRows)
+        {
+            return false;
+        }
+
+        var normalizedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        foreach (var header in document.Headers)
+        {
+            if (!IsValidParserFieldShape(header)
+                || string.IsNullOrWhiteSpace(header)
+                || !normalizedHeaders.Add(header.Trim()))
+            {
+                return false;
+            }
+        }
+
+        foreach (var row in document.Rows)
+        {
+            if (row is null
+                || row.Count != document.Headers.Count
+                || row.Any(field => !IsValidParserFieldShape(field)))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private static bool IsValidParserFieldShape(string? value) =>
+        value is not null
+        && value.Length <= MaximumCharactersPerField
+        && value.All(character =>
+            (!char.IsControl(character) || character is '\t' or '\r' or '\n')
+            && character is not '\uFFFE' and not '\uFFFF');
 
     private static bool IsLowercaseSha256(string? value) =>
         value is { Length: 64 }
