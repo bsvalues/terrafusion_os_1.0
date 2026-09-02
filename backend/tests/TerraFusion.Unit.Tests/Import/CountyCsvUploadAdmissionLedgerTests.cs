@@ -185,6 +185,10 @@ public sealed class CountyCsvUploadAdmissionLedgerTests
             Franklin,
             FranklinId,
             "franklin-assessor");
+        var misboundBentonContext = await CreateCountyContextAsync(
+            Benton,
+            FranklinId,
+            "benton-assessor");
         var receipt = valid.IntakeReceipt!;
         var intakeReceipt = receipt.IntakeReceipt;
         var oversizedIntakeReceipt = intakeReceipt with
@@ -214,6 +218,9 @@ public sealed class CountyCsvUploadAdmissionLedgerTests
                 CountyCsvUploadAdmissionDenialCode.InvalidActor),
             (
                 valid with { CountyContext = franklinContext },
+                CountyCsvUploadAdmissionDenialCode.CountyMismatch),
+            (
+                valid with { CountyContext = misboundBentonContext },
                 CountyCsvUploadAdmissionDenialCode.CountyMismatch),
             (
                 valid with

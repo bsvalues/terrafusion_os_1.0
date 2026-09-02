@@ -54,6 +54,16 @@ public sealed class CountyCsvUploadAdmissionLedger : ICountyCsvUploadAdmissionLe
         await using var dbContext = await _dbContextFactory
             .CreateDbContextAsync(cancellationToken)
             .ConfigureAwait(false);
+        if (!await MatchesPersistedCanonicalCountyAsync(
+                dbContext,
+                evidence.CountyId,
+                evidence.County,
+                cancellationToken)
+            .ConfigureAwait(false))
+        {
+            return Denied(CountyCsvUploadAdmissionDenialCode.CountyMismatch);
+        }
+
         var existing = await FindByIdempotencyKeyAsync(
                 dbContext,
                 evidence.IdempotencyKey,
@@ -119,6 +129,20 @@ public sealed class CountyCsvUploadAdmissionLedger : ICountyCsvUploadAdmissionLe
                 batch => batch.IdempotencyKey == idempotencyKey,
                 cancellationToken)
             .ConfigureAwait(false);
+
+    private static Task<bool> MatchesPersistedCanonicalCountyAsync(
+        TerraFusionDbContext dbContext,
+        Guid countyId,
+        WashingtonCountyIdentity canonicalCounty,
+        CancellationToken cancellationToken) =>
+        dbContext.Counties
+            .AsNoTracking()
+            .AnyAsync(
+                county => county.Id == countyId
+                    && county.Name == canonicalCounty.Name
+                    && county.State == canonicalCounty.State
+                    && county.FipsCode == canonicalCounty.FipsCode,
+                cancellationToken);
 
     private static bool TryValidate(
         CountyCsvUploadAdmissionRequest? request,
