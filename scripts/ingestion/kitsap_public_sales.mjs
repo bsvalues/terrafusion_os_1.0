@@ -916,6 +916,21 @@ export async function loadVerifiedRetainedWashingtonPackage(
   invariant(manifest.schemaVersion === MANIFEST_SCHEMA, 'Existing Washington manifest schema is invalid.');
   invariant(status.schemaVersion === STATUS_SCHEMA, 'Existing Washington status schema is invalid.');
   invariant(
+    typeof manifest.generatedAt === 'string' &&
+      new Date(manifest.generatedAt).toISOString() === manifest.generatedAt,
+    'Existing Washington manifest generated-at is invalid.'
+  );
+  invariant(
+    typeof status.generatedAt === 'string' &&
+      new Date(status.generatedAt).toISOString() === status.generatedAt &&
+      status.generatedAt === manifest.generatedAt,
+    'Existing Washington status and manifest release identities do not match.'
+  );
+  invariant(
+    generatedAt >= manifest.generatedAt,
+    'Generated-at cannot precede the existing Washington package.'
+  );
+  invariant(
     manifest.statusCanonicalJsonSha256 === canonicalJsonSha256(status),
     'Existing Washington status digest does not match its manifest.'
   );

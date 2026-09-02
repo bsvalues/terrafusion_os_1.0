@@ -317,6 +317,8 @@ describe('Washington launch shard county isolation', () => {
         ...saleRecord('Kitsap', '035', 'kitsap-dwelling-sale'),
         grossLivingArea: 2_150,
         yearBuilt: 1998,
+        bedrooms: 3,
+        bathrooms: 2.5,
         condition: 'AV',
       }],
     }, '035', 'hosted');
@@ -337,6 +339,8 @@ describe('Washington launch shard county isolation', () => {
       slLivingArea: 2_150,
       slYearBuilt: 1998,
       yearBuilt: 1998,
+      bedrooms: 3,
+      bathrooms: 2.5,
       condition: 'AV',
     });
   });
