@@ -40,7 +40,7 @@ public sealed class CountyCsvUploadAdmissionLedger : ICountyCsvUploadAdmissionLe
         if (!TryValidate(
                 request,
                 out var evidence,
-                out var claimedDocumentSnapshot,
+                out var claimedDocumentShape,
                 out var denialCode))
         {
             return Denied(denialCode);
@@ -49,7 +49,7 @@ public sealed class CountyCsvUploadAdmissionLedger : ICountyCsvUploadAdmissionLe
         var contentRevalidation = await RevalidateAdmittedContentAsync(
                 request!.AdmittedContent,
                 request.IntakeReceipt!,
-                claimedDocumentSnapshot,
+                claimedDocumentShape,
                 cancellationToken)
             .ConfigureAwait(false);
         if (contentRevalidation.DenialCode != CountyCsvUploadAdmissionDenialCode.None)
@@ -172,11 +172,11 @@ public sealed class CountyCsvUploadAdmissionLedger : ICountyCsvUploadAdmissionLe
     private static bool TryValidate(
         CountyCsvUploadAdmissionRequest? request,
         out AdmissionEvidence evidence,
-        out CountyCsvDocument claimedDocumentSnapshot,
+        out ClaimedDocumentShape claimedDocumentShape,
         out CountyCsvUploadAdmissionDenialCode denialCode)
     {
         evidence = null!;
-        claimedDocumentSnapshot = null!;
+        claimedDocumentShape = default;
         denialCode = CountyCsvUploadAdmissionDenialCode.InvalidApiContract;
 
         if (request is null
@@ -253,7 +253,7 @@ public sealed class CountyCsvUploadAdmissionLedger : ICountyCsvUploadAdmissionLe
         }
 
         var intakeReceipt = receipt.IntakeReceipt;
-        if (!TrySnapshotDocument(intakeReceipt.Document, out claimedDocumentSnapshot))
+        if (!TryCaptureDocumentShape(intakeReceipt.Document, out claimedDocumentShape))
         {
             denialCode = CountyCsvUploadAdmissionDenialCode.InvalidDocumentEvidence;
             return false;
@@ -272,15 +272,9 @@ public sealed class CountyCsvUploadAdmissionLedger : ICountyCsvUploadAdmissionLe
         if (!IsLowercaseSha256(content.Sha256)
             || content.ByteLength <= 0
             || content.ByteLength > ICountyCsvUploadAdmissionLedger.MaximumAuthenticatedCsvUploadBytes
-            || content.ByteLength != claimedDocumentSnapshot.InputBytes)
+            || content.ByteLength != claimedDocumentShape.InputBytes)
         {
             denialCode = CountyCsvUploadAdmissionDenialCode.InvalidContentEvidence;
-            return false;
-        }
-
-        if (!HasValidDocumentEvidence(claimedDocumentSnapshot))
-        {
-            denialCode = CountyCsvUploadAdmissionDenialCode.InvalidDocumentEvidence;
             return false;
         }
 
@@ -338,7 +332,7 @@ public sealed class CountyCsvUploadAdmissionLedger : ICountyCsvUploadAdmissionLe
             intakeReceipt.MediaType,
             content.Sha256,
             content.ByteLength,
-            claimedDocumentSnapshot.Rows.Count,
+            0,
             identity.IdempotencyKey,
             request.ApiAdmissionContractId);
         denialCode = CountyCsvUploadAdmissionDenialCode.None;
@@ -369,7 +363,7 @@ public sealed class CountyCsvUploadAdmissionLedger : ICountyCsvUploadAdmissionLe
     private static async Task<ContentRevalidationResult> RevalidateAdmittedContentAsync(
         ReadOnlyMemory<byte> admittedContent,
         CountyCsvCountyBoundIntakeReceipt claimedReceipt,
-        CountyCsvDocument claimedDocumentSnapshot,
+        ClaimedDocumentShape claimedDocumentShape,
         CancellationToken cancellationToken)
     {
         var claimedIntake = claimedReceipt.IntakeReceipt;
@@ -430,18 +424,19 @@ public sealed class CountyCsvUploadAdmissionLedger : ICountyCsvUploadAdmissionLe
 
         return DocumentsMatch(
                 regeneratedReceipt.IntakeReceipt.Document,
-                claimedDocumentSnapshot)
+                claimedIntake.Document,
+                claimedDocumentShape)
             ? ContentRevalidationResult.Accepted(
                 regeneratedReceipt.IntakeReceipt.Document.Rows.Count)
             : ContentRevalidationResult.Denied(
                 CountyCsvUploadAdmissionDenialCode.InvalidDocumentEvidence);
     }
 
-    private static bool TrySnapshotDocument(
+    private static bool TryCaptureDocumentShape(
         CountyCsvDocument document,
-        out CountyCsvDocument snapshot)
+        out ClaimedDocumentShape shape)
     {
-        snapshot = null!;
+        shape = default;
         try
         {
             if (document.Headers is null || document.Rows is null)
@@ -457,110 +452,85 @@ public sealed class CountyCsvUploadAdmissionLedger : ICountyCsvUploadAdmissionLe
                 return false;
             }
 
-            var headers = new string[headerCount];
-            for (var index = 0; index < headers.Length; index++)
-            {
-                headers[index] = document.Headers[index];
-            }
-
-            var rows = new IReadOnlyList<string>[rowCount];
-            for (var index = 0; index < rows.Length; index++)
-            {
-                var row = document.Rows[index];
-                if (row is null
-                    || row.Count < 0
-                    || row.Count > MaximumFieldsPerRow
-                    || row.Count != headerCount)
-                {
-                    return false;
-                }
-
-                var fields = new string[row.Count];
-                for (var fieldIndex = 0; fieldIndex < fields.Length; fieldIndex++)
-                {
-                    fields[fieldIndex] = row[fieldIndex];
-                }
-
-                rows[index] = Array.AsReadOnly(fields);
-            }
-
-            snapshot = new CountyCsvDocument(
-                Array.AsReadOnly(headers),
-                Array.AsReadOnly(rows),
-                document.InputBytes);
+            shape = new ClaimedDocumentShape(headerCount, rowCount, document.InputBytes);
             return true;
         }
         catch (Exception exception) when (
             exception is ArgumentException
                 or InvalidOperationException
-                or IndexOutOfRangeException)
+                or IndexOutOfRangeException
+                or NotSupportedException)
         {
             return false;
         }
     }
 
-    private static bool DocumentsMatch(CountyCsvDocument regenerated, CountyCsvDocument claimed)
+    private static bool DocumentsMatch(
+        CountyCsvDocument regenerated,
+        CountyCsvDocument claimed,
+        ClaimedDocumentShape claimedShape)
     {
-        if (regenerated.InputBytes != claimed.InputBytes
-            || !regenerated.Headers.SequenceEqual(claimed.Headers, StringComparer.Ordinal)
-            || regenerated.Rows.Count != claimed.Rows.Count)
+        try
+        {
+            if (claimed.Headers is null
+                || claimed.Rows is null
+                || regenerated.InputBytes != claimedShape.InputBytes
+                || claimed.InputBytes != claimedShape.InputBytes
+                || regenerated.Headers.Count != claimedShape.HeaderCount
+                || claimed.Headers.Count != claimedShape.HeaderCount
+                || regenerated.Rows.Count != claimedShape.RowCount
+                || claimed.Rows.Count != claimedShape.RowCount)
+            {
+                return false;
+            }
+
+            for (var index = 0; index < regenerated.Headers.Count; index++)
+            {
+                if (!string.Equals(
+                        regenerated.Headers[index],
+                        claimed.Headers[index],
+                        StringComparison.Ordinal))
+                {
+                    return false;
+                }
+            }
+
+            for (var rowIndex = 0; rowIndex < regenerated.Rows.Count; rowIndex++)
+            {
+                var regeneratedRow = regenerated.Rows[rowIndex];
+                var claimedRow = claimed.Rows[rowIndex];
+                var claimedFieldCount = claimedRow?.Count ?? -1;
+                if (claimedRow is null
+                    || claimedFieldCount < 0
+                    || claimedFieldCount > MaximumFieldsPerRow
+                    || claimedFieldCount != regeneratedRow.Count)
+                {
+                    return false;
+                }
+
+                for (var fieldIndex = 0; fieldIndex < regeneratedRow.Count; fieldIndex++)
+                {
+                    if (!string.Equals(
+                            regeneratedRow[fieldIndex],
+                            claimedRow[fieldIndex],
+                            StringComparison.Ordinal))
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            return true;
+        }
+        catch (Exception exception) when (
+            exception is ArgumentException
+                or InvalidOperationException
+                or IndexOutOfRangeException
+                or NotSupportedException)
         {
             return false;
         }
-
-        for (var index = 0; index < regenerated.Rows.Count; index++)
-        {
-            if (!regenerated.Rows[index].SequenceEqual(
-                    claimed.Rows[index],
-                    StringComparer.Ordinal))
-            {
-                return false;
-            }
-        }
-
-        return true;
     }
-
-    private static bool HasValidDocumentEvidence(CountyCsvDocument document)
-    {
-        if (document.Headers is null
-            || document.Headers.Count is <= 0 or > MaximumFieldsPerRow
-            || document.Rows is null
-            || document.Rows.Count > MaximumDataRows)
-        {
-            return false;
-        }
-
-        var normalizedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-        foreach (var header in document.Headers)
-        {
-            if (!IsValidParserFieldShape(header)
-                || string.IsNullOrWhiteSpace(header)
-                || !normalizedHeaders.Add(header.Trim()))
-            {
-                return false;
-            }
-        }
-
-        foreach (var row in document.Rows)
-        {
-            if (row is null
-                || row.Count != document.Headers.Count
-                || row.Any(field => !IsValidParserFieldShape(field)))
-            {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    private static bool IsValidParserFieldShape(string? value) =>
-        value is not null
-        && value.Length <= MaximumCharactersPerField
-        && value.All(character =>
-            (!char.IsControl(character) || character is '\t' or '\r' or '\n')
-            && character is not '\uFEFF' and not '\uFFFE' and not '\uFFFF');
 
     private static bool IsLowercaseSha256(string? value) =>
         value is { Length: 64 }
@@ -602,6 +572,11 @@ public sealed class CountyCsvUploadAdmissionLedger : ICountyCsvUploadAdmissionLe
             CountyCsvUploadAdmissionDenialCode denialCode) =>
             new(denialCode, 0);
     }
+
+    private readonly record struct ClaimedDocumentShape(
+        int HeaderCount,
+        int RowCount,
+        long InputBytes);
 
     private sealed record AdmissionEvidence(
         Guid CountyId,

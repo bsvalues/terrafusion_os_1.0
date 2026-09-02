@@ -504,7 +504,11 @@ public sealed class CountyCsvUploadAdmissionLedgerTests
             originalDocument with
             {
                 Rows = Array.AsReadOnly<IReadOnlyList<string>>(
-                    new[] { new OversizedCountReadOnlyList<string>() }),
+                    new IReadOnlyList<string>[]
+                    {
+                        new OversizedCountReadOnlyList<string>(),
+                        originalDocument.Rows[1],
+                    }),
             },
         };
         var ledger = new CountyCsvUploadAdmissionLedger(database.CreateFactory());
@@ -530,6 +534,44 @@ public sealed class CountyCsvUploadAdmissionLedgerTests
                 result.DenialCode);
             Assert.Null(result.Batch);
         }
+
+        await using var verificationContext = database.CreateContext();
+        Assert.Equal(0, await verificationContext.CountyCsvUploadBatches.CountAsync());
+        Assert.Equal(0, await verificationContext.AuditLogs.CountAsync());
+    }
+
+    [Fact]
+    public async Task AdmitAsync_DeniesAggregateHostileDocumentShapeWithoutMaterializingRows()
+    {
+        await using var database = await TestDatabase.CreateAsync((Benton, BentonId));
+        var request = await CreateRequestAsync(Benton, BentonId, "assessor-1");
+        var originalDocument = request.IntakeReceipt!.IntakeReceipt.Document;
+        var repeatedFieldRow = new RepeatedReadOnlyList<string>(512, "field");
+        var aggregateRows = new RepeatedReadOnlyList<IReadOnlyList<string>>(
+            100_000,
+            repeatedFieldRow);
+        var hostileDocument = originalDocument with { Rows = aggregateRows };
+        var hostileRequest = request with
+        {
+            IntakeReceipt = request.IntakeReceipt with
+            {
+                IntakeReceipt = request.IntakeReceipt.IntakeReceipt with
+                {
+                    Document = hostileDocument,
+                },
+            },
+        };
+
+        var result = await new CountyCsvUploadAdmissionLedger(database.CreateFactory())
+            .AdmitAsync(hostileRequest);
+
+        Assert.Equal(CountyCsvUploadAdmissionDisposition.Denied, result.Disposition);
+        Assert.Equal(
+            CountyCsvUploadAdmissionDenialCode.InvalidDocumentEvidence,
+            result.DenialCode);
+        Assert.Null(result.Batch);
+        Assert.Equal(0, aggregateRows.IndexAccesses);
+        Assert.Equal(0, repeatedFieldRow.IndexAccesses);
 
         await using var verificationContext = database.CreateContext();
         Assert.Equal(0, await verificationContext.CountyCsvUploadBatches.CountAsync());
@@ -905,6 +947,32 @@ public sealed class CountyCsvUploadAdmissionLedgerTests
 
         public IEnumerator<T> GetEnumerator() =>
             throw new InvalidOperationException("Oversized evidence must not be enumerated.");
+
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() =>
+            GetEnumerator();
+    }
+
+    private sealed class RepeatedReadOnlyList<T>(int count, T value) : IReadOnlyList<T>
+    {
+        private int _indexAccesses;
+
+        public int Count { get; } = count;
+
+        public int IndexAccesses => Volatile.Read(ref _indexAccesses);
+
+        public T this[int index]
+        {
+            get
+            {
+                Interlocked.Increment(ref _indexAccesses);
+                return index >= 0 && index < Count
+                    ? value
+                    : throw new ArgumentOutOfRangeException(nameof(index));
+            }
+        }
+
+        public IEnumerator<T> GetEnumerator() =>
+            throw new InvalidOperationException("Aggregate evidence must not be enumerated.");
 
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() =>
             GetEnumerator();
