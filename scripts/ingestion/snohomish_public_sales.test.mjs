@@ -102,8 +102,20 @@ async function fixture() {
   const directory = await mkdtemp(join(tmpdir(), 'tf-snohomish-sales-'));
   const sales = workbookBytes([
     saleRow(1, { Bedrooms: null }),
-    saleRow(2, { Excise_Nbr: 'E2', Exten: 'R01', Imp_Type: 'DWELL', Total_SqFt: 1800 }),
-    saleRow(2, { Excise_Nbr: 'E2', Exten: 'G01', Imp_Type: 'GARAGE', Total_SqFt: 1800 }),
+    saleRow(2, {
+      Parcel_Id: '000000001234',
+      Excise_Nbr: 'E2',
+      Exten: 'R01',
+      Imp_Type: 'DWELL',
+      Total_SqFt: 1800,
+    }),
+    saleRow(2, {
+      Parcel_Id: '000000001234',
+      Excise_Nbr: 'E2',
+      Exten: 'G01',
+      Imp_Type: 'GARAGE',
+      Total_SqFt: 1800,
+    }),
     saleRow(3, { Excise_Nbr: 'E3' }),
     saleRow(4, { Excise_Nbr: 'E3' }),
     saleRow(5, { Sale_Qual_Code: 'M' }),
@@ -117,11 +129,13 @@ async function fixture() {
     saleRow(11, { Parcel_Id: null }),
     saleRow(12, { Excise_Nbr: 'E12-A' }),
     saleRow(12, { Excise_Nbr: 'E12-B' }),
+    saleRow(1, { Bedrooms: null }),
+    saleRow(13, { Parcel_Id: 'CONTRADICTS-P13' }),
   ]);
   const archive = Buffer.from('fixture official assessor archive');
   const assessorRows = [
     assessorRow('P1'),
-    assessorRow('P2'),
+    assessorRow('P2', { parcel_number: '1234' }),
     assessorRow('P3'),
     assessorRow('P4'),
     assessorRow('P5'),
@@ -131,6 +145,7 @@ async function fixture() {
     assessorRow('P10'),
     assessorRow('P11'),
     assessorRow('P12'),
+    assessorRow('P13'),
   ];
   const assessor = `${csvLine(SNOHOMISH_ASSESSOR_HEADERS)}\r\n${assessorRows.map(csvLine).join('\r\n')}\r\n`;
   await Promise.all([
@@ -187,14 +202,14 @@ test('publishes only active, single-parcel qualified sales joined to public situ
   t.after(() => rm(data.directory, { recursive: true, force: true }));
   const result = await buildSnohomishCountyPackage(data.directory, GENERATED_AT, data.configPath);
 
-  assert.equal(result.receipt.sourceRows.sales, 16);
-  assert.equal(result.receipt.sourceRows.assessor, 11);
+  assert.equal(result.receipt.sourceRows.sales, 18);
+  assert.equal(result.receipt.sourceRows.assessor, 12);
   assert.equal(result.receipt.sourceDisposition.notOfficiallyQualified, 1);
-  assert.equal(result.receipt.candidateSales, 15);
-  assert.equal(result.receipt.stagedSales, 2);
+  assert.equal(result.receipt.candidateSales, 17);
+  assert.equal(result.receipt.stagedSales, 1);
   assert.equal(result.receipt.consolidation.componentRowsConsolidated, 1);
   assert.equal(result.receipt.consolidation.multiComponentTransactions, 1);
-  assert.equal(result.receipt.quarantinedSales, 12);
+  assert.equal(result.receipt.quarantinedSales, 15);
   assert.deepEqual(
     {
       missingParcelIdentity: result.receipt.quarantine.missingParcelIdentity,
@@ -202,10 +217,12 @@ test('publishes only active, single-parcel qualified sales joined to public situ
       nonPositiveSalePrice: result.receipt.quarantine.nonPositiveSalePrice,
       multiParcelSales: result.receipt.quarantine.multiParcelSales,
       crossConveyanceDuplicateSales: result.receipt.quarantine.crossConveyanceDuplicateSales,
+      exactDuplicateRows: result.receipt.quarantine.exactDuplicateRows,
       inactiveSales: result.receipt.quarantine.inactiveSales,
       conflictingTransactionRows: result.receipt.quarantine.conflictingTransactionRows,
       missingAssessorJoin: result.receipt.quarantine.missingAssessorJoin,
       ambiguousAssessorJoin: result.receipt.quarantine.ambiguousAssessorJoin,
+      parcelAssessorContradictions: result.receipt.quarantine.parcelAssessorContradictions,
       missingSitusAddress: result.receipt.quarantine.missingSitusAddress,
     },
     {
@@ -214,20 +231,25 @@ test('publishes only active, single-parcel qualified sales joined to public situ
       nonPositiveSalePrice: 1,
       multiParcelSales: 2,
       crossConveyanceDuplicateSales: 2,
+      exactDuplicateRows: 2,
       inactiveSales: 1,
       conflictingTransactionRows: 2,
       missingAssessorJoin: 1,
       ambiguousAssessorJoin: 0,
+      parcelAssessorContradictions: 1,
       missingSitusAddress: 1,
     }
   );
   assert.equal(result.receipt.quarantine.crossConveyanceDuplicateIdentities.length, 1);
-  const first = result.shard.records.find(record => record.parcelNumber === 'P1');
-  assert.equal(first.bedrooms, null);
-  assert.equal(first.situsCity, 'EVERETT');
-  assert.equal(first.situsZip, '98201');
-  assert.equal(first.lotSizeSqft, 10_890);
-  const consolidated = result.shard.records.find(record => record.parcelNumber === 'P2');
+  assert.equal(
+    result.shard.records.some(record => record.parcelNumber === 'P1'),
+    false
+  );
+  assert.equal(
+    result.shard.records.some(record => record.parcelNumber === 'P13'),
+    false
+  );
+  const consolidated = result.shard.records.find(record => record.parcelNumber === '1234');
   assert.equal(consolidated.provenance.componentRows.length, 3);
   assert.equal(JSON.stringify(result).includes('PRIVATE OWNER'), false);
   assert.equal(JSON.stringify(result).includes('NameAddr.csv'), true);

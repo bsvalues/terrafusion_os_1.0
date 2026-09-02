@@ -119,6 +119,17 @@ function nullableString(value) {
   return normalized || null;
 }
 
+function normalizedParcelIdentifier(value) {
+  const compact =
+    nullableString(value)
+      ?.toUpperCase()
+      .replace(/[^A-Z0-9]/g, '') || null;
+  // The sales workbook zero-pads Snohomish's numeric parcel number to 14
+  // characters while MainData.csv exposes the same identifier without that
+  // display padding. Preserve alphanumeric identifiers exactly.
+  return compact && /^\d+$/.test(compact) ? compact.replace(/^0+(?=\d)/, '') : compact;
+}
+
 function nullablePositiveNumber(value) {
   const normalized = nullableString(value);
   if (normalized === null) return null;
@@ -329,6 +340,12 @@ function workbookCandidate(values, ordinal) {
   // OwnerName1 (column I) is deliberately never copied out of the workbook parser boundary.
   return {
     ordinal,
+    // Hash every source value except OwnerName1. This distinguishes legitimate
+    // improvement-component rows while making exact source-row repeats detectable
+    // without carrying private owner data beyond the parser boundary.
+    sourceRowSha256: hashedIdentity(
+      JSON.stringify(values.map((value, index) => (index === 8 ? null : (value ?? null))))
+    ),
     lrsn: nullableString(values[0]),
     parcel: nullableString(values[1]),
     status: nullableString(values[2]),
@@ -564,16 +581,27 @@ export async function buildSnohomishCountyPackage(
     [...crossConveyanceCollisions.values()].flatMap(group => group)
   );
   const groups = new Map();
+  const duplicateSourceRows = new Map();
+  for (const candidate of candidates) {
+    const repeated = duplicateSourceRows.get(candidate.sourceRowSha256) ?? [];
+    repeated.push(candidate);
+    duplicateSourceRows.set(candidate.sourceRowSha256, repeated);
+  }
+  const exactDuplicateCandidates = new Set(
+    [...duplicateSourceRows.values()].filter(group => group.length > 1).flat()
+  );
   const quarantine = {
     missingParcelIdentity: 0,
     missingConveyanceIdentity: 0,
     nonPositiveSalePrice: 0,
     multiParcelSales: 0,
     crossConveyanceDuplicateSales: 0,
+    exactDuplicateRows: 0,
     inactiveSales: 0,
     conflictingTransactionRows: 0,
     missingAssessorJoin: 0,
     ambiguousAssessorJoin: 0,
+    parcelAssessorContradictions: 0,
     missingSitusAddress: 0,
   };
   for (const candidate of candidates) {
@@ -583,6 +611,10 @@ export async function buildSnohomishCountyPackage(
     }
     if (!candidate.excise) {
       quarantine.missingConveyanceIdentity += 1;
+      continue;
+    }
+    if (exactDuplicateCandidates.has(candidate)) {
+      quarantine.exactDuplicateRows += 1;
       continue;
     }
     const key = `${candidate.excise}|${candidate.lrsn}`;
@@ -624,6 +656,14 @@ export async function buildSnohomishCountyPackage(
     }
     if (propertyEntry.ambiguous) {
       quarantine.ambiguousAssessorJoin += group.length;
+      continue;
+    }
+    const joinedParcel = normalizedParcelIdentifier(propertyEntry.property.parcelNumber);
+    if (
+      !joinedParcel ||
+      group.some(candidate => normalizedParcelIdentifier(candidate.parcel) !== joinedParcel)
+    ) {
+      quarantine.parcelAssessorContradictions += group.length;
       continue;
     }
     if (
