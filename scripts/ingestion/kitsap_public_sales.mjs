@@ -39,6 +39,7 @@ const SHA256_PATTERN = /^[a-f\d]{64}$/;
 const OPERATION_ID_PATTERN =
   /^\d+-[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
 const heldRefreshAcquisitionMutexes = new Map();
+let directorySyncFailureCountdownForTest = null;
 
 function invariant(condition, message) {
   if (!condition) throw new Error(message);
@@ -55,6 +56,13 @@ async function pathExists(path) {
 }
 
 async function syncDirectory(path) {
+  if (directorySyncFailureCountdownForTest !== null) {
+    directorySyncFailureCountdownForTest -= 1;
+    if (directorySyncFailureCountdownForTest === 0) {
+      directorySyncFailureCountdownForTest = null;
+      throw new Error('Injected TerraFusion directory durability failure.');
+    }
+  }
   if (process.platform === 'win32') {
     const canonicalPath = resolve(path);
     const heldEntry = [...heldRefreshAcquisitionMutexes.entries()].find(
@@ -595,18 +603,28 @@ export async function acquirePackageRefreshLock(outputPath, operationId) {
     }
     throw new Error('Kitsap package refresh lock could not be acquired.');
   } finally {
-    await rm(claimPath, { force: true });
-    await syncDirectory(dirname(lockPath));
-    if (!lockAcquired) {
-      try {
-        await releaseRefreshAcquisitionMutex(acquisitionMutex);
-      } finally {
-        if (heldRefreshAcquisitionMutexes.get(outputRoot)?.operationId === operationId) {
-          heldRefreshAcquisitionMutexes.delete(outputRoot);
+    let claimCleanupSucceeded = false;
+    try {
+      await rm(claimPath, { force: true });
+      await syncDirectory(dirname(lockPath));
+      claimCleanupSucceeded = true;
+    } finally {
+      if (!lockAcquired || !claimCleanupSucceeded) {
+        try {
+          await releaseRefreshAcquisitionMutex(acquisitionMutex);
+        } finally {
+          if (heldRefreshAcquisitionMutexes.get(outputRoot)?.operationId === operationId) {
+            heldRefreshAcquisitionMutexes.delete(outputRoot);
+          }
         }
       }
     }
   }
+}
+
+export function failDirectorySyncAfterForTest(syncCount) {
+  invariant(Number.isSafeInteger(syncCount) && syncCount > 0, 'Sync failure count is invalid.');
+  directorySyncFailureCountdownForTest = syncCount;
 }
 
 async function assertRefreshLockOwner(outputRoot, operationId) {

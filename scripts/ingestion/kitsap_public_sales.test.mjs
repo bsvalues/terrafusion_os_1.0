@@ -25,6 +25,7 @@ import {
 import {
   acquirePackageRefreshLock,
   assertPackageRefreshLockHeld,
+  failDirectorySyncAfterForTest,
   releasePackageRefreshLock,
   terminatePackageRefreshMutexForTest,
   timeoutPackageRefreshMutexForTest,
@@ -87,6 +88,24 @@ test('Kitsap adapter serializes overlapping package refresh writers', async () =
       /already running under PID/i
     );
     await releasePackageRefreshLock(outputPath, firstOperation);
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test('Kitsap adapter releases its mutex when lock-publication durability cleanup fails', async () => {
+  const root = await mkdtemp(join(tmpdir(), 'tf-kitsap-lock-durability-failure-'));
+  const outputPath = join(root, 'launch-data', 'washington');
+  const failedOperation = '123-12345678-1234-4123-8123-123456789abc';
+  const recoveryOperation = '456-abcdefab-cdef-4abc-8def-abcdefabcdef';
+  try {
+    failDirectorySyncAfterForTest(3);
+    await assert.rejects(
+      acquirePackageRefreshLock(outputPath, failedOperation),
+      /directory durability failure/i
+    );
+    await acquirePackageRefreshLock(outputPath, recoveryOperation);
+    await releasePackageRefreshLock(outputPath, recoveryOperation);
   } finally {
     await rm(root, { recursive: true, force: true });
   }
