@@ -106,6 +106,7 @@ pids/
 *.pid
 *.seed
 *.pid.lock
+*.refresh.acquire.lock
 
 # Local service-registry snapshot — written by the API on each dev run
 # (Pid + LastUpdated timestamps churn on every start). Kept local only
