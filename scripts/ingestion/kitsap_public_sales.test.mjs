@@ -444,6 +444,15 @@ async function createFixtureWorkbook(path) {
         'Sale Dt': new Date('2026-09-01T00:00:00.000Z'),
       }),
       fixtureRow({
+        'REET no.': '2026EX00005',
+        'Tax parcel no.': '1234-000-001-0005',
+        'Sale Dt': new Date('2025-07-15T00:00:00.000Z'),
+        Yr: 2025,
+        'Yr blt': 2026,
+        'Living area': 2400,
+        Condition: 'EX',
+      }),
+      fixtureRow({
         'REET no.': '2026EX00002',
         'Tax parcel no.': '1234-000-001-0002',
         Validity: 'With other property',
@@ -495,10 +504,10 @@ test('Kitsap adapter stages only valid official rows with county-scoped public p
 
     assert.equal(status.counties.length, 1);
     assert.equal(status.counties[0].countyCode, '035');
-    assert.equal(status.counties[0].candidateSales, 4);
-    assert.equal(status.counties[0].stagedSales, 3);
+    assert.equal(status.counties[0].candidateSales, 5);
+    assert.equal(status.counties[0].stagedSales, 4);
     assert.equal(status.counties[0].needsReview, 2);
-    assert.equal(shard.records.length, 3);
+    assert.equal(shard.records.length, 4);
     assert.equal(shard.summary.reviewRecords, 1);
     assert.equal(shard.records[0].countyCode, '035');
     assert.equal(shard.records[0].grantor, null);
@@ -510,6 +519,12 @@ test('Kitsap adapter stages only valid official rows with county-scoped public p
     assert.equal(futureSale.reviewStatus, 'needs_review');
     assert.equal(futureSale.flags.futureSaleDate, true);
     assert.equal(futureSale.flags.needsReview, true);
+    const preconstructionSale = shard.records.find(
+      record => record.documentNumber === '2026EX00005'
+    );
+    assert.equal(preconstructionSale.grossLivingArea, null);
+    assert.equal(preconstructionSale.yearBuilt, null);
+    assert.equal(preconstructionSale.condition, null);
     assert.equal(manifest.salesShardAttestations[0].countyCode, '035');
     assert.equal(manifest.salesShardAttestations[0].sourcePayloadSha256[0], workbookSha256);
     assert.doesNotThrow(() => {
@@ -529,7 +544,7 @@ test('Kitsap adapter stages only valid official rows with county-scoped public p
     const refreshedShard = JSON.parse(
       await readFile(join(outputPath, 'sales/by-county/035.json'), 'utf8')
     );
-    assert.equal(refreshedShard.records.length, 3);
+    assert.equal(refreshedShard.records.length, 4);
   } finally {
     await rm(root, { recursive: true, force: true });
   }

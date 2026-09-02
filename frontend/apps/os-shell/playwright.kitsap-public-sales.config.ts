@@ -2,7 +2,7 @@ import { defineConfig, devices } from '@playwright/test';
 
 const PORT = process.env.VITE_PORT || '5173';
 const BASE_URL = `http://localhost:${PORT}`;
-const KITSAP_MANIFEST_SHA256 = '349e5e44c03dbece94613252354d33d372f0d1e98361d12578ccf47faec6080e';
+const KITSAP_MANIFEST_SHA256 = 'ed6475da4961a801e46dbfa95b2d67d6982140ec5e64f71b57af4d402a5688f1';
 
 export default defineConfig({
   testDir: '../../tests/integration',

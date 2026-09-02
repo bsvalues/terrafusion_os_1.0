@@ -941,6 +941,10 @@ function mapRecord(sheetName, row, ordinal, payloadSha256, generatedAt) {
   const generatedDate = generatedAt.slice(0, 10);
   const futureSaleDate = saleDate > generatedDate;
   const isDwelling = sheetName === 'Dwellings';
+  const reportedYearBuilt = isDwelling ? nullableNumber(row['Yr blt']) : null;
+  const dwellingExistedAtSale =
+    isDwelling &&
+    (reportedYearBuilt === null || reportedYearBuilt <= Number(saleDate.slice(0, 4)));
   return {
     saleId: makeSaleId(sheetName, row, ordinal),
     county: COUNTY,
@@ -968,12 +972,12 @@ function mapRecord(sheetName, row, ordinal, payloadSha256, generatedAt) {
     qualityScore: 1,
     qualityBand: 'official_valid_sale',
     reviewStatus: futureSaleDate ? 'needs_review' : 'ready',
-    grossLivingArea: isDwelling ? nullableNumber(row['Living area']) : null,
+    grossLivingArea: dwellingExistedAtSale ? nullableNumber(row['Living area']) : null,
     lotSizeSqft: null,
-    yearBuilt: isDwelling ? nullableNumber(row['Yr blt']) : null,
+    yearBuilt: dwellingExistedAtSale ? reportedYearBuilt : null,
     bedrooms: null,
     bathrooms: null,
-    condition: isDwelling ? nullableString(row.Condition) : null,
+    condition: dwellingExistedAtSale ? nullableString(row.Condition) : null,
     qualityGrade: null,
     provenance: {
       sourceUrl: SOURCE_URL,

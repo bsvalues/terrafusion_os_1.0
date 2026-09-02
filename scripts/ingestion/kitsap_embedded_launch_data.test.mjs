@@ -10,7 +10,7 @@ import {
 
 const PACKAGE_ROOT = 'frontend/apps/os-shell/public/launch-data/washington';
 const EXPECTED_MANIFEST_SHA256 =
-  '349e5e44c03dbece94613252354d33d372f0d1e98361d12578ccf47faec6080e';
+  'ed6475da4961a801e46dbfa95b2d67d6982140ec5e64f71b57af4d402a5688f1';
 
 function canonicalizeJson(value) {
   if (value === null || typeof value === 'boolean' || typeof value === 'string') {

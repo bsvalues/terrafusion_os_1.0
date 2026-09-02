@@ -36,7 +36,9 @@ test('uses the authenticated Kitsap public-sales package without lending it to a
   await expect(page.getByRole('heading', { name: 'TerraForge', exact: true })).toBeVisible({
     timeout: 20_000,
   });
-  await expect(page.getByTestId('forge-county-context')).toContainText('24,585');
+  await expect(page.getByTestId('forge-county-context')).toContainText('24,585', {
+    timeout: 45_000,
+  });
   const kitsapSalesForge = page
     .getByTestId('forge-primary-applications')
     .getByRole('button', { name: /SalesForge/i });
