@@ -1,0 +1,30 @@
+{
+  "schemaVersion": "terrafusion.washington.public-source-set.v1",
+  "county": "Snohomish",
+  "countyCode": "061",
+  "officialSourceBaseUrl": "https://snohomishcountywa.gov",
+  "indexUrl": "https://www.snohomishcountywa.gov/6322/102531/County-Sales",
+  "publishedLabel": "Snohomish County All Sales and official GIS assessment roll 2026-09-02",
+  "sourceDateRange": {
+    "start": "2024-01-01",
+    "end": "2026-09-02"
+  },
+  "sources": [
+    {
+      "key": "sales",
+      "file": "snohomish-all-sales.xlsx",
+      "url": "https://snohomishcountywa.gov/DocumentCenter/View/109438",
+      "finalUrl": "https://snohomishcountywa.gov/DocumentCenter/View/109438",
+      "sha256": "3923ea32577ea6d3c74cf964ab79c4cd589dc5ce2543d78b26f5e6d0b8170701"
+    },
+    {
+      "key": "assessor",
+      "archiveFile": "snohomish-assessor-roll.zip",
+      "file": "MainData.csv",
+      "url": "https://www.arcgis.com/sharing/rest/content/items/ee76dfa5905947cc9af1605a25cf216a/data",
+      "finalUrl": "https://www.arcgis.com/sharing/rest/content/items/ee76dfa5905947cc9af1605a25cf216a/data",
+      "archiveSha256": "7acbcac033e423bb547dc74f4c9c6dbf08b65a12b7590822624a079d810dd1ac",
+      "sha256": "06db6d0e32bf8059e342cc86b60f1db03e4543abeea02d21156ebc085e86a4ed"
+    }
+  ]
+}
