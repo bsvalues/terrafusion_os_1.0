@@ -485,6 +485,7 @@ test('Kitsap adapter stages only valid official rows with county-scoped public p
     const workbookPath = join(root, 'Residential_Sales_2021-2026.xlsx');
     const outputPath = join(root, 'launch-data', 'washington');
     await createFixtureWorkbook(workbookPath);
+    await mkdir(outputPath, { recursive: true });
     const workbookBytes = await readFile(workbookPath);
     const workbookSha256 = createHash('sha256').update(workbookBytes).digest('hex');
 

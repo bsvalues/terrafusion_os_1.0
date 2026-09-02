@@ -358,6 +358,7 @@ test('reports the single official source posture for standalone Whatcom publicat
   const fixture = await createFixture();
   const outputPath = join(fixture.directory, 'standalone', 'washington');
   t.after(() => rm(fixture.directory, { recursive: true, force: true }));
+  await mkdir(outputPath, { recursive: true });
   await publishWhatcomPackage(fixture.directory, outputPath, GENERATED_AT, fixture.configPath);
   const manifest = JSON.parse(await readFile(join(outputPath, 'manifest.json'), 'utf8'));
   const status = JSON.parse(await readFile(join(outputPath, 'counties', 'status.json'), 'utf8'));

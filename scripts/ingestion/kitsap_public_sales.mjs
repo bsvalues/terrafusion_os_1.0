@@ -900,6 +900,17 @@ export async function loadVerifiedRetainedWashingtonPackage(
     return { artifacts: new Map(), attestations: [], shards: new Map(), statusEntries: [] };
   }
 
+  const existingEntries = await readdir(outputRoot);
+  if (existingEntries.length === 0) {
+    return { artifacts: new Map(), attestations: [], shards: new Map(), statusEntries: [] };
+  }
+
+  invariant(
+    (await pathExists(join(outputRoot, 'manifest.json'))) &&
+      (await pathExists(join(outputRoot, 'counties', 'status.json'))),
+    'Existing Washington output is incomplete; expected manifest.json and counties/status.json.'
+  );
+
   const manifest = JSON.parse(await readFile(join(outputRoot, 'manifest.json'), 'utf8'));
   const status = JSON.parse(await readFile(join(outputRoot, 'counties', 'status.json'), 'utf8'));
   invariant(manifest.schemaVersion === MANIFEST_SCHEMA, 'Existing Washington manifest schema is invalid.');
