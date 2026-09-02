@@ -8,6 +8,7 @@ import {
   link,
   mkdir,
   open,
+  readdir,
   readFile,
   readlink,
   realpath,
@@ -719,14 +720,37 @@ export async function recoverInterruptedPackageRefresh(outputPath, ownerOperatio
   const outputRoot = await canonicalizePackageOutputRoot(outputPath);
   await assertRefreshLockOwner(outputRoot, ownerOperationId);
   const journalPath = `${outputRoot}.refresh.json`;
-  if (!(await pathExists(journalPath))) return false;
+  let journal = null;
+  if (await pathExists(journalPath)) {
+    journal = JSON.parse(await readFile(journalPath, 'utf8'));
+    invariant(
+      journal?.schemaVersion === REFRESH_JOURNAL_SCHEMA &&
+        OPERATION_ID_PATTERN.test(journal.operationId),
+      'Kitsap package refresh journal is invalid.'
+    );
+  }
 
-  const journal = JSON.parse(await readFile(journalPath, 'utf8'));
-  invariant(
-    journal?.schemaVersion === REFRESH_JOURNAL_SCHEMA &&
-      OPERATION_ID_PATTERN.test(journal.operationId),
-    'Kitsap package refresh journal is invalid.'
-  );
+  const stagingPrefix = `${basename(outputRoot)}.tmp-`;
+  let prunedStagingRoot = false;
+  for (const entry of await readdir(dirname(outputRoot), { withFileTypes: true })) {
+    if (!entry.isDirectory() || !entry.name.startsWith(stagingPrefix)) continue;
+    const stagingOperationId = entry.name.slice(stagingPrefix.length);
+    if (
+      !OPERATION_ID_PATTERN.test(stagingOperationId) ||
+      stagingOperationId === journal?.operationId
+    ) {
+      continue;
+    }
+    await runRefreshMutexMutation(outputRoot, ownerOperationId, {
+      op: 'rm',
+      path: join(dirname(outputRoot), entry.name),
+      recursive: true,
+      force: true,
+    });
+    prunedStagingRoot = true;
+  }
+  if (prunedStagingRoot) await syncDirectory(dirname(outputRoot));
+  if (!journal) return false;
 
   const temporaryRoot = `${outputRoot}.tmp-${journal.operationId}`;
   const backupRoot = `${outputRoot}.bak-${journal.operationId}`;
@@ -769,6 +793,46 @@ export async function recoverInterruptedPackageRefresh(outputPath, ownerOperatio
   });
   await syncDirectory(dirname(outputRoot));
   return true;
+}
+
+async function cleanUpFailedPackageRefresh(
+  outputRoot,
+  operationId,
+  temporaryRoot,
+  temporaryJournalPath,
+  journalPublished
+) {
+  const mutexState = heldRefreshAcquisitionMutexes.get(outputRoot);
+  if (mutexState?.operationId === operationId && mutexState.lostError) {
+    // A timed-out helper may still complete the command that crossed the timeout.
+    // Preserve transaction artifacts until bounded helper termination completes so
+    // the next exclusive invocation can recover the actual filesystem state.
+    await terminateRefreshMutexChild(mutexState.child);
+    return;
+  }
+  await rm(temporaryJournalPath, { force: true });
+  if (journalPublished) {
+    await recoverInterruptedPackageRefresh(outputRoot, operationId);
+  } else {
+    await rm(temporaryRoot, { recursive: true, force: true });
+  }
+}
+
+export async function preserveFailedRefreshArtifactsAfterMutexLossForTest(
+  outputPath,
+  operationId,
+  temporaryRoot,
+  temporaryJournalPath,
+  journalPublished = false
+) {
+  const outputRoot = await canonicalizePackageOutputRoot(outputPath);
+  await cleanUpFailedPackageRefresh(
+    outputRoot,
+    operationId,
+    temporaryRoot,
+    temporaryJournalPath,
+    journalPublished
+  );
 }
 
 function canonicalizeJson(value) {
@@ -1175,12 +1239,13 @@ async function generatePackage(sourcePath, expectedSha256, outputRoot, generated
     await syncDirectory(dirname(outputRoot));
     journalPublished = false;
   } catch (error) {
-    await rm(temporaryJournalPath, { force: true });
-    if (journalPublished) {
-      await recoverInterruptedPackageRefresh(outputRoot, operationId);
-    } else {
-      await rm(temporaryRoot, { recursive: true, force: true });
-    }
+    await cleanUpFailedPackageRefresh(
+      outputRoot,
+      operationId,
+      temporaryRoot,
+      temporaryJournalPath,
+      journalPublished
+    );
     throw error;
   }
 

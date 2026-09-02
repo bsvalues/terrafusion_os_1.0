@@ -26,6 +26,8 @@ import {
   acquirePackageRefreshLock,
   assertPackageRefreshLockHeld,
   failDirectorySyncAfterForTest,
+  preserveFailedRefreshArtifactsAfterMutexLossForTest,
+  recoverInterruptedPackageRefresh,
   releasePackageRefreshLock,
   terminatePackageRefreshMutexForTest,
   timeoutPackageRefreshMutexForTest,
@@ -149,6 +151,58 @@ test('Kitsap adapter treats a filesystem mutation timeout as terminal mutex loss
     );
     assert.ok(Date.now() - releaseStartedAt < 5_000, 'mutex-loss cleanup must remain bounded');
     assert.equal((await stat(`${outputPath}.refresh.lock`)).isFile(), true);
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test('Kitsap adapter preserves transaction artifacts until a timed-out mutex helper exits', async () => {
+  const root = await mkdtemp(join(tmpdir(), 'tf-kitsap-timeout-artifacts-'));
+  const outputPath = join(root, 'launch-data', 'washington');
+  const operationId = '123-12345678-1234-4123-8123-123456789abc';
+  const temporaryRoot = `${outputPath}.tmp-${operationId}`;
+  const temporaryJournalPath = `${outputPath}.refresh.json.tmp-${operationId}`;
+  try {
+    await acquirePackageRefreshLock(outputPath, operationId);
+    await mkdir(temporaryRoot, { recursive: true });
+    await writeFile(join(temporaryRoot, 'manifest.json'), '{"package":"replacement"}\n', 'utf8');
+    await writeFile(temporaryJournalPath, '{"pending":true}\n', 'utf8');
+    await assert.rejects(
+      timeoutPackageRefreshMutexForTest(outputPath, operationId),
+      /filesystem mutex was lost.*mutation timed out/i
+    );
+    await preserveFailedRefreshArtifactsAfterMutexLossForTest(
+      outputPath,
+      operationId,
+      temporaryRoot,
+      temporaryJournalPath
+    );
+    assert.equal((await stat(temporaryRoot)).isDirectory(), true);
+    assert.equal((await stat(temporaryJournalPath)).isFile(), true);
+    await assert.rejects(
+      releasePackageRefreshLock(outputPath, operationId),
+      /filesystem mutex was lost|acquisition mutex exited/i
+    );
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test('Kitsap adapter prunes only validated orphan staging roots without an active journal', async () => {
+  const root = await mkdtemp(join(tmpdir(), 'tf-kitsap-orphan-staging-'));
+  const outputPath = join(root, 'launch-data', 'washington');
+  const ownerOperation = '123-12345678-1234-4123-8123-123456789abc';
+  const orphanOperation = '456-abcdefab-cdef-4abc-8def-abcdefabcdef';
+  const orphanRoot = `${outputPath}.tmp-${orphanOperation}`;
+  const unvalidatedRoot = `${outputPath}.tmp-not-an-operation`;
+  try {
+    await acquirePackageRefreshLock(outputPath, ownerOperation);
+    await mkdir(orphanRoot, { recursive: true });
+    await mkdir(unvalidatedRoot, { recursive: true });
+    assert.equal(await recoverInterruptedPackageRefresh(outputPath, ownerOperation), false);
+    await assert.rejects(stat(orphanRoot), error => error?.code === 'ENOENT');
+    assert.equal((await stat(unvalidatedRoot)).isDirectory(), true);
+    await releasePackageRefreshLock(outputPath, ownerOperation);
   } finally {
     await rm(root, { recursive: true, force: true });
   }
