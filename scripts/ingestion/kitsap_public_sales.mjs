@@ -1203,8 +1203,8 @@ async function generatePackage(sourcePath, expectedSha256, outputRoot, generated
       source: temporaryJournalPath,
       target: journalPath,
     });
-    await syncDirectory(dirname(outputRoot));
     journalPublished = true;
+    await syncDirectory(dirname(outputRoot));
     await assertRefreshLockOwner(outputRoot, operationId);
     try {
       await runRefreshMutexMutation(outputRoot, operationId, {

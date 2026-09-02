@@ -208,6 +208,43 @@ test('Kitsap adapter prunes only validated orphan staging roots without an activ
   }
 });
 
+test('Kitsap adapter recovers staged first publication after the canonical journal exists', async () => {
+  const root = await mkdtemp(join(tmpdir(), 'tf-kitsap-published-journal-'));
+  const outputPath = join(root, 'launch-data', 'washington');
+  const operationId = '123-12345678-1234-4123-8123-123456789abc';
+  const temporaryRoot = `${outputPath}.tmp-${operationId}`;
+  const temporaryJournalPath = `${outputPath}.refresh.json.tmp-${operationId}`;
+  const journalPath = `${outputPath}.refresh.json`;
+  try {
+    await acquirePackageRefreshLock(outputPath, operationId);
+    await mkdir(temporaryRoot, { recursive: true });
+    await writeFile(join(temporaryRoot, 'manifest.json'), '{"package":"replacement"}\n', 'utf8');
+    await writeFile(
+      journalPath,
+      `${JSON.stringify({
+        schemaVersion: 'terrafusion.washington.package-refresh.v1',
+        operationId,
+      })}\n`,
+      'utf8'
+    );
+    await preserveFailedRefreshArtifactsAfterMutexLossForTest(
+      outputPath,
+      operationId,
+      temporaryRoot,
+      temporaryJournalPath,
+      true
+    );
+    assert.deepEqual(JSON.parse(await readFile(join(outputPath, 'manifest.json'), 'utf8')), {
+      package: 'replacement',
+    });
+    await assert.rejects(stat(temporaryRoot), error => error?.code === 'ENOENT');
+    await assert.rejects(stat(journalPath), error => error?.code === 'ENOENT');
+    await releasePackageRefreshLock(outputPath, operationId);
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
 test('Kitsap adapter serializes real and symlinked paths to the same package', async () => {
   const root = await mkdtemp(join(tmpdir(), 'tf-kitsap-lock-alias-'));
   const realParent = join(root, 'real');
