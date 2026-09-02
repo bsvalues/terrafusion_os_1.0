@@ -7,6 +7,7 @@ import test from 'node:test';
 
 import {
   buildThurstonCountyPackage,
+  findThurstonRecordingReferenceCollisions,
   projectThurstonPublicCandidate,
 } from './thurston_public_sales.mjs';
 
@@ -66,6 +67,23 @@ test('projects only public assessor fields at the APTE parser boundary', () => {
     yearBuilt: 2020,
   });
   assert.doesNotMatch(JSON.stringify(candidate), /PRIVATE/);
+});
+
+test('identifies recording references that contradict across parcels', () => {
+  const collisions = findThurstonRecordingReferenceCollisions([
+    { recordingReference: '5046900', parcelNumber: '56510003200' },
+    { recordingReference: '5046900', parcelNumber: '78770007800' },
+    { recordingReference: 'same-parcel', parcelNumber: '12345678900' },
+    { recordingReference: 'same-parcel', parcelNumber: '12345678900' },
+    { recordingReference: null, parcelNumber: '99999999999' },
+  ]);
+
+  assert.deepEqual([...collisions.keys()], ['5046900']);
+  assert.deepEqual([...collisions.get('5046900').parcels].sort(), [
+    '56510003200',
+    '78770007800',
+  ]);
+  assert.equal(collisions.get('5046900').rowCount, 2);
 });
 
 test('rejects source digest drift and credential-bearing county URLs before APTE parsing', async t => {

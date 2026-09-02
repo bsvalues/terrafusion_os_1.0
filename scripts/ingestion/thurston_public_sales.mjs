@@ -262,6 +262,21 @@ export function projectThurstonPublicCandidate(row, ordinal) {
   };
 }
 
+export function findThurstonRecordingReferenceCollisions(candidates) {
+  const groups = new Map();
+  for (const candidate of candidates) {
+    if (!candidate.recordingReference || !candidate.parcelNumber) continue;
+    const group = groups.get(candidate.recordingReference) ?? {
+      parcels: new Set(),
+      rowCount: 0,
+    };
+    group.parcels.add(candidate.parcelNumber);
+    group.rowCount += 1;
+    groups.set(candidate.recordingReference, group);
+  }
+  return new Map([...groups].filter(([, group]) => group.parcels.size > 1));
+}
+
 function mapRecord(candidate, source) {
   const saleYear = Number(candidate.saleDate.slice(0, 4));
   const safeYearBuilt =
@@ -402,8 +417,29 @@ export async function buildThurstonCountyPackage(
     multiParcelSales: 0,
     inactiveSales: 0,
     missingSitusAddress: 0,
+    recordingReferenceCollisions: 0,
     duplicateParcelSales: 0,
   };
+  const otherwisePublishableCandidates = candidates.filter(
+    candidate =>
+      candidate.parcelNumber &&
+      candidate.salePrice !== null &&
+      candidate.multiParcel === 'N' &&
+      candidate.status === 'A' &&
+      candidate.situsAddress &&
+      candidate.situsCity &&
+      /^\d{5}(?:-\d{4})?$/.test(candidate.situsZip ?? '')
+  );
+  const recordingReferenceCollisions = findThurstonRecordingReferenceCollisions(
+    otherwisePublishableCandidates
+  );
+  const recordingReferenceCollisionGroups = [...recordingReferenceCollisions]
+    .map(([recordingReference, group]) => ({
+      identitySha256: hashedIdentity(recordingReference),
+      parcelCount: group.parcels.size,
+      rowCount: group.rowCount,
+    }))
+    .sort((left, right) => left.identitySha256.localeCompare(right.identitySha256));
   const records = [];
   const seenParcels = new Set();
   for (const candidate of candidates) {
@@ -429,6 +465,13 @@ export async function buildThurstonCountyPackage(
       !/^\d{5}(?:-\d{4})?$/.test(candidate.situsZip ?? '')
     ) {
       quarantine.missingSitusAddress += 1;
+      continue;
+    }
+    if (
+      candidate.recordingReference &&
+      recordingReferenceCollisions.has(candidate.recordingReference)
+    ) {
+      quarantine.recordingReferenceCollisions += 1;
       continue;
     }
     if (seenParcels.has(candidate.parcelNumber)) {
@@ -528,6 +571,7 @@ export async function buildThurstonCountyPackage(
     stagedSales: records.length,
     quarantinedSales,
     quarantine,
+    quarantineEvidence: { recordingReferenceCollisionGroups },
     sources: [
       {
         key: source.key,

@@ -271,7 +271,7 @@ test('uses the authenticated Chelan, Clark, Kitsap, Pierce, Skagit, Snohomish, T
   await thurston.click();
   await expect(thurston).toHaveAttribute('aria-selected', 'true');
   await expect(context).toContainText('Thurston County');
-  await expect(context).toContainText('9,552', { timeout: 45_000 });
+  await expect(context).toContainText('9,550', { timeout: 45_000 });
   await expect(context).toContainText('2026-07-29');
   await expect(context).not.toContainText('No governed public sales state is available');
 
@@ -279,7 +279,7 @@ test('uses the authenticated Chelan, Clark, Kitsap, Pierce, Skagit, Snohomish, T
   await expect(page.getByRole('heading', { name: 'TerraForge', exact: true })).toBeVisible({
     timeout: 20_000,
   });
-  await expect(page.getByTestId('forge-county-context')).toContainText('9,552', {
+  await expect(page.getByTestId('forge-county-context')).toContainText('9,550', {
     timeout: 45_000,
   });
   const thurstonSalesForge = page
@@ -379,7 +379,7 @@ test('uses the authenticated Chelan, Clark, Kitsap, Pierce, Skagit, Snohomish, T
   await expect(page.getByTestId('forge-county-context')).not.toContainText('12,738');
   await expect(page.getByTestId('forge-county-context')).not.toContainText('3,877');
   await expect(page.getByTestId('forge-county-context')).not.toContainText('21,792');
-  await expect(page.getByTestId('forge-county-context')).not.toContainText('9,552');
+  await expect(page.getByTestId('forge-county-context')).not.toContainText('9,550');
 
   expect(requestedSalesShards).toContain('/launch-data/washington/sales/by-county/035.json');
   expect(requestedSalesShards).toContain('/launch-data/washington/sales/by-county/073.json');

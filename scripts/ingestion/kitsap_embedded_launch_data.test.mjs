@@ -9,7 +9,7 @@ import {
 } from '../ci/package_washington_launch_data.mjs';
 
 const PACKAGE_ROOT = 'frontend/apps/os-shell/public/launch-data/washington';
-const EXPECTED_MANIFEST_SHA256 = '47af51118cb011eb50e87c456c650fcc7018bbb6ea05e56a25c08a502c0bf25b';
+const EXPECTED_MANIFEST_SHA256 = '2721a1e8d8f3e075b20726bf33005d83d38f949c29c3ea78911559815682fec7';
 
 function canonicalizeJson(value) {
   if (value === null || typeof value === 'boolean' || typeof value === 'string') {
@@ -100,7 +100,7 @@ test('embedded Chelan, Clark, Kitsap, Pierce, Skagit, Snohomish, Thurston, and W
   assert.equal(status.counties[3].stagedSales, 12_738);
   assert.equal(status.counties[4].stagedSales, 3_877);
   assert.equal(status.counties[5].stagedSales, 21_792);
-  assert.equal(status.counties[6].stagedSales, 9_552);
+  assert.equal(status.counties[6].stagedSales, 9_550);
   assert.equal(status.counties[7].stagedSales, 5_109);
   assert.equal(chelanShard.countyCode, '007');
   assert.equal(chelanShard.records.length, 908);
@@ -342,12 +342,12 @@ test('embedded Chelan, Clark, Kitsap, Pierce, Skagit, Snohomish, Thurston, and W
     true
   );
   assert.equal(thurstonShard.countyCode, '067');
-  assert.equal(thurstonShard.records.length, 9_552);
+  assert.equal(thurstonShard.records.length, 9_550);
   assert.equal(thurstonShard.summary.latestSaleDate, '2026-07-29');
   assert.equal(thurstonShard.summary.reviewRecords, 0);
   assert.equal(thurstonReceipt.candidateSales, 10_211);
-  assert.equal(thurstonReceipt.stagedSales, 9_552);
-  assert.equal(thurstonReceipt.quarantinedSales, 659);
+  assert.equal(thurstonReceipt.stagedSales, 9_550);
+  assert.equal(thurstonReceipt.quarantinedSales, 661);
   assert.deepEqual(thurstonReceipt.saleValidityAuthority, {
     table: 'PAR_SALES',
     column: 'SALE_VRFY',
@@ -356,6 +356,18 @@ test('embedded Chelan, Clark, Kitsap, Pierce, Skagit, Snohomish, Thurston, and W
   });
   assert.equal(thurstonReceipt.quarantine.multiParcelSales, 623);
   assert.equal(thurstonReceipt.quarantine.missingSitusAddress, 36);
+  assert.equal(thurstonReceipt.quarantine.recordingReferenceCollisions, 2);
+  assert.deepEqual(thurstonReceipt.quarantineEvidence.recordingReferenceCollisionGroups, [
+    {
+      identitySha256: 'c9cbeb0174d2f88235831d3c9068666aa76eaa5fbfd788e252dadaad5e894710',
+      parcelCount: 2,
+      rowCount: 2,
+    },
+  ]);
+  assert.equal(
+    thurstonShard.records.some(record => record.documentNumber === '5046900'),
+    false
+  );
   assert.equal(
     thurstonShard.records.every(
       record =>
