@@ -5,8 +5,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging.Abstractions;
+using System.Text.Json;
+using TerraFusion.API.Auth;
 using TerraFusion.API.Controllers;
 using TerraFusion.API.Services;
+using TerraFusion.Core.Auth;
+using TerraFusion.Core.Counties;
 using TerraFusion.Core.Entities;
 using TerraFusion.Core.Services;
 using ComparableSale = TerraFusion.Core.Entities.ComparableSale;
@@ -59,14 +63,35 @@ public sealed class R2Wave42RatioStudyEndpointTests
             .ReturnsAsync(BentonCountyId);
         countyResolver
             .Setup(x => x.TryResolveAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(BentonCountyId);
+            .Returns<string, CancellationToken>((value, _) =>
+            {
+                if (Guid.TryParse(value, out var parsed))
+                {
+                    return Task.FromResult<Guid?>(parsed == BentonCountyId ? BentonCountyId : null);
+                }
 
+                return Task.FromResult<Guid?>(
+                    string.Equals(value, "wa-benton", StringComparison.OrdinalIgnoreCase)
+                        ? BentonCountyId
+                        : null);
+            });
+
+        var accessor = new Mock<IRequestUserContextAccessor>();
+        accessor.SetupGet(candidate => candidate.Current).Returns(new RequestUserContext(
+            true,
+            "wave42-assessor",
+            BentonCountyId.ToString("D"),
+            ["Assessor"]));
+        var contextProvider = new AuthenticatedCanonicalCountyContextProvider(
+            new AuthenticatedCountyAuthorityBinding(accessor.Object, countyResolver.Object),
+            new AuthenticatedCanonicalCountyContext(countyResolver.Object));
         var controller = new TerraForgeController(
             db,
             NullLogger<TerraForgeController>.Instance,
             new OlsRegressionService(),
             Mock.Of<ISaleQualificationService>(),
-            countyResolver.Object);
+            countyResolver.Object,
+            contextProvider);
         controller.ControllerContext = new ControllerContext
         {
             HttpContext = new DefaultHttpContext()
@@ -402,5 +427,108 @@ public sealed class R2Wave42RatioStudyEndpointTests
         ((int)body.total).Should().Be(1,
             "comps pool must contain only qualified sales — non-arms-length and exempt excluded");
         ((decimal)body.items[0].salePrice).Should().Be(400_000m);
+    }
+
+    [Fact]
+    public async Task SharedSalesEndpoints_RejectCallerSelectedForeignCounty()
+    {
+        await using var db = CreateDbContext(nameof(SharedSalesEndpoints_RejectCallerSelectedForeignCounty));
+        await SeedCountyAsync(db);
+        var ctrl = CreateController(db);
+        const string foreignCountyId = "22222222-2222-2222-2222-222222222222";
+
+        (await ctrl.GetRatioStudy(taxYear: 2026, countyId: foreignCountyId))
+            .Should().BeOfType<ForbidResult>();
+        (await ctrl.GetCompsPool(taxYear: 2026, countyId: foreignCountyId))
+            .Should().BeOfType<ForbidResult>();
+        (await ctrl.ComputeQualifications(countyId: foreignCountyId))
+            .Should().BeOfType<ForbidResult>();
+    }
+
+    [Fact]
+    public async Task DriverAnalysis_DoesNotBorrowForeignCountyImprovementFeature()
+    {
+        await using var db = CreateDbContext(nameof(DriverAnalysis_DoesNotBorrowForeignCountyImprovementFeature));
+        await SeedCountyAsync(db);
+        var sale = await SeedSaleAsync(db, 400_000m, pacsRatio: 90m);
+        sale.SalesYear = 2026;
+        db.CamaImprovementDetails.Add(new CamaImprovementDetail
+        {
+            ParcelId = sale.ParcelId,
+            TaxYear = 2026,
+            SegmentType = "BSMT",
+            CountyId = Guid.Parse("22222222-2222-2222-2222-222222222222")
+        });
+        await db.SaveChangesAsync();
+        var ctrl = CreateController(db);
+
+        var result = await ctrl.GetDriverAnalysis(taxYear: 2026);
+
+        var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+        using var body = JsonDocument.Parse(JsonSerializer.Serialize(ok.Value));
+        var basement = body.RootElement.GetProperty("features")
+            .EnumerateArray()
+            .Single(feature => feature.GetProperty("featureCode").GetString() == "BSMT");
+        basement.GetProperty("saleCount").GetInt32().Should().Be(0,
+            "a same-numbered parcel in another county must not supply improvement features");
+    }
+
+    [Fact]
+    public async Task StratifiedRatioStudy_DoesNotBorrowForeignCountyQualityGrade()
+    {
+        await using var db = CreateDbContext(nameof(StratifiedRatioStudy_DoesNotBorrowForeignCountyQualityGrade));
+        await SeedCountyAsync(db);
+        var sale = await SeedSaleAsync(db, 400_000m, pacsRatio: 90m);
+        sale.SalesYear = 2026;
+        db.CamaCharacteristics.Add(new CamaCharacteristic
+        {
+            ParcelId = sale.ParcelId,
+            TaxYear = 2026,
+            BuildingType = "R1",
+            SquareFeet = 2_000m,
+            QualityGrade = "EXCELLENT",
+            CountyId = Guid.Parse("22222222-2222-2222-2222-222222222222")
+        });
+        await db.SaveChangesAsync();
+        var ctrl = CreateController(db);
+
+        var result = await ctrl.GetStratifiedRatioStudy(taxYear: 2026, minSales: 1);
+
+        var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+        using var body = JsonDocument.Parse(JsonSerializer.Serialize(ok.Value));
+        var stratum = body.RootElement.GetProperty("strata").EnumerateArray().Single();
+        stratum.GetProperty("qualityGrade").GetString().Should().Be("Unknown",
+            "a same-numbered parcel in another county must not supply its quality grade");
+    }
+
+    [Fact]
+    public async Task SpatialAutocorrelation_FailsClosedWhileGeometryHasNoCountyOwnership()
+    {
+        await using var db = CreateDbContext(nameof(SpatialAutocorrelation_FailsClosedWhileGeometryHasNoCountyOwnership));
+        await SeedCountyAsync(db);
+        for (var index = 0; index < 10; index++)
+        {
+            var sale = await SeedSaleAsync(db, 300_000m + index * 10_000m, pacsRatio: 90m + index);
+            sale.SalesYear = 2026;
+            db.GisParcelGeometries.Add(new GisParcelGeometry
+            {
+                ParcelId = sale.ParcelId,
+                CentroidLat = 46.20 + index * 0.01,
+                CentroidLng = -119.10 - index * 0.01,
+            });
+        }
+        await db.SaveChangesAsync();
+        var ctrl = CreateController(db);
+
+        var result = await ctrl.GetSpatialAutocorrelation(taxYear: 2026);
+
+        var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+        using var body = JsonDocument.Parse(JsonSerializer.Serialize(ok.Value));
+        body.RootElement.GetProperty("available").GetBoolean().Should().BeFalse();
+        body.RootElement.GetProperty("reasonCode").GetString()
+            .Should().Be("COUNTY_SCOPED_GEOMETRY_UNAVAILABLE",
+                "unowned geometry must never be joined to authenticated county sales");
+        body.RootElement.TryGetProperty("moransI", out _).Should().BeFalse(
+            "the endpoint must not compute a result from geometry without county ownership");
     }
 }

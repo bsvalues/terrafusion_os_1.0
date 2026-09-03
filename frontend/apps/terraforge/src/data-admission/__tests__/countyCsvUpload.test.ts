@@ -2,7 +2,12 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const apiFetchMock = vi.fn();
 
-import { fetchCountyCsvUploadHistory, uploadCountyCsv } from '../countyCsvUpload';
+import {
+  fetchCountyCsvPromotedSalesAvailability,
+  fetchCountyCsvUploadHistory,
+  promoteCountyCsvSales,
+  uploadCountyCsv,
+} from '../countyCsvUpload';
 
 function response(body: unknown, ok = true, status = 200): Response {
   return {
@@ -186,5 +191,64 @@ describe('county CSV upload client', () => {
     await expect(
       uploadCountyCsv(apiFetchMock, new File(['bad'], 'bad.csv', { type: 'text/csv' }), 'Parcels')
     ).rejects.toThrow(/HTTP 400.*CSV_ADMISSION_DENIED/i);
+  });
+
+  it('promotes one batch without accepting county identity from the caller', async () => {
+    const payload = {
+      contractId: 'wal.county-upload.terraforge-sales-promotion.v1',
+      countyKey: 'wa-spokane',
+      countyName: 'Spokane',
+      disposition: 'Promoted',
+      promotion: {
+        batchId: 'batch-id',
+        countyId: 'county-id',
+        contractId: 'wal.county-upload.terraforge-sales-promotion.v1',
+        promotedRowCount: 2,
+        latestSaleDate: '2026-01-15',
+        promotedAtUtc: '2026-09-03T10:00:00Z',
+      },
+    };
+    apiFetchMock.mockResolvedValue(response(payload));
+    await expect(promoteCountyCsvSales(apiFetchMock, 'batch-id')).resolves.toEqual(payload);
+    expect(apiFetchMock).toHaveBeenCalledWith('/upload/batch-id/promote', {
+      method: 'POST',
+      signal: undefined,
+    });
+  });
+
+  it('accepts an immutable zero-new-sale receipt for a fully overlapping batch', async () => {
+    const payload = {
+      contractId: 'wal.county-upload.terraforge-sales-promotion.v1',
+      countyKey: 'wa-spokane',
+      countyName: 'Spokane',
+      disposition: 'Promoted',
+      promotion: {
+        batchId: 'overlap-batch-id',
+        countyId: 'county-id',
+        contractId: 'wal.county-upload.terraforge-sales-promotion.v1',
+        promotedRowCount: 0,
+        latestSaleDate: '2026-01-15',
+        promotedAtUtc: '2026-09-03T10:00:00Z',
+      },
+    };
+    apiFetchMock.mockResolvedValue(response(payload));
+
+    await expect(promoteCountyCsvSales(apiFetchMock, 'overlap-batch-id')).resolves.toEqual(payload);
+  });
+
+  it('reads only authenticated county promoted-sales availability', async () => {
+    const payload = {
+      contractId: 'wal.county-upload.terraforge-sales-promotion.v1',
+      countyId: 'county-id',
+      countyKey: 'wa-spokane',
+      countyName: 'Spokane',
+      promotedSales: 2,
+      latestSaleDate: '2026-01-15',
+      recommendedStudyYear: 2027,
+      salesReviewAvailable: true,
+    };
+    apiFetchMock.mockResolvedValue(response(payload));
+    await expect(fetchCountyCsvPromotedSalesAvailability(apiFetchMock)).resolves.toEqual(payload);
+    expect(apiFetchMock).toHaveBeenCalledWith('/upload/promoted-sales', { signal: undefined });
   });
 });

@@ -24,8 +24,10 @@ namespace TerraFusion.Unit.Tests.Import;
 
 public sealed class CountyCsvUploadAdmissionServiceRegistrationTests
 {
+    private const string AdmissionLedgerMigrationId =
+        "20260902000000_WAL002GCountyCsvUploadAdmissionLedger";
     private const string MigrationId =
-        "20260903000000_WAL002JCountyCsvRowStaging";
+        "20260903010000_WAL002KCountyCsvSalesPromotion";
     private static readonly WashingtonCountyIdentity Benton = ResolveCounty("Benton");
     private static readonly WashingtonCountyIdentity Franklin = ResolveCounty("Franklin");
     private static readonly Guid BentonId =
@@ -55,6 +57,8 @@ public sealed class CountyCsvUploadAdmissionServiceRegistrationTests
             secondScope.ServiceProvider.GetRequiredService<ICountyCsvUploadAdmissionLedger>());
         Assert.IsType<CountyCsvUploadRowStager>(
             firstScope.ServiceProvider.GetRequiredService<ICountyCsvUploadRowStager>());
+        Assert.IsType<CountyCsvUploadPromoter>(
+            firstScope.ServiceProvider.GetRequiredService<ICountyCsvUploadPromoter>());
 
         var factory = firstScope.ServiceProvider
             .GetRequiredService<IDbContextFactory<TerraFusionDbContext>>();
@@ -366,14 +370,15 @@ public sealed class CountyCsvUploadAdmissionServiceRegistrationTests
 
         var migrations = context.Database.GetMigrations().ToArray();
         Assert.Equal(MigrationId, migrations[^1]);
-        var previousMigration = migrations[^2];
-        foreach (var migration in migrations[..^2])
+        var admissionLedgerMigrationIndex = Array.IndexOf(
+            migrations,
+            AdmissionLedgerMigrationId);
+        Assert.InRange(admissionLedgerMigrationIndex, 0, migrations.Length - 1);
+        foreach (var migration in migrations[..admissionLedgerMigrationIndex])
         {
             await context.Database.ExecuteSqlInterpolatedAsync(
                 $"INSERT INTO \"__EFMigrationsHistory\" (\"MigrationId\", \"ProductVersion\") VALUES ({migration}, {"8.0.0"})");
         }
-
-        await context.GetService<IMigrator>().MigrateAsync(previousMigration);
     }
 
     private static async Task<int> CountBatchesAsync(IServiceProvider services)

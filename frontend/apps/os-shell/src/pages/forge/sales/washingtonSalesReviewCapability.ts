@@ -93,21 +93,19 @@ export type WashingtonSalesReviewHostedShardVerification =
     }
   | { state: 'unavailable' };
 
-export type WashingtonSalesReviewAvailability =
-  | 'available'
-  | 'verifying'
-  | 'unavailable';
+export type WashingtonSalesReviewAvailability = 'available' | 'verifying' | 'unavailable';
 
 export interface WashingtonCountiesHubHandoff {
   countyCode: string;
   countyName: string;
   resetValuationScope: true;
   launchContext: 'washington-counties-hub';
-  dataTrustTier: 'public-reference-not-county-certified';
-  referencePackageSource: WashingtonReferencePackageSource;
+  dataTrustTier: 'public-reference-not-county-certified' | 'county-provided-validated-upload';
+  referencePackageSource: WashingtonReferencePackageSource | 'county-upload';
   referenceDataPosture: string;
   referenceRecordCount: number | null;
   latestReferenceSaleDate: string | null;
+  taxYear?: number | null;
   salesReviewAvailability: WashingtonSalesReviewAvailability;
   salesReviewUnavailableMessage: string | null;
 }
@@ -135,8 +133,10 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 function isSyntheticReferenceMarker(value: unknown): boolean {
   if (typeof value !== 'string') return false;
   const normalizedValue = normalizeReferenceDataPosture(value);
-  return normalizedValue === REPOSITORY_REFERENCE_DEMO_POSTURE
-    || normalizedValue === SYNTHETIC_REFERENCE_RECORD_TYPE;
+  return (
+    normalizedValue === REPOSITORY_REFERENCE_DEMO_POSTURE ||
+    normalizedValue === SYNTHETIC_REFERENCE_RECORD_TYPE
+  );
 }
 
 function isNonEmptyString(value: unknown): value is string {
@@ -158,9 +158,9 @@ function readSha256DigestArray(value: unknown): string[] | null {
 }
 
 function readPinnedHostedManifestSha256(): string | null {
-  const value = String(
-    getViteEnv().VITE_WASHINGTON_LAUNCH_MANIFEST_SHA256 ?? '',
-  ).trim().toLowerCase();
+  const value = String(getViteEnv().VITE_WASHINGTON_LAUNCH_MANIFEST_SHA256 ?? '')
+    .trim()
+    .toLowerCase();
   return isSha256Digest(value) ? value : null;
 }
 
@@ -168,11 +168,11 @@ function parseTrustedHttpsUrl(value: unknown): URL | null {
   if (!isNonEmptyString(value)) return null;
   try {
     const url = new URL(value);
-    return url.protocol === 'https:'
-      && url.hostname.length > 0
-      && url.username.length === 0
-      && url.password.length === 0
-      && (url.port === '' || url.port === '443')
+    return url.protocol === 'https:' &&
+      url.hostname.length > 0 &&
+      url.username.length === 0 &&
+      url.password.length === 0 &&
+      (url.port === '' || url.port === '443')
       ? url
       : null;
   } catch {
@@ -187,33 +187,34 @@ function isOfficialCountySourceUrl(value: unknown, officialSourceBaseUrl: string
 
   const officialHostname = officialUrl.hostname.toLowerCase().replace(/^www\./, '');
   const sourceHostname = sourceUrl.hostname.toLowerCase().replace(/^www\./, '');
-  return sourceHostname === officialHostname
-    || sourceHostname.endsWith(`.${officialHostname}`);
+  return sourceHostname === officialHostname || sourceHostname.endsWith(`.${officialHostname}`);
 }
 
 function hasAffirmativePublicSourceProvenance(
   record: Record<string, unknown>,
-  officialSourceBaseUrl: string,
+  officialSourceBaseUrl: string
 ): boolean {
   if (!isRecord(record.provenance)) return false;
   const provenance = record.provenance;
   const sourceUrlIsOfficial = isOfficialCountySourceUrl(
     provenance.sourceUrl,
-    officialSourceBaseUrl,
+    officialSourceBaseUrl
   );
   const sourceFinalUrlIsOfficial = isOfficialCountySourceUrl(
     provenance.sourceFinalUrl,
-    officialSourceBaseUrl,
+    officialSourceBaseUrl
   );
 
-  return isNonEmptyString(record.candidateSource)
-    && (sourceUrlIsOfficial || sourceFinalUrlIsOfficial)
-    && (provenance.sourceUrl === null || sourceUrlIsOfficial)
-    && (provenance.sourceFinalUrl === null || sourceFinalUrlIsOfficial)
-    && isNonEmptyString(provenance.sourcePayloadPath)
-    && isSha256Digest(provenance.sourcePayloadSha256)
-    && isNonEmptyString(provenance.candidateIndexSource)
-    && isNonEmptyString(provenance.candidateRecordType);
+  return (
+    isNonEmptyString(record.candidateSource) &&
+    (sourceUrlIsOfficial || sourceFinalUrlIsOfficial) &&
+    (provenance.sourceUrl === null || sourceUrlIsOfficial) &&
+    (provenance.sourceFinalUrl === null || sourceFinalUrlIsOfficial) &&
+    isNonEmptyString(provenance.sourcePayloadPath) &&
+    isSha256Digest(provenance.sourcePayloadSha256) &&
+    isNonEmptyString(provenance.candidateIndexSource) &&
+    isNonEmptyString(provenance.candidateRecordType)
+  );
 }
 
 function canonicalizeJson(value: unknown): string {
@@ -243,11 +244,11 @@ function canonicalizeJson(value: unknown): string {
  * public records remain unavailable rather than being weakly attested.
  */
 export async function computeWashingtonLaunchCanonicalJsonSha256(
-  value: unknown,
+  value: unknown
 ): Promise<string | null> {
   if (
-    typeof TextEncoder === 'undefined'
-    || typeof globalThis.crypto?.subtle?.digest !== 'function'
+    typeof TextEncoder === 'undefined' ||
+    typeof globalThis.crypto?.subtle?.digest !== 'function'
   ) {
     return null;
   }
@@ -265,55 +266,57 @@ export async function computeWashingtonLaunchCanonicalJsonSha256(
 
 function getHostedSalesShardAttestation(
   manifest: unknown,
-  input: WashingtonSalesReviewCapabilityInput,
+  input: WashingtonSalesReviewCapabilityInput
 ): WashingtonLaunchSalesShardAttestation | null {
   const officialSource = getWashingtonPublicSourceInventory(input.county);
   if (
-    !officialSource
-    || officialSource.countyCode !== input.countyCode
-    || !isRecord(manifest)
-    || manifest.schemaVersion !== WASHINGTON_LAUNCH_MANIFEST_SCHEMA
-    || manifest.statusSchemaVersion !== input.packageIdentity.statusSchemaVersion
-    || !isSha256Digest(manifest.statusCanonicalJsonSha256)
-    || manifest.statusCanonicalJsonSha256
-      !== input.packageIdentity.statusCanonicalJsonSha256
-    || manifest.generatedAt !== input.packageIdentity.generatedAt
-    || normalizeReferenceDataPosture(String(manifest.sourcePosture ?? ''))
-      !== normalizeReferenceDataPosture(input.packageIdentity.sourcePosture)
-    || !Array.isArray(manifest.salesShardAttestations)
+    !officialSource ||
+    officialSource.countyCode !== input.countyCode ||
+    !isRecord(manifest) ||
+    manifest.schemaVersion !== WASHINGTON_LAUNCH_MANIFEST_SCHEMA ||
+    manifest.statusSchemaVersion !== input.packageIdentity.statusSchemaVersion ||
+    !isSha256Digest(manifest.statusCanonicalJsonSha256) ||
+    manifest.statusCanonicalJsonSha256 !== input.packageIdentity.statusCanonicalJsonSha256 ||
+    manifest.generatedAt !== input.packageIdentity.generatedAt ||
+    normalizeReferenceDataPosture(String(manifest.sourcePosture ?? '')) !==
+      normalizeReferenceDataPosture(input.packageIdentity.sourcePosture) ||
+    !Array.isArray(manifest.salesShardAttestations)
   ) {
     return null;
   }
 
-  const matchingAttestations = manifest.salesShardAttestations.filter((value) =>
-    isRecord(value) && value.countyCode === input.countyCode,
+  const matchingAttestations = manifest.salesShardAttestations.filter(
+    (value) => isRecord(value) && value.countyCode === input.countyCode
   );
   if (matchingAttestations.length !== 1) return null;
   const attestation = matchingAttestations[0];
   if (!isRecord(attestation)) return null;
   const sourcePayloadSha256 = readSha256DigestArray(attestation.sourcePayloadSha256);
 
-  const officialSourceOrigin = parseTrustedHttpsUrl(
-    officialSource.officialAssessorBaseUrl,
-  )?.origin;
-  const attestedSourceOrigin = parseTrustedHttpsUrl(
-    attestation.officialSourceBaseUrl,
-  )?.origin;
-  const attestedCountyName = typeof attestation.county === 'string'
-    ? attestation.county.replace(/\s+county$/i, '').trim().toLowerCase()
-    : '';
-  const expectedCountyName = input.county.replace(/\s+county$/i, '').trim().toLowerCase();
+  const officialSourceOrigin = parseTrustedHttpsUrl(officialSource.officialAssessorBaseUrl)?.origin;
+  const attestedSourceOrigin = parseTrustedHttpsUrl(attestation.officialSourceBaseUrl)?.origin;
+  const attestedCountyName =
+    typeof attestation.county === 'string'
+      ? attestation.county
+          .replace(/\s+county$/i, '')
+          .trim()
+          .toLowerCase()
+      : '';
+  const expectedCountyName = input.county
+    .replace(/\s+county$/i, '')
+    .trim()
+    .toLowerCase();
 
   if (
-    attestation.algorithm !== 'SHA-256'
-    || !isSha256Digest(attestation.canonicalJsonSha256)
-    || !sourcePayloadSha256
-    || attestedCountyName !== expectedCountyName
-    || attestation.route !== input.staticRoutes.salesShard
-    || normalizeReferenceDataPosture(String(attestation.sourcePosture ?? ''))
-      !== normalizeReferenceDataPosture(input.primarySourceMode)
-    || !officialSourceOrigin
-    || attestedSourceOrigin !== officialSourceOrigin
+    attestation.algorithm !== 'SHA-256' ||
+    !isSha256Digest(attestation.canonicalJsonSha256) ||
+    !sourcePayloadSha256 ||
+    attestedCountyName !== expectedCountyName ||
+    attestation.route !== input.staticRoutes.salesShard ||
+    normalizeReferenceDataPosture(String(attestation.sourcePosture ?? '')) !==
+      normalizeReferenceDataPosture(input.primarySourceMode) ||
+    !officialSourceOrigin ||
+    attestedSourceOrigin !== officialSourceOrigin
   ) {
     return null;
   }
@@ -344,38 +347,42 @@ function shardRecordProvenanceSupportsPosture(
   value: unknown,
   expectedPosture: string,
   officialSourceBaseUrl: string,
-  attestedSourcePayloadDigests: ReadonlySet<string>,
+  attestedSourcePayloadDigests: ReadonlySet<string>
 ): boolean {
   if (!isRecord(value) || !Array.isArray(value.records)) return true;
   const normalizedExpectedPosture = normalizeReferenceDataPosture(expectedPosture);
 
   return value.records.every((record) => {
     if (!isRecord(record)) return true;
-    const normalizedSourceMode = typeof record.sourceMode === 'string'
-      ? normalizeReferenceDataPosture(record.sourceMode)
-      : '';
+    const normalizedSourceMode =
+      typeof record.sourceMode === 'string' ? normalizeReferenceDataPosture(record.sourceMode) : '';
     const candidateRecordType = isRecord(record.provenance)
       ? record.provenance.candidateRecordType
       : null;
 
-    return normalizedSourceMode === normalizedExpectedPosture
-      && hasAffirmativePublicSourceProvenance(record, officialSourceBaseUrl)
-      && isRecord(record.provenance)
-      && typeof record.provenance.sourcePayloadSha256 === 'string'
-      && attestedSourcePayloadDigests.has(record.provenance.sourcePayloadSha256)
-      && !isSyntheticReferenceMarker(record.sourceMode)
-      && !isSyntheticReferenceMarker(record.candidateSource)
-      && !isSyntheticReferenceMarker(candidateRecordType);
+    return (
+      normalizedSourceMode === normalizedExpectedPosture &&
+      hasAffirmativePublicSourceProvenance(record, officialSourceBaseUrl) &&
+      isRecord(record.provenance) &&
+      typeof record.provenance.sourcePayloadSha256 === 'string' &&
+      attestedSourcePayloadDigests.has(record.provenance.sourcePayloadSha256) &&
+      !isSyntheticReferenceMarker(record.sourceMode) &&
+      !isSyntheticReferenceMarker(record.candidateSource) &&
+      !isSyntheticReferenceMarker(candidateRecordType)
+    );
   });
 }
 
 function isNullableFiniteNumber(value: unknown): value is number | null {
-  return value === null
-    || (typeof value === 'number' && Number.isFinite(value) && value >= 0);
+  return value === null || (typeof value === 'number' && Number.isFinite(value) && value >= 0);
 }
 
 function isNullableString(value: unknown): value is string | null {
   return value === null || typeof value === 'string';
+}
+
+function isStudyYear(value: unknown): value is number {
+  return typeof value === 'number' && Number.isSafeInteger(value) && value >= 2 && value <= 10_000;
 }
 
 /**
@@ -384,37 +391,40 @@ function isNullableString(value: unknown): value is string | null {
  * county authority on protected TerraFusion APIs.
  */
 export function parseWashingtonCountiesHubHandoff(
-  metadata: Record<string, unknown> | undefined,
+  metadata: Record<string, unknown> | undefined
 ): WashingtonCountiesHubHandoff | null {
   if (
-    !metadata
-    || metadata.launchContext !== 'washington-counties-hub'
-    || metadata.dataTrustTier !== 'public-reference-not-county-certified'
-    || typeof metadata.countyCode !== 'string'
-    || typeof metadata.countyName !== 'string'
-    || metadata.resetValuationScope !== true
-    || (
-      metadata.referencePackageSource !== 'hosted'
-      && metadata.referencePackageSource !== 'repository-reference'
-    )
-    || typeof metadata.referenceDataPosture !== 'string'
-    || !(
-      metadata.referenceRecordCount === undefined
-      || isNullableFiniteNumber(metadata.referenceRecordCount)
-    )
-    || !(
-      metadata.latestReferenceSaleDate === undefined
-      || isNullableString(metadata.latestReferenceSaleDate)
-    )
-    || (
-      metadata.salesReviewAvailability !== undefined
-      && metadata.salesReviewAvailability !== 'available'
-      && metadata.salesReviewAvailability !== 'verifying'
-      && metadata.salesReviewAvailability !== 'unavailable'
-    )
-    || !(
-      metadata.salesReviewUnavailableMessage === undefined
-      || isNullableString(metadata.salesReviewUnavailableMessage)
+    !metadata ||
+    metadata.launchContext !== 'washington-counties-hub' ||
+    (metadata.dataTrustTier !== 'public-reference-not-county-certified' &&
+      metadata.dataTrustTier !== 'county-provided-validated-upload') ||
+    typeof metadata.countyCode !== 'string' ||
+    typeof metadata.countyName !== 'string' ||
+    metadata.resetValuationScope !== true ||
+    (metadata.referencePackageSource !== 'hosted' &&
+      metadata.referencePackageSource !== 'repository-reference' &&
+      metadata.referencePackageSource !== 'county-upload') ||
+    typeof metadata.referenceDataPosture !== 'string' ||
+    !(
+      metadata.referenceRecordCount === undefined ||
+      isNullableFiniteNumber(metadata.referenceRecordCount)
+    ) ||
+    !(
+      metadata.latestReferenceSaleDate === undefined ||
+      isNullableString(metadata.latestReferenceSaleDate)
+    ) ||
+    !(
+      metadata.taxYear === undefined ||
+      metadata.taxYear === null ||
+      isStudyYear(metadata.taxYear)
+    ) ||
+    (metadata.salesReviewAvailability !== undefined &&
+      metadata.salesReviewAvailability !== 'available' &&
+      metadata.salesReviewAvailability !== 'verifying' &&
+      metadata.salesReviewAvailability !== 'unavailable') ||
+    !(
+      metadata.salesReviewUnavailableMessage === undefined ||
+      isNullableString(metadata.salesReviewUnavailableMessage)
     )
   ) {
     return null;
@@ -422,39 +432,68 @@ export function parseWashingtonCountiesHubHandoff(
 
   const countyName = metadata.countyName.replace(/\s+county$/i, '').trim();
   const registeredCounty = WASHINGTON_COUNTIES.find(
-    (county) => county.code === metadata.countyCode
-      && county.name.toLowerCase() === countyName.toLowerCase(),
+    (county) =>
+      county.code === metadata.countyCode && county.name.toLowerCase() === countyName.toLowerCase()
   );
   if (!registeredCounty) return null;
 
-  const referenceRecordCount = typeof metadata.referenceRecordCount === 'number'
-    ? metadata.referenceRecordCount
-    : null;
-  const latestReferenceSaleDate = typeof metadata.latestReferenceSaleDate === 'string'
-    ? metadata.latestReferenceSaleDate
-    : null;
-  const salesReviewAvailability = metadata.salesReviewAvailability === 'available'
-    ? 'available'
-    : metadata.salesReviewAvailability === 'verifying'
-      ? 'verifying'
-      : 'unavailable';
-  const salesReviewUnavailableMessage = typeof metadata.salesReviewUnavailableMessage === 'string'
-    ? metadata.salesReviewUnavailableMessage
-    : null;
+  const referenceRecordCount =
+    typeof metadata.referenceRecordCount === 'number' ? metadata.referenceRecordCount : null;
+  const latestReferenceSaleDate =
+    typeof metadata.latestReferenceSaleDate === 'string' ? metadata.latestReferenceSaleDate : null;
+  const salesReviewAvailability =
+    metadata.salesReviewAvailability === 'available'
+      ? 'available'
+      : metadata.salesReviewAvailability === 'verifying'
+        ? 'verifying'
+        : 'unavailable';
+  const salesReviewUnavailableMessage =
+    typeof metadata.salesReviewUnavailableMessage === 'string'
+      ? metadata.salesReviewUnavailableMessage
+      : null;
+
+  if (metadata.dataTrustTier === 'county-provided-validated-upload') {
+    if (
+      metadata.referencePackageSource !== 'county-upload' ||
+      metadata.referenceDataPosture !== 'county_provided_validated_upload' ||
+      salesReviewAvailability !== 'available' ||
+      referenceRecordCount === null ||
+      referenceRecordCount <= 0 ||
+      latestReferenceSaleDate === null ||
+      !isStudyYear(metadata.taxYear) ||
+      salesReviewUnavailableMessage !== null
+    ) {
+      return null;
+    }
+    return {
+      countyCode: registeredCounty.code,
+      countyName: registeredCounty.name,
+      resetValuationScope: true,
+      launchContext: 'washington-counties-hub',
+      dataTrustTier: 'county-provided-validated-upload',
+      referencePackageSource: 'county-upload',
+      referenceDataPosture: 'county_provided_validated_upload',
+      referenceRecordCount,
+      latestReferenceSaleDate,
+      taxYear: metadata.taxYear,
+      salesReviewAvailability: 'available',
+      salesReviewUnavailableMessage: null,
+    };
+  }
+
+  if (metadata.referencePackageSource === 'county-upload') return null;
 
   // The tracked repository-reference package is a synthetic navigation fixture.
   // A structurally valid hosted availability claim remains navigation context;
   // every workflow boundary must independently attest the exact county package
   // before treating the claim as available.
   if (
-    salesReviewAvailability === 'available'
-    && (
-      metadata.referencePackageSource !== 'hosted'
-      || referenceRecordCount === null
-      || referenceRecordCount <= 0
-      || isUnavailableReferenceDataPosture(metadata.referenceDataPosture)
-      || isRepositoryReferenceDemoPosture(metadata.referenceDataPosture)
-    )
+    salesReviewAvailability === 'available' &&
+    (metadata.referencePackageSource !== 'hosted' ||
+      referenceRecordCount === null ||
+      referenceRecordCount <= 0 ||
+      isUnavailableReferenceDataPosture(metadata.referenceDataPosture) ||
+      isRepositoryReferenceDemoPosture(metadata.referenceDataPosture))
   ) {
     return null;
   }
@@ -463,15 +502,13 @@ export function parseWashingtonCountiesHubHandoff(
   // hosted package and must be re-attested by TerraForge before any public
   // workflow is enabled.
   if (
-    salesReviewAvailability === 'verifying'
-    && (
-      metadata.referencePackageSource !== 'hosted'
-      || referenceRecordCount !== null
-      || latestReferenceSaleDate !== null
-      || salesReviewUnavailableMessage !== null
-      || isUnavailableReferenceDataPosture(metadata.referenceDataPosture)
-      || isRepositoryReferenceDemoPosture(metadata.referenceDataPosture)
-    )
+    salesReviewAvailability === 'verifying' &&
+    (metadata.referencePackageSource !== 'hosted' ||
+      referenceRecordCount !== null ||
+      latestReferenceSaleDate !== null ||
+      salesReviewUnavailableMessage !== null ||
+      isUnavailableReferenceDataPosture(metadata.referenceDataPosture) ||
+      isRepositoryReferenceDemoPosture(metadata.referenceDataPosture))
   ) {
     return null;
   }
@@ -492,11 +529,14 @@ export function parseWashingtonCountiesHubHandoff(
 }
 
 export function getWashingtonSalesReviewCapability(
-  input: WashingtonSalesReviewCapabilityInput,
+  input: WashingtonSalesReviewCapabilityInput
 ): WashingtonSalesReviewCapability {
-  const observedName = input.county.replace(/\s+county$/i, '').trim().toLowerCase();
+  const observedName = input.county
+    .replace(/\s+county$/i, '')
+    .trim()
+    .toLowerCase();
   const registeredCounty = WASHINGTON_COUNTIES.some(
-    (county) => county.code === input.countyCode && county.name.toLowerCase() === observedName,
+    (county) => county.code === input.countyCode && county.name.toLowerCase() === observedName
   );
   const normalizedPosture = normalizeReferenceDataPosture(input.primarySourceMode);
   const isSyntheticReference = isRepositoryReferenceDemoPosture(input.primarySourceMode);
@@ -508,20 +548,21 @@ export function getWashingtonSalesReviewCapability(
   const referenceData: WashingtonSalesReviewReferenceData = {
     posture: normalizedPosture || 'unavailable',
     isSyntheticReference,
-    observed: registeredCounty
-      && !isSyntheticReference
-      && !isSourcePostureUnavailable
-      && salesClaimsHaveShardEvidence
-      && Boolean(input.staticRoutes.salesShard.trim())
-      ? {
-          recordCount: input.stagedSales,
-          latestSaleDate: input.latestSaleDate,
-          needsReview: input.needsReview,
-          runtimePosture: input.prometheusStatus,
-          sourceStatus: input.confidence.rawStatus,
-          sourceDriftDetected: input.confidence.rawDriftDetected,
-        }
-      : null,
+    observed:
+      registeredCounty &&
+      !isSyntheticReference &&
+      !isSourcePostureUnavailable &&
+      salesClaimsHaveShardEvidence &&
+      Boolean(input.staticRoutes.salesShard.trim())
+        ? {
+            recordCount: input.stagedSales,
+            latestSaleDate: input.latestSaleDate,
+            needsReview: input.needsReview,
+            runtimePosture: input.prometheusStatus,
+            sourceStatus: input.confidence.rawStatus,
+            sourceDriftDetected: input.confidence.rawDriftDetected,
+          }
+        : null,
   };
 
   if (!registeredCounty) {
@@ -530,8 +571,8 @@ export function getWashingtonSalesReviewCapability(
       status: 'county-context-invalid',
       statusLabel: 'Registry mismatch',
       unavailableMessage:
-        'The observed county name and code do not match the Washington registry. '
-        + 'Sales review remains unavailable instead of guessing a county context.',
+        'The observed county name and code do not match the Washington registry. ' +
+        'Sales review remains unavailable instead of guessing a county context.',
       referenceData,
     };
   }
@@ -542,8 +583,8 @@ export function getWashingtonSalesReviewCapability(
       status: 'reference-demo-only',
       statusLabel: 'Reference demo only',
       unavailableMessage:
-        'Only invented repository reference records are available for this county. '
-        + 'They remain visible as test evidence but cannot enable an assessor sales workflow.',
+        'Only invented repository reference records are available for this county. ' +
+        'They remain visible as test evidence but cannot enable an assessor sales workflow.',
       referenceData,
     };
   }
@@ -554,23 +595,20 @@ export function getWashingtonSalesReviewCapability(
       status: 'source-posture-unavailable',
       statusLabel: 'Source gap',
       unavailableMessage:
-        'The governed source posture is unavailable for this county. '
-        + 'Sales review remains unavailable instead of inferring public-data trust.',
+        'The governed source posture is unavailable for this county. ' +
+        'Sales review remains unavailable instead of inferring public-data trust.',
       referenceData,
     };
   }
 
-  if (
-    !input.staticRoutes.salesShard.trim()
-    || input.salesShardVerification === 'unavailable'
-  ) {
+  if (!input.staticRoutes.salesShard.trim() || input.salesShardVerification === 'unavailable') {
     return {
       eligible: false,
       status: 'sales-shard-unavailable',
       statusLabel: 'Source gap',
       unavailableMessage:
-        'The governed TerraForge sales package is unavailable for this county. '
-        + 'Sales review remains unavailable instead of falling back to another county.',
+        'The governed TerraForge sales package is unavailable for this county. ' +
+        'Sales review remains unavailable instead of falling back to another county.',
       referenceData,
     };
   }
@@ -581,8 +619,8 @@ export function getWashingtonSalesReviewCapability(
       status: 'sales-shard-verification-required',
       statusLabel: 'Verification required',
       unavailableMessage:
-        'The linked public sales package must be validated for this county. '
-        + 'Select the county and Counties HUB will verify it without loading other counties.',
+        'The linked public sales package must be validated for this county. ' +
+        'Select the county and Counties HUB will verify it without loading other counties.',
       referenceData,
     };
   }
@@ -593,8 +631,8 @@ export function getWashingtonSalesReviewCapability(
       status: 'no-staged-sales',
       statusLabel: 'Source gap',
       unavailableMessage:
-        'No governed staged sales are available for this county. '
-        + 'Sales review remains unavailable instead of falling back to another county.',
+        'No governed staged sales are available for this county. ' +
+        'Sales review remains unavailable instead of falling back to another county.',
       referenceData,
     };
   }
@@ -627,7 +665,7 @@ function abortErrorForSignal(signal: AbortSignal): Error {
 export async function verifyWashingtonSalesReviewHostedShard(
   input: WashingtonSalesReviewCapabilityInput,
   signal?: AbortSignal,
-  isCurrentAttempt: () => boolean = () => true,
+  isCurrentAttempt: () => boolean = () => true
 ): Promise<WashingtonSalesReviewHostedShardVerification> {
   const evictHostedShard = (): void => {
     if (isCurrentAttempt()) {
@@ -655,13 +693,10 @@ export async function verifyWashingtonSalesReviewHostedShard(
       signal,
     });
     if (!manifestResponse.ok) return unavailable();
-    const manifest = await manifestResponse.json() as unknown;
+    const manifest = (await manifestResponse.json()) as unknown;
     const pinnedManifestDigest = readPinnedHostedManifestSha256();
     const observedManifestDigest = await computeWashingtonLaunchCanonicalJsonSha256(manifest);
-    if (
-      !pinnedManifestDigest
-      || observedManifestDigest !== pinnedManifestDigest
-    ) {
+    if (!pinnedManifestDigest || observedManifestDigest !== pinnedManifestDigest) {
       return unavailable();
     }
     const attestation = getHostedSalesShardAttestation(manifest, input);
@@ -673,15 +708,15 @@ export async function verifyWashingtonSalesReviewHostedShard(
     });
     if (!response.ok) return unavailable();
 
-    const payload = await response.json() as unknown;
+    const payload = (await response.json()) as unknown;
     const shardDigest = await computeWashingtonLaunchCanonicalJsonSha256(payload);
     if (
-      shardDigest !== attestation.canonicalJsonSha256
-      || !shardRecordProvenanceSupportsPosture(
+      shardDigest !== attestation.canonicalJsonSha256 ||
+      !shardRecordProvenanceSupportsPosture(
         payload,
         input.primarySourceMode,
         attestation.officialSourceBaseUrl,
-        new Set(attestation.sourcePayloadSha256),
+        new Set(attestation.sourcePayloadSha256)
       )
     ) {
       return unavailable();
@@ -690,7 +725,7 @@ export async function verifyWashingtonSalesReviewHostedShard(
     const candidate = validateAttestedWashingtonLaunchCountyShard(
       payload,
       input.countyCode,
-      'hosted',
+      'hosted'
     );
     return {
       state: 'verified',

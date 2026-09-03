@@ -35,11 +35,17 @@ describe('Statistics Studio county truth contract', () => {
     expect(drivers).not.toContain('Benton County');
   });
 
-  it('active TerraForge ratio-study endpoints require county scope instead of Benton fallback', () => {
-    const controller = read('../../../../../../backend/src/TerraFusion.API/Controllers/TerraForgeController.cs');
+  it('active TerraForge ratio-study endpoints require authenticated canonical county scope', () => {
+    const controller = read(
+      '../../../../../../backend/src/TerraFusion.API/Controllers/TerraForgeController.cs'
+    );
 
-    expect(controller).toContain('ResolveCountyScopeAsync');
-    expect(controller).toContain('County context required.');
+    expect(controller).toContain('[Authorize(Policy = "RequireAssessor")]');
+    expect(controller).toContain('TryResolveAuthenticatedCountyScopeAsync');
+    expect(controller).toContain('_authenticatedCountyContext');
+    expect(controller).toContain('.GetCurrentAsync(cancellationToken)');
+    expect(controller).toContain('return (Guid.Empty, Forbid());');
+    expect(controller).not.toContain('Request.Headers["x-county-id"]');
     expect(controller).toContain('GetStratifiedRatioStudy(');
     expect(controller).toContain('GetDriverAnalysis(');
     expect(controller).toContain('GetComparisonSnapshots(');

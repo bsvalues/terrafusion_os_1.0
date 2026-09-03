@@ -23,7 +23,7 @@ namespace TerraFusion.Unit.Tests.Import;
 public sealed class CountyCsvUploadAdmissionLedgerTests
 {
     private const string MigrationId =
-        "20260903000000_WAL002JCountyCsvRowStaging";
+        "20260903010000_WAL002KCountyCsvSalesPromotion";
 
     private static readonly WashingtonCountyIdentity Benton = ResolveCounty("Benton");
     private static readonly WashingtonCountyIdentity Franklin = ResolveCounty("Franklin");
@@ -693,6 +693,152 @@ public sealed class CountyCsvUploadAdmissionLedgerTests
     }
 
     [Fact]
+    public async Task PromoteSales_PublishesOnlyValidatedRowsOnceAndKeepsCountyIsolation()
+    {
+        await using var database = await TestDatabase.CreateAsync(
+            (Benton, BentonId), (Franklin, FranklinId));
+        var request = await CreateRequestAsync(
+            Benton,
+            BentonId,
+            "assessor-1",
+            CountyCsvDataset.Sales,
+            "parcel_id,sale_date,sale_price\nB-1,2026-01-15,350000\nB-2,not-a-date,410000\n");
+        var admission = await new CountyCsvUploadAdmissionLedger(database.CreateFactory())
+            .AdmitAsync(request);
+        var batch = Assert.IsType<CountyCsvUploadBatch>(admission.Batch);
+        Assert.Equal(1, admission.RowStaging!.StagedRowCount);
+        Assert.Equal(1, admission.RowStaging.QuarantinedRowCount);
+        var promoter = new CountyCsvUploadPromoter(
+            database.CreateFactory(),
+            new FixedTimeProvider(new DateTimeOffset(2026, 9, 3, 10, 0, 0, TimeSpan.Zero)));
+
+        var first = await promoter.PromoteAsync(new(request.CountyContext, batch.BatchId));
+        var duplicate = await promoter.PromoteAsync(new(request.CountyContext, batch.BatchId));
+        var franklinContext = await CreateCountyContextAsync(Franklin, FranklinId, "assessor-2");
+        var franklinAttempt = await promoter.PromoteAsync(new(franklinContext, batch.BatchId));
+
+        Assert.Equal(CountyCsvUploadPromotionDisposition.Promoted, first.Disposition);
+        Assert.Equal(CountyCsvUploadPromotionDisposition.Duplicate, duplicate.Disposition);
+        Assert.Equal(CountyCsvUploadPromotionDenialCode.BatchNotFound, franklinAttempt.DenialCode);
+        await using var context = database.CreateContext();
+        var sale = Assert.Single(await context.ComparableSales.AsNoTracking().ToListAsync());
+        Assert.Equal(BentonId, sale.CountyId);
+        Assert.Equal("B-1", sale.ParcelId);
+        Assert.Equal(350000m, sale.SalePrice);
+        Assert.Null(sale.SalesYear);
+        Assert.False(sale.IsVerified);
+        Assert.Null(sale.QualificationDecision);
+        Assert.StartsWith($"county-upload:{batch.BatchId:D}:", sale.VerificationSource);
+        Assert.Equal(1, await context.CountyCsvUploadPromotions.CountAsync());
+        var trace = Assert.Single(await context.AuditEvents.AsNoTracking().ToListAsync());
+        Assert.Equal(BentonId, trace.CountyId);
+        Assert.Equal("assessor-1", trace.UserId);
+        Assert.Equal("ValuationComparableSale", trace.Entity);
+        Assert.Equal("B-1", trace.EntityId);
+        Assert.Equal("valuation.sales-promoted", trace.Action);
+        Assert.Contains("\"category\":\"valuation\"", trace.DetailsJson, StringComparison.Ordinal);
+        var availability = await promoter.GetAvailabilityAsync(request.CountyContext!);
+        Assert.Equal(1, availability.PromotedSales);
+        Assert.Equal("2026-01-15", availability.LatestSaleDate);
+        Assert.Equal(2027, availability.RecommendedStudyYear);
+        Assert.True(availability.SalesReviewAvailable);
+        Assert.Equal(0, (await promoter.GetAvailabilityAsync(franklinContext)).PromotedSales);
+    }
+
+    [Fact]
+    public async Task PromoteSales_DeduplicatesNaturalSaleIdentityAcrossChangedBatches()
+    {
+        await using var database = await TestDatabase.CreateAsync((Benton, BentonId));
+        var ledger = new CountyCsvUploadAdmissionLedger(database.CreateFactory());
+        var firstRequest = await CreateRequestAsync(
+            Benton,
+            BentonId,
+            "assessor-1",
+            CountyCsvDataset.Sales,
+            "parcel_id,sale_date,sale_price\nB-1,2025-11-01,350000\n");
+        var secondRequest = await CreateRequestAsync(
+            Benton,
+            BentonId,
+            "assessor-1",
+            CountyCsvDataset.Sales,
+            "parcel_id,sale_date,sale_price\nb-1,2025-11-01,350000.00\nB-OLD,2022-05-01,275000\nB-2,2026-02-10,410000\n");
+        var overlapOnlyRequest = await CreateRequestAsync(
+            Benton,
+            BentonId,
+            "assessor-1",
+            CountyCsvDataset.Sales,
+            "parcel_id,sale_date,sale_price\nB-1,2025-11-01,350000.0\n");
+        var firstBatch = Assert.IsType<CountyCsvUploadBatch>((await ledger.AdmitAsync(firstRequest)).Batch);
+        var secondBatch = Assert.IsType<CountyCsvUploadBatch>((await ledger.AdmitAsync(secondRequest)).Batch);
+        var overlapOnlyBatch = Assert.IsType<CountyCsvUploadBatch>(
+            (await ledger.AdmitAsync(overlapOnlyRequest)).Batch);
+        var promoter = new CountyCsvUploadPromoter(database.CreateFactory());
+
+        var first = await promoter.PromoteAsync(new(firstRequest.CountyContext, firstBatch.BatchId));
+        var second = await promoter.PromoteAsync(new(secondRequest.CountyContext, secondBatch.BatchId));
+        var overlapOnly = await promoter.PromoteAsync(
+            new(overlapOnlyRequest.CountyContext, overlapOnlyBatch.BatchId));
+
+        Assert.Equal(1, first.Promotion!.PromotedRowCount);
+        Assert.Equal(2, second.Promotion!.PromotedRowCount);
+        Assert.Equal(0, overlapOnly.Promotion!.PromotedRowCount);
+        await using var context = database.CreateContext();
+        var sales = await context.ComparableSales.AsNoTracking().OrderBy(sale => sale.ParcelId).ToListAsync();
+        Assert.Equal(3, sales.Count);
+        Assert.Single(sales, sale => sale.ParcelId == "B-1");
+        Assert.Equal(3, await context.CountyCsvUploadPromotions.CountAsync());
+        Assert.Equal(3, await context.AuditEvents.CountAsync());
+        var availability = await promoter.GetAvailabilityAsync(firstRequest.CountyContext!);
+        // The 2022 row remains durable but is not advertised in the 2027 study's
+        // reachable 2025-2026 window.
+        Assert.Equal(2, availability.PromotedSales);
+        Assert.Equal("2026-02-10", availability.LatestSaleDate);
+        Assert.Equal(2027, availability.RecommendedStudyYear);
+    }
+
+    [Fact]
+    public async Task PromoteSales_ReusesExactRetainedAppendOnlyTraceAfterBusinessStateRollback()
+    {
+        await using var database = await TestDatabase.CreateAsync((Benton, BentonId));
+        var request = await CreateRequestAsync(
+            Benton,
+            BentonId,
+            "assessor-1",
+            CountyCsvDataset.Sales,
+            "parcel_id,sale_date,sale_price\nB-1,2026-01-15,350000\n");
+        var batch = Assert.IsType<CountyCsvUploadBatch>(
+            (await new CountyCsvUploadAdmissionLedger(database.CreateFactory()).AdmitAsync(request)).Batch);
+        var promoter = new CountyCsvUploadPromoter(database.CreateFactory());
+        var first = await promoter.PromoteAsync(new(request.CountyContext, batch.BatchId));
+        Assert.Equal(CountyCsvUploadPromotionDisposition.Promoted, first.Disposition);
+
+        await using (var rollbackContext = database.CreateContext())
+        {
+            rollbackContext.CountyCsvUploadPromotions.RemoveRange(
+                await rollbackContext.CountyCsvUploadPromotions.ToListAsync());
+            rollbackContext.ComparableSales.RemoveRange(
+                await rollbackContext.ComparableSales.Where(sale => sale.CountyId == BentonId).ToListAsync());
+            await rollbackContext.SaveChangesAsync();
+        }
+
+        var secondActorContext = await CreateCountyContextAsync(Benton, BentonId, "assessor-2");
+        var reapplied = await promoter.PromoteAsync(new(secondActorContext, batch.BatchId));
+
+        Assert.Equal(CountyCsvUploadPromotionDisposition.Promoted, reapplied.Disposition);
+        await using var verificationContext = database.CreateContext();
+        Assert.Single(await verificationContext.ComparableSales.AsNoTracking().ToListAsync());
+        Assert.Single(await verificationContext.CountyCsvUploadPromotions.AsNoTracking().ToListAsync());
+        var traces = await verificationContext.AuditEvents.AsNoTracking()
+            .OrderBy(trace => trace.Timestamp)
+            .ToListAsync();
+        Assert.Equal(2, traces.Count);
+        Assert.Equal("assessor-1", traces[0].UserId);
+        Assert.Equal("assessor-2", traces[1].UserId);
+        Assert.StartsWith($"{traces[0].Id}:reapply:", traces[1].Id);
+        Assert.Contains($"\"reappliesTraceId\":\"{traces[0].Id}\"", traces[1].DetailsJson);
+    }
+
+    [Fact]
     public async Task ExactMigrationCreatesIndexesAndCompletelyRollsBackOnDisposableSqlite()
     {
         await using var temporary = new TemporaryDatabaseFile();
@@ -709,15 +855,85 @@ public sealed class CountyCsvUploadAdmissionLedgerTests
             "index",
             "IX_CountyCsvUploadRowStages_CountyId_ValidatedAtUtc"));
         Assert.True(await ObjectExistsAsync(context, "table", "CountyCsvUploadRowStages"));
+        Assert.True(await ObjectExistsAsync(context, "table", "CountyCsvUploadPromotions"));
+        Assert.True(await ObjectExistsAsync(
+            context,
+            "index",
+            "IX_CountyCsvUploadPromotions_CountyId_PromotedAtUtc"));
+
+        var countyId = Guid.NewGuid();
+        var uploadedSaleId = Guid.NewGuid();
+        var retainedSaleId = Guid.NewGuid();
+        context.Counties.Add(new TerraFusion.Core.Entities.County
+        {
+            Id = countyId,
+            Name = "Rollback",
+            State = "WA",
+            FipsCode = "53999",
+        });
+        context.ComparableSales.AddRange(
+            new TerraFusion.Core.Entities.ComparableSale
+            {
+                Id = uploadedSaleId,
+                CountyId = countyId,
+                ParcelId = "ROLLBACK-UPLOAD",
+                SaleDate = new DateTime(2026, 1, 15, 0, 0, 0, DateTimeKind.Utc),
+                SalePrice = 350000m,
+                PropertyType = "unknown",
+                IngestedBy = "county-upload",
+                VerificationSource = $"county-upload:{Guid.NewGuid():D}:2",
+            },
+            new TerraFusion.Core.Entities.ComparableSale
+            {
+                Id = retainedSaleId,
+                CountyId = countyId,
+                ParcelId = "RETAINED-SALE",
+                SaleDate = new DateTime(2026, 1, 16, 0, 0, 0, DateTimeKind.Utc),
+                SalePrice = 360000m,
+                PropertyType = "residential",
+                IngestedBy = "test",
+                VerificationSource = "test",
+            });
+        context.AuditEvents.AddRange(
+            new TerraFusion.Core.Entities.AuditEvent
+            {
+                Id = $"county-upload-promotion:{Guid.NewGuid():D}:2",
+                Entity = "ValuationComparableSale",
+                EntityId = "ROLLBACK-UPLOAD",
+                UserId = "assessor-1",
+                Action = "valuation.sales-promoted",
+                Type = TerraFusion.Core.DTOs.AuditEventType.Create,
+                CountyId = countyId,
+            },
+            new TerraFusion.Core.Entities.AuditEvent
+            {
+                Id = "retained-event",
+                Entity = "Parcel",
+                EntityId = "RETAINED-SALE",
+                UserId = "test",
+                Action = "Viewed",
+                Type = TerraFusion.Core.DTOs.AuditEventType.View,
+                CountyId = countyId,
+            });
+        await context.SaveChangesAsync();
 
         await migrator.MigrateAsync(previousMigration);
 
         Assert.True(await ObjectExistsAsync(context, "table", "CountyCsvUploadBatches"));
-        Assert.False(await ObjectExistsAsync(context, "table", "CountyCsvUploadRowStages"));
-        Assert.False(await ObjectExistsAsync(
+        Assert.True(await ObjectExistsAsync(context, "table", "CountyCsvUploadRowStages"));
+        Assert.True(await ObjectExistsAsync(
             context,
             "index",
             "IX_CountyCsvUploadRowStages_CountyId_ValidatedAtUtc"));
+        Assert.False(await ObjectExistsAsync(context, "table", "CountyCsvUploadPromotions"));
+        Assert.False(await context.ComparableSales.AnyAsync(sale => sale.Id == uploadedSaleId));
+        Assert.True(await context.ComparableSales.AnyAsync(sale => sale.Id == retainedSaleId));
+        Assert.True(await context.AuditEvents.AnyAsync(trace => trace.EntityId == "ROLLBACK-UPLOAD"));
+        Assert.True(await context.AuditEvents.AnyAsync(trace => trace.Id == "retained-event"));
+
+        await migrator.MigrateAsync(MigrationId);
+        Assert.True(await ObjectExistsAsync(context, "table", "CountyCsvUploadPromotions"));
+        Assert.True(await context.AuditEvents.AnyAsync(trace => trace.EntityId == "ROLLBACK-UPLOAD"));
     }
 
     [Fact]
@@ -757,6 +973,15 @@ public sealed class CountyCsvUploadAdmissionLedgerTests
         Assert.NotNull(digest);
         Assert.Equal(64, digest.GetMaxLength());
         Assert.True(digest.IsFixedLength());
+
+        var promotionEntity = snapshot.Model.FindEntityType(typeof(CountyCsvUploadPromotion));
+        var runtimePromotionEntity = context.Model.FindEntityType(typeof(CountyCsvUploadPromotion));
+        Assert.NotNull(promotionEntity);
+        Assert.NotNull(runtimePromotionEntity);
+        Assert.Equal("CountyCsvUploadPromotions", promotionEntity.GetTableName());
+        Assert.Equal(
+            runtimePromotionEntity.GetProperties().Select(PropertyShape),
+            promotionEntity.GetProperties().Select(PropertyShape));
     }
 
     private static string PropertyShape(Microsoft.EntityFrameworkCore.Metadata.IProperty property) =>
@@ -853,6 +1078,19 @@ public sealed class CountyCsvUploadAdmissionLedgerTests
         return Convert.ToInt32(await command.ExecuteScalarAsync()) == 1;
     }
 
+    private static async Task CreateCurrentModelTableAsync(
+        TerraFusionDbContext context,
+        string tableName)
+    {
+        var script = context.Database.GenerateCreateScript();
+        var marker = $"CREATE TABLE \"{tableName}\"";
+        var start = script.IndexOf(marker, StringComparison.Ordinal);
+        Assert.True(start >= 0, $"Current model create script did not contain {tableName}.");
+        var end = script.IndexOf(';', start);
+        Assert.True(end > start, $"Current model create script did not terminate {tableName}.");
+        await context.Database.ExecuteSqlRawAsync(script[start..(end + 1)]);
+    }
+
     private static async Task<string> PrepareMigrationBaselineAsync(
         TerraFusionDbContext context)
     {
@@ -860,13 +1098,22 @@ public sealed class CountyCsvUploadAdmissionLedgerTests
             "CREATE TABLE \"Counties\" (\"Id\" TEXT NOT NULL CONSTRAINT \"PK_Counties\" PRIMARY KEY, \"Name\" TEXT NOT NULL, \"State\" TEXT NOT NULL, \"FipsCode\" TEXT NOT NULL, \"Population\" INTEGER NOT NULL, \"Area\" REAL NOT NULL, \"CreatedAt\" TEXT NOT NULL, \"UpdatedAt\" TEXT NOT NULL)");
         await context.Database.ExecuteSqlRawAsync(
             "CREATE TABLE \"AuditLogs\" (\"Id\" TEXT NOT NULL CONSTRAINT \"PK_AuditLogs\" PRIMARY KEY, \"Type\" TEXT NOT NULL, \"Data\" TEXT NULL, \"Timestamp\" TEXT NOT NULL, \"UserId\" TEXT NULL, \"UserEmail\" TEXT NULL, \"IpAddress\" TEXT NULL, \"UserAgent\" TEXT NULL, \"RequestPath\" TEXT NULL, \"RequestMethod\" TEXT NULL, \"CorrelationId\" TEXT NULL, \"ResponseStatusCode\" INTEGER NULL, \"DurationMs\" INTEGER NULL, \"MachineName\" TEXT NULL, \"ProcessId\" INTEGER NULL, \"Severity\" TEXT NULL, \"Source\" TEXT NULL)");
+        // AuditEvents retains a nullable legacy ProjectId relationship; the target
+        // table must exist even when every promotion trace leaves ProjectId null.
+        await context.Database.ExecuteSqlRawAsync(
+            "CREATE TABLE \"Projects\" (\"Id\" TEXT NOT NULL CONSTRAINT \"PK_Projects\" PRIMARY KEY)");
+        await CreateCurrentModelTableAsync(context, "AuditEvents");
+        await CreateCurrentModelTableAsync(context, "ComparableSales");
         await context.Database.ExecuteSqlRawAsync(
             "CREATE TABLE \"__EFMigrationsHistory\" (\"MigrationId\" TEXT NOT NULL CONSTRAINT \"PK___EFMigrationsHistory\" PRIMARY KEY, \"ProductVersion\" TEXT NOT NULL)");
 
         var migrations = context.Database.GetMigrations().ToArray();
         Assert.Equal(MigrationId, migrations[^1]);
         var previousMigration = migrations[^2];
-        foreach (var migration in migrations[..^2])
+        // The upload feature has three ordered migrations: admission, row staging,
+        // and promotion. Mark only the migrations before that chain as applied so
+        // migrating to the row-staging predecessor actually creates both tables.
+        foreach (var migration in migrations[..^3])
         {
             await context.Database.ExecuteSqlInterpolatedAsync(
                 $"INSERT INTO \"__EFMigrationsHistory\" (\"MigrationId\", \"ProductVersion\") VALUES ({migration}, {"8.0.0"})");

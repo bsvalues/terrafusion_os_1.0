@@ -166,6 +166,7 @@ export default function SalesForge({ metadata }: SalesForgeProps = {}) {
   const invalidCountiesHubHandoff = countiesHubHandoffRequested && countiesHubHandoff === null;
   const referencePackageSource = countiesHubHandoff?.referencePackageSource;
   const repositoryReferenceHandoff = referencePackageSource === 'repository-reference';
+  const countyUploadHandoff = referencePackageSource === 'county-upload';
   const hostedReferenceHandoff = countiesHubHandoff !== null && referencePackageSource === 'hosted';
   const hostedHandoffCountyCode = hostedReferenceHandoff
     ? (countiesHubHandoff?.countyCode ?? null)
@@ -229,6 +230,7 @@ export default function SalesForge({ metadata }: SalesForgeProps = {}) {
     directHostedVerificationPending ||
     directHostedVerificationUnavailable;
   const hostedLaunchDataMode = directHostedLaunch || hostedReferenceHandoff;
+  // Promoted county uploads are served by the protected live API, not a launch-data package.
   const launchDataMode = hostedLaunchDataMode || repositoryReferenceHandoff;
   const handoff = parseRollupHandoff(invalidCountiesHubHandoff ? undefined : metadata);
   const selectedCounty = WASHINGTON_COUNTIES.find(
@@ -357,9 +359,11 @@ export default function SalesForge({ metadata }: SalesForgeProps = {}) {
         ? 'washington-reference'
         : hostedLaunchReady
           ? 'washington-hosted'
-          : 'live-api'
+          : countyUploadHandoff
+            ? 'county-upload'
+            : 'live-api'
     );
-  }, [hostedLaunchReady, repositoryReferenceHandoff, setDataSource]);
+  }, [countyUploadHandoff, hostedLaunchReady, repositoryReferenceHandoff, setDataSource]);
 
   useLayoutEffect(() => {
     if (hostedLaunchReady && directHostedVerification.taxYear !== null) {

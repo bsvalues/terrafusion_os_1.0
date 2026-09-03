@@ -31,6 +31,11 @@ import {
   type WashingtonPublicSourceInventoryEntry,
 } from '../lib/washingtonPublicSourceInventory';
 import activateModule from '../orchestration/moduleActivation';
+import { apiFetch } from '../lib/apiBase';
+import {
+  fetchCountyCsvPromotedSalesAvailability,
+  type CountyCsvPromotedSalesAvailability,
+} from '../../../terraforge/src/data-admission/countyCsvUpload';
 import {
   getWashingtonSalesReviewCapability,
   isWashingtonSalesReviewLaunchEnabled,
@@ -90,6 +95,9 @@ const CountiesHub = () => {
   const [countyStatusSource, setCountyStatusSource] =
     useState<WashingtonCountiesHubHandoff['referencePackageSource']>('repository-reference');
   const [usedRepositoryFallback, setUsedRepositoryFallback] = useState(false);
+  const [promotedSales, setPromotedSales] = useState<CountyCsvPromotedSalesAvailability | null>(
+    null
+  );
   const launchDataEnabled = isWashingtonSalesReviewLaunchEnabled({
     explicitReferenceHandoff: true,
   });
@@ -124,6 +132,18 @@ const CountiesHub = () => {
     void loadCounties(controller.signal);
     return () => controller.abort();
   }, [loadCounties]);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    void fetchCountyCsvPromotedSalesAvailability(apiFetch, controller.signal)
+      .then((availability) => {
+        if (!controller.signal.aborted) setPromotedSales(availability);
+      })
+      .catch(() => {
+        if (!controller.signal.aborted) setPromotedSales(null);
+      });
+    return () => controller.abort();
+  }, []);
 
   const { directory: countyDirectory, registryIssueStatuses } = useMemo<{
     directory: WashingtonCountyDirectoryEntry[];
@@ -233,6 +253,13 @@ const CountiesHub = () => {
   }, [countyStatusSource, selectedStatus]);
 
   const selectedCapability = selectedCounty?.capability ?? null;
+  const selectedPromotedSales =
+    selectedCounty &&
+    promotedSales &&
+    promotedSales.countyKey === `wa-${selectedCounty.county.toLowerCase().replaceAll(' ', '-')}` &&
+    normalizeCountyName(promotedSales.countyName) === normalizeCountyName(selectedCounty.county)
+      ? promotedSales
+      : null;
   const selectedObservedReference = selectedCapability?.referenceData.observed ?? null;
   const selectedIdentityMismatch = selectedCounty?.identityMismatch ?? null;
   const observedCountyCount = useMemo(
@@ -240,7 +267,10 @@ const CountiesHub = () => {
       countyDirectory.filter((county) => Boolean(county.capability?.referenceData.observed)).length,
     [countyDirectory]
   );
-  const selectedSalesReviewAvailable = Boolean(selectedCapability?.eligible && launchDataEnabled);
+  const selectedSalesReviewAvailable = Boolean(
+    selectedPromotedSales?.salesReviewAvailable ||
+    (selectedCapability?.eligible && launchDataEnabled)
+  );
   const selectedSalesReviewVerifying = Boolean(
     launchDataEnabled &&
     countyStatusSource === 'hosted' &&
@@ -290,16 +320,26 @@ const CountiesHub = () => {
     setLaunching(true);
     setLaunchError(null);
     try {
+      const countyUploadAvailable = Boolean(selectedPromotedSales?.salesReviewAvailable);
       const metadata = {
         countyCode: selectedCounty.countyCode,
         countyName: selectedCounty.county,
         resetValuationScope: true,
         launchContext: 'washington-counties-hub',
-        dataTrustTier: 'public-reference-not-county-certified',
-        referencePackageSource: countyStatusSource,
-        referenceDataPosture: selectedCapability?.referenceData.posture ?? 'unavailable',
-        referenceRecordCount: selectedObservedReference?.recordCount ?? null,
-        latestReferenceSaleDate: selectedObservedReference?.latestSaleDate ?? null,
+        dataTrustTier: countyUploadAvailable
+          ? 'county-provided-validated-upload'
+          : 'public-reference-not-county-certified',
+        referencePackageSource: countyUploadAvailable ? 'county-upload' : countyStatusSource,
+        referenceDataPosture: countyUploadAvailable
+          ? 'county_provided_validated_upload'
+          : (selectedCapability?.referenceData.posture ?? 'unavailable'),
+        referenceRecordCount: countyUploadAvailable
+          ? selectedPromotedSales!.promotedSales
+          : (selectedObservedReference?.recordCount ?? null),
+        latestReferenceSaleDate: countyUploadAvailable
+          ? selectedPromotedSales!.latestSaleDate
+          : (selectedObservedReference?.latestSaleDate ?? null),
+        ...(countyUploadAvailable ? { taxYear: selectedPromotedSales!.recommendedStudyYear } : {}),
         salesReviewAvailability: selectedSalesReviewAvailable
           ? 'available'
           : selectedSalesReviewVerifying
@@ -327,6 +367,7 @@ const CountiesHub = () => {
     selectedCounty,
     selectedCapability,
     selectedObservedReference,
+    selectedPromotedSales,
     selectedSalesReviewAvailable,
     selectedSalesReviewVerifying,
     selectedSalesReviewUnavailableMessage,
@@ -474,9 +515,11 @@ const CountiesHub = () => {
                         <Typography variant='h5'>{selectedCounty.county} County</Typography>
                         <Typography variant='body2' color='text.secondary'>
                           Washington county code {selectedCounty.countyCode} · source{' '}
-                          {selectedCapability
-                            ? formatStatus(selectedCapability.referenceData.posture)
-                            : 'Unavailable'}
+                          {selectedPromotedSales
+                            ? 'County-provided validated upload'
+                            : selectedCapability
+                              ? formatStatus(selectedCapability.referenceData.posture)
+                              : 'Unavailable'}
                         </Typography>
                       </Box>
                       <Button
@@ -497,9 +540,11 @@ const CountiesHub = () => {
                           Reference records
                         </Typography>
                         <Typography variant='body1'>
-                          {selectedObservedReference
-                            ? selectedObservedReference.recordCount.toLocaleString()
-                            : 'Unavailable'}
+                          {selectedPromotedSales
+                            ? selectedPromotedSales.promotedSales.toLocaleString()
+                            : selectedObservedReference
+                              ? selectedObservedReference.recordCount.toLocaleString()
+                              : 'Unavailable'}
                         </Typography>
                       </Grid>
                       <Grid item xs={12} sm={6} md={3}>
@@ -507,9 +552,11 @@ const CountiesHub = () => {
                           Latest reference sale
                         </Typography>
                         <Typography variant='body1'>
-                          {selectedObservedReference
-                            ? (selectedObservedReference.latestSaleDate ?? 'Not reported')
-                            : 'Unavailable'}
+                          {selectedPromotedSales
+                            ? (selectedPromotedSales.latestSaleDate ?? 'Not reported')
+                            : selectedObservedReference
+                              ? (selectedObservedReference.latestSaleDate ?? 'Not reported')
+                              : 'Unavailable'}
                         </Typography>
                       </Grid>
                       <Grid item xs={12} sm={6} md={3}>
@@ -646,7 +693,14 @@ const CountiesHub = () => {
                       </Alert>
                     )}
 
-                    {!launchDataEnabled && (
+                    {selectedPromotedSales && (
+                      <Alert severity='success' data-testid='county-promoted-sales-availability'>
+                        County-provided validated upload ·{' '}
+                        {selectedPromotedSales.promotedSales.toLocaleString()} promoted sales are
+                        available through this county&apos;s protected TerraForge Sales Review API.
+                      </Alert>
+                    )}
+                    {!launchDataEnabled && !selectedPromotedSales && (
                       <Alert severity='warning'>
                         The Washington public sales package is not enabled in this environment.
                         TerraForge still opens in this county context and marks that workflow
@@ -661,7 +715,7 @@ const CountiesHub = () => {
                         County. Its record counts, freshness, and runtime posture are suppressed.
                       </Alert>
                     )}
-                    {!selectedCapability && !selectedIdentityMismatch && (
+                    {!selectedCapability && !selectedIdentityMismatch && !selectedPromotedSales && (
                       <Alert severity='warning'>
                         No governed public sales state is available for {selectedCounty.county}{' '}
                         County. TerraForge still opens in this county context, while sales review
@@ -669,6 +723,7 @@ const CountiesHub = () => {
                       </Alert>
                     )}
                     {!selectedIdentityMismatch &&
+                      !selectedPromotedSales &&
                       !selectedCapability?.eligible &&
                       selectedCapability?.unavailableMessage && (
                         <Alert

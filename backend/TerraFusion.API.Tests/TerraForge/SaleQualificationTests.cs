@@ -16,13 +16,18 @@
 //    10. Wrong county → 404 (county isolation)
 
 using System.Text.Json;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
+using TerraFusion.API.Auth;
 using TerraFusion.API.Controllers;
 using TerraFusion.API.Services;
 using TerraFusion.API.Tests.TestHelpers;
+using TerraFusion.Core.Auth;
+using TerraFusion.Core.Counties;
 using TerraFusion.Core.Entities;
+using TerraFusion.Core.Services;
 using Xunit;
 // Disambiguate: TerraFusion.Core.Entities.Task vs System.Threading.Tasks.Task
 using Task = System.Threading.Tasks.Task;
@@ -41,7 +46,8 @@ public sealed class SaleQualificationTests : IDisposable
 {
     private static readonly Guid BentonId =
         Guid.Parse("19190019-1919-1919-1919-191919191919");
-    private static readonly Guid OtherCountyId = Guid.NewGuid();
+    private static readonly Guid OtherCountyId =
+        Guid.Parse("22222222-2222-2222-2222-222222222222");
 
     // Lookback window for taxYear=2026
     private static readonly DateTime LookbackStart =
@@ -55,12 +61,14 @@ public sealed class SaleQualificationTests : IDisposable
     public SaleQualificationTests()
     {
         _db  = TestDbContextFactory.CreateInMemoryContext();
+        var countyRuntime = CreateCountyRuntime();
         _sut = new TerraForgeController(
             _db,
             NullLogger<TerraForgeController>.Instance,
             Mock.Of<IOlsRegressionService>(),
             Mock.Of<ISaleQualificationService>(),
-            ControllerTestSetup.CountyResolverFor(BentonId))
+            countyRuntime.Resolver,
+            countyRuntime.ContextProvider)
         {
             ControllerContext = ControllerTestSetup.WithCountyClaim(BentonId),
         };
@@ -178,6 +186,22 @@ public sealed class SaleQualificationTests : IDisposable
         Assert.Equal(1, body.GetProperty("total").GetInt32());
     }
 
+    [Theory]
+    [InlineData("wa-franklin")]
+    [InlineData("22222222-2222-2222-2222-222222222222")]
+    public async Task GetSaleQualification_CallerSelectedDifferentCounty_IsForbidden(
+        string requestedCounty)
+    {
+        Seed(MakeSale(countyId: OtherCountyId));
+
+        var result = await _sut.GetSaleQualification(
+            taxYear: 2026,
+            countyId: requestedCounty,
+            status: "pending");
+
+        Assert.IsType<ForbidResult>(result);
+    }
+
     [Fact]
     public async Task GetSaleQualification_StaffConfirmedFilter_ReturnsOnlyStaffDecisions()
     {
@@ -267,5 +291,107 @@ public sealed class SaleQualificationTests : IDisposable
             new SaleQualificationPatchDto { QualificationDecision = "qualified" });
 
         Assert.IsType<NotFoundObjectResult>(result);
+    }
+
+    [Fact]
+    public async Task SaleQualification_WithoutAuthenticatedCanonicalContext_FailsClosed()
+    {
+        var controller = new TerraForgeController(
+            _db,
+            NullLogger<TerraForgeController>.Instance,
+            Mock.Of<IOlsRegressionService>(),
+            Mock.Of<ISaleQualificationService>(),
+            ControllerTestSetup.CountyResolverFor(BentonId))
+        {
+            ControllerContext = ControllerTestSetup.WithCountyClaim(BentonId),
+        };
+
+        Assert.IsType<ForbidResult>(
+            await controller.GetSaleQualification(taxYear: 2026, status: "pending"));
+    }
+
+    [Fact]
+    public async Task SharedComparableSalesEndpoints_RejectCallerSelectedForeignCounty()
+    {
+        Assert.IsType<ForbidResult>(
+            await _sut.GetRatioStudy(countyId: OtherCountyId.ToString("D")));
+        Assert.IsType<ForbidResult>(
+            await _sut.GetCompsPool(countyId: OtherCountyId.ToString("D")));
+        Assert.IsType<ForbidResult>(
+            await _sut.ComputeQualifications(countyId: OtherCountyId.ToString("D")));
+    }
+
+    [Fact]
+    public void TerraForgeController_RequiresAssessorForEveryEndpoint()
+    {
+        Assert.Contains(
+            typeof(TerraForgeController)
+                .GetCustomAttributes(typeof(AuthorizeAttribute), inherit: true)
+                .Cast<AuthorizeAttribute>(),
+            attribute => attribute.Policy == "RequireAssessor");
+    }
+
+    [Fact]
+    public void EverySaleQualificationEndpoint_RequiresAssessorPolicy()
+    {
+        var endpoints = typeof(TerraForgeController)
+            .GetMethods()
+            .Where(method => method.GetCustomAttributes(inherit: true)
+                .OfType<Microsoft.AspNetCore.Mvc.Routing.HttpMethodAttribute>()
+                .Any(attribute => attribute.Template?.StartsWith(
+                    "sale-qualification", StringComparison.Ordinal) == true))
+            .ToArray();
+
+        Assert.Equal(7, endpoints.Length);
+        Assert.All(endpoints, endpoint => Assert.Contains(
+            endpoint.GetCustomAttributes(typeof(AuthorizeAttribute), inherit: true)
+                .Cast<AuthorizeAttribute>(),
+            attribute => attribute.Policy == "RequireAssessor"));
+    }
+
+    private static (ICountyResolver Resolver,
+        AuthenticatedCanonicalCountyContextProvider ContextProvider) CreateCountyRuntime()
+    {
+        var countyIds = WashingtonCountyRegistry.Counties
+            .Select((county, index) => new
+            {
+                county.Key,
+                Id = county.Key == "wa-benton"
+                    ? BentonId
+                    : county.Key == "wa-franklin"
+                        ? OtherCountyId
+                        : new Guid(index + 1, 0, 0, new byte[8]),
+            })
+            .ToDictionary(entry => entry.Key, entry => entry.Id, StringComparer.Ordinal);
+        Guid? Resolve(string value)
+        {
+            if (Guid.TryParse(value, out var id) && countyIds.Values.Contains(id))
+            {
+                return id;
+            }
+            return WashingtonCountyRegistry.TryResolve(value, out var county)
+                ? countyIds[county.Key]
+                : null;
+        }
+
+        var resolver = new Mock<ICountyResolver>();
+        resolver.Setup(candidate => candidate.TryResolveAsync(
+                It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .Returns<string, CancellationToken>((value, _) => Task.FromResult(Resolve(value)));
+        resolver.Setup(candidate => candidate.ResolveAsync(
+                It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .Returns<string, CancellationToken>((value, _) => Resolve(value) is { } id
+                ? Task.FromResult(id)
+                : throw new CountyNotFoundException(value));
+        var accessor = new Mock<IRequestUserContextAccessor>();
+        accessor.SetupGet(candidate => candidate.Current).Returns(new RequestUserContext(
+            true,
+            "benton-assessor",
+            "wa-benton",
+            ["Assessor"]));
+        var provider = new AuthenticatedCanonicalCountyContextProvider(
+            new AuthenticatedCountyAuthorityBinding(accessor.Object, resolver.Object),
+            new AuthenticatedCanonicalCountyContext(resolver.Object));
+        return (resolver.Object, provider);
     }
 }

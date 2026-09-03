@@ -6,8 +6,12 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging.Abstractions;
 using System.Security.Claims;
+using System.Text.Json;
+using TerraFusion.API.Auth;
 using TerraFusion.API.Controllers;
 using TerraFusion.API.Services;
+using TerraFusion.Core.Auth;
+using TerraFusion.Core.Counties;
 using TerraFusion.Core.Entities;
 using TerraFusion.Core.Services;
 using ComparableSale = TerraFusion.Core.Entities.ComparableSale;
@@ -67,14 +71,35 @@ public sealed class R2Wave43RegressionEndpointTests
             .ReturnsAsync(BentonCountyId);
         countyResolver
             .Setup(x => x.TryResolveAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(BentonCountyId);
+            .Returns<string, CancellationToken>((value, _) =>
+            {
+                if (Guid.TryParse(value, out var parsed))
+                {
+                    return Task.FromResult<Guid?>(parsed == BentonCountyId ? BentonCountyId : null);
+                }
 
+                return Task.FromResult<Guid?>(
+                    string.Equals(value, "wa-benton", StringComparison.OrdinalIgnoreCase)
+                        ? BentonCountyId
+                        : null);
+            });
+
+        var accessor = new Mock<IRequestUserContextAccessor>();
+        accessor.SetupGet(candidate => candidate.Current).Returns(new RequestUserContext(
+            true,
+            "w43-test-user",
+            BentonCountyId.ToString("D"),
+            ["Assessor"]));
+        var contextProvider = new AuthenticatedCanonicalCountyContextProvider(
+            new AuthenticatedCountyAuthorityBinding(accessor.Object, countyResolver.Object),
+            new AuthenticatedCanonicalCountyContext(countyResolver.Object));
         var ctrl = new TerraForgeController(
             db,
             NullLogger<TerraForgeController>.Instance,
             new OlsRegressionService(),
             Mock.Of<ISaleQualificationService>(),
-            countyResolver.Object);
+            countyResolver.Object,
+            contextProvider);
 
         // CI-HYGIENE-D (#739): provide ControllerContext.HttpContext so ResolveCountyScopeToken's Request.Headers access does not throw
         ctrl.ControllerContext = new ControllerContext
@@ -410,5 +435,33 @@ public sealed class R2Wave43RegressionEndpointTests
                     "percentResidual must equal residual / salePrice * 100");
             }
         }
+    }
+
+    [Fact]
+    public async Task HedonicRegression_DoesNotBorrowForeignCountyCharacteristics()
+    {
+        await using var db = CreateDbContext(nameof(HedonicRegression_DoesNotBorrowForeignCountyCharacteristics));
+        await SeedCountyAsync(db);
+        var sale = await SeedSaleAsync(db, 400_000m);
+        sale.SalesYear = 2026;
+        db.CamaCharacteristics.Add(new CamaCharacteristic
+        {
+            ParcelId = sale.ParcelId,
+            TaxYear = 2026,
+            BuildingType = "R1",
+            SquareFeet = 2_000m,
+            YearBuilt = 2005,
+            QualityGrade = "EXCELLENT",
+            CountyId = Guid.Parse("22222222-2222-2222-2222-222222222222")
+        });
+        await db.SaveChangesAsync();
+        var ctrl = CreateController(db);
+
+        var result = await ctrl.GetHedonicRegression(taxYear: 2026);
+
+        var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+        using var body = JsonDocument.Parse(JsonSerializer.Serialize(ok.Value));
+        body.RootElement.GetProperty("sampleSize").GetInt32().Should().Be(0,
+            "a same-numbered parcel in another county must not supply hedonic characteristics");
     }
 }

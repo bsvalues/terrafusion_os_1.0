@@ -57,10 +57,12 @@ describe('Forge-owned Washington sales-review capability', () => {
   });
 
   it('fails closed when observed county identity is mismatched', () => {
-    expect(getWashingtonSalesReviewCapability({
-      ...SPOKANE_CAPABILITY_INPUT,
-      county: 'Adams',
-    })).toMatchObject({
+    expect(
+      getWashingtonSalesReviewCapability({
+        ...SPOKANE_CAPABILITY_INPUT,
+        county: 'Adams',
+      })
+    ).toMatchObject({
       eligible: false,
       status: 'county-context-invalid',
       statusLabel: 'Registry mismatch',
@@ -68,18 +70,22 @@ describe('Forge-owned Washington sales-review capability', () => {
   });
 
   it('owns staged-sales and shard availability semantics', () => {
-    expect(getWashingtonSalesReviewCapability({
-      ...SPOKANE_CAPABILITY_INPUT,
-      stagedSales: 0,
-    })).toMatchObject({
+    expect(
+      getWashingtonSalesReviewCapability({
+        ...SPOKANE_CAPABILITY_INPUT,
+        stagedSales: 0,
+      })
+    ).toMatchObject({
       eligible: false,
       status: 'no-staged-sales',
       statusLabel: 'Source gap',
     });
-    expect(getWashingtonSalesReviewCapability({
-      ...SPOKANE_CAPABILITY_INPUT,
-      staticRoutes: { salesShard: '   ' },
-    })).toMatchObject({
+    expect(
+      getWashingtonSalesReviewCapability({
+        ...SPOKANE_CAPABILITY_INPUT,
+        staticRoutes: { salesShard: '   ' },
+      })
+    ).toMatchObject({
       eligible: false,
       status: 'sales-shard-unavailable',
       statusLabel: 'Source gap',
@@ -87,10 +93,12 @@ describe('Forge-owned Washington sales-review capability', () => {
   });
 
   it('requires selected-county shard verification before exposing status claims', () => {
-    expect(getWashingtonSalesReviewCapability({
-      ...SPOKANE_CAPABILITY_INPUT,
-      salesShardVerification: 'unverified',
-    })).toMatchObject({
+    expect(
+      getWashingtonSalesReviewCapability({
+        ...SPOKANE_CAPABILITY_INPUT,
+        salesShardVerification: 'unverified',
+      })
+    ).toMatchObject({
       eligible: false,
       status: 'sales-shard-verification-required',
       statusLabel: 'Verification required',
@@ -101,13 +109,15 @@ describe('Forge-owned Washington sales-review capability', () => {
   });
 
   it('requires selected-county verification even when status claims zero staged sales', () => {
-    expect(getWashingtonSalesReviewCapability({
-      ...SPOKANE_CAPABILITY_INPUT,
-      stagedSales: 0,
-      needsReview: 9,
-      latestSaleDate: '2099-12-31',
-      salesShardVerification: 'unverified',
-    })).toMatchObject({
+    expect(
+      getWashingtonSalesReviewCapability({
+        ...SPOKANE_CAPABILITY_INPUT,
+        stagedSales: 0,
+        needsReview: 9,
+        latestSaleDate: '2099-12-31',
+        salesShardVerification: 'unverified',
+      })
+    ).toMatchObject({
       eligible: false,
       status: 'sales-shard-verification-required',
       statusLabel: 'Verification required',
@@ -118,13 +128,15 @@ describe('Forge-owned Washington sales-review capability', () => {
   });
 
   it('does not treat not-required as observed public-sales evidence', () => {
-    expect(getWashingtonSalesReviewCapability({
-      ...SPOKANE_CAPABILITY_INPUT,
-      stagedSales: 0,
-      needsReview: 9,
-      latestSaleDate: '2099-12-31',
-      salesShardVerification: 'not-required',
-    })).toMatchObject({
+    expect(
+      getWashingtonSalesReviewCapability({
+        ...SPOKANE_CAPABILITY_INPUT,
+        stagedSales: 0,
+        needsReview: 9,
+        latestSaleDate: '2099-12-31',
+        salesShardVerification: 'not-required',
+      })
+    ).toMatchObject({
       eligible: false,
       status: 'sales-shard-verification-required',
       statusLabel: 'Verification required',
@@ -135,10 +147,12 @@ describe('Forge-owned Washington sales-review capability', () => {
   });
 
   it('does not mistake invented repository demo records for assessor-ready public data', () => {
-    expect(getWashingtonSalesReviewCapability({
-      ...SPOKANE_CAPABILITY_INPUT,
-      primarySourceMode: ' Repository_Reference_Demo ',
-    })).toMatchObject({
+    expect(
+      getWashingtonSalesReviewCapability({
+        ...SPOKANE_CAPABILITY_INPUT,
+        primarySourceMode: ' Repository_Reference_Demo ',
+      })
+    ).toMatchObject({
       eligible: false,
       status: 'reference-demo-only',
       statusLabel: 'Reference demo only',
@@ -151,10 +165,12 @@ describe('Forge-owned Washington sales-review capability', () => {
   });
 
   it('fails closed when the Forge-owned source posture is unavailable', () => {
-    expect(getWashingtonSalesReviewCapability({
-      ...SPOKANE_CAPABILITY_INPUT,
-      primarySourceMode: '  ',
-    })).toMatchObject({
+    expect(
+      getWashingtonSalesReviewCapability({
+        ...SPOKANE_CAPABILITY_INPUT,
+        primarySourceMode: '  ',
+      })
+    ).toMatchObject({
       eligible: false,
       status: 'source-posture-unavailable',
       statusLabel: 'Source gap',
@@ -167,110 +183,161 @@ describe('Forge-owned Washington sales-review capability', () => {
   });
 
   it('validates an exact Counties Hub handoff without granting county authority', () => {
-    expect(parseWashingtonCountiesHubHandoff({
+    expect(
+      parseWashingtonCountiesHubHandoff({
+        countyCode: '063',
+        countyName: 'Spokane',
+        resetValuationScope: true,
+        launchContext: 'washington-counties-hub',
+        dataTrustTier: 'county-provided-validated-upload',
+        referencePackageSource: 'county-upload',
+        referenceDataPosture: 'county_provided_validated_upload',
+        referenceRecordCount: 2,
+        latestReferenceSaleDate: '2026-01-15',
+        taxYear: 2027,
+        salesReviewAvailability: 'available',
+        salesReviewUnavailableMessage: null,
+      })
+    ).toMatchObject({
       countyCode: '063',
-      countyName: 'Spokane',
-      resetValuationScope: true,
-      launchContext: 'washington-counties-hub',
-      dataTrustTier: 'public-reference-not-county-certified',
-      referencePackageSource: 'hosted',
-      referenceDataPosture: 'public_recorder_export',
-      referenceRecordCount: 12,
-      latestReferenceSaleDate: '2025-12-31',
-      salesReviewAvailability: 'available',
-      salesReviewUnavailableMessage: null,
-    })).toMatchObject({
+      referencePackageSource: 'county-upload',
+      taxYear: 2027,
+    });
+
+    expect(
+      parseWashingtonCountiesHubHandoff({
+        countyCode: '063',
+        countyName: 'Spokane',
+        resetValuationScope: true,
+        launchContext: 'washington-counties-hub',
+        dataTrustTier: 'county-provided-validated-upload',
+        referencePackageSource: 'county-upload',
+        referenceDataPosture: 'county_provided_validated_upload',
+        referenceRecordCount: 0,
+        latestReferenceSaleDate: null,
+        salesReviewAvailability: 'available',
+        salesReviewUnavailableMessage: null,
+      })
+    ).toBeNull();
+
+    expect(
+      parseWashingtonCountiesHubHandoff({
+        countyCode: '063',
+        countyName: 'Spokane',
+        resetValuationScope: true,
+        launchContext: 'washington-counties-hub',
+        dataTrustTier: 'public-reference-not-county-certified',
+        referencePackageSource: 'hosted',
+        referenceDataPosture: 'public_recorder_export',
+        referenceRecordCount: 12,
+        latestReferenceSaleDate: '2025-12-31',
+        salesReviewAvailability: 'available',
+        salesReviewUnavailableMessage: null,
+      })
+    ).toMatchObject({
       countyCode: '063',
       countyName: 'Spokane',
       salesReviewAvailability: 'available',
     });
 
-    expect(parseWashingtonCountiesHubHandoff({
-      countyCode: '063',
-      countyName: 'Spokane',
-      resetValuationScope: true,
-      launchContext: 'washington-counties-hub',
-      dataTrustTier: 'public-reference-not-county-certified',
-      referencePackageSource: 'hosted',
-      referenceDataPosture: 'public_recorder_export',
-      referenceRecordCount: null,
-      latestReferenceSaleDate: null,
-      salesReviewAvailability: 'verifying',
-      salesReviewUnavailableMessage: null,
-    })).toMatchObject({
+    expect(
+      parseWashingtonCountiesHubHandoff({
+        countyCode: '063',
+        countyName: 'Spokane',
+        resetValuationScope: true,
+        launchContext: 'washington-counties-hub',
+        dataTrustTier: 'public-reference-not-county-certified',
+        referencePackageSource: 'hosted',
+        referenceDataPosture: 'public_recorder_export',
+        referenceRecordCount: null,
+        latestReferenceSaleDate: null,
+        salesReviewAvailability: 'verifying',
+        salesReviewUnavailableMessage: null,
+      })
+    ).toMatchObject({
       countyCode: '063',
       salesReviewAvailability: 'verifying',
       referenceRecordCount: null,
     });
 
-    expect(parseWashingtonCountiesHubHandoff({
-      countyCode: '063',
-      countyName: 'Spokane',
-      resetValuationScope: true,
-      launchContext: 'washington-counties-hub',
-      dataTrustTier: 'public-reference-not-county-certified',
-      referencePackageSource: 'repository-reference',
-      referenceDataPosture: 'repository_reference_demo',
-      referenceRecordCount: null,
-      latestReferenceSaleDate: null,
-      salesReviewAvailability: 'verifying',
-      salesReviewUnavailableMessage: null,
-    })).toBeNull();
+    expect(
+      parseWashingtonCountiesHubHandoff({
+        countyCode: '063',
+        countyName: 'Spokane',
+        resetValuationScope: true,
+        launchContext: 'washington-counties-hub',
+        dataTrustTier: 'public-reference-not-county-certified',
+        referencePackageSource: 'repository-reference',
+        referenceDataPosture: 'repository_reference_demo',
+        referenceRecordCount: null,
+        latestReferenceSaleDate: null,
+        salesReviewAvailability: 'verifying',
+        salesReviewUnavailableMessage: null,
+      })
+    ).toBeNull();
 
-    expect(parseWashingtonCountiesHubHandoff({
-      countyCode: '063',
-      countyName: 'Spokane',
-      resetValuationScope: true,
-      launchContext: 'washington-counties-hub',
-      dataTrustTier: 'public-reference-not-county-certified',
-      referencePackageSource: 'hosted',
-      referenceDataPosture: 'public_recorder_export',
-      referenceRecordCount: 12,
-      latestReferenceSaleDate: null,
-      salesReviewAvailability: 'verifying',
-      salesReviewUnavailableMessage: null,
-    })).toBeNull();
+    expect(
+      parseWashingtonCountiesHubHandoff({
+        countyCode: '063',
+        countyName: 'Spokane',
+        resetValuationScope: true,
+        launchContext: 'washington-counties-hub',
+        dataTrustTier: 'public-reference-not-county-certified',
+        referencePackageSource: 'hosted',
+        referenceDataPosture: 'public_recorder_export',
+        referenceRecordCount: 12,
+        latestReferenceSaleDate: null,
+        salesReviewAvailability: 'verifying',
+        salesReviewUnavailableMessage: null,
+      })
+    ).toBeNull();
 
-    expect(parseWashingtonCountiesHubHandoff({
-      countyCode: '063',
-      countyName: 'Adams',
-      resetValuationScope: true,
-      launchContext: 'washington-counties-hub',
-      dataTrustTier: 'public-reference-not-county-certified',
-      referencePackageSource: 'hosted',
-      referenceDataPosture: 'public_recorder_export',
-      referenceRecordCount: 12,
-      latestReferenceSaleDate: null,
-      salesReviewAvailability: 'available',
-      salesReviewUnavailableMessage: null,
-    })).toBeNull();
+    expect(
+      parseWashingtonCountiesHubHandoff({
+        countyCode: '063',
+        countyName: 'Adams',
+        resetValuationScope: true,
+        launchContext: 'washington-counties-hub',
+        dataTrustTier: 'public-reference-not-county-certified',
+        referencePackageSource: 'hosted',
+        referenceDataPosture: 'public_recorder_export',
+        referenceRecordCount: 12,
+        latestReferenceSaleDate: null,
+        salesReviewAvailability: 'available',
+        salesReviewUnavailableMessage: null,
+      })
+    ).toBeNull();
 
-    expect(parseWashingtonCountiesHubHandoff({
-      countyCode: '063',
-      countyName: 'Spokane',
-      resetValuationScope: true,
-      launchContext: 'washington-counties-hub',
-      dataTrustTier: 'public-reference-not-county-certified',
-      referencePackageSource: 'repository-reference',
-      referenceDataPosture: 'repository_reference_demo',
-      referenceRecordCount: 3,
-      latestReferenceSaleDate: '2025-11-06',
-      salesReviewAvailability: 'available',
-      salesReviewUnavailableMessage: null,
-    })).toBeNull();
+    expect(
+      parseWashingtonCountiesHubHandoff({
+        countyCode: '063',
+        countyName: 'Spokane',
+        resetValuationScope: true,
+        launchContext: 'washington-counties-hub',
+        dataTrustTier: 'public-reference-not-county-certified',
+        referencePackageSource: 'repository-reference',
+        referenceDataPosture: 'repository_reference_demo',
+        referenceRecordCount: 3,
+        latestReferenceSaleDate: '2025-11-06',
+        salesReviewAvailability: 'available',
+        salesReviewUnavailableMessage: null,
+      })
+    ).toBeNull();
 
-    expect(parseWashingtonCountiesHubHandoff({
-      countyCode: '063',
-      countyName: 'Spokane',
-      resetValuationScope: true,
-      launchContext: 'washington-counties-hub',
-      dataTrustTier: 'public-reference-not-county-certified',
-      referencePackageSource: 'repository-reference',
-      referenceDataPosture: 'public_recorder_export',
-      referenceRecordCount: 12,
-      latestReferenceSaleDate: '2025-12-31',
-      salesReviewAvailability: 'available',
-      salesReviewUnavailableMessage: null,
-    })).toBeNull();
+    expect(
+      parseWashingtonCountiesHubHandoff({
+        countyCode: '063',
+        countyName: 'Spokane',
+        resetValuationScope: true,
+        launchContext: 'washington-counties-hub',
+        dataTrustTier: 'public-reference-not-county-certified',
+        referencePackageSource: 'repository-reference',
+        referenceDataPosture: 'public_recorder_export',
+        referenceRecordCount: 12,
+        latestReferenceSaleDate: '2025-12-31',
+        salesReviewAvailability: 'available',
+        salesReviewUnavailableMessage: null,
+      })
+    ).toBeNull();
   });
 });

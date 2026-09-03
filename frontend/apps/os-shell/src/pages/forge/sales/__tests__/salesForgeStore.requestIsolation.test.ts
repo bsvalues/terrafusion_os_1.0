@@ -71,6 +71,28 @@ describe('SalesForge request isolation', () => {
     expect(launchApiMocks.fetchQueue.mock.calls[1]?.[5]).toBe('repository-reference');
   });
 
+  it('keeps validated county uploads on the live API and sends the selected study year', async () => {
+    useSalesForgeStore.getState().setDataSource('county-upload');
+    useSalesForgeStore.getState().setTaxYear(2025);
+    launchApiMocks.apiFetch
+      .mockResolvedValueOnce(Response.json({ total: 1, page: 1, pageSize: 50, items: [] }))
+      .mockResolvedValueOnce(Response.json({ saleId: 'uploaded-sale' }));
+
+    await useSalesForgeStore.getState().fetchQueue();
+    await useSalesForgeStore.getState().fetchSaleDetail('uploaded-sale');
+
+    expect(launchApiMocks.fetchQueue).not.toHaveBeenCalled();
+    expect(launchApiMocks.fetchDetail).not.toHaveBeenCalled();
+    expect(launchApiMocks.apiFetch).toHaveBeenNthCalledWith(
+      1,
+      expect.stringContaining('/terraforge/sale-qualification?'),
+      expect.anything(),
+    );
+    const detailUrl = String(launchApiMocks.apiFetch.mock.calls[1]?.[0]);
+    expect(detailUrl).toContain('/terraforge/sale-qualification/uploaded-sale?');
+    expect(detailUrl).toContain('taxYear=2025');
+  });
+
   it('lets only the latest same-county queue request own data and loading state', async () => {
     const first = deferred<SaleQueuePage>();
     const second = deferred<SaleQueuePage>();

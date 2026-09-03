@@ -7,14 +7,17 @@ import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { MemoryRouter, Route, Routes, useNavigate } from 'react-router-dom';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const { fetchCountyCsvUploadHistoryMock, uploadCountyCsvMock } = vi.hoisted(() => ({
-  fetchCountyCsvUploadHistoryMock: vi.fn(),
-  uploadCountyCsvMock: vi.fn(),
-}));
+const { fetchCountyCsvUploadHistoryMock, uploadCountyCsvMock, promoteCountyCsvSalesMock } =
+  vi.hoisted(() => ({
+    fetchCountyCsvUploadHistoryMock: vi.fn(),
+    uploadCountyCsvMock: vi.fn(),
+    promoteCountyCsvSalesMock: vi.fn(),
+  }));
 
 vi.mock('../countyCsvUpload', () => ({
   fetchCountyCsvUploadHistory: fetchCountyCsvUploadHistoryMock,
   uploadCountyCsv: uploadCountyCsvMock,
+  promoteCountyCsvSales: promoteCountyCsvSalesMock,
 }));
 
 import CountyCsvAdmissionPage from '../CountyCsvAdmissionPage';
@@ -77,6 +80,20 @@ describe('county CSV admission domain surface', () => {
       quarantinedRowCount: 1,
       quarantineReasonCounts: [{ reasonCode: 'INVALID_SALE_DATE', count: 1 }],
     });
+    promoteCountyCsvSalesMock.mockReset().mockResolvedValue({
+      contractId: 'wal.county-upload.terraforge-sales-promotion.v1',
+      countyKey: 'wa-spokane',
+      countyName: 'Spokane',
+      disposition: 'Promoted',
+      promotion: {
+        batchId: 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
+        countyId: SPOKANE_ID,
+        contractId: 'wal.county-upload.terraforge-sales-promotion.v1',
+        promotedRowCount: 1,
+        latestSaleDate: '2026-01-15',
+        promotedAtUtc: '2026-09-03T10:00:00Z',
+      },
+    });
   });
 
   it('admits a CSV only after the route county and authenticated county match', async () => {
@@ -101,6 +118,7 @@ describe('county CSV admission domain surface', () => {
         reasonCounts: [{ reasonCode: 'INVALID_SALE_DATE', count: 1 }],
         validatedAtUtc: '2026-09-03T00:00:01Z',
       },
+      promotion: null,
     };
     fetchCountyCsvUploadHistoryMock
       .mockResolvedValueOnce({
@@ -118,6 +136,26 @@ describe('county CSV admission domain surface', () => {
         countyName: 'Spokane',
         availability: 'row-validation-staging-not-promoted',
         batches: [batch],
+      })
+      .mockResolvedValueOnce({
+        contractId: 'wal.county-upload.authenticated-row-staging-api.v1',
+        countyId: SPOKANE_ID,
+        countyKey: 'wa-spokane',
+        countyName: 'Spokane',
+        availability: 'promoted-sales-available',
+        batches: [
+          {
+            ...batch,
+            promotion: {
+              batchId: batch.batchId,
+              countyId: SPOKANE_ID,
+              contractId: 'wal.county-upload.terraforge-sales-promotion.v1',
+              promotedRowCount: 1,
+              latestSaleDate: '2026-01-15',
+              promotedAtUtc: '2026-09-03T10:00:00Z',
+            },
+          },
+        ],
       });
 
     renderRoute();
@@ -153,6 +191,16 @@ describe('county CSV admission domain surface', () => {
       screen.getByText(/validated staging only; not promoted or available to TerraForge/i)
     ).toBeInTheDocument();
     expect(screen.getByText(/INVALID_SALE_DATE \(1\)/i)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Promote validated sales to TerraForge' }));
+    await waitFor(() =>
+      expect(promoteCountyCsvSalesMock).toHaveBeenCalledWith(apiFetchMock, batch.batchId)
+    );
+    expect(
+      await screen.findByText(/promotion completed; validated sales are available/i)
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText(/validated staging only; not promoted or available to TerraForge/i)
+    ).not.toBeInTheDocument();
 
     const fileInput = screen.getByLabelText('Choose county CSV') as HTMLInputElement;
     expect(fileInput.value).toBe('');
