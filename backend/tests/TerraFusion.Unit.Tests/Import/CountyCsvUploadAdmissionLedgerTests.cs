@@ -725,10 +725,18 @@ public sealed class CountyCsvUploadAdmissionLedgerTests
         Assert.Equal(BentonId, sale.CountyId);
         Assert.Equal("B-1", sale.ParcelId);
         Assert.Equal(350000m, sale.SalePrice);
+        Assert.Null(sale.SalesYear);
         Assert.False(sale.IsVerified);
         Assert.Null(sale.QualificationDecision);
         Assert.StartsWith($"county-upload:{batch.BatchId:D}:", sale.VerificationSource);
         Assert.Equal(1, await context.CountyCsvUploadPromotions.CountAsync());
+        var trace = Assert.Single(await context.AuditEvents.AsNoTracking().ToListAsync());
+        Assert.Equal(BentonId, trace.CountyId);
+        Assert.Equal("assessor-1", trace.UserId);
+        Assert.Equal("ComparableSale", trace.Entity);
+        Assert.Equal(sale.Id.ToString("D"), trace.EntityId);
+        Assert.Equal("valuation.sales-promoted", trace.Action);
+        Assert.Contains("\"category\":\"valuation\"", trace.DetailsJson, StringComparison.Ordinal);
         Assert.Equal(1, (await promoter.GetAvailabilityAsync(request.CountyContext!)).PromotedSales);
         Assert.Equal(0, (await promoter.GetAvailabilityAsync(franklinContext)).PromotedSales);
     }

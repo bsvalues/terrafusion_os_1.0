@@ -106,6 +106,21 @@ public sealed class CountyCsvUploadRowValidatorTests
         Assert.Equal("DUPLICATE_SALE", Assert.Single(result.QuarantinedRows).ReasonCode);
     }
 
+    [Fact]
+    public void Parcel_ids_beyond_comparable_sale_capacity_are_quarantined_before_promotion()
+    {
+        var result = CountyCsvUploadRowValidator.Validate(
+            CountyCsvDataset.Sales,
+            Document(
+                ["parcel_id", "sale_date", "sale_price"],
+                [[new string('P', 51), "2025-06-01", "325000"]]));
+
+        Assert.Empty(result.StagedRows);
+        var row = Assert.Single(result.QuarantinedRows);
+        Assert.Equal("INVALID_PARCEL_ID", row.ReasonCode);
+        Assert.Contains("at most 50 characters", row.Detail, StringComparison.Ordinal);
+    }
+
     private static CountyCsvDocument Document(
         IReadOnlyList<string> headers,
         IReadOnlyList<IReadOnlyList<string>> rows) =>

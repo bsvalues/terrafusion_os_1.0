@@ -1,6 +1,9 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using TerraFusion.API.Auth;
 using TerraFusion.API.Services;
+using TerraFusion.Core.Counties;
 using TerraFusion.Data;
 using ICountyResolver = TerraFusion.Core.Services.ICountyResolver;
 using CountyNotFoundException = TerraFusion.Core.Services.CountyNotFoundException;
@@ -20,19 +23,22 @@ public class TerraForgeController : ControllerBase
     private readonly IOlsRegressionService _ols;
     private readonly ISaleQualificationService _saleQual;
     private readonly ICountyResolver _countyResolver;
+    private readonly AuthenticatedCanonicalCountyContextProvider? _authenticatedCountyContext;
 
     public TerraForgeController(
         TerraFusionDbContext db,
         ILogger<TerraForgeController> logger,
         IOlsRegressionService ols,
         ISaleQualificationService saleQual,
-        ICountyResolver countyResolver)
+        ICountyResolver countyResolver,
+        AuthenticatedCanonicalCountyContextProvider? authenticatedCountyContext = null)
     {
         _db             = db;
         _logger         = logger;
         _ols            = ols;
         _saleQual       = saleQual;
         _countyResolver = countyResolver;
+        _authenticatedCountyContext = authenticatedCountyContext;
     }
 
     private string? ResolveCountyScopeToken(string? countyId)
@@ -74,6 +80,39 @@ public class TerraForgeController : ControllerBase
         }
     }
 
+    private async Task<(Guid CountyId, IActionResult? Error)> TryResolveAuthenticatedCountyScopeAsync(
+        string? requestedCounty,
+        CancellationToken cancellationToken)
+    {
+        if (_authenticatedCountyContext is null)
+        {
+            return (Guid.Empty, Forbid());
+        }
+
+        var context = await _authenticatedCountyContext
+            .GetCurrentAsync(cancellationToken)
+            .ConfigureAwait(false);
+        if (context.Decision != AuthenticatedCanonicalCountyContextDecision.Established
+            || context.CountyId is null
+            || context.CountyId == Guid.Empty)
+        {
+            return (Guid.Empty, Forbid());
+        }
+
+        if (!string.IsNullOrWhiteSpace(requestedCounty))
+        {
+            var requestedCountyId = await _countyResolver
+                .TryResolveAsync(requestedCounty.Trim(), cancellationToken)
+                .ConfigureAwait(false);
+            if (requestedCountyId is null || requestedCountyId.Value != context.CountyId.Value)
+            {
+                return (Guid.Empty, Forbid());
+            }
+        }
+
+        return (context.CountyId.Value, null);
+    }
+
     // ── Sale Qualification ────────────────────────────────────────────────
 
     /// <summary>
@@ -84,6 +123,7 @@ public class TerraForgeController : ControllerBase
     /// Response includes computed assessedValue + salesRatio (from Properties join).
     /// </summary>
     [HttpGet("sale-qualification")]
+    [Authorize(Policy = "RequireAssessor")]
     public async Task<IActionResult> GetSaleQualification(
         [FromQuery] int taxYear = 2026,
         [FromQuery] string? countyId = null,
@@ -101,7 +141,7 @@ public class TerraForgeController : ControllerBase
         if (pageSize > 200) pageSize = 200;
         if (page < 1) page = 1;
 
-        var countyScope = await TryResolveCountyScopeAsync(countyId, ct);
+        var countyScope = await TryResolveAuthenticatedCountyScopeAsync(countyId, ct);
         if (countyScope.Error is not null) return countyScope.Error;
         var scopedCountyId = countyScope.CountyId;
 
@@ -217,12 +257,13 @@ public class TerraForgeController : ControllerBase
     /// Full detail for a single sale — all 40+ fields plus Properties join for assessed value.
     /// </summary>
     [HttpGet("sale-qualification/{saleId:guid}")]
+    [Authorize(Policy = "RequireAssessor")]
     public async Task<IActionResult> GetSaleQualificationDetail(
         Guid saleId,
         [FromQuery] string? countyId = null,
         CancellationToken ct = default)
     {
-        var countyScope = await TryResolveCountyScopeAsync(countyId, ct);
+        var countyScope = await TryResolveAuthenticatedCountyScopeAsync(countyId, ct);
         if (countyScope.Error is not null) return countyScope.Error;
         var scopedCountyId = countyScope.CountyId;
 
@@ -321,6 +362,7 @@ public class TerraForgeController : ControllerBase
     /// Returns zeroed stats when no qualified sales exist (never throws).
     /// </summary>
     [HttpGet("sale-qualification/running-stats")]
+    [Authorize(Policy = "RequireAssessor")]
     public async Task<IActionResult> GetSaleQualificationRunningStats(
         [FromQuery] int taxYear = 2026,
         [FromQuery] string? countyId = null,
@@ -328,7 +370,7 @@ public class TerraForgeController : ControllerBase
         [FromQuery] string? propertyType = null,
         CancellationToken ct = default)
     {
-        var countyScope = await TryResolveCountyScopeAsync(countyId, ct);
+        var countyScope = await TryResolveAuthenticatedCountyScopeAsync(countyId, ct);
         if (countyScope.Error is not null) return countyScope.Error;
         var scopedCountyId = countyScope.CountyId;
 
@@ -477,13 +519,14 @@ public class TerraForgeController : ControllerBase
     /// Hoods with fewer than 5 qualified sales report null for median/COD (insufficient sample).
     /// </summary>
     [HttpGet("sale-qualification/neighborhood-stats")]
+    [Authorize(Policy = "RequireAssessor")]
     public async Task<IActionResult> GetSaleQualificationNeighborhoodStats(
         [FromQuery] int taxYear = 2026,
         [FromQuery] string? countyId = null,
         [FromQuery] string? propertyType = null,
         CancellationToken ct = default)
     {
-        var countyScope = await TryResolveCountyScopeAsync(countyId, ct);
+        var countyScope = await TryResolveAuthenticatedCountyScopeAsync(countyId, ct);
         if (countyScope.Error is not null) return countyScope.Error;
         var scopedCountyId = countyScope.CountyId;
 
@@ -589,12 +632,13 @@ public class TerraForgeController : ControllerBase
     /// Exposes WAC code nulls as a data quality flag (the known PACS seeding gap).
     /// </summary>
     [HttpGet("sale-qualification/code-audit")]
+    [Authorize(Policy = "RequireAssessor")]
     public async Task<IActionResult> GetSaleQualificationCodeAudit(
         [FromQuery] int taxYear = 2026,
         [FromQuery] string? countyId = null,
         CancellationToken ct = default)
     {
-        var countyScope = await TryResolveCountyScopeAsync(countyId, ct);
+        var countyScope = await TryResolveAuthenticatedCountyScopeAsync(countyId, ct);
         if (countyScope.Error is not null) return countyScope.Error;
         var scopedCountyId = countyScope.CountyId;
 
@@ -1459,6 +1503,7 @@ public class TerraForgeController : ControllerBase
     /// Max 200 sales per call. Errors on individual sales are logged but do not abort the batch.
     /// </summary>
     [HttpPatch("sale-qualification/bulk")]
+    [Authorize(Policy = "RequireAssessor")]
     public async Task<IActionResult> BulkPatchSaleQualification(
         [FromBody] BulkSaleQualificationPatchDto body,
         [FromQuery] string? countyId = null,
@@ -1467,7 +1512,7 @@ public class TerraForgeController : ControllerBase
         if (body.SaleIds == null || body.SaleIds.Length == 0)
             return BadRequest(new { error = "saleIds is required and must not be empty." });
 
-        var countyScope = await TryResolveCountyScopeAsync(countyId, ct);
+        var countyScope = await TryResolveAuthenticatedCountyScopeAsync(countyId, ct);
         if (countyScope.Error is not null) return countyScope.Error;
         var scopedCountyId = countyScope.CountyId;
 
@@ -1507,13 +1552,14 @@ public class TerraForgeController : ControllerBase
     /// Body: { qualificationDecision, researchNotes, decidedBy, decisionSource }
     /// </summary>
     [HttpPatch("sale-qualification/{saleId:guid}")]
+    [Authorize(Policy = "RequireAssessor")]
     public async Task<IActionResult> PatchSaleQualification(
         Guid saleId,
         [FromBody] SaleQualificationPatchDto body,
         [FromQuery] string? countyId = null,
         CancellationToken ct = default)
     {
-        var countyScope = await TryResolveCountyScopeAsync(countyId, ct);
+        var countyScope = await TryResolveAuthenticatedCountyScopeAsync(countyId, ct);
         if (countyScope.Error is not null) return countyScope.Error;
         var scopedCountyId = countyScope.CountyId;
 

@@ -7,6 +7,7 @@ using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using TerraFusion.Core.Counties;
+using TerraFusion.Core.DTOs;
 using TerraFusion.Core.Entities;
 using TerraFusion.Core.Entities.Import;
 using TerraFusion.Core.Import;
@@ -175,6 +176,25 @@ public sealed class CountyCsvUploadPromoter : ICountyCsvUploadPromoter
 
             dbContext.ComparableSales.AddRange(sales);
             dbContext.CountyCsvUploadPromotions.Add(promotion);
+            dbContext.AuditEvents.AddRange(stagedRows.Select((row, index) => new AuditEvent
+            {
+                Id = $"county-upload-promotion:{batchId:D}:{row.SourceRowNumber}",
+                Type = AuditEventType.Create,
+                Entity = nameof(ComparableSale),
+                EntityId = sales[index].Id.ToString("D"),
+                UserId = actorId,
+                Action = "valuation.sales-promoted",
+                DetailsJson = JsonSerializer.Serialize(new
+                {
+                    category = "valuation",
+                    contractId = ICountyCsvUploadPromoter.ContractId,
+                    batchId,
+                    sourceRowNumber = row.SourceRowNumber,
+                    comparableSaleId = sales[index].Id,
+                }, JsonOptions),
+                Timestamp = promotedAtUtc.UtcDateTime,
+                CountyId = countyId,
+            }));
             await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
             await transaction.CommitAsync(cancellationToken).ConfigureAwait(false);
             return Accepted(CountyCsvUploadPromotionDisposition.Promoted, promotion);
@@ -263,7 +283,9 @@ public sealed class CountyCsvUploadPromoter : ICountyCsvUploadPromoter
             SaleDate = DateTime.SpecifyKind(saleDate.ToDateTime(TimeOnly.MinValue), DateTimeKind.Utc),
             SalePrice = row.SalePrice!.Value,
             PropertyType = "unknown",
-            SalesYear = saleDate.Year,
+            // A source sale date is not a DOR ratio-study assignment. Keep the assignment unknown
+            // so Sales Review applies its bounded two-year study window.
+            SalesYear = null,
             IsVerified = false,
             VerificationSource = $"county-upload:{batch.BatchId:D}:{row.SourceRowNumber}",
             IngestedBy = "county-upload",

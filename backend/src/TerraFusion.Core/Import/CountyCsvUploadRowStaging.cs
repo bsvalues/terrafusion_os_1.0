@@ -121,10 +121,10 @@ public static class CountyCsvUploadRowValidator
             var sourceRowNumber = index + 2;
             var row = document.Rows[index];
             var parcelId = Cell(row, headers["parcel_id"]);
-            if (!TryBoundedText(parcelId, 128, out parcelId))
+            if (!TryBoundedText(parcelId, 50, out parcelId))
             {
                 quarantinedRows.Add(new(sourceRowNumber, "INVALID_PARCEL_ID",
-                    "parcel_id must be non-empty, trimmed, control-free, and at most 128 characters."));
+                    "parcel_id must be non-empty, trimmed, control-free, and at most 50 characters."));
                 continue;
             }
 
