@@ -761,7 +761,7 @@ public sealed class CountyCsvUploadAdmissionLedgerTests
             BentonId,
             "assessor-1",
             CountyCsvDataset.Sales,
-            "parcel_id,sale_date,sale_price\nb-1,2025-11-01,350000.00\nB-2,2026-02-10,410000\n");
+            "parcel_id,sale_date,sale_price\nb-1,2025-11-01,350000.00\nB-OLD,2022-05-01,275000\nB-2,2026-02-10,410000\n");
         var overlapOnlyRequest = await CreateRequestAsync(
             Benton,
             BentonId,
@@ -780,15 +780,17 @@ public sealed class CountyCsvUploadAdmissionLedgerTests
             new(overlapOnlyRequest.CountyContext, overlapOnlyBatch.BatchId));
 
         Assert.Equal(1, first.Promotion!.PromotedRowCount);
-        Assert.Equal(1, second.Promotion!.PromotedRowCount);
+        Assert.Equal(2, second.Promotion!.PromotedRowCount);
         Assert.Equal(0, overlapOnly.Promotion!.PromotedRowCount);
         await using var context = database.CreateContext();
         var sales = await context.ComparableSales.AsNoTracking().OrderBy(sale => sale.ParcelId).ToListAsync();
-        Assert.Equal(2, sales.Count);
+        Assert.Equal(3, sales.Count);
         Assert.Single(sales, sale => sale.ParcelId == "B-1");
         Assert.Equal(3, await context.CountyCsvUploadPromotions.CountAsync());
-        Assert.Equal(2, await context.AuditEvents.CountAsync());
+        Assert.Equal(3, await context.AuditEvents.CountAsync());
         var availability = await promoter.GetAvailabilityAsync(firstRequest.CountyContext!);
+        // The 2022 row remains durable but is not advertised in the 2027 study's
+        // reachable 2025-2026 window.
         Assert.Equal(2, availability.PromotedSales);
         Assert.Equal("2026-02-10", availability.LatestSaleDate);
         Assert.Equal(2027, availability.RecommendedStudyYear);
@@ -819,13 +821,21 @@ public sealed class CountyCsvUploadAdmissionLedgerTests
             await rollbackContext.SaveChangesAsync();
         }
 
-        var reapplied = await promoter.PromoteAsync(new(request.CountyContext, batch.BatchId));
+        var secondActorContext = await CreateCountyContextAsync(Benton, BentonId, "assessor-2");
+        var reapplied = await promoter.PromoteAsync(new(secondActorContext, batch.BatchId));
 
         Assert.Equal(CountyCsvUploadPromotionDisposition.Promoted, reapplied.Disposition);
         await using var verificationContext = database.CreateContext();
         Assert.Single(await verificationContext.ComparableSales.AsNoTracking().ToListAsync());
         Assert.Single(await verificationContext.CountyCsvUploadPromotions.AsNoTracking().ToListAsync());
-        Assert.Single(await verificationContext.AuditEvents.AsNoTracking().ToListAsync());
+        var traces = await verificationContext.AuditEvents.AsNoTracking()
+            .OrderBy(trace => trace.Timestamp)
+            .ToListAsync();
+        Assert.Equal(2, traces.Count);
+        Assert.Equal("assessor-1", traces[0].UserId);
+        Assert.Equal("assessor-2", traces[1].UserId);
+        Assert.StartsWith($"{traces[0].Id}:reapply:", traces[1].Id);
+        Assert.Contains($"\"reappliesTraceId\":\"{traces[0].Id}\"", traces[1].DetailsJson);
     }
 
     [Fact]

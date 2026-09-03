@@ -5,8 +5,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging.Abstractions;
+using TerraFusion.API.Auth;
 using TerraFusion.API.Controllers;
 using TerraFusion.API.Services;
+using TerraFusion.Core.Auth;
+using TerraFusion.Core.Counties;
 using TerraFusion.Core.Entities;
 using TerraFusion.Core.Services;
 using ComparableSale = TerraFusion.Core.Entities.ComparableSale;
@@ -59,14 +62,35 @@ public sealed class R2Wave42RatioStudyEndpointTests
             .ReturnsAsync(BentonCountyId);
         countyResolver
             .Setup(x => x.TryResolveAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(BentonCountyId);
+            .Returns<string, CancellationToken>((value, _) =>
+            {
+                if (Guid.TryParse(value, out var parsed))
+                {
+                    return Task.FromResult<Guid?>(parsed == BentonCountyId ? BentonCountyId : null);
+                }
 
+                return Task.FromResult<Guid?>(
+                    string.Equals(value, "wa-benton", StringComparison.OrdinalIgnoreCase)
+                        ? BentonCountyId
+                        : null);
+            });
+
+        var accessor = new Mock<IRequestUserContextAccessor>();
+        accessor.SetupGet(candidate => candidate.Current).Returns(new RequestUserContext(
+            true,
+            "wave42-assessor",
+            BentonCountyId.ToString("D"),
+            ["Assessor"]));
+        var contextProvider = new AuthenticatedCanonicalCountyContextProvider(
+            new AuthenticatedCountyAuthorityBinding(accessor.Object, countyResolver.Object),
+            new AuthenticatedCanonicalCountyContext(countyResolver.Object));
         var controller = new TerraForgeController(
             db,
             NullLogger<TerraForgeController>.Instance,
             new OlsRegressionService(),
             Mock.Of<ISaleQualificationService>(),
-            countyResolver.Object);
+            countyResolver.Object,
+            contextProvider);
         controller.ControllerContext = new ControllerContext
         {
             HttpContext = new DefaultHttpContext()
@@ -402,5 +426,21 @@ public sealed class R2Wave42RatioStudyEndpointTests
         ((int)body.total).Should().Be(1,
             "comps pool must contain only qualified sales — non-arms-length and exempt excluded");
         ((decimal)body.items[0].salePrice).Should().Be(400_000m);
+    }
+
+    [Fact]
+    public async Task SharedSalesEndpoints_RejectCallerSelectedForeignCounty()
+    {
+        await using var db = CreateDbContext(nameof(SharedSalesEndpoints_RejectCallerSelectedForeignCounty));
+        await SeedCountyAsync(db);
+        var ctrl = CreateController(db);
+        const string foreignCountyId = "22222222-2222-2222-2222-222222222222";
+
+        (await ctrl.GetRatioStudy(taxYear: 2026, countyId: foreignCountyId))
+            .Should().BeOfType<ForbidResult>();
+        (await ctrl.GetCompsPool(taxYear: 2026, countyId: foreignCountyId))
+            .Should().BeOfType<ForbidResult>();
+        (await ctrl.ComputeQualifications(countyId: foreignCountyId))
+            .Should().BeOfType<ForbidResult>();
     }
 }

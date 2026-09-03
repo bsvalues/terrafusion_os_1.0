@@ -6,8 +6,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging.Abstractions;
 using System.Security.Claims;
+using TerraFusion.API.Auth;
 using TerraFusion.API.Controllers;
 using TerraFusion.API.Services;
+using TerraFusion.Core.Auth;
+using TerraFusion.Core.Counties;
 using TerraFusion.Core.Entities;
 using TerraFusion.Core.Services;
 using ComparableSale = TerraFusion.Core.Entities.ComparableSale;
@@ -67,14 +70,35 @@ public sealed class R2Wave43RegressionEndpointTests
             .ReturnsAsync(BentonCountyId);
         countyResolver
             .Setup(x => x.TryResolveAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(BentonCountyId);
+            .Returns<string, CancellationToken>((value, _) =>
+            {
+                if (Guid.TryParse(value, out var parsed))
+                {
+                    return Task.FromResult<Guid?>(parsed == BentonCountyId ? BentonCountyId : null);
+                }
 
+                return Task.FromResult<Guid?>(
+                    string.Equals(value, "wa-benton", StringComparison.OrdinalIgnoreCase)
+                        ? BentonCountyId
+                        : null);
+            });
+
+        var accessor = new Mock<IRequestUserContextAccessor>();
+        accessor.SetupGet(candidate => candidate.Current).Returns(new RequestUserContext(
+            true,
+            "w43-test-user",
+            BentonCountyId.ToString("D"),
+            ["Assessor"]));
+        var contextProvider = new AuthenticatedCanonicalCountyContextProvider(
+            new AuthenticatedCountyAuthorityBinding(accessor.Object, countyResolver.Object),
+            new AuthenticatedCanonicalCountyContext(countyResolver.Object));
         var ctrl = new TerraForgeController(
             db,
             NullLogger<TerraForgeController>.Instance,
             new OlsRegressionService(),
             Mock.Of<ISaleQualificationService>(),
-            countyResolver.Object);
+            countyResolver.Object,
+            contextProvider);
 
         // CI-HYGIENE-D (#739): provide ControllerContext.HttpContext so ResolveCountyScopeToken's Request.Headers access does not throw
         ctrl.ControllerContext = new ControllerContext

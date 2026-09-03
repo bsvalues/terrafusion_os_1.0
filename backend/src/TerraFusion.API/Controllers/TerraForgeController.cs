@@ -16,6 +16,7 @@ namespace TerraFusion.API.Controllers;
 /// </summary>
 [ApiController]
 [Route("api/terraforge")]
+[Authorize(Policy = "RequireAssessor")]
 public class TerraForgeController : ControllerBase
 {
     private readonly TerraFusionDbContext _db;
@@ -41,44 +42,8 @@ public class TerraForgeController : ControllerBase
         _authenticatedCountyContext = authenticatedCountyContext;
     }
 
-    private string? ResolveCountyScopeToken(string? countyId)
-    {
-        if (string.IsNullOrWhiteSpace(countyId))
-        {
-            countyId = Request.Headers["x-county-id"].FirstOrDefault()
-                ?? Request.Headers["X-County-Id"].FirstOrDefault()
-                ?? User.FindFirst("countyId")?.Value;
-        }
-
-        return string.IsNullOrWhiteSpace(countyId) ? null : countyId.Trim();
-    }
-
-    private async Task<Guid> ResolveCountyScopeAsync(string? countyId, CancellationToken ct)
-    {
-        var countyToken = ResolveCountyScopeToken(countyId);
-        if (string.IsNullOrWhiteSpace(countyToken))
-        {
-            throw new ArgumentException("County context required.", nameof(countyId));
-        }
-
-        return await _countyResolver.ResolveAsync(countyToken, ct);
-    }
-
     private async Task<(Guid CountyId, IActionResult? Error)> TryResolveCountyScopeAsync(string? countyId, CancellationToken ct)
-    {
-        try
-        {
-            return (await ResolveCountyScopeAsync(countyId, ct), null);
-        }
-        catch (ArgumentException ex) when (ex.ParamName == "countyId")
-        {
-            return (Guid.Empty, BadRequest(new { error = ex.Message, field = "countyId" }));
-        }
-        catch (CountyNotFoundException ex)
-        {
-            return (Guid.Empty, BadRequest(new { error = ex.Message, field = "countyId" }));
-        }
-    }
+        => await TryResolveAuthenticatedCountyScopeAsync(countyId, ct).ConfigureAwait(false);
 
     private async Task<(Guid CountyId, IActionResult? Error)> TryResolveAuthenticatedCountyScopeAsync(
         string? requestedCounty,
@@ -750,19 +715,9 @@ public class TerraForgeController : ControllerBase
         if (pageSize > 200) pageSize = 200;
         if (page < 1) page = 1;
 
-        Guid scopedCountyId;
-        try
-        {
-            scopedCountyId = await ResolveCountyScopeAsync(countyId, ct);
-        }
-        catch (ArgumentException ex) when (ex.ParamName == "countyId")
-        {
-            return BadRequest(new { error = ex.Message, field = "countyId" });
-        }
-        catch (CountyNotFoundException ex)
-        {
-            return BadRequest(new { error = ex.Message, field = "countyId" });
-        }
+        var countyScope = await TryResolveAuthenticatedCountyScopeAsync(countyId, ct);
+        if (countyScope.Error is not null) return countyScope.Error;
+        var scopedCountyId = countyScope.CountyId;
 
         var lookbackStart = new DateTime(taxYear - 2, 1, 1, 0, 0, 0, DateTimeKind.Utc);
         var lookbackEnd   = new DateTime(taxYear, 1, 1, 0, 0, 0, DateTimeKind.Utc);
@@ -1607,19 +1562,9 @@ public class TerraForgeController : ControllerBase
     {
         _logger.LogInformation("GetRatioStudyTrends: taxYear={TaxYear}", taxYear);
 
-        Guid scopedCountyId;
-        try
-        {
-            scopedCountyId = await ResolveCountyScopeAsync(countyId, ct);
-        }
-        catch (ArgumentException ex) when (ex.ParamName == "countyId")
-        {
-            return BadRequest(new { error = ex.Message, field = "countyId" });
-        }
-        catch (CountyNotFoundException ex)
-        {
-            return BadRequest(new { error = ex.Message, field = "countyId" });
-        }
+        var countyScope = await TryResolveAuthenticatedCountyScopeAsync(countyId, ct);
+        if (countyScope.Error is not null) return countyScope.Error;
+        var scopedCountyId = countyScope.CountyId;
 
         var cutoff = taxYear - 2;
         // Use GetAssessedValueMapAsync (same pattern as all other ratio-study endpoints).
@@ -1703,7 +1648,9 @@ public class TerraForgeController : ControllerBase
 
         try
         {
-            var scopedCountyId = await ResolveCountyScopeAsync(countyId, ct);
+            var countyScope = await TryResolveAuthenticatedCountyScopeAsync(countyId, ct);
+            if (countyScope.Error is not null) return countyScope.Error;
+            var scopedCountyId = countyScope.CountyId;
 
             // Qualified sale population — same rule as other ratio-study endpoints
             var salesQuery = _db.ComparableSales
@@ -3212,7 +3159,9 @@ public class TerraForgeController : ControllerBase
 
         try
         {
-            var scopedCountyId = await ResolveCountyScopeAsync(countyId, ct);
+            var countyScope = await TryResolveAuthenticatedCountyScopeAsync(countyId, ct);
+            if (countyScope.Error is not null) return countyScope.Error;
+            var scopedCountyId = countyScope.CountyId;
 
             // County-wide qualified sale population (same population rule as ratio-study)
             var salesQuery = _db.ComparableSales
@@ -3340,19 +3289,9 @@ public class TerraForgeController : ControllerBase
     {
         _logger.LogInformation("GetComparisonSnapshots: taxYear={TaxYear}", taxYear);
 
-        Guid scopedCountyId;
-        try
-        {
-            scopedCountyId = await ResolveCountyScopeAsync(countyId, ct);
-        }
-        catch (ArgumentException ex) when (ex.ParamName == "countyId")
-        {
-            return BadRequest(new { error = ex.Message, field = "countyId" });
-        }
-        catch (CountyNotFoundException ex)
-        {
-            return BadRequest(new { error = ex.Message, field = "countyId" });
-        }
+        var countyScope = await TryResolveAuthenticatedCountyScopeAsync(countyId, ct);
+        if (countyScope.Error is not null) return countyScope.Error;
+        var scopedCountyId = countyScope.CountyId;
 
         var cutoff = taxYear - 2;
 

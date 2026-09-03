@@ -80,27 +80,36 @@ public sealed class CountyCsvUploadPromoter : ICountyCsvUploadPromoter
 
         await using var dbContext = await _dbContextFactory
             .CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
-        var promotions = await dbContext.CountyCsvUploadPromotions
+        var promotedSalesQuery = dbContext.ComparableSales
             .AsNoTracking()
-            .Where(promotion => promotion.CountyId == countyId && promotion.PromotedRowCount > 0)
-            .Select(promotion => new { promotion.PromotedRowCount, promotion.LatestSaleDate })
-            .ToListAsync(cancellationToken).ConfigureAwait(false);
-        var promotedSales = promotions.Sum(promotion => promotion.PromotedRowCount);
-        var latestSaleDate = promotions
-            .Select(promotion => promotion.LatestSaleDate)
-            .OrderByDescending(value => value, StringComparer.Ordinal)
-            .FirstOrDefault();
-        var recommendedStudyYear = latestSaleDate is null
-            ? (int?)null
-            : DateOnly.ParseExact(
-                latestSaleDate,
-                "yyyy-MM-dd",
-                CultureInfo.InvariantCulture).Year + 1;
+            .Where(sale => sale.CountyId == countyId
+                && sale.IngestedBy == "county-upload"
+                && sale.VerificationSource != null
+                && sale.VerificationSource.StartsWith("county-upload:"));
+        var latestSaleTimestamp = await promotedSalesQuery
+            .MaxAsync(sale => (DateTime?)sale.SaleDate, cancellationToken)
+            .ConfigureAwait(false);
+        if (latestSaleTimestamp is null)
+        {
+            return new(countyId, ICountyCsvUploadPromoter.ContractId, 0, null, null, false);
+        }
+
+        var latestSaleDate = DateOnly.FromDateTime(latestSaleTimestamp.Value);
+        var recommendedStudyYear = latestSaleDate.Year + 1;
+        var lookbackStart = new DateTime(
+            recommendedStudyYear - 2, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        var lookbackEnd = new DateTime(
+            recommendedStudyYear, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        var promotedSales = await promotedSalesQuery
+            .CountAsync(
+                sale => sale.SaleDate >= lookbackStart && sale.SaleDate < lookbackEnd,
+                cancellationToken)
+            .ConfigureAwait(false);
         return new(
             countyId,
             ICountyCsvUploadPromoter.ContractId,
             promotedSales,
-            latestSaleDate,
+            latestSaleDate.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
             recommendedStudyYear,
             promotedSales > 0);
     }
@@ -204,6 +213,11 @@ public sealed class CountyCsvUploadPromoter : ICountyCsvUploadPromoter
                         "A stable county Sales promotion trace identity collided with a different event.");
                 }
             }
+            var tracesToAppend = traceCandidates
+                .Select(trace => existingTraces.ContainsKey(trace.Id)
+                    ? CreateReapplicationTrace(trace, actorId, promotedAtUtc)
+                    : trace)
+                .ToArray();
             var latestSaleDate = stagedRows
                 .Select(row => row.SaleDate!)
                 .OrderByDescending(value => value, StringComparer.Ordinal)
@@ -220,8 +234,7 @@ public sealed class CountyCsvUploadPromoter : ICountyCsvUploadPromoter
 
             dbContext.ComparableSales.AddRange(sales);
             dbContext.CountyCsvUploadPromotions.Add(promotion);
-            dbContext.AuditEvents.AddRange(
-                traceCandidates.Where(trace => !existingTraces.ContainsKey(trace.Id)));
+            dbContext.AuditEvents.AddRange(tracesToAppend);
             await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
             await transaction.CommitAsync(cancellationToken).ConfigureAwait(false);
             return Accepted(CountyCsvUploadPromotionDisposition.Promoted, promotion);
@@ -405,6 +418,27 @@ public sealed class CountyCsvUploadPromoter : ICountyCsvUploadPromoter
     };
 
     private static string NormalizeParcelIdentity(string parcelId) => parcelId.ToUpperInvariant();
+
+    private static AuditEvent CreateReapplicationTrace(
+        AuditEvent original,
+        string actorId,
+        DateTimeOffset promotedAtUtc) => new()
+    {
+        Id = $"{original.Id}:reapply:{promotedAtUtc.UtcDateTime.Ticks.ToString(CultureInfo.InvariantCulture)}",
+        Type = AuditEventType.Create,
+        Entity = original.Entity,
+        EntityId = original.EntityId,
+        UserId = actorId,
+        Action = original.Action,
+        DetailsJson = JsonSerializer.Serialize(new
+        {
+            category = "valuation",
+            contractId = ICountyCsvUploadPromoter.ContractId,
+            reappliesTraceId = original.Id,
+        }, JsonOptions),
+        Timestamp = promotedAtUtc.UtcDateTime,
+        CountyId = original.CountyId,
+    };
 
     private static bool SameSaleIdentity(ComparableSale candidate, ComparableSale existing) =>
         candidate.CountyId == existing.CountyId

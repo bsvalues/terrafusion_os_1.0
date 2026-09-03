@@ -53,12 +53,14 @@ public sealed class CompsPoolTests : IDisposable
     public CompsPoolTests()
     {
         _db  = TestDbContextFactory.CreateInMemoryContext();
+        var resolver = ControllerTestSetup.CountyResolverFor(BentonId);
         _sut = new TerraForgeController(
             _db,
             NullLogger<TerraForgeController>.Instance,
             Mock.Of<IOlsRegressionService>(),
             Mock.Of<ISaleQualificationService>(),
-            ControllerTestSetup.CountyResolverFor(BentonId))
+            resolver,
+            ControllerTestSetup.CountyContextProviderFor(BentonId))
         {
             ControllerContext = ControllerTestSetup.WithCountyClaim(BentonId),
         };

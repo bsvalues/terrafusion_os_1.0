@@ -397,9 +397,11 @@ export default function CountyCsvAdmissionPage({
                             </Typography>
                             <Typography variant='caption' color='text.secondary'>
                               Admitted {formatSnapshotDate(batch.receivedAtUtc)} ·{' '}
-                              {batch.rowStaging
-                                ? 'validated staging only; not promoted or available to TerraForge'
-                                : 'not staged or available to TerraForge'}
+                              {batch.promotion
+                                ? 'promotion completed; validated sales are available to TerraForge'
+                                : batch.rowStaging
+                                  ? 'validated staging only; not promoted or available to TerraForge'
+                                  : 'not staged or available to TerraForge'}
                             </Typography>
                             {batch.rowStaging && batch.rowStaging.reasonCounts.length > 0 && (
                               <Typography variant='caption' display='block' color='warning.main'>

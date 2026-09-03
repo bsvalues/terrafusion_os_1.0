@@ -28,6 +28,9 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
+using TerraFusion.API.Auth;
+using TerraFusion.Core.Auth;
+using TerraFusion.Core.Counties;
 using TerraFusion.Core.Services;
 
 namespace TerraFusion.API.Tests.TestHelpers;
@@ -84,6 +87,48 @@ public static class ControllerTestSetup
         resolver
             .Setup(r => r.TryResolveAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(countyId);
+        return resolver.Object;
+    }
+
+    /// <summary>
+    /// Build the same authenticated canonical county binding used by protected
+    /// TerraForge endpoints. The actor's authority token and resolver converge
+    /// on exactly one county.
+    /// </summary>
+    public static AuthenticatedCanonicalCountyContextProvider CountyContextProviderFor(
+        Guid countyId)
+    {
+        var accessor = new Mock<IRequestUserContextAccessor>();
+        accessor.SetupGet(candidate => candidate.Current).Returns(new RequestUserContext(
+            true,
+            "test-assessor",
+            countyId.ToString("D"),
+            ["Assessor"]));
+        var canonicalResolver = CanonicalCountyResolverFor(countyId, "wa-benton");
+        return new AuthenticatedCanonicalCountyContextProvider(
+            new AuthenticatedCountyAuthorityBinding(accessor.Object, canonicalResolver),
+            new AuthenticatedCanonicalCountyContext(canonicalResolver));
+    }
+
+    private static ICountyResolver CanonicalCountyResolverFor(Guid countyId, string canonicalKey)
+    {
+        var resolver = new Mock<ICountyResolver>();
+        resolver
+            .Setup(candidate => candidate.TryResolveAsync(
+                It.IsAny<string>(),
+                It.IsAny<CancellationToken>()))
+            .Returns<string, CancellationToken>((value, _) =>
+            {
+                if (Guid.TryParse(value, out var parsed))
+                {
+                    return Task.FromResult<Guid?>(parsed == countyId ? countyId : null);
+                }
+
+                return Task.FromResult<Guid?>(
+                    string.Equals(value, canonicalKey, StringComparison.OrdinalIgnoreCase)
+                        ? countyId
+                        : null);
+            });
         return resolver.Object;
     }
 

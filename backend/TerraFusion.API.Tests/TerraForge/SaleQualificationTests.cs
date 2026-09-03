@@ -311,6 +311,27 @@ public sealed class SaleQualificationTests : IDisposable
     }
 
     [Fact]
+    public async Task SharedComparableSalesEndpoints_RejectCallerSelectedForeignCounty()
+    {
+        Assert.IsType<ForbidResult>(
+            await _sut.GetRatioStudy(countyId: OtherCountyId.ToString("D")));
+        Assert.IsType<ForbidResult>(
+            await _sut.GetCompsPool(countyId: OtherCountyId.ToString("D")));
+        Assert.IsType<ForbidResult>(
+            await _sut.ComputeQualifications(countyId: OtherCountyId.ToString("D")));
+    }
+
+    [Fact]
+    public void TerraForgeController_RequiresAssessorForEveryEndpoint()
+    {
+        Assert.Contains(
+            typeof(TerraForgeController)
+                .GetCustomAttributes(typeof(AuthorizeAttribute), inherit: true)
+                .Cast<AuthorizeAttribute>(),
+            attribute => attribute.Policy == "RequireAssessor");
+    }
+
+    [Fact]
     public void EverySaleQualificationEndpoint_RequiresAssessorPolicy()
     {
         var endpoints = typeof(TerraForgeController)
