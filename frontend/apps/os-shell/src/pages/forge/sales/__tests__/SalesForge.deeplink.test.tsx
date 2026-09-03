@@ -34,27 +34,27 @@ vi.mock('@/services/washingtonCountyLaunch', () => ({
 // The child panels fetch live data — replace them with cheap render stubs
 // so tests don't need to mock every PACS endpoint.
 vi.mock('../panels/QualificationQueuePanel', () => ({
-  QualificationQueuePanel: () => <div data-testid="stub-queue" />,
+  QualificationQueuePanel: () => <div data-testid='stub-queue' />,
 }));
 vi.mock('../panels/RatioAuditPanel', () => ({
-  RatioAuditPanel: () => <div data-testid="stub-ratio" />,
+  RatioAuditPanel: () => <div data-testid='stub-ratio' />,
 }));
 vi.mock('../panels/NeighborhoodViewPanel', () => ({
-  NeighborhoodViewPanel: () => <div data-testid="stub-hood" />,
+  NeighborhoodViewPanel: () => <div data-testid='stub-hood' />,
 }));
 vi.mock('../panels/CodeAuditPanel', () => ({
-  CodeAuditPanel: () => <div data-testid="stub-code" />,
+  CodeAuditPanel: () => <div data-testid='stub-code' />,
 }));
 vi.mock('../panels/DorExportPanel', () => ({
-  DorExportPanel: () => <div data-testid="stub-dor" />,
+  DorExportPanel: () => <div data-testid='stub-dor' />,
 }));
 vi.mock('../audit/AuditCommandCenter', () => ({
   AuditCommandCenter: ({ taxYear }: { taxYear: number }) => (
-    <div data-testid="stub-ai-audit" data-year={taxYear} />
+    <div data-testid='stub-ai-audit' data-year={taxYear} />
   ),
 }));
 vi.mock('../components/RunningStatsPanel', () => ({
-  RunningStatsPanel: () => <div data-testid="stub-stats" />,
+  RunningStatsPanel: () => <div data-testid='stub-stats' />,
 }));
 
 function resetStore() {
@@ -135,6 +135,46 @@ describe('SalesForge — County Studio deeplink consumption (Task D2)', () => {
     expect(screen.queryByTestId('sf-scoped-from-chip')).not.toBeInTheDocument();
   });
 
+  it('uses the independently verified package year instead of an untrusted Hub claim', async () => {
+    const olderPackage = {
+      ...hostedBentonStatus(),
+      latestSaleDate: '2024-12-31',
+    };
+    washingtonCountyLaunchMocks.resolve.mockResolvedValue({
+      counties: [olderPackage],
+      packageSource: 'hosted',
+      usedRepositoryFallback: false,
+    });
+    washingtonCountyLaunchMocks.verify.mockResolvedValue({
+      ...olderPackage,
+      salesShardVerification: 'verified',
+    });
+
+    render(
+      <SalesForge
+        metadata={{
+          countyCode: '005',
+          countyName: 'Benton',
+          resetValuationScope: true,
+          launchContext: 'washington-counties-hub',
+          dataTrustTier: 'public-reference-not-county-certified',
+          referencePackageSource: 'hosted',
+          referenceDataPosture: 'public_recorder_export',
+          referenceRecordCount: 999,
+          latestReferenceSaleDate: '2099-12-31',
+          salesReviewAvailability: 'available',
+          salesReviewUnavailableMessage: null,
+        }}
+      />
+    );
+
+    await waitFor(() => {
+      expect(useSalesForgeStore.getState().dataSource).toBe('washington-hosted');
+      expect(useSalesForgeStore.getState().taxYear).toBe(2024);
+    });
+    expect(screen.getByText('2024 study year')).toBeInTheDocument();
+  });
+
   it('keeps public-package mode on package-backed tabs and forces stale live state to Queue', async () => {
     window.history.replaceState({}, '', '/?wa-launch-data=1');
     act(() => {
@@ -143,7 +183,10 @@ describe('SalesForge — County Studio deeplink consumption (Task D2)', () => {
 
     render(<SalesForge />);
 
-    expect(await screen.findByRole('tab', { name: 'Queue' })).toHaveAttribute('aria-selected', 'true');
+    expect(await screen.findByRole('tab', { name: 'Queue' })).toHaveAttribute(
+      'aria-selected',
+      'true'
+    );
     expect(screen.getByRole('tab', { name: 'Neighborhoods' })).toBeInTheDocument();
     expect(screen.getByRole('tab', { name: 'Code Audit' })).toBeInTheDocument();
     expect(screen.queryByRole('tab', { name: 'AI Audit' })).not.toBeInTheDocument();
@@ -152,10 +195,10 @@ describe('SalesForge — County Studio deeplink consumption (Task D2)', () => {
     expect(await screen.findByTestId('stub-queue')).toBeInTheDocument();
     expect(screen.queryByTestId('stub-ai-audit')).not.toBeInTheDocument();
     expect(screen.getByText(/Public\/reference package only/i)).toHaveTextContent(
-      /browser-local and nonofficial/i,
+      /browser-local and nonofficial/i
     );
     expect(screen.getByText(/Public\/reference package only/i)).not.toHaveTextContent(
-      /invented synthetic sales/i,
+      /invented synthetic sales/i
     );
 
     await waitFor(() => {
@@ -176,9 +219,9 @@ describe('SalesForge — County Studio deeplink consumption (Task D2)', () => {
 
     render(<SalesForge />);
 
-    expect(await screen.findByText(
-      /No authenticated hosted sales package is currently available/i,
-    )).toBeInTheDocument();
+    expect(
+      await screen.findByText(/No authenticated hosted sales package is currently available/i)
+    ).toBeInTheDocument();
     expect(screen.getByTestId('salesforge-data-unavailable')).toBeInTheDocument();
     expect(screen.queryByRole('tab')).not.toBeInTheDocument();
     expect(screen.queryByTestId('stub-queue')).not.toBeInTheDocument();
@@ -202,17 +245,18 @@ describe('SalesForge — County Studio deeplink consumption (Task D2)', () => {
 
     render(<SalesForge />);
 
-    expect(screen.getByText(/authenticating the selected county public-data package/i))
-      .toBeInTheDocument();
-    expect(screen.queryByTestId('salesforge-retry-hosted-verification'))
-      .not.toBeInTheDocument();
+    expect(
+      screen.getByText(/authenticating the selected county public-data package/i)
+    ).toBeInTheDocument();
+    expect(screen.queryByTestId('salesforge-retry-hosted-verification')).not.toBeInTheDocument();
 
     await act(async () => {
       await vi.advanceTimersByTimeAsync(15_000);
     });
 
-    expect(screen.getByText(/No authenticated hosted sales package is currently available/i))
-      .toBeInTheDocument();
+    expect(
+      screen.getByText(/No authenticated hosted sales package is currently available/i)
+    ).toBeInTheDocument();
     expect(screen.getByTestId('salesforge-retry-hosted-verification')).toBeInTheDocument();
     expect(screen.getByTestId('salesforge-data-unavailable')).toBeInTheDocument();
     expect(washingtonCountyLaunchMocks.resolve).toHaveBeenCalledTimes(1);
@@ -241,12 +285,12 @@ describe('SalesForge — County Studio deeplink consumption (Task D2)', () => {
           salesReviewAvailability: 'available',
           salesReviewUnavailableMessage: null,
         }}
-      />,
+      />
     );
 
-    expect(await screen.findByText(
-      /No authenticated hosted sales package is currently available/i,
-    )).toBeInTheDocument();
+    expect(
+      await screen.findByText(/No authenticated hosted sales package is currently available/i)
+    ).toBeInTheDocument();
     expect(useSalesForgeStore.getState().dataSource).toBe('live-api');
     expect(screen.queryByRole('tab')).not.toBeInTheDocument();
     expect(washingtonCountyLaunchMocks.resolve).toHaveBeenCalledTimes(1);
@@ -262,21 +306,22 @@ describe('SalesForge — County Studio deeplink consumption (Task D2)', () => {
     });
     const completeVerification: Array<(county: typeof benton) => void> = [];
     washingtonCountyLaunchMocks.verify.mockImplementation(
-      () => new Promise<typeof benton>((resolve) => completeVerification.push(resolve)),
+      () => new Promise<typeof benton>((resolve) => completeVerification.push(resolve))
     );
-    const handoff = () => ({
-      countyCode: '005',
-      countyName: 'Benton',
-      resetValuationScope: true,
-      launchContext: 'washington-counties-hub',
-      dataTrustTier: 'public-reference-not-county-certified',
-      referencePackageSource: 'hosted',
-      referenceDataPosture: 'public_recorder_export',
-      referenceRecordCount: 1,
-      latestReferenceSaleDate: '2025-12-31',
-      salesReviewAvailability: 'available',
-      salesReviewUnavailableMessage: null,
-    } as const);
+    const handoff = () =>
+      ({
+        countyCode: '005',
+        countyName: 'Benton',
+        resetValuationScope: true,
+        launchContext: 'washington-counties-hub',
+        dataTrustTier: 'public-reference-not-county-certified',
+        referencePackageSource: 'hosted',
+        referenceDataPosture: 'public_recorder_export',
+        referenceRecordCount: 1,
+        latestReferenceSaleDate: '2025-12-31',
+        salesReviewAvailability: 'available',
+        salesReviewUnavailableMessage: null,
+      }) as const;
 
     const rendered = render(<SalesForge metadata={handoff()} />);
     await waitFor(() => expect(completeVerification).toHaveLength(1));
@@ -299,12 +344,13 @@ describe('SalesForge — County Studio deeplink consumption (Task D2)', () => {
       <>
         <SalesForge metadata={handoff()} />
         <RefreshLayoutProbe />
-      </>,
+      </>
     );
     expect(refreshLayoutSources).toEqual(['live-api']);
     await waitFor(() => expect(completeVerification).toHaveLength(2));
-    expect(screen.getByText(/authenticating the selected county public-data package/i))
-      .toBeInTheDocument();
+    expect(
+      screen.getByText(/authenticating the selected county public-data package/i)
+    ).toBeInTheDocument();
 
     await act(async () => {
       completeVerification[1]!({ ...benton, salesShardVerification: 'verified' });
@@ -336,9 +382,12 @@ describe('SalesForge — County Studio deeplink consumption (Task D2)', () => {
         ...county,
         salesShardVerification: 'verified',
       }))
-      .mockImplementationOnce(() => new Promise((resolve) => {
-        finishVerification = resolve;
-      }));
+      .mockImplementationOnce(
+        () =>
+          new Promise((resolve) => {
+            finishVerification = resolve;
+          })
+      );
 
     render(
       <SalesForge
@@ -355,7 +404,7 @@ describe('SalesForge — County Studio deeplink consumption (Task D2)', () => {
           salesReviewAvailability: 'available',
           salesReviewUnavailableMessage: null,
         }}
-      />,
+      />
     );
 
     await waitFor(() => {
@@ -364,7 +413,7 @@ describe('SalesForge — County Studio deeplink consumption (Task D2)', () => {
     expect(washingtonCountyLaunchMocks.resolve).toHaveBeenCalledTimes(1);
     expect(washingtonCountyLaunchMocks.verify).toHaveBeenCalledWith(
       expect.objectContaining({ countyCode: '005' }),
-      expect.anything(),
+      expect.anything()
     );
 
     act(() => {
@@ -377,14 +426,15 @@ describe('SalesForge — County Studio deeplink consumption (Task D2)', () => {
       expect(washingtonCountyLaunchMocks.resolve).toHaveBeenCalledTimes(2);
       expect(washingtonCountyLaunchMocks.verify).toHaveBeenCalledWith(
         expect.objectContaining({ countyCode: '063' }),
-        expect.anything(),
+        expect.anything()
       );
     });
     expect(useSalesForgeStore.getState().committedFilters.countyCode).toBe('063');
     expect(useSalesForgeStore.getState().dataSource).toBe('live-api');
     expect(screen.getByText('Spokane County')).toBeInTheDocument();
-    expect(screen.getByText(/authenticating the selected county public-data package/i))
-      .toBeInTheDocument();
+    expect(
+      screen.getByText(/authenticating the selected county public-data package/i)
+    ).toBeInTheDocument();
     expect(screen.queryByTestId('stub-queue')).not.toBeInTheDocument();
 
     await act(async () => {
@@ -440,12 +490,12 @@ describe('SalesForge — County Studio deeplink consumption (Task D2)', () => {
           salesReviewAvailability: 'verifying',
           salesReviewUnavailableMessage: null,
         }}
-      />,
+      />
     );
 
-    expect(await screen.findByText(
-      /No authenticated hosted sales package is currently available/i,
-    )).toBeInTheDocument();
+    expect(
+      await screen.findByText(/No authenticated hosted sales package is currently available/i)
+    ).toBeInTheDocument();
     expect(useSalesForgeStore.getState().dataSource).toBe('live-api');
     expect(screen.getByTestId('salesforge-retry-hosted-verification')).toBeInTheDocument();
 
@@ -458,7 +508,7 @@ describe('SalesForge — County Studio deeplink consumption (Task D2)', () => {
     expect(washingtonCountyLaunchMocks.resolve).toHaveBeenCalledTimes(2);
     expect(washingtonCountyLaunchMocks.verify).toHaveBeenCalledWith(
       expect.objectContaining({ countyCode: '063' }),
-      expect.anything(),
+      expect.anything()
     );
   });
 
@@ -490,7 +540,7 @@ describe('SalesForge — County Studio deeplink consumption (Task D2)', () => {
     expect(washingtonCountyLaunchMocks.verify).not.toHaveBeenCalled();
     expect(screen.getByText(/Only invented repository reference records/i)).toBeInTheDocument();
     expect(screen.getByTestId('salesforge-data-unavailable')).toHaveTextContent(
-      /No sales-review records or data-dependent tools/i,
+      /No sales-review records or data-dependent tools/i
     );
     expect(screen.queryByTestId('stub-queue')).not.toBeInTheDocument();
   });
@@ -555,11 +605,7 @@ describe('SalesForge — County Studio deeplink consumption (Task D2)', () => {
   });
 
   it('falls back to parsing raw deeplinkQuery when pre-split fields are absent', () => {
-    render(
-      <SalesForge
-        metadata={{ deeplinkQuery: '?stratum=C2&year=2024&segmentId=seg-7' }}
-      />
-    );
+    render(<SalesForge metadata={{ deeplinkQuery: '?stratum=C2&year=2024&segmentId=seg-7' }} />);
     const s = useSalesForgeStore.getState();
     expect(s.selectedStratumKey).toBe('C2');
     expect(s.taxYear).toBe(2024);
@@ -591,7 +637,7 @@ describe('SalesForge — County Studio deeplink consumption (Task D2)', () => {
 
     expect(screen.getAllByText(/West Richland Estates/).length).toBeGreaterThan(0);
     expect(
-      screen.getByText(/counties track reval area and neighborhood before parcel-level action/i),
+      screen.getByText(/counties track reval area and neighborhood before parcel-level action/i)
     ).toBeInTheDocument();
   });
 
@@ -688,16 +734,12 @@ describe('SalesForge — County Studio deeplink consumption (Task D2)', () => {
 
     expect(screen.getAllByText(/city overview/i).length).toBeGreaterThan(0);
     expect(
-      screen.getByText(/city scope remains triage-only until you narrow below the city rollup/i),
+      screen.getByText(/city scope remains triage-only until you narrow below the city rollup/i)
     ).toBeInTheDocument();
   });
 
   it('Scoped From chip click fires activateModule("county-studio") with segmentId', () => {
-    render(
-      <SalesForge
-        metadata={{ stratumKey: 'R1', taxYear: 2026, segmentId: 'seg-back' }}
-      />
-    );
+    render(<SalesForge metadata={{ stratumKey: 'R1', taxYear: 2026, segmentId: 'seg-back' }} />);
     const chip = screen.getByTestId('sf-scoped-from-chip');
     fireEvent.click(chip);
     expect(activateModuleMock).toHaveBeenCalledWith(

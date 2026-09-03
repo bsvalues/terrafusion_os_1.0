@@ -232,7 +232,7 @@ importers:
         version: 4.7.0(vite@5.4.21(@types/node@20.19.11)(lightningcss@1.30.1)(terser@5.44.1))
       '@vitest/coverage-v8':
         specifier: ^1.6.0
-        version: 1.6.1(vitest@1.6.1(@types/node@20.19.11)(happy-dom@20.8.9(bufferutil@4.1.0))(jsdom@23.2.0(bufferutil@4.1.0))(lightningcss@1.30.1)(terser@5.44.1))
+        version: 1.6.1(vitest@1.6.1(@types/node@20.19.11)(happy-dom@20.8.9(bufferutil@4.1.0))(jsdom@23.2.0(bufferutil@4.1.0)(canvas@3.2.3))(lightningcss@1.30.1)(terser@5.44.1))
       archiver:
         specifier: ^7.0.1
         version: 7.0.1
@@ -277,7 +277,7 @@ importers:
         version: 29.7.0(@types/node@20.19.11)(babel-plugin-macros@3.1.0)(ts-node@10.9.2(@types/node@20.19.11)(typescript@5.9.2))
       jsdom:
         specifier: ^23.0.0
-        version: 23.2.0(bufferutil@4.1.0)
+        version: 23.2.0(bufferutil@4.1.0)(canvas@3.2.3)
       leaflet:
         specifier: 1.9.4
         version: 1.9.4
@@ -290,6 +290,9 @@ importers:
       nodemon:
         specifier: ^3.0.1
         version: 3.1.11
+      pdfjs-dist:
+        specifier: 4.8.69
+        version: 4.8.69
       playwright:
         specifier: ^1.54.2
         version: 1.57.0
@@ -316,7 +319,7 @@ importers:
         version: 5.4.21(@types/node@20.19.11)(lightningcss@1.30.1)(terser@5.44.1)
       vitest:
         specifier: 1.6.1
-        version: 1.6.1(@types/node@20.19.11)(happy-dom@20.8.9(bufferutil@4.1.0))(jsdom@23.2.0(bufferutil@4.1.0))(lightningcss@1.30.1)(terser@5.44.1)
+        version: 1.6.1(@types/node@20.19.11)(happy-dom@20.8.9(bufferutil@4.1.0))(jsdom@23.2.0(bufferutil@4.1.0)(canvas@3.2.3))(lightningcss@1.30.1)(terser@5.44.1)
       wait-on:
         specifier: 9.0.3
         version: 9.0.3
@@ -677,7 +680,7 @@ importers:
         version: 29.7.0(@types/node@20.19.11)(babel-plugin-macros@3.1.0)(ts-node@10.9.2(@types/node@20.19.11)(typescript@5.9.2))
       jest-environment-jsdom:
         specifier: 30.2.0
-        version: 30.2.0(bufferutil@4.1.0)
+        version: 30.2.0(bufferutil@4.1.0)(canvas@3.2.3)
       lint-staged:
         specifier: ^16.1.5
         version: 16.2.7
@@ -1849,7 +1852,7 @@ importers:
         version: 5.9.2
       vitest:
         specifier: 1.6.1
-        version: 1.6.1(@types/node@20.19.11)(happy-dom@20.8.9(bufferutil@4.1.0))(jsdom@23.2.0(bufferutil@4.1.0))(lightningcss@1.30.1)(terser@5.44.1)
+        version: 1.6.1(@types/node@20.19.11)(happy-dom@20.8.9(bufferutil@4.1.0))(jsdom@23.2.0(bufferutil@4.1.0)(canvas@3.2.3))(lightningcss@1.30.1)(terser@5.44.1)
 
   tools/ai-workspace-companion:
     dependencies:
@@ -8323,6 +8326,10 @@ packages:
   caniuse-lite@1.0.30001761:
     resolution: {integrity: sha512-JF9ptu1vP2coz98+5051jZ4PwQgd2ni8A+gYSN7EA7dPKIMf0pDlSUxhdmVOaV3/fYK5uWBkgSXJaRLr4+3A6g==}
 
+  canvas@3.2.3:
+    resolution: {integrity: sha512-PzE5nJZPz72YUAfo8oTp0u3fqqY7IzlTubneAihqDYAUcBk7ryeCmBbdJBEdaH0bptSOe2VT2Zwcb3UaFyaSWw==}
+    engines: {node: ^18.12.0 || >= 20.9.0}
+
   canvg@3.0.11:
     resolution: {integrity: sha512-5ON+q7jCTgMp9cjpu4Jo6XbvfYwSB2Ow3kzHKfIyJfaCAOHLbdKPQqGKgfED/R5B+3TFFfe8pegYA+b423SRyA==}
     engines: {node: '>=10.0.0'}
@@ -12076,6 +12083,9 @@ packages:
   node-addon-api@4.3.0:
     resolution: {integrity: sha512-73sE9+3UaLYYFmDsFZnqCInzPyh3MqIwZO9cw58yIqAZhONrrabrYyYe3TuIqtIiOuTXVhsGau8hcrhhwSsDIQ==}
 
+  node-addon-api@7.1.1:
+    resolution: {integrity: sha512-5m3bsyrjFWE1xf7nz7YXdN4udnVtXK6/Yfgn5qnahL6bCkf2yKt4k3nuTKAtT4r3IG8JNR2ncsIMdZuAzJjHQQ==}
+
   node-api-version@0.2.1:
     resolution: {integrity: sha512-2xP/IGGMmmSQpI1+O/k72jF/ykvZ89JeuKX3TLJAYPDVLUalrshrLHkeVcCCZqG/eEa635cr8IBYzgnDvM2O8Q==}
 
@@ -12433,6 +12443,10 @@ packages:
     resolution: {integrity: sha512-gDKb8aZMDeD/tZWs9P6+q0J9Mwkdl6xMV8TjnGP3qJVJ06bdMgkbBlLU8IdfOsIsFz2BW1rNVT3XuNEl8zPAvw==}
     engines: {node: '>=8'}
 
+  path2d@0.2.2:
+    resolution: {integrity: sha512-+vnG6S4dYcYxZd+CZxzXCNKdELYZSKfohrk98yajCo1PtRoDgCTrrwOvK1GT0UoAdVszagDVllQc0U1vaX4NUQ==}
+    engines: {node: '>=6'}
+
   path@0.12.7:
     resolution: {integrity: sha512-aXXC6s+1w7otVF9UletFkFcDsJeO7lSZBPUQhtb5O0xJe8LtYhj/GxldoL09bBj9+ZmE2hNoHqQSFMN5fikh4Q==}
 
@@ -12452,6 +12466,10 @@ packages:
   pbf@4.0.1:
     resolution: {integrity: sha512-SuLdBvS42z33m8ejRbInMapQe8n0D3vN/Xd5fmWM3tufNgRQFBpaW2YVJxQZV4iPNqb0vEFvssMEo5w9c6BTIA==}
     hasBin: true
+
+  pdfjs-dist@4.8.69:
+    resolution: {integrity: sha512-IHZsA4T7YElCKNNXtiLgqScw4zPd3pG9do8UrznC757gMd7UPeHSL2qwNNMJo4r79fl8oj1Xx+1nh2YkzdMpLQ==}
+    engines: {node: '>=18'}
 
   pe-library@0.4.1:
     resolution: {integrity: sha512-eRWB5LBz7PpDu4PUlwT0PhnQfTQJlDDdPa35urV4Osrm0t0AqQFGn+UIkU3klZvwJ8KPO3VbBFsXquA6p6kqZw==}
@@ -17471,7 +17489,7 @@ snapshots:
       - supports-color
       - ts-node
 
-  '@jest/environment-jsdom-abstract@30.2.0(jsdom@26.1.0(bufferutil@4.1.0))':
+  '@jest/environment-jsdom-abstract@30.2.0(canvas@3.2.3)(jsdom@26.1.0(bufferutil@4.1.0)(canvas@3.2.3))':
     dependencies:
       '@jest/environment': 30.2.0
       '@jest/fake-timers': 30.2.0
@@ -17480,7 +17498,9 @@ snapshots:
       '@types/node': 20.19.11
       jest-mock: 30.2.0
       jest-util: 30.2.0
-      jsdom: 26.1.0(bufferutil@4.1.0)
+      jsdom: 26.1.0(bufferutil@4.1.0)(canvas@3.2.3)
+    optionalDependencies:
+      canvas: 3.2.3
 
   '@jest/environment@29.7.0':
     dependencies:
@@ -23118,7 +23138,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@vitest/coverage-v8@1.6.1(vitest@1.6.1(@types/node@20.19.11)(happy-dom@20.8.9(bufferutil@4.1.0))(jsdom@23.2.0(bufferutil@4.1.0))(lightningcss@1.30.1)(terser@5.44.1))':
+  '@vitest/coverage-v8@1.6.1(vitest@1.6.1(@types/node@20.19.11)(happy-dom@20.8.9(bufferutil@4.1.0))(jsdom@23.2.0(bufferutil@4.1.0)(canvas@3.2.3))(lightningcss@1.30.1)(terser@5.44.1))':
     dependencies:
       '@ampproject/remapping': 2.3.0
       '@bcoe/v8-coverage': 0.2.3
@@ -23133,7 +23153,7 @@ snapshots:
       std-env: 3.10.0
       strip-literal: 2.1.1
       test-exclude: 6.0.0
-      vitest: 1.6.1(@types/node@20.19.11)(happy-dom@20.8.9(bufferutil@4.1.0))(jsdom@23.2.0(bufferutil@4.1.0))(lightningcss@1.30.1)(terser@5.44.1)
+      vitest: 1.6.1(@types/node@20.19.11)(happy-dom@20.8.9(bufferutil@4.1.0))(jsdom@23.2.0(bufferutil@4.1.0)(canvas@3.2.3))(lightningcss@1.30.1)(terser@5.44.1)
     transitivePeerDependencies:
       - supports-color
 
@@ -24326,6 +24346,12 @@ snapshots:
       three: 0.179.1
 
   caniuse-lite@1.0.30001761: {}
+
+  canvas@3.2.3:
+    dependencies:
+      node-addon-api: 7.1.1
+      prebuild-install: 7.1.3
+    optional: true
 
   canvg@3.0.11:
     dependencies:
@@ -27494,13 +27520,15 @@ snapshots:
       jest-util: 29.7.0
       pretty-format: 29.7.0
 
-  jest-environment-jsdom@30.2.0(bufferutil@4.1.0):
+  jest-environment-jsdom@30.2.0(bufferutil@4.1.0)(canvas@3.2.3):
     dependencies:
       '@jest/environment': 30.2.0
-      '@jest/environment-jsdom-abstract': 30.2.0(jsdom@26.1.0(bufferutil@4.1.0))
+      '@jest/environment-jsdom-abstract': 30.2.0(canvas@3.2.3)(jsdom@26.1.0(bufferutil@4.1.0)(canvas@3.2.3))
       '@types/jsdom': 21.1.7
       '@types/node': 20.19.11
-      jsdom: 26.1.0(bufferutil@4.1.0)
+      jsdom: 26.1.0(bufferutil@4.1.0)(canvas@3.2.3)
+    optionalDependencies:
+      canvas: 3.2.3
     transitivePeerDependencies:
       - bufferutil
       - supports-color
@@ -27826,8 +27854,39 @@ snapshots:
       - bufferutil
       - supports-color
       - utf-8-validate
+    optional: true
 
-  jsdom@26.1.0(bufferutil@4.1.0):
+  jsdom@23.2.0(bufferutil@4.1.0)(canvas@3.2.3):
+    dependencies:
+      '@asamuzakjp/dom-selector': 2.0.2
+      cssstyle: 4.6.0
+      data-urls: 5.0.0
+      decimal.js: 10.6.0
+      form-data: 4.0.5
+      html-encoding-sniffer: 4.0.0
+      http-proxy-agent: 7.0.2
+      https-proxy-agent: 7.0.6
+      is-potential-custom-element-name: 1.0.1
+      parse5: 7.3.0
+      rrweb-cssom: 0.6.0
+      saxes: 6.0.0
+      symbol-tree: 3.2.4
+      tough-cookie: 4.1.4
+      w3c-xmlserializer: 5.0.0
+      webidl-conversions: 7.0.0
+      whatwg-encoding: 3.1.1
+      whatwg-mimetype: 4.0.0
+      whatwg-url: 14.2.0
+      ws: 8.21.0(bufferutil@4.1.0)
+      xml-name-validator: 5.0.0
+    optionalDependencies:
+      canvas: 3.2.3
+    transitivePeerDependencies:
+      - bufferutil
+      - supports-color
+      - utf-8-validate
+
+  jsdom@26.1.0(bufferutil@4.1.0)(canvas@3.2.3):
     dependencies:
       cssstyle: 4.6.0
       data-urls: 5.0.0
@@ -27849,6 +27908,8 @@ snapshots:
       whatwg-url: 14.2.0
       ws: 8.21.0(bufferutil@4.1.0)
       xml-name-validator: 5.0.0
+    optionalDependencies:
+      canvas: 3.2.3
     transitivePeerDependencies:
       - bufferutil
       - supports-color
@@ -28804,6 +28865,9 @@ snapshots:
   node-addon-api@4.3.0:
     optional: true
 
+  node-addon-api@7.1.1:
+    optional: true
+
   node-api-version@0.2.1:
     dependencies:
       semver: 7.7.3
@@ -29171,6 +29235,9 @@ snapshots:
 
   path-type@4.0.0: {}
 
+  path2d@0.2.2:
+    optional: true
+
   path@0.12.7:
     dependencies:
       process: 0.11.10
@@ -29187,6 +29254,11 @@ snapshots:
   pbf@4.0.1:
     dependencies:
       resolve-protobuf-schema: 2.1.0
+
+  pdfjs-dist@4.8.69:
+    optionalDependencies:
+      canvas: 3.2.3
+      path2d: 0.2.2
 
   pe-library@0.4.1: {}
 
@@ -31959,6 +32031,42 @@ snapshots:
       '@types/node': 20.16.11
       happy-dom: 20.8.9(bufferutil@4.1.0)
       jsdom: 23.2.0(bufferutil@4.1.0)
+    transitivePeerDependencies:
+      - less
+      - lightningcss
+      - sass
+      - sass-embedded
+      - stylus
+      - sugarss
+      - supports-color
+      - terser
+
+  vitest@1.6.1(@types/node@20.19.11)(happy-dom@20.8.9(bufferutil@4.1.0))(jsdom@23.2.0(bufferutil@4.1.0)(canvas@3.2.3))(lightningcss@1.30.1)(terser@5.44.1):
+    dependencies:
+      '@vitest/expect': 1.6.1
+      '@vitest/runner': 1.6.1
+      '@vitest/snapshot': 1.6.1
+      '@vitest/spy': 1.6.1
+      '@vitest/utils': 1.6.1
+      acorn-walk: 8.3.4
+      chai: 4.5.0
+      debug: 4.4.3(supports-color@5.5.0)
+      execa: 8.0.1
+      local-pkg: 0.5.1
+      magic-string: 0.30.21
+      pathe: 1.1.2
+      picocolors: 1.1.1
+      std-env: 3.10.0
+      strip-literal: 2.1.1
+      tinybench: 2.9.0
+      tinypool: 0.8.4
+      vite: 5.4.21(@types/node@20.19.11)(lightningcss@1.30.1)(terser@5.44.1)
+      vite-node: 1.6.1(@types/node@20.19.11)(lightningcss@1.30.1)(terser@5.44.1)
+      why-is-node-running: 2.3.0
+    optionalDependencies:
+      '@types/node': 20.19.11
+      happy-dom: 20.8.9(bufferutil@4.1.0)
+      jsdom: 23.2.0(bufferutil@4.1.0)(canvas@3.2.3)
     transitivePeerDependencies:
       - less
       - lightningcss

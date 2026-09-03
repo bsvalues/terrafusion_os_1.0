@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-test('uses the authenticated Chelan, Clark, Kitsap, Pierce, Skagit, Snohomish, Thurston, and Whatcom public-sales package without lending it to another county', async ({
+test('uses the authenticated Chelan, Clark, Kitsap, Lewis, Pierce, Skagit, Snohomish, Thurston, and Whatcom public-sales package without lending it to another county', async ({
   page,
 }) => {
   const requestedSalesShards: string[] = [];
@@ -307,6 +307,47 @@ test('uses the authenticated Chelan, Clark, Kitsap, Pierce, Skagit, Snohomish, T
   await page.goto('/counties', { waitUntil: 'domcontentloaded' });
   await expect(page.getByRole('option')).toHaveCount(39, { timeout: 20_000 });
 
+  const lewis = page.getByRole('option', { name: 'Select Lewis County' });
+  await lewis.click();
+  await expect(lewis).toHaveAttribute('aria-selected', 'true');
+  await expect(context).toContainText('Lewis County');
+  await expect(context).toContainText('909', { timeout: 45_000 });
+  await expect(context).toContainText('2024-12-31');
+  await expect(context).not.toContainText('No governed public sales state is available');
+
+  await page.getByRole('button', { name: 'Open TerraForge' }).click();
+  await expect(page.getByRole('heading', { name: 'TerraForge', exact: true })).toBeVisible({
+    timeout: 20_000,
+  });
+  await expect(page.getByTestId('forge-county-context')).toContainText('909', {
+    timeout: 45_000,
+  });
+  const lewisSalesForge = page
+    .getByTestId('forge-primary-applications')
+    .getByRole('button', { name: /SalesForge/i });
+  await expect(lewisSalesForge).toBeEnabled();
+  await lewisSalesForge.click();
+  await expect(page.getByRole('heading', { name: 'SalesForge' })).toBeVisible({ timeout: 20_000 });
+  await expect(salesForge.getByText('Lewis County', { exact: true })).toBeVisible();
+  await expect(salesForge.getByText('Washington launch data package', { exact: true })).toBeVisible(
+    { timeout: 20_000 }
+  );
+  await expect(salesForge.getByTestId('salesforge-data-unavailable')).toHaveCount(0);
+  const firstLewisSaleRow = salesForge
+    .getByRole('table', { name: 'Sale qualification queue' })
+    .getByRole('row')
+    .nth(1);
+  await expect(firstLewisSaleRow).toContainText('018106003002', { timeout: 20_000 });
+  await expect(firstLewisSaleRow).toContainText('Dec 31, 24');
+  await expect(firstLewisSaleRow).toContainText('$283k');
+  await firstLewisSaleRow.click();
+  const lewisAddress = salesForge.locator('.sf-detail-field').filter({ hasText: 'Address' });
+  await expect(lewisAddress).toContainText('481 KIRKLAND RD');
+  await expect(lewisAddress).not.toContainText('CHEHALIS');
+
+  await page.goto('/counties', { waitUntil: 'domcontentloaded' });
+  await expect(page.getByRole('option')).toHaveCount(39, { timeout: 20_000 });
+
   const whatcom = page.getByRole('option', { name: 'Select Whatcom County' });
   await whatcom.click();
   await expect(whatcom).toHaveAttribute('aria-selected', 'true');
@@ -380,8 +421,10 @@ test('uses the authenticated Chelan, Clark, Kitsap, Pierce, Skagit, Snohomish, T
   await expect(page.getByTestId('forge-county-context')).not.toContainText('3,877');
   await expect(page.getByTestId('forge-county-context')).not.toContainText('21,792');
   await expect(page.getByTestId('forge-county-context')).not.toContainText('9,550');
+  await expect(page.getByTestId('forge-county-context')).not.toContainText('909');
 
   expect(requestedSalesShards).toContain('/launch-data/washington/sales/by-county/035.json');
+  expect(requestedSalesShards).toContain('/launch-data/washington/sales/by-county/041.json');
   expect(requestedSalesShards).toContain('/launch-data/washington/sales/by-county/073.json');
   expect(requestedSalesShards).toContain('/launch-data/washington/sales/by-county/007.json');
   expect(requestedSalesShards).toContain('/launch-data/washington/sales/by-county/011.json');

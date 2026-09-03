@@ -1,0 +1,28 @@
+{
+  "schemaVersion": "terrafusion.washington.public-source-set.v1",
+  "county": "Lewis",
+  "countyCode": "041",
+  "officialSourceBaseUrl": "https://lewiscountywa.gov/offices/assessor/",
+  "indexUrl": "https://lewiscountywa.gov/offices/assessor/sales-data/2024-sales-for-2025-assessments-for-the-2026-tax-year/",
+  "publishedLabel": "Lewis County Assessor 2024 all-county sales report",
+  "sourceDateRange": {
+    "start": "2024-01-01",
+    "end": "2024-12-31"
+  },
+  "sources": [
+    {
+      "key": "sales",
+      "file": "2024_All_Sales_All_County.pdf",
+      "url": "https://lewiscountywa.gov/documents/17288/2024_All_Sales_All_County.pdf",
+      "finalUrl": "https://lewiscountywa.gov/documents/17288/2024_All_Sales_All_County.pdf",
+      "sha256": "c106e0e767fa9df3082ab80e5914ec21631aa233819b5de56eca44556c83c06a"
+    },
+    {
+      "key": "legend",
+      "file": "Web_Sales_Information_v7Ega81.pdf",
+      "url": "https://lewiscountywa.gov/documents/12617/Web_Sales_Information_v7Ega81.pdf",
+      "finalUrl": "https://lewiscountywa.gov/documents/12617/Web_Sales_Information_v7Ega81.pdf",
+      "sha256": "551c74bae09ba1fc99435535cc64a096dc3464be654f98eacb85e0be8d6d42d1"
+    }
+  ]
+}
