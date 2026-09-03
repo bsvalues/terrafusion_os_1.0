@@ -37,6 +37,8 @@ availability.
 - `frontend/apps/terraforge/src/data-admission/countyCsvUpload.ts`
 - `frontend/apps/terraforge/src/data-admission/__tests__/countyCsvUpload.test.ts`
 - `frontend/tsconfig.json`
+- `frontend/vite.config.ts`
+- `frontend/vitest.config.ts`
 
 ## Contract
 

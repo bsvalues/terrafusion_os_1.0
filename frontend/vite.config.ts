@@ -116,6 +116,8 @@ export default defineConfig(({ command, mode }) => {
     publicDir: path.resolve(appRoot, 'public'),
 
     resolve: {
+      // Cross-app route modules must use the OS Shell's single React/router runtime.
+      dedupe: ['react', 'react-dom', 'react-router-dom'],
       alias: {
         '@': path.resolve(appRoot, 'src'),
         '@components': path.resolve(appRoot, 'src/components'),
