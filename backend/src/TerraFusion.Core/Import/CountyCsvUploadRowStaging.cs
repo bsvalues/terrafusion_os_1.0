@@ -273,12 +273,3 @@ public sealed record CountyCsvUploadRowStagingSummary(
     int QuarantinedRowCount,
     IReadOnlyList<CountyCsvQuarantineReasonCount> ReasonCounts,
     DateTimeOffset ValidatedAtUtc);
-
-public interface ICountyCsvUploadRowStager
-{
-    public const string ContractId = "wal.county-upload.durable-row-staging.v1";
-
-    Task<CountyCsvUploadRowStagingSummary> StageAsync(
-        CountyCsvUploadRowStagingRequest request,
-        CancellationToken cancellationToken = default);
-}

@@ -75,7 +75,12 @@ function isReasonCount(value: unknown): value is CountyCsvQuarantineReasonCount 
   );
 }
 
-function isRowStaging(value: unknown, batchId: string, countyId: string): boolean {
+function isRowStaging(
+  value: unknown,
+  batchId: string,
+  countyId: string,
+  acceptedRowCount: number
+): boolean {
   return (
     isRecord(value) &&
     value.batchId === batchId &&
@@ -85,6 +90,7 @@ function isRowStaging(value: unknown, batchId: string, countyId: string): boolea
     typeof value.totalRowCount === 'number' &&
     Number.isSafeInteger(value.totalRowCount) &&
     value.totalRowCount >= 0 &&
+    value.totalRowCount === acceptedRowCount &&
     typeof value.stagedRowCount === 'number' &&
     Number.isSafeInteger(value.stagedRowCount) &&
     value.stagedRowCount >= 0 &&
@@ -117,7 +123,8 @@ function isBatch(value: unknown): value is CountyCsvUploadBatchSummary {
     value.acceptedRowCount >= 0 &&
     value.status === 'Admitted' &&
     typeof value.receivedAtUtc === 'string' &&
-    (value.rowStaging === null || isRowStaging(value.rowStaging, value.batchId, value.countyId))
+    (value.rowStaging === null ||
+      isRowStaging(value.rowStaging, value.batchId, value.countyId, value.acceptedRowCount))
   );
 }
 

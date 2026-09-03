@@ -1,13 +1,17 @@
 using System.Text;
+using System.Data.Common;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Npgsql;
 using TerraFusion.API.Auth;
 using TerraFusion.Core.Auth;
 using TerraFusion.Core.Counties;
 using TerraFusion.Core.Import;
+using TerraFusion.Core.Interfaces;
 using TerraFusion.Data;
 using TerraFusion.Data.Extensions;
 using TerraFusion.Data.Services.Import;
@@ -132,6 +136,32 @@ public sealed class CountyCsvUploadAdmissionServiceRegistrationTests
     }
 
     [Fact]
+    public async Task Row_staging_retries_the_entire_serializable_attempt_with_a_fresh_context()
+    {
+        await using var database = new TemporaryDatabaseFile();
+        var serializationFailure = new SerializationFailureOnceInterceptor();
+        await using var provider = BuildProvider(database.ConnectionString, serializationFailure);
+        await InitializeAsync(provider);
+        await using var scope = provider.CreateAsyncScope();
+        var request = await CreateRequestAsync(Benton, BentonId, "benton-assessor");
+        var ledger = scope.ServiceProvider.GetRequiredService<ICountyCsvUploadAdmissionLedger>();
+        var admission = await ledger.AdmitAsync(request);
+        serializationFailure.Arm();
+
+        var staging = await scope.ServiceProvider
+            .GetRequiredService<ICountyCsvUploadRowStager>()
+            .StageAsync(new(
+                request.CountyContext,
+                admission.Batch,
+                request.IntakeReceipt!.IntakeReceipt.Document));
+
+        Assert.Equal(2, staging.StagedRowCount);
+        Assert.Equal(0, staging.QuarantinedRowCount);
+        Assert.True(serializationFailure.WasTriggered);
+        Assert.True(serializationFailure.ObservedContextCount >= 2);
+    }
+
+    [Fact]
     public async Task Factory_and_ledger_propagate_cancellation_without_persistence()
     {
         await using var database = new TemporaryDatabaseFile();
@@ -175,15 +205,78 @@ public sealed class CountyCsvUploadAdmissionServiceRegistrationTests
         Assert.DoesNotContain("FROM (", sql, StringComparison.OrdinalIgnoreCase);
     }
 
-    private static ServiceProvider BuildProvider(string connectionString)
+    private static ServiceProvider BuildProvider(
+        string connectionString,
+        DbCommandInterceptor? interceptor = null)
     {
         var services = new ServiceCollection();
         services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
         services.AddDbContext<TerraFusionDbContext>(options =>
-            options.UseSqlite(connectionString));
+        {
+            options.UseSqlite(connectionString);
+            if (interceptor is not null)
+            {
+                options.AddInterceptors(interceptor);
+            }
+        });
         services.AddCountyCsvUploadAdmission();
         return services.BuildServiceProvider(
             new ServiceProviderOptions { ValidateOnBuild = true, ValidateScopes = true });
+    }
+
+    private sealed class SerializationFailureOnceInterceptor : DbCommandInterceptor
+    {
+        private readonly object _gate = new();
+        private readonly HashSet<DbContext> _contexts = new(ReferenceEqualityComparer.Instance);
+        private int _armed;
+        private int _triggered;
+
+        public bool WasTriggered => Volatile.Read(ref _triggered) == 1;
+
+        public int ObservedContextCount
+        {
+            get
+            {
+                lock (_gate)
+                {
+                    return _contexts.Count;
+                }
+            }
+        }
+
+        public void Arm() => Volatile.Write(ref _armed, 1);
+
+        public override ValueTask<InterceptionResult<DbDataReader>> ReaderExecutingAsync(
+            DbCommand command,
+            CommandEventData eventData,
+            InterceptionResult<DbDataReader> result,
+            CancellationToken cancellationToken = default)
+        {
+            if (eventData.Context is not null
+                && command.CommandText.Contains("CountyCsvUploadRowStages", StringComparison.Ordinal))
+            {
+                lock (_gate)
+                {
+                    _contexts.Add(eventData.Context);
+                }
+
+                if (Volatile.Read(ref _armed) == 1
+                    && Interlocked.CompareExchange(ref _triggered, 1, 0) == 0)
+                {
+                    throw new PostgresException(
+                        "serialization failure",
+                        "ERROR",
+                        "ERROR",
+                        PostgresErrorCodes.SerializationFailure);
+                }
+            }
+
+            return base.ReaderExecutingAsync(
+                command,
+                eventData,
+                result,
+                cancellationToken);
+        }
     }
 
     private static async Task InitializeAsync(ServiceProvider provider)

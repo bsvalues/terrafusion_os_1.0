@@ -141,6 +141,46 @@ describe('county CSV upload client', () => {
     );
   });
 
+  it('rejects staging metadata whose total does not match the admitted row count', async () => {
+    apiFetchMock.mockResolvedValue(
+      response({
+        contractId: 'upload-v1',
+        countyId: 'spokane-id',
+        countyKey: 'wa-spokane',
+        countyName: 'Spokane',
+        availability: 'row-validation-staging-not-promoted',
+        batches: [
+          {
+            batchId: 'batch-id',
+            countyId: 'spokane-id',
+            dataset: 'Sales',
+            sourceFileName: 'sales.csv',
+            contentSha256: 'a'.repeat(64),
+            contentByteLength: 64,
+            acceptedRowCount: 1,
+            status: 'Admitted',
+            receivedAtUtc: '2026-09-03T00:00:00Z',
+            rowStaging: {
+              batchId: 'batch-id',
+              countyId: 'spokane-id',
+              contractId: 'wal.county-upload.durable-row-staging.v1',
+              schemaVersion: 'wa-county-csv-v1',
+              totalRowCount: 2,
+              stagedRowCount: 2,
+              quarantinedRowCount: 0,
+              reasonCounts: [],
+              validatedAtUtc: '2026-09-03T00:00:01Z',
+            },
+          },
+        ],
+      })
+    );
+
+    await expect(fetchCountyCsvUploadHistory(apiFetchMock)).rejects.toThrow(
+      /invalid history response/i
+    );
+  });
+
   it('preserves protected HTTP denial instead of inventing a receipt', async () => {
     apiFetchMock.mockResolvedValue(response({ code: 'CSV_ADMISSION_DENIED' }, false, 400));
     await expect(

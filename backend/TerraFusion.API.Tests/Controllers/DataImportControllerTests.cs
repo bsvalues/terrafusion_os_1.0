@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization.Infrastructure;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,8 +22,12 @@ using TerraFusion.Core.Auth;
 using TerraFusion.Core.Counties;
 using TerraFusion.Core.Entities.Import;
 using TerraFusion.Core.Import;
+using TerraFusion.Core.Interfaces;
 using TerraFusion.Core.Services;
+using TerraFusion.Data;
+using TerraFusion.Data.Extensions;
 using Xunit;
+using CountyEntity = TerraFusion.Core.Entities.County;
 
 namespace TerraFusion.API.Tests.Controllers;
 
@@ -139,6 +144,97 @@ public sealed class DataImportControllerTests
         Assert.Equal(2, receipt.StagedRowCount);
         Assert.Equal(0, receipt.QuarantinedRowCount);
         Assert.Empty(receipt.QuarantineReasonCounts);
+    }
+
+    [Theory]
+    [InlineData(
+        "Sales",
+        "parcel_id,sale_date,sale_price\n100,2026-01-15,350000\n101,bad-date,250000\n",
+        "INVALID_SALE_DATE")]
+    [InlineData(
+        "Parcels",
+        "parcel_id,situs_address,assessed_value\n100,123 Main St,450000\n101,,250000\n",
+        "INVALID_SITUS_ADDRESS")]
+    public async Task Upload_uses_production_store_to_persist_staged_and_quarantined_rows(
+        string dataset,
+        string csv,
+        string expectedReason)
+    {
+        var databasePath = Path.Combine(
+            Path.GetTempPath(),
+            $"terrafusion-api-row-staging-{Guid.NewGuid():N}.db");
+        try
+        {
+            var services = new ServiceCollection();
+            services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
+            services.AddDbContext<TerraFusionDbContext>(options =>
+                options.UseSqlite($"Data Source={databasePath};Pooling=False"));
+            services.AddCountyCsvUploadAdmission();
+            await using var serviceProvider = services.BuildServiceProvider(
+                new ServiceProviderOptions { ValidateOnBuild = true, ValidateScopes = true });
+
+            await using (var initializationScope = serviceProvider.CreateAsyncScope())
+            {
+                var dbContext = initializationScope.ServiceProvider
+                    .GetRequiredService<TerraFusionDbContext>();
+                await dbContext.Database.EnsureCreatedAsync();
+                dbContext.Counties.Add(new CountyEntity
+                {
+                    Id = CountyIds["wa-benton"],
+                    Name = "Benton",
+                    State = "WA",
+                    FipsCode = "005",
+                });
+                await dbContext.SaveChangesAsync();
+            }
+
+            await using var requestScope = serviceProvider.CreateAsyncScope();
+            var ledger = requestScope.ServiceProvider
+                .GetRequiredService<ICountyCsvUploadAdmissionLedger>();
+            var historyReader = requestScope.ServiceProvider
+                .GetRequiredService<ICountyCsvUploadHistoryReader>();
+            var rowStager = requestScope.ServiceProvider
+                .GetRequiredService<ICountyCsvUploadRowStager>();
+            var controller = BuildController(
+                ledger,
+                historyReader: historyReader,
+                rowStager: rowStager);
+            var file = CsvFile(csv, $"{dataset.ToLowerInvariant()}.csv");
+            SetMultipartForm(controller, file, dataset);
+
+            var receipt = Receipt(await controller.UploadFile(file, dataset, default));
+
+            Assert.Equal(2, receipt.AcceptedRowCount);
+            Assert.Equal(1, receipt.StagedRowCount);
+            Assert.Equal(1, receipt.QuarantinedRowCount);
+            var reason = Assert.Single(receipt.QuarantineReasonCounts);
+            Assert.Equal(expectedReason, reason.ReasonCode);
+            Assert.Equal(1, reason.Count);
+
+            var factory = requestScope.ServiceProvider
+                .GetRequiredService<IDbContextFactory<TerraFusionDbContext>>();
+            await using var verificationContext = await factory.CreateDbContextAsync();
+            var persisted = await verificationContext.CountyCsvUploadRowStages
+                .AsNoTracking()
+                .SingleAsync(stage => stage.BatchId == receipt.BatchId);
+            Assert.Equal(receipt.CountyId, persisted.CountyId);
+            Assert.Equal(1, persisted.StagedRowCount);
+            Assert.Equal(1, persisted.QuarantinedRowCount);
+            Assert.Contains(expectedReason, persisted.QuarantinedRowsJson, StringComparison.Ordinal);
+
+            var historyResult = await controller.GetCountyUploadHistory(default);
+            var history = Assert.IsType<CountyCsvUploadHistoryReceipt>(
+                Assert.IsType<OkObjectResult>(historyResult).Value);
+            var batch = Assert.Single(history.Batches);
+            Assert.Equal(receipt.BatchId, batch.BatchId);
+            Assert.Equal(1, batch.RowStaging!.StagedRowCount);
+            Assert.Equal(1, batch.RowStaging.QuarantinedRowCount);
+            Assert.Equal(expectedReason, Assert.Single(batch.RowStaging.ReasonCounts).ReasonCode);
+        }
+        finally
+        {
+            File.Delete(databasePath);
+        }
     }
 
     [Fact]
@@ -451,7 +547,8 @@ public sealed class DataImportControllerTests
     private static DataImportController BuildController(
         ICountyCsvUploadAdmissionLedger admissionLedger,
         string authorityCounty = "wa-benton",
-        ICountyCsvUploadHistoryReader? historyReader = null)
+        ICountyCsvUploadHistoryReader? historyReader = null,
+        ICountyCsvUploadRowStager? rowStager = null)
     {
         var accessor = new StaticContextAccessor(
             new RequestUserContext(
@@ -469,7 +566,7 @@ public sealed class DataImportControllerTests
             admissionLedger,
             historyReader ?? admissionLedger as ICountyCsvUploadHistoryReader
                 ?? new EmptyHistoryReader(),
-            new TestRowStager())
+            rowStager ?? new TestRowStager())
         {
             ControllerContext = new ControllerContext
             {

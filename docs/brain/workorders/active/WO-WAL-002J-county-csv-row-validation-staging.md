@@ -22,6 +22,7 @@ are not yet promoted, published, or available in TerraForge workflows.
 
 - `docs/brain/workorders/active/WO-WAL-002J-county-csv-row-validation-staging.md`
 - `backend/src/TerraFusion.Core/Import/CountyCsvUploadRowStaging.cs`
+- `backend/src/TerraFusion.Core/Interfaces/ICountyCsvUploadRowStager.cs`
 - `backend/src/TerraFusion.Core/Import/CountyCsvUploadAdmissionLedger.cs`
 - `backend/src/TerraFusion.Core/Entities/Import/CountyCsvUploadRowStage.cs`
 - `backend/src/TerraFusion.Data/Configurations/Import/CountyCsvUploadRowStageConfiguration.cs`

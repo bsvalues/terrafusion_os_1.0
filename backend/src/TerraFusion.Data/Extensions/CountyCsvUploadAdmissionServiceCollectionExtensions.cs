@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using TerraFusion.Core.Import;
+using TerraFusion.Core.Interfaces;
 using TerraFusion.Data.Services.Import;
 
 namespace TerraFusion.Data.Extensions;

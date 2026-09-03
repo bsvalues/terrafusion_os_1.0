@@ -1,9 +1,11 @@
 using System.Data;
 using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
 using TerraFusion.Core.Counties;
 using TerraFusion.Core.Entities.Import;
 using TerraFusion.Core.Import;
+using TerraFusion.Core.Interfaces;
 
 namespace TerraFusion.Data.Services.Import;
 
@@ -13,6 +15,7 @@ namespace TerraFusion.Data.Services.Import;
 /// </summary>
 public sealed class CountyCsvUploadRowStager : ICountyCsvUploadRowStager
 {
+    private const int MaximumSerializationAttempts = 3;
     private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web);
     private readonly IDbContextFactory<TerraFusionDbContext> _dbContextFactory;
     private readonly TimeProvider _timeProvider;
@@ -70,35 +73,63 @@ public sealed class CountyCsvUploadRowStager : ICountyCsvUploadRowStager
             JsonSerializer.Serialize(validation.ReasonCounts, JsonOptions),
             validatedAtUtc);
 
+        for (var attempt = 1; attempt <= MaximumSerializationAttempts; attempt++)
+        {
+            try
+            {
+                return await StageAttemptAsync(
+                        entity,
+                        batch,
+                        context.County,
+                        cancellationToken)
+                    .ConfigureAwait(false);
+            }
+            catch (Exception exception) when (
+                attempt < MaximumSerializationAttempts
+                && IsPostgresSerializationFailure(exception))
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+            }
+        }
+
+        throw new InvalidOperationException("County CSV row staging retry control reached an invalid state.");
+    }
+
+    private async Task<CountyCsvUploadRowStagingSummary> StageAttemptAsync(
+        CountyCsvUploadRowStage entity,
+        CountyCsvUploadBatch batch,
+        WashingtonCountyIdentity county,
+        CancellationToken cancellationToken)
+    {
         await using var dbContext = await _dbContextFactory
             .CreateDbContextAsync(cancellationToken)
             .ConfigureAwait(false);
         await using var transaction = await dbContext.Database
             .BeginTransactionAsync(IsolationLevel.Serializable, cancellationToken)
             .ConfigureAwait(false);
-
-        var existing = await FindAsync(dbContext, batch.BatchId, batch.CountyId, cancellationToken)
-            .ConfigureAwait(false);
-        if (existing is not null)
-        {
-            await transaction.CommitAsync(cancellationToken).ConfigureAwait(false);
-            return RequireMatching(existing, entity);
-        }
-
-        if (!await MatchesBatchAndCountyAsync(dbContext, batch, context.County, cancellationToken)
-            .ConfigureAwait(false))
-        {
-            throw new InvalidOperationException("The admitted batch is not bound to the authenticated county.");
-        }
-
-        dbContext.CountyCsvUploadRowStages.Add(entity);
         try
         {
+            var existing = await FindAsync(dbContext, batch.BatchId, batch.CountyId, cancellationToken)
+                .ConfigureAwait(false);
+            if (existing is not null)
+            {
+                await transaction.CommitAsync(cancellationToken).ConfigureAwait(false);
+                return RequireMatching(existing, entity);
+            }
+
+            if (!await MatchesBatchAndCountyAsync(dbContext, batch, county, cancellationToken)
+                .ConfigureAwait(false))
+            {
+                throw new InvalidOperationException(
+                    "The admitted batch is not bound to the authenticated county.");
+            }
+
+            dbContext.CountyCsvUploadRowStages.Add(entity);
             await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
             await transaction.CommitAsync(cancellationToken).ConfigureAwait(false);
             return Summary(entity);
         }
-        catch (DbUpdateException exception)
+        catch (DbUpdateException exception) when (IsBatchPrimaryKeyViolation(exception))
         {
             await transaction.RollbackAsync(CancellationToken.None).ConfigureAwait(false);
             dbContext.ChangeTracker.Clear();
@@ -113,7 +144,7 @@ public sealed class CountyCsvUploadRowStager : ICountyCsvUploadRowStager
                 .ConfigureAwait(false);
             return winner is null
                 ? throw new InvalidOperationException(
-                    "County CSV row staging failed without an idempotent winner.", exception)
+                    "County CSV row staging primary-key race had no idempotent winner.", exception)
                 : RequireMatching(winner, entity);
         }
         catch
@@ -121,6 +152,31 @@ public sealed class CountyCsvUploadRowStager : ICountyCsvUploadRowStager
             await transaction.RollbackAsync(CancellationToken.None).ConfigureAwait(false);
             throw;
         }
+    }
+
+    private static bool IsPostgresSerializationFailure(Exception exception) =>
+        FindPostgresException(exception)?.SqlState == PostgresErrorCodes.SerializationFailure;
+
+    private static bool IsBatchPrimaryKeyViolation(Exception exception)
+    {
+        var postgres = FindPostgresException(exception);
+        return postgres?.SqlState == PostgresErrorCodes.UniqueViolation
+            && string.Equals(
+                postgres.ConstraintName,
+                "PK_CountyCsvUploadRowStages",
+                StringComparison.Ordinal);
+    }
+
+    private static PostgresException? FindPostgresException(Exception exception)
+    {
+        for (Exception? current = exception; current is not null; current = current.InnerException)
+        {
+            if (current is PostgresException postgres)
+            {
+                return postgres;
+            }
+        }
+        return null;
     }
 
     private static Task<CountyCsvUploadRowStage?> FindAsync(
