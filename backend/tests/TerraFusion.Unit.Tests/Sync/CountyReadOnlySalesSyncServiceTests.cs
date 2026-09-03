@@ -1,8 +1,12 @@
+using System.Text.Json;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
+using TerraFusion.API.Auth;
+using TerraFusion.API.Controllers;
 using TerraFusion.Core.Auth;
 using TerraFusion.Core.Counties;
 using TerraFusion.Core.Entities;
@@ -16,6 +20,8 @@ using Xunit;
 using Task = System.Threading.Tasks.Task;
 using ICountyResolver = TerraFusion.Core.Services.ICountyResolver;
 using CountyNotFoundException = TerraFusion.Core.Services.CountyNotFoundException;
+using IOlsRegressionService = TerraFusion.API.Services.IOlsRegressionService;
+using ISaleQualificationService = TerraFusion.API.Services.ISaleQualificationService;
 
 namespace TerraFusion.Unit.Tests.Sync;
 
@@ -231,6 +237,17 @@ public sealed class CountyReadOnlySalesSyncServiceTests
                 IngestedBy = "county-readonly-sync",
                 VerificationSource = $"county-readonly-sync:{connectionId:D}:1",
             });
+            seed.ComparableSales.Add(new ComparableSale
+            {
+                Id = Guid.NewGuid(),
+                CountyId = BentonId,
+                ParcelId = "BEN-RETIRED-SOURCE",
+                SaleDate = new DateTime(2026, 1, 2, 0, 0, 0, DateTimeKind.Utc),
+                SalePrice = 110_000m,
+                PropertyType = "unknown",
+                IngestedBy = "county-readonly-sync",
+                VerificationSource = "county-readonly-sync:77770077-7777-7777-7777-777777777777:2",
+            });
             await seed.SaveChangesAsync();
         }
         var adapter = new Mock<IPacsAdapter>();
@@ -255,6 +272,84 @@ public sealed class CountyReadOnlySalesSyncServiceTests
         Assert.False(drifted.ConnectionConfigured);
         Assert.False(drifted.SalesReviewAvailable);
         Assert.Equal("source-identity-mismatch", drifted.Status);
+    }
+
+    [Fact]
+    public async Task TerraForgeAdmissionUsesOnlyTheExactActiveConnection()
+    {
+        var factory = new InMemoryFactory();
+        var activeConnectionId = Guid.NewGuid();
+        await using var db = factory.CreateDbContext();
+        db.ComparableSales.AddRange(
+            ConnectedSale(activeConnectionId, "active"),
+            ConnectedSale(Guid.NewGuid(), "retired"),
+            new ComparableSale
+            {
+                Id = Guid.NewGuid(),
+                CountyId = BentonId,
+                ParcelId = "UPLOADED",
+                SaleDate = new DateTime(2025, 6, 1, 0, 0, 0, DateTimeKind.Utc),
+                SalePrice = 300_000m,
+                SalesYear = 2026,
+                IngestedBy = "county-upload",
+                VerificationSource = "county-upload:batch",
+            });
+        await db.SaveChangesAsync();
+
+        var resolver = new StaticCountyResolver(Benton, BentonId);
+        var accessor = new StaticContextAccessor(new RequestUserContext(
+            true,
+            "benton-assessor",
+            Benton.Key,
+            ["Assessor"]));
+        var provider = new AuthenticatedCanonicalCountyContextProvider(
+            new AuthenticatedCountyAuthorityBinding(accessor, resolver),
+            new AuthenticatedCanonicalCountyContext(resolver));
+        var sync = new Mock<ICountyReadOnlySalesSyncService>();
+        sync.Setup(candidate => candidate.GetAvailabilityAsync(
+                It.IsAny<AuthenticatedCanonicalCountyContextResult>(),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new CountyReadOnlySalesSyncAvailability(
+                ICountyReadOnlySalesSyncService.ContractId,
+                BentonId,
+                activeConnectionId,
+                true,
+                "PACS",
+                DateTimeOffset.UtcNow,
+                1,
+                "2025-06-01",
+                2026,
+                true,
+                "available"));
+        var controller = new TerraForgeController(
+            db,
+            NullLogger<TerraForgeController>.Instance,
+            Mock.Of<IOlsRegressionService>(),
+            Mock.Of<ISaleQualificationService>(),
+            resolver,
+            provider,
+            sync.Object);
+
+        var result = await controller.GetSaleQualification(
+            taxYear: 2026,
+            admissionSource: "county-readonly-sync",
+            status: "pending");
+        var ok = Assert.IsType<OkObjectResult>(result);
+        var body = JsonDocument.Parse(JsonSerializer.Serialize(ok.Value)).RootElement;
+
+        Assert.Equal(1, body.GetProperty("total").GetInt32());
+
+        ComparableSale ConnectedSale(Guid connectionId, string suffix) => new()
+        {
+            Id = Guid.NewGuid(),
+            CountyId = BentonId,
+            ParcelId = $"CONNECTED-{suffix}",
+            SaleDate = new DateTime(2025, 6, 1, 0, 0, 0, DateTimeKind.Utc),
+            SalePrice = 300_000m,
+            SalesYear = 2026,
+            IngestedBy = "county-readonly-sync",
+            VerificationSource = $"county-readonly-sync:{connectionId:D}:{suffix}",
+        };
     }
 
     private static async Task<AuthenticatedCanonicalCountyContextResult> CreateCountyContextAsync(

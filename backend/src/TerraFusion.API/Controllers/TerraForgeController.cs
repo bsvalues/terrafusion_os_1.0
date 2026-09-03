@@ -4,6 +4,8 @@ using Microsoft.EntityFrameworkCore;
 using TerraFusion.API.Auth;
 using TerraFusion.API.Services;
 using TerraFusion.Core.Counties;
+using TerraFusion.Core.Sync;
+using ComparableSaleEntity = TerraFusion.Core.Entities.ComparableSale;
 using TerraFusion.Data;
 using ICountyResolver = TerraFusion.Core.Services.ICountyResolver;
 using CountyNotFoundException = TerraFusion.Core.Services.CountyNotFoundException;
@@ -25,6 +27,7 @@ public class TerraForgeController : ControllerBase
     private readonly ISaleQualificationService _saleQual;
     private readonly ICountyResolver _countyResolver;
     private readonly AuthenticatedCanonicalCountyContextProvider? _authenticatedCountyContext;
+    private readonly ICountyReadOnlySalesSyncService? _countyReadOnlySalesSync;
 
     public TerraForgeController(
         TerraFusionDbContext db,
@@ -32,7 +35,8 @@ public class TerraForgeController : ControllerBase
         IOlsRegressionService ols,
         ISaleQualificationService saleQual,
         ICountyResolver countyResolver,
-        AuthenticatedCanonicalCountyContextProvider? authenticatedCountyContext = null)
+        AuthenticatedCanonicalCountyContextProvider? authenticatedCountyContext = null,
+        ICountyReadOnlySalesSyncService? countyReadOnlySalesSync = null)
     {
         _db             = db;
         _logger         = logger;
@@ -40,6 +44,7 @@ public class TerraForgeController : ControllerBase
         _saleQual       = saleQual;
         _countyResolver = countyResolver;
         _authenticatedCountyContext = authenticatedCountyContext;
+        _countyReadOnlySalesSync = countyReadOnlySalesSync;
     }
 
     private async Task<(Guid CountyId, IActionResult? Error)> TryResolveCountyScopeAsync(string? countyId, CancellationToken ct)
@@ -78,6 +83,49 @@ public class TerraForgeController : ControllerBase
         return (context.CountyId.Value, null);
     }
 
+    private async Task<(string? Prefix, IActionResult? Error)> ResolveAdmissionSourcePrefixAsync(
+        string? admissionSource,
+        Guid countyId,
+        CancellationToken cancellationToken)
+    {
+        if (admissionSource is null) return (null, null);
+        if (!string.Equals(admissionSource, "county-readonly-sync", StringComparison.Ordinal))
+        {
+            return (null, BadRequest(new { error = "Unsupported Sales admission source." }));
+        }
+        if (_authenticatedCountyContext is null || _countyReadOnlySalesSync is null)
+        {
+            return (null, Forbid());
+        }
+
+        var context = await _authenticatedCountyContext.GetCurrentAsync(cancellationToken)
+            .ConfigureAwait(false);
+        if (context.Decision != AuthenticatedCanonicalCountyContextDecision.Established
+            || context.CountyId != countyId)
+        {
+            return (null, Forbid());
+        }
+        var availability = await _countyReadOnlySalesSync
+            .GetAvailabilityAsync(context, cancellationToken).ConfigureAwait(false);
+        if (!availability.SalesReviewAvailable || availability.ConnectionId is null)
+        {
+            return (null, Conflict(new
+            {
+                error = "The authenticated county does not have an available read-only Sales sync.",
+                status = availability.Status,
+            }));
+        }
+        return ($"county-readonly-sync:{availability.ConnectionId.Value:D}:", null);
+    }
+
+    private static IQueryable<ComparableSaleEntity> ApplyAdmissionSourcePrefix(
+        IQueryable<ComparableSaleEntity> query,
+        string? prefix) => prefix is null
+            ? query
+            : query.Where(sale => sale.IngestedBy == "county-readonly-sync"
+                && sale.VerificationSource != null
+                && sale.VerificationSource.StartsWith(prefix));
+
     // ── Sale Qualification ────────────────────────────────────────────────
 
     /// <summary>
@@ -92,6 +140,7 @@ public class TerraForgeController : ControllerBase
     public async Task<IActionResult> GetSaleQualification(
         [FromQuery] int taxYear = 2026,
         [FromQuery] string? countyId = null,
+        [FromQuery] string? admissionSource = null,
         [FromQuery] string status = "all",
         [FromQuery] string? hood = null,
         [FromQuery] string? propertyType = null,
@@ -109,12 +158,14 @@ public class TerraForgeController : ControllerBase
         var countyScope = await TryResolveAuthenticatedCountyScopeAsync(countyId, ct);
         if (countyScope.Error is not null) return countyScope.Error;
         var scopedCountyId = countyScope.CountyId;
+        var sourceScope = await ResolveAdmissionSourcePrefixAsync(admissionSource, scopedCountyId, ct);
+        if (sourceScope.Error is not null) return sourceScope.Error;
 
         var lookbackStart = new DateTime(taxYear - 2, 1, 1, 0, 0, 0, DateTimeKind.Utc);
         var lookbackEnd   = new DateTime(taxYear, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
-        var query = _db.ComparableSales
-            .Where(s => s.CountyId == scopedCountyId)
+        var query = ApplyAdmissionSourcePrefix(
+            _db.ComparableSales.Where(s => s.CountyId == scopedCountyId), sourceScope.Prefix)
             .Where(s => s.SalesYear == taxYear
                      || (s.SalesYear == null
                          && s.SaleDate >= lookbackStart
@@ -227,14 +278,17 @@ public class TerraForgeController : ControllerBase
         Guid saleId,
         [FromQuery] int taxYear = 2026,
         [FromQuery] string? countyId = null,
+        [FromQuery] string? admissionSource = null,
         CancellationToken ct = default)
     {
         var countyScope = await TryResolveAuthenticatedCountyScopeAsync(countyId, ct);
         if (countyScope.Error is not null) return countyScope.Error;
         var scopedCountyId = countyScope.CountyId;
+        var sourceScope = await ResolveAdmissionSourcePrefixAsync(admissionSource, scopedCountyId, ct);
+        if (sourceScope.Error is not null) return sourceScope.Error;
 
-        var s = await _db.ComparableSales
-            .AsNoTracking()
+        var s = await ApplyAdmissionSourcePrefix(
+                _db.ComparableSales.AsNoTracking(), sourceScope.Prefix)
             .FirstOrDefaultAsync(s => s.Id == saleId && s.CountyId == scopedCountyId, ct);
 
         if (s is null)
@@ -334,6 +388,7 @@ public class TerraForgeController : ControllerBase
     public async Task<IActionResult> GetSaleQualificationRunningStats(
         [FromQuery] int taxYear = 2026,
         [FromQuery] string? countyId = null,
+        [FromQuery] string? admissionSource = null,
         [FromQuery] string? hood = null,
         [FromQuery] string? propertyType = null,
         CancellationToken ct = default)
@@ -341,13 +396,15 @@ public class TerraForgeController : ControllerBase
         var countyScope = await TryResolveAuthenticatedCountyScopeAsync(countyId, ct);
         if (countyScope.Error is not null) return countyScope.Error;
         var scopedCountyId = countyScope.CountyId;
+        var sourceScope = await ResolveAdmissionSourcePrefixAsync(admissionSource, scopedCountyId, ct);
+        if (sourceScope.Error is not null) return sourceScope.Error;
 
         var lookbackStart = new DateTime(taxYear - 2, 1, 1, 0, 0, 0, DateTimeKind.Utc);
         var lookbackEnd   = new DateTime(taxYear, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
         // Total counts for all sales in the window (regardless of qualification status).
-        var allQuery = _db.ComparableSales
-            .Where(s => s.CountyId == scopedCountyId)
+        var allQuery = ApplyAdmissionSourcePrefix(
+            _db.ComparableSales.Where(s => s.CountyId == scopedCountyId), sourceScope.Prefix)
             .Where(s => s.SalesYear == taxYear
                      || (s.SalesYear == null
                          && s.SaleDate >= lookbackStart
@@ -375,8 +432,8 @@ public class TerraForgeController : ControllerBase
             .FirstOrDefaultAsync(ct);
 
         // IAAO stats from the effective qualified pool (same as ratio-study population rule).
-        var qualQuery = _db.ComparableSales
-            .Where(s => s.CountyId == scopedCountyId)
+        var qualQuery = ApplyAdmissionSourcePrefix(
+            _db.ComparableSales.Where(s => s.CountyId == scopedCountyId), sourceScope.Prefix)
             .Where(s => s.SalesYear == taxYear
                      || (s.SalesYear == null
                          && s.SaleDate >= lookbackStart
@@ -491,18 +548,21 @@ public class TerraForgeController : ControllerBase
     public async Task<IActionResult> GetSaleQualificationNeighborhoodStats(
         [FromQuery] int taxYear = 2026,
         [FromQuery] string? countyId = null,
+        [FromQuery] string? admissionSource = null,
         [FromQuery] string? propertyType = null,
         CancellationToken ct = default)
     {
         var countyScope = await TryResolveAuthenticatedCountyScopeAsync(countyId, ct);
         if (countyScope.Error is not null) return countyScope.Error;
         var scopedCountyId = countyScope.CountyId;
+        var sourceScope = await ResolveAdmissionSourcePrefixAsync(admissionSource, scopedCountyId, ct);
+        if (sourceScope.Error is not null) return sourceScope.Error;
 
         var lookbackStart = new DateTime(taxYear - 2, 1, 1, 0, 0, 0, DateTimeKind.Utc);
         var lookbackEnd   = new DateTime(taxYear, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
-        var query = _db.ComparableSales
-            .Where(s => s.CountyId == scopedCountyId)
+        var query = ApplyAdmissionSourcePrefix(
+            _db.ComparableSales.Where(s => s.CountyId == scopedCountyId), sourceScope.Prefix)
             .Where(s => s.SalesYear == taxYear
                      || (s.SalesYear == null
                          && s.SaleDate >= lookbackStart
@@ -604,17 +664,20 @@ public class TerraForgeController : ControllerBase
     public async Task<IActionResult> GetSaleQualificationCodeAudit(
         [FromQuery] int taxYear = 2026,
         [FromQuery] string? countyId = null,
+        [FromQuery] string? admissionSource = null,
         CancellationToken ct = default)
     {
         var countyScope = await TryResolveAuthenticatedCountyScopeAsync(countyId, ct);
         if (countyScope.Error is not null) return countyScope.Error;
         var scopedCountyId = countyScope.CountyId;
+        var sourceScope = await ResolveAdmissionSourcePrefixAsync(admissionSource, scopedCountyId, ct);
+        if (sourceScope.Error is not null) return sourceScope.Error;
 
         var lookbackStart = new DateTime(taxYear - 2, 1, 1, 0, 0, 0, DateTimeKind.Utc);
         var lookbackEnd   = new DateTime(taxYear, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
-        var sales = await _db.ComparableSales
-            .Where(s => s.CountyId == scopedCountyId)
+        var sales = await ApplyAdmissionSourcePrefix(
+                _db.ComparableSales.Where(s => s.CountyId == scopedCountyId), sourceScope.Prefix)
             .Where(s => s.SalesYear == taxYear
                      || (s.SalesYear == null
                          && s.SaleDate >= lookbackStart
@@ -1465,6 +1528,7 @@ public class TerraForgeController : ControllerBase
     public async Task<IActionResult> BulkPatchSaleQualification(
         [FromBody] BulkSaleQualificationPatchDto body,
         [FromQuery] string? countyId = null,
+        [FromQuery] string? admissionSource = null,
         CancellationToken ct = default)
     {
         if (body.SaleIds == null || body.SaleIds.Length == 0)
@@ -1473,10 +1537,13 @@ public class TerraForgeController : ControllerBase
         var countyScope = await TryResolveAuthenticatedCountyScopeAsync(countyId, ct);
         if (countyScope.Error is not null) return countyScope.Error;
         var scopedCountyId = countyScope.CountyId;
+        var sourceScope = await ResolveAdmissionSourcePrefixAsync(admissionSource, scopedCountyId, ct);
+        if (sourceScope.Error is not null) return sourceScope.Error;
 
         var ids = body.SaleIds.Take(200).ToArray();
 
-        var sales = await _db.ComparableSales
+        var sales = await ApplyAdmissionSourcePrefix(
+                _db.ComparableSales, sourceScope.Prefix)
             .Where(s => ids.Contains(s.Id) && s.CountyId == scopedCountyId)
             .ToListAsync(ct);
 
@@ -1515,13 +1582,17 @@ public class TerraForgeController : ControllerBase
         Guid saleId,
         [FromBody] SaleQualificationPatchDto body,
         [FromQuery] string? countyId = null,
+        [FromQuery] string? admissionSource = null,
         CancellationToken ct = default)
     {
         var countyScope = await TryResolveAuthenticatedCountyScopeAsync(countyId, ct);
         if (countyScope.Error is not null) return countyScope.Error;
         var scopedCountyId = countyScope.CountyId;
+        var sourceScope = await ResolveAdmissionSourcePrefixAsync(admissionSource, scopedCountyId, ct);
+        if (sourceScope.Error is not null) return sourceScope.Error;
 
-        var sale = await _db.ComparableSales
+        var sale = await ApplyAdmissionSourcePrefix(
+                _db.ComparableSales, sourceScope.Prefix)
             .FirstOrDefaultAsync(s => s.Id == saleId && s.CountyId == scopedCountyId, ct);
 
         if (sale is null)

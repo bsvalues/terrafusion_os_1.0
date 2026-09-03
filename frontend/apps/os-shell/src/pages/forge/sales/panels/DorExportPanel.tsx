@@ -73,6 +73,7 @@ function fmtRatio(n: number | null | undefined): string {
 export function DorExportPanel() {
   const taxYear = useSalesForgeStore((s) => s.taxYear);
   const committedFilters = useSalesForgeStore((s) => s.committedFilters);
+  const dataSource = useSalesForgeStore((s) => s.dataSource);
 
   const [exportData, setExportData] = useState<SaleQueueItem[] | null>(null);
   const [loading, setLoading] = useState(false);
@@ -100,6 +101,9 @@ export function DorExportPanel() {
     if (committedFilters.saleDateFrom) params.set('saleDateFrom', committedFilters.saleDateFrom);
     if (committedFilters.saleDateTo)   params.set('saleDateTo',   committedFilters.saleDateTo);
     if (countyScope.countyId) params.set('countyId', countyScope.countyId);
+    if (dataSource === 'county-readonly-sync') {
+      params.set('admissionSource', 'county-readonly-sync');
+    }
 
     try {
       const res = await apiFetch(`/terraforge/sale-qualification?${params}`, { signal, headers: countyScope.headers });
@@ -113,7 +117,7 @@ export function DorExportPanel() {
     } finally {
       if (!signal?.aborted) setLoading(false);
     }
-  }, [taxYear, committedFilters]);
+  }, [taxYear, committedFilters, dataSource]);
 
   useEffect(() => {
     const ctrl = new AbortController();

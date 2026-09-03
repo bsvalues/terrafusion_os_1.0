@@ -165,11 +165,14 @@ public sealed class CountyReadOnlySalesSyncService : ICountyReadOnlySalesSyncSer
             && _pacsAdapter is IExternalReadOnlyPacsAdapter externalAdapter
             && externalAdapter.MatchesSource(connection!.Server!, connection.Database!);
         var configured = registrationConfigured && sourceIdentityMatches;
+        var connectionPrefix = connection is null
+            ? "county-readonly-sync:unavailable:"
+            : $"county-readonly-sync:{connection.Id:D}:";
         var salesQuery = db.ComparableSales.AsNoTracking()
             .Where(sale => sale.CountyId == countyId
                 && sale.IngestedBy == "county-readonly-sync"
                 && sale.VerificationSource != null
-                && sale.VerificationSource.StartsWith("county-readonly-sync:"));
+                && sale.VerificationSource.StartsWith(connectionPrefix));
         var latestTimestamp = await salesQuery.MaxAsync(sale => (DateTime?)sale.SaleDate, cancellationToken)
             .ConfigureAwait(false);
         DateOnly? latest = latestTimestamp is null
@@ -203,6 +206,7 @@ public sealed class CountyReadOnlySalesSyncService : ICountyReadOnlySalesSyncSer
         return new(
             ICountyReadOnlySalesSyncService.ContractId,
             countyId,
+            configured ? connection!.Id : null,
             configured,
             configured ? connection!.SourceSystem : null,
             configured ? connection!.LastSuccessfulConnectionAtUtc : null,
@@ -394,6 +398,7 @@ public sealed class CountyReadOnlySalesSyncService : ICountyReadOnlySalesSyncSer
                 || row.GeoId != row.GeoId.Trim()
                 || row.GeoId.Any(char.IsControl)
                 || row.SaleDate == default
+                || row.SaleDate.Year is < 1800 or > 9998
                 || row.SaleDate.Kind == DateTimeKind.Local
                 || row.SalePrice <= 0
                 || row.SalePrice > 10_000_000_000m
@@ -451,8 +456,7 @@ public sealed class CountyReadOnlySalesSyncService : ICountyReadOnlySalesSyncSer
         '|',
         row.PropId.ToString(CultureInfo.InvariantCulture),
         row.GeoId.ToUpperInvariant(),
-        row.SaleDate.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
-        row.SalePrice.ToString("G29", CultureInfo.InvariantCulture));
+        row.SaleDate.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture));
 
     private static bool TryAuthority(
         AuthenticatedCanonicalCountyContextResult? context,

@@ -109,6 +109,12 @@ function usesWashingtonReferenceData(dataSource: SalesForgeDataSource): boolean 
   return washingtonReferencePackageSource(dataSource) !== null;
 }
 
+function addAdmissionSourceParam(params: URLSearchParams, dataSource: SalesForgeDataSource): void {
+  if (dataSource === 'county-readonly-sync') {
+    params.set('admissionSource', 'county-readonly-sync');
+  }
+}
+
 function clearedDerivedData() {
   return {
     queueData: null,
@@ -409,7 +415,7 @@ export const useSalesForgeStore = create<SalesForgeState>((set, get) => ({
 
   fetchQueue: async () => {
     const requestId = beginRequest('queue');
-    const { taxYear, queueTab, queuePage, committedFilters } = get();
+    const { taxYear, queueTab, queuePage, committedFilters, dataSource } = get();
     const countyScope = getSalesForgeCountyScope();
     set({ queueLoading: true, queueError: null });
 
@@ -435,9 +441,10 @@ export const useSalesForgeStore = create<SalesForgeState>((set, get) => ({
     if (committedFilters.maxPrice) params.set('maxPrice', String(committedFilters.maxPrice));
     params.set('countyCode', committedFilters.countyCode);
     addCountyScopeParam(params, countyScope.countyId);
+    addAdmissionSourceParam(params, dataSource);
 
     try {
-      const packageSource = washingtonReferencePackageSource(get().dataSource);
+      const packageSource = washingtonReferencePackageSource(dataSource);
       const data = packageSource
         ? await fetchWashingtonLaunchQueue(
             taxYear,
@@ -476,17 +483,18 @@ export const useSalesForgeStore = create<SalesForgeState>((set, get) => ({
 
   fetchSaleDetail: async (saleId) => {
     const requestId = beginRequest('detail');
-    const { committedFilters, taxYear } = get();
+    const { committedFilters, taxYear, dataSource } = get();
     const countyScope = getSalesForgeCountyScope();
     set({ detailLoading: true, detailError: null });
     try {
-      const packageSource = washingtonReferencePackageSource(get().dataSource);
+      const packageSource = washingtonReferencePackageSource(dataSource);
       const detail = packageSource
         ? await fetchWashingtonLaunchSaleDetail(saleId, committedFilters, packageSource)
         : await (async () => {
             const params = new URLSearchParams();
             params.set('taxYear', String(taxYear));
             addCountyScopeParam(params, countyScope.countyId);
+            addAdmissionSourceParam(params, dataSource);
             const query = params.toString();
             const res = await apiFetch(
               `/terraforge/sale-qualification/${saleId}${query ? `?${query}` : ''}`,
@@ -508,16 +516,17 @@ export const useSalesForgeStore = create<SalesForgeState>((set, get) => ({
 
   fetchRunningStats: async () => {
     const requestId = beginRequest('stats');
-    const { taxYear, committedFilters } = get();
+    const { taxYear, committedFilters, dataSource } = get();
     const countyScope = getSalesForgeCountyScope();
     set({ statsLoading: true, statsError: null });
     const params = new URLSearchParams({ taxYear: String(taxYear) });
     params.set('countyCode', committedFilters.countyCode);
     addCountyScopeParam(params, countyScope.countyId);
+    addAdmissionSourceParam(params, dataSource);
     if (committedFilters.hood) params.set('hood', committedFilters.hood);
     if (committedFilters.propertyType) params.set('propertyType', committedFilters.propertyType);
     try {
-      const packageSource = washingtonReferencePackageSource(get().dataSource);
+      const packageSource = washingtonReferencePackageSource(dataSource);
       const stats = packageSource
         ? await fetchWashingtonLaunchRunningStats(taxYear, committedFilters, packageSource)
         : await (async () => {
@@ -540,16 +549,17 @@ export const useSalesForgeStore = create<SalesForgeState>((set, get) => ({
 
   fetchHoodStats: async () => {
     const requestId = beginRequest('hoodStats');
-    const { taxYear, committedFilters } = get();
+    const { taxYear, committedFilters, dataSource } = get();
     const countyScope = getSalesForgeCountyScope();
     set({ hoodStatsLoading: true, hoodStatsError: null });
     const params = new URLSearchParams({ taxYear: String(taxYear) });
     params.set('countyCode', committedFilters.countyCode);
     addCountyScopeParam(params, countyScope.countyId);
+    addAdmissionSourceParam(params, dataSource);
     if (committedFilters.hood) params.set('hood', committedFilters.hood);
     if (committedFilters.propertyType) params.set('propertyType', committedFilters.propertyType);
     try {
-      const packageSource = washingtonReferencePackageSource(get().dataSource);
+      const packageSource = washingtonReferencePackageSource(dataSource);
       const stats = packageSource
         ? await fetchWashingtonLaunchNeighborhoodStats(taxYear, committedFilters, packageSource)
         : await (async () => {
@@ -573,16 +583,17 @@ export const useSalesForgeStore = create<SalesForgeState>((set, get) => ({
 
   fetchCodeAudit: async () => {
     const requestId = beginRequest('codeAudit');
-    const { taxYear, committedFilters } = get();
+    const { taxYear, committedFilters, dataSource } = get();
     const countyScope = getSalesForgeCountyScope();
     set({ codeAuditLoading: true, codeAuditError: null });
     const params = new URLSearchParams({ taxYear: String(taxYear) });
     params.set('countyCode', committedFilters.countyCode);
     addCountyScopeParam(params, countyScope.countyId);
+    addAdmissionSourceParam(params, dataSource);
     if (committedFilters.hood) params.set('hood', committedFilters.hood);
     if (committedFilters.propertyType) params.set('propertyType', committedFilters.propertyType);
     try {
-      const packageSource = washingtonReferencePackageSource(get().dataSource);
+      const packageSource = washingtonReferencePackageSource(dataSource);
       const audit = packageSource
         ? await fetchWashingtonLaunchCodeAudit(taxYear, committedFilters, packageSource)
         : await (async () => {
@@ -627,6 +638,7 @@ export const useSalesForgeStore = create<SalesForgeState>((set, get) => ({
       } else {
         const params = new URLSearchParams();
         addCountyScopeParam(params, countyScope.countyId);
+        addAdmissionSourceParam(params, get().dataSource);
         const query = params.toString();
         const res = await apiFetch(
           `/terraforge/sale-qualification/${saleId}${query ? `?${query}` : ''}`,
@@ -679,6 +691,7 @@ export const useSalesForgeStore = create<SalesForgeState>((set, get) => ({
       } else {
         const params = new URLSearchParams();
         addCountyScopeParam(params, countyScope.countyId);
+        addAdmissionSourceParam(params, get().dataSource);
         const query = params.toString();
         const res = await apiFetch(
           `/terraforge/sale-qualification/bulk${query ? `?${query}` : ''}`,

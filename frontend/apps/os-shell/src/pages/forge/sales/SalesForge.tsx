@@ -88,6 +88,13 @@ const TABS: { id: SalesForgeTab; label: string; title: string }[] = [
 ];
 
 const WASHINGTON_LAUNCH_TABS = new Set<SalesForgeTab>(['queue', 'neighborhoods', 'code-audit']);
+const COUNTY_READONLY_SYNC_TABS = new Set<SalesForgeTab>([
+  'queue',
+  'ratio-audit',
+  'neighborhoods',
+  'code-audit',
+  'dor-export',
+]);
 
 const DIRECT_HOSTED_PACKAGE_VERIFICATION_TIMEOUT_MS = 15_000;
 
@@ -249,12 +256,19 @@ export default function SalesForge({ metadata }: SalesForgeProps = {}) {
   const availableTabs =
     launchDataMode && !salesReviewUnavailable
       ? TABS.filter((tab) => WASHINGTON_LAUNCH_TABS.has(tab.id))
-      : salesReviewUnavailable
-        ? []
-        : TABS;
-  // Never mount a live-only panel while the header claims public-package mode.
+      : countyReadOnlySyncHandoff && !salesReviewUnavailable
+        ? TABS.filter((tab) => COUNTY_READONLY_SYNC_TABS.has(tab.id))
+        : salesReviewUnavailable
+          ? []
+          : TABS;
+  const allowedTabs = launchDataMode
+    ? WASHINGTON_LAUNCH_TABS
+    : countyReadOnlySyncHandoff
+      ? COUNTY_READONLY_SYNC_TABS
+      : null;
+  // Never mount a panel that is not admitted by the handed-off data source.
   const renderedActiveTab =
-    launchDataMode && !WASHINGTON_LAUNCH_TABS.has(activeTab) ? 'queue' : activeTab;
+    allowedTabs !== null && !allowedTabs.has(activeTab) ? 'queue' : activeTab;
 
   // Establish the handed-off county only after its navigation scope reaches
   // the store. The handoff itself is never treated as package attestation.
@@ -511,7 +525,9 @@ export default function SalesForge({ metadata }: SalesForgeProps = {}) {
                   ? 'County context · sales data unavailable'
                   : launchDataMode
                     ? 'Washington launch data package'
-                    : 'Live TerraFusion API'}
+                    : countyReadOnlySyncHandoff
+                      ? 'Connected read-only county sales'
+                      : 'Live TerraFusion API'}
             </span>
           </div>
         </div>
@@ -541,6 +557,14 @@ export default function SalesForge({ metadata }: SalesForgeProps = {}) {
               : ''}{' '}
             Review decisions stay browser-local and nonofficial; nothing is written back to a county
             system. Live AI Audit, Ratio Audit, and DOR Export are unavailable in this mode.
+          </p>
+        )}
+        {countyReadOnlySyncHandoff && !salesReviewUnavailable && (
+          <p className='sf-header__source-note'>
+            Active read-only county connection only — no county-system write-back. Queue, ratio,
+            neighborhood, code-audit, and DOR export views are restricted to sales admitted from
+            this exact connection. AI Audit remains unavailable until its derived-analysis records
+            carry the same source identity.
           </p>
         )}
         {salesReviewUnavailable && (

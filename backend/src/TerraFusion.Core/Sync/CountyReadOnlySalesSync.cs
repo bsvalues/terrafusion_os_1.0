@@ -62,6 +62,7 @@ public sealed record CountyReadOnlySalesSyncResult(
 public sealed record CountyReadOnlySalesSyncAvailability(
     string ContractId,
     Guid CountyId,
+    Guid? ConnectionId,
     bool ConnectionConfigured,
     string? SourceSystem,
     DateTimeOffset? LastSuccessfulSyncAtUtc,

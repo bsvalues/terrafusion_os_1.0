@@ -52,6 +52,7 @@ function OutlierBadge({ ratio }: { ratio: number | null | undefined }) {
 export function RatioAuditPanel() {
   const taxYear          = useSalesForgeStore((s) => s.taxYear);
   const committedFilters = useSalesForgeStore((s) => s.committedFilters);
+  const dataSource       = useSalesForgeStore((s) => s.dataSource);
   const selectSale       = useSalesForgeStore((s) => s.selectSale);
   const clearSelection   = useSalesForgeStore((s) => s.clearSelection);
   const selectedSaleId   = useSalesForgeStore((s) => s.selectedSaleId);
@@ -86,6 +87,9 @@ export function RatioAuditPanel() {
     if (committedFilters.saleDateFrom) params.set('saleDateFrom', committedFilters.saleDateFrom);
     if (committedFilters.saleDateTo)   params.set('saleDateTo', committedFilters.saleDateTo);
     if (countyScope.countyId) params.set('countyId', countyScope.countyId);
+    if (dataSource === 'county-readonly-sync') {
+      params.set('admissionSource', 'county-readonly-sync');
+    }
     try {
       const res = await apiFetch(`/terraforge/sale-qualification?${params}`, { signal, headers: countyScope.headers });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -99,7 +103,7 @@ export function RatioAuditPanel() {
     } finally {
       if (!signal?.aborted) setAuditLoading(false);
     }
-  }, [taxYear, committedFilters]);
+  }, [taxYear, committedFilters, dataSource]);
 
   useEffect(() => {
     const ctrl = new AbortController();
