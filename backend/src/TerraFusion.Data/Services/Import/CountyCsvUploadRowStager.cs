@@ -264,6 +264,7 @@ public sealed class CountyCsvUploadRowStager : ICountyCsvUploadRowStager
     {
         if (existing.CountyId != candidate.CountyId
             || !string.Equals(existing.Dataset, candidate.Dataset, StringComparison.Ordinal)
+            || !string.Equals(existing.ContentSha256, candidate.ContentSha256, StringComparison.Ordinal)
             || !string.Equals(existing.ContractId, candidate.ContractId, StringComparison.Ordinal)
             || !string.Equals(existing.SchemaVersion, candidate.SchemaVersion, StringComparison.Ordinal)
             || existing.TotalRowCount != candidate.TotalRowCount
@@ -297,6 +298,7 @@ public sealed class CountyCsvUploadRowStager : ICountyCsvUploadRowStager
         new(
             batch.BatchId,
             batch.CountyId,
+            batch.ContentSha256,
             batch.Dataset,
             ICountyCsvUploadRowStager.ContractId,
             validation.SchemaVersion,

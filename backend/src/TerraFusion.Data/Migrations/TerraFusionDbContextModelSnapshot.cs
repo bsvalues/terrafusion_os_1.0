@@ -7038,6 +7038,12 @@ namespace TerraFusion.Data.Migrations
                     b.Property<Guid>("BatchId")
                         .HasColumnType("uuid");
 
+                    b.Property<string>("ContentSha256")
+                        .IsRequired()
+                        .IsFixedLength()
+                        .HasMaxLength(64)
+                        .HasColumnType("character(64)");
+
                     b.Property<string>("ContractId")
                         .IsRequired()
                         .HasMaxLength(128)

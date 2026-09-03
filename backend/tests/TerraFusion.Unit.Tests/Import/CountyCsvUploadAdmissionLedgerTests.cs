@@ -76,15 +76,23 @@ public sealed class CountyCsvUploadAdmissionLedgerTests
         Assert.Equal(0, result.RowStaging.QuarantinedRowCount);
         Assert.Equal(1, await context.CountyCsvUploadBatches.CountAsync());
         Assert.Equal(1, await context.CountyCsvUploadRowStages.CountAsync());
+        Assert.Equal(
+            batch.ContentSha256,
+            await context.CountyCsvUploadRowStages
+                .Select(stage => stage.ContentSha256)
+                .SingleAsync());
         Assert.Equal(2, await context.AuditLogs.CountAsync());
         Assert.Equal(
-            ["CountyCsvUploadBatch_Added", "CountyCsvUploadRowStage_Added"],
+            new[] { "CountyCsvUploadBatch_Added", "CountyCsvUploadRowStage_Added" },
             await context.AuditLogs
                 .OrderBy(audit => audit.Type)
                 .Select(audit => audit.Type)
                 .ToArrayAsync());
         Assert.All(
             typeof(CountyCsvUploadBatch).GetProperties(),
+            property => Assert.False(property.SetMethod?.IsPublic == true));
+        Assert.All(
+            typeof(CountyCsvUploadRowStage).GetProperties(),
             property => Assert.False(property.SetMethod?.IsPublic == true));
     }
 
@@ -699,19 +707,17 @@ public sealed class CountyCsvUploadAdmissionLedgerTests
         Assert.True(await ObjectExistsAsync(
             context,
             "index",
-            "IX_CountyCsvUploadBatches_IdempotencyKey"));
-        Assert.True(await ObjectExistsAsync(
-            context,
-            "index",
-            "IX_CountyCsvUploadBatches_CountyId_Dataset_ReceivedAtUtc"));
+            "IX_CountyCsvUploadRowStages_CountyId_ValidatedAtUtc"));
+        Assert.True(await ObjectExistsAsync(context, "table", "CountyCsvUploadRowStages"));
 
         await migrator.MigrateAsync(previousMigration);
 
-        Assert.False(await ObjectExistsAsync(context, "table", "CountyCsvUploadBatches"));
+        Assert.True(await ObjectExistsAsync(context, "table", "CountyCsvUploadBatches"));
+        Assert.False(await ObjectExistsAsync(context, "table", "CountyCsvUploadRowStages"));
         Assert.False(await ObjectExistsAsync(
             context,
             "index",
-            "IX_CountyCsvUploadBatches_IdempotencyKey"));
+            "IX_CountyCsvUploadRowStages_CountyId_ValidatedAtUtc"));
     }
 
     [Fact]
@@ -738,6 +744,19 @@ public sealed class CountyCsvUploadAdmissionLedgerTests
         var foreignKey = Assert.Single(entity.GetForeignKeys());
         Assert.Equal(nameof(CountyCsvUploadBatch.CountyId), foreignKey.Properties.Single().Name);
         Assert.Equal(DeleteBehavior.Restrict, foreignKey.DeleteBehavior);
+
+        var stageEntity = snapshot.Model.FindEntityType(typeof(CountyCsvUploadRowStage));
+        var runtimeStageEntity = context.Model.FindEntityType(typeof(CountyCsvUploadRowStage));
+        Assert.NotNull(stageEntity);
+        Assert.NotNull(runtimeStageEntity);
+        Assert.Equal("CountyCsvUploadRowStages", stageEntity.GetTableName());
+        Assert.Equal(
+            runtimeStageEntity.GetProperties().Select(PropertyShape),
+            stageEntity.GetProperties().Select(PropertyShape));
+        var digest = stageEntity.FindProperty(nameof(CountyCsvUploadRowStage.ContentSha256));
+        Assert.NotNull(digest);
+        Assert.Equal(64, digest.GetMaxLength());
+        Assert.True(digest.IsFixedLength());
     }
 
     private static string PropertyShape(Microsoft.EntityFrameworkCore.Metadata.IProperty property) =>

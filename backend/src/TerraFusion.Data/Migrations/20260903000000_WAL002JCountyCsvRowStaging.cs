@@ -17,6 +17,11 @@ public partial class WAL002JCountyCsvRowStaging : Migration
             {
                 BatchId = table.Column<Guid>(type: "uuid", nullable: false),
                 CountyId = table.Column<Guid>(type: "uuid", nullable: false),
+                ContentSha256 = table.Column<string>(
+                    type: "character(64)",
+                    fixedLength: true,
+                    maxLength: 64,
+                    nullable: false),
                 Dataset = table.Column<string>(
                     type: "character varying(16)",
                     maxLength: 16,

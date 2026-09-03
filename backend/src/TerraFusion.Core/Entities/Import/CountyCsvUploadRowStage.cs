@@ -13,6 +13,7 @@ public sealed class CountyCsvUploadRowStage
     public CountyCsvUploadRowStage(
         Guid batchId,
         Guid countyId,
+        string contentSha256,
         string dataset,
         string contractId,
         string schemaVersion,
@@ -38,6 +39,7 @@ public sealed class CountyCsvUploadRowStage
 
         BatchId = batchId;
         CountyId = countyId;
+        ContentSha256 = LowercaseSha256(contentSha256, nameof(contentSha256));
         Dataset = Required(dataset, 16, nameof(dataset));
         ContractId = Required(contractId, 128, nameof(contractId));
         SchemaVersion = Required(schemaVersion, 64, nameof(schemaVersion));
@@ -52,6 +54,7 @@ public sealed class CountyCsvUploadRowStage
 
     public Guid BatchId { get; private set; }
     public Guid CountyId { get; private set; }
+    public string ContentSha256 { get; private set; } = null!;
     public string Dataset { get; private set; } = null!;
     public string ContractId { get; private set; } = null!;
     public string SchemaVersion { get; private set; } = null!;
@@ -78,6 +81,17 @@ public sealed class CountyCsvUploadRowStage
         if (string.IsNullOrWhiteSpace(value))
         {
             throw new ArgumentException("A JSON document is required.", name);
+        }
+        return value;
+    }
+
+    private static string LowercaseSha256(string? value, string name)
+    {
+        if (value is not { Length: 64 }
+            || value.Any(character =>
+                character is not (>= '0' and <= '9' or >= 'a' and <= 'f')))
+        {
+            throw new ArgumentException("A lowercase SHA-256 digest is required.", name);
         }
         return value;
     }

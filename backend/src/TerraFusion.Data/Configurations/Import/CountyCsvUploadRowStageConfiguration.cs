@@ -12,6 +12,7 @@ public sealed class CountyCsvUploadRowStageConfiguration
     {
         builder.ToTable("CountyCsvUploadRowStages");
         builder.HasKey(stage => stage.BatchId);
+        builder.Property(stage => stage.ContentSha256).HasMaxLength(64).IsFixedLength().IsRequired();
         builder.Property(stage => stage.Dataset).HasMaxLength(16).IsRequired();
         builder.Property(stage => stage.ContractId).HasMaxLength(128).IsRequired();
         builder.Property(stage => stage.SchemaVersion).HasMaxLength(64).IsRequired();
