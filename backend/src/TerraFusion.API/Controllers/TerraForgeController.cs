@@ -3206,7 +3206,8 @@ public class TerraForgeController : ControllerBase
             foreach (var (featureCode, featureLabel) in featureMap)
             {
                 var featureParcelIds = await _db.CamaImprovementDetails
-                    .Where(d => d.SegmentType == featureCode
+                    .Where(d => d.CountyId == scopedCountyId
+                        && d.SegmentType == featureCode
                         && d.TaxYear == taxYear
                         && allParcelIds.Contains(d.ParcelId))
                     .Select(d => d.ParcelId)

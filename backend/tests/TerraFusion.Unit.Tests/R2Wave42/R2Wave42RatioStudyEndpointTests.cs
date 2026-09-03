@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging.Abstractions;
+using System.Text.Json;
 using TerraFusion.API.Auth;
 using TerraFusion.API.Controllers;
 using TerraFusion.API.Services;
@@ -442,5 +443,33 @@ public sealed class R2Wave42RatioStudyEndpointTests
             .Should().BeOfType<ForbidResult>();
         (await ctrl.ComputeQualifications(countyId: foreignCountyId))
             .Should().BeOfType<ForbidResult>();
+    }
+
+    [Fact]
+    public async Task DriverAnalysis_DoesNotBorrowForeignCountyImprovementFeature()
+    {
+        await using var db = CreateDbContext(nameof(DriverAnalysis_DoesNotBorrowForeignCountyImprovementFeature));
+        await SeedCountyAsync(db);
+        var sale = await SeedSaleAsync(db, 400_000m, pacsRatio: 90m);
+        sale.SalesYear = 2026;
+        db.CamaImprovementDetails.Add(new CamaImprovementDetail
+        {
+            ParcelId = sale.ParcelId,
+            TaxYear = 2026,
+            SegmentType = "BSMT",
+            CountyId = Guid.Parse("22222222-2222-2222-2222-222222222222")
+        });
+        await db.SaveChangesAsync();
+        var ctrl = CreateController(db);
+
+        var result = await ctrl.GetDriverAnalysis(taxYear: 2026);
+
+        var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+        using var body = JsonDocument.Parse(JsonSerializer.Serialize(ok.Value));
+        var basement = body.RootElement.GetProperty("features")
+            .EnumerateArray()
+            .Single(feature => feature.GetProperty("featureCode").GetString() == "BSMT");
+        basement.GetProperty("saleCount").GetInt32().Should().Be(0,
+            "a same-numbered parcel in another county must not supply improvement features");
     }
 }
