@@ -194,10 +194,15 @@ describe('Forge-owned Washington sales-review capability', () => {
         referenceDataPosture: 'county_provided_validated_upload',
         referenceRecordCount: 2,
         latestReferenceSaleDate: '2026-01-15',
+        taxYear: 2027,
         salesReviewAvailability: 'available',
         salesReviewUnavailableMessage: null,
       })
-    ).toMatchObject({ countyCode: '063', referencePackageSource: 'county-upload' });
+    ).toMatchObject({
+      countyCode: '063',
+      referencePackageSource: 'county-upload',
+      taxYear: 2027,
+    });
 
     expect(
       parseWashingtonCountiesHubHandoff({

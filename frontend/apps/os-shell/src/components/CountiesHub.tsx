@@ -339,6 +339,7 @@ const CountiesHub = () => {
         latestReferenceSaleDate: countyUploadAvailable
           ? selectedPromotedSales!.latestSaleDate
           : (selectedObservedReference?.latestSaleDate ?? null),
+        ...(countyUploadAvailable ? { taxYear: selectedPromotedSales!.recommendedStudyYear } : {}),
         salesReviewAvailability: selectedSalesReviewAvailable
           ? 'available'
           : selectedSalesReviewVerifying

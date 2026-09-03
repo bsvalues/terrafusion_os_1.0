@@ -66,6 +66,7 @@ export interface CountyCsvPromotedSalesAvailability {
   countyName: string;
   promotedSales: number;
   latestSaleDate: string | null;
+  recommendedStudyYear: number | null;
   salesReviewAvailable: boolean;
 }
 
@@ -217,6 +218,10 @@ function requirePromotionReceipt(value: unknown): CountyCsvPromotionReceipt {
 }
 
 function requireAvailability(value: unknown): CountyCsvPromotedSalesAvailability {
+  const expectedStudyYear =
+    isRecord(value) && typeof value.latestSaleDate === 'string'
+      ? Number(value.latestSaleDate.slice(0, 4)) + 1
+      : null;
   if (
     !isRecord(value) ||
     value.contractId !== 'wal.county-upload.terraforge-sales-promotion.v1' ||
@@ -227,6 +232,10 @@ function requireAvailability(value: unknown): CountyCsvPromotedSalesAvailability
     !Number.isSafeInteger(value.promotedSales) ||
     value.promotedSales < 0 ||
     (value.latestSaleDate !== null && !isCanonicalDate(value.latestSaleDate)) ||
+    (value.recommendedStudyYear !== null &&
+      (typeof value.recommendedStudyYear !== 'number' ||
+        !Number.isSafeInteger(value.recommendedStudyYear))) ||
+    value.recommendedStudyYear !== expectedStudyYear ||
     typeof value.salesReviewAvailable !== 'boolean' ||
     value.salesReviewAvailable !== value.promotedSales > 0
   ) {

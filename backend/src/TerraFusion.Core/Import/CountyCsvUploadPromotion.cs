@@ -42,6 +42,7 @@ public sealed record CountyCsvUploadPromotionAvailability(
     string ContractId,
     int PromotedSales,
     string? LatestSaleDate,
+    int? RecommendedStudyYear,
     bool SalesReviewAvailable);
 
 public interface ICountyCsvUploadPromoter

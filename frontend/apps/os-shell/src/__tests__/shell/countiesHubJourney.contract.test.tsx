@@ -129,6 +129,7 @@ describe('Washington Counties Hub assessor journey', () => {
       countyName: 'Spokane',
       promotedSales: 2,
       latestSaleDate: '2026-01-15',
+      recommendedStudyYear: 2027,
       salesReviewAvailable: true,
     });
     render(<CountiesHub />);
@@ -146,6 +147,7 @@ describe('Washington Counties Hub assessor journey', () => {
           dataTrustTier: 'county-provided-validated-upload',
           referencePackageSource: 'county-upload',
           referenceRecordCount: 2,
+          taxYear: 2027,
           salesReviewAvailability: 'available',
         }),
       })

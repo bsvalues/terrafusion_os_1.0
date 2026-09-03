@@ -105,6 +105,7 @@ export interface WashingtonCountiesHubHandoff {
   referenceDataPosture: string;
   referenceRecordCount: number | null;
   latestReferenceSaleDate: string | null;
+  taxYear?: number | null;
   salesReviewAvailability: WashingtonSalesReviewAvailability;
   salesReviewUnavailableMessage: string | null;
 }
@@ -380,6 +381,10 @@ function isNullableString(value: unknown): value is string | null {
   return value === null || typeof value === 'string';
 }
 
+function isStudyYear(value: unknown): value is number {
+  return typeof value === 'number' && Number.isSafeInteger(value) && value >= 2 && value <= 10_000;
+}
+
 /**
  * Validate the shell-to-Forge county-context handoff before any suite uses it.
  * This is navigation context only; it never substitutes for authenticated
@@ -407,6 +412,11 @@ export function parseWashingtonCountiesHubHandoff(
     !(
       metadata.latestReferenceSaleDate === undefined ||
       isNullableString(metadata.latestReferenceSaleDate)
+    ) ||
+    !(
+      metadata.taxYear === undefined ||
+      metadata.taxYear === null ||
+      isStudyYear(metadata.taxYear)
     ) ||
     (metadata.salesReviewAvailability !== undefined &&
       metadata.salesReviewAvailability !== 'available' &&
@@ -450,6 +460,7 @@ export function parseWashingtonCountiesHubHandoff(
       referenceRecordCount === null ||
       referenceRecordCount <= 0 ||
       latestReferenceSaleDate === null ||
+      !isStudyYear(metadata.taxYear) ||
       salesReviewUnavailableMessage !== null
     ) {
       return null;
@@ -464,6 +475,7 @@ export function parseWashingtonCountiesHubHandoff(
       referenceDataPosture: 'county_provided_validated_upload',
       referenceRecordCount,
       latestReferenceSaleDate,
+      taxYear: metadata.taxYear,
       salesReviewAvailability: 'available',
       salesReviewUnavailableMessage: null,
     };

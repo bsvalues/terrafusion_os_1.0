@@ -57,7 +57,9 @@ public sealed class CountyCsvUploadPromoter : ICountyCsvUploadPromoter
                     cancellationToken).ConfigureAwait(false);
             }
             catch (Exception exception) when (
-                attempt < MaximumSerializationAttempts && IsTransientStoreFailure(exception))
+                attempt < MaximumSerializationAttempts
+                && (IsTransientStoreFailure(exception)
+                    || exception is CrossBatchPromotionContentionException))
             {
                 cancellationToken.ThrowIfCancellationRequested();
             }
@@ -80,7 +82,7 @@ public sealed class CountyCsvUploadPromoter : ICountyCsvUploadPromoter
             .CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
         var promotions = await dbContext.CountyCsvUploadPromotions
             .AsNoTracking()
-            .Where(promotion => promotion.CountyId == countyId)
+            .Where(promotion => promotion.CountyId == countyId && promotion.PromotedRowCount > 0)
             .Select(promotion => new { promotion.PromotedRowCount, promotion.LatestSaleDate })
             .ToListAsync(cancellationToken).ConfigureAwait(false);
         var promotedSales = promotions.Sum(promotion => promotion.PromotedRowCount);
@@ -88,11 +90,18 @@ public sealed class CountyCsvUploadPromoter : ICountyCsvUploadPromoter
             .Select(promotion => promotion.LatestSaleDate)
             .OrderByDescending(value => value, StringComparer.Ordinal)
             .FirstOrDefault();
+        var recommendedStudyYear = latestSaleDate is null
+            ? (int?)null
+            : DateOnly.ParseExact(
+                latestSaleDate,
+                "yyyy-MM-dd",
+                CultureInfo.InvariantCulture).Year + 1;
         return new(
             countyId,
             ICountyCsvUploadPromoter.ContractId,
             promotedSales,
             latestSaleDate,
+            recommendedStudyYear,
             promotedSales > 0);
     }
 
@@ -157,9 +166,29 @@ public sealed class CountyCsvUploadPromoter : ICountyCsvUploadPromoter
             }
 
             var promotedAtUtc = _timeProvider.GetUtcNow();
-            var sales = stagedRows
-                .Select(row => CreateComparableSale(batch, row, promotedAtUtc.UtcDateTime))
+            var candidates = stagedRows
+                .Select(row => new PromotionCandidate(
+                    row,
+                    CreateComparableSale(batch, row, promotedAtUtc.UtcDateTime)))
+                .GroupBy(candidate => candidate.Sale.Id)
+                .Select(group => group.First())
                 .ToArray();
+            var existingSales = await LoadExistingSalesAsync(
+                dbContext,
+                candidates.Select(candidate => candidate.Sale.Id),
+                cancellationToken).ConfigureAwait(false);
+            foreach (var candidate in candidates.Where(candidate => existingSales.ContainsKey(candidate.Sale.Id)))
+            {
+                if (!SameSaleIdentity(candidate.Sale, existingSales[candidate.Sale.Id]))
+                {
+                    throw new InvalidOperationException(
+                        "A stable county Sales identity collided with a different comparable sale.");
+                }
+            }
+            var additions = candidates
+                .Where(candidate => !existingSales.ContainsKey(candidate.Sale.Id))
+                .ToArray();
+            var sales = additions.Select(candidate => candidate.Sale).ToArray();
             var latestSaleDate = stagedRows
                 .Select(row => row.SaleDate!)
                 .OrderByDescending(value => value, StringComparer.Ordinal)
@@ -176,14 +205,14 @@ public sealed class CountyCsvUploadPromoter : ICountyCsvUploadPromoter
 
             dbContext.ComparableSales.AddRange(sales);
             dbContext.CountyCsvUploadPromotions.Add(promotion);
-            dbContext.AuditEvents.AddRange(stagedRows.Select((row, index) => new AuditEvent
+            dbContext.AuditEvents.AddRange(additions.Select(candidate => new AuditEvent
             {
-                Id = $"county-upload-promotion:{batchId:D}:{row.SourceRowNumber}",
+                Id = $"county-upload-promotion:{batchId:D}:{candidate.Row.SourceRowNumber}",
                 Type = AuditEventType.Create,
                 // AuditTrailMapper derives the canonical category from Entity and exposes
                 // EntityId as ParcelId. Keep the exact sale ID in immutable details.
                 Entity = "ValuationComparableSale",
-                EntityId = row.ParcelId!,
+                EntityId = candidate.Row.ParcelId!,
                 UserId = actorId,
                 Action = "valuation.sales-promoted",
                 DetailsJson = JsonSerializer.Serialize(new
@@ -191,8 +220,8 @@ public sealed class CountyCsvUploadPromoter : ICountyCsvUploadPromoter
                     category = "valuation",
                     contractId = ICountyCsvUploadPromoter.ContractId,
                     batchId,
-                    sourceRowNumber = row.SourceRowNumber,
-                    comparableSaleId = sales[index].Id,
+                    sourceRowNumber = candidate.Row.SourceRowNumber,
+                    comparableSaleId = candidate.Sale.Id,
                 }, JsonOptions),
                 Timestamp = promotedAtUtc.UtcDateTime,
                 CountyId = countyId,
@@ -208,10 +237,11 @@ public sealed class CountyCsvUploadPromoter : ICountyCsvUploadPromoter
                 .CreateDbContextAsync(CancellationToken.None).ConfigureAwait(false);
             var winner = await FindPromotionAsync(
                 winnerContext, batchId, countyId, CancellationToken.None).ConfigureAwait(false);
-            return winner is null
-                ? throw new InvalidOperationException(
-                    "County CSV promotion race had no idempotent winner.", exception)
-                : Accepted(CountyCsvUploadPromotionDisposition.Duplicate, winner);
+            if (winner is not null)
+            {
+                return Accepted(CountyCsvUploadPromotionDisposition.Duplicate, winner);
+            }
+            throw new CrossBatchPromotionContentionException(exception);
         }
         catch
         {
@@ -279,7 +309,7 @@ public sealed class CountyCsvUploadPromoter : ICountyCsvUploadPromoter
         var saleDate = DateOnly.ParseExact(row.SaleDate!, "yyyy-MM-dd", CultureInfo.InvariantCulture);
         return new ComparableSale
         {
-            Id = DeterministicSaleId(batch.BatchId, row.SourceRowNumber),
+            Id = DeterministicSaleId(batch.CountyId, row),
             CountyId = batch.CountyId,
             ParcelId = row.ParcelId,
             SaleDate = DateTime.SpecifyKind(saleDate.ToDateTime(TimeOnly.MinValue), DateTimeKind.Utc),
@@ -295,15 +325,48 @@ public sealed class CountyCsvUploadPromoter : ICountyCsvUploadPromoter
         };
     }
 
-    private static Guid DeterministicSaleId(Guid batchId, int sourceRowNumber)
+    private static Guid DeterministicSaleId(Guid countyId, CountyCsvStagedRow row)
     {
+        var stableIdentity = string.Join(
+            '|',
+            ICountyCsvUploadPromoter.ContractId,
+            countyId.ToString("D", CultureInfo.InvariantCulture),
+            row.ParcelId,
+            row.SaleDate,
+            row.SalePrice!.Value.ToString("G29", CultureInfo.InvariantCulture));
         var bytes = SHA256.HashData(Encoding.UTF8.GetBytes(
-            $"{ICountyCsvUploadPromoter.ContractId}|{batchId:D}|{sourceRowNumber}"));
+            stableIdentity));
         var guidBytes = bytes[..16];
         guidBytes[7] = (byte)((guidBytes[7] & 0x0F) | 0x50);
         guidBytes[8] = (byte)((guidBytes[8] & 0x3F) | 0x80);
         return new Guid(guidBytes);
     }
+
+    private static async Task<Dictionary<Guid, ComparableSale>> LoadExistingSalesAsync(
+        TerraFusionDbContext dbContext,
+        IEnumerable<Guid> candidateIds,
+        CancellationToken cancellationToken)
+    {
+        var existing = new Dictionary<Guid, ComparableSale>();
+        foreach (var chunk in candidateIds.Distinct().Chunk(500))
+        {
+            var rows = await dbContext.ComparableSales
+                .AsNoTracking()
+                .Where(sale => chunk.Contains(sale.Id))
+                .ToListAsync(cancellationToken).ConfigureAwait(false);
+            foreach (var row in rows)
+            {
+                existing.Add(row.Id, row);
+            }
+        }
+        return existing;
+    }
+
+    private static bool SameSaleIdentity(ComparableSale candidate, ComparableSale existing) =>
+        candidate.CountyId == existing.CountyId
+        && string.Equals(candidate.ParcelId, existing.ParcelId, StringComparison.Ordinal)
+        && candidate.SaleDate == existing.SaleDate
+        && candidate.SalePrice == existing.SalePrice;
 
     private static bool TryAuthority(
         AuthenticatedCanonicalCountyContextResult? context,
@@ -388,5 +451,15 @@ public sealed class CountyCsvUploadPromoter : ICountyCsvUploadPromoter
             if (current is SqliteException sqlite) return sqlite;
         }
         return null;
+    }
+
+    private sealed record PromotionCandidate(CountyCsvStagedRow Row, ComparableSale Sale);
+
+    private sealed class CrossBatchPromotionContentionException : Exception
+    {
+        public CrossBatchPromotionContentionException(Exception innerException)
+            : base("A concurrent county Sales batch won the stable sale identity.", innerException)
+        {
+        }
     }
 }

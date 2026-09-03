@@ -737,8 +737,61 @@ public sealed class CountyCsvUploadAdmissionLedgerTests
         Assert.Equal("B-1", trace.EntityId);
         Assert.Equal("valuation.sales-promoted", trace.Action);
         Assert.Contains("\"category\":\"valuation\"", trace.DetailsJson, StringComparison.Ordinal);
-        Assert.Equal(1, (await promoter.GetAvailabilityAsync(request.CountyContext!)).PromotedSales);
+        var availability = await promoter.GetAvailabilityAsync(request.CountyContext!);
+        Assert.Equal(1, availability.PromotedSales);
+        Assert.Equal("2026-01-15", availability.LatestSaleDate);
+        Assert.Equal(2027, availability.RecommendedStudyYear);
+        Assert.True(availability.SalesReviewAvailable);
         Assert.Equal(0, (await promoter.GetAvailabilityAsync(franklinContext)).PromotedSales);
+    }
+
+    [Fact]
+    public async Task PromoteSales_DeduplicatesNaturalSaleIdentityAcrossChangedBatches()
+    {
+        await using var database = await TestDatabase.CreateAsync((Benton, BentonId));
+        var ledger = new CountyCsvUploadAdmissionLedger(database.CreateFactory());
+        var firstRequest = await CreateRequestAsync(
+            Benton,
+            BentonId,
+            "assessor-1",
+            CountyCsvDataset.Sales,
+            "parcel_id,sale_date,sale_price\nB-1,2025-11-01,350000\n");
+        var secondRequest = await CreateRequestAsync(
+            Benton,
+            BentonId,
+            "assessor-1",
+            CountyCsvDataset.Sales,
+            "parcel_id,sale_date,sale_price\nB-1,2025-11-01,350000.00\nB-2,2026-02-10,410000\n");
+        var overlapOnlyRequest = await CreateRequestAsync(
+            Benton,
+            BentonId,
+            "assessor-1",
+            CountyCsvDataset.Sales,
+            "parcel_id,sale_date,sale_price\nB-1,2025-11-01,350000.0\n");
+        var firstBatch = Assert.IsType<CountyCsvUploadBatch>((await ledger.AdmitAsync(firstRequest)).Batch);
+        var secondBatch = Assert.IsType<CountyCsvUploadBatch>((await ledger.AdmitAsync(secondRequest)).Batch);
+        var overlapOnlyBatch = Assert.IsType<CountyCsvUploadBatch>(
+            (await ledger.AdmitAsync(overlapOnlyRequest)).Batch);
+        var promoter = new CountyCsvUploadPromoter(database.CreateFactory());
+
+        var first = await promoter.PromoteAsync(new(firstRequest.CountyContext, firstBatch.BatchId));
+        var second = await promoter.PromoteAsync(new(secondRequest.CountyContext, secondBatch.BatchId));
+        var overlapOnly = await promoter.PromoteAsync(
+            new(overlapOnlyRequest.CountyContext, overlapOnlyBatch.BatchId));
+
+        Assert.Equal(1, first.Promotion!.PromotedRowCount);
+        Assert.Equal(1, second.Promotion!.PromotedRowCount);
+        Assert.Equal(0, overlapOnly.Promotion!.PromotedRowCount);
+        await using var context = database.CreateContext();
+        var sales = await context.ComparableSales.AsNoTracking().OrderBy(sale => sale.ParcelId).ToListAsync();
+        Assert.Equal(2, sales.Count);
+        Assert.Single(sales, sale => sale.ParcelId == "B-1");
+        Assert.Equal(3, await context.CountyCsvUploadPromotions.CountAsync());
+        Assert.Equal(2, await context.AuditEvents.CountAsync());
+        var availability = await promoter.GetAvailabilityAsync(firstRequest.CountyContext!);
+        Assert.Equal(2, availability.PromotedSales);
+        Assert.Equal("2026-02-10", availability.LatestSaleDate);
+        Assert.Equal(2027, availability.RecommendedStudyYear);
     }
 
     [Fact]

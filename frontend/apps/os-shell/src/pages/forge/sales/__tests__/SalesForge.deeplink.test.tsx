@@ -560,6 +560,7 @@ describe('SalesForge — County Studio deeplink consumption (Task D2)', () => {
           referenceDataPosture: 'county_provided_validated_upload',
           referenceRecordCount: 1,
           latestReferenceSaleDate: '2026-01-15',
+          taxYear: 2027,
           salesReviewAvailability: 'available',
           salesReviewUnavailableMessage: null,
         }}
@@ -569,6 +570,7 @@ describe('SalesForge — County Studio deeplink consumption (Task D2)', () => {
     await waitFor(() => {
       expect(useSalesForgeStore.getState().committedFilters.countyCode).toBe('005');
       expect(useSalesForgeStore.getState().dataSource).toBe('county-upload');
+      expect(useSalesForgeStore.getState().taxYear).toBe(2027);
     });
     expect(washingtonCountyLaunchMocks.resolve).not.toHaveBeenCalled();
     expect(washingtonCountyLaunchMocks.verify).not.toHaveBeenCalled();

@@ -224,6 +224,7 @@ describe('county CSV upload client', () => {
       countyName: 'Spokane',
       promotedSales: 2,
       latestSaleDate: '2026-01-15',
+      recommendedStudyYear: 2027,
       salesReviewAvailable: true,
     };
     apiFetchMock.mockResolvedValue(response(payload));

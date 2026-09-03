@@ -348,6 +348,7 @@ namespace TerraFusion.API.Controllers
                 countyContext.County.Name,
                 availability.PromotedSales,
                 availability.LatestSaleDate,
+                availability.RecommendedStudyYear,
                 availability.SalesReviewAvailable));
         }
 
@@ -494,5 +495,6 @@ namespace TerraFusion.API.Controllers
         string CountyName,
         int PromotedSales,
         string? LatestSaleDate,
+        int? RecommendedStudyYear,
         bool SalesReviewAvailable);
 }

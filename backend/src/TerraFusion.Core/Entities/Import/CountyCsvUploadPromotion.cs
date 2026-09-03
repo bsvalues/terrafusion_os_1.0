@@ -4,8 +4,9 @@ namespace TerraFusion.Core.Entities.Import;
 
 /// <summary>
 /// Immutable receipt for one county-scoped promotion of validated upload rows into TerraForge's
-/// comparable-sales write lane. The promoted sale IDs preserve rollback-grade lineage without
-/// copying row values into a second promotion document.
+/// comparable-sales write lane. The newly promoted sale IDs preserve rollback-grade lineage
+/// without copying row values into a second promotion document. A fully overlapping later batch
+/// records an immutable zero-new-sales receipt so retries converge without inflating availability.
 /// </summary>
 public sealed class CountyCsvUploadPromotion
 {
@@ -25,7 +26,7 @@ public sealed class CountyCsvUploadPromotion
     {
         if (batchId == Guid.Empty) throw new ArgumentException("Batch ID is required.", nameof(batchId));
         if (countyId == Guid.Empty) throw new ArgumentException("County ID is required.", nameof(countyId));
-        if (promotedRowCount <= 0) throw new ArgumentOutOfRangeException(nameof(promotedRowCount));
+        if (promotedRowCount < 0) throw new ArgumentOutOfRangeException(nameof(promotedRowCount));
         if (promotedAtUtc.Offset != TimeSpan.Zero)
         {
             throw new ArgumentException("Promotion time must be UTC.", nameof(promotedAtUtc));
