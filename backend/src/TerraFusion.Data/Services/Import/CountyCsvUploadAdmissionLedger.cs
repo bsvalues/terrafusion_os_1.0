@@ -303,9 +303,17 @@ public sealed class CountyCsvUploadAdmissionLedger :
             .ToListAsync(cancellationToken)
             .ConfigureAwait(false);
         var stageByBatch = stages.ToDictionary(stage => stage.BatchId);
+        var promotions = await dbContext.CountyCsvUploadPromotions
+            .AsNoTracking()
+            .Where(promotion => promotion.CountyId == countyId && batchIds.Contains(promotion.BatchId))
+            .ToListAsync(cancellationToken)
+            .ConfigureAwait(false);
+        var promotionByBatch = promotions.ToDictionary(promotion => promotion.BatchId);
         return summaries
-            .Select(summary => stageByBatch.TryGetValue(summary.BatchId, out var stage)
-                ? summary with
+            .Select(summary =>
+            {
+                var enriched = stageByBatch.TryGetValue(summary.BatchId, out var stage)
+                    ? summary with
                 {
                     RowStaging = CountyCsvUploadRowStager.SummaryFromMetadata(
                         stage.BatchId,
@@ -318,7 +326,11 @@ public sealed class CountyCsvUploadAdmissionLedger :
                         stage.ReasonCountsJson,
                         stage.ValidatedAtUtc)
                 }
-                : summary)
+                    : summary;
+                return promotionByBatch.TryGetValue(summary.BatchId, out var promotion)
+                    ? enriched with { Promotion = CountyCsvUploadPromoter.Summary(promotion) }
+                    : enriched;
+            })
             .ToList();
     }
 

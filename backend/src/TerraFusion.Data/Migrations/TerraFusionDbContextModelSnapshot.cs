@@ -7093,6 +7093,47 @@ namespace TerraFusion.Data.Migrations
                     b.ToTable("CountyCsvUploadRowStages", (string)null);
                 });
 
+            modelBuilder.Entity("TerraFusion.Core.Entities.Import.CountyCsvUploadPromotion", b =>
+                {
+                    b.Property<Guid>("BatchId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("ComparableSaleIdsJson")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ContractId")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
+
+                    b.Property<Guid>("CountyId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("LatestSaleDate")
+                        .IsRequired()
+                        .IsFixedLength()
+                        .HasMaxLength(10)
+                        .HasColumnType("character(10)");
+
+                    b.Property<DateTimeOffset>("PromotedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("PromotedByActorId")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<int>("PromotedRowCount")
+                        .HasColumnType("integer");
+
+                    b.HasKey("BatchId");
+
+                    b.HasIndex("CountyId", "PromotedAtUtc");
+
+                    b.ToTable("CountyCsvUploadPromotions", (string)null);
+                });
+
             modelBuilder.Entity("TerraFusion.Core.Entities.Import.CountyCsvUploadBatch", b =>
                 {
                     b.HasOne("TerraFusion.Core.Entities.County", null)
@@ -7107,6 +7148,21 @@ namespace TerraFusion.Data.Migrations
                     b.HasOne("TerraFusion.Core.Entities.Import.CountyCsvUploadBatch", null)
                         .WithOne()
                         .HasForeignKey("TerraFusion.Core.Entities.Import.CountyCsvUploadRowStage", "BatchId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("TerraFusion.Core.Entities.County", null)
+                        .WithMany()
+                        .HasForeignKey("CountyId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("TerraFusion.Core.Entities.Import.CountyCsvUploadPromotion", b =>
+                {
+                    b.HasOne("TerraFusion.Core.Entities.Import.CountyCsvUploadBatch", null)
+                        .WithOne()
+                        .HasForeignKey("TerraFusion.Core.Entities.Import.CountyCsvUploadPromotion", "BatchId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

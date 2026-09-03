@@ -23,7 +23,7 @@ namespace TerraFusion.Unit.Tests.Import;
 public sealed class CountyCsvUploadAdmissionLedgerTests
 {
     private const string MigrationId =
-        "20260903000000_WAL002JCountyCsvRowStaging";
+        "20260903010000_WAL002KCountyCsvSalesPromotion";
 
     private static readonly WashingtonCountyIdentity Benton = ResolveCounty("Benton");
     private static readonly WashingtonCountyIdentity Franklin = ResolveCounty("Franklin");
@@ -693,6 +693,47 @@ public sealed class CountyCsvUploadAdmissionLedgerTests
     }
 
     [Fact]
+    public async Task PromoteSales_PublishesOnlyValidatedRowsOnceAndKeepsCountyIsolation()
+    {
+        await using var database = await TestDatabase.CreateAsync(
+            (Benton, BentonId), (Franklin, FranklinId));
+        var request = await CreateRequestAsync(
+            Benton,
+            BentonId,
+            "assessor-1",
+            CountyCsvDataset.Sales,
+            "parcel_id,sale_date,sale_price\nB-1,2026-01-15,350000\nB-2,not-a-date,410000\n");
+        var admission = await new CountyCsvUploadAdmissionLedger(database.CreateFactory())
+            .AdmitAsync(request);
+        var batch = Assert.IsType<CountyCsvUploadBatch>(admission.Batch);
+        Assert.Equal(1, admission.RowStaging!.StagedRowCount);
+        Assert.Equal(1, admission.RowStaging.QuarantinedRowCount);
+        var promoter = new CountyCsvUploadPromoter(
+            database.CreateFactory(),
+            new FixedTimeProvider(new DateTimeOffset(2026, 9, 3, 10, 0, 0, TimeSpan.Zero)));
+
+        var first = await promoter.PromoteAsync(new(request.CountyContext, batch.BatchId));
+        var duplicate = await promoter.PromoteAsync(new(request.CountyContext, batch.BatchId));
+        var franklinContext = await CreateCountyContextAsync(Franklin, FranklinId, "assessor-2");
+        var franklinAttempt = await promoter.PromoteAsync(new(franklinContext, batch.BatchId));
+
+        Assert.Equal(CountyCsvUploadPromotionDisposition.Promoted, first.Disposition);
+        Assert.Equal(CountyCsvUploadPromotionDisposition.Duplicate, duplicate.Disposition);
+        Assert.Equal(CountyCsvUploadPromotionDenialCode.BatchNotFound, franklinAttempt.DenialCode);
+        await using var context = database.CreateContext();
+        var sale = Assert.Single(await context.ComparableSales.AsNoTracking().ToListAsync());
+        Assert.Equal(BentonId, sale.CountyId);
+        Assert.Equal("B-1", sale.ParcelId);
+        Assert.Equal(350000m, sale.SalePrice);
+        Assert.False(sale.IsVerified);
+        Assert.Null(sale.QualificationDecision);
+        Assert.StartsWith($"county-upload:{batch.BatchId:D}:", sale.VerificationSource);
+        Assert.Equal(1, await context.CountyCsvUploadPromotions.CountAsync());
+        Assert.Equal(1, (await promoter.GetAvailabilityAsync(request.CountyContext!)).PromotedSales);
+        Assert.Equal(0, (await promoter.GetAvailabilityAsync(franklinContext)).PromotedSales);
+    }
+
+    [Fact]
     public async Task ExactMigrationCreatesIndexesAndCompletelyRollsBackOnDisposableSqlite()
     {
         await using var temporary = new TemporaryDatabaseFile();
@@ -709,15 +750,21 @@ public sealed class CountyCsvUploadAdmissionLedgerTests
             "index",
             "IX_CountyCsvUploadRowStages_CountyId_ValidatedAtUtc"));
         Assert.True(await ObjectExistsAsync(context, "table", "CountyCsvUploadRowStages"));
+        Assert.True(await ObjectExistsAsync(context, "table", "CountyCsvUploadPromotions"));
+        Assert.True(await ObjectExistsAsync(
+            context,
+            "index",
+            "IX_CountyCsvUploadPromotions_CountyId_PromotedAtUtc"));
 
         await migrator.MigrateAsync(previousMigration);
 
         Assert.True(await ObjectExistsAsync(context, "table", "CountyCsvUploadBatches"));
-        Assert.False(await ObjectExistsAsync(context, "table", "CountyCsvUploadRowStages"));
-        Assert.False(await ObjectExistsAsync(
+        Assert.True(await ObjectExistsAsync(context, "table", "CountyCsvUploadRowStages"));
+        Assert.True(await ObjectExistsAsync(
             context,
             "index",
             "IX_CountyCsvUploadRowStages_CountyId_ValidatedAtUtc"));
+        Assert.False(await ObjectExistsAsync(context, "table", "CountyCsvUploadPromotions"));
     }
 
     [Fact]
@@ -757,6 +804,15 @@ public sealed class CountyCsvUploadAdmissionLedgerTests
         Assert.NotNull(digest);
         Assert.Equal(64, digest.GetMaxLength());
         Assert.True(digest.IsFixedLength());
+
+        var promotionEntity = snapshot.Model.FindEntityType(typeof(CountyCsvUploadPromotion));
+        var runtimePromotionEntity = context.Model.FindEntityType(typeof(CountyCsvUploadPromotion));
+        Assert.NotNull(promotionEntity);
+        Assert.NotNull(runtimePromotionEntity);
+        Assert.Equal("CountyCsvUploadPromotions", promotionEntity.GetTableName());
+        Assert.Equal(
+            runtimePromotionEntity.GetProperties().Select(PropertyShape),
+            promotionEntity.GetProperties().Select(PropertyShape));
     }
 
     private static string PropertyShape(Microsoft.EntityFrameworkCore.Metadata.IProperty property) =>

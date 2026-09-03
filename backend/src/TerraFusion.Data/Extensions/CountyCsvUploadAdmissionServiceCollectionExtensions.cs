@@ -26,6 +26,7 @@ public static class CountyCsvUploadAdmissionServiceCollectionExtensions
         services.AddScoped<ICountyCsvUploadHistoryReader>(provider =>
             provider.GetRequiredService<CountyCsvUploadAdmissionLedger>());
         services.AddScoped<ICountyCsvUploadRowStager, CountyCsvUploadRowStager>();
+        services.AddScoped<ICountyCsvUploadPromoter, CountyCsvUploadPromoter>();
 
         return services;
     }

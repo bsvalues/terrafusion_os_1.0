@@ -10,8 +10,7 @@ using TerraFusion.Core.Interfaces;
 namespace TerraFusion.API.Controllers
 {
     /// <summary>
-    /// Authenticated durable CSV admission and county-scoped normalized row validation/staging.
-    /// Promotion, rollback, and PACS synchronization remain later work.
+    /// Authenticated durable CSV admission, county-scoped validation, and explicit Sales promotion.
     /// </summary>
     [ApiController]
     [Produces("application/json")]
@@ -32,13 +31,15 @@ namespace TerraFusion.API.Controllers
         private readonly ICountyCsvUploadAdmissionLedger _admissionLedger;
         private readonly ICountyCsvUploadHistoryReader _historyReader;
         private readonly ICountyCsvUploadRowStager _rowStager;
+        private readonly ICountyCsvUploadPromoter _promoter;
 
         public DataImportController(
             ILogger<DataImportController> logger,
             AuthenticatedCanonicalCountyContextProvider countyContextProvider,
             ICountyCsvUploadAdmissionLedger admissionLedger,
             ICountyCsvUploadHistoryReader historyReader,
-            ICountyCsvUploadRowStager rowStager)
+            ICountyCsvUploadRowStager rowStager,
+            ICountyCsvUploadPromoter promoter)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _countyContextProvider = countyContextProvider
@@ -48,6 +49,7 @@ namespace TerraFusion.API.Controllers
             _historyReader = historyReader
                 ?? throw new ArgumentNullException(nameof(historyReader));
             _rowStager = rowStager ?? throw new ArgumentNullException(nameof(rowStager));
+            _promoter = promoter ?? throw new ArgumentNullException(nameof(promoter));
 
             _countyBoundIntake = new CountyCsvCountyBoundIntake(
                 new CountyCsvParserOptions
@@ -254,8 +256,7 @@ namespace TerraFusion.API.Controllers
 
         /// <summary>
         /// GET /api/upload/history — list metadata for this authenticated county's durable
-        /// admissions and validation summaries. Staged rows are not represented as promoted,
-        /// published, or usable in TerraForge.
+        /// admissions, validation summaries, and immutable promotion receipts.
         /// </summary>
         [HttpGet("api/upload/history")]
         [Authorize(Policy = "RequireAssessor")]
@@ -282,8 +283,72 @@ namespace TerraFusion.API.Controllers
                 countyContext.CountyId.Value,
                 countyContext.County.Key,
                 countyContext.County.Name,
-                "row-validation-staging-not-promoted",
+                batches.Any(batch => batch.Promotion is not null)
+                    ? "validated-sales-promoted-to-terraforge"
+                    : "row-validation-staging-not-promoted",
                 batches));
+        }
+
+        /// <summary>POST /api/upload/{batchId}/promote — promote validated Sales rows once.</summary>
+        [HttpPost("api/upload/{batchId:guid}/promote")]
+        [Authorize(Policy = "RequireAssessor")]
+        public async Task<IActionResult> PromoteSales(
+            Guid batchId,
+            CancellationToken cancellationToken = default)
+        {
+            var countyContext = await _countyContextProvider.GetCurrentAsync(cancellationToken)
+                .ConfigureAwait(false);
+            if (countyContext.Decision != AuthenticatedCanonicalCountyContextDecision.Established
+                || countyContext.County is null
+                || countyContext.CountyId is null)
+            {
+                return Forbid();
+            }
+
+            var result = await _promoter.PromoteAsync(
+                new CountyCsvUploadPromotionRequest(countyContext, batchId), cancellationToken)
+                .ConfigureAwait(false);
+            if (result.Disposition == CountyCsvUploadPromotionDisposition.Denied
+                || result.Promotion is null)
+            {
+                var status = result.DenialCode == CountyCsvUploadPromotionDenialCode.BatchNotFound
+                    ? StatusCodes.Status404NotFound
+                    : StatusCodes.Status409Conflict;
+                return AdmissionDenied(status, $"CSV_PROMOTION_{result.DenialCode.ToString().ToUpperInvariant()}");
+            }
+
+            return Ok(new CountyCsvPromotionApiReceipt(
+                ICountyCsvUploadPromoter.ContractId,
+                countyContext.County.Key,
+                countyContext.County.Name,
+                result.Disposition.ToString(),
+                result.Promotion));
+        }
+
+        /// <summary>GET /api/upload/promoted-sales — authenticated county availability.</summary>
+        [HttpGet("api/upload/promoted-sales")]
+        [Authorize(Policy = "RequireAssessor")]
+        public async Task<IActionResult> GetPromotedSalesAvailability(
+            CancellationToken cancellationToken = default)
+        {
+            var countyContext = await _countyContextProvider.GetCurrentAsync(cancellationToken)
+                .ConfigureAwait(false);
+            if (countyContext.Decision != AuthenticatedCanonicalCountyContextDecision.Established
+                || countyContext.County is null
+                || countyContext.CountyId is null)
+            {
+                return Forbid();
+            }
+            var availability = await _promoter.GetAvailabilityAsync(countyContext, cancellationToken)
+                .ConfigureAwait(false);
+            return Ok(new CountyCsvPromotedSalesAvailabilityReceipt(
+                availability.ContractId,
+                availability.CountyId,
+                countyContext.County.Key,
+                countyContext.County.Name,
+                availability.PromotedSales,
+                availability.LatestSaleDate,
+                availability.SalesReviewAvailable));
         }
 
         /// <summary>GET /api/preview-import/{fileId} — preview import rows.</summary>
@@ -414,4 +479,20 @@ namespace TerraFusion.API.Controllers
         string CountyName,
         string Availability,
         IReadOnlyList<CountyCsvUploadBatchSummary> Batches);
+
+    public sealed record CountyCsvPromotionApiReceipt(
+        string ContractId,
+        string CountyKey,
+        string CountyName,
+        string Disposition,
+        CountyCsvUploadPromotionSummary Promotion);
+
+    public sealed record CountyCsvPromotedSalesAvailabilityReceipt(
+        string ContractId,
+        Guid CountyId,
+        string CountyKey,
+        string CountyName,
+        int PromotedSales,
+        string? LatestSaleDate,
+        bool SalesReviewAvailable);
 }

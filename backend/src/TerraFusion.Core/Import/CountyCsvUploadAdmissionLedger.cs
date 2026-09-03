@@ -82,7 +82,8 @@ public sealed record CountyCsvUploadBatchSummary(
     int AcceptedRowCount,
     string Status,
     DateTimeOffset ReceivedAtUtc,
-    CountyCsvUploadRowStagingSummary? RowStaging = null);
+    CountyCsvUploadRowStagingSummary? RowStaging = null,
+    CountyCsvUploadPromotionSummary? Promotion = null);
 
 /// <summary>
 /// Reads recent durable admissions only for the authenticated county ID supplied by the protected

@@ -229,6 +229,7 @@ export default function SalesForge({ metadata }: SalesForgeProps = {}) {
     directHostedVerificationPending ||
     directHostedVerificationUnavailable;
   const hostedLaunchDataMode = directHostedLaunch || hostedReferenceHandoff;
+  // Promoted county uploads are served by the protected live API, not a launch-data package.
   const launchDataMode = hostedLaunchDataMode || repositoryReferenceHandoff;
   const handoff = parseRollupHandoff(invalidCountiesHubHandoff ? undefined : metadata);
   const selectedCounty = WASHINGTON_COUNTIES.find(

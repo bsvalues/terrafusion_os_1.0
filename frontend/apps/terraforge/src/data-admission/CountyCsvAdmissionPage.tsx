@@ -19,11 +19,13 @@ import {
 import { useParams } from 'react-router-dom';
 import {
   fetchCountyCsvUploadHistory,
+  promoteCountyCsvSales,
   uploadCountyCsv,
   type CountyCsvApiFetch,
   type CountyCsvDataset,
   type CountyCsvUploadHistory,
   type CountyCsvUploadReceipt,
+  type CountyCsvPromotionReceipt,
 } from './countyCsvUpload';
 
 function normalizeCountyName(value: string): string {
@@ -65,6 +67,8 @@ export default function CountyCsvAdmissionPage({
   const [uploadDataset, setUploadDataset] = useState<CountyCsvDataset>('Sales');
   const [uploading, setUploading] = useState(false);
   const [uploadReceipt, setUploadReceipt] = useState<CountyCsvUploadReceipt | null>(null);
+  const [promotionReceipt, setPromotionReceipt] = useState<CountyCsvPromotionReceipt | null>(null);
+  const [promotingBatchId, setPromotingBatchId] = useState<string | null>(null);
   const requestGeneration = useRef(0);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -78,6 +82,8 @@ export default function CountyCsvAdmissionPage({
     setUploadDataset('Sales');
     setUploading(false);
     setUploadReceipt(null);
+    setPromotionReceipt(null);
+    setPromotingBatchId(null);
   }, [countyCode]);
 
   const authenticatedUploadMatchesSelection = Boolean(
@@ -174,6 +180,46 @@ export default function CountyCsvAdmissionPage({
     uploadFile,
   ]);
 
+  const promoteSales = useCallback(
+    async (batchId: string) => {
+      if (!county || !uploadContext || !authenticatedUploadMatchesSelection) return;
+      const generation = requestGeneration.current + 1;
+      requestGeneration.current = generation;
+      setPromotingBatchId(batchId);
+      setPromotionReceipt(null);
+      setUploadError(null);
+      try {
+        const receipt = await promoteCountyCsvSales(apiFetch, batchId);
+        if (requestGeneration.current !== generation) return;
+        if (
+          receipt.promotion.countyId !== uploadContext.countyId ||
+          receipt.countyKey !== uploadContext.countyKey ||
+          normalizeCountyName(receipt.countyName) !== normalizeCountyName(county.name)
+        ) {
+          setUploadError(
+            'The promotion receipt did not match the authenticated county. No availability claim was applied.'
+          );
+          return;
+        }
+        setPromotionReceipt(receipt);
+        const refreshed = await fetchCountyCsvUploadHistory(apiFetch);
+        if (
+          requestGeneration.current === generation &&
+          refreshed.countyId === uploadContext.countyId
+        ) {
+          setUploadContext(refreshed);
+        }
+      } catch (error) {
+        if (requestGeneration.current === generation) {
+          setUploadError(error instanceof Error ? error.message : 'County Sales promotion failed.');
+        }
+      } finally {
+        if (requestGeneration.current === generation) setPromotingBatchId(null);
+      }
+    },
+    [apiFetch, authenticatedUploadMatchesSelection, county, uploadContext]
+  );
+
   if (!county) {
     return (
       <Box sx={{ p: { xs: 2, md: 4 } }}>
@@ -222,7 +268,8 @@ export default function CountyCsvAdmissionPage({
           <Typography variant='body1' color='text.secondary'>
             Authenticate {county.name} County before admitting a Parcels or Sales CSV. TerraFusion
             validates the launch schema, stages only canonical fields, and quarantines invalid rows.
-            Staged rows are not yet promoted, published, or enabled in TerraForge.
+            Staged rows are not yet promoted, published, or enabled in TerraForge. Valid Sales rows
+            can then be promoted explicitly into this county&apos;s TerraForge Sales Review.
           </Typography>
         </Box>
 
@@ -320,6 +367,15 @@ export default function CountyCsvAdmissionPage({
                       promotion is completed.
                     </Alert>
                   )}
+                  {promotionReceipt && (
+                    <Alert severity='success' data-testid='county-promotion-receipt'>
+                      {promotionReceipt.promotion.promotedRowCount.toLocaleString()} validated sales
+                      promoted to TerraForge Sales Review. Quarantined rows were not promoted.{' '}
+                      <Button component='a' href='/counties' size='small'>
+                        Open Counties HUB
+                      </Button>
+                    </Alert>
+                  )}
                   <Box>
                     <Typography variant='subtitle2'>Recent admitted batches</Typography>
                     {uploadContext.batches.length === 0 ? (
@@ -351,6 +407,29 @@ export default function CountyCsvAdmissionPage({
                                 {batch.rowStaging.reasonCounts
                                   .map((reason) => `${reason.reasonCode} (${reason.count})`)
                                   .join(', ')}
+                              </Typography>
+                            )}
+                            {batch.dataset === 'Sales' &&
+                              batch.rowStaging &&
+                              batch.rowStaging.stagedRowCount > 0 &&
+                              !batch.promotion && (
+                                <Button
+                                  size='small'
+                                  variant='contained'
+                                  disabled={promotingBatchId !== null}
+                                  onClick={() => void promoteSales(batch.batchId)}
+                                  sx={{ mt: 1 }}
+                                >
+                                  {promotingBatchId === batch.batchId
+                                    ? 'Promoting…'
+                                    : 'Promote validated sales to TerraForge'}
+                                </Button>
+                              )}
+                            {batch.promotion && (
+                              <Typography variant='caption' display='block' color='success.main'>
+                                {batch.promotion.promotedRowCount.toLocaleString()} promoted to
+                                TerraForge Sales Review · latest sale{' '}
+                                {batch.promotion.latestSaleDate}
                               </Typography>
                             )}
                           </Box>

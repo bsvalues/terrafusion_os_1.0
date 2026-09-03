@@ -16,12 +16,18 @@ const {
   verifyWashingtonCountySalesShardMock,
   getWashingtonSalesReviewCapabilityMock,
   isWashingtonSalesReviewLaunchEnabledMock,
+  fetchCountyCsvPromotedSalesAvailabilityMock,
 } = vi.hoisted(() => ({
   activateModuleMock: vi.fn(),
   resolveWashingtonCountyStatusMock: vi.fn(),
   verifyWashingtonCountySalesShardMock: vi.fn(),
   getWashingtonSalesReviewCapabilityMock: vi.fn(),
   isWashingtonSalesReviewLaunchEnabledMock: vi.fn(),
+  fetchCountyCsvPromotedSalesAvailabilityMock: vi.fn(),
+}));
+
+vi.mock('../../../../terraforge/src/data-admission/countyCsvUpload', () => ({
+  fetchCountyCsvPromotedSalesAvailability: fetchCountyCsvPromotedSalesAvailabilityMock,
 }));
 
 vi.mock('../../orchestration/moduleActivation', () => ({
@@ -110,6 +116,40 @@ describe('Washington Counties Hub assessor journey', () => {
       },
     });
     isWashingtonSalesReviewLaunchEnabledMock.mockReset().mockReturnValue(true);
+    fetchCountyCsvPromotedSalesAvailabilityMock
+      .mockReset()
+      .mockRejectedValue(new Error('not authenticated'));
+  });
+
+  it('surfaces authenticated county-upload sales and opens TerraForge on its live API', async () => {
+    fetchCountyCsvPromotedSalesAvailabilityMock.mockResolvedValue({
+      contractId: 'wal.county-upload.terraforge-sales-promotion.v1',
+      countyId: '00000000-0000-0000-0000-000000000063',
+      countyKey: 'wa-spokane',
+      countyName: 'Spokane',
+      promotedSales: 2,
+      latestSaleDate: '2026-01-15',
+      salesReviewAvailable: true,
+    });
+    render(<CountiesHub />);
+    const spokane = await screen.findByRole('option', { name: /Spokane County/i });
+    fireEvent.click(spokane);
+    expect(await screen.findByTestId('county-promoted-sales-availability')).toHaveTextContent(
+      /2 promoted sales.*protected TerraForge Sales Review API/i
+    );
+    fireEvent.click(screen.getByRole('button', { name: 'Open TerraForge' }));
+    await waitFor(() =>
+      expect(activateModuleMock).toHaveBeenCalledWith('suite-forge', {
+        source: 'system',
+        metadata: expect.objectContaining({
+          countyCode: '063',
+          dataTrustTier: 'county-provided-validated-upload',
+          referencePackageSource: 'county-upload',
+          referenceRecordCount: 2,
+          salesReviewAvailability: 'available',
+        }),
+      })
+    );
   });
 
   it('selects an observed county and opens the TerraForge suite with an exact county-only handoff', async () => {
