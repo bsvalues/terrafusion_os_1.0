@@ -16,12 +16,16 @@ const {
   verifyWashingtonCountySalesShardMock,
   getWashingtonSalesReviewCapabilityMock,
   isWashingtonSalesReviewLaunchEnabledMock,
+  fetchCountyCsvUploadHistoryMock,
+  uploadCountyCsvMock,
 } = vi.hoisted(() => ({
   activateModuleMock: vi.fn(),
   resolveWashingtonCountyStatusMock: vi.fn(),
   verifyWashingtonCountySalesShardMock: vi.fn(),
   getWashingtonSalesReviewCapabilityMock: vi.fn(),
   isWashingtonSalesReviewLaunchEnabledMock: vi.fn(),
+  fetchCountyCsvUploadHistoryMock: vi.fn(),
+  uploadCountyCsvMock: vi.fn(),
 }));
 
 vi.mock('../../orchestration/moduleActivation', () => ({
@@ -38,10 +42,15 @@ vi.mock('../../pages/forge/sales/washingtonSalesReviewCapability', () => ({
   isWashingtonSalesReviewLaunchEnabled: isWashingtonSalesReviewLaunchEnabledMock,
 }));
 
+vi.mock('../../services/countyCsvUpload', () => ({
+  fetchCountyCsvUploadHistory: fetchCountyCsvUploadHistoryMock,
+  uploadCountyCsv: uploadCountyCsvMock,
+}));
+
 import CountiesHub from '../../components/CountiesHub';
 
 function countyStatus(
-  overrides: Partial<WashingtonCountyStatusEntry> = {},
+  overrides: Partial<WashingtonCountyStatusEntry> = {}
 ): WashingtonCountyStatusEntry {
   return {
     county: 'Spokane',
@@ -77,7 +86,7 @@ function countyStatus(
 function countyStatusResolution(
   counties: WashingtonCountyStatusEntry[],
   packageSource: WashingtonCountyStatusResolution['packageSource'] = 'hosted',
-  usedRepositoryFallback = packageSource === 'repository-reference',
+  usedRepositoryFallback = packageSource === 'repository-reference'
 ): WashingtonCountyStatusResolution {
   return { counties, packageSource, usedRepositoryFallback };
 }
@@ -85,12 +94,12 @@ function countyStatusResolution(
 describe('Washington Counties Hub assessor journey', () => {
   beforeEach(() => {
     activateModuleMock.mockReset().mockResolvedValue(undefined);
-    resolveWashingtonCountyStatusMock.mockReset().mockResolvedValue(
-      countyStatusResolution([countyStatus()]),
-    );
-    verifyWashingtonCountySalesShardMock.mockReset().mockImplementation(
-      async (status: WashingtonCountyStatusEntry) => status,
-    );
+    resolveWashingtonCountyStatusMock
+      .mockReset()
+      .mockResolvedValue(countyStatusResolution([countyStatus()]));
+    verifyWashingtonCountySalesShardMock
+      .mockReset()
+      .mockImplementation(async (status: WashingtonCountyStatusEntry) => status);
     getWashingtonSalesReviewCapabilityMock.mockReset().mockReturnValue({
       eligible: true,
       status: 'available',
@@ -110,13 +119,34 @@ describe('Washington Counties Hub assessor journey', () => {
       },
     });
     isWashingtonSalesReviewLaunchEnabledMock.mockReset().mockReturnValue(true);
+    fetchCountyCsvUploadHistoryMock.mockReset().mockResolvedValue({
+      contractId: 'wal.county-upload.authenticated-durable-csv-api-admission.v1',
+      countyId: '00000000-0000-0000-0000-000000000032',
+      countyKey: 'wa-spokane',
+      countyName: 'Spokane',
+      availability: 'admitted-not-staged',
+      batches: [],
+    });
+    uploadCountyCsvMock.mockReset().mockResolvedValue({
+      contractId: 'wal.county-upload.authenticated-durable-csv-api-admission.v1',
+      ledgerContractId: 'wal.county-upload.durable-admission-ledger.v1',
+      batchId: 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
+      countyId: '00000000-0000-0000-0000-000000000032',
+      countyKey: 'wa-spokane',
+      countyName: 'Spokane',
+      dataset: 'Sales',
+      contentSha256: 'a'.repeat(64),
+      contentLength: 64,
+      acceptedRowCount: 2,
+      duplicateDisposition: 'FirstSeen',
+    });
   });
 
   it('selects an observed county and opens the TerraForge suite with an exact county-only handoff', async () => {
     render(<CountiesHub />);
 
     expect(screen.getByRole('status')).toHaveTextContent(
-      'Loading governed Washington county status',
+      'Loading governed Washington county status'
     );
 
     const spokaneOption = await screen.findByRole('option', {
@@ -136,16 +166,14 @@ describe('Washington Counties Hub assessor journey', () => {
 
     expect(spokaneOption).toHaveAttribute('aria-selected', 'true');
     expect(getWashingtonSalesReviewCapabilityMock).toHaveBeenCalledWith(
-      expect.objectContaining({ county: 'Spokane', countyCode: '063' }),
+      expect.objectContaining({ county: 'Spokane', countyCode: '063' })
     );
     expect(screen.getByTestId('selected-county-context')).toHaveTextContent(
-      'Selected navigation context',
+      'Selected navigation context'
     );
     expect(screen.getByText(/navigation context only/i)).toBeInTheDocument();
 
-    fireEvent.click(
-      screen.getByRole('button', { name: 'Open TerraForge' }),
-    );
+    fireEvent.click(screen.getByRole('button', { name: 'Open TerraForge' }));
 
     await waitFor(() => {
       expect(activateModuleMock).toHaveBeenCalledWith('suite-forge', {
@@ -167,6 +195,86 @@ describe('Washington Counties Hub assessor journey', () => {
     });
   });
 
+  it('admits a CSV only after selected and authenticated county identities match', async () => {
+    const batch = {
+      batchId: 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
+      countyId: '00000000-0000-0000-0000-000000000032',
+      dataset: 'Sales',
+      sourceFileName: 'spokane-sales.csv',
+      contentSha256: 'a'.repeat(64),
+      contentByteLength: 64,
+      acceptedRowCount: 2,
+      status: 'Admitted',
+      receivedAtUtc: '2026-09-03T00:00:00Z',
+    };
+    fetchCountyCsvUploadHistoryMock
+      .mockResolvedValueOnce({
+        contractId: 'wal.county-upload.authenticated-durable-csv-api-admission.v1',
+        countyId: batch.countyId,
+        countyKey: 'wa-spokane',
+        countyName: 'Spokane',
+        availability: 'admitted-not-staged',
+        batches: [],
+      })
+      .mockResolvedValueOnce({
+        contractId: 'wal.county-upload.authenticated-durable-csv-api-admission.v1',
+        countyId: batch.countyId,
+        countyKey: 'wa-spokane',
+        countyName: 'Spokane',
+        availability: 'admitted-not-staged',
+        batches: [batch],
+      });
+
+    render(<CountiesHub />);
+    fireEvent.click(await screen.findByRole('option', { name: 'Select Spokane County' }));
+    expect(screen.getByTestId('county-csv-upload-panel')).toHaveTextContent(
+      /does not yet stage, publish, or enable rows in TerraForge/i
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Check authenticated county' }));
+    expect(await screen.findByText(/Authenticated for Spokane County/i)).toBeInTheDocument();
+
+    const file = new File(['parcel_id,sale_price\n1,350000\n2,410000\n'], 'spokane-sales.csv', {
+      type: 'text/csv',
+    });
+    fireEvent.change(screen.getByLabelText('Choose county CSV'), {
+      target: { files: [file] },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Admit county CSV' }));
+
+    await waitFor(() => {
+      expect(uploadCountyCsvMock).toHaveBeenCalledWith(file, 'Sales');
+    });
+    expect(await screen.findByTestId('county-upload-receipt')).toHaveTextContent(
+      /2 structurally valid rows/i
+    );
+    expect(
+      screen.getByText(/spokane-sales.csv.*Sales.*2 structurally valid rows/i)
+    ).toBeInTheDocument();
+    expect(screen.getByText(/not staged or available to TerraForge/i)).toBeInTheDocument();
+  });
+
+  it('blocks upload controls when selected county differs from authenticated authority', async () => {
+    fetchCountyCsvUploadHistoryMock.mockResolvedValueOnce({
+      contractId: 'wal.county-upload.authenticated-durable-csv-api-admission.v1',
+      countyId: '00000000-0000-0000-0000-000000000005',
+      countyKey: 'wa-benton',
+      countyName: 'Benton',
+      availability: 'admitted-not-staged',
+      batches: [],
+    });
+
+    render(<CountiesHub />);
+    fireEvent.click(await screen.findByRole('option', { name: 'Select Spokane County' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Check authenticated county' }));
+
+    expect(await screen.findByText(/authenticated county is Benton County/i)).toHaveTextContent(
+      /no data was uploaded/i
+    );
+    expect(screen.queryByRole('button', { name: 'Admit county CSV' })).not.toBeInTheDocument();
+    expect(uploadCountyCsvMock).not.toHaveBeenCalled();
+  });
+
   it('validates only the selected hosted county and hands off shard-derived claims', async () => {
     const unverifiedStatus = countyStatus({
       stagedSales: 99,
@@ -181,41 +289,40 @@ describe('Washington Counties Hub assessor journey', () => {
       latestSaleDate: '2025-11-06',
       salesShardVerification: 'verified',
     };
-    resolveWashingtonCountyStatusMock.mockResolvedValue(
-      countyStatusResolution([unverifiedStatus]),
-    );
+    resolveWashingtonCountyStatusMock.mockResolvedValue(countyStatusResolution([unverifiedStatus]));
     verifyWashingtonCountySalesShardMock.mockResolvedValue(verifiedStatus);
     getWashingtonSalesReviewCapabilityMock.mockImplementation(
-      (status: WashingtonCountyStatusEntry) => status.salesShardVerification === 'unverified'
-        ? {
-            eligible: false,
-            status: 'sales-shard-verification-required',
-            statusLabel: 'Verification required',
-            unavailableMessage: 'The selected county package must be verified.',
-            referenceData: {
-              posture: 'public_recorder_export',
-              isSyntheticReference: false,
-              observed: null,
-            },
-          }
-        : {
-            eligible: true,
-            status: 'available',
-            statusLabel: 'Sales review available',
-            unavailableMessage: null,
-            referenceData: {
-              posture: 'public_recorder_export',
-              isSyntheticReference: false,
-              observed: {
-                recordCount: status.stagedSales,
-                latestSaleDate: status.latestSaleDate,
-                needsReview: status.needsReview,
-                runtimePosture: status.prometheusStatus,
-                sourceStatus: status.confidence.rawStatus,
-                sourceDriftDetected: status.confidence.rawDriftDetected,
+      (status: WashingtonCountyStatusEntry) =>
+        status.salesShardVerification === 'unverified'
+          ? {
+              eligible: false,
+              status: 'sales-shard-verification-required',
+              statusLabel: 'Verification required',
+              unavailableMessage: 'The selected county package must be verified.',
+              referenceData: {
+                posture: 'public_recorder_export',
+                isSyntheticReference: false,
+                observed: null,
               },
-            },
-          },
+            }
+          : {
+              eligible: true,
+              status: 'available',
+              statusLabel: 'Sales review available',
+              unavailableMessage: null,
+              referenceData: {
+                posture: 'public_recorder_export',
+                isSyntheticReference: false,
+                observed: {
+                  recordCount: status.stagedSales,
+                  latestSaleDate: status.latestSaleDate,
+                  needsReview: status.needsReview,
+                  runtimePosture: status.prometheusStatus,
+                  sourceStatus: status.confidence.rawStatus,
+                  sourceDriftDetected: status.confidence.rawDriftDetected,
+                },
+              },
+            }
     );
 
     render(<CountiesHub />);
@@ -232,7 +339,7 @@ describe('Washington Counties Hub assessor journey', () => {
           countyCode: '063',
           salesShardVerification: 'unverified',
         }),
-        expect.any(AbortSignal),
+        expect.any(AbortSignal)
       );
     });
     const selectedContext = screen.getByTestId('selected-county-context');
@@ -253,7 +360,7 @@ describe('Washington Counties Hub assessor journey', () => {
             latestReferenceSaleDate: '2025-11-06',
             salesReviewAvailability: 'available',
           }),
-        }),
+        })
       );
     });
   });
@@ -262,11 +369,9 @@ describe('Washington Counties Hub assessor journey', () => {
     const unverifiedStatus = countyStatus({
       salesShardVerification: 'unverified',
     });
-    resolveWashingtonCountyStatusMock.mockResolvedValue(
-      countyStatusResolution([unverifiedStatus]),
-    );
+    resolveWashingtonCountyStatusMock.mockResolvedValue(countyStatusResolution([unverifiedStatus]));
     verifyWashingtonCountySalesShardMock.mockReturnValue(
-      new Promise<WashingtonCountyStatusEntry>(() => undefined),
+      new Promise<WashingtonCountyStatusEntry>(() => undefined)
     );
     getWashingtonSalesReviewCapabilityMock.mockReturnValue({
       eligible: false,
@@ -286,7 +391,7 @@ describe('Washington Counties Hub assessor journey', () => {
     await waitFor(() => {
       expect(verifyWashingtonCountySalesShardMock).toHaveBeenCalledWith(
         expect.objectContaining({ countyCode: '063' }),
-        expect.any(AbortSignal),
+        expect.any(AbortSignal)
       );
     });
     const openTerraForge = screen.getByRole('button', { name: 'Open TerraForge' });
@@ -302,7 +407,7 @@ describe('Washington Counties Hub assessor journey', () => {
             salesReviewAvailability: 'verifying',
             salesReviewUnavailableMessage: null,
           }),
-        }),
+        })
       );
     });
   });
@@ -322,9 +427,7 @@ describe('Washington Counties Hub assessor journey', () => {
       latestSaleDate: '2025-11-06',
       salesShardVerification: 'verified',
     };
-    resolveWashingtonCountyStatusMock.mockResolvedValue(
-      countyStatusResolution([unverifiedStatus]),
-    );
+    resolveWashingtonCountyStatusMock.mockResolvedValue(countyStatusResolution([unverifiedStatus]));
     verifyWashingtonCountySalesShardMock
       .mockResolvedValueOnce(unavailableStatus)
       .mockResolvedValueOnce(verifiedStatus);
@@ -364,7 +467,7 @@ describe('Washington Counties Hub assessor journey', () => {
               : null,
           },
         };
-      },
+      }
     );
 
     render(<CountiesHub />);
@@ -383,7 +486,7 @@ describe('Washington Counties Hub assessor journey', () => {
           countyCode: '063',
           salesShardVerification: 'unverified',
         }),
-        expect.any(AbortSignal),
+        expect.any(AbortSignal)
       );
     });
     await waitFor(() => {
@@ -408,10 +511,11 @@ describe('Washington Counties Hub assessor journey', () => {
     const selectedContext = screen.getByTestId('selected-county-context');
     expect(selectedContext).toHaveTextContent('Adams County');
     expect(within(selectedContext).getAllByText('Unavailable')).toHaveLength(4);
-    expect(screen.getByText(/No governed public sales state is available for Adams/i))
-      .toHaveTextContent(/TerraForge still opens.*unavailable instead of borrowing/i);
+    expect(
+      screen.getByText(/No governed public sales state is available for Adams/i)
+    ).toHaveTextContent(/TerraForge still opens.*unavailable instead of borrowing/i);
     expect(selectedContext).toHaveTextContent(
-      'Parcel/property search via TaxSifter; direct sales UI not yet verified in this pass',
+      'Parcel/property search via TaxSifter; direct sales UI not yet verified in this pass'
     );
     expect(selectedContext).toHaveTextContent('MapSifter/parcel detail history');
     expect(selectedContext).toHaveTextContent('GIS / map surface');
@@ -440,13 +544,13 @@ describe('Washington Counties Hub assessor journey', () => {
           latestReferenceSaleDate: null,
           salesReviewAvailability: 'unavailable',
           salesReviewUnavailableMessage: expect.stringMatching(
-            /No governed public sales state is available for Adams County/i,
+            /No governed public sales state is available for Adams County/i
           ),
         }),
       });
     });
     expect(getWashingtonSalesReviewCapabilityMock).not.toHaveBeenCalledWith(
-      expect.objectContaining({ county: 'Adams' }),
+      expect.objectContaining({ county: 'Adams' })
     );
   });
 
@@ -464,22 +568,27 @@ describe('Washington Counties Hub assessor journey', () => {
   });
 
   it('falls back to repository navigation without exposing synthetic records as public data', async () => {
-    resolveWashingtonCountyStatusMock.mockResolvedValue(countyStatusResolution([
-      countyStatus({
-        primarySourceMode: ' Repository_Reference_Demo ',
-        prometheusStatus: 'reference_demo',
-        latestSaleDate: '2025-11-06',
-        candidateSales: 3,
-        stagedSales: 3,
-        needsReview: 2,
-        confidence: {
-          averageQualityScore: 0.85,
-          parserStatus: 'repository_fixture',
-          rawStatus: 'synthetic_reference',
-          rawDriftDetected: false,
-        },
-      }),
-    ], 'repository-reference'));
+    resolveWashingtonCountyStatusMock.mockResolvedValue(
+      countyStatusResolution(
+        [
+          countyStatus({
+            primarySourceMode: ' Repository_Reference_Demo ',
+            prometheusStatus: 'reference_demo',
+            latestSaleDate: '2025-11-06',
+            candidateSales: 3,
+            stagedSales: 3,
+            needsReview: 2,
+            confidence: {
+              averageQualityScore: 0.85,
+              parserStatus: 'repository_fixture',
+              rawStatus: 'synthetic_reference',
+              rawDriftDetected: false,
+            },
+          }),
+        ],
+        'repository-reference'
+      )
+    );
     getWashingtonSalesReviewCapabilityMock.mockReturnValue({
       eligible: false,
       status: 'reference-demo-only',
@@ -499,17 +608,16 @@ describe('Washington Counties Hub assessor journey', () => {
     });
     expect(spokaneOption).toBeInTheDocument();
     expect(resolveWashingtonCountyStatusMock).toHaveBeenCalledWith(expect.any(AbortSignal));
-    expect(screen.getByText(/valid same-origin Washington public sales package was not available/i))
-      .toHaveTextContent(/invented interface fixtures remain suppressed/i);
+    expect(
+      screen.getByText(/valid same-origin Washington public sales package was not available/i)
+    ).toHaveTextContent(/invented interface fixtures remain suppressed/i);
     expect(screen.getByText('0 with verified observed status')).toBeInTheDocument();
 
     fireEvent.click(spokaneOption);
     const selectedContext = screen.getByTestId('selected-county-context');
     expect(within(selectedContext).getAllByText('Unavailable')).toHaveLength(4);
     expect(selectedContext).not.toHaveTextContent('2025-11-06');
-    fireEvent.click(
-      screen.getByRole('button', { name: 'Open TerraForge' }),
-    );
+    fireEvent.click(screen.getByRole('button', { name: 'Open TerraForge' }));
 
     await waitFor(() => {
       expect(activateModuleMock).toHaveBeenCalledWith('suite-forge', {
@@ -525,7 +633,8 @@ describe('Washington Counties Hub assessor journey', () => {
           referenceRecordCount: null,
           latestReferenceSaleDate: null,
           salesReviewAvailability: 'unavailable',
-          salesReviewUnavailableMessage: 'Only invented repository reference records are available.',
+          salesReviewUnavailableMessage:
+            'Only invented repository reference records are available.',
         },
       });
     });
@@ -537,27 +646,29 @@ describe('Washington Counties Hub assessor journey', () => {
       status: 'sales-shard-unavailable',
       statusLabel: 'Source gap',
       unavailableMessage:
-        'The governed TerraForge sales package is unavailable for this county. '
-        + 'Sales review remains unavailable instead of falling back to another county.',
+        'The governed TerraForge sales package is unavailable for this county. ' +
+        'Sales review remains unavailable instead of falling back to another county.',
       referenceData: {
         posture: 'public_recorder_export',
         isSyntheticReference: false,
         observed: null,
       },
     });
-    resolveWashingtonCountyStatusMock.mockResolvedValue(countyStatusResolution([
-      countyStatus({
-        county: 'Adams',
-        countyCode: '001',
-        latestSaleDate: null,
-        stagedSales: 0,
-        needsReview: 0,
-        staticRoutes: {
-          detail: '/launch-data/washington/counties/001.json',
-          salesShard: '',
-        },
-      }),
-    ]));
+    resolveWashingtonCountyStatusMock.mockResolvedValue(
+      countyStatusResolution([
+        countyStatus({
+          county: 'Adams',
+          countyCode: '001',
+          latestSaleDate: null,
+          stagedSales: 0,
+          needsReview: 0,
+          staticRoutes: {
+            detail: '/launch-data/washington/counties/001.json',
+            salesShard: '',
+          },
+        }),
+      ])
+    );
 
     render(<CountiesHub />);
     fireEvent.click(await screen.findByRole('option', { name: 'Select Adams County' }));
@@ -575,18 +686,18 @@ describe('Washington Counties Hub assessor journey', () => {
             countyCode: '001',
             salesReviewAvailability: 'unavailable',
             salesReviewUnavailableMessage: expect.stringMatching(
-              /TerraForge sales package is unavailable/i,
+              /TerraForge sales package is unavailable/i
             ),
           }),
-        }),
+        })
       );
     });
   });
 
   it('rejects a mismatched observed county name and code instead of guessing scope', async () => {
-    resolveWashingtonCountyStatusMock.mockResolvedValue(countyStatusResolution([
-      countyStatus({ county: 'Adams', countyCode: '063' }),
-    ]));
+    resolveWashingtonCountyStatusMock.mockResolvedValue(
+      countyStatusResolution([countyStatus({ county: 'Adams', countyCode: '063' })])
+    );
 
     render(<CountiesHub />);
     const spokaneOption = await screen.findByRole('option', { name: 'Select Spokane County' });
@@ -596,10 +707,12 @@ describe('Washington Counties Hub assessor journey', () => {
     const openTerraForge = screen.getByRole('button', { name: 'Open TerraForge' });
     expect(openTerraForge).toBeEnabled();
     expect(screen.getByText(/name and code do not match/i)).toBeInTheDocument();
-    expect(screen.getByText(/record counts, freshness, and runtime posture are suppressed/i))
-      .toBeInTheDocument();
-    expect(screen.getByTestId('county-registry-integrity-error'))
-      .toHaveTextContent(/Adams \(063\)/i);
+    expect(
+      screen.getByText(/record counts, freshness, and runtime posture are suppressed/i)
+    ).toBeInTheDocument();
+    expect(screen.getByTestId('county-registry-integrity-error')).toHaveTextContent(
+      /Adams \(063\)/i
+    );
     expect(within(spokaneOption).getByText('Registry mismatch')).toBeInTheDocument();
     expect(screen.getByText('0 with verified observed status')).toBeInTheDocument();
     expect(within(selectedContext).getAllByText('Unavailable')).toHaveLength(4);
@@ -616,26 +729,28 @@ describe('Washington Counties Hub assessor journey', () => {
             salesReviewAvailability: 'unavailable',
             salesReviewUnavailableMessage: expect.stringMatching(/registry mismatch/i),
           }),
-        }),
+        })
       );
     });
   });
 
   it('surfaces an unregistered county code by its unique canonical county name', async () => {
-    resolveWashingtonCountyStatusMock.mockResolvedValue(countyStatusResolution([
-      countyStatus({ county: 'Spokane', countyCode: '999' }),
-    ]));
+    resolveWashingtonCountyStatusMock.mockResolvedValue(
+      countyStatusResolution([countyStatus({ county: 'Spokane', countyCode: '999' })])
+    );
 
     render(<CountiesHub />);
     const spokaneOption = await screen.findByRole('option', { name: 'Select Spokane County' });
     fireEvent.click(spokaneOption);
 
     const selectedContext = screen.getByTestId('selected-county-context');
-    expect(screen.getByTestId('county-registry-integrity-error'))
-      .toHaveTextContent(/Spokane \(999\)/i);
+    expect(screen.getByTestId('county-registry-integrity-error')).toHaveTextContent(
+      /Spokane \(999\)/i
+    );
     expect(within(spokaneOption).getByText('Registry mismatch')).toBeInTheDocument();
-    expect(screen.getByText(/reported Spokane County with code 999 for canonical Spokane County/i))
-      .toBeInTheDocument();
+    expect(
+      screen.getByText(/reported Spokane County with code 999 for canonical Spokane County/i)
+    ).toBeInTheDocument();
     expect(screen.getByText('0 with verified observed status')).toBeInTheDocument();
     expect(within(selectedContext).getAllByText('Unavailable')).toHaveLength(4);
     const openTerraForge = screen.getByRole('button', { name: 'Open TerraForge' });
@@ -650,7 +765,7 @@ describe('Washington Counties Hub assessor journey', () => {
             countyCode: '063',
             salesReviewAvailability: 'unavailable',
           }),
-        }),
+        })
       );
     });
   });
@@ -664,7 +779,7 @@ describe('Washington Counties Hub assessor journey', () => {
     const openTerraForge = screen.getByRole('button', { name: 'Open TerraForge' });
     expect(openTerraForge).toBeEnabled();
     expect(screen.getByText(/public sales package is not enabled/i)).toHaveTextContent(
-      /TerraForge still opens.*unavailable/i,
+      /TerraForge still opens.*unavailable/i
     );
     fireEvent.click(openTerraForge);
     await waitFor(() => {
@@ -676,7 +791,7 @@ describe('Washington Counties Hub assessor journey', () => {
             salesReviewAvailability: 'unavailable',
             salesReviewUnavailableMessage: expect.stringMatching(/not enabled/i),
           }),
-        }),
+        })
       );
     });
   });
@@ -693,17 +808,17 @@ describe('Washington Counties Hub assessor journey', () => {
     const adamsOption = screen.getByRole('option', { name: 'Select Adams County' });
     fireEvent.click(adamsOption);
     expect(screen.getByTestId('selected-county-context')).toHaveTextContent('Adams County');
-    expect(
-      screen.getByRole('button', { name: 'Open TerraForge' }),
-    ).toBeEnabled();
+    expect(screen.getByRole('button', { name: 'Open TerraForge' })).toBeEnabled();
 
     fireEvent.click(screen.getByRole('button', { name: 'Retry' }));
 
     expect(
-      await screen.findByRole('option', { name: 'Select Spokane County' }),
+      await screen.findByRole('option', { name: 'Select Spokane County' })
     ).toBeInTheDocument();
-    expect(screen.getByRole('option', { name: 'Select Adams County' }))
-      .toHaveAttribute('aria-selected', 'true');
+    expect(screen.getByRole('option', { name: 'Select Adams County' })).toHaveAttribute(
+      'aria-selected',
+      'true'
+    );
     expect(screen.getByTestId('selected-county-context')).toHaveTextContent('Adams County');
     expect(activateModuleMock).not.toHaveBeenCalled();
     expect(resolveWashingtonCountyStatusMock).toHaveBeenCalledTimes(2);

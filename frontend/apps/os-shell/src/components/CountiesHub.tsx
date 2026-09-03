@@ -1,9 +1,4 @@
-import {
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   Alert,
   Box,
@@ -16,11 +11,13 @@ import {
   Divider,
   Grid,
   InputAdornment,
+  MenuItem,
   Stack,
   TextField,
   Typography,
 } from '@mui/material';
 import {
+  CloudUploadOutlined as CloudUploadIcon,
   Launch as LaunchIcon,
   OpenInNew as OpenInNewIcon,
   Refresh as RefreshIcon,
@@ -41,14 +38,19 @@ import {
   type WashingtonCountiesHubHandoff,
   type WashingtonSalesReviewCapability,
 } from '../pages/forge/sales/washingtonSalesReviewCapability';
-import {
-  WASHINGTON_COUNTIES,
-} from '../pages/forge/sales/washingtonLaunchApi';
+import { WASHINGTON_COUNTIES } from '../pages/forge/sales/washingtonLaunchApi';
 import {
   resolveWashingtonCountyStatus,
   verifyWashingtonCountySalesShard,
   type WashingtonCountyStatusEntry,
 } from '../services/washingtonCountyLaunch';
+import {
+  fetchCountyCsvUploadHistory,
+  uploadCountyCsv,
+  type CountyCsvDataset,
+  type CountyCsvUploadHistory,
+  type CountyCsvUploadReceipt,
+} from '../services/countyCsvUpload';
 
 const EXPECTED_WASHINGTON_COUNTIES = 39;
 
@@ -67,13 +69,14 @@ function formatStatus(value: string | null | undefined): string {
 }
 
 function normalizeCountyName(value: string): string {
-  return value.replace(/\s+county$/i, '').trim().toLowerCase();
+  return value
+    .replace(/\s+county$/i, '')
+    .trim()
+    .toLowerCase();
 }
 
 function formatInventoryStatus(status: WashingtonPublicSourceInventoryEntry['status']): string {
-  return status === 'adapter-ready'
-    ? 'Acquisition path adapter-ready'
-    : 'Source path researched';
+  return status === 'adapter-ready' ? 'Acquisition path adapter-ready' : 'Source path researched';
 }
 
 function formatSnapshotDate(value: string | null): string {
@@ -92,9 +95,15 @@ const CountiesHub = () => {
   const [loadError, setLoadError] = useState<string | null>(null);
   const [launching, setLaunching] = useState(false);
   const [launchError, setLaunchError] = useState<string | null>(null);
-  const [countyStatusSource, setCountyStatusSource] = useState<
-    WashingtonCountiesHubHandoff['referencePackageSource']
-  >('repository-reference');
+  const [uploadContextLoading, setUploadContextLoading] = useState(false);
+  const [uploadContext, setUploadContext] = useState<CountyCsvUploadHistory | null>(null);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const [uploadFile, setUploadFile] = useState<File | null>(null);
+  const [uploadDataset, setUploadDataset] = useState<CountyCsvDataset>('Sales');
+  const [uploading, setUploading] = useState(false);
+  const [uploadReceipt, setUploadReceipt] = useState<CountyCsvUploadReceipt | null>(null);
+  const [countyStatusSource, setCountyStatusSource] =
+    useState<WashingtonCountiesHubHandoff['referencePackageSource']>('repository-reference');
   const [usedRepositoryFallback, setUsedRepositoryFallback] = useState(false);
   const launchDataEnabled = isWashingtonSalesReviewLaunchEnabled({
     explicitReferenceHandoff: true,
@@ -110,9 +119,7 @@ const CountiesHub = () => {
       setCountyStatusSource(resolution.packageSource);
       setUsedRepositoryFallback(resolution.usedRepositoryFallback);
       setSelectedCountyCode((current) =>
-        current && WASHINGTON_COUNTIES.some((county) => county.code === current)
-          ? current
-          : null,
+        current && WASHINGTON_COUNTIES.some((county) => county.code === current) ? current : null
       );
     } catch (error) {
       if (signal?.aborted) return;
@@ -120,9 +127,7 @@ const CountiesHub = () => {
       setUsedRepositoryFallback(false);
       setSelectedCountyCode(null);
       setLoadError(
-        error instanceof Error
-          ? error.message
-          : 'Washington county status could not be loaded.',
+        error instanceof Error ? error.message : 'Washington county status could not be loaded.'
       );
     } finally {
       if (!signal?.aborted) setLoading(false);
@@ -135,18 +140,15 @@ const CountiesHub = () => {
     return () => controller.abort();
   }, [loadCounties]);
 
-  const {
-    directory: countyDirectory,
-    registryIssueStatuses,
-  } = useMemo<{
+  const { directory: countyDirectory, registryIssueStatuses } = useMemo<{
     directory: WashingtonCountyDirectoryEntry[];
     registryIssueStatuses: WashingtonCountyStatusEntry[];
   }>(() => {
     const canonicalNameByCode = new Map<string, string>(
-      WASHINGTON_COUNTIES.map((county) => [county.code, county.name] as const),
+      WASHINGTON_COUNTIES.map((county) => [county.code, county.name] as const)
     );
     const canonicalCodeByName = new Map<string, string>(
-      WASHINGTON_COUNTIES.map((county) => [normalizeCountyName(county.name), county.code] as const),
+      WASHINGTON_COUNTIES.map((county) => [normalizeCountyName(county.name), county.code] as const)
     );
     const validatedStatusByCode = new Map<string, WashingtonCountyStatusEntry>();
     const identityMismatchByCode = new Map<string, WashingtonCountyStatusEntry>();
@@ -155,13 +157,13 @@ const CountiesHub = () => {
     for (const observedStatus of counties) {
       const canonicalName = canonicalNameByCode.get(observedStatus.countyCode);
       const canonicalCodeForName = canonicalCodeByName.get(
-        normalizeCountyName(observedStatus.county),
+        normalizeCountyName(observedStatus.county)
       );
 
       if (
-        canonicalName
-        && canonicalCodeForName === observedStatus.countyCode
-        && normalizeCountyName(observedStatus.county) === normalizeCountyName(canonicalName)
+        canonicalName &&
+        canonicalCodeForName === observedStatus.countyCode &&
+        normalizeCountyName(observedStatus.county) === normalizeCountyName(canonicalName)
       ) {
         validatedStatusByCode.set(observedStatus.countyCode, observedStatus);
       } else {
@@ -177,7 +179,7 @@ const CountiesHub = () => {
 
     const directory = WASHINGTON_COUNTIES.map((county) => {
       const identityMismatch = identityMismatchByCode.get(county.code) ?? null;
-      const status = identityMismatch ? null : validatedStatusByCode.get(county.code) ?? null;
+      const status = identityMismatch ? null : (validatedStatusByCode.get(county.code) ?? null);
       return {
         county: county.name,
         countyCode: county.code,
@@ -193,29 +195,32 @@ const CountiesHub = () => {
 
   const selectedCounty = useMemo(
     () => countyDirectory.find((county) => county.countyCode === selectedCountyCode) ?? null,
-    [countyDirectory, selectedCountyCode],
+    [countyDirectory, selectedCountyCode]
   );
   const selectedStatus = selectedCounty?.status ?? null;
-  const selectedShardRetryAvailable = countyStatusSource === 'hosted'
-    && selectedStatus?.salesShardVerification === 'unavailable'
-    && Boolean(selectedStatus.staticRoutes.salesShard.trim());
+  const selectedShardRetryAvailable =
+    countyStatusSource === 'hosted' &&
+    selectedStatus?.salesShardVerification === 'unavailable' &&
+    Boolean(selectedStatus.staticRoutes.salesShard.trim());
 
   const retrySelectedCountySalesShard = useCallback(() => {
     if (!selectedStatus || !selectedShardRetryAvailable) return;
     const retryCountyCode = selectedStatus.countyCode;
-    setCounties((current) => current.map((status) => (
-      status.countyCode === retryCountyCode
-        ? { ...status, salesShardVerification: 'unverified' as const }
-        : status
-    )));
+    setCounties((current) =>
+      current.map((status) =>
+        status.countyCode === retryCountyCode
+          ? { ...status, salesShardVerification: 'unverified' as const }
+          : status
+      )
+    );
     setLaunchError(null);
   }, [selectedShardRetryAvailable, selectedStatus]);
 
   useEffect(() => {
     if (
-      countyStatusSource !== 'hosted'
-      || !selectedStatus
-      || selectedStatus.salesShardVerification !== 'unverified'
+      countyStatusSource !== 'hosted' ||
+      !selectedStatus ||
+      selectedStatus.salesShardVerification !== 'unverified'
     ) {
       return;
     }
@@ -224,19 +229,19 @@ const CountiesHub = () => {
     void verifyWashingtonCountySalesShard(selectedStatus, controller.signal)
       .then((verifiedStatus) => {
         if (controller.signal.aborted) return;
-        setCounties((current) => current.map((status) => (
-          status === selectedStatus
-            ? verifiedStatus
-            : status
-        )));
+        setCounties((current) =>
+          current.map((status) => (status === selectedStatus ? verifiedStatus : status))
+        );
       })
       .catch(() => {
         if (controller.signal.aborted) return;
-        setCounties((current) => current.map((status) => (
-          status === selectedStatus
-            ? { ...status, salesShardVerification: 'unavailable' as const }
-            : status
-        )));
+        setCounties((current) =>
+          current.map((status) =>
+            status === selectedStatus
+              ? { ...status, salesShardVerification: 'unavailable' as const }
+              : status
+          )
+        );
       });
 
     return () => controller.abort();
@@ -246,25 +251,23 @@ const CountiesHub = () => {
   const selectedObservedReference = selectedCapability?.referenceData.observed ?? null;
   const selectedIdentityMismatch = selectedCounty?.identityMismatch ?? null;
   const observedCountyCount = useMemo(
-    () => countyDirectory.filter(
-      (county) => Boolean(county.capability?.referenceData.observed),
-    ).length,
-    [countyDirectory],
+    () =>
+      countyDirectory.filter((county) => Boolean(county.capability?.referenceData.observed)).length,
+    [countyDirectory]
   );
-  const selectedSalesReviewAvailable = Boolean(
-    selectedCapability?.eligible
-    && launchDataEnabled,
-  );
+  const selectedSalesReviewAvailable = Boolean(selectedCapability?.eligible && launchDataEnabled);
   const selectedSalesReviewVerifying = Boolean(
-    launchDataEnabled
-    && countyStatusSource === 'hosted'
-    && selectedStatus?.salesShardVerification === 'unverified'
-    && selectedCapability?.status === 'sales-shard-verification-required',
+    launchDataEnabled &&
+    countyStatusSource === 'hosted' &&
+    selectedStatus?.salesShardVerification === 'unverified' &&
+    selectedCapability?.status === 'sales-shard-verification-required'
   );
   const selectedSalesReviewUnavailableMessage = useMemo(() => {
     if (selectedIdentityMismatch) {
-      return 'The observed public-data status has a county registry mismatch, so no '
-        + 'TerraForge sales workflow can use it.';
+      return (
+        'The observed public-data status has a county registry mismatch, so no ' +
+        'TerraForge sales workflow can use it.'
+      );
     }
     if (!selectedCapability) {
       return `No governed public sales state is available for ${selectedCounty?.county ?? 'this'} County.`;
@@ -273,30 +276,27 @@ const CountiesHub = () => {
       return 'The Washington public sales package is not enabled in this environment.';
     }
     return selectedCapability?.unavailableMessage;
-  }, [
-    launchDataEnabled,
-    selectedCapability,
-    selectedCounty,
-    selectedIdentityMismatch,
-  ]);
+  }, [launchDataEnabled, selectedCapability, selectedCounty, selectedIdentityMismatch]);
 
   const filteredCounties = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase();
     if (!normalizedQuery) return countyDirectory;
-    return countyDirectory.filter((county) =>
-      county.county.toLowerCase().includes(normalizedQuery)
-      || county.countyCode.includes(normalizedQuery)
-      || county.capability?.referenceData.posture.includes(normalizedQuery)
-      || matchesWashingtonPublicSourceQuery(county.publicSource, normalizedQuery)
-      || (county.identityMismatch !== null && 'registry mismatch'.includes(normalizedQuery))
-      || (!county.capability && 'unavailable'.includes(normalizedQuery)),
+    return countyDirectory.filter(
+      (county) =>
+        county.county.toLowerCase().includes(normalizedQuery) ||
+        county.countyCode.includes(normalizedQuery) ||
+        county.capability?.referenceData.posture.includes(normalizedQuery) ||
+        matchesWashingtonPublicSourceQuery(county.publicSource, normalizedQuery) ||
+        (county.identityMismatch !== null && 'registry mismatch'.includes(normalizedQuery)) ||
+        (!county.capability && 'unavailable'.includes(normalizedQuery))
     );
   }, [countyDirectory, query]);
   const repositoryReferenceDemo = useMemo(
-    () => countyDirectory.some(
-      (county) => county.capability?.referenceData.isSyntheticReference === true,
-    ),
-    [countyDirectory],
+    () =>
+      countyDirectory.some(
+        (county) => county.capability?.referenceData.isSyntheticReference === true
+      ),
+    [countyDirectory]
   );
 
   const launchSelectedCounty = useCallback(async () => {
@@ -324,8 +324,8 @@ const CountiesHub = () => {
           ? null
           : selectedSalesReviewVerifying
             ? null
-            : selectedSalesReviewUnavailableMessage
-              ?? 'No governed public sales workflow is available for this county.',
+            : (selectedSalesReviewUnavailableMessage ??
+              'No governed public sales workflow is available for this county.'),
       } satisfies WashingtonCountiesHubHandoff;
 
       await activateModule('suite-forge', {
@@ -333,9 +333,7 @@ const CountiesHub = () => {
         metadata,
       });
     } catch (error) {
-      setLaunchError(
-        error instanceof Error ? error.message : 'TerraForge could not be opened.',
-      );
+      setLaunchError(error instanceof Error ? error.message : 'TerraForge could not be opened.');
     } finally {
       setLaunching(false);
     }
@@ -349,11 +347,77 @@ const CountiesHub = () => {
     selectedSalesReviewUnavailableMessage,
   ]);
 
+  const authenticatedUploadMatchesSelection = Boolean(
+    selectedCounty &&
+    uploadContext &&
+    normalizeCountyName(uploadContext.countyName) === normalizeCountyName(selectedCounty.county) &&
+    uploadContext.countyKey === `wa-${selectedCounty.county.toLowerCase().replaceAll(' ', '-')}`
+  );
+
+  const loadAuthenticatedUploadContext = useCallback(async () => {
+    if (!selectedCounty) return;
+    setUploadContextLoading(true);
+    setUploadError(null);
+    setUploadReceipt(null);
+    try {
+      const history = await fetchCountyCsvUploadHistory();
+      setUploadContext(history);
+      if (
+        normalizeCountyName(history.countyName) !== normalizeCountyName(selectedCounty.county) ||
+        history.countyKey !== `wa-${selectedCounty.county.toLowerCase().replaceAll(' ', '-')}`
+      ) {
+        setUploadError(
+          `Your authenticated county is ${history.countyName} County. Select that county before uploading; no data was uploaded.`
+        );
+      }
+    } catch (error) {
+      setUploadContext(null);
+      setUploadError(
+        error instanceof Error ? error.message : 'Authenticated county upload is unavailable.'
+      );
+    } finally {
+      setUploadContextLoading(false);
+    }
+  }, [selectedCounty]);
+
+  const submitCountyUpload = useCallback(async () => {
+    if (!selectedCounty || !uploadContext || !authenticatedUploadMatchesSelection || !uploadFile) {
+      return;
+    }
+    setUploading(true);
+    setUploadError(null);
+    setUploadReceipt(null);
+    try {
+      const receipt = await uploadCountyCsv(uploadFile, uploadDataset);
+      if (
+        receipt.countyId !== uploadContext.countyId ||
+        receipt.countyKey !== uploadContext.countyKey ||
+        normalizeCountyName(receipt.countyName) !== normalizeCountyName(selectedCounty.county)
+      ) {
+        setUploadContext(null);
+        setUploadError(
+          'The upload receipt did not match the authenticated county context. No availability claim was applied.'
+        );
+        return;
+      }
+      setUploadReceipt(receipt);
+      setUploadFile(null);
+      setUploadContext(await fetchCountyCsvUploadHistory());
+    } catch (error) {
+      setUploadError(error instanceof Error ? error.message : 'County CSV upload failed.');
+    } finally {
+      setUploading(false);
+    }
+  }, [
+    authenticatedUploadMatchesSelection,
+    selectedCounty,
+    uploadContext,
+    uploadDataset,
+    uploadFile,
+  ]);
+
   return (
-    <Box
-      data-testid='counties-hub'
-      sx={{ height: '100%', overflow: 'auto', p: { xs: 2, md: 4 } }}
-    >
+    <Box data-testid='counties-hub' sx={{ height: '100%', overflow: 'auto', p: { xs: 2, md: 4 } }}>
       <Stack spacing={3}>
         <Box>
           <Typography variant='h4' component='h1' gutterBottom>
@@ -361,8 +425,8 @@ const CountiesHub = () => {
           </Typography>
           <Typography variant='body1' color='text.secondary' sx={{ maxWidth: 900 }}>
             Inspect the governed public/reference data posture for a Washington county, then enter
-            TerraForge in that explicit navigation context. Each data-dependent workflow reports
-            its own availability.
+            TerraForge in that explicit navigation context. Each data-dependent workflow reports its
+            own availability.
           </Typography>
         </Box>
 
@@ -382,14 +446,16 @@ const CountiesHub = () => {
             sx={{ minHeight: 220 }}
           >
             <CircularProgress size={36} />
-            <Typography color='text.secondary'>Loading governed Washington county status…</Typography>
+            <Typography color='text.secondary'>
+              Loading governed Washington county status…
+            </Typography>
           </Stack>
         )}
 
         {!loading && loadError && (
           <Alert
             severity='error'
-            action={(
+            action={
               <Button
                 color='inherit'
                 size='small'
@@ -398,7 +464,7 @@ const CountiesHub = () => {
               >
                 Retry
               </Button>
-            )}
+            }
           >
             {loadError} Governed status claims are suppressed while the feed is unavailable. All 39
             counties remain selectable with explicit unavailable state.
@@ -417,13 +483,13 @@ const CountiesHub = () => {
 
             {registryIssueStatuses.length > 0 && (
               <Alert severity='error' data-testid='county-registry-integrity-error'>
-                The governed feed reported {registryIssueStatuses.length}{' '}
-                unregistered or mismatched county{' '}
-                {registryIssueStatuses.length === 1 ? 'identity' : 'identities'}. Their status data
-                is suppressed:{' '}
+                The governed feed reported {registryIssueStatuses.length} unregistered or mismatched
+                county {registryIssueStatuses.length === 1 ? 'identity' : 'identities'}. Their
+                status data is suppressed:{' '}
                 {registryIssueStatuses
                   .map((status) => `${status.county} (${status.countyCode})`)
-                  .join(', ')}.
+                  .join(', ')}
+                .
               </Alert>
             )}
 
@@ -439,8 +505,8 @@ const CountiesHub = () => {
             {repositoryReferenceDemo && !usedRepositoryFallback && (
               <Alert severity='warning'>
                 This hosted package contains invented synthetic sales for interface testing. They
-                cannot enable an assessor workflow, are not observed public sales, and are not county
-                records.
+                cannot enable an assessor workflow, are not observed public sales, and are not
+                county records.
               </Alert>
             )}
 
@@ -489,9 +555,7 @@ const CountiesHub = () => {
                         <Typography variant='overline' color='text.secondary'>
                           Selected navigation context
                         </Typography>
-                        <Typography variant='h5'>
-                          {selectedCounty.county} County
-                        </Typography>
+                        <Typography variant='h5'>{selectedCounty.county} County</Typography>
                         <Typography variant='body2' color='text.secondary'>
                           Washington county code {selectedCounty.countyCode} · source{' '}
                           {selectedCapability
@@ -513,7 +577,9 @@ const CountiesHub = () => {
 
                     <Grid container spacing={2}>
                       <Grid item xs={12} sm={6} md={3}>
-                        <Typography variant='caption' color='text.secondary'>Reference records</Typography>
+                        <Typography variant='caption' color='text.secondary'>
+                          Reference records
+                        </Typography>
                         <Typography variant='body1'>
                           {selectedObservedReference
                             ? selectedObservedReference.recordCount.toLocaleString()
@@ -521,15 +587,19 @@ const CountiesHub = () => {
                         </Typography>
                       </Grid>
                       <Grid item xs={12} sm={6} md={3}>
-                        <Typography variant='caption' color='text.secondary'>Latest reference sale</Typography>
+                        <Typography variant='caption' color='text.secondary'>
+                          Latest reference sale
+                        </Typography>
                         <Typography variant='body1'>
                           {selectedObservedReference
-                            ? selectedObservedReference.latestSaleDate ?? 'Not reported'
+                            ? (selectedObservedReference.latestSaleDate ?? 'Not reported')
                             : 'Unavailable'}
                         </Typography>
                       </Grid>
                       <Grid item xs={12} sm={6} md={3}>
-                        <Typography variant='caption' color='text.secondary'>Records needing review</Typography>
+                        <Typography variant='caption' color='text.secondary'>
+                          Records needing review
+                        </Typography>
                         <Typography variant='body1'>
                           {selectedObservedReference
                             ? selectedObservedReference.needsReview.toLocaleString()
@@ -537,7 +607,9 @@ const CountiesHub = () => {
                         </Typography>
                       </Grid>
                       <Grid item xs={12} sm={6} md={3}>
-                        <Typography variant='caption' color='text.secondary'>Runtime posture</Typography>
+                        <Typography variant='caption' color='text.secondary'>
+                          Runtime posture
+                        </Typography>
                         <Typography variant='body1'>
                           {selectedObservedReference
                             ? formatStatus(selectedObservedReference.runtimePosture)
@@ -545,6 +617,136 @@ const CountiesHub = () => {
                         </Typography>
                       </Grid>
                     </Grid>
+
+                    <Card variant='outlined' data-testid='county-csv-upload-panel'>
+                      <CardContent>
+                        <Stack spacing={2}>
+                          <Box>
+                            <Typography variant='h6'>County-provided CSV</Typography>
+                            <Typography variant='body2' color='text.secondary'>
+                              Authenticate the selected county before admitting a Parcels or Sales
+                              CSV. Admission validates CSV structure and stores immutable metadata;
+                              it does not yet stage, publish, or enable rows in TerraForge.
+                            </Typography>
+                          </Box>
+
+                          {!uploadContext && (
+                            <Button
+                              variant='outlined'
+                              startIcon={
+                                uploadContextLoading ? (
+                                  <CircularProgress size={16} />
+                                ) : (
+                                  <ShieldIcon />
+                                )
+                              }
+                              disabled={uploadContextLoading}
+                              onClick={() => void loadAuthenticatedUploadContext()}
+                            >
+                              {uploadContextLoading
+                                ? 'Checking authenticated county…'
+                                : 'Check authenticated county'}
+                            </Button>
+                          )}
+
+                          {uploadContext && authenticatedUploadMatchesSelection && (
+                            <>
+                              <Alert severity='success'>
+                                Authenticated for {uploadContext.countyName} County. Recent history
+                                below contains this county only.
+                              </Alert>
+                              <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
+                                <TextField
+                                  select
+                                  size='small'
+                                  label='Dataset'
+                                  value={uploadDataset}
+                                  onChange={(event) => {
+                                    setUploadDataset(event.target.value as CountyCsvDataset);
+                                    setUploadReceipt(null);
+                                  }}
+                                  sx={{ minWidth: 160 }}
+                                >
+                                  <MenuItem value='Sales'>Sales</MenuItem>
+                                  <MenuItem value='Parcels'>Parcels</MenuItem>
+                                </TextField>
+                                <Button component='label' variant='outlined'>
+                                  Choose CSV
+                                  <input
+                                    hidden
+                                    type='file'
+                                    accept='.csv,text/csv'
+                                    aria-label='Choose county CSV'
+                                    onChange={(event) => {
+                                      setUploadFile(event.target.files?.[0] ?? null);
+                                      setUploadReceipt(null);
+                                      setUploadError(null);
+                                    }}
+                                  />
+                                </Button>
+                                <Button
+                                  variant='contained'
+                                  startIcon={
+                                    uploading ? (
+                                      <CircularProgress size={16} color='inherit' />
+                                    ) : (
+                                      <CloudUploadIcon />
+                                    )
+                                  }
+                                  disabled={!uploadFile || uploading}
+                                  onClick={() => void submitCountyUpload()}
+                                >
+                                  {uploading ? 'Uploading…' : 'Admit county CSV'}
+                                </Button>
+                              </Stack>
+                              {uploadFile && (
+                                <Typography variant='body2'>
+                                  Selected: {uploadFile.name} ({uploadFile.size.toLocaleString()}{' '}
+                                  bytes)
+                                </Typography>
+                              )}
+                              {uploadReceipt && (
+                                <Alert severity='success' data-testid='county-upload-receipt'>
+                                  {uploadReceipt.duplicateDisposition === 'Duplicate'
+                                    ? 'This exact county dataset was already admitted.'
+                                    : 'CSV admitted durably.'}{' '}
+                                  {uploadReceipt.acceptedRowCount.toLocaleString()} structurally
+                                  valid rows · batch {uploadReceipt.batchId}. Rows remain
+                                  unavailable to TerraForge until staging and promotion are
+                                  completed.
+                                </Alert>
+                              )}
+                              <Box>
+                                <Typography variant='subtitle2'>Recent admitted batches</Typography>
+                                {uploadContext.batches.length === 0 ? (
+                                  <Typography variant='body2' color='text.secondary'>
+                                    No durable CSV admissions exist for this county.
+                                  </Typography>
+                                ) : (
+                                  <Stack spacing={1} sx={{ mt: 1 }}>
+                                    {uploadContext.batches.map((batch) => (
+                                      <Box key={batch.batchId}>
+                                        <Typography variant='body2'>
+                                          {batch.sourceFileName} · {batch.dataset} ·{' '}
+                                          {batch.acceptedRowCount.toLocaleString()} structurally
+                                          valid rows
+                                        </Typography>
+                                        <Typography variant='caption' color='text.secondary'>
+                                          Admitted {formatSnapshotDate(batch.receivedAtUtc)} · not
+                                          staged or available to TerraForge
+                                        </Typography>
+                                      </Box>
+                                    ))}
+                                  </Stack>
+                                )}
+                              </Box>
+                            </>
+                          )}
+
+                          {uploadError && <Alert severity='error'>{uploadError}</Alert>}
+                        </Stack>
+                      </CardContent>
+                    </Card>
 
                     {selectedCounty.publicSource ? (
                       <Alert
@@ -554,38 +756,50 @@ const CountiesHub = () => {
                       >
                         <Stack spacing={1.5}>
                           <Box>
-                            <Typography variant='subtitle2'>Tracked official public source</Typography>
+                            <Typography variant='subtitle2'>
+                              Tracked official public source
+                            </Typography>
                             <Typography variant='body2'>
                               {selectedCounty.county} County official assessor website
                             </Typography>
                           </Box>
                           <Grid container spacing={2}>
                             <Grid item xs={12}>
-                              <Typography variant='caption' color='text.secondary'>Primary public sales workflow</Typography>
+                              <Typography variant='caption' color='text.secondary'>
+                                Primary public sales workflow
+                              </Typography>
                               <Typography variant='body2'>
                                 {selectedCounty.publicSource.primarySalesSource}
                               </Typography>
                             </Grid>
                             <Grid item xs={12} sm={6}>
-                              <Typography variant='caption' color='text.secondary'>Fallback public workflow</Typography>
+                              <Typography variant='caption' color='text.secondary'>
+                                Fallback public workflow
+                              </Typography>
                               <Typography variant='body2'>
                                 {selectedCounty.publicSource.fallbackSource ?? 'Not inventoried'}
                               </Typography>
                             </Grid>
                             <Grid item xs={12} sm={6}>
-                              <Typography variant='caption' color='text.secondary'>GIS / map surface</Typography>
+                              <Typography variant='caption' color='text.secondary'>
+                                GIS / map surface
+                              </Typography>
                               <Typography variant='body2'>
                                 {selectedCounty.publicSource.gisMapSurface ?? 'Not inventoried'}
                               </Typography>
                             </Grid>
                             <Grid item xs={12} sm={6}>
-                              <Typography variant='caption' color='text.secondary'>Acquisition family</Typography>
+                              <Typography variant='caption' color='text.secondary'>
+                                Acquisition family
+                              </Typography>
                               <Typography variant='body2'>
                                 {selectedCounty.publicSource.acquisitionFamily}
                               </Typography>
                             </Grid>
                             <Grid item xs={12} sm={6}>
-                              <Typography variant='caption' color='text.secondary'>Inventory posture</Typography>
+                              <Typography variant='caption' color='text.secondary'>
+                                Inventory posture
+                              </Typography>
                               <Typography variant='body2'>
                                 {formatInventoryStatus(selectedCounty.publicSource.status)}
                               </Typography>
@@ -640,25 +854,27 @@ const CountiesHub = () => {
                         remains unavailable instead of borrowing another county&apos;s data.
                       </Alert>
                     )}
-                    {!selectedIdentityMismatch
-                      && !selectedCapability?.eligible
-                      && selectedCapability?.unavailableMessage && (
-                      <Alert
-                        severity='warning'
-                        action={selectedShardRetryAvailable ? (
-                          <Button
-                            color='inherit'
-                            size='small'
-                            startIcon={<RefreshIcon />}
-                            onClick={retrySelectedCountySalesShard}
-                          >
-                            Retry sales data
-                          </Button>
-                        ) : undefined}
-                      >
-                        {selectedCapability.unavailableMessage}
-                      </Alert>
-                    )}
+                    {!selectedIdentityMismatch &&
+                      !selectedCapability?.eligible &&
+                      selectedCapability?.unavailableMessage && (
+                        <Alert
+                          severity='warning'
+                          action={
+                            selectedShardRetryAvailable ? (
+                              <Button
+                                color='inherit'
+                                size='small'
+                                startIcon={<RefreshIcon />}
+                                onClick={retrySelectedCountySalesShard}
+                              >
+                                Retry sales data
+                              </Button>
+                            ) : undefined
+                          }
+                        >
+                          {selectedCapability.unavailableMessage}
+                        </Alert>
+                      )}
                     {launchError && <Alert severity='error'>{launchError}</Alert>}
                   </Stack>
                 </CardContent>
@@ -691,9 +907,14 @@ const CountiesHub = () => {
                         role='option'
                         aria-selected={selected}
                         aria-label={`Select ${county.county} County`}
+                        disabled={uploadContextLoading || uploading}
                         onClick={() => {
                           setSelectedCountyCode(county.countyCode);
                           setLaunchError(null);
+                          setUploadContext(null);
+                          setUploadError(null);
+                          setUploadFile(null);
+                          setUploadReceipt(null);
                         }}
                         sx={{ height: '100%' }}
                       >
@@ -709,23 +930,28 @@ const CountiesHub = () => {
                               <Chip
                                 size='small'
                                 color={capability?.eligible ? 'success' : 'default'}
-                                label={county.identityMismatch
-                                  ? 'Registry mismatch'
-                                  : capability?.statusLabel ?? 'Public data unavailable'}
+                                label={
+                                  county.identityMismatch
+                                    ? 'Registry mismatch'
+                                    : (capability?.statusLabel ?? 'Public data unavailable')
+                                }
                               />
                             </Stack>
                             <Typography variant='body2' color='text.secondary'>
-                              Source: {capability
+                              Source:{' '}
+                              {capability
                                 ? formatStatus(capability.referenceData.posture)
                                 : 'Unavailable'}
                             </Typography>
                             <Typography variant='body2' color='text.secondary'>
-                              Freshness: {observedReference
-                                ? observedReference.latestSaleDate ?? 'Not reported'
+                              Freshness:{' '}
+                              {observedReference
+                                ? (observedReference.latestSaleDate ?? 'Not reported')
                                 : 'Unavailable'}
                             </Typography>
                             <Typography variant='body2' color='text.secondary'>
-                              Public path: {county.publicSource
+                              Public path:{' '}
+                              {county.publicSource
                                 ? county.publicSource.acquisitionFamily
                                 : 'Not inventoried'}
                             </Typography>
@@ -733,9 +959,11 @@ const CountiesHub = () => {
                               <Chip
                                 size='small'
                                 variant='outlined'
-                                label={observedReference
-                                  ? formatStatus(observedReference.sourceStatus)
-                                  : 'Not reported'}
+                                label={
+                                  observedReference
+                                    ? formatStatus(observedReference.sourceStatus)
+                                    : 'Not reported'
+                                }
                               />
                               {observedReference?.sourceDriftDetected && (
                                 <Chip size='small' color='warning' label='Source drift reported' />

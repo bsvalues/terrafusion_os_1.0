@@ -43,6 +43,9 @@ public sealed class CountyCsvUploadAdmissionServiceRegistrationTests
         Assert.Same(
             firstLedger,
             firstScope.ServiceProvider.GetRequiredService<ICountyCsvUploadAdmissionLedger>());
+        Assert.Same(
+            firstLedger,
+            firstScope.ServiceProvider.GetRequiredService<ICountyCsvUploadHistoryReader>());
         Assert.NotSame(
             firstLedger,
             secondScope.ServiceProvider.GetRequiredService<ICountyCsvUploadAdmissionLedger>());
@@ -93,6 +96,16 @@ public sealed class CountyCsvUploadAdmissionServiceRegistrationTests
             Assert.Equal(CountyCsvUploadAdmissionDisposition.Duplicate, duplicate.Disposition);
             Assert.Equal(bentonBatchId, duplicate.Batch!.BatchId);
             Assert.Equal(2, await CountBatchesAsync(scope.ServiceProvider));
+
+            var history = scope.ServiceProvider
+                .GetRequiredService<ICountyCsvUploadHistoryReader>();
+            var bentonHistory = await history.ListRecentAsync(BentonId, 25);
+            var franklinHistory = await history.ListRecentAsync(FranklinId, 25);
+            Assert.Equal(bentonBatchId, Assert.Single(bentonHistory).BatchId);
+            Assert.Equal(BentonId, Assert.Single(bentonHistory).CountyId);
+            Assert.Equal(FranklinId, Assert.Single(franklinHistory).CountyId);
+            Assert.DoesNotContain(bentonHistory, batch => batch.CountyId == FranklinId);
+            Assert.DoesNotContain(franklinHistory, batch => batch.CountyId == BentonId);
         }
     }
 
