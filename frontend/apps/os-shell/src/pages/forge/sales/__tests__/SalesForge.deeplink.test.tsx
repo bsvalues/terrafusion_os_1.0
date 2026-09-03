@@ -577,6 +577,38 @@ describe('SalesForge — County Studio deeplink consumption (Task D2)', () => {
     expect(screen.getByTestId('stub-queue')).toBeInTheDocument();
   });
 
+  it('keeps a validated county read-only sync handoff on the protected live provider', async () => {
+    window.history.replaceState({}, '', '/?wa-launch-data=1');
+
+    render(
+      <SalesForge
+        metadata={{
+          countyCode: '005',
+          countyName: 'Benton',
+          resetValuationScope: true,
+          launchContext: 'washington-counties-hub',
+          dataTrustTier: 'county-connected-readonly',
+          referencePackageSource: 'county-readonly-sync',
+          referenceDataPosture: 'county_connected_readonly',
+          referenceRecordCount: 17,
+          latestReferenceSaleDate: '2026-02-03',
+          taxYear: 2027,
+          salesReviewAvailability: 'available',
+          salesReviewUnavailableMessage: null,
+        }}
+      />
+    );
+
+    await waitFor(() => {
+      expect(useSalesForgeStore.getState().committedFilters.countyCode).toBe('005');
+      expect(useSalesForgeStore.getState().dataSource).toBe('county-readonly-sync');
+      expect(useSalesForgeStore.getState().taxYear).toBe(2027);
+    });
+    expect(washingtonCountyLaunchMocks.resolve).not.toHaveBeenCalled();
+    expect(washingtonCountyLaunchMocks.verify).not.toHaveBeenCalled();
+    expect(screen.getByTestId('stub-queue')).toBeInTheDocument();
+  });
+
   it('fails closed instead of retaining Benton when a Counties Hub handoff is invalid', async () => {
     render(
       <SalesForge

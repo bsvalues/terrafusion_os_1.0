@@ -21,6 +21,7 @@ using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Dapper;
+using TerraFusion.Core.Sync;
 
 namespace TerraFusion.Core.PACS
 {
@@ -28,7 +29,7 @@ namespace TerraFusion.Core.PACS
     /// SQL Server implementation of IPacsAdapter.
     /// Implements pacscontract.v1 with fail-closed semantics.
     /// </summary>
-    public sealed class PacsSqlAdapter : IPacsAdapter, IDisposable
+    public sealed class PacsSqlAdapter : IPacsAdapter, IExternalReadOnlyPacsAdapter, IDisposable
     {
         private readonly ILogger<PacsSqlAdapter> _logger;
         private readonly string _connectionString;
@@ -95,6 +96,18 @@ namespace TerraFusion.Core.PACS
             {
                 builder.ApplicationName = "TerraFusion-OS";
             }
+        }
+
+        public bool MatchesSource(string server, string database)
+        {
+            if (string.IsNullOrWhiteSpace(server) || string.IsNullOrWhiteSpace(database))
+            {
+                return false;
+            }
+            var builder = new SqlConnectionStringBuilder(_salesConnectionString);
+            return builder.ApplicationIntent == ApplicationIntent.ReadOnly
+                && string.Equals(builder.DataSource, server, StringComparison.OrdinalIgnoreCase)
+                && string.Equals(builder.InitialCatalog, database, StringComparison.OrdinalIgnoreCase);
         }
 
         // ═══════════════════════════════════════════════════════════════

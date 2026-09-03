@@ -167,6 +167,7 @@ export default function SalesForge({ metadata }: SalesForgeProps = {}) {
   const referencePackageSource = countiesHubHandoff?.referencePackageSource;
   const repositoryReferenceHandoff = referencePackageSource === 'repository-reference';
   const countyUploadHandoff = referencePackageSource === 'county-upload';
+  const countyReadOnlySyncHandoff = referencePackageSource === 'county-readonly-sync';
   const hostedReferenceHandoff = countiesHubHandoff !== null && referencePackageSource === 'hosted';
   const hostedHandoffCountyCode = hostedReferenceHandoff
     ? (countiesHubHandoff?.countyCode ?? null)
@@ -361,9 +362,17 @@ export default function SalesForge({ metadata }: SalesForgeProps = {}) {
           ? 'washington-hosted'
           : countyUploadHandoff
             ? 'county-upload'
-            : 'live-api'
+            : countyReadOnlySyncHandoff
+              ? 'county-readonly-sync'
+              : 'live-api'
     );
-  }, [countyUploadHandoff, hostedLaunchReady, repositoryReferenceHandoff, setDataSource]);
+  }, [
+    countyReadOnlySyncHandoff,
+    countyUploadHandoff,
+    hostedLaunchReady,
+    repositoryReferenceHandoff,
+    setDataSource,
+  ]);
 
   useLayoutEffect(() => {
     if (hostedLaunchReady && directHostedVerification.taxYear !== null) {

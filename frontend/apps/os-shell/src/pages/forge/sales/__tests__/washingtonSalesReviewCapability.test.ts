@@ -222,6 +222,46 @@ describe('Forge-owned Washington sales-review capability', () => {
 
     expect(
       parseWashingtonCountiesHubHandoff({
+        countyCode: '005',
+        countyName: 'Benton',
+        resetValuationScope: true,
+        launchContext: 'washington-counties-hub',
+        dataTrustTier: 'county-connected-readonly',
+        referencePackageSource: 'county-readonly-sync',
+        referenceDataPosture: 'county_connected_readonly',
+        referenceRecordCount: 17,
+        latestReferenceSaleDate: '2026-02-03',
+        taxYear: 2027,
+        salesReviewAvailability: 'available',
+        salesReviewUnavailableMessage: null,
+      })
+    ).toMatchObject({
+      countyCode: '005',
+      countyName: 'Benton',
+      dataTrustTier: 'county-connected-readonly',
+      referencePackageSource: 'county-readonly-sync',
+      taxYear: 2027,
+    });
+
+    expect(
+      parseWashingtonCountiesHubHandoff({
+        countyCode: '005',
+        countyName: 'Benton',
+        resetValuationScope: true,
+        launchContext: 'washington-counties-hub',
+        dataTrustTier: 'county-connected-readonly',
+        referencePackageSource: 'county-readonly-sync',
+        referenceDataPosture: 'county_connected_readonly',
+        referenceRecordCount: 0,
+        latestReferenceSaleDate: null,
+        taxYear: 2027,
+        salesReviewAvailability: 'unavailable',
+        salesReviewUnavailableMessage: 'No county-bound sales were synchronized.',
+      })
+    ).toBeNull();
+
+    expect(
+      parseWashingtonCountiesHubHandoff({
         countyCode: '063',
         countyName: 'Spokane',
         resetValuationScope: true,

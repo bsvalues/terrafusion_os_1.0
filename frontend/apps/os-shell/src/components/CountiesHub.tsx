@@ -22,6 +22,7 @@ import {
   Refresh as RefreshIcon,
   Search as SearchIcon,
   ShieldOutlined as ShieldIcon,
+  Sync as SyncIcon,
 } from '@mui/icons-material';
 import {
   getWashingtonPublicSourceInventory,
@@ -36,6 +37,11 @@ import {
   fetchCountyCsvPromotedSalesAvailability,
   type CountyCsvPromotedSalesAvailability,
 } from '../../../terraforge/src/data-admission/countyCsvUpload';
+import {
+  fetchCountyReadOnlySalesSyncAvailability,
+  runCountyReadOnlySalesSync,
+  type CountyReadOnlySalesSyncAvailability,
+} from '../../../terraforge/src/data-admission/countyReadOnlySalesSync';
 import {
   getWashingtonSalesReviewCapability,
   isWashingtonSalesReviewLaunchEnabled,
@@ -98,6 +104,11 @@ const CountiesHub = () => {
   const [promotedSales, setPromotedSales] = useState<CountyCsvPromotedSalesAvailability | null>(
     null
   );
+  const [connectedSales, setConnectedSales] = useState<CountyReadOnlySalesSyncAvailability | null>(
+    null
+  );
+  const [syncingSales, setSyncingSales] = useState(false);
+  const [syncError, setSyncError] = useState<string | null>(null);
   const launchDataEnabled = isWashingtonSalesReviewLaunchEnabled({
     explicitReferenceHandoff: true,
   });
@@ -144,6 +155,21 @@ const CountiesHub = () => {
       });
     return () => controller.abort();
   }, []);
+
+  const loadConnectedSales = useCallback(async (signal?: AbortSignal) => {
+    try {
+      const availability = await fetchCountyReadOnlySalesSyncAvailability(apiFetch, signal);
+      if (!signal?.aborted) setConnectedSales(availability);
+    } catch {
+      if (!signal?.aborted) setConnectedSales(null);
+    }
+  }, []);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    void loadConnectedSales(controller.signal);
+    return () => controller.abort();
+  }, [loadConnectedSales]);
 
   const { directory: countyDirectory, registryIssueStatuses } = useMemo<{
     directory: WashingtonCountyDirectoryEntry[];
@@ -260,6 +286,13 @@ const CountiesHub = () => {
     normalizeCountyName(promotedSales.countyName) === normalizeCountyName(selectedCounty.county)
       ? promotedSales
       : null;
+  const selectedConnectedSales =
+    selectedCounty &&
+    connectedSales &&
+    connectedSales.countyKey === `wa-${selectedCounty.county.toLowerCase().replaceAll(' ', '-')}` &&
+    normalizeCountyName(connectedSales.countyName) === normalizeCountyName(selectedCounty.county)
+      ? connectedSales
+      : null;
   const selectedObservedReference = selectedCapability?.referenceData.observed ?? null;
   const selectedIdentityMismatch = selectedCounty?.identityMismatch ?? null;
   const observedCountyCount = useMemo(
@@ -268,9 +301,30 @@ const CountiesHub = () => {
     [countyDirectory]
   );
   const selectedSalesReviewAvailable = Boolean(
+    selectedConnectedSales?.salesReviewAvailable ||
     selectedPromotedSales?.salesReviewAvailable ||
     (selectedCapability?.eligible && launchDataEnabled)
   );
+  const runSelectedCountySync = useCallback(async () => {
+    if (!selectedCounty || !selectedConnectedSales?.connectionConfigured) return;
+    setSyncingSales(true);
+    setSyncError(null);
+    try {
+      const receipt = await runCountyReadOnlySalesSync(apiFetch);
+      const expectedKey = `wa-${selectedCounty.county.toLowerCase().replaceAll(' ', '-')}`;
+      if (
+        receipt.countyKey !== expectedKey ||
+        normalizeCountyName(receipt.countyName) !== normalizeCountyName(selectedCounty.county)
+      ) {
+        throw new Error('The sync receipt did not match the selected authenticated county.');
+      }
+      await loadConnectedSales();
+    } catch (error) {
+      setSyncError(error instanceof Error ? error.message : 'County read-only Sales sync failed.');
+    } finally {
+      setSyncingSales(false);
+    }
+  }, [loadConnectedSales, selectedConnectedSales, selectedCounty]);
   const selectedSalesReviewVerifying = Boolean(
     launchDataEnabled &&
     countyStatusSource === 'hosted' &&
@@ -320,26 +374,44 @@ const CountiesHub = () => {
     setLaunching(true);
     setLaunchError(null);
     try {
-      const countyUploadAvailable = Boolean(selectedPromotedSales?.salesReviewAvailable);
+      const connectedSourceAvailable = Boolean(selectedConnectedSales?.salesReviewAvailable);
+      const countyUploadAvailable =
+        !connectedSourceAvailable && Boolean(selectedPromotedSales?.salesReviewAvailable);
       const metadata = {
         countyCode: selectedCounty.countyCode,
         countyName: selectedCounty.county,
         resetValuationScope: true,
         launchContext: 'washington-counties-hub',
-        dataTrustTier: countyUploadAvailable
-          ? 'county-provided-validated-upload'
-          : 'public-reference-not-county-certified',
-        referencePackageSource: countyUploadAvailable ? 'county-upload' : countyStatusSource,
-        referenceDataPosture: countyUploadAvailable
-          ? 'county_provided_validated_upload'
-          : (selectedCapability?.referenceData.posture ?? 'unavailable'),
-        referenceRecordCount: countyUploadAvailable
-          ? selectedPromotedSales!.promotedSales
-          : (selectedObservedReference?.recordCount ?? null),
-        latestReferenceSaleDate: countyUploadAvailable
-          ? selectedPromotedSales!.latestSaleDate
-          : (selectedObservedReference?.latestSaleDate ?? null),
-        ...(countyUploadAvailable ? { taxYear: selectedPromotedSales!.recommendedStudyYear } : {}),
+        dataTrustTier: connectedSourceAvailable
+          ? 'county-connected-readonly'
+          : countyUploadAvailable
+            ? 'county-provided-validated-upload'
+            : 'public-reference-not-county-certified',
+        referencePackageSource: connectedSourceAvailable
+          ? 'county-readonly-sync'
+          : countyUploadAvailable
+            ? 'county-upload'
+            : countyStatusSource,
+        referenceDataPosture: connectedSourceAvailable
+          ? 'county_connected_readonly'
+          : countyUploadAvailable
+            ? 'county_provided_validated_upload'
+            : (selectedCapability?.referenceData.posture ?? 'unavailable'),
+        referenceRecordCount: connectedSourceAvailable
+          ? selectedConnectedSales!.availableSales
+          : countyUploadAvailable
+            ? selectedPromotedSales!.promotedSales
+            : (selectedObservedReference?.recordCount ?? null),
+        latestReferenceSaleDate: connectedSourceAvailable
+          ? selectedConnectedSales!.latestSaleDate
+          : countyUploadAvailable
+            ? selectedPromotedSales!.latestSaleDate
+            : (selectedObservedReference?.latestSaleDate ?? null),
+        ...(connectedSourceAvailable
+          ? { taxYear: selectedConnectedSales!.recommendedStudyYear }
+          : countyUploadAvailable
+            ? { taxYear: selectedPromotedSales!.recommendedStudyYear }
+            : {}),
         salesReviewAvailability: selectedSalesReviewAvailable
           ? 'available'
           : selectedSalesReviewVerifying
@@ -366,6 +438,7 @@ const CountiesHub = () => {
     countyStatusSource,
     selectedCounty,
     selectedCapability,
+    selectedConnectedSales,
     selectedObservedReference,
     selectedPromotedSales,
     selectedSalesReviewAvailable,
@@ -515,11 +588,13 @@ const CountiesHub = () => {
                         <Typography variant='h5'>{selectedCounty.county} County</Typography>
                         <Typography variant='body2' color='text.secondary'>
                           Washington county code {selectedCounty.countyCode} · source{' '}
-                          {selectedPromotedSales
-                            ? 'County-provided validated upload'
-                            : selectedCapability
-                              ? formatStatus(selectedCapability.referenceData.posture)
-                              : 'Unavailable'}
+                          {selectedConnectedSales?.salesReviewAvailable
+                            ? `Connected read-only ${selectedConnectedSales.sourceSystem ?? 'county source'}`
+                            : selectedPromotedSales
+                              ? 'County-provided validated upload'
+                              : selectedCapability
+                                ? formatStatus(selectedCapability.referenceData.posture)
+                                : 'Unavailable'}
                         </Typography>
                       </Box>
                       <Button
@@ -540,11 +615,13 @@ const CountiesHub = () => {
                           Reference records
                         </Typography>
                         <Typography variant='body1'>
-                          {selectedPromotedSales
-                            ? selectedPromotedSales.promotedSales.toLocaleString()
-                            : selectedObservedReference
-                              ? selectedObservedReference.recordCount.toLocaleString()
-                              : 'Unavailable'}
+                          {selectedConnectedSales?.salesReviewAvailable
+                            ? selectedConnectedSales.availableSales.toLocaleString()
+                            : selectedPromotedSales
+                              ? selectedPromotedSales.promotedSales.toLocaleString()
+                              : selectedObservedReference
+                                ? selectedObservedReference.recordCount.toLocaleString()
+                                : 'Unavailable'}
                         </Typography>
                       </Grid>
                       <Grid item xs={12} sm={6} md={3}>
@@ -552,11 +629,13 @@ const CountiesHub = () => {
                           Latest reference sale
                         </Typography>
                         <Typography variant='body1'>
-                          {selectedPromotedSales
-                            ? (selectedPromotedSales.latestSaleDate ?? 'Not reported')
-                            : selectedObservedReference
-                              ? (selectedObservedReference.latestSaleDate ?? 'Not reported')
-                              : 'Unavailable'}
+                          {selectedConnectedSales?.salesReviewAvailable
+                            ? (selectedConnectedSales.latestSaleDate ?? 'Not reported')
+                            : selectedPromotedSales
+                              ? (selectedPromotedSales.latestSaleDate ?? 'Not reported')
+                              : selectedObservedReference
+                                ? (selectedObservedReference.latestSaleDate ?? 'Not reported')
+                                : 'Unavailable'}
                         </Typography>
                       </Grid>
                       <Grid item xs={12} sm={6} md={3}>
@@ -606,6 +685,57 @@ const CountiesHub = () => {
                             Manage county CSV
                           </Button>
                         </Stack>
+                      </CardContent>
+                    </Card>
+
+                    <Card variant='outlined' data-testid='county-readonly-sales-sync'>
+                      <CardContent>
+                        <Stack
+                          direction={{ xs: 'column', sm: 'row' }}
+                          spacing={2}
+                          justifyContent='space-between'
+                          alignItems={{ xs: 'stretch', sm: 'center' }}
+                        >
+                          <Box>
+                            <Typography variant='h6'>Connected read-only Sales sync</Typography>
+                            <Typography variant='body2' color='text.secondary'>
+                              Read sales from this authenticated county&apos;s registered source
+                              into TerraFusion. The source connection cannot perform external DML or
+                              write-back.
+                            </Typography>
+                            {selectedConnectedSales?.lastSuccessfulSyncAtUtc && (
+                              <Typography variant='caption' color='text.secondary'>
+                                Last successful sync{' '}
+                                {formatSnapshotDate(selectedConnectedSales.lastSuccessfulSyncAtUtc)}
+                              </Typography>
+                            )}
+                          </Box>
+                          <Button
+                            variant='contained'
+                            startIcon={
+                              syncingSales ? (
+                                <CircularProgress size={16} color='inherit' />
+                              ) : (
+                                <SyncIcon />
+                              )
+                            }
+                            disabled={syncingSales || !selectedConnectedSales?.connectionConfigured}
+                            onClick={() => void runSelectedCountySync()}
+                          >
+                            {syncingSales ? 'Syncing sales…' : 'Run read-only Sales sync'}
+                          </Button>
+                        </Stack>
+                        {!selectedConnectedSales?.connectionConfigured && (
+                          <Alert severity='info' sx={{ mt: 2 }}>
+                            No single protected read-only PACS connection is registered for this
+                            authenticated county. Connected sales remain unavailable.
+                          </Alert>
+                        )}
+                        {syncError && (
+                          <Alert severity='error' sx={{ mt: 2 }}>
+                            {syncError}
+                          </Alert>
+                        )}
                       </CardContent>
                     </Card>
 
@@ -700,13 +830,23 @@ const CountiesHub = () => {
                         available through this county&apos;s protected TerraForge Sales Review API.
                       </Alert>
                     )}
-                    {!launchDataEnabled && !selectedPromotedSales && (
-                      <Alert severity='warning'>
-                        The Washington public sales package is not enabled in this environment.
-                        TerraForge still opens in this county context and marks that workflow
-                        unavailable.
+                    {selectedConnectedSales?.salesReviewAvailable && (
+                      <Alert severity='success' data-testid='county-connected-sales-availability'>
+                        Connected read-only {selectedConnectedSales.sourceSystem} ·{' '}
+                        {selectedConnectedSales.availableSales.toLocaleString()} sales are available
+                        through this county&apos;s protected TerraForge Sales Review API. External
+                        writes: 0.
                       </Alert>
                     )}
+                    {!launchDataEnabled &&
+                      !selectedPromotedSales &&
+                      !selectedConnectedSales?.salesReviewAvailable && (
+                        <Alert severity='warning'>
+                          The Washington public sales package is not enabled in this environment.
+                          TerraForge still opens in this county context and marks that workflow
+                          unavailable.
+                        </Alert>
+                      )}
                     {selectedIdentityMismatch && (
                       <Alert severity='error'>
                         The observed county name and code do not match the Washington registry. The
@@ -715,15 +855,19 @@ const CountiesHub = () => {
                         County. Its record counts, freshness, and runtime posture are suppressed.
                       </Alert>
                     )}
-                    {!selectedCapability && !selectedIdentityMismatch && !selectedPromotedSales && (
-                      <Alert severity='warning'>
-                        No governed public sales state is available for {selectedCounty.county}{' '}
-                        County. TerraForge still opens in this county context, while sales review
-                        remains unavailable instead of borrowing another county&apos;s data.
-                      </Alert>
-                    )}
+                    {!selectedCapability &&
+                      !selectedIdentityMismatch &&
+                      !selectedPromotedSales &&
+                      !selectedConnectedSales?.salesReviewAvailable && (
+                        <Alert severity='warning'>
+                          No governed public sales state is available for {selectedCounty.county}{' '}
+                          County. TerraForge still opens in this county context, while sales review
+                          remains unavailable instead of borrowing another county&apos;s data.
+                        </Alert>
+                      )}
                     {!selectedIdentityMismatch &&
                       !selectedPromotedSales &&
+                      !selectedConnectedSales?.salesReviewAvailable &&
                       !selectedCapability?.eligible &&
                       selectedCapability?.unavailableMessage && (
                         <Alert
