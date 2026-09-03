@@ -461,7 +461,7 @@
     "lint-staged": "^13.2.3",
     "mdb-reader": "3.2.0",
     "nodemon": "^3.0.1",
-    "pdfjs-dist": "5.4.296",
+    "pdfjs-dist": "4.8.69",
     "playwright": "^1.54.2",
     "prettier": "^3.2.0",
     "spdx-expression-parse": "5.0.0",

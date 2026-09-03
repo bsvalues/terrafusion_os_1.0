@@ -1,8 +1,7 @@
 #!/usr/bin/env node
 
 import { createHash } from 'node:crypto';
-import { createReadStream } from 'node:fs';
-import { readFile, stat } from 'node:fs/promises';
+import { readFile } from 'node:fs/promises';
 import { basename, join, resolve, sep } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { getDocument } from 'pdfjs-dist/legacy/build/pdf.mjs';
@@ -147,10 +146,8 @@ async function readSourceConfig(configPath) {
   return { ...config, sourceDateRange: { start, end } };
 }
 
-async function sha256File(path) {
-  const hash = createHash('sha256');
-  for await (const chunk of createReadStream(path)) hash.update(chunk);
-  return hash.digest('hex');
+function sha256Bytes(bytes) {
+  return createHash('sha256').update(bytes).digest('hex');
 }
 
 function sourcePath(sourceDirectory, file) {
@@ -420,15 +417,16 @@ export async function buildLewisCountyPackage(
   const legendSource = config.sources[1];
   const salesPath = sourcePath(sourceDirectory, salesSource.file);
   const legendPath = sourcePath(sourceDirectory, legendSource.file);
-  const [salesSha256, legendSha256] = await Promise.all([
-    sha256File(salesPath),
-    sha256File(legendPath),
-  ]);
+  // Read each source exactly once so its digest, parsed content, and byte count
+  // all describe the same immutable in-memory snapshot.
+  const [salesBytes, legendBytes] = await Promise.all([readFile(salesPath), readFile(legendPath)]);
+  const salesSha256 = sha256Bytes(salesBytes);
+  const legendSha256 = sha256Bytes(legendBytes);
   invariant(salesSha256 === salesSource.sha256, 'Lewis sales PDF does not match its SHA-256.');
   invariant(legendSha256 === legendSource.sha256, 'Lewis sales legend does not match its SHA-256.');
   const [rows, legendText] = await Promise.all([
-    readLewisSalesRows(await readFile(salesPath)),
-    readLegendText(await readFile(legendPath)),
+    readLewisSalesRows(salesBytes),
+    readLegendText(legendBytes),
   ]);
   assertLegendAuthority(legendText);
   const sourceDisposition = {
@@ -580,7 +578,6 @@ export async function buildLewisCountyPackage(
     sourcePayloadSha256: [salesSha256, legendSha256],
     sourcePosture: SOURCE_MODE,
   };
-  const sourceStats = await Promise.all([stat(salesPath), stat(legendPath)]);
   const receipt = {
     schemaVersion: RECEIPT_SCHEMA,
     county: COUNTY,
@@ -610,7 +607,7 @@ export async function buildLewisCountyPackage(
       file: source.file,
       url: source.url,
       finalUrl: source.finalUrl,
-      bytes: sourceStats[index].size,
+      bytes: index === 0 ? salesBytes.byteLength : legendBytes.byteLength,
       sha256: index === 0 ? salesSha256 : legendSha256,
     })),
     omittedFields: [
