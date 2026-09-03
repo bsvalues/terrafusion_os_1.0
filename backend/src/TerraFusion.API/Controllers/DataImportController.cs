@@ -9,15 +9,15 @@ using TerraFusion.Core.Import;
 namespace TerraFusion.API.Controllers
 {
     /// <summary>
-    /// DataImport Controller — authenticated durable CSV admission plus existing import stubs.
-    /// Staging, promotion, rollback, and PACS synchronization remain later work.
+    /// Authenticated durable CSV admission and county-scoped normalized row validation/staging.
+    /// Promotion, rollback, and PACS synchronization remain later work.
     /// </summary>
     [ApiController]
     [Produces("application/json")]
     public class DataImportController : ControllerBase
     {
         public const string UploadContractId =
-            "wal.county-upload.authenticated-durable-csv-api-admission.v1";
+            "wal.county-upload.authenticated-row-staging-api.v1";
 
         public const long MaximumUploadBytes = 10L * 1024L * 1024L;
         public const long MaximumMultipartBodyBytes = MaximumUploadBytes + (64L * 1024L);
@@ -30,12 +30,14 @@ namespace TerraFusion.API.Controllers
         private readonly CountyCsvCountyBoundIntake _countyBoundIntake;
         private readonly ICountyCsvUploadAdmissionLedger _admissionLedger;
         private readonly ICountyCsvUploadHistoryReader _historyReader;
+        private readonly ICountyCsvUploadRowStager _rowStager;
 
         public DataImportController(
             ILogger<DataImportController> logger,
             AuthenticatedCanonicalCountyContextProvider countyContextProvider,
             ICountyCsvUploadAdmissionLedger admissionLedger,
-            ICountyCsvUploadHistoryReader historyReader)
+            ICountyCsvUploadHistoryReader historyReader,
+            ICountyCsvUploadRowStager rowStager)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _countyContextProvider = countyContextProvider
@@ -44,6 +46,7 @@ namespace TerraFusion.API.Controllers
                 ?? throw new ArgumentNullException(nameof(admissionLedger));
             _historyReader = historyReader
                 ?? throw new ArgumentNullException(nameof(historyReader));
+            _rowStager = rowStager ?? throw new ArgumentNullException(nameof(rowStager));
 
             _countyBoundIntake = new CountyCsvCountyBoundIntake(
                 new CountyCsvParserOptions
@@ -201,6 +204,13 @@ namespace TerraFusion.API.Controllers
                 }
 
                 var batch = durableAdmission.Batch;
+                var staging = await _rowStager.StageAsync(
+                        new CountyCsvUploadRowStagingRequest(
+                            countyContext,
+                            batch,
+                            intakeReceipt.IntakeReceipt.Document),
+                        cancellationToken)
+                    .ConfigureAwait(false);
                 return Ok(
                     new CountyCsvApiAdmissionReceipt(
                         UploadContractId,
@@ -213,7 +223,12 @@ namespace TerraFusion.API.Controllers
                         batch.ContentSha256,
                         batch.ContentByteLength,
                         batch.AcceptedRowCount,
-                        durableAdmission.Disposition.ToString()));
+                        durableAdmission.Disposition.ToString(),
+                        staging.ContractId,
+                        staging.SchemaVersion,
+                        staging.StagedRowCount,
+                        staging.QuarantinedRowCount,
+                        staging.ReasonCounts));
             }
             catch (OperationCanceledException)
             {
@@ -232,7 +247,8 @@ namespace TerraFusion.API.Controllers
 
         /// <summary>
         /// GET /api/upload/history — list metadata for this authenticated county's durable
-        /// admissions. Admitted rows are not represented as staged, published, or usable.
+        /// admissions and validation summaries. Staged rows are not represented as promoted,
+        /// published, or usable in TerraForge.
         /// </summary>
         [HttpGet("api/upload/history")]
         [Authorize(Policy = "RequireAssessor")]
@@ -259,7 +275,7 @@ namespace TerraFusion.API.Controllers
                 countyContext.CountyId.Value,
                 countyContext.County.Key,
                 countyContext.County.Name,
-                "admitted-not-staged",
+                "row-validation-staging-not-promoted",
                 batches));
         }
 
@@ -377,7 +393,12 @@ namespace TerraFusion.API.Controllers
         string ContentSha256,
         long ContentLength,
         int AcceptedRowCount,
-        string DuplicateDisposition);
+        string DuplicateDisposition,
+        string RowStagingContractId,
+        string ValidationSchemaVersion,
+        int StagedRowCount,
+        int QuarantinedRowCount,
+        IReadOnlyList<CountyCsvQuarantineReasonCount> QuarantineReasonCounts);
 
     public sealed record CountyCsvUploadHistoryReceipt(
         string ContractId,

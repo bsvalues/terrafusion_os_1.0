@@ -220,9 +220,9 @@ export default function CountyCsvAdmissionPage({
             {county.name} County CSV admission
           </Typography>
           <Typography variant='body1' color='text.secondary'>
-            Authenticate {county.name} County before admitting a Parcels or Sales CSV. Admission
-            validates CSV structure and stores immutable metadata; it does not yet stage, publish,
-            or enable rows in TerraForge.
+            Authenticate {county.name} County before admitting a Parcels or Sales CSV. TerraFusion
+            validates the launch schema, stages only canonical fields, and quarantines invalid rows.
+            Staged rows are not yet promoted, published, or enabled in TerraForge.
           </Typography>
         </Box>
 
@@ -253,6 +253,11 @@ export default function CountyCsvAdmissionPage({
                   <Alert severity='success'>
                     Authenticated for {uploadContext.countyName} County. Recent history below
                     contains this county only.
+                  </Alert>
+                  <Alert severity='info'>
+                    Sales requires parcel_id, sale_date (yyyy-MM-dd), and sale_price. Parcels
+                    requires parcel_id, situs_address, and assessed_value. Extra columns are not
+                    copied into staging.
                   </Alert>
                   <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
                     <TextField
@@ -307,11 +312,12 @@ export default function CountyCsvAdmissionPage({
                   {uploadReceipt && (
                     <Alert severity='success' data-testid='county-upload-receipt'>
                       {uploadReceipt.duplicateDisposition === 'Duplicate'
-                        ? 'This exact county dataset was already admitted.'
-                        : 'CSV admitted durably.'}{' '}
-                      {uploadReceipt.acceptedRowCount.toLocaleString()} structurally valid rows ·
-                      batch {uploadReceipt.batchId}. Rows remain unavailable to TerraForge until
-                      staging and promotion are completed.
+                        ? 'This exact county dataset was already admitted and validated.'
+                        : 'CSV admitted and validated durably.'}{' '}
+                      {uploadReceipt.stagedRowCount.toLocaleString()} rows staged ·{' '}
+                      {uploadReceipt.quarantinedRowCount.toLocaleString()} quarantined · batch{' '}
+                      {uploadReceipt.batchId}. Staged rows remain unavailable to TerraForge until
+                      promotion is completed.
                     </Alert>
                   )}
                   <Box>
@@ -329,12 +335,24 @@ export default function CountyCsvAdmissionPage({
                           >
                             <Typography variant='body2'>
                               {batch.sourceFileName} · {batch.dataset} ·{' '}
-                              {batch.acceptedRowCount.toLocaleString()} structurally valid rows
+                              {batch.rowStaging
+                                ? `${batch.rowStaging.stagedRowCount.toLocaleString()} staged · ${batch.rowStaging.quarantinedRowCount.toLocaleString()} quarantined`
+                                : `${batch.acceptedRowCount.toLocaleString()} structurally valid rows`}
                             </Typography>
                             <Typography variant='caption' color='text.secondary'>
-                              Admitted {formatSnapshotDate(batch.receivedAtUtc)} · not staged or
-                              available to TerraForge
+                              Admitted {formatSnapshotDate(batch.receivedAtUtc)} ·{' '}
+                              {batch.rowStaging
+                                ? 'validated staging only; not promoted or available to TerraForge'
+                                : 'not staged or available to TerraForge'}
                             </Typography>
+                            {batch.rowStaging && batch.rowStaging.reasonCounts.length > 0 && (
+                              <Typography variant='caption' display='block' color='warning.main'>
+                                Quarantine:{' '}
+                                {batch.rowStaging.reasonCounts
+                                  .map((reason) => `${reason.reasonCode} (${reason.count})`)
+                                  .join(', ')}
+                              </Typography>
+                            )}
                           </Box>
                         ))}
                       </Stack>

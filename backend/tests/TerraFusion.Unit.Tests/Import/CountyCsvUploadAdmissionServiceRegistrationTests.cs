@@ -21,7 +21,7 @@ namespace TerraFusion.Unit.Tests.Import;
 public sealed class CountyCsvUploadAdmissionServiceRegistrationTests
 {
     private const string MigrationId =
-        "20260902000000_WAL002GCountyCsvUploadAdmissionLedger";
+        "20260903000000_WAL002JCountyCsvRowStaging";
     private static readonly WashingtonCountyIdentity Benton = ResolveCounty("Benton");
     private static readonly WashingtonCountyIdentity Franklin = ResolveCounty("Franklin");
     private static readonly Guid BentonId =
@@ -49,6 +49,8 @@ public sealed class CountyCsvUploadAdmissionServiceRegistrationTests
         Assert.NotSame(
             firstLedger,
             secondScope.ServiceProvider.GetRequiredService<ICountyCsvUploadAdmissionLedger>());
+        Assert.IsType<CountyCsvUploadRowStager>(
+            firstScope.ServiceProvider.GetRequiredService<ICountyCsvUploadRowStager>());
 
         var factory = firstScope.ServiceProvider
             .GetRequiredService<IDbContextFactory<TerraFusionDbContext>>();
@@ -84,6 +86,24 @@ public sealed class CountyCsvUploadAdmissionServiceRegistrationTests
                 first.Batch).BatchId;
             Assert.NotEqual(bentonBatchId, franklin.Batch!.BatchId);
             Assert.NotEqual(first.Batch.CountyId, franklin.Batch.CountyId);
+
+            var stager = scope.ServiceProvider.GetRequiredService<ICountyCsvUploadRowStager>();
+            var bentonStaging = await stager.StageAsync(new(
+                bentonRequest.CountyContext,
+                first.Batch,
+                bentonRequest.IntakeReceipt!.IntakeReceipt.Document));
+            var franklinStaging = await stager.StageAsync(new(
+                franklinRequest.CountyContext,
+                franklin.Batch,
+                franklinRequest.IntakeReceipt!.IntakeReceipt.Document));
+            Assert.Equal(2, bentonStaging.StagedRowCount);
+            Assert.Equal(0, bentonStaging.QuarantinedRowCount);
+            Assert.Equal(BentonId, bentonStaging.CountyId);
+            Assert.Equal(FranklinId, franklinStaging.CountyId);
+            await Assert.ThrowsAsync<InvalidOperationException>(() => stager.StageAsync(new(
+                bentonRequest.CountyContext,
+                franklin.Batch,
+                franklinRequest.IntakeReceipt!.IntakeReceipt.Document)));
         }
 
         await using (var restartedProvider = BuildProvider(database.ConnectionString))
@@ -104,6 +124,8 @@ public sealed class CountyCsvUploadAdmissionServiceRegistrationTests
             Assert.Equal(bentonBatchId, Assert.Single(bentonHistory).BatchId);
             Assert.Equal(BentonId, Assert.Single(bentonHistory).CountyId);
             Assert.Equal(FranklinId, Assert.Single(franklinHistory).CountyId);
+            Assert.Equal(2, Assert.Single(bentonHistory).RowStaging!.StagedRowCount);
+            Assert.Equal(2, Assert.Single(franklinHistory).RowStaging!.StagedRowCount);
             Assert.DoesNotContain(bentonHistory, batch => batch.CountyId == FranklinId);
             Assert.DoesNotContain(franklinHistory, batch => batch.CountyId == BentonId);
         }
@@ -230,7 +252,8 @@ public sealed class CountyCsvUploadAdmissionServiceRegistrationTests
             .BindCurrentAsync();
         var context = await new AuthenticatedCanonicalCountyContext(resolver)
             .EstablishAsync(binding);
-        var bytes = Encoding.UTF8.GetBytes("parcel_id,owner\n1,Ada\n2,Grace\n");
+        var bytes = Encoding.UTF8.GetBytes(
+            "parcel_id,situs_address,assessed_value\n1,100 Main St,250000\n2,200 Main St,300000\n");
         var intake = new CountyCsvCountyBoundIntake(
             new CountyCsvParserOptions
             {

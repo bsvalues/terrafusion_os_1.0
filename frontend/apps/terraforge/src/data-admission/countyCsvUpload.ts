@@ -12,6 +12,24 @@ export interface CountyCsvUploadBatchSummary {
   acceptedRowCount: number;
   status: 'Admitted';
   receivedAtUtc: string;
+  rowStaging: CountyCsvUploadRowStagingSummary | null;
+}
+
+export interface CountyCsvQuarantineReasonCount {
+  reasonCode: string;
+  count: number;
+}
+
+export interface CountyCsvUploadRowStagingSummary {
+  batchId: string;
+  countyId: string;
+  contractId: string;
+  schemaVersion: string;
+  totalRowCount: number;
+  stagedRowCount: number;
+  quarantinedRowCount: number;
+  reasonCounts: CountyCsvQuarantineReasonCount[];
+  validatedAtUtc: string;
 }
 
 export interface CountyCsvUploadHistory {
@@ -19,7 +37,7 @@ export interface CountyCsvUploadHistory {
   countyId: string;
   countyKey: string;
   countyName: string;
-  availability: 'admitted-not-staged';
+  availability: 'row-validation-staging-not-promoted';
   batches: CountyCsvUploadBatchSummary[];
 }
 
@@ -35,10 +53,51 @@ export interface CountyCsvUploadReceipt {
   contentLength: number;
   acceptedRowCount: number;
   duplicateDisposition: 'FirstSeen' | 'Duplicate';
+  rowStagingContractId: string;
+  validationSchemaVersion: string;
+  stagedRowCount: number;
+  quarantinedRowCount: number;
+  quarantineReasonCounts: CountyCsvQuarantineReasonCount[];
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null;
+}
+
+function isReasonCount(value: unknown): value is CountyCsvQuarantineReasonCount {
+  return (
+    isRecord(value) &&
+    typeof value.reasonCode === 'string' &&
+    /^[A-Z][A-Z0-9_]{0,63}$/.test(value.reasonCode) &&
+    typeof value.count === 'number' &&
+    Number.isSafeInteger(value.count) &&
+    value.count > 0
+  );
+}
+
+function isRowStaging(value: unknown, batchId: string, countyId: string): boolean {
+  return (
+    isRecord(value) &&
+    value.batchId === batchId &&
+    value.countyId === countyId &&
+    value.contractId === 'wal.county-upload.durable-row-staging.v1' &&
+    value.schemaVersion === 'wa-county-csv-v1' &&
+    typeof value.totalRowCount === 'number' &&
+    Number.isSafeInteger(value.totalRowCount) &&
+    value.totalRowCount >= 0 &&
+    typeof value.stagedRowCount === 'number' &&
+    Number.isSafeInteger(value.stagedRowCount) &&
+    value.stagedRowCount >= 0 &&
+    typeof value.quarantinedRowCount === 'number' &&
+    Number.isSafeInteger(value.quarantinedRowCount) &&
+    value.quarantinedRowCount >= 0 &&
+    value.stagedRowCount + value.quarantinedRowCount === value.totalRowCount &&
+    Array.isArray(value.reasonCounts) &&
+    value.reasonCounts.every(isReasonCount) &&
+    value.reasonCounts.reduce((sum, reason) => sum + reason.count, 0) ===
+      value.quarantinedRowCount &&
+    typeof value.validatedAtUtc === 'string'
+  );
 }
 
 function isBatch(value: unknown): value is CountyCsvUploadBatchSummary {
@@ -57,7 +116,8 @@ function isBatch(value: unknown): value is CountyCsvUploadBatchSummary {
     Number.isSafeInteger(value.acceptedRowCount) &&
     value.acceptedRowCount >= 0 &&
     value.status === 'Admitted' &&
-    typeof value.receivedAtUtc === 'string'
+    typeof value.receivedAtUtc === 'string' &&
+    (value.rowStaging === null || isRowStaging(value.rowStaging, value.batchId, value.countyId))
   );
 }
 
@@ -68,7 +128,7 @@ function requireHistory(value: unknown): CountyCsvUploadHistory {
     typeof value.countyId !== 'string' ||
     typeof value.countyKey !== 'string' ||
     typeof value.countyName !== 'string' ||
-    value.availability !== 'admitted-not-staged' ||
+    value.availability !== 'row-validation-staging-not-promoted' ||
     !Array.isArray(value.batches) ||
     !value.batches.every(isBatch) ||
     value.batches.some((batch) => batch.countyId !== value.countyId)
@@ -96,7 +156,20 @@ function requireReceipt(value: unknown): CountyCsvUploadReceipt {
     typeof value.acceptedRowCount !== 'number' ||
     !Number.isSafeInteger(value.acceptedRowCount) ||
     value.acceptedRowCount < 0 ||
-    (value.duplicateDisposition !== 'FirstSeen' && value.duplicateDisposition !== 'Duplicate')
+    (value.duplicateDisposition !== 'FirstSeen' && value.duplicateDisposition !== 'Duplicate') ||
+    value.rowStagingContractId !== 'wal.county-upload.durable-row-staging.v1' ||
+    value.validationSchemaVersion !== 'wa-county-csv-v1' ||
+    typeof value.stagedRowCount !== 'number' ||
+    !Number.isSafeInteger(value.stagedRowCount) ||
+    value.stagedRowCount < 0 ||
+    typeof value.quarantinedRowCount !== 'number' ||
+    !Number.isSafeInteger(value.quarantinedRowCount) ||
+    value.quarantinedRowCount < 0 ||
+    value.stagedRowCount + value.quarantinedRowCount !== value.acceptedRowCount ||
+    !Array.isArray(value.quarantineReasonCounts) ||
+    !value.quarantineReasonCounts.every(isReasonCount) ||
+    value.quarantineReasonCounts.reduce((sum, reason) => sum + reason.count, 0) !==
+      value.quarantinedRowCount
   ) {
     throw new Error('The county upload service returned an invalid admission receipt.');
   }

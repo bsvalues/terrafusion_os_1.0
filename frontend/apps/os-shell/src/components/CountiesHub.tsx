@@ -546,7 +546,8 @@ const CountiesHub = () => {
                             <Typography variant='h6'>County-provided CSV</Typography>
                             <Typography variant='body2' color='text.secondary'>
                               Open the county data-admission surface to authenticate this county,
-                              submit a Parcels or Sales CSV, and inspect durable admission history.
+                              submit a Parcels or Sales CSV, and inspect county-only staging and
+                              quarantine results.
                             </Typography>
                           </Box>
                           <Button

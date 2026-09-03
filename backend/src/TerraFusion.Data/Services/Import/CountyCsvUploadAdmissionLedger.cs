@@ -166,38 +166,84 @@ public sealed class CountyCsvUploadAdmissionLedger :
             .CreateDbContextAsync(cancellationToken)
             .ConfigureAwait(false);
 
+        IReadOnlyList<CountyCsvUploadBatchSummary> summaries;
         if (!dbContext.Database.IsSqlite())
         {
-            return await BuildProviderHistoryQuery(dbContext, countyId, limit)
+            summaries = await BuildProviderHistoryQuery(dbContext, countyId, limit)
                 .ToListAsync(cancellationToken)
                 .ConfigureAwait(false);
         }
+        else
+        {
+            // SQLite cannot translate DateTimeOffset ordering through LINQ. Keep its county
+            // predicate and limit parameterized and make this raw query terminal.
+            var batches = await dbContext.CountyCsvUploadBatches
+                .FromSqlInterpolated($@"
+                    SELECT *
+                    FROM ""CountyCsvUploadBatches""
+                    WHERE ""CountyId"" = {countyId}
+                    ORDER BY ""ReceivedAtUtc"" DESC, ""BatchId"" DESC
+                    LIMIT {limit}")
+                .AsNoTracking()
+                .ToListAsync(cancellationToken)
+                .ConfigureAwait(false);
 
-        // SQLite cannot translate DateTimeOffset ordering through LINQ. Keep its county predicate
-        // and limit parameterized and make this raw query terminal so EF never composes around its
-        // ORDER BY. SQL Server and PostgreSQL use the provider-translated query above.
-        var batches = await dbContext.CountyCsvUploadBatches
-            .FromSqlInterpolated($@"
-                SELECT *
-                FROM ""CountyCsvUploadBatches""
-                WHERE ""CountyId"" = {countyId}
-                ORDER BY ""ReceivedAtUtc"" DESC, ""BatchId"" DESC
-                LIMIT {limit}")
+            summaries = batches
+                .Select(batch => new CountyCsvUploadBatchSummary(
+                    batch.BatchId,
+                    batch.CountyId,
+                    batch.Dataset,
+                    batch.SourceFileName,
+                    batch.ContentSha256,
+                    batch.ContentByteLength,
+                    batch.AcceptedRowCount,
+                    batch.Status,
+                    batch.ReceivedAtUtc))
+                .ToList();
+        }
+
+        var batchIds = summaries.Select(summary => summary.BatchId).ToArray();
+        if (batchIds.Length == 0)
+        {
+            return summaries;
+        }
+
+        // History only needs staging metadata. Do not materialize the potentially large staged and
+        // quarantined row documents merely to render the recent-batch summary.
+        var stages = await dbContext.CountyCsvUploadRowStages
             .AsNoTracking()
+            .Where(stage => stage.CountyId == countyId && batchIds.Contains(stage.BatchId))
+            .Select(stage => new
+            {
+                stage.BatchId,
+                stage.CountyId,
+                stage.ContractId,
+                stage.SchemaVersion,
+                stage.TotalRowCount,
+                stage.StagedRowCount,
+                stage.QuarantinedRowCount,
+                stage.ReasonCountsJson,
+                stage.ValidatedAtUtc,
+            })
             .ToListAsync(cancellationToken)
             .ConfigureAwait(false);
-
-        return batches
-            .Select(batch => new CountyCsvUploadBatchSummary(
-                batch.BatchId,
-                batch.CountyId,
-                batch.Dataset,
-                batch.SourceFileName,
-                batch.ContentSha256,
-                batch.ContentByteLength,
-                batch.AcceptedRowCount,
-                batch.Status,
-                batch.ReceivedAtUtc))
+        var stageByBatch = stages.ToDictionary(stage => stage.BatchId);
+        return summaries
+            .Select(summary => stageByBatch.TryGetValue(summary.BatchId, out var stage)
+                ? summary with
+                {
+                    RowStaging = CountyCsvUploadRowStager.SummaryFromMetadata(
+                        stage.BatchId,
+                        stage.CountyId,
+                        stage.ContractId,
+                        stage.SchemaVersion,
+                        stage.TotalRowCount,
+                        stage.StagedRowCount,
+                        stage.QuarantinedRowCount,
+                        stage.ReasonCountsJson,
+                        stage.ValidatedAtUtc)
+                }
+                : summary)
             .ToList();
     }
 

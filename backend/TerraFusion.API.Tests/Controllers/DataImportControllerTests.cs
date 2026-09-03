@@ -66,7 +66,7 @@ public sealed class DataImportControllerTests
             action.GetParameters().Take(2),
             parameter => Assert.NotNull(parameter.GetCustomAttribute<FromFormAttribute>()));
         Assert.Equal(
-            "wal.county-upload.authenticated-durable-csv-api-admission.v1",
+            "wal.county-upload.authenticated-row-staging-api.v1",
             DataImportController.UploadContractId);
         var historyAction = typeof(DataImportController).GetMethod(
             nameof(DataImportController.GetCountyUploadHistory));
@@ -134,6 +134,11 @@ public sealed class DataImportControllerTests
         Assert.Equal(Encoding.UTF8.GetByteCount(ValidCsv), receipt.ContentLength);
         Assert.Equal(2, receipt.AcceptedRowCount);
         Assert.Equal("FirstSeen", receipt.DuplicateDisposition);
+        Assert.Equal(ICountyCsvUploadRowStager.ContractId, receipt.RowStagingContractId);
+        Assert.Equal(CountyCsvUploadRowValidator.SchemaVersion, receipt.ValidationSchemaVersion);
+        Assert.Equal(2, receipt.StagedRowCount);
+        Assert.Equal(0, receipt.QuarantinedRowCount);
+        Assert.Empty(receipt.QuarantineReasonCounts);
     }
 
     [Fact]
@@ -177,7 +182,7 @@ public sealed class DataImportControllerTests
         Assert.Equal(CountyIds["wa-benton"], receipt.CountyId);
         Assert.Equal("wa-benton", receipt.CountyKey);
         Assert.Equal("Benton", receipt.CountyName);
-        Assert.Equal("admitted-not-staged", receipt.Availability);
+        Assert.Equal("row-validation-staging-not-promoted", receipt.Availability);
         var batch = Assert.Single(receipt.Batches);
         Assert.Equal(CountyIds["wa-benton"], batch.CountyId);
         Assert.Equal("Sales", batch.Dataset);
@@ -422,6 +427,7 @@ public sealed class DataImportControllerTests
                 typeof(AuthenticatedCanonicalCountyContextProvider),
                 typeof(ICountyCsvUploadAdmissionLedger),
                 typeof(ICountyCsvUploadHistoryReader),
+                typeof(ICountyCsvUploadRowStager),
             },
             constructor.GetParameters().Select(parameter => parameter.ParameterType));
         Assert.DoesNotContain(
@@ -462,7 +468,8 @@ public sealed class DataImportControllerTests
             provider,
             admissionLedger,
             historyReader ?? admissionLedger as ICountyCsvUploadHistoryReader
-                ?? new EmptyHistoryReader())
+                ?? new EmptyHistoryReader(),
+            new TestRowStager())
         {
             ControllerContext = new ControllerContext
             {
@@ -716,6 +723,31 @@ public sealed class DataImportControllerTests
             int limit,
             CancellationToken cancellationToken = default) =>
             Task.FromResult<IReadOnlyList<CountyCsvUploadBatchSummary>>([]);
+    }
+
+    private sealed class TestRowStager : ICountyCsvUploadRowStager
+    {
+        public Task<CountyCsvUploadRowStagingSummary> StageAsync(
+            CountyCsvUploadRowStagingRequest request,
+            CancellationToken cancellationToken = default)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            Assert.NotNull(request.CountyContext);
+            Assert.NotNull(request.Batch);
+            Assert.NotNull(request.Document);
+            var batch = request.Batch;
+            var document = request.Document;
+            return Task.FromResult(new CountyCsvUploadRowStagingSummary(
+                batch.BatchId,
+                batch.CountyId,
+                ICountyCsvUploadRowStager.ContractId,
+                CountyCsvUploadRowValidator.SchemaVersion,
+                document.Rows.Count,
+                document.Rows.Count,
+                0,
+                [],
+                DateTimeOffset.UtcNow));
+        }
     }
 
     private sealed class TrackingHistoryReader : ICountyCsvUploadHistoryReader
