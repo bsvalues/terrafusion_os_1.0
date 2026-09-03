@@ -270,7 +270,7 @@ public static class CountyCsvUploadRowValidator
 public sealed record CountyCsvUploadRowStagingRequest(
     AuthenticatedCanonicalCountyContextResult? CountyContext,
     TerraFusion.Core.Entities.Import.CountyCsvUploadBatch? Batch,
-    CountyCsvDocument? Document);
+    ReadOnlyMemory<byte> AdmittedContent);
 
 public sealed record CountyCsvUploadRowStagingSummary(
     Guid BatchId,

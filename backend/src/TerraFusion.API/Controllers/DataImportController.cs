@@ -215,7 +215,7 @@ namespace TerraFusion.API.Controllers
                             new CountyCsvUploadRowStagingRequest(
                                 countyContext,
                                 batch,
-                                intakeReceipt.IntakeReceipt.Document),
+                                content),
                             cancellationToken)
                         .ConfigureAwait(false);
                 return Ok(

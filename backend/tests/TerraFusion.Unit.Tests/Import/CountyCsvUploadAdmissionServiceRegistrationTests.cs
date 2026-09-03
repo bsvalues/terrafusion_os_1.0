@@ -95,11 +95,11 @@ public sealed class CountyCsvUploadAdmissionServiceRegistrationTests
             var bentonStaging = await stager.StageAsync(new(
                 bentonRequest.CountyContext,
                 first.Batch,
-                bentonRequest.IntakeReceipt!.IntakeReceipt.Document));
+                bentonRequest.AdmittedContent));
             var franklinStaging = await stager.StageAsync(new(
                 franklinRequest.CountyContext,
                 franklin.Batch,
-                franklinRequest.IntakeReceipt!.IntakeReceipt.Document));
+                franklinRequest.AdmittedContent));
             Assert.Equal(2, bentonStaging.StagedRowCount);
             Assert.Equal(0, bentonStaging.QuarantinedRowCount);
             Assert.Equal(BentonId, bentonStaging.CountyId);
@@ -107,7 +107,7 @@ public sealed class CountyCsvUploadAdmissionServiceRegistrationTests
             await Assert.ThrowsAsync<InvalidOperationException>(() => stager.StageAsync(new(
                 bentonRequest.CountyContext,
                 franklin.Batch,
-                franklinRequest.IntakeReceipt!.IntakeReceipt.Document)));
+                franklinRequest.AdmittedContent)));
         }
 
         await using (var restartedProvider = BuildProvider(database.ConnectionString))
@@ -153,7 +153,7 @@ public sealed class CountyCsvUploadAdmissionServiceRegistrationTests
             .StageAsync(new(
                 request.CountyContext,
                 admission.Batch,
-                request.IntakeReceipt!.IntakeReceipt.Document));
+                request.AdmittedContent));
 
         Assert.Equal(2, staging.StagedRowCount);
         Assert.Equal(0, staging.QuarantinedRowCount);
@@ -162,7 +162,7 @@ public sealed class CountyCsvUploadAdmissionServiceRegistrationTests
     }
 
     [Fact]
-    public async Task Row_staging_rejects_a_document_not_bound_to_the_admitted_digest()
+    public async Task Row_staging_rejects_content_not_bound_to_the_admitted_digest()
     {
         await using var database = new TemporaryDatabaseFile();
         await using var provider = BuildProvider(database.ConnectionString);
@@ -172,20 +172,18 @@ public sealed class CountyCsvUploadAdmissionServiceRegistrationTests
         var admission = await scope.ServiceProvider
             .GetRequiredService<ICountyCsvUploadAdmissionLedger>()
             .AdmitAsync(request);
-        var reboundDocument = request.IntakeReceipt!.IntakeReceipt.Document with
-        {
-            ContentSha256 = new string('0', 64),
-        };
+        var alteredContent = request.AdmittedContent.ToArray();
+        alteredContent[^2] = alteredContent[^2] == (byte)'e' ? (byte)'f' : (byte)'e';
 
         await Assert.ThrowsAsync<InvalidOperationException>(() =>
             scope.ServiceProvider.GetRequiredService<ICountyCsvUploadRowStager>().StageAsync(new(
                 request.CountyContext,
                 admission.Batch,
-                reboundDocument)));
+                alteredContent)));
     }
 
     [Fact]
-    public async Task Parallel_sqlite_staging_calls_converge_on_one_batch_stage()
+    public async Task Parallel_sqlite_legacy_backfill_calls_converge_on_one_batch_stage()
     {
         await using var database = new TemporaryDatabaseFile();
         await using var provider = BuildProvider(database.ConnectionString);
@@ -205,7 +203,7 @@ public sealed class CountyCsvUploadAdmissionServiceRegistrationTests
         var stagingRequest = new CountyCsvUploadRowStagingRequest(
             request.CountyContext,
             admission.Batch,
-            request.IntakeReceipt!.IntakeReceipt.Document);
+            request.AdmittedContent);
         var results = await Task.WhenAll(
             stager.StageAsync(stagingRequest),
             stager.StageAsync(stagingRequest));

@@ -848,16 +848,15 @@ public sealed class DataImportControllerTests
             cancellationToken.ThrowIfCancellationRequested();
             Assert.NotNull(request.CountyContext);
             Assert.NotNull(request.Batch);
-            Assert.NotNull(request.Document);
             var batch = request.Batch;
-            var document = request.Document;
+            Assert.False(request.AdmittedContent.IsEmpty);
             return Task.FromResult(new CountyCsvUploadRowStagingSummary(
                 batch.BatchId,
                 batch.CountyId,
                 ICountyCsvUploadRowStager.ContractId,
                 CountyCsvUploadRowValidator.SchemaVersion,
-                document.Rows.Count,
-                document.Rows.Count,
+                batch.AcceptedRowCount,
+                batch.AcceptedRowCount,
                 0,
                 [],
                 DateTimeOffset.UtcNow));

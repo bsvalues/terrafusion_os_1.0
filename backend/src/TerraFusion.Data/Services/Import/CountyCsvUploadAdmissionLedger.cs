@@ -109,23 +109,21 @@ public sealed class CountyCsvUploadAdmissionLedger :
                     existing.CountyId,
                     cancellationToken)
                 .ConfigureAwait(false);
+            if (existingStage is null)
+            {
+                // A pre-staging admission is repaired by the API's provider-aware row stager.
+                // Returning no summary here avoids a second, competing backfill implementation.
+                await transaction.CommitAsync(cancellationToken).ConfigureAwait(false);
+                return resolution;
+            }
+
             var candidateStage = CountyCsvUploadRowStager.CreateStage(
                 existing,
                 validation,
                 _timeProvider.GetUtcNow());
-            CountyCsvUploadRowStagingSummary staging;
-            if (existingStage is null)
-            {
-                dbContext.CountyCsvUploadRowStages.Add(candidateStage);
-                await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-                staging = CountyCsvUploadRowStager.Summary(candidateStage);
-            }
-            else
-            {
-                staging = CountyCsvUploadRowStager.RequireMatchingStage(
-                    existingStage,
-                    candidateStage);
-            }
+            var staging = CountyCsvUploadRowStager.RequireMatchingStage(
+                existingStage,
+                candidateStage);
             await transaction.CommitAsync(cancellationToken).ConfigureAwait(false);
             return Accepted(CountyCsvUploadAdmissionDisposition.Duplicate, existing, staging);
         }
@@ -189,23 +187,22 @@ public sealed class CountyCsvUploadAdmissionLedger :
                         winner.CountyId,
                         CancellationToken.None)
                     .ConfigureAwait(false);
+                if (winnerStage is null)
+                {
+                    // Preserve the same legacy-repair handoff after an idempotency race.
+                    await winnerTransaction
+                        .CommitAsync(CancellationToken.None)
+                        .ConfigureAwait(false);
+                    return resolution;
+                }
+
                 var candidateStage = CountyCsvUploadRowStager.CreateStage(
                     winner,
                     validation,
                     _timeProvider.GetUtcNow());
-                CountyCsvUploadRowStagingSummary staging;
-                if (winnerStage is null)
-                {
-                    winnerContext.CountyCsvUploadRowStages.Add(candidateStage);
-                    await winnerContext.SaveChangesAsync(CancellationToken.None).ConfigureAwait(false);
-                    staging = CountyCsvUploadRowStager.Summary(candidateStage);
-                }
-                else
-                {
-                    staging = CountyCsvUploadRowStager.RequireMatchingStage(
-                        winnerStage,
-                        candidateStage);
-                }
+                var staging = CountyCsvUploadRowStager.RequireMatchingStage(
+                    winnerStage,
+                    candidateStage);
                 await winnerTransaction
                     .CommitAsync(CancellationToken.None)
                     .ConfigureAwait(false);

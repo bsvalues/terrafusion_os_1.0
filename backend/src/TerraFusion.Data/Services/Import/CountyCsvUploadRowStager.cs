@@ -1,4 +1,5 @@
 using System.Data;
+using System.Security.Cryptography;
 using System.Text.Json;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
@@ -17,6 +18,9 @@ namespace TerraFusion.Data.Services.Import;
 public sealed class CountyCsvUploadRowStager : ICountyCsvUploadRowStager
 {
     private const int MaximumSerializationAttempts = 3;
+    private const int MaximumDataRows = 100_000;
+    private const int MaximumFieldsPerRow = 512;
+    private const int MaximumCharactersPerField = 65_536;
     private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web);
     private readonly IDbContextFactory<TerraFusionDbContext> _dbContextFactory;
     private readonly TimeProvider _timeProvider;
@@ -38,25 +42,45 @@ public sealed class CountyCsvUploadRowStager : ICountyCsvUploadRowStager
 
         var context = request.CountyContext;
         var batch = request.Batch;
-        var document = request.Document;
         if (context is null
             || context.Decision != AuthenticatedCanonicalCountyContextDecision.Established
             || context.CountyId is null
             || context.CountyId == Guid.Empty
             || context.County is null
             || batch is null
-            || document is null
             || batch.CountyId != context.CountyId
             || !string.Equals(batch.ActorId, context.ActorId, StringComparison.Ordinal)
             || !string.Equals(batch.Status, CountyCsvUploadBatch.AdmittedStatus, StringComparison.Ordinal)
             || !Enum.TryParse<CountyCsvDataset>(batch.Dataset, out var dataset)
             || dataset is not CountyCsvDataset.Parcels and not CountyCsvDataset.Sales
-            || batch.AcceptedRowCount != document.Rows.Count
-            || batch.ContentByteLength != document.InputBytes
-            || !string.Equals(batch.ContentSha256, document.ContentSha256, StringComparison.Ordinal)
             || WashingtonCountyRegistry.Counties.All(candidate => candidate != context.County))
         {
             throw new InvalidOperationException("County CSV row staging authority or lineage is invalid.");
+        }
+
+        var contentSnapshot = request.AdmittedContent.ToArray();
+        if (contentSnapshot.LongLength != batch.ContentByteLength
+            || !string.Equals(
+                Convert.ToHexString(SHA256.HashData(contentSnapshot)).ToLowerInvariant(),
+                batch.ContentSha256,
+                StringComparison.Ordinal))
+        {
+            throw new InvalidOperationException("County CSV row staging content does not match the admitted batch.");
+        }
+
+        await using var contentStream = new MemoryStream(contentSnapshot, writable: false);
+        var document = await new CountyCsvStreamParser(new CountyCsvParserOptions
+        {
+            Delimiter = ',',
+            MaxInputBytes = ICountyCsvUploadAdmissionLedger.MaximumAuthenticatedCsvUploadBytes,
+            MaxDataRows = MaximumDataRows,
+            MaxFieldsPerRow = MaximumFieldsPerRow,
+            MaxCharactersPerField = MaximumCharactersPerField,
+        }).ParseAsync(contentStream, cancellationToken).ConfigureAwait(false);
+        if (batch.AcceptedRowCount != document.Rows.Count
+            || !string.Equals(document.ContentSha256, batch.ContentSha256, StringComparison.Ordinal))
+        {
+            throw new InvalidOperationException("County CSV row staging row count does not match the admitted batch.");
         }
 
         var validation = CountyCsvUploadRowValidator.Validate(dataset, document);

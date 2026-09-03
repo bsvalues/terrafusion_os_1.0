@@ -23,7 +23,7 @@ namespace TerraFusion.Unit.Tests.Import;
 public sealed class CountyCsvUploadAdmissionLedgerTests
 {
     private const string MigrationId =
-        "20260902000000_WAL002GCountyCsvUploadAdmissionLedger";
+        "20260903000000_WAL002JCountyCsvRowStaging";
 
     private static readonly WashingtonCountyIdentity Benton = ResolveCounty("Benton");
     private static readonly WashingtonCountyIdentity Franklin = ResolveCounty("Franklin");
@@ -76,7 +76,13 @@ public sealed class CountyCsvUploadAdmissionLedgerTests
         Assert.Equal(0, result.RowStaging.QuarantinedRowCount);
         Assert.Equal(1, await context.CountyCsvUploadBatches.CountAsync());
         Assert.Equal(1, await context.CountyCsvUploadRowStages.CountAsync());
-        Assert.Equal(1, await context.AuditLogs.CountAsync());
+        Assert.Equal(2, await context.AuditLogs.CountAsync());
+        Assert.Equal(
+            ["CountyCsvUploadBatch_Added", "CountyCsvUploadRowStage_Added"],
+            await context.AuditLogs
+                .OrderBy(audit => audit.Type)
+                .Select(audit => audit.Type)
+                .ToArrayAsync());
         Assert.All(
             typeof(CountyCsvUploadBatch).GetProperties(),
             property => Assert.False(property.SetMethod?.IsPublic == true));
@@ -126,7 +132,7 @@ public sealed class CountyCsvUploadAdmissionLedgerTests
             Assert.Equal(CountyCsvUploadAdmissionDisposition.Duplicate, duplicate.Disposition);
             Assert.Equal(firstBatchId, Assert.IsType<CountyCsvUploadBatch>(duplicate.Batch).BatchId);
             Assert.Equal(1, await restartedContext.CountyCsvUploadBatches.CountAsync());
-            Assert.Equal(1, await restartedContext.AuditLogs.CountAsync());
+            Assert.Equal(2, await restartedContext.AuditLogs.CountAsync());
         }
     }
 
@@ -153,7 +159,7 @@ public sealed class CountyCsvUploadAdmissionLedgerTests
 
         await using var verificationContext = database.CreateContext();
         Assert.Equal(1, await verificationContext.CountyCsvUploadBatches.CountAsync());
-        Assert.Equal(1, await verificationContext.AuditLogs.CountAsync());
+        Assert.Equal(2, await verificationContext.AuditLogs.CountAsync());
     }
 
     [Fact]
@@ -439,7 +445,7 @@ public sealed class CountyCsvUploadAdmissionLedgerTests
 
         await using var verificationContext = database.CreateContext();
         Assert.Equal(1, await verificationContext.CountyCsvUploadBatches.CountAsync());
-        Assert.Equal(1, await verificationContext.AuditLogs.CountAsync());
+        Assert.Equal(2, await verificationContext.AuditLogs.CountAsync());
         Assert.Equal(originalCountyName, await verificationContext.Counties
             .Where(county => county.Id == BentonId)
             .Select(county => county.Name)

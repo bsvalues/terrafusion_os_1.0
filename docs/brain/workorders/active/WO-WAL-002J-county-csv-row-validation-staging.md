@@ -62,7 +62,9 @@ are not yet promoted, published, or available in TerraForge workflows.
    row numbers, accepted normalized rows, quarantined row numbers/reasons, counts, schema version,
    county ID, content digest, and lineage batch ID.
 6. Duplicate/retry staging must converge on the same batch result across PostgreSQL and the
-   disposable SQLite adapter. A mismatched replay fails closed.
+   disposable SQLite adapter. The staging boundary re-parses the admitted bytes and verifies their
+   digest against the durable batch; a copied digest or mismatched replay fails closed. Concurrent
+   repair of a legacy admission without a stage converges through the same provider-aware stager.
 7. History and receipt surfaces expose county-only validation counts and reason classes and reject
    malformed or cross-county nested summaries.
 8. Label the entire result as validation staging only. It grants no canonical promotion or
