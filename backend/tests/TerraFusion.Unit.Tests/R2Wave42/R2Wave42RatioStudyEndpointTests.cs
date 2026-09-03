@@ -500,4 +500,35 @@ public sealed class R2Wave42RatioStudyEndpointTests
         stratum.GetProperty("qualityGrade").GetString().Should().Be("Unknown",
             "a same-numbered parcel in another county must not supply its quality grade");
     }
+
+    [Fact]
+    public async Task SpatialAutocorrelation_FailsClosedWhileGeometryHasNoCountyOwnership()
+    {
+        await using var db = CreateDbContext(nameof(SpatialAutocorrelation_FailsClosedWhileGeometryHasNoCountyOwnership));
+        await SeedCountyAsync(db);
+        for (var index = 0; index < 10; index++)
+        {
+            var sale = await SeedSaleAsync(db, 300_000m + index * 10_000m, pacsRatio: 90m + index);
+            sale.SalesYear = 2026;
+            db.GisParcelGeometries.Add(new GisParcelGeometry
+            {
+                ParcelId = sale.ParcelId,
+                CentroidLat = 46.20 + index * 0.01,
+                CentroidLng = -119.10 - index * 0.01,
+            });
+        }
+        await db.SaveChangesAsync();
+        var ctrl = CreateController(db);
+
+        var result = await ctrl.GetSpatialAutocorrelation(taxYear: 2026);
+
+        var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+        using var body = JsonDocument.Parse(JsonSerializer.Serialize(ok.Value));
+        body.RootElement.GetProperty("available").GetBoolean().Should().BeFalse();
+        body.RootElement.GetProperty("reasonCode").GetString()
+            .Should().Be("COUNTY_SCOPED_GEOMETRY_UNAVAILABLE",
+                "unowned geometry must never be joined to authenticated county sales");
+        body.RootElement.TryGetProperty("moransI", out _).Should().BeFalse(
+            "the endpoint must not compute a result from geometry without county ownership");
+    }
 }

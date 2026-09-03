@@ -2252,6 +2252,23 @@ public class TerraForgeController : ControllerBase
         if (countyScope.Error is not null) return countyScope.Error;
         var scopedCountyId = countyScope.CountyId;
 
+        // GisParcelGeometry predates canonical county ownership. Never combine
+        // authenticated county sales with geometry until the model can prove
+        // that every geometry row is bound to the same canonical county.
+        var geometryCountyProperty = _db.Model
+            .FindEntityType(typeof(TerraFusion.Core.Entities.GisParcelGeometry))?
+            .FindProperty("CountyId");
+        if (geometryCountyProperty is null)
+        {
+            return Ok(new
+            {
+                taxYear,
+                available = false,
+                reasonCode = "COUNTY_SCOPED_GEOMETRY_UNAVAILABLE",
+                error = "Spatial autocorrelation is unavailable until parcel geometry has canonical county ownership.",
+            });
+        }
+
         try
         {
             var salesQuery = _db.ComparableSales
@@ -2288,7 +2305,10 @@ public class TerraForgeController : ControllerBase
             var parcelSet = baseRows.Select(r => r.parcelId).Distinct().ToHashSet();
             var geom = await _db.GisParcelGeometries
                 .AsNoTracking()
-                .Where(g => parcelSet.Contains(g.ParcelId) && g.CentroidLat != null && g.CentroidLng != null)
+                .Where(g => EF.Property<Guid>(g, "CountyId") == scopedCountyId
+                    && parcelSet.Contains(g.ParcelId)
+                    && g.CentroidLat != null
+                    && g.CentroidLng != null)
                 .Select(g => new { g.ParcelId, Lat = g.CentroidLat!.Value, Lng = g.CentroidLng!.Value })
                 .ToListAsync(ct);
 
