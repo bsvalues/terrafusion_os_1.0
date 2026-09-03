@@ -176,7 +176,7 @@ function isPromotion(
     value.contractId === 'wal.county-upload.terraforge-sales-promotion.v1' &&
     typeof value.promotedRowCount === 'number' &&
     Number.isSafeInteger(value.promotedRowCount) &&
-    value.promotedRowCount > 0 &&
+    value.promotedRowCount >= 0 &&
     isCanonicalDate(value.latestSaleDate) &&
     typeof value.promotedAtUtc === 'string'
   );

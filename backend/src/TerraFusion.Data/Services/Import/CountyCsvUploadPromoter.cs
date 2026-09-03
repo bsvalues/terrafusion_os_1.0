@@ -189,6 +189,21 @@ public sealed class CountyCsvUploadPromoter : ICountyCsvUploadPromoter
                 .Where(candidate => !existingSales.ContainsKey(candidate.Sale.Id))
                 .ToArray();
             var sales = additions.Select(candidate => candidate.Sale).ToArray();
+            var traceCandidates = additions
+                .Select(candidate => CreatePromotionTrace(batch, candidate, actorId, promotedAtUtc))
+                .ToArray();
+            var existingTraces = await LoadExistingTracesAsync(
+                dbContext,
+                traceCandidates.Select(trace => trace.Id),
+                cancellationToken).ConfigureAwait(false);
+            foreach (var trace in traceCandidates.Where(trace => existingTraces.ContainsKey(trace.Id)))
+            {
+                if (!SamePromotionTraceIdentity(trace, existingTraces[trace.Id]))
+                {
+                    throw new InvalidOperationException(
+                        "A stable county Sales promotion trace identity collided with a different event.");
+                }
+            }
             var latestSaleDate = stagedRows
                 .Select(row => row.SaleDate!)
                 .OrderByDescending(value => value, StringComparer.Ordinal)
@@ -205,27 +220,8 @@ public sealed class CountyCsvUploadPromoter : ICountyCsvUploadPromoter
 
             dbContext.ComparableSales.AddRange(sales);
             dbContext.CountyCsvUploadPromotions.Add(promotion);
-            dbContext.AuditEvents.AddRange(additions.Select(candidate => new AuditEvent
-            {
-                Id = $"county-upload-promotion:{batchId:D}:{candidate.Row.SourceRowNumber}",
-                Type = AuditEventType.Create,
-                // AuditTrailMapper derives the canonical category from Entity and exposes
-                // EntityId as ParcelId. Keep the exact sale ID in immutable details.
-                Entity = "ValuationComparableSale",
-                EntityId = candidate.Row.ParcelId!,
-                UserId = actorId,
-                Action = "valuation.sales-promoted",
-                DetailsJson = JsonSerializer.Serialize(new
-                {
-                    category = "valuation",
-                    contractId = ICountyCsvUploadPromoter.ContractId,
-                    batchId,
-                    sourceRowNumber = candidate.Row.SourceRowNumber,
-                    comparableSaleId = candidate.Sale.Id,
-                }, JsonOptions),
-                Timestamp = promotedAtUtc.UtcDateTime,
-                CountyId = countyId,
-            }));
+            dbContext.AuditEvents.AddRange(
+                traceCandidates.Where(trace => !existingTraces.ContainsKey(trace.Id)));
             await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
             await transaction.CommitAsync(cancellationToken).ConfigureAwait(false);
             return Accepted(CountyCsvUploadPromotionDisposition.Promoted, promotion);
@@ -331,7 +327,7 @@ public sealed class CountyCsvUploadPromoter : ICountyCsvUploadPromoter
             '|',
             ICountyCsvUploadPromoter.ContractId,
             countyId.ToString("D", CultureInfo.InvariantCulture),
-            row.ParcelId,
+            NormalizeParcelIdentity(row.ParcelId!),
             row.SaleDate,
             row.SalePrice!.Value.ToString("G29", CultureInfo.InvariantCulture));
         var bytes = SHA256.HashData(Encoding.UTF8.GetBytes(
@@ -362,11 +358,70 @@ public sealed class CountyCsvUploadPromoter : ICountyCsvUploadPromoter
         return existing;
     }
 
+    private static async Task<Dictionary<string, AuditEvent>> LoadExistingTracesAsync(
+        TerraFusionDbContext dbContext,
+        IEnumerable<string> candidateIds,
+        CancellationToken cancellationToken)
+    {
+        var existing = new Dictionary<string, AuditEvent>(StringComparer.Ordinal);
+        foreach (var chunk in candidateIds.Distinct(StringComparer.Ordinal).Chunk(500))
+        {
+            var rows = await dbContext.AuditEvents
+                .AsNoTracking()
+                .Where(trace => chunk.Contains(trace.Id))
+                .ToListAsync(cancellationToken).ConfigureAwait(false);
+            foreach (var row in rows)
+            {
+                existing.Add(row.Id, row);
+            }
+        }
+        return existing;
+    }
+
+    private static AuditEvent CreatePromotionTrace(
+        CountyCsvUploadBatch batch,
+        PromotionCandidate candidate,
+        string actorId,
+        DateTimeOffset promotedAtUtc) => new()
+    {
+        Id = $"county-upload-promotion:{batch.BatchId:D}:{candidate.Row.SourceRowNumber}",
+        Type = AuditEventType.Create,
+        // AuditTrailMapper derives the canonical category from Entity and exposes
+        // EntityId as ParcelId. Keep the exact sale ID in immutable details.
+        Entity = "ValuationComparableSale",
+        EntityId = candidate.Row.ParcelId!,
+        UserId = actorId,
+        Action = "valuation.sales-promoted",
+        DetailsJson = JsonSerializer.Serialize(new
+        {
+            category = "valuation",
+            contractId = ICountyCsvUploadPromoter.ContractId,
+            batchId = batch.BatchId,
+            sourceRowNumber = candidate.Row.SourceRowNumber,
+            comparableSaleId = candidate.Sale.Id,
+        }, JsonOptions),
+        Timestamp = promotedAtUtc.UtcDateTime,
+        CountyId = batch.CountyId,
+    };
+
+    private static string NormalizeParcelIdentity(string parcelId) => parcelId.ToUpperInvariant();
+
     private static bool SameSaleIdentity(ComparableSale candidate, ComparableSale existing) =>
         candidate.CountyId == existing.CountyId
-        && string.Equals(candidate.ParcelId, existing.ParcelId, StringComparison.Ordinal)
+        && string.Equals(
+            NormalizeParcelIdentity(candidate.ParcelId),
+            NormalizeParcelIdentity(existing.ParcelId),
+            StringComparison.Ordinal)
         && candidate.SaleDate == existing.SaleDate
         && candidate.SalePrice == existing.SalePrice;
+
+    private static bool SamePromotionTraceIdentity(AuditEvent candidate, AuditEvent existing) =>
+        candidate.CountyId == existing.CountyId
+        && candidate.Type == existing.Type
+        && string.Equals(candidate.Entity, existing.Entity, StringComparison.Ordinal)
+        && string.Equals(candidate.EntityId, existing.EntityId, StringComparison.Ordinal)
+        && string.Equals(candidate.Action, existing.Action, StringComparison.Ordinal)
+        && string.Equals(candidate.DetailsJson, existing.DetailsJson, StringComparison.Ordinal);
 
     private static bool TryAuthority(
         AuthenticatedCanonicalCountyContextResult? context,

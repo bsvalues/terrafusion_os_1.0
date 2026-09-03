@@ -216,6 +216,26 @@ describe('county CSV upload client', () => {
     });
   });
 
+  it('accepts an immutable zero-new-sale receipt for a fully overlapping batch', async () => {
+    const payload = {
+      contractId: 'wal.county-upload.terraforge-sales-promotion.v1',
+      countyKey: 'wa-spokane',
+      countyName: 'Spokane',
+      disposition: 'Promoted',
+      promotion: {
+        batchId: 'overlap-batch-id',
+        countyId: 'county-id',
+        contractId: 'wal.county-upload.terraforge-sales-promotion.v1',
+        promotedRowCount: 0,
+        latestSaleDate: '2026-01-15',
+        promotedAtUtc: '2026-09-03T10:00:00Z',
+      },
+    };
+    apiFetchMock.mockResolvedValue(response(payload));
+
+    await expect(promoteCountyCsvSales(apiFetchMock, 'overlap-batch-id')).resolves.toEqual(payload);
+  });
+
   it('reads only authenticated county promoted-sales availability', async () => {
     const payload = {
       contractId: 'wal.county-upload.terraforge-sales-promotion.v1',

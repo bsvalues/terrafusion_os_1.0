@@ -761,7 +761,7 @@ public sealed class CountyCsvUploadAdmissionLedgerTests
             BentonId,
             "assessor-1",
             CountyCsvDataset.Sales,
-            "parcel_id,sale_date,sale_price\nB-1,2025-11-01,350000.00\nB-2,2026-02-10,410000\n");
+            "parcel_id,sale_date,sale_price\nb-1,2025-11-01,350000.00\nB-2,2026-02-10,410000\n");
         var overlapOnlyRequest = await CreateRequestAsync(
             Benton,
             BentonId,
@@ -792,6 +792,40 @@ public sealed class CountyCsvUploadAdmissionLedgerTests
         Assert.Equal(2, availability.PromotedSales);
         Assert.Equal("2026-02-10", availability.LatestSaleDate);
         Assert.Equal(2027, availability.RecommendedStudyYear);
+    }
+
+    [Fact]
+    public async Task PromoteSales_ReusesExactRetainedAppendOnlyTraceAfterBusinessStateRollback()
+    {
+        await using var database = await TestDatabase.CreateAsync((Benton, BentonId));
+        var request = await CreateRequestAsync(
+            Benton,
+            BentonId,
+            "assessor-1",
+            CountyCsvDataset.Sales,
+            "parcel_id,sale_date,sale_price\nB-1,2026-01-15,350000\n");
+        var batch = Assert.IsType<CountyCsvUploadBatch>(
+            (await new CountyCsvUploadAdmissionLedger(database.CreateFactory()).AdmitAsync(request)).Batch);
+        var promoter = new CountyCsvUploadPromoter(database.CreateFactory());
+        var first = await promoter.PromoteAsync(new(request.CountyContext, batch.BatchId));
+        Assert.Equal(CountyCsvUploadPromotionDisposition.Promoted, first.Disposition);
+
+        await using (var rollbackContext = database.CreateContext())
+        {
+            rollbackContext.CountyCsvUploadPromotions.RemoveRange(
+                await rollbackContext.CountyCsvUploadPromotions.ToListAsync());
+            rollbackContext.ComparableSales.RemoveRange(
+                await rollbackContext.ComparableSales.Where(sale => sale.CountyId == BentonId).ToListAsync());
+            await rollbackContext.SaveChangesAsync();
+        }
+
+        var reapplied = await promoter.PromoteAsync(new(request.CountyContext, batch.BatchId));
+
+        Assert.Equal(CountyCsvUploadPromotionDisposition.Promoted, reapplied.Disposition);
+        await using var verificationContext = database.CreateContext();
+        Assert.Single(await verificationContext.ComparableSales.AsNoTracking().ToListAsync());
+        Assert.Single(await verificationContext.CountyCsvUploadPromotions.AsNoTracking().ToListAsync());
+        Assert.Single(await verificationContext.AuditEvents.AsNoTracking().ToListAsync());
     }
 
     [Fact]
@@ -884,8 +918,12 @@ public sealed class CountyCsvUploadAdmissionLedgerTests
         Assert.False(await ObjectExistsAsync(context, "table", "CountyCsvUploadPromotions"));
         Assert.False(await context.ComparableSales.AnyAsync(sale => sale.Id == uploadedSaleId));
         Assert.True(await context.ComparableSales.AnyAsync(sale => sale.Id == retainedSaleId));
-        Assert.False(await context.AuditEvents.AnyAsync(trace => trace.EntityId == "ROLLBACK-UPLOAD"));
+        Assert.True(await context.AuditEvents.AnyAsync(trace => trace.EntityId == "ROLLBACK-UPLOAD"));
         Assert.True(await context.AuditEvents.AnyAsync(trace => trace.Id == "retained-event"));
+
+        await migrator.MigrateAsync(MigrationId);
+        Assert.True(await ObjectExistsAsync(context, "table", "CountyCsvUploadPromotions"));
+        Assert.True(await context.AuditEvents.AnyAsync(trace => trace.EntityId == "ROLLBACK-UPLOAD"));
     }
 
     [Fact]

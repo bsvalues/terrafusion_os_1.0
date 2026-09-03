@@ -50,10 +50,9 @@ public partial class WAL002KCountyCsvSalesPromotion : Migration
 
     protected override void Down(MigrationBuilder migrationBuilder)
     {
-        // Return to the pre-feature state. Leaving promoted rows behind would make a
-        // later re-apply/retry collide with deterministic sale and trace identities.
-        migrationBuilder.Sql(
-            """DELETE FROM "AuditEvents" WHERE "Id" LIKE 'county-upload-promotion:%' AND "Action" = 'valuation.sales-promoted';""");
+        // Remove feature-owned business state, but preserve the append-only valuation
+        // trace. The promoter recognizes an exact retained trace on re-application and
+        // fails closed if the stable trace identity has different contents.
         migrationBuilder.Sql(
             """DELETE FROM "ComparableSales" WHERE "IngestedBy" = 'county-upload' AND "VerificationSource" LIKE 'county-upload:%';""");
         migrationBuilder.DropTable(name: "CountyCsvUploadPromotions");
