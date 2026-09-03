@@ -67,24 +67,36 @@ const AuditCommandCenter = lazy(() =>
 );
 
 const TABS: { id: SalesForgeTab; label: string; title: string }[] = [
-  { id: 'ai-audit',      label: 'AI Audit',       title: 'AI-powered audit — diagnose, qualify, propose adjustments' },
-  { id: 'queue',         label: 'Queue',          title: 'Sale qualification queue — make decisions' },
-  { id: 'ratio-audit',  label: 'Ratio Audit',     title: 'All qualified sales sorted by ratio, outlier flags' },
-  { id: 'neighborhoods', label: 'Neighborhoods',  title: 'Hood-level COD/PRD equity view' },
-  { id: 'code-audit',   label: 'Code Audit',      title: 'WAC code breakdown — qualifier, ratio type, exclude calc' },
-  { id: 'dor-export',   label: 'DOR Export',      title: 'Preview and download DOR-certified CSV' },
+  {
+    id: 'ai-audit',
+    label: 'AI Audit',
+    title: 'AI-powered audit — diagnose, qualify, propose adjustments',
+  },
+  { id: 'queue', label: 'Queue', title: 'Sale qualification queue — make decisions' },
+  {
+    id: 'ratio-audit',
+    label: 'Ratio Audit',
+    title: 'All qualified sales sorted by ratio, outlier flags',
+  },
+  { id: 'neighborhoods', label: 'Neighborhoods', title: 'Hood-level COD/PRD equity view' },
+  {
+    id: 'code-audit',
+    label: 'Code Audit',
+    title: 'WAC code breakdown — qualifier, ratio type, exclude calc',
+  },
+  { id: 'dor-export', label: 'DOR Export', title: 'Preview and download DOR-certified CSV' },
 ];
 
-const WASHINGTON_LAUNCH_TABS = new Set<SalesForgeTab>([
-  'queue',
-  'neighborhoods',
-  'code-audit',
-]);
+const WASHINGTON_LAUNCH_TABS = new Set<SalesForgeTab>(['queue', 'neighborhoods', 'code-audit']);
 
 const DIRECT_HOSTED_PACKAGE_VERIFICATION_TIMEOUT_MS = 15_000;
 
 function TabSpinner() {
-  return <div className="sf-state" role="status">Loading…</div>;
+  return (
+    <div className='sf-state' role='status'>
+      Loading…
+    </div>
+  );
 }
 
 export interface SalesForgeProps {
@@ -125,53 +137,61 @@ function parseDeeplinkQuery(raw: unknown): {
   }
 }
 
+function verifiedReferenceTaxYear(latestSaleDate: string | null): number | null {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(latestSaleDate ?? '');
+  if (!match) return null;
+  const [year, month, day] = match.slice(1).map(Number);
+  const date = new Date(Date.UTC(year, month - 1, day));
+  return date.getUTCFullYear() === year &&
+    date.getUTCMonth() === month - 1 &&
+    date.getUTCDate() === day
+    ? Math.min(year, SALESFORGE_TAX_YEAR)
+    : null;
+}
+
 export default function SalesForge({ metadata }: SalesForgeProps = {}) {
-  const setDataSource     = useSalesForgeStore((s) => s.setDataSource);
-  const activeTab         = useSalesForgeStore((s) => s.activeTab);
-  const setActiveTab      = useSalesForgeStore((s) => s.setActiveTab);
-  const taxYear           = useSalesForgeStore((s) => s.taxYear);
-  const setTaxYear        = useSalesForgeStore((s) => s.setTaxYear);
+  const setDataSource = useSalesForgeStore((s) => s.setDataSource);
+  const activeTab = useSalesForgeStore((s) => s.activeTab);
+  const setActiveTab = useSalesForgeStore((s) => s.setActiveTab);
+  const taxYear = useSalesForgeStore((s) => s.taxYear);
+  const setTaxYear = useSalesForgeStore((s) => s.setTaxYear);
   const setSelectedStratum = useSalesForgeStore((s) => s.setSelectedStratumKey);
   const setContextSegment = useSalesForgeStore((s) => s.setContextSegment);
   const applyCountyStudioScope = useSalesForgeStore((s) => s.applyCountyStudioScope);
-  const contextSegmentId    = useSalesForgeStore((s) => s.contextSegmentId);
+  const contextSegmentId = useSalesForgeStore((s) => s.contextSegmentId);
   const contextSegmentLabel = useSalesForgeStore((s) => s.contextSegmentLabel);
   const committedFilters = useSalesForgeStore((s) => s.committedFilters);
-  const countiesHubHandoffRequested = metadata?.launchContext
-    === 'washington-counties-hub';
-  const countiesHubHandoff = useMemo(
-    () => parseWashingtonCountiesHubHandoff(metadata),
-    [metadata],
-  );
-  const invalidCountiesHubHandoff = countiesHubHandoffRequested
-    && countiesHubHandoff === null;
+  const countiesHubHandoffRequested = metadata?.launchContext === 'washington-counties-hub';
+  const countiesHubHandoff = useMemo(() => parseWashingtonCountiesHubHandoff(metadata), [metadata]);
+  const invalidCountiesHubHandoff = countiesHubHandoffRequested && countiesHubHandoff === null;
   const referencePackageSource = countiesHubHandoff?.referencePackageSource;
   const repositoryReferenceHandoff = referencePackageSource === 'repository-reference';
-  const hostedReferenceHandoff = countiesHubHandoff !== null
-    && referencePackageSource === 'hosted';
+  const hostedReferenceHandoff = countiesHubHandoff !== null && referencePackageSource === 'hosted';
   const hostedHandoffCountyCode = hostedReferenceHandoff
-    ? countiesHubHandoff?.countyCode ?? null
+    ? (countiesHubHandoff?.countyCode ?? null)
     : null;
-  const directHostedLaunch = isWashingtonLaunchDataEnabled()
-    && !countiesHubHandoffRequested;
-  const [establishedHostedHandoffCountyCode, setEstablishedHostedHandoffCountyCode] =
-    useState<string | null>(null);
+  const directHostedLaunch = isWashingtonLaunchDataEnabled() && !countiesHubHandoffRequested;
+  const [establishedHostedHandoffCountyCode, setEstablishedHostedHandoffCountyCode] = useState<
+    string | null
+  >(null);
   const [directHostedVerification, setDirectHostedVerification] = useState<{
     countyCode: string | null;
     request: WashingtonCountiesHubHandoff | null;
     state: 'not-required' | 'pending' | 'available' | 'unavailable';
+    taxYear: number | null;
   }>({
     countyCode: directHostedLaunch ? committedFilters.countyCode : null,
     request: null,
     state: directHostedLaunch ? 'pending' : 'not-required',
+    taxYear: null,
   });
   const [directHostedVerificationAttempt, setDirectHostedVerificationAttempt] = useState(0);
-  const syntheticReferenceData = countiesHubHandoff?.referenceDataPosture
-    === 'repository_reference_demo';
-  const hostedHandoffInitializationPending = hostedReferenceHandoff
-    && establishedHostedHandoffCountyCode !== hostedHandoffCountyCode;
-  const hostedHandoffVerificationRequired = hostedReferenceHandoff
-    && countiesHubHandoff?.salesReviewAvailability !== 'unavailable';
+  const syntheticReferenceData =
+    countiesHubHandoff?.referenceDataPosture === 'repository_reference_demo';
+  const hostedHandoffInitializationPending =
+    hostedReferenceHandoff && establishedHostedHandoffCountyCode !== hostedHandoffCountyCode;
+  const hostedHandoffVerificationRequired =
+    hostedReferenceHandoff && countiesHubHandoff?.salesReviewAvailability !== 'unavailable';
   const hostedVerificationCountyCode = directHostedLaunch
     ? committedFilters.countyCode
     : hostedHandoffVerificationRequired
@@ -180,50 +200,40 @@ export default function SalesForge({ metadata }: SalesForgeProps = {}) {
         : committedFilters.countyCode
       : null;
   const hostedCountyVerificationRequired = hostedVerificationCountyCode !== null;
-  const hostedVerificationRequest = hostedHandoffVerificationRequired
-    ? countiesHubHandoff
-    : null;
-  const directHostedVerificationMatchesCounty = directHostedVerification.countyCode
-    === hostedVerificationCountyCode;
-  const directHostedVerificationMatchesRequest = directHostedVerification.request
-    === hostedVerificationRequest;
-  const directHostedVerificationPending = (
-    hostedHandoffInitializationPending
-    && hostedHandoffVerificationRequired
-  )
-    || (
-      hostedCountyVerificationRequired
-      && (
-        !directHostedVerificationMatchesCounty
-        || !directHostedVerificationMatchesRequest
-        || (
-          directHostedVerification.state !== 'available'
-          && directHostedVerification.state !== 'unavailable'
-        )
-      )
-    );
-  const directHostedVerificationUnavailable = hostedCountyVerificationRequired
-    && directHostedVerificationMatchesCounty
-    && directHostedVerificationMatchesRequest
-    && directHostedVerification.state === 'unavailable';
-  const hostedLaunchReady = (
-    !hostedHandoffInitializationPending
-    && hostedCountyVerificationRequired
-    && directHostedVerificationMatchesCounty
-    && directHostedVerificationMatchesRequest
-    && directHostedVerification.state === 'available'
-  );
-  const salesReviewUnavailable = invalidCountiesHubHandoff
-    || (
-      countiesHubHandoff !== null
-      && countiesHubHandoff.salesReviewAvailability === 'unavailable'
-    )
-    || directHostedVerificationPending
-    || directHostedVerificationUnavailable;
+  const hostedVerificationRequest = hostedHandoffVerificationRequired ? countiesHubHandoff : null;
+  const directHostedVerificationMatchesCounty =
+    directHostedVerification.countyCode === hostedVerificationCountyCode;
+  const directHostedVerificationMatchesRequest =
+    directHostedVerification.request === hostedVerificationRequest;
+  const directHostedVerificationPending =
+    (hostedHandoffInitializationPending && hostedHandoffVerificationRequired) ||
+    (hostedCountyVerificationRequired &&
+      (!directHostedVerificationMatchesCounty ||
+        !directHostedVerificationMatchesRequest ||
+        (directHostedVerification.state !== 'available' &&
+          directHostedVerification.state !== 'unavailable')));
+  const directHostedVerificationUnavailable =
+    hostedCountyVerificationRequired &&
+    directHostedVerificationMatchesCounty &&
+    directHostedVerificationMatchesRequest &&
+    directHostedVerification.state === 'unavailable';
+  const hostedLaunchReady =
+    !hostedHandoffInitializationPending &&
+    hostedCountyVerificationRequired &&
+    directHostedVerificationMatchesCounty &&
+    directHostedVerificationMatchesRequest &&
+    directHostedVerification.state === 'available';
+  const salesReviewUnavailable =
+    invalidCountiesHubHandoff ||
+    (countiesHubHandoff !== null && countiesHubHandoff.salesReviewAvailability === 'unavailable') ||
+    directHostedVerificationPending ||
+    directHostedVerificationUnavailable;
   const hostedLaunchDataMode = directHostedLaunch || hostedReferenceHandoff;
   const launchDataMode = hostedLaunchDataMode || repositoryReferenceHandoff;
   const handoff = parseRollupHandoff(invalidCountiesHubHandoff ? undefined : metadata);
-  const selectedCounty = WASHINGTON_COUNTIES.find((county) => county.code === committedFilters.countyCode);
+  const selectedCounty = WASHINGTON_COUNTIES.find(
+    (county) => county.code === committedFilters.countyCode
+  );
   const countyScopeLabel = selectedCounty?.name
     ? `${selectedCounty.name} County`
     : countiesHubHandoffRequested
@@ -233,52 +243,44 @@ export default function SalesForge({ metadata }: SalesForgeProps = {}) {
       : handoff.countyName
         ? `${handoff.countyName} County`
         : 'County scope required';
-  const availableTabs = launchDataMode && !salesReviewUnavailable
-    ? TABS.filter((tab) => WASHINGTON_LAUNCH_TABS.has(tab.id))
-    : salesReviewUnavailable
-      ? []
-      : TABS;
+  const availableTabs =
+    launchDataMode && !salesReviewUnavailable
+      ? TABS.filter((tab) => WASHINGTON_LAUNCH_TABS.has(tab.id))
+      : salesReviewUnavailable
+        ? []
+        : TABS;
   // Never mount a live-only panel while the header claims public-package mode.
-  const renderedActiveTab = launchDataMode && !WASHINGTON_LAUNCH_TABS.has(activeTab)
-    ? 'queue'
-    : activeTab;
+  const renderedActiveTab =
+    launchDataMode && !WASHINGTON_LAUNCH_TABS.has(activeTab) ? 'queue' : activeTab;
 
   // Establish the handed-off county only after its navigation scope reaches
   // the store. The handoff itself is never treated as package attestation.
   useLayoutEffect(() => {
     if (!hostedReferenceHandoff || hostedHandoffCountyCode === null) {
-      setEstablishedHostedHandoffCountyCode((current) => (
-        current === null ? current : null
-      ));
+      setEstablishedHostedHandoffCountyCode((current) => (current === null ? current : null));
       return;
     }
 
     if (committedFilters.countyCode === hostedHandoffCountyCode) {
-      setEstablishedHostedHandoffCountyCode((current) => (
+      setEstablishedHostedHandoffCountyCode((current) =>
         current === hostedHandoffCountyCode ? current : hostedHandoffCountyCode
-      ));
+      );
     }
-  }, [
-    committedFilters.countyCode,
-    hostedHandoffCountyCode,
-    hostedReferenceHandoff,
-  ]);
+  }, [committedFilters.countyCode, hostedHandoffCountyCode, hostedReferenceHandoff]);
 
   useEffect(() => {
     if (!hostedCountyVerificationRequired || hostedVerificationCountyCode === null) {
-      setDirectHostedVerification((current) => (
-        current.countyCode === null
-          && current.request === null
-          && current.state === 'not-required'
+      setDirectHostedVerification((current) =>
+        current.countyCode === null && current.request === null && current.state === 'not-required'
           ? current
-          : { countyCode: null, request: null, state: 'not-required' }
-      ));
+          : { countyCode: null, request: null, state: 'not-required', taxYear: null }
+      );
       return;
     }
 
     const selectedCountyCode = hostedVerificationCountyCode;
     const selectedCountyIsRegistered = WASHINGTON_COUNTIES.some(
-      (county) => county.code === selectedCountyCode,
+      (county) => county.code === selectedCountyCode
     );
     const controller = new AbortController();
     const markUnavailable = (): void => {
@@ -289,6 +291,7 @@ export default function SalesForge({ metadata }: SalesForgeProps = {}) {
         countyCode: selectedCountyCode,
         request: hostedVerificationRequest,
         state: 'unavailable',
+        taxYear: null,
       });
     };
     const timeout = window.setTimeout(() => {
@@ -299,25 +302,22 @@ export default function SalesForge({ metadata }: SalesForgeProps = {}) {
       countyCode: selectedCountyCode,
       request: hostedVerificationRequest,
       state: 'pending',
+      taxYear: null,
     });
 
     void (async () => {
       const resolution = await resolveWashingtonCountyStatus(controller.signal);
-      const county = resolution.packageSource === 'hosted'
-        ? resolution.counties.find(
-            (entry) => entry.countyCode === selectedCountyCode,
-          )
-        : null;
+      const county =
+        resolution.packageSource === 'hosted'
+          ? resolution.counties.find((entry) => entry.countyCode === selectedCountyCode)
+          : null;
       if (controller.signal.aborted) return;
       if (!county) {
         markUnavailable();
         return;
       }
 
-      const verifiedCounty = await verifyWashingtonCountySalesShard(
-        county,
-        controller.signal,
-      );
+      const verifiedCounty = await verifyWashingtonCountySalesShard(county, controller.signal);
       if (controller.signal.aborted) return;
       const eligible = getWashingtonSalesReviewCapability(verifiedCounty).eligible;
       if (!eligible && selectedCountyIsRegistered) {
@@ -327,14 +327,17 @@ export default function SalesForge({ metadata }: SalesForgeProps = {}) {
         countyCode: selectedCountyCode,
         request: hostedVerificationRequest,
         state: eligible ? 'available' : 'unavailable',
+        taxYear: eligible ? verifiedReferenceTaxYear(verifiedCounty.latestSaleDate) : null,
       });
-    })().catch(() => {
-      if (!controller.signal.aborted) {
-        markUnavailable();
-      }
-    }).finally(() => {
-      window.clearTimeout(timeout);
-    });
+    })()
+      .catch(() => {
+        if (!controller.signal.aborted) {
+          markUnavailable();
+        }
+      })
+      .finally(() => {
+        window.clearTimeout(timeout);
+      });
 
     return () => {
       window.clearTimeout(timeout);
@@ -354,13 +357,15 @@ export default function SalesForge({ metadata }: SalesForgeProps = {}) {
         ? 'washington-reference'
         : hostedLaunchReady
           ? 'washington-hosted'
-          : 'live-api',
+          : 'live-api'
     );
-  }, [
-    hostedLaunchReady,
-    repositoryReferenceHandoff,
-    setDataSource,
-  ]);
+  }, [hostedLaunchReady, repositoryReferenceHandoff, setDataSource]);
+
+  useLayoutEffect(() => {
+    if (hostedLaunchReady && directHostedVerification.taxYear !== null) {
+      setTaxYear(directHostedVerification.taxYear);
+    }
+  }, [directHostedVerification.taxYear, hostedLaunchReady, setTaxYear]);
 
   useLayoutEffect(() => {
     if (launchDataMode && activeTab !== renderedActiveTab) {
@@ -390,7 +395,7 @@ export default function SalesForge({ metadata }: SalesForgeProps = {}) {
         handoff.countyCode,
         !resetValuationScope && handoff.rollupScope === 'neighborhood'
           ? handoff.neighborhoodCode
-          : null,
+          : null
       );
     }
 
@@ -441,22 +446,22 @@ export default function SalesForge({ metadata }: SalesForgeProps = {}) {
   };
 
   return (
-    <div className="sf-workspace">
+    <div className='sf-workspace'>
       {/* Header */}
-      <header className="sf-header">
-        <div className="sf-header__row">
+      <header className='sf-header'>
+        <div className='sf-header__row'>
           <div>
-            <p className="sf-header__eyebrow">TerraForge · Sale Qualification</p>
-            <h1 className="sf-header__title">SalesForge</h1>
+            <p className='sf-header__eyebrow'>TerraForge · Sale Qualification</p>
+            <h1 className='sf-header__title'>SalesForge</h1>
           </div>
-          <div className="sf-header__badges">
+          <div className='sf-header__badges'>
             {contextSegmentId && (
               <button
-                type="button"
-                data-testid="sf-scoped-from-chip"
+                type='button'
+                data-testid='sf-scoped-from-chip'
                 data-segment-id={contextSegmentId}
                 onClick={handleBackToCountyStudio}
-                title="Back to County Studio"
+                title='Back to County Studio'
                 style={{
                   background: 'hsl(var(--tf-suite-forge) / 0.12)',
                   border: '1px solid hsl(var(--tf-suite-forge) / 0.4)',
@@ -472,21 +477,21 @@ export default function SalesForge({ metadata }: SalesForgeProps = {}) {
               </button>
             )}
             {!handoff.resetValuationScope && handoff.rollupScope === 'city' && handoff.city && (
-              <span className="forge-chip forge-chip--neutral">
-                City overview · {handoff.city}
-              </span>
+              <span className='forge-chip forge-chip--neutral'>City overview · {handoff.city}</span>
             )}
-            {!handoff.resetValuationScope
-              && handoff.rollupScope === 'neighborhood'
-              && handoff.neighborhoodCode && (
-              <span className="forge-chip forge-chip--neutral">
-                Neighborhood · {handoff.neighborhoodName ?? handoff.neighborhoodCode}
-                {handoff.revalArea !== null ? ` · Reval ${handoff.revalArea}` : ''}
-              </span>
-            )}
-            <span className="forge-chip forge-chip--neutral">{taxYear} study year</span>
-            <span className="forge-chip forge-chip--neutral">{countyScopeLabel}</span>
-            <span className={`forge-chip ${salesReviewUnavailable ? 'forge-chip--warn' : 'forge-chip--success'}`}>
+            {!handoff.resetValuationScope &&
+              handoff.rollupScope === 'neighborhood' &&
+              handoff.neighborhoodCode && (
+                <span className='forge-chip forge-chip--neutral'>
+                  Neighborhood · {handoff.neighborhoodName ?? handoff.neighborhoodCode}
+                  {handoff.revalArea !== null ? ` · Reval ${handoff.revalArea}` : ''}
+                </span>
+              )}
+            <span className='forge-chip forge-chip--neutral'>{taxYear} study year</span>
+            <span className='forge-chip forge-chip--neutral'>{countyScopeLabel}</span>
+            <span
+              className={`forge-chip ${salesReviewUnavailable ? 'forge-chip--warn' : 'forge-chip--success'}`}
+            >
               {directHostedVerificationPending
                 ? 'County context · verifying sales data'
                 : salesReviewUnavailable
@@ -498,30 +503,35 @@ export default function SalesForge({ metadata }: SalesForgeProps = {}) {
           </div>
         </div>
         {!handoff.resetValuationScope && handoff.rollupScope === 'city' && handoff.city && (
-          <p className="sf-header__source-note">
-            County Studio handed off a city overview for {handoff.city}. Counties actually qualify and defend sales by reval area and neighborhood, so city scope remains triage-only until you narrow below the city rollup.
+          <p className='sf-header__source-note'>
+            County Studio handed off a city overview for {handoff.city}. Counties actually qualify
+            and defend sales by reval area and neighborhood, so city scope remains triage-only until
+            you narrow below the city rollup.
           </p>
         )}
-        {!handoff.resetValuationScope
-          && handoff.rollupScope === 'neighborhood'
-          && handoff.neighborhoodCode && (
-          <p className="sf-header__source-note">
-            County Studio handed off neighborhood {handoff.neighborhoodName ?? handoff.neighborhoodCode}
-            {handoff.revalArea !== null ? ` in reval ${handoff.revalArea}` : ''}. SalesForge is pinned to that county and neighborhood because counties track reval area and neighborhood before parcel-level action.
-          </p>
-        )}
+        {!handoff.resetValuationScope &&
+          handoff.rollupScope === 'neighborhood' &&
+          handoff.neighborhoodCode && (
+            <p className='sf-header__source-note'>
+              County Studio handed off neighborhood{' '}
+              {handoff.neighborhoodName ?? handoff.neighborhoodCode}
+              {handoff.revalArea !== null ? ` in reval ${handoff.revalArea}` : ''}. SalesForge is
+              pinned to that county and neighborhood because counties track reval area and
+              neighborhood before parcel-level action.
+            </p>
+          )}
         {launchDataMode && !salesReviewUnavailable && (
-          <p className="sf-header__source-note">
+          <p className='sf-header__source-note'>
             Public/reference package only — not county-certified valuation truth.
             {syntheticReferenceData
               ? ' This workspace contains invented synthetic sales for workflow validation, not observed public sales or county records.'
               : ''}{' '}
-            Review decisions stay browser-local and nonofficial; nothing is written back to a
-            county system. Live AI Audit, Ratio Audit, and DOR Export are unavailable in this mode.
+            Review decisions stay browser-local and nonofficial; nothing is written back to a county
+            system. Live AI Audit, Ratio Audit, and DOR Export are unavailable in this mode.
           </p>
         )}
         {salesReviewUnavailable && (
-          <p className="sf-header__source-note" role="status">
+          <p className='sf-header__source-note' role='status'>
             {directHostedVerificationPending
               ? 'TerraForge is authenticating the selected county public-data package before any sales record can load.'
               : directHostedVerificationUnavailable
@@ -530,16 +540,17 @@ export default function SalesForge({ metadata }: SalesForgeProps = {}) {
                   ? 'The Counties Hub county handoff is invalid, so no county workflow can run.'
                   : countiesHubHandoff?.salesReviewAvailability === 'verifying'
                     ? 'The selected county public sales package is still being verified.'
-                    : countiesHubHandoff?.salesReviewUnavailableMessage
-                      ?? 'No governed public sales workflow is available for this county.'}{' '}
-            County context remains active, and SalesForge does not borrow another county&apos;s data.
+                    : (countiesHubHandoff?.salesReviewUnavailableMessage ??
+                      'No governed public sales workflow is available for this county.')}{' '}
+            County context remains active, and SalesForge does not borrow another county&apos;s
+            data.
           </p>
         )}
         {directHostedVerificationUnavailable && (
           <button
-            type="button"
-            className="forge-chip forge-chip--neutral"
-            data-testid="salesforge-retry-hosted-verification"
+            type='button'
+            className='forge-chip forge-chip--neutral'
+            data-testid='salesforge-retry-hosted-verification'
             onClick={() => setDirectHostedVerificationAttempt((attempt) => attempt + 1)}
           >
             Retry public-data verification
@@ -549,12 +560,12 @@ export default function SalesForge({ metadata }: SalesForgeProps = {}) {
 
       {/* Tab bar */}
       {!salesReviewUnavailable && (
-        <nav className="sf-tabbar" aria-label="SalesForge sections">
+        <nav className='sf-tabbar' aria-label='SalesForge sections'>
           {availableTabs.map((tab) => (
             <button
               key={tab.id}
-              type="button"
-              role="tab"
+              type='button'
+              role='tab'
               aria-selected={renderedActiveTab === tab.id}
               className={`sf-tab ${renderedActiveTab === tab.id ? 'sf-tab--active' : ''}`}
               onClick={() => setActiveTab(tab.id)}
@@ -568,19 +579,19 @@ export default function SalesForge({ metadata }: SalesForgeProps = {}) {
 
       {/* Main layout: content + stats rail */}
       {salesReviewUnavailable ? (
-        <div className="sf-state" data-testid="salesforge-data-unavailable" role="status">
+        <div className='sf-state' data-testid='salesforge-data-unavailable' role='status'>
           No sales-review records or data-dependent tools are available in this county context.
         </div>
       ) : (
-        <div className="sf-layout">
+        <div className='sf-layout'>
           {/* Left: panel content */}
           <Suspense fallback={<TabSpinner />}>
-            {renderedActiveTab === 'ai-audit'      && <AuditCommandCenter taxYear={taxYear} />}
-            {renderedActiveTab === 'queue'         && <QualificationQueuePanel />}
-            {renderedActiveTab === 'ratio-audit'   && <RatioAuditPanel />}
+            {renderedActiveTab === 'ai-audit' && <AuditCommandCenter taxYear={taxYear} />}
+            {renderedActiveTab === 'queue' && <QualificationQueuePanel />}
+            {renderedActiveTab === 'ratio-audit' && <RatioAuditPanel />}
             {renderedActiveTab === 'neighborhoods' && <NeighborhoodViewPanel />}
-            {renderedActiveTab === 'code-audit'    && <CodeAuditPanel />}
-            {renderedActiveTab === 'dor-export'    && <DorExportPanel />}
+            {renderedActiveTab === 'code-audit' && <CodeAuditPanel />}
+            {renderedActiveTab === 'dor-export' && <DorExportPanel />}
           </Suspense>
 
           {/* Right: live IAAO stats rail */}

@@ -1,0 +1,1 @@
+{"schemaVersion":"terrafusion.washington.county-detail.v1","generatedAt":"2026-09-02T23:45:00.000Z","county":"Lewis","countyCode":"041","operationalState":{"primarySourceMode":"public_assessor_benchmarked_valid_sales_pdf","prometheusStatus":"public_data_ready"},"summary":{"records":909,"latestSaleDate":"2024-12-31"},"salesRoute":"/launch-data/washington/sales/by-county/041.json"}
