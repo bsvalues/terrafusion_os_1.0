@@ -199,7 +199,7 @@ public sealed class CountyCsvUploadAdmissionLedger :
                     batch.AcceptedRowCount,
                     batch.Status,
                     batch.ReceivedAtUtc,
-                    RowStaging: null))
+                    null))
                 .ToList();
         }
 
@@ -268,7 +268,7 @@ public sealed class CountyCsvUploadAdmissionLedger :
                 batch.AcceptedRowCount,
                 batch.Status,
                 batch.ReceivedAtUtc,
-                RowStaging: null));
+                null));
 
     private static async Task<CountyCsvUploadBatch?> FindByIdempotencyKeyAsync(
         TerraFusionDbContext dbContext,
