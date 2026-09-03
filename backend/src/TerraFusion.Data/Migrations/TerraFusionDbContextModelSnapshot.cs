@@ -7033,8 +7033,83 @@ namespace TerraFusion.Data.Migrations
                     b.ToTable("CountyCsvUploadBatches", (string)null);
                 });
 
+            modelBuilder.Entity("TerraFusion.Core.Entities.Import.CountyCsvUploadRowStage", b =>
+                {
+                    b.Property<Guid>("BatchId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("ContentSha256")
+                        .IsRequired()
+                        .IsFixedLength()
+                        .HasMaxLength(64)
+                        .HasColumnType("character(64)");
+
+                    b.Property<string>("ContractId")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
+
+                    b.Property<Guid>("CountyId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Dataset")
+                        .IsRequired()
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)");
+
+                    b.Property<int>("QuarantinedRowCount")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("QuarantinedRowsJson")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ReasonCountsJson")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("SchemaVersion")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<int>("StagedRowCount")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("StagedRowsJson")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("TotalRowCount")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTimeOffset>("ValidatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("BatchId");
+
+                    b.HasIndex("CountyId", "ValidatedAtUtc");
+
+                    b.ToTable("CountyCsvUploadRowStages", (string)null);
+                });
+
             modelBuilder.Entity("TerraFusion.Core.Entities.Import.CountyCsvUploadBatch", b =>
                 {
+                    b.HasOne("TerraFusion.Core.Entities.County", null)
+                        .WithMany()
+                        .HasForeignKey("CountyId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("TerraFusion.Core.Entities.Import.CountyCsvUploadRowStage", b =>
+                {
+                    b.HasOne("TerraFusion.Core.Entities.Import.CountyCsvUploadBatch", null)
+                        .WithOne()
+                        .HasForeignKey("TerraFusion.Core.Entities.Import.CountyCsvUploadRowStage", "BatchId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("TerraFusion.Core.Entities.County", null)
                         .WithMany()
                         .HasForeignKey("CountyId")

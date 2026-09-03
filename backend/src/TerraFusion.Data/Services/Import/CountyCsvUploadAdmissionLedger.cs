@@ -60,6 +60,17 @@ public sealed class CountyCsvUploadAdmissionLedger :
         }
 
         evidence = evidence with { AcceptedRowCount = contentRevalidation.AcceptedRowCount };
+        CountyCsvUploadRowValidationResult validation;
+        try
+        {
+            validation = CountyCsvUploadRowValidator.Validate(
+                evidence.Dataset,
+                contentRevalidation.Document!);
+        }
+        catch (CountyCsvUploadRowSchemaException)
+        {
+            return Denied(CountyCsvUploadAdmissionDenialCode.InvalidRowSchema);
+        }
 
         await using var dbContext = await _dbContextFactory
             .CreateDbContextAsync(cancellationToken)
@@ -85,21 +96,53 @@ public sealed class CountyCsvUploadAdmissionLedger :
             .ConfigureAwait(false);
         if (existing is not null)
         {
+            var resolution = ResolveExisting(existing, evidence);
+            if (resolution.Disposition == CountyCsvUploadAdmissionDisposition.Denied)
+            {
+                await transaction.CommitAsync(cancellationToken).ConfigureAwait(false);
+                return resolution;
+            }
+
+            var existingStage = await FindStageAsync(
+                    dbContext,
+                    existing.BatchId,
+                    existing.CountyId,
+                    cancellationToken)
+                .ConfigureAwait(false);
+            if (existingStage is null)
+            {
+                // A pre-staging admission is repaired by the API's provider-aware row stager.
+                // Returning no summary here avoids a second, competing backfill implementation.
+                await transaction.CommitAsync(cancellationToken).ConfigureAwait(false);
+                return resolution;
+            }
+
+            var candidateStage = CountyCsvUploadRowStager.CreateStage(
+                existing,
+                validation,
+                _timeProvider.GetUtcNow());
+            var staging = CountyCsvUploadRowStager.RequireMatchingStage(
+                existingStage,
+                candidateStage);
             await transaction.CommitAsync(cancellationToken).ConfigureAwait(false);
-            return ResolveExisting(existing, evidence);
+            return Accepted(CountyCsvUploadAdmissionDisposition.Duplicate, existing, staging);
         }
 
-        var batch = evidence.CreateBatch(
-            Guid.NewGuid(),
-            _timeProvider.GetUtcNow());
+        var admittedAtUtc = _timeProvider.GetUtcNow();
+        var batch = evidence.CreateBatch(Guid.NewGuid(), admittedAtUtc);
+        var rowStage = CountyCsvUploadRowStager.CreateStage(batch, validation, admittedAtUtc);
         dbContext.CountyCsvUploadBatches.Add(batch);
+        dbContext.CountyCsvUploadRowStages.Add(rowStage);
 
         try
         {
             await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
             await transaction.CommitAsync(cancellationToken).ConfigureAwait(false);
 
-            return Accepted(CountyCsvUploadAdmissionDisposition.FirstSeen, batch);
+            return Accepted(
+                CountyCsvUploadAdmissionDisposition.FirstSeen,
+                batch,
+                CountyCsvUploadRowStager.Summary(rowStage));
         }
         catch (DbUpdateException updateException)
         {
@@ -129,10 +172,41 @@ public sealed class CountyCsvUploadAdmissionLedger :
                 .ConfigureAwait(false);
             if (winner is not null)
             {
+                var resolution = ResolveExisting(winner, evidence);
+                if (resolution.Disposition == CountyCsvUploadAdmissionDisposition.Denied)
+                {
+                    await winnerTransaction
+                        .CommitAsync(CancellationToken.None)
+                        .ConfigureAwait(false);
+                    return resolution;
+                }
+
+                var winnerStage = await FindStageAsync(
+                        winnerContext,
+                        winner.BatchId,
+                        winner.CountyId,
+                        CancellationToken.None)
+                    .ConfigureAwait(false);
+                if (winnerStage is null)
+                {
+                    // Preserve the same legacy-repair handoff after an idempotency race.
+                    await winnerTransaction
+                        .CommitAsync(CancellationToken.None)
+                        .ConfigureAwait(false);
+                    return resolution;
+                }
+
+                var candidateStage = CountyCsvUploadRowStager.CreateStage(
+                    winner,
+                    validation,
+                    _timeProvider.GetUtcNow());
+                var staging = CountyCsvUploadRowStager.RequireMatchingStage(
+                    winnerStage,
+                    candidateStage);
                 await winnerTransaction
                     .CommitAsync(CancellationToken.None)
                     .ConfigureAwait(false);
-                return ResolveExisting(winner, evidence);
+                return Accepted(CountyCsvUploadAdmissionDisposition.Duplicate, winner, staging);
             }
 
             throw new InvalidOperationException(
@@ -166,38 +240,85 @@ public sealed class CountyCsvUploadAdmissionLedger :
             .CreateDbContextAsync(cancellationToken)
             .ConfigureAwait(false);
 
+        IReadOnlyList<CountyCsvUploadBatchSummary> summaries;
         if (!dbContext.Database.IsSqlite())
         {
-            return await BuildProviderHistoryQuery(dbContext, countyId, limit)
+            summaries = await BuildProviderHistoryQuery(dbContext, countyId, limit)
                 .ToListAsync(cancellationToken)
                 .ConfigureAwait(false);
         }
+        else
+        {
+            // SQLite cannot translate DateTimeOffset ordering through LINQ. Keep its county
+            // predicate and limit parameterized and make this raw query terminal.
+            var batches = await dbContext.CountyCsvUploadBatches
+                .FromSqlInterpolated($@"
+                    SELECT *
+                    FROM ""CountyCsvUploadBatches""
+                    WHERE ""CountyId"" = {countyId}
+                    ORDER BY ""ReceivedAtUtc"" DESC, ""BatchId"" DESC
+                    LIMIT {limit}")
+                .AsNoTracking()
+                .ToListAsync(cancellationToken)
+                .ConfigureAwait(false);
 
-        // SQLite cannot translate DateTimeOffset ordering through LINQ. Keep its county predicate
-        // and limit parameterized and make this raw query terminal so EF never composes around its
-        // ORDER BY. SQL Server and PostgreSQL use the provider-translated query above.
-        var batches = await dbContext.CountyCsvUploadBatches
-            .FromSqlInterpolated($@"
-                SELECT *
-                FROM ""CountyCsvUploadBatches""
-                WHERE ""CountyId"" = {countyId}
-                ORDER BY ""ReceivedAtUtc"" DESC, ""BatchId"" DESC
-                LIMIT {limit}")
+            summaries = batches
+                .Select(batch => new CountyCsvUploadBatchSummary(
+                    batch.BatchId,
+                    batch.CountyId,
+                    batch.Dataset,
+                    batch.SourceFileName,
+                    batch.ContentSha256,
+                    batch.ContentByteLength,
+                    batch.AcceptedRowCount,
+                    batch.Status,
+                    batch.ReceivedAtUtc,
+                    null))
+                .ToList();
+        }
+
+        var batchIds = summaries.Select(summary => summary.BatchId).ToArray();
+        if (batchIds.Length == 0)
+        {
+            return summaries;
+        }
+
+        // History only needs staging metadata. Do not materialize the potentially large staged and
+        // quarantined row documents merely to render the recent-batch summary.
+        var stages = await dbContext.CountyCsvUploadRowStages
             .AsNoTracking()
+            .Where(stage => stage.CountyId == countyId && batchIds.Contains(stage.BatchId))
+            .Select(stage => new
+            {
+                stage.BatchId,
+                stage.CountyId,
+                stage.ContractId,
+                stage.SchemaVersion,
+                stage.TotalRowCount,
+                stage.StagedRowCount,
+                stage.QuarantinedRowCount,
+                stage.ReasonCountsJson,
+                stage.ValidatedAtUtc,
+            })
             .ToListAsync(cancellationToken)
             .ConfigureAwait(false);
-
-        return batches
-            .Select(batch => new CountyCsvUploadBatchSummary(
-                batch.BatchId,
-                batch.CountyId,
-                batch.Dataset,
-                batch.SourceFileName,
-                batch.ContentSha256,
-                batch.ContentByteLength,
-                batch.AcceptedRowCount,
-                batch.Status,
-                batch.ReceivedAtUtc))
+        var stageByBatch = stages.ToDictionary(stage => stage.BatchId);
+        return summaries
+            .Select(summary => stageByBatch.TryGetValue(summary.BatchId, out var stage)
+                ? summary with
+                {
+                    RowStaging = CountyCsvUploadRowStager.SummaryFromMetadata(
+                        stage.BatchId,
+                        stage.CountyId,
+                        stage.ContractId,
+                        stage.SchemaVersion,
+                        stage.TotalRowCount,
+                        stage.StagedRowCount,
+                        stage.QuarantinedRowCount,
+                        stage.ReasonCountsJson,
+                        stage.ValidatedAtUtc)
+                }
+                : summary)
             .ToList();
     }
 
@@ -220,7 +341,8 @@ public sealed class CountyCsvUploadAdmissionLedger :
                 batch.ContentByteLength,
                 batch.AcceptedRowCount,
                 batch.Status,
-                batch.ReceivedAtUtc));
+                batch.ReceivedAtUtc,
+                null));
 
     private static async Task<CountyCsvUploadBatch?> FindByIdempotencyKeyAsync(
         TerraFusionDbContext dbContext,
@@ -232,6 +354,17 @@ public sealed class CountyCsvUploadAdmissionLedger :
                 batch => batch.IdempotencyKey == idempotencyKey,
                 cancellationToken)
             .ConfigureAwait(false);
+
+    private static Task<CountyCsvUploadRowStage?> FindStageAsync(
+        TerraFusionDbContext dbContext,
+        Guid batchId,
+        Guid countyId,
+        CancellationToken cancellationToken) =>
+        dbContext.CountyCsvUploadRowStages
+            .AsNoTracking()
+            .SingleOrDefaultAsync(
+                stage => stage.BatchId == batchId && stage.CountyId == countyId,
+                cancellationToken);
 
     private static Task<bool> MatchesPersistedCanonicalCountyAsync(
         TerraFusionDbContext dbContext,
@@ -505,7 +638,7 @@ public sealed class CountyCsvUploadAdmissionLedger :
                 claimedIntake.Document,
                 claimedDocumentShape)
             ? ContentRevalidationResult.Accepted(
-                regeneratedReceipt.IntakeReceipt.Document.Rows.Count)
+                regeneratedReceipt.IntakeReceipt.Document)
             : ContentRevalidationResult.Denied(
                 CountyCsvUploadAdmissionDenialCode.InvalidDocumentEvidence);
     }
@@ -550,6 +683,10 @@ public sealed class CountyCsvUploadAdmissionLedger :
                 || claimed.Rows is null
                 || regenerated.InputBytes != claimedShape.InputBytes
                 || claimed.InputBytes != claimedShape.InputBytes
+                || !string.Equals(
+                    regenerated.ContentSha256,
+                    claimed.ContentSha256,
+                    StringComparison.Ordinal)
                 || regenerated.Headers.Count != claimedShape.HeaderCount
                 || claimed.Headers.Count != claimedShape.HeaderCount
                 || regenerated.Rows.Count != claimedShape.RowCount
@@ -621,12 +758,14 @@ public sealed class CountyCsvUploadAdmissionLedger :
 
     private static CountyCsvUploadAdmissionResult Accepted(
         CountyCsvUploadAdmissionDisposition disposition,
-        CountyCsvUploadBatch batch) =>
+        CountyCsvUploadBatch batch,
+        CountyCsvUploadRowStagingSummary? rowStaging = null) =>
         new(
             ICountyCsvUploadAdmissionLedger.ContractId,
             disposition,
             CountyCsvUploadAdmissionDenialCode.None,
-            batch);
+            batch,
+            rowStaging);
 
     private static CountyCsvUploadAdmissionResult Denied(
         CountyCsvUploadAdmissionDenialCode denialCode) =>
@@ -638,14 +777,18 @@ public sealed class CountyCsvUploadAdmissionLedger :
 
     private sealed record ContentRevalidationResult(
         CountyCsvUploadAdmissionDenialCode DenialCode,
-        int AcceptedRowCount)
+        int AcceptedRowCount,
+        CountyCsvDocument? Document)
     {
-        public static ContentRevalidationResult Accepted(int acceptedRowCount) =>
-            new(CountyCsvUploadAdmissionDenialCode.None, acceptedRowCount);
+        public static ContentRevalidationResult Accepted(CountyCsvDocument document) =>
+            new(
+                CountyCsvUploadAdmissionDenialCode.None,
+                document.Rows.Count,
+                document);
 
         public static ContentRevalidationResult Denied(
             CountyCsvUploadAdmissionDenialCode denialCode) =>
-            new(denialCode, 0);
+            new(denialCode, 0, null);
     }
 
     private readonly record struct ClaimedDocumentShape(

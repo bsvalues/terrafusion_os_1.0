@@ -1,13 +1,17 @@
 using System.Text;
+using System.Data.Common;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using TerraFusion.API.Auth;
 using TerraFusion.Core.Auth;
 using TerraFusion.Core.Counties;
 using TerraFusion.Core.Import;
+using TerraFusion.Core.Interfaces;
 using TerraFusion.Data;
 using TerraFusion.Data.Extensions;
 using TerraFusion.Data.Services.Import;
@@ -21,7 +25,7 @@ namespace TerraFusion.Unit.Tests.Import;
 public sealed class CountyCsvUploadAdmissionServiceRegistrationTests
 {
     private const string MigrationId =
-        "20260902000000_WAL002GCountyCsvUploadAdmissionLedger";
+        "20260903000000_WAL002JCountyCsvRowStaging";
     private static readonly WashingtonCountyIdentity Benton = ResolveCounty("Benton");
     private static readonly WashingtonCountyIdentity Franklin = ResolveCounty("Franklin");
     private static readonly Guid BentonId =
@@ -49,6 +53,8 @@ public sealed class CountyCsvUploadAdmissionServiceRegistrationTests
         Assert.NotSame(
             firstLedger,
             secondScope.ServiceProvider.GetRequiredService<ICountyCsvUploadAdmissionLedger>());
+        Assert.IsType<CountyCsvUploadRowStager>(
+            firstScope.ServiceProvider.GetRequiredService<ICountyCsvUploadRowStager>());
 
         var factory = firstScope.ServiceProvider
             .GetRequiredService<IDbContextFactory<TerraFusionDbContext>>();
@@ -84,6 +90,24 @@ public sealed class CountyCsvUploadAdmissionServiceRegistrationTests
                 first.Batch).BatchId;
             Assert.NotEqual(bentonBatchId, franklin.Batch!.BatchId);
             Assert.NotEqual(first.Batch.CountyId, franklin.Batch.CountyId);
+
+            var stager = scope.ServiceProvider.GetRequiredService<ICountyCsvUploadRowStager>();
+            var bentonStaging = await stager.StageAsync(new(
+                bentonRequest.CountyContext,
+                first.Batch,
+                bentonRequest.AdmittedContent));
+            var franklinStaging = await stager.StageAsync(new(
+                franklinRequest.CountyContext,
+                franklin.Batch,
+                franklinRequest.AdmittedContent));
+            Assert.Equal(2, bentonStaging.StagedRowCount);
+            Assert.Equal(0, bentonStaging.QuarantinedRowCount);
+            Assert.Equal(BentonId, bentonStaging.CountyId);
+            Assert.Equal(FranklinId, franklinStaging.CountyId);
+            await Assert.ThrowsAsync<InvalidOperationException>(() => stager.StageAsync(new(
+                bentonRequest.CountyContext,
+                franklin.Batch,
+                franklinRequest.AdmittedContent)));
         }
 
         await using (var restartedProvider = BuildProvider(database.ConnectionString))
@@ -104,9 +128,89 @@ public sealed class CountyCsvUploadAdmissionServiceRegistrationTests
             Assert.Equal(bentonBatchId, Assert.Single(bentonHistory).BatchId);
             Assert.Equal(BentonId, Assert.Single(bentonHistory).CountyId);
             Assert.Equal(FranklinId, Assert.Single(franklinHistory).CountyId);
+            Assert.Equal(2, Assert.Single(bentonHistory).RowStaging!.StagedRowCount);
+            Assert.Equal(2, Assert.Single(franklinHistory).RowStaging!.StagedRowCount);
             Assert.DoesNotContain(bentonHistory, batch => batch.CountyId == FranklinId);
             Assert.DoesNotContain(franklinHistory, batch => batch.CountyId == BentonId);
         }
+    }
+
+    [Fact]
+    public async Task Row_staging_retries_the_entire_serializable_attempt_with_a_fresh_context()
+    {
+        await using var database = new TemporaryDatabaseFile();
+        var transientFailure = new SqliteBusyOnceInterceptor();
+        await using var provider = BuildProvider(database.ConnectionString, transientFailure);
+        await InitializeAsync(provider);
+        await using var scope = provider.CreateAsyncScope();
+        var request = await CreateRequestAsync(Benton, BentonId, "benton-assessor");
+        var ledger = scope.ServiceProvider.GetRequiredService<ICountyCsvUploadAdmissionLedger>();
+        var admission = await ledger.AdmitAsync(request);
+        transientFailure.Arm();
+
+        var staging = await scope.ServiceProvider
+            .GetRequiredService<ICountyCsvUploadRowStager>()
+            .StageAsync(new(
+                request.CountyContext,
+                admission.Batch,
+                request.AdmittedContent));
+
+        Assert.Equal(2, staging.StagedRowCount);
+        Assert.Equal(0, staging.QuarantinedRowCount);
+        Assert.True(transientFailure.WasTriggered);
+        Assert.True(transientFailure.ObservedContextCount >= 2);
+    }
+
+    [Fact]
+    public async Task Row_staging_rejects_content_not_bound_to_the_admitted_digest()
+    {
+        await using var database = new TemporaryDatabaseFile();
+        await using var provider = BuildProvider(database.ConnectionString);
+        await InitializeAsync(provider);
+        await using var scope = provider.CreateAsyncScope();
+        var request = await CreateRequestAsync(Benton, BentonId, "benton-assessor");
+        var admission = await scope.ServiceProvider
+            .GetRequiredService<ICountyCsvUploadAdmissionLedger>()
+            .AdmitAsync(request);
+        var alteredContent = request.AdmittedContent.ToArray();
+        alteredContent[^2] = alteredContent[^2] == (byte)'e' ? (byte)'f' : (byte)'e';
+
+        await Assert.ThrowsAsync<InvalidOperationException>(() =>
+            scope.ServiceProvider.GetRequiredService<ICountyCsvUploadRowStager>().StageAsync(new(
+                request.CountyContext,
+                admission.Batch,
+                alteredContent)));
+    }
+
+    [Fact]
+    public async Task Parallel_sqlite_legacy_backfill_calls_converge_on_one_batch_stage()
+    {
+        await using var database = new TemporaryDatabaseFile();
+        await using var provider = BuildProvider(database.ConnectionString);
+        await InitializeAsync(provider);
+        await using var scope = provider.CreateAsyncScope();
+        var request = await CreateRequestAsync(Benton, BentonId, "benton-assessor");
+        var admission = await scope.ServiceProvider
+            .GetRequiredService<ICountyCsvUploadAdmissionLedger>()
+            .AdmitAsync(request);
+        var factory = scope.ServiceProvider.GetRequiredService<IDbContextFactory<TerraFusionDbContext>>();
+        await using (var cleanupContext = await factory.CreateDbContextAsync())
+        {
+            await cleanupContext.CountyCsvUploadRowStages.ExecuteDeleteAsync();
+        }
+
+        var stager = scope.ServiceProvider.GetRequiredService<ICountyCsvUploadRowStager>();
+        var stagingRequest = new CountyCsvUploadRowStagingRequest(
+            request.CountyContext,
+            admission.Batch,
+            request.AdmittedContent);
+        var results = await Task.WhenAll(
+            stager.StageAsync(stagingRequest),
+            stager.StageAsync(stagingRequest));
+
+        Assert.All(results, result => Assert.Equal(2, result.StagedRowCount));
+        await using var verificationContext = await factory.CreateDbContextAsync();
+        Assert.Equal(1, await verificationContext.CountyCsvUploadRowStages.CountAsync());
     }
 
     [Fact]
@@ -153,15 +257,74 @@ public sealed class CountyCsvUploadAdmissionServiceRegistrationTests
         Assert.DoesNotContain("FROM (", sql, StringComparison.OrdinalIgnoreCase);
     }
 
-    private static ServiceProvider BuildProvider(string connectionString)
+    private static ServiceProvider BuildProvider(
+        string connectionString,
+        DbCommandInterceptor? interceptor = null)
     {
         var services = new ServiceCollection();
         services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
         services.AddDbContext<TerraFusionDbContext>(options =>
-            options.UseSqlite(connectionString));
+        {
+            options.UseSqlite(connectionString);
+            if (interceptor is not null)
+            {
+                options.AddInterceptors(interceptor);
+            }
+        });
         services.AddCountyCsvUploadAdmission();
         return services.BuildServiceProvider(
             new ServiceProviderOptions { ValidateOnBuild = true, ValidateScopes = true });
+    }
+
+    private sealed class SqliteBusyOnceInterceptor : DbCommandInterceptor
+    {
+        private readonly object _gate = new();
+        private readonly HashSet<DbContext> _contexts = new(ReferenceEqualityComparer.Instance);
+        private int _armed;
+        private int _triggered;
+
+        public bool WasTriggered => Volatile.Read(ref _triggered) == 1;
+
+        public int ObservedContextCount
+        {
+            get
+            {
+                lock (_gate)
+                {
+                    return _contexts.Count;
+                }
+            }
+        }
+
+        public void Arm() => Volatile.Write(ref _armed, 1);
+
+        public override ValueTask<InterceptionResult<DbDataReader>> ReaderExecutingAsync(
+            DbCommand command,
+            CommandEventData eventData,
+            InterceptionResult<DbDataReader> result,
+            CancellationToken cancellationToken = default)
+        {
+            if (eventData.Context is not null
+                && command.CommandText.Contains("CountyCsvUploadRowStages", StringComparison.Ordinal))
+            {
+                lock (_gate)
+                {
+                    _contexts.Add(eventData.Context);
+                }
+
+                if (Volatile.Read(ref _armed) == 1
+                    && Interlocked.CompareExchange(ref _triggered, 1, 0) == 0)
+                {
+                    throw new SqliteException("database is busy", 5);
+                }
+            }
+
+            return base.ReaderExecutingAsync(
+                command,
+                eventData,
+                result,
+                cancellationToken);
+        }
     }
 
     private static async Task InitializeAsync(ServiceProvider provider)
@@ -203,11 +366,14 @@ public sealed class CountyCsvUploadAdmissionServiceRegistrationTests
 
         var migrations = context.Database.GetMigrations().ToArray();
         Assert.Equal(MigrationId, migrations[^1]);
-        foreach (var migration in migrations[..^1])
+        var previousMigration = migrations[^2];
+        foreach (var migration in migrations[..^2])
         {
             await context.Database.ExecuteSqlInterpolatedAsync(
                 $"INSERT INTO \"__EFMigrationsHistory\" (\"MigrationId\", \"ProductVersion\") VALUES ({migration}, {"8.0.0"})");
         }
+
+        await context.GetService<IMigrator>().MigrateAsync(previousMigration);
     }
 
     private static async Task<int> CountBatchesAsync(IServiceProvider services)
@@ -230,7 +396,8 @@ public sealed class CountyCsvUploadAdmissionServiceRegistrationTests
             .BindCurrentAsync();
         var context = await new AuthenticatedCanonicalCountyContext(resolver)
             .EstablishAsync(binding);
-        var bytes = Encoding.UTF8.GetBytes("parcel_id,owner\n1,Ada\n2,Grace\n");
+        var bytes = Encoding.UTF8.GetBytes(
+            "parcel_id,situs_address,assessed_value\n1,100 Main St,250000\n2,200 Main St,300000\n");
         var intake = new CountyCsvCountyBoundIntake(
             new CountyCsvParserOptions
             {

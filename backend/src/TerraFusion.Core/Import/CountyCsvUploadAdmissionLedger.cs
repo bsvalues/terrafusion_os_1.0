@@ -27,6 +27,7 @@ public enum CountyCsvUploadAdmissionDenialCode
   InvalidIdentity = 12,
   IdempotencyKeyMismatch = 13,
   KeyCollision = 14,
+  InvalidRowSchema = 15,
 }
 
 /// <summary>
@@ -44,7 +45,8 @@ public sealed record CountyCsvUploadAdmissionResult(
     string ContractId,
     CountyCsvUploadAdmissionDisposition Disposition,
     CountyCsvUploadAdmissionDenialCode DenialCode,
-    CountyCsvUploadBatch? Batch);
+    CountyCsvUploadBatch? Batch,
+    CountyCsvUploadRowStagingSummary? RowStaging = null);
 
 /// <summary>
 /// Durable upload-only contract <c>wal.county-upload.durable-admission-ledger.v1</c>. Implementations
@@ -79,7 +81,8 @@ public sealed record CountyCsvUploadBatchSummary(
     long ContentByteLength,
     int AcceptedRowCount,
     string Status,
-    DateTimeOffset ReceivedAtUtc);
+    DateTimeOffset ReceivedAtUtc,
+    CountyCsvUploadRowStagingSummary? RowStaging = null);
 
 /// <summary>
 /// Reads recent durable admissions only for the authenticated county ID supplied by the protected

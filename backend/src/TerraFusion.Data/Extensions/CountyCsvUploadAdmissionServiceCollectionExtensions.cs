@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using TerraFusion.Core.Import;
+using TerraFusion.Core.Interfaces;
 using TerraFusion.Data.Services.Import;
 
 namespace TerraFusion.Data.Extensions;
@@ -24,6 +25,7 @@ public static class CountyCsvUploadAdmissionServiceCollectionExtensions
             provider.GetRequiredService<CountyCsvUploadAdmissionLedger>());
         services.AddScoped<ICountyCsvUploadHistoryReader>(provider =>
             provider.GetRequiredService<CountyCsvUploadAdmissionLedger>());
+        services.AddScoped<ICountyCsvUploadRowStager, CountyCsvUploadRowStager>();
 
         return services;
     }

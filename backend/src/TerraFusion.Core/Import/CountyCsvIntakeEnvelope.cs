@@ -124,9 +124,10 @@ public sealed class CountyCsvIntakeEnvelope
 
         await using var stream = new MemoryStream(snapshot, writable: false);
         var document = await _parser.ParseAsync(stream, cancellationToken).ConfigureAwait(false);
-        if (document.InputBytes != evidence.ByteLength)
+        if (document.InputBytes != evidence.ByteLength
+            || !string.Equals(document.ContentSha256, evidence.Sha256, StringComparison.Ordinal))
         {
-            throw new InvalidOperationException("Parser byte evidence does not match the admitted snapshot.");
+            throw new InvalidOperationException("Parser content evidence does not match the admitted snapshot.");
         }
 
         return new CountyCsvIntakeReceipt(

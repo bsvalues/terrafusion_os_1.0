@@ -52,15 +52,15 @@ function renderRoute(path = '/counties/063/upload') {
 describe('county CSV admission domain surface', () => {
   beforeEach(() => {
     fetchCountyCsvUploadHistoryMock.mockReset().mockResolvedValue({
-      contractId: 'wal.county-upload.authenticated-durable-csv-api-admission.v1',
+      contractId: 'wal.county-upload.authenticated-row-staging-api.v1',
       countyId: SPOKANE_ID,
       countyKey: 'wa-spokane',
       countyName: 'Spokane',
-      availability: 'admitted-not-staged',
+      availability: 'row-validation-staging-not-promoted',
       batches: [],
     });
     uploadCountyCsvMock.mockReset().mockResolvedValue({
-      contractId: 'wal.county-upload.authenticated-durable-csv-api-admission.v1',
+      contractId: 'wal.county-upload.authenticated-row-staging-api.v1',
       ledgerContractId: 'wal.county-upload.durable-admission-ledger.v1',
       batchId: 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
       countyId: SPOKANE_ID,
@@ -71,6 +71,11 @@ describe('county CSV admission domain surface', () => {
       contentLength: 64,
       acceptedRowCount: 2,
       duplicateDisposition: 'FirstSeen',
+      rowStagingContractId: 'wal.county-upload.durable-row-staging.v1',
+      validationSchemaVersion: 'wa-county-csv-v1',
+      stagedRowCount: 1,
+      quarantinedRowCount: 1,
+      quarantineReasonCounts: [{ reasonCode: 'INVALID_SALE_DATE', count: 1 }],
     });
   });
 
@@ -85,22 +90,33 @@ describe('county CSV admission domain surface', () => {
       acceptedRowCount: 2,
       status: 'Admitted',
       receivedAtUtc: '2026-09-03T00:00:00Z',
+      rowStaging: {
+        batchId: 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
+        countyId: SPOKANE_ID,
+        contractId: 'wal.county-upload.durable-row-staging.v1',
+        schemaVersion: 'wa-county-csv-v1',
+        totalRowCount: 2,
+        stagedRowCount: 1,
+        quarantinedRowCount: 1,
+        reasonCounts: [{ reasonCode: 'INVALID_SALE_DATE', count: 1 }],
+        validatedAtUtc: '2026-09-03T00:00:01Z',
+      },
     };
     fetchCountyCsvUploadHistoryMock
       .mockResolvedValueOnce({
-        contractId: 'wal.county-upload.authenticated-durable-csv-api-admission.v1',
+        contractId: 'wal.county-upload.authenticated-row-staging-api.v1',
         countyId: SPOKANE_ID,
         countyKey: 'wa-spokane',
         countyName: 'Spokane',
-        availability: 'admitted-not-staged',
+        availability: 'row-validation-staging-not-promoted',
         batches: [],
       })
       .mockResolvedValueOnce({
-        contractId: 'wal.county-upload.authenticated-durable-csv-api-admission.v1',
+        contractId: 'wal.county-upload.authenticated-row-staging-api.v1',
         countyId: SPOKANE_ID,
         countyKey: 'wa-spokane',
         countyName: 'Spokane',
-        availability: 'admitted-not-staged',
+        availability: 'row-validation-staging-not-promoted',
         batches: [batch],
       });
 
@@ -112,7 +128,7 @@ describe('county CSV admission domain surface', () => {
       /check authenticated county/i
     );
     expect(
-      screen.getByText(/does not yet stage, publish, or enable rows in TerraForge/i)
+      screen.getByText(/staged rows are not yet promoted, published, or enabled in TerraForge/i)
     ).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('button', { name: 'Check authenticated county' }));
@@ -128,12 +144,15 @@ describe('county CSV admission domain surface', () => {
       expect(uploadCountyCsvMock).toHaveBeenCalledWith(apiFetchMock, file, 'Sales')
     );
     expect(await screen.findByTestId('county-upload-receipt')).toHaveTextContent(
-      /2 structurally valid rows/i
+      /1 rows staged.*1 quarantined/i
     );
     expect(await screen.findByTestId(`county-upload-batch-${batch.batchId}`)).toHaveTextContent(
-      /spokane-sales.csv.*Sales.*2 structurally valid rows/i
+      /spokane-sales.csv.*Sales.*1 staged.*1 quarantined/i
     );
-    expect(screen.getByText(/not staged or available to TerraForge/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/validated staging only; not promoted or available to TerraForge/i)
+    ).toBeInTheDocument();
+    expect(screen.getByText(/INVALID_SALE_DATE \(1\)/i)).toBeInTheDocument();
 
     const fileInput = screen.getByLabelText('Choose county CSV') as HTMLInputElement;
     expect(fileInput.value).toBe('');
@@ -144,11 +163,11 @@ describe('county CSV admission domain surface', () => {
 
   it('blocks controls when the authenticated county differs from the route county', async () => {
     fetchCountyCsvUploadHistoryMock.mockResolvedValueOnce({
-      contractId: 'wal.county-upload.authenticated-durable-csv-api-admission.v1',
+      contractId: 'wal.county-upload.authenticated-row-staging-api.v1',
       countyId: '00000000-0000-0000-0000-000000000005',
       countyKey: 'wa-benton',
       countyName: 'Benton',
-      availability: 'admitted-not-staged',
+      availability: 'row-validation-staging-not-promoted',
       batches: [],
     });
 
@@ -181,11 +200,11 @@ describe('county CSV admission domain surface', () => {
         })
       )
       .mockResolvedValueOnce({
-        contractId: 'wal.county-upload.authenticated-durable-csv-api-admission.v1',
+        contractId: 'wal.county-upload.authenticated-row-staging-api.v1',
         countyId: BENTON_ID,
         countyKey: 'wa-benton',
         countyName: 'Benton',
-        availability: 'admitted-not-staged',
+        availability: 'row-validation-staging-not-promoted',
         batches: [],
       });
 
@@ -200,11 +219,11 @@ describe('county CSV admission domain surface', () => {
 
     await act(async () => {
       resolveSpokaneHistory?.({
-        contractId: 'wal.county-upload.authenticated-durable-csv-api-admission.v1',
+        contractId: 'wal.county-upload.authenticated-row-staging-api.v1',
         countyId: SPOKANE_ID,
         countyKey: 'wa-spokane',
         countyName: 'Spokane',
-        availability: 'admitted-not-staged',
+        availability: 'row-validation-staging-not-promoted',
         batches: [],
       });
     });

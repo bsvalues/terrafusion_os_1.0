@@ -1,3 +1,4 @@
+using System.Security.Cryptography;
 using System.Text;
 using TerraFusion.Core.Import;
 using Xunit;
@@ -22,6 +23,9 @@ public sealed class CountyCsvStreamParserTests
             new[] { "1002", "Doe, John", "line one\r\nline two with \"quote\"" },
             document.Rows[1]);
         Assert.Equal((long)Encoding.UTF8.GetByteCount(csv), document.InputBytes);
+        Assert.Equal(
+            Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(csv))).ToLowerInvariant(),
+            document.ContentSha256);
     }
 
     [Fact]

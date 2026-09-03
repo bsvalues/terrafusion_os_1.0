@@ -21,7 +21,7 @@ describe('county CSV upload client', () => {
       countyId: 'county-id',
       countyKey: 'wa-spokane',
       countyName: 'Spokane',
-      availability: 'admitted-not-staged',
+      availability: 'row-validation-staging-not-promoted',
       batches: [],
     };
     apiFetchMock.mockResolvedValue(response(payload));
@@ -46,6 +46,11 @@ describe('county CSV upload client', () => {
       contentLength: file.size,
       acceptedRowCount: 1,
       duplicateDisposition: 'FirstSeen',
+      rowStagingContractId: 'wal.county-upload.durable-row-staging.v1',
+      validationSchemaVersion: 'wa-county-csv-v1',
+      stagedRowCount: 1,
+      quarantinedRowCount: 0,
+      quarantineReasonCounts: [],
     };
     apiFetchMock.mockResolvedValue(response(payload));
 
@@ -73,7 +78,7 @@ describe('county CSV upload client', () => {
         countyId: 'spokane-id',
         countyKey: 'wa-spokane',
         countyName: 'Spokane',
-        availability: 'admitted-not-staged',
+        availability: 'row-validation-staging-not-promoted',
         batches: [
           {
             batchId: 'batch-id',
@@ -85,6 +90,87 @@ describe('county CSV upload client', () => {
             acceptedRowCount: 1,
             status: 'Admitted',
             receivedAtUtc: '2026-09-03T00:00:00Z',
+            rowStaging: null,
+          },
+        ],
+      })
+    );
+
+    await expect(fetchCountyCsvUploadHistory(apiFetchMock)).rejects.toThrow(
+      /invalid history response/i
+    );
+  });
+
+  it('rejects staging metadata that is rebound to another county', async () => {
+    apiFetchMock.mockResolvedValue(
+      response({
+        contractId: 'upload-v1',
+        countyId: 'spokane-id',
+        countyKey: 'wa-spokane',
+        countyName: 'Spokane',
+        availability: 'row-validation-staging-not-promoted',
+        batches: [
+          {
+            batchId: 'batch-id',
+            countyId: 'spokane-id',
+            dataset: 'Sales',
+            sourceFileName: 'sales.csv',
+            contentSha256: 'a'.repeat(64),
+            contentByteLength: 64,
+            acceptedRowCount: 1,
+            status: 'Admitted',
+            receivedAtUtc: '2026-09-03T00:00:00Z',
+            rowStaging: {
+              batchId: 'batch-id',
+              countyId: 'benton-id',
+              contractId: 'wal.county-upload.durable-row-staging.v1',
+              schemaVersion: 'wa-county-csv-v1',
+              totalRowCount: 1,
+              stagedRowCount: 1,
+              quarantinedRowCount: 0,
+              reasonCounts: [],
+              validatedAtUtc: '2026-09-03T00:00:01Z',
+            },
+          },
+        ],
+      })
+    );
+
+    await expect(fetchCountyCsvUploadHistory(apiFetchMock)).rejects.toThrow(
+      /invalid history response/i
+    );
+  });
+
+  it('rejects staging metadata whose total does not match the admitted row count', async () => {
+    apiFetchMock.mockResolvedValue(
+      response({
+        contractId: 'upload-v1',
+        countyId: 'spokane-id',
+        countyKey: 'wa-spokane',
+        countyName: 'Spokane',
+        availability: 'row-validation-staging-not-promoted',
+        batches: [
+          {
+            batchId: 'batch-id',
+            countyId: 'spokane-id',
+            dataset: 'Sales',
+            sourceFileName: 'sales.csv',
+            contentSha256: 'a'.repeat(64),
+            contentByteLength: 64,
+            acceptedRowCount: 1,
+            status: 'Admitted',
+            receivedAtUtc: '2026-09-03T00:00:00Z',
+            rowStaging: {
+              batchId: 'batch-id',
+              countyId: 'spokane-id',
+              contractId: 'wal.county-upload.durable-row-staging.v1',
+              schemaVersion: 'wa-county-csv-v1',
+              totalRowCount: 2,
+              stagedRowCount: 2,
+              quarantinedRowCount: 0,
+              reasonCounts: [],
+              validatedAtUtc: '2026-09-03T00:00:01Z',
+            },
           },
         ],
       })

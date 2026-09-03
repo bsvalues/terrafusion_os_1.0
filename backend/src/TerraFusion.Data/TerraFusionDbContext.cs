@@ -40,8 +40,9 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
   public DbSet<GovernmentUser> GovernmentUsers { get; set; }
   public DbSet<AuditLog> AuditLogs { get; set; }
 
-  // WAL upload-only durable admission ledger (no bytes, staging, promotion, or PACS state)
+  // WAL durable admission ledger plus county-scoped normalized row staging (no promotion/PACS state)
   public DbSet<CountyCsvUploadBatch> CountyCsvUploadBatches { get; set; }
+  public DbSet<CountyCsvUploadRowStage> CountyCsvUploadRowStages { get; set; }
 
   // WS-1 Forge Cost Reference — TF-native valuation reference data (county-scoped, versioned, audit-stamped)
   public DbSet<CostFactorSet> CostFactorSets { get; set; }
@@ -989,8 +990,9 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
     modelBuilder.ApplyConfiguration(new NoticeConfiguration());
     modelBuilder.ApplyConfiguration(new QueueItemConfiguration());
 
-    // WAL upload-only durable admission ledger
+    // WAL durable admission ledger and normalized county-scoped row staging
     modelBuilder.ApplyConfiguration(new CountyCsvUploadBatchConfiguration());
+    modelBuilder.ApplyConfiguration(new CountyCsvUploadRowStageConfiguration());
 
     // R3 Sync Spine
     modelBuilder.ApplyConfiguration(new SyncBatchConfiguration());

@@ -285,7 +285,8 @@ public sealed class CountyCsvIntakeIdempotencyTests
                 new CountyCsvDocument(
                     Array.AsReadOnly(new[] { "parcel_id" }),
                     Array.AsReadOnly<IReadOnlyList<string>>([]),
-                    byteLength)));
+                    byteLength,
+                    evidence.Sha256)));
     }
 
     private static void AssertError(
