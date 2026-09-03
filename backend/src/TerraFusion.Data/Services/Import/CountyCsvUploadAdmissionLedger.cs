@@ -354,6 +354,7 @@ public sealed class CountyCsvUploadAdmissionLedger :
                 batch.AcceptedRowCount,
                 batch.Status,
                 batch.ReceivedAtUtc,
+                null,
                 null));
 
     private static async Task<CountyCsvUploadBatch?> FindByIdempotencyKeyAsync(
