@@ -19,6 +19,8 @@ using TerraFusion.API.Controllers;
 using TerraFusion.API.Security;
 using TerraFusion.Core.Auth;
 using TerraFusion.Core.Counties;
+using TerraFusion.Core.Entities.Import;
+using TerraFusion.Core.Import;
 using TerraFusion.Core.Services;
 using Xunit;
 
@@ -64,7 +66,7 @@ public sealed class DataImportControllerTests
             action.GetParameters().Take(2),
             parameter => Assert.NotNull(parameter.GetCustomAttribute<FromFormAttribute>()));
         Assert.Equal(
-            "wal.county-upload.authenticated-csv-api-admission.v1",
+            "wal.county-upload.authenticated-durable-csv-api-admission.v1",
             DataImportController.UploadContractId);
         Assert.All(
             typeof(DataImportController)
@@ -117,6 +119,8 @@ public sealed class DataImportControllerTests
         var ok = Assert.IsType<OkObjectResult>(result);
         var receipt = Assert.IsType<CountyCsvApiAdmissionReceipt>(ok.Value);
         Assert.Equal(DataImportController.UploadContractId, receipt.ContractId);
+        Assert.Equal(ICountyCsvUploadAdmissionLedger.ContractId, receipt.LedgerContractId);
+        Assert.NotEqual(Guid.Empty, receipt.BatchId);
         Assert.Equal(CountyIds["wa-benton"], receipt.CountyId);
         Assert.Equal("wa-benton", receipt.CountyKey);
         Assert.Equal("Benton", receipt.CountyName);
@@ -145,28 +149,55 @@ public sealed class DataImportControllerTests
 
         Assert.Equal("FirstSeen", first.DuplicateDisposition);
         Assert.Equal("Duplicate", second.DuplicateDisposition);
+        Assert.Equal(first.BatchId, second.BatchId);
         Assert.Equal(first.ContentSha256, second.ContentSha256);
         Assert.Equal(first.CountyId, second.CountyId);
     }
 
     [Fact]
-    public async Task Controller_initializes_one_duplicate_decision_during_concurrent_activation()
+    public async Task Upload_fails_closed_when_durable_ledger_denies()
     {
-        using var cache = new RacingMemoryCache();
+        var controller = BuildController(new DenyingAdmissionLedger());
+        var file = CsvFile(ValidCsv);
+        SetMultipartForm(controller, file, "Parcels");
+
+        var result = await controller.UploadFile(file, "Parcels", default);
+
+        AssertProblem(
+            result,
+            StatusCodes.Status409Conflict,
+            "CSV_DURABLE_ADMISSION_DENIED");
+    }
+
+    [Fact]
+    public async Task Upload_propagates_durable_ledger_cancellation()
+    {
+        var controller = BuildController(new CancelingAdmissionLedger());
+        var file = CsvFile(ValidCsv);
+        SetMultipartForm(controller, file, "Parcels");
+
+        await Assert.ThrowsAsync<OperationCanceledException>(
+            () => controller.UploadFile(file, "Parcels", default));
+    }
+
+    [Fact]
+    public async Task Controller_uses_one_injected_durable_ledger_during_concurrent_activation()
+    {
+        var ledger = new TestAdmissionLedger();
         using var start = new ManualResetEventSlim();
         var activations = Enumerable.Range(0, 8)
             .Select(_ => Task.Run(
                 () =>
                 {
                     start.Wait();
-                    return BuildController(cache);
+                    return BuildController(ledger);
                 }))
             .ToArray();
 
         start.Set();
         var controllers = await Task.WhenAll(activations);
         var field = typeof(DataImportController).GetField(
-            "_duplicateDecision",
+            "_admissionLedger",
             BindingFlags.Instance | BindingFlags.NonPublic);
         Assert.NotNull(field);
         var decisions = controllers
@@ -335,7 +366,7 @@ public sealed class DataImportControllerTests
     }
 
     [Fact]
-    public void Controller_has_only_local_in_memory_admission_dependencies()
+    public void Controller_has_only_county_context_and_durable_admission_dependencies()
     {
         var constructor = Assert.Single(typeof(DataImportController).GetConstructors());
         Assert.Equal(
@@ -343,7 +374,7 @@ public sealed class DataImportControllerTests
             {
                 typeof(ILogger<DataImportController>),
                 typeof(AuthenticatedCanonicalCountyContextProvider),
-                typeof(IMemoryCache),
+                typeof(ICountyCsvUploadAdmissionLedger),
             },
             constructor.GetParameters().Select(parameter => parameter.ParameterType));
         Assert.DoesNotContain(
@@ -356,6 +387,16 @@ public sealed class DataImportControllerTests
 
     private static DataImportController BuildController(
         IMemoryCache cache,
+        string authorityCounty = "wa-benton")
+    {
+        var admissionLedger = cache.GetOrCreate(
+            "test-county-csv-admission-ledger",
+            _ => new TestAdmissionLedger())!;
+        return BuildController(admissionLedger, authorityCounty);
+    }
+
+    private static DataImportController BuildController(
+        ICountyCsvUploadAdmissionLedger admissionLedger,
         string authorityCounty = "wa-benton")
     {
         var accessor = new StaticContextAccessor(
@@ -371,7 +412,7 @@ public sealed class DataImportControllerTests
         var controller = new DataImportController(
             NullLogger<DataImportController>.Instance,
             provider,
-            cache)
+            admissionLedger)
         {
             ControllerContext = new ControllerContext
             {
@@ -531,36 +572,83 @@ public sealed class DataImportControllerTests
         }
     }
 
-    private sealed class RacingMemoryCache : IMemoryCache
+    private sealed class TestAdmissionLedger : ICountyCsvUploadAdmissionLedger
     {
-        private readonly MemoryCache _inner = new(new MemoryCacheOptions());
-        private readonly CountdownEvent _firstMisses = new(2);
+        private readonly object _gate = new();
+        private readonly Dictionary<string, CountyCsvUploadBatch> _batches =
+            new(StringComparer.Ordinal);
 
-        public ICacheEntry CreateEntry(object key) => _inner.CreateEntry(key);
-
-        public void Remove(object key) => _inner.Remove(key);
-
-        public bool TryGetValue(object key, out object? value)
+        public Task<CountyCsvUploadAdmissionResult> AdmitAsync(
+            CountyCsvUploadAdmissionRequest? request,
+            CancellationToken cancellationToken = default)
         {
-            if (_inner.TryGetValue(key, out value))
+            cancellationToken.ThrowIfCancellationRequested();
+            Assert.NotNull(request);
+            Assert.NotNull(request.CountyContext);
+            Assert.NotNull(request.IntakeReceipt);
+            Assert.NotNull(request.Identity);
+
+            var context = request.CountyContext;
+            var receipt = request.IntakeReceipt.IntakeReceipt;
+            var identity = request.Identity;
+            lock (_gate)
             {
-                return true;
+                var disposition = CountyCsvUploadAdmissionDisposition.Duplicate;
+                if (!_batches.TryGetValue(identity.IdempotencyKey, out var batch))
+                {
+                    batch = new CountyCsvUploadBatch(
+                        Guid.NewGuid(),
+                        context.CountyId!.Value,
+                        context.ActorId!,
+                        request.IntakeReceipt.Binding.Dataset,
+                        receipt.FileName,
+                        receipt.Format,
+                        receipt.MediaType,
+                        receipt.Content.Sha256,
+                        receipt.Content.ByteLength,
+                        receipt.Document.Rows.Count,
+                        identity.IdempotencyKey,
+                        request.ApiAdmissionContractId,
+                        AuthenticatedCanonicalCountyContext.ContractId,
+                        request.IntakeReceipt.ContractId,
+                        receipt.ContractId,
+                        CountyCsvStreamParser.ContractId,
+                        identity.ContractId,
+                        ICountyCsvUploadAdmissionLedger.ContractId,
+                        DateTimeOffset.UtcNow);
+                    _batches.Add(identity.IdempotencyKey, batch);
+                    disposition = CountyCsvUploadAdmissionDisposition.FirstSeen;
+                }
+
+                return Task.FromResult(
+                    new CountyCsvUploadAdmissionResult(
+                        ICountyCsvUploadAdmissionLedger.ContractId,
+                        disposition,
+                        CountyCsvUploadAdmissionDenialCode.None,
+                        batch));
             }
-
-            if (_firstMisses.CurrentCount > 0)
-            {
-                _firstMisses.Signal();
-                _firstMisses.Wait(TimeSpan.FromMilliseconds(100));
-            }
-
-            value = null;
-            return false;
         }
+    }
 
-        public void Dispose()
-        {
-            _firstMisses.Dispose();
-            _inner.Dispose();
-        }
+    private sealed class DenyingAdmissionLedger : ICountyCsvUploadAdmissionLedger
+    {
+        public Task<CountyCsvUploadAdmissionResult> AdmitAsync(
+            CountyCsvUploadAdmissionRequest? request,
+            CancellationToken cancellationToken = default) =>
+            Task.FromResult(
+                new CountyCsvUploadAdmissionResult(
+                    ICountyCsvUploadAdmissionLedger.ContractId,
+                    CountyCsvUploadAdmissionDisposition.Denied,
+                    CountyCsvUploadAdmissionDenialCode.InvalidApiContract,
+                    Batch: null));
+    }
+
+    private sealed class CancelingAdmissionLedger : ICountyCsvUploadAdmissionLedger
+    {
+        public Task<CountyCsvUploadAdmissionResult> AdmitAsync(
+            CountyCsvUploadAdmissionRequest? request,
+            CancellationToken cancellationToken = default) =>
+            Task.FromException<CountyCsvUploadAdmissionResult>(
+                new OperationCanceledException("synthetic durable ledger cancellation"));
     }
 }
