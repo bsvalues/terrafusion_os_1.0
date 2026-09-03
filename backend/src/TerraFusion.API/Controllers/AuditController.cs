@@ -419,7 +419,7 @@ public class AuditController : ControllerBase
     /// <summary>
     /// Translatable Entity predicate that mirrors <see cref="AuditTrailMapper.MapCategory"/>
     /// (case-insensitive substring, same precedence: appeal &gt; permit &gt; exemption &gt;
-    /// document &gt; field &gt; assessment &gt; system). Unknown category ⇒ no rows.
+    /// document &gt; field &gt; valuation &gt; assessment &gt; system). Unknown category ⇒ no rows.
     /// Applied in SQL so category filtering happens before the page window.
     /// </summary>
     private static IQueryable<AuditEvent> ApplyCategoryFilter(IQueryable<AuditEvent> q, string category)
@@ -442,13 +442,18 @@ public class AuditController : ControllerBase
                 return q.Where(e => e.Entity.ToLower().Contains("field")
                     && !e.Entity.ToLower().Contains("appeal") && !e.Entity.ToLower().Contains("permit")
                     && !e.Entity.ToLower().Contains("exemption") && !e.Entity.ToLower().Contains("document"));
-            case "assessment":
-                return q.Where(e =>
-                    (e.Entity.ToLower().Contains("parcel") || e.Entity.ToLower().Contains("property")
-                        || e.Entity.ToLower().Contains("assessment") || e.Entity.ToLower().Contains("valuation"))
+            case "valuation":
+                return q.Where(e => e.Entity.ToLower().Contains("valuation")
                     && !e.Entity.ToLower().Contains("appeal") && !e.Entity.ToLower().Contains("permit")
                     && !e.Entity.ToLower().Contains("exemption") && !e.Entity.ToLower().Contains("document")
                     && !e.Entity.ToLower().Contains("field"));
+            case "assessment":
+                return q.Where(e =>
+                    (e.Entity.ToLower().Contains("parcel") || e.Entity.ToLower().Contains("property")
+                        || e.Entity.ToLower().Contains("assessment"))
+                    && !e.Entity.ToLower().Contains("appeal") && !e.Entity.ToLower().Contains("permit")
+                    && !e.Entity.ToLower().Contains("exemption") && !e.Entity.ToLower().Contains("document")
+                    && !e.Entity.ToLower().Contains("field") && !e.Entity.ToLower().Contains("valuation"));
             case "system":
                 return q.Where(e =>
                     !e.Entity.ToLower().Contains("appeal") && !e.Entity.ToLower().Contains("permit")
@@ -565,7 +570,8 @@ public static class AuditTrailMapper
         if (s.Contains("exemption")) return "exemption";
         if (s.Contains("document")) return "document";
         if (s.Contains("field")) return "field";
-        if (s.Contains("parcel") || s.Contains("property") || s.Contains("assessment") || s.Contains("valuation"))
+        if (s.Contains("valuation")) return "valuation";
+        if (s.Contains("parcel") || s.Contains("property") || s.Contains("assessment"))
             return "assessment";
         return "system";
     }

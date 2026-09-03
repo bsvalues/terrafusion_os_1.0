@@ -177,9 +177,38 @@ public sealed class AuditTrailEndpointsTests
         events.Should().ContainSingle().Which.EventId.Should().Be("app");
     }
 
+    [Fact]
+    public async Task Search_ValuationCategoryReturnsPromotionTraceAsParcelEvent()
+    {
+        await using var db = CreateDb(nameof(Search_ValuationCategoryReturnsPromotionTraceAsParcelEvent));
+        db.AuditEvents.Add(new AuditEvent
+        {
+            Id = "county-upload-promotion:batch:1",
+            Entity = "ValuationComparableSale",
+            EntityId = "B-1",
+            UserId = "assessor-1",
+            Action = "valuation.sales-promoted",
+            Type = AuditEventType.Create,
+            Timestamp = DateTime.UtcNow,
+            CountyId = CountyId,
+            DetailsJson = "{\"comparableSaleId\":\"sale-1\"}",
+        });
+        await db.SaveChangesAsync();
+
+        var events = Ok(await CreateController(db).SearchAuditTrail(
+            parcelId: "B-1", startDate: null, endDate: null, userId: null,
+            category: "valuation", action: null));
+
+        var trace = events.Should().ContainSingle().Which;
+        trace.Category.Should().Be("valuation");
+        trace.ParcelId.Should().Be("B-1");
+        trace.Action.Should().Be("valuation.sales-promoted");
+    }
+
     [Theory]
     [InlineData("Parcel", "assessment")]
-    [InlineData("PropertyValuation", "assessment")]
+    [InlineData("PropertyValuation", "valuation")]
+    [InlineData("ValuationComparableSale", "valuation")]
     [InlineData("Appeal", "appeal")]
     [InlineData("BuildingPermit", "permit")]
     [InlineData("Exemption", "exemption")]

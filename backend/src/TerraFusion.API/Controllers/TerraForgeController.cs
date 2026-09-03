@@ -260,6 +260,7 @@ public class TerraForgeController : ControllerBase
     [Authorize(Policy = "RequireAssessor")]
     public async Task<IActionResult> GetSaleQualificationDetail(
         Guid saleId,
+        [FromQuery] int taxYear = 2026,
         [FromQuery] string? countyId = null,
         CancellationToken ct = default)
     {
@@ -278,7 +279,9 @@ public class TerraForgeController : ControllerBase
         decimal? assessedValue = null;
         if (s.ParcelId != null)
         {
-            var avMap = await GetAssessedValueMapAsync(new[] { s.ParcelId }, s.SalesYear ?? DateTime.UtcNow.Year, ct, scopedCountyId);
+            // County-upload sales intentionally have no source ratio-study assignment.
+            // Use the assessor's selected study year, exactly as the queue does.
+            var avMap = await GetAssessedValueMapAsync(new[] { s.ParcelId }, s.SalesYear ?? taxYear, ct, scopedCountyId);
             if (avMap.TryGetValue(s.ParcelId, out var avFound))
                 assessedValue = avFound;
         }

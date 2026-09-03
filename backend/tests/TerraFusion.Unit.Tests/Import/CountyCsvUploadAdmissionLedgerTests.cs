@@ -733,8 +733,8 @@ public sealed class CountyCsvUploadAdmissionLedgerTests
         var trace = Assert.Single(await context.AuditEvents.AsNoTracking().ToListAsync());
         Assert.Equal(BentonId, trace.CountyId);
         Assert.Equal("assessor-1", trace.UserId);
-        Assert.Equal("ComparableSale", trace.Entity);
-        Assert.Equal(sale.Id.ToString("D"), trace.EntityId);
+        Assert.Equal("ValuationComparableSale", trace.Entity);
+        Assert.Equal("B-1", trace.EntityId);
         Assert.Equal("valuation.sales-promoted", trace.Action);
         Assert.Contains("\"category\":\"valuation\"", trace.DetailsJson, StringComparison.Ordinal);
         Assert.Equal(1, (await promoter.GetAvailabilityAsync(request.CountyContext!)).PromotedSales);
@@ -764,6 +764,62 @@ public sealed class CountyCsvUploadAdmissionLedgerTests
             "index",
             "IX_CountyCsvUploadPromotions_CountyId_PromotedAtUtc"));
 
+        var countyId = Guid.NewGuid();
+        var uploadedSaleId = Guid.NewGuid();
+        var retainedSaleId = Guid.NewGuid();
+        context.Counties.Add(new TerraFusion.Core.Entities.County
+        {
+            Id = countyId,
+            Name = "Rollback",
+            State = "WA",
+            FipsCode = "53999",
+        });
+        context.ComparableSales.AddRange(
+            new TerraFusion.Core.Entities.ComparableSale
+            {
+                Id = uploadedSaleId,
+                CountyId = countyId,
+                ParcelId = "ROLLBACK-UPLOAD",
+                SaleDate = new DateTime(2026, 1, 15, 0, 0, 0, DateTimeKind.Utc),
+                SalePrice = 350000m,
+                PropertyType = "unknown",
+                IngestedBy = "county-upload",
+                VerificationSource = $"county-upload:{Guid.NewGuid():D}:2",
+            },
+            new TerraFusion.Core.Entities.ComparableSale
+            {
+                Id = retainedSaleId,
+                CountyId = countyId,
+                ParcelId = "RETAINED-SALE",
+                SaleDate = new DateTime(2026, 1, 16, 0, 0, 0, DateTimeKind.Utc),
+                SalePrice = 360000m,
+                PropertyType = "residential",
+                IngestedBy = "test",
+                VerificationSource = "test",
+            });
+        context.AuditEvents.AddRange(
+            new TerraFusion.Core.Entities.AuditEvent
+            {
+                Id = $"county-upload-promotion:{Guid.NewGuid():D}:2",
+                Entity = "ValuationComparableSale",
+                EntityId = "ROLLBACK-UPLOAD",
+                UserId = "assessor-1",
+                Action = "valuation.sales-promoted",
+                Type = TerraFusion.Core.DTOs.AuditEventType.Create,
+                CountyId = countyId,
+            },
+            new TerraFusion.Core.Entities.AuditEvent
+            {
+                Id = "retained-event",
+                Entity = "Parcel",
+                EntityId = "RETAINED-SALE",
+                UserId = "test",
+                Action = "Viewed",
+                Type = TerraFusion.Core.DTOs.AuditEventType.View,
+                CountyId = countyId,
+            });
+        await context.SaveChangesAsync();
+
         await migrator.MigrateAsync(previousMigration);
 
         Assert.True(await ObjectExistsAsync(context, "table", "CountyCsvUploadBatches"));
@@ -773,6 +829,10 @@ public sealed class CountyCsvUploadAdmissionLedgerTests
             "index",
             "IX_CountyCsvUploadRowStages_CountyId_ValidatedAtUtc"));
         Assert.False(await ObjectExistsAsync(context, "table", "CountyCsvUploadPromotions"));
+        Assert.False(await context.ComparableSales.AnyAsync(sale => sale.Id == uploadedSaleId));
+        Assert.True(await context.ComparableSales.AnyAsync(sale => sale.Id == retainedSaleId));
+        Assert.False(await context.AuditEvents.AnyAsync(trace => trace.EntityId == "ROLLBACK-UPLOAD"));
+        Assert.True(await context.AuditEvents.AnyAsync(trace => trace.Id == "retained-event"));
     }
 
     [Fact]
@@ -917,6 +977,19 @@ public sealed class CountyCsvUploadAdmissionLedgerTests
         return Convert.ToInt32(await command.ExecuteScalarAsync()) == 1;
     }
 
+    private static async Task CreateCurrentModelTableAsync(
+        TerraFusionDbContext context,
+        string tableName)
+    {
+        var script = context.Database.GenerateCreateScript();
+        var marker = $"CREATE TABLE \"{tableName}\"";
+        var start = script.IndexOf(marker, StringComparison.Ordinal);
+        Assert.True(start >= 0, $"Current model create script did not contain {tableName}.");
+        var end = script.IndexOf(';', start);
+        Assert.True(end > start, $"Current model create script did not terminate {tableName}.");
+        await context.Database.ExecuteSqlRawAsync(script[start..(end + 1)]);
+    }
+
     private static async Task<string> PrepareMigrationBaselineAsync(
         TerraFusionDbContext context)
     {
@@ -924,13 +997,22 @@ public sealed class CountyCsvUploadAdmissionLedgerTests
             "CREATE TABLE \"Counties\" (\"Id\" TEXT NOT NULL CONSTRAINT \"PK_Counties\" PRIMARY KEY, \"Name\" TEXT NOT NULL, \"State\" TEXT NOT NULL, \"FipsCode\" TEXT NOT NULL, \"Population\" INTEGER NOT NULL, \"Area\" REAL NOT NULL, \"CreatedAt\" TEXT NOT NULL, \"UpdatedAt\" TEXT NOT NULL)");
         await context.Database.ExecuteSqlRawAsync(
             "CREATE TABLE \"AuditLogs\" (\"Id\" TEXT NOT NULL CONSTRAINT \"PK_AuditLogs\" PRIMARY KEY, \"Type\" TEXT NOT NULL, \"Data\" TEXT NULL, \"Timestamp\" TEXT NOT NULL, \"UserId\" TEXT NULL, \"UserEmail\" TEXT NULL, \"IpAddress\" TEXT NULL, \"UserAgent\" TEXT NULL, \"RequestPath\" TEXT NULL, \"RequestMethod\" TEXT NULL, \"CorrelationId\" TEXT NULL, \"ResponseStatusCode\" INTEGER NULL, \"DurationMs\" INTEGER NULL, \"MachineName\" TEXT NULL, \"ProcessId\" INTEGER NULL, \"Severity\" TEXT NULL, \"Source\" TEXT NULL)");
+        // AuditEvents retains a nullable legacy ProjectId relationship; the target
+        // table must exist even when every promotion trace leaves ProjectId null.
+        await context.Database.ExecuteSqlRawAsync(
+            "CREATE TABLE \"Projects\" (\"Id\" TEXT NOT NULL CONSTRAINT \"PK_Projects\" PRIMARY KEY)");
+        await CreateCurrentModelTableAsync(context, "AuditEvents");
+        await CreateCurrentModelTableAsync(context, "ComparableSales");
         await context.Database.ExecuteSqlRawAsync(
             "CREATE TABLE \"__EFMigrationsHistory\" (\"MigrationId\" TEXT NOT NULL CONSTRAINT \"PK___EFMigrationsHistory\" PRIMARY KEY, \"ProductVersion\" TEXT NOT NULL)");
 
         var migrations = context.Database.GetMigrations().ToArray();
         Assert.Equal(MigrationId, migrations[^1]);
         var previousMigration = migrations[^2];
-        foreach (var migration in migrations[..^2])
+        // The upload feature has three ordered migrations: admission, row staging,
+        // and promotion. Mark only the migrations before that chain as applied so
+        // migrating to the row-staging predecessor actually creates both tables.
+        foreach (var migration in migrations[..^3])
         {
             await context.Database.ExecuteSqlInterpolatedAsync(
                 $"INSERT INTO \"__EFMigrationsHistory\" (\"MigrationId\", \"ProductVersion\") VALUES ({migration}, {"8.0.0"})");

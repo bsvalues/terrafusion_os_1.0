@@ -56,6 +56,7 @@ type RequestLane = 'queue' | 'detail' | 'stats' | 'hoodStats' | 'codeAudit' | 'd
 
 export type SalesForgeDataSource =
   | 'live-api'
+  | 'county-upload'
   | 'washington-hosted'
   | 'washington-reference';
 
@@ -96,6 +97,9 @@ function washingtonReferencePackageSource(
   dataSource: SalesForgeDataSource,
 ): WashingtonReferencePackageSource | null {
   if (dataSource === 'washington-reference') return 'repository-reference';
+  // A validated county upload is canonical live data. It must not be replaced by
+  // the optional hosted public package merely because launch-data mode is enabled.
+  if (dataSource === 'county-upload') return null;
   if (dataSource === 'washington-hosted' || isWashingtonLaunchDataEnabled()) return 'hosted';
   return null;
 }
@@ -466,7 +470,7 @@ export const useSalesForgeStore = create<SalesForgeState>((set, get) => ({
 
   fetchSaleDetail: async (saleId) => {
     const requestId = beginRequest('detail');
-    const { committedFilters } = get();
+    const { committedFilters, taxYear } = get();
     const countyScope = getSalesForgeCountyScope();
     set({ detailLoading: true, detailError: null });
     try {
@@ -475,6 +479,7 @@ export const useSalesForgeStore = create<SalesForgeState>((set, get) => ({
         ? await fetchWashingtonLaunchSaleDetail(saleId, committedFilters, packageSource)
         : await (async () => {
             const params = new URLSearchParams();
+            params.set('taxYear', String(taxYear));
             addCountyScopeParam(params, countyScope.countyId);
             const query = params.toString();
             const res = await apiFetch(`/terraforge/sale-qualification/${saleId}${query ? `?${query}` : ''}`, { headers: countyScope.headers });

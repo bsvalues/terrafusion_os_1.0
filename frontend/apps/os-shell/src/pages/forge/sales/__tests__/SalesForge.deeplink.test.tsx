@@ -545,6 +545,36 @@ describe('SalesForge — County Studio deeplink consumption (Task D2)', () => {
     expect(screen.queryByTestId('stub-queue')).not.toBeInTheDocument();
   });
 
+  it('keeps a validated county-upload handoff on the protected live provider', async () => {
+    window.history.replaceState({}, '', '/?wa-launch-data=1');
+
+    render(
+      <SalesForge
+        metadata={{
+          countyCode: '005',
+          countyName: 'Benton',
+          resetValuationScope: true,
+          launchContext: 'washington-counties-hub',
+          dataTrustTier: 'county-provided-validated-upload',
+          referencePackageSource: 'county-upload',
+          referenceDataPosture: 'county_provided_validated_upload',
+          referenceRecordCount: 1,
+          latestReferenceSaleDate: '2026-01-15',
+          salesReviewAvailability: 'available',
+          salesReviewUnavailableMessage: null,
+        }}
+      />
+    );
+
+    await waitFor(() => {
+      expect(useSalesForgeStore.getState().committedFilters.countyCode).toBe('005');
+      expect(useSalesForgeStore.getState().dataSource).toBe('county-upload');
+    });
+    expect(washingtonCountyLaunchMocks.resolve).not.toHaveBeenCalled();
+    expect(washingtonCountyLaunchMocks.verify).not.toHaveBeenCalled();
+    expect(screen.getByTestId('stub-queue')).toBeInTheDocument();
+  });
+
   it('fails closed instead of retaining Benton when a Counties Hub handoff is invalid', async () => {
     render(
       <SalesForge

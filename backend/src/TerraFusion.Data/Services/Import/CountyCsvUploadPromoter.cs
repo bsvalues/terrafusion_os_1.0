@@ -180,8 +180,10 @@ public sealed class CountyCsvUploadPromoter : ICountyCsvUploadPromoter
             {
                 Id = $"county-upload-promotion:{batchId:D}:{row.SourceRowNumber}",
                 Type = AuditEventType.Create,
-                Entity = nameof(ComparableSale),
-                EntityId = sales[index].Id.ToString("D"),
+                // AuditTrailMapper derives the canonical category from Entity and exposes
+                // EntityId as ParcelId. Keep the exact sale ID in immutable details.
+                Entity = "ValuationComparableSale",
+                EntityId = row.ParcelId!,
                 UserId = actorId,
                 Action = "valuation.sales-promoted",
                 DetailsJson = JsonSerializer.Serialize(new
