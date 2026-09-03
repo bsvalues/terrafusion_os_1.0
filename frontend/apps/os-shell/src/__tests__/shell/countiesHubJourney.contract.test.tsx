@@ -16,16 +16,12 @@ const {
   verifyWashingtonCountySalesShardMock,
   getWashingtonSalesReviewCapabilityMock,
   isWashingtonSalesReviewLaunchEnabledMock,
-  fetchCountyCsvUploadHistoryMock,
-  uploadCountyCsvMock,
 } = vi.hoisted(() => ({
   activateModuleMock: vi.fn(),
   resolveWashingtonCountyStatusMock: vi.fn(),
   verifyWashingtonCountySalesShardMock: vi.fn(),
   getWashingtonSalesReviewCapabilityMock: vi.fn(),
   isWashingtonSalesReviewLaunchEnabledMock: vi.fn(),
-  fetchCountyCsvUploadHistoryMock: vi.fn(),
-  uploadCountyCsvMock: vi.fn(),
 }));
 
 vi.mock('../../orchestration/moduleActivation', () => ({
@@ -40,11 +36,6 @@ vi.mock('../../services/washingtonCountyLaunch', () => ({
 vi.mock('../../pages/forge/sales/washingtonSalesReviewCapability', () => ({
   getWashingtonSalesReviewCapability: getWashingtonSalesReviewCapabilityMock,
   isWashingtonSalesReviewLaunchEnabled: isWashingtonSalesReviewLaunchEnabledMock,
-}));
-
-vi.mock('../../services/countyCsvUpload', () => ({
-  fetchCountyCsvUploadHistory: fetchCountyCsvUploadHistoryMock,
-  uploadCountyCsv: uploadCountyCsvMock,
 }));
 
 import CountiesHub from '../../components/CountiesHub';
@@ -119,27 +110,6 @@ describe('Washington Counties Hub assessor journey', () => {
       },
     });
     isWashingtonSalesReviewLaunchEnabledMock.mockReset().mockReturnValue(true);
-    fetchCountyCsvUploadHistoryMock.mockReset().mockResolvedValue({
-      contractId: 'wal.county-upload.authenticated-durable-csv-api-admission.v1',
-      countyId: '00000000-0000-0000-0000-000000000032',
-      countyKey: 'wa-spokane',
-      countyName: 'Spokane',
-      availability: 'admitted-not-staged',
-      batches: [],
-    });
-    uploadCountyCsvMock.mockReset().mockResolvedValue({
-      contractId: 'wal.county-upload.authenticated-durable-csv-api-admission.v1',
-      ledgerContractId: 'wal.county-upload.durable-admission-ledger.v1',
-      batchId: 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
-      countyId: '00000000-0000-0000-0000-000000000032',
-      countyKey: 'wa-spokane',
-      countyName: 'Spokane',
-      dataset: 'Sales',
-      contentSha256: 'a'.repeat(64),
-      contentLength: 64,
-      acceptedRowCount: 2,
-      duplicateDisposition: 'FirstSeen',
-    });
   });
 
   it('selects an observed county and opens the TerraForge suite with an exact county-only handoff', async () => {
@@ -172,6 +142,10 @@ describe('Washington Counties Hub assessor journey', () => {
       'Selected navigation context'
     );
     expect(screen.getByText(/navigation context only/i)).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Manage county CSV' })).toHaveAttribute(
+      'href',
+      '/counties/063/upload'
+    );
 
     fireEvent.click(screen.getByRole('button', { name: 'Open TerraForge' }));
 
@@ -193,86 +167,6 @@ describe('Washington Counties Hub assessor journey', () => {
         },
       });
     });
-  });
-
-  it('admits a CSV only after selected and authenticated county identities match', async () => {
-    const batch = {
-      batchId: 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
-      countyId: '00000000-0000-0000-0000-000000000032',
-      dataset: 'Sales',
-      sourceFileName: 'spokane-sales.csv',
-      contentSha256: 'a'.repeat(64),
-      contentByteLength: 64,
-      acceptedRowCount: 2,
-      status: 'Admitted',
-      receivedAtUtc: '2026-09-03T00:00:00Z',
-    };
-    fetchCountyCsvUploadHistoryMock
-      .mockResolvedValueOnce({
-        contractId: 'wal.county-upload.authenticated-durable-csv-api-admission.v1',
-        countyId: batch.countyId,
-        countyKey: 'wa-spokane',
-        countyName: 'Spokane',
-        availability: 'admitted-not-staged',
-        batches: [],
-      })
-      .mockResolvedValueOnce({
-        contractId: 'wal.county-upload.authenticated-durable-csv-api-admission.v1',
-        countyId: batch.countyId,
-        countyKey: 'wa-spokane',
-        countyName: 'Spokane',
-        availability: 'admitted-not-staged',
-        batches: [batch],
-      });
-
-    render(<CountiesHub />);
-    fireEvent.click(await screen.findByRole('option', { name: 'Select Spokane County' }));
-    expect(screen.getByTestId('county-csv-upload-panel')).toHaveTextContent(
-      /does not yet stage, publish, or enable rows in TerraForge/i
-    );
-
-    fireEvent.click(screen.getByRole('button', { name: 'Check authenticated county' }));
-    expect(await screen.findByText(/Authenticated for Spokane County/i)).toBeInTheDocument();
-
-    const file = new File(['parcel_id,sale_price\n1,350000\n2,410000\n'], 'spokane-sales.csv', {
-      type: 'text/csv',
-    });
-    fireEvent.change(screen.getByLabelText('Choose county CSV'), {
-      target: { files: [file] },
-    });
-    fireEvent.click(screen.getByRole('button', { name: 'Admit county CSV' }));
-
-    await waitFor(() => {
-      expect(uploadCountyCsvMock).toHaveBeenCalledWith(file, 'Sales');
-    });
-    expect(await screen.findByTestId('county-upload-receipt')).toHaveTextContent(
-      /2 structurally valid rows/i
-    );
-    expect(
-      screen.getByText(/spokane-sales.csv.*Sales.*2 structurally valid rows/i)
-    ).toBeInTheDocument();
-    expect(screen.getByText(/not staged or available to TerraForge/i)).toBeInTheDocument();
-  });
-
-  it('blocks upload controls when selected county differs from authenticated authority', async () => {
-    fetchCountyCsvUploadHistoryMock.mockResolvedValueOnce({
-      contractId: 'wal.county-upload.authenticated-durable-csv-api-admission.v1',
-      countyId: '00000000-0000-0000-0000-000000000005',
-      countyKey: 'wa-benton',
-      countyName: 'Benton',
-      availability: 'admitted-not-staged',
-      batches: [],
-    });
-
-    render(<CountiesHub />);
-    fireEvent.click(await screen.findByRole('option', { name: 'Select Spokane County' }));
-    fireEvent.click(screen.getByRole('button', { name: 'Check authenticated county' }));
-
-    expect(await screen.findByText(/authenticated county is Benton County/i)).toHaveTextContent(
-      /no data was uploaded/i
-    );
-    expect(screen.queryByRole('button', { name: 'Admit county CSV' })).not.toBeInTheDocument();
-    expect(uploadCountyCsvMock).not.toHaveBeenCalled();
   });
 
   it('validates only the selected hosted county and hands off shard-derived claims', async () => {

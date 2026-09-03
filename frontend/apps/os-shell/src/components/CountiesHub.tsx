@@ -11,7 +11,6 @@ import {
   Divider,
   Grid,
   InputAdornment,
-  MenuItem,
   Stack,
   TextField,
   Typography,
@@ -44,13 +43,6 @@ import {
   verifyWashingtonCountySalesShard,
   type WashingtonCountyStatusEntry,
 } from '../services/washingtonCountyLaunch';
-import {
-  fetchCountyCsvUploadHistory,
-  uploadCountyCsv,
-  type CountyCsvDataset,
-  type CountyCsvUploadHistory,
-  type CountyCsvUploadReceipt,
-} from '../services/countyCsvUpload';
 
 const EXPECTED_WASHINGTON_COUNTIES = 39;
 
@@ -95,13 +87,6 @@ const CountiesHub = () => {
   const [loadError, setLoadError] = useState<string | null>(null);
   const [launching, setLaunching] = useState(false);
   const [launchError, setLaunchError] = useState<string | null>(null);
-  const [uploadContextLoading, setUploadContextLoading] = useState(false);
-  const [uploadContext, setUploadContext] = useState<CountyCsvUploadHistory | null>(null);
-  const [uploadError, setUploadError] = useState<string | null>(null);
-  const [uploadFile, setUploadFile] = useState<File | null>(null);
-  const [uploadDataset, setUploadDataset] = useState<CountyCsvDataset>('Sales');
-  const [uploading, setUploading] = useState(false);
-  const [uploadReceipt, setUploadReceipt] = useState<CountyCsvUploadReceipt | null>(null);
   const [countyStatusSource, setCountyStatusSource] =
     useState<WashingtonCountiesHubHandoff['referencePackageSource']>('repository-reference');
   const [usedRepositoryFallback, setUsedRepositoryFallback] = useState(false);
@@ -347,75 +332,6 @@ const CountiesHub = () => {
     selectedSalesReviewUnavailableMessage,
   ]);
 
-  const authenticatedUploadMatchesSelection = Boolean(
-    selectedCounty &&
-    uploadContext &&
-    normalizeCountyName(uploadContext.countyName) === normalizeCountyName(selectedCounty.county) &&
-    uploadContext.countyKey === `wa-${selectedCounty.county.toLowerCase().replaceAll(' ', '-')}`
-  );
-
-  const loadAuthenticatedUploadContext = useCallback(async () => {
-    if (!selectedCounty) return;
-    setUploadContextLoading(true);
-    setUploadError(null);
-    setUploadReceipt(null);
-    try {
-      const history = await fetchCountyCsvUploadHistory();
-      setUploadContext(history);
-      if (
-        normalizeCountyName(history.countyName) !== normalizeCountyName(selectedCounty.county) ||
-        history.countyKey !== `wa-${selectedCounty.county.toLowerCase().replaceAll(' ', '-')}`
-      ) {
-        setUploadError(
-          `Your authenticated county is ${history.countyName} County. Select that county before uploading; no data was uploaded.`
-        );
-      }
-    } catch (error) {
-      setUploadContext(null);
-      setUploadError(
-        error instanceof Error ? error.message : 'Authenticated county upload is unavailable.'
-      );
-    } finally {
-      setUploadContextLoading(false);
-    }
-  }, [selectedCounty]);
-
-  const submitCountyUpload = useCallback(async () => {
-    if (!selectedCounty || !uploadContext || !authenticatedUploadMatchesSelection || !uploadFile) {
-      return;
-    }
-    setUploading(true);
-    setUploadError(null);
-    setUploadReceipt(null);
-    try {
-      const receipt = await uploadCountyCsv(uploadFile, uploadDataset);
-      if (
-        receipt.countyId !== uploadContext.countyId ||
-        receipt.countyKey !== uploadContext.countyKey ||
-        normalizeCountyName(receipt.countyName) !== normalizeCountyName(selectedCounty.county)
-      ) {
-        setUploadContext(null);
-        setUploadError(
-          'The upload receipt did not match the authenticated county context. No availability claim was applied.'
-        );
-        return;
-      }
-      setUploadReceipt(receipt);
-      setUploadFile(null);
-      setUploadContext(await fetchCountyCsvUploadHistory());
-    } catch (error) {
-      setUploadError(error instanceof Error ? error.message : 'County CSV upload failed.');
-    } finally {
-      setUploading(false);
-    }
-  }, [
-    authenticatedUploadMatchesSelection,
-    selectedCounty,
-    uploadContext,
-    uploadDataset,
-    uploadFile,
-  ]);
-
   return (
     <Box data-testid='counties-hub' sx={{ height: '100%', overflow: 'auto', p: { xs: 2, md: 4 } }}>
       <Stack spacing={3}>
@@ -618,132 +534,29 @@ const CountiesHub = () => {
                       </Grid>
                     </Grid>
 
-                    <Card variant='outlined' data-testid='county-csv-upload-panel'>
+                    <Card variant='outlined' data-testid='county-csv-upload-navigation'>
                       <CardContent>
-                        <Stack spacing={2}>
+                        <Stack
+                          direction={{ xs: 'column', sm: 'row' }}
+                          spacing={2}
+                          justifyContent='space-between'
+                          alignItems={{ xs: 'stretch', sm: 'center' }}
+                        >
                           <Box>
                             <Typography variant='h6'>County-provided CSV</Typography>
                             <Typography variant='body2' color='text.secondary'>
-                              Authenticate the selected county before admitting a Parcels or Sales
-                              CSV. Admission validates CSV structure and stores immutable metadata;
-                              it does not yet stage, publish, or enable rows in TerraForge.
+                              Open the county data-admission surface to authenticate this county,
+                              submit a Parcels or Sales CSV, and inspect durable admission history.
                             </Typography>
                           </Box>
-
-                          {!uploadContext && (
-                            <Button
-                              variant='outlined'
-                              startIcon={
-                                uploadContextLoading ? (
-                                  <CircularProgress size={16} />
-                                ) : (
-                                  <ShieldIcon />
-                                )
-                              }
-                              disabled={uploadContextLoading}
-                              onClick={() => void loadAuthenticatedUploadContext()}
-                            >
-                              {uploadContextLoading
-                                ? 'Checking authenticated county…'
-                                : 'Check authenticated county'}
-                            </Button>
-                          )}
-
-                          {uploadContext && authenticatedUploadMatchesSelection && (
-                            <>
-                              <Alert severity='success'>
-                                Authenticated for {uploadContext.countyName} County. Recent history
-                                below contains this county only.
-                              </Alert>
-                              <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
-                                <TextField
-                                  select
-                                  size='small'
-                                  label='Dataset'
-                                  value={uploadDataset}
-                                  onChange={(event) => {
-                                    setUploadDataset(event.target.value as CountyCsvDataset);
-                                    setUploadReceipt(null);
-                                  }}
-                                  sx={{ minWidth: 160 }}
-                                >
-                                  <MenuItem value='Sales'>Sales</MenuItem>
-                                  <MenuItem value='Parcels'>Parcels</MenuItem>
-                                </TextField>
-                                <Button component='label' variant='outlined'>
-                                  Choose CSV
-                                  <input
-                                    hidden
-                                    type='file'
-                                    accept='.csv,text/csv'
-                                    aria-label='Choose county CSV'
-                                    onChange={(event) => {
-                                      setUploadFile(event.target.files?.[0] ?? null);
-                                      setUploadReceipt(null);
-                                      setUploadError(null);
-                                    }}
-                                  />
-                                </Button>
-                                <Button
-                                  variant='contained'
-                                  startIcon={
-                                    uploading ? (
-                                      <CircularProgress size={16} color='inherit' />
-                                    ) : (
-                                      <CloudUploadIcon />
-                                    )
-                                  }
-                                  disabled={!uploadFile || uploading}
-                                  onClick={() => void submitCountyUpload()}
-                                >
-                                  {uploading ? 'Uploading…' : 'Admit county CSV'}
-                                </Button>
-                              </Stack>
-                              {uploadFile && (
-                                <Typography variant='body2'>
-                                  Selected: {uploadFile.name} ({uploadFile.size.toLocaleString()}{' '}
-                                  bytes)
-                                </Typography>
-                              )}
-                              {uploadReceipt && (
-                                <Alert severity='success' data-testid='county-upload-receipt'>
-                                  {uploadReceipt.duplicateDisposition === 'Duplicate'
-                                    ? 'This exact county dataset was already admitted.'
-                                    : 'CSV admitted durably.'}{' '}
-                                  {uploadReceipt.acceptedRowCount.toLocaleString()} structurally
-                                  valid rows · batch {uploadReceipt.batchId}. Rows remain
-                                  unavailable to TerraForge until staging and promotion are
-                                  completed.
-                                </Alert>
-                              )}
-                              <Box>
-                                <Typography variant='subtitle2'>Recent admitted batches</Typography>
-                                {uploadContext.batches.length === 0 ? (
-                                  <Typography variant='body2' color='text.secondary'>
-                                    No durable CSV admissions exist for this county.
-                                  </Typography>
-                                ) : (
-                                  <Stack spacing={1} sx={{ mt: 1 }}>
-                                    {uploadContext.batches.map((batch) => (
-                                      <Box key={batch.batchId}>
-                                        <Typography variant='body2'>
-                                          {batch.sourceFileName} · {batch.dataset} ·{' '}
-                                          {batch.acceptedRowCount.toLocaleString()} structurally
-                                          valid rows
-                                        </Typography>
-                                        <Typography variant='caption' color='text.secondary'>
-                                          Admitted {formatSnapshotDate(batch.receivedAtUtc)} · not
-                                          staged or available to TerraForge
-                                        </Typography>
-                                      </Box>
-                                    ))}
-                                  </Stack>
-                                )}
-                              </Box>
-                            </>
-                          )}
-
-                          {uploadError && <Alert severity='error'>{uploadError}</Alert>}
+                          <Button
+                            component='a'
+                            href={`/counties/${selectedCounty.countyCode}/upload`}
+                            variant='outlined'
+                            startIcon={<CloudUploadIcon />}
+                          >
+                            Manage county CSV
+                          </Button>
                         </Stack>
                       </CardContent>
                     </Card>
@@ -907,14 +720,9 @@ const CountiesHub = () => {
                         role='option'
                         aria-selected={selected}
                         aria-label={`Select ${county.county} County`}
-                        disabled={uploadContextLoading || uploading}
                         onClick={() => {
                           setSelectedCountyCode(county.countyCode);
                           setLaunchError(null);
-                          setUploadContext(null);
-                          setUploadError(null);
-                          setUploadFile(null);
-                          setUploadReceipt(null);
                         }}
                         sx={{ height: '100%' }}
                       >

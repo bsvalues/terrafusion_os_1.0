@@ -4,7 +4,7 @@ const { apiFetchMock } = vi.hoisted(() => ({ apiFetchMock: vi.fn() }));
 
 vi.mock('@/lib/apiBase', () => ({ apiFetch: apiFetchMock }));
 
-import { fetchCountyCsvUploadHistory, uploadCountyCsv } from '../countyCsvUpload';
+import { fetchCountyCsvUploadHistory, uploadCountyCsv } from '../canon/countyCsvUpload';
 
 function response(body: unknown, ok = true, status = 200): Response {
   return {

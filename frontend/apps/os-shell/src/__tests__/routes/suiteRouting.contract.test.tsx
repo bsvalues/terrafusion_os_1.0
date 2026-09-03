@@ -26,29 +26,32 @@ import { resolve } from 'path';
 let routerSource: string;
 
 beforeAll(() => {
-  routerSource = readFileSync(
-    resolve(import.meta.dirname, '../../Router.tsx'),
-    'utf-8',
-  );
+  routerSource = readFileSync(resolve(import.meta.dirname, '../../Router.tsx'), 'utf-8');
 });
 
 describe('Suite routing source contract — Router.tsx', () => {
   describe('CountiesHub', () => {
     it('is lazy-imported from components/CountiesHub', () => {
       expect(routerSource).toMatch(
-        /lazy\s*\(\s*\(\)\s*=>\s*import\s*\(\s*['"]\.\/components\/CountiesHub['"]\s*\)\s*\)/,
+        /lazy\s*\(\s*\(\)\s*=>\s*import\s*\(\s*['"]\.\/components\/CountiesHub['"]\s*\)\s*\)/
       );
     });
 
     it('is used in the canonical /counties route', () => {
       expect(routerSource).toContain("path='counties' element={<CountiesHub />}");
     });
+
+    it('routes county CSV admission to the canon-owned data surface', () => {
+      expect(routerSource).toContain("import('./pages/canon/CountyCsvAdmissionPage')");
+      expect(routerSource).toContain("path='counties/:countyCode/upload'");
+      expect(routerSource).toContain('element={<CountyCsvAdmissionPage />}');
+    });
   });
 
   describe('ForgeSuiteHome', () => {
     it('is lazy-imported from pages/suites/ForgeSuiteHome', () => {
       expect(routerSource).toMatch(
-        /lazy\s*\(\s*\(\)\s*=>\s*import\s*\(\s*['"]\.\/pages\/suites\/ForgeSuiteHome['"]\s*\)\s*\)/,
+        /lazy\s*\(\s*\(\)\s*=>\s*import\s*\(\s*['"]\.\/pages\/suites\/ForgeSuiteHome['"]\s*\)\s*\)/
       );
     });
 
@@ -60,7 +63,7 @@ describe('Suite routing source contract — Router.tsx', () => {
   describe('AtlasSuiteHome', () => {
     it('is lazy-imported from pages/suites/AtlasSuiteHome', () => {
       expect(routerSource).toMatch(
-        /lazy\s*\(\s*\(\)\s*=>\s*import\s*\(\s*['"]\.\/pages\/suites\/AtlasSuiteHome['"]\s*\)\s*\)/,
+        /lazy\s*\(\s*\(\)\s*=>\s*import\s*\(\s*['"]\.\/pages\/suites\/AtlasSuiteHome['"]\s*\)\s*\)/
       );
     });
 
@@ -74,7 +77,7 @@ describe('Suite routing source contract — Router.tsx', () => {
   describe('DaisSuiteHome', () => {
     it('is lazy-imported from pages/suites/DaisSuiteHome', () => {
       expect(routerSource).toMatch(
-        /lazy\s*\(\s*\(\)\s*=>\s*import\s*\(\s*['"]\.\/pages\/suites\/DaisSuiteHome['"]\s*\)\s*\)/,
+        /lazy\s*\(\s*\(\)\s*=>\s*import\s*\(\s*['"]\.\/pages\/suites\/DaisSuiteHome['"]\s*\)\s*\)/
       );
     });
 
@@ -87,7 +90,7 @@ describe('Suite routing source contract — Router.tsx', () => {
   describe('CanonHome', () => {
     it('is lazy-imported from pages/CanonHome', () => {
       expect(routerSource).toMatch(
-        /lazy\s*\(\s*\(\)\s*=>\s*import\s*\(\s*['"]\.\/pages\/CanonHome['"]\s*\)\s*\)/,
+        /lazy\s*\(\s*\(\)\s*=>\s*import\s*\(\s*['"]\.\/pages\/CanonHome['"]\s*\)\s*\)/
       );
     });
 
