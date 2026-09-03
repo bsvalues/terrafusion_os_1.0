@@ -152,13 +152,14 @@ GO
 -- VIEW 4: vw_TerraFusion_Comparable_Sales
 -- ─────────────────────────────────────────────────────────────────────────────
 -- Raw PACS sale/change-of-owner data for TerraFusionSync conversion:
---   PropId, GeoId, SaleDate, SalePrice, PropTypeCd, SitusAddr, Neighborhood,
---   SaleRatioTypeCd, DeedTypeCd, Consideration, LastModified
+--   PacsChgOfOwnerId, PropId, GeoId, SaleDate, SalePrice, PropTypeCd, SitusAddr,
+--   Neighborhood, SaleRatioTypeCd, DeedTypeCd, Consideration, SaleComment, LastModified
 -- TerraFusionSync converts this raw legacy shape into operational ComparableSales.
 -- ─────────────────────────────────────────────────────────────────────────────
 CREATE OR ALTER VIEW [dbo].[vw_TerraFusion_Comparable_Sales]
 AS
 SELECT
+    coo.chg_of_owner_id                                                AS chg_of_owner_id,
     p.prop_id                                                           AS prop_id,
     p.geo_id                                                            AS geo_id,
     COALESCE(s.sl_dt, coo.deed_dt, coo.recorded_dt)                     AS sale_date,
@@ -174,6 +175,7 @@ SELECT
     s.sl_ratio_type_cd                                                  AS sale_ratio_type_cd,
     coo.deed_type_cd                                                    AS deed_type_cd,
     coo.consideration                                                   AS consideration,
+    s.sl_comment                                                        AS sale_comment,
     COALESCE(s.sl_dt, coo.deed_dt, coo.recorded_dt)                     AS last_modified
 FROM dbo.property p
 INNER JOIN dbo.chg_of_owner_prop_assoc coopa ON coopa.prop_id = p.prop_id

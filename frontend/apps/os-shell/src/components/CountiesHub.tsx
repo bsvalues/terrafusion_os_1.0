@@ -107,8 +107,11 @@ const CountiesHub = () => {
   const [connectedSales, setConnectedSales] = useState<CountyReadOnlySalesSyncAvailability | null>(
     null
   );
-  const [syncingSales, setSyncingSales] = useState(false);
-  const [syncError, setSyncError] = useState<string | null>(null);
+  const [salesSyncState, setSalesSyncState] = useState<{
+    countyCode: string;
+    syncing: boolean;
+    error: string | null;
+  } | null>(null);
   const launchDataEnabled = isWashingtonSalesReviewLaunchEnabled({
     explicitReferenceHandoff: true,
   });
@@ -293,6 +296,15 @@ const CountiesHub = () => {
     normalizeCountyName(connectedSales.countyName) === normalizeCountyName(selectedCounty.county)
       ? connectedSales
       : null;
+  const syncingSales = Boolean(
+    selectedCountyCode &&
+    salesSyncState?.countyCode === selectedCountyCode &&
+    salesSyncState.syncing
+  );
+  const syncError =
+    selectedCountyCode && salesSyncState?.countyCode === selectedCountyCode
+      ? salesSyncState.error
+      : null;
   const selectedObservedReference = selectedCapability?.referenceData.observed ?? null;
   const selectedIdentityMismatch = selectedCounty?.identityMismatch ?? null;
   const observedCountyCount = useMemo(
@@ -307,11 +319,11 @@ const CountiesHub = () => {
   );
   const runSelectedCountySync = useCallback(async () => {
     if (!selectedCounty || !selectedConnectedSales?.connectionConfigured) return;
-    setSyncingSales(true);
-    setSyncError(null);
+    const syncCountyCode = selectedCounty.countyCode;
+    const expectedKey = `wa-${selectedCounty.county.toLowerCase().replaceAll(' ', '-')}`;
+    setSalesSyncState({ countyCode: syncCountyCode, syncing: true, error: null });
     try {
       const receipt = await runCountyReadOnlySalesSync(apiFetch);
-      const expectedKey = `wa-${selectedCounty.county.toLowerCase().replaceAll(' ', '-')}`;
       if (
         receipt.countyKey !== expectedKey ||
         normalizeCountyName(receipt.countyName) !== normalizeCountyName(selectedCounty.county)
@@ -320,9 +332,19 @@ const CountiesHub = () => {
       }
       await loadConnectedSales();
     } catch (error) {
-      setSyncError(error instanceof Error ? error.message : 'County read-only Sales sync failed.');
+      setSalesSyncState((current) =>
+        current?.countyCode === syncCountyCode
+          ? {
+              countyCode: syncCountyCode,
+              syncing: false,
+              error: error instanceof Error ? error.message : 'County read-only Sales sync failed.',
+            }
+          : current
+      );
     } finally {
-      setSyncingSales(false);
+      setSalesSyncState((current) =>
+        current?.countyCode === syncCountyCode ? { ...current, syncing: false } : current
+      );
     }
   }, [loadConnectedSales, selectedConnectedSales, selectedCounty]);
   const selectedSalesReviewVerifying = Boolean(
@@ -690,52 +712,54 @@ const CountiesHub = () => {
 
                     <Card variant='outlined' data-testid='county-readonly-sales-sync'>
                       <CardContent>
-                        <Stack
-                          direction={{ xs: 'column', sm: 'row' }}
-                          spacing={2}
-                          justifyContent='space-between'
-                          alignItems={{ xs: 'stretch', sm: 'center' }}
-                        >
-                          <Box>
-                            <Typography variant='h6'>Connected read-only Sales sync</Typography>
-                            <Typography variant='body2' color='text.secondary'>
-                              Read sales from this authenticated county&apos;s registered source
-                              into TerraFusion. The source connection cannot perform external DML or
-                              write-back.
-                            </Typography>
-                            {selectedConnectedSales?.lastSuccessfulSyncAtUtc && (
-                              <Typography variant='caption' color='text.secondary'>
-                                Last successful sync{' '}
-                                {formatSnapshotDate(selectedConnectedSales.lastSuccessfulSyncAtUtc)}
-                              </Typography>
-                            )}
-                          </Box>
-                          <Button
-                            variant='contained'
-                            startIcon={
-                              syncingSales ? (
-                                <CircularProgress size={16} color='inherit' />
-                              ) : (
-                                <SyncIcon />
-                              )
-                            }
-                            disabled={syncingSales || !selectedConnectedSales?.connectionConfigured}
-                            onClick={() => void runSelectedCountySync()}
+                        <Stack spacing={2}>
+                          <Stack
+                            direction={{ xs: 'column', sm: 'row' }}
+                            spacing={2}
+                            justifyContent='space-between'
+                            alignItems={{ xs: 'stretch', sm: 'center' }}
                           >
-                            {syncingSales ? 'Syncing sales…' : 'Run read-only Sales sync'}
-                          </Button>
+                            <Box>
+                              <Typography variant='h6'>Connected read-only Sales sync</Typography>
+                              <Typography variant='body2' color='text.secondary'>
+                                Read sales from this authenticated county&apos;s registered source
+                                into TerraFusion. The source connection cannot perform external DML
+                                or write-back.
+                              </Typography>
+                              {selectedConnectedSales?.lastSuccessfulSyncAtUtc && (
+                                <Typography variant='caption' color='text.secondary'>
+                                  Last successful sync{' '}
+                                  {formatSnapshotDate(
+                                    selectedConnectedSales.lastSuccessfulSyncAtUtc
+                                  )}
+                                </Typography>
+                              )}
+                            </Box>
+                            <Button
+                              variant='contained'
+                              startIcon={
+                                syncingSales ? (
+                                  <CircularProgress size={16} color='inherit' />
+                                ) : (
+                                  <SyncIcon />
+                                )
+                              }
+                              disabled={
+                                syncingSales || !selectedConnectedSales?.connectionConfigured
+                              }
+                              onClick={() => void runSelectedCountySync()}
+                            >
+                              {syncingSales ? 'Syncing sales…' : 'Run read-only Sales sync'}
+                            </Button>
+                          </Stack>
+                          {!selectedConnectedSales?.connectionConfigured && (
+                            <Alert severity='info'>
+                              No single protected read-only PACS connection is registered for this
+                              authenticated county. Connected sales remain unavailable.
+                            </Alert>
+                          )}
+                          {syncError && <Alert severity='error'>{syncError}</Alert>}
                         </Stack>
-                        {!selectedConnectedSales?.connectionConfigured && (
-                          <Alert severity='info' sx={{ mt: 2 }}>
-                            No single protected read-only PACS connection is registered for this
-                            authenticated county. Connected sales remain unavailable.
-                          </Alert>
-                        )}
-                        {syncError && (
-                          <Alert severity='error' sx={{ mt: 2 }}>
-                            {syncError}
-                          </Alert>
-                        )}
                       </CardContent>
                     </Card>
 

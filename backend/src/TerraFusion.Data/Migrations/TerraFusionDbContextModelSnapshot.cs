@@ -3737,6 +3737,10 @@ namespace TerraFusion.Data.Migrations
                     b.Property<int?>("PacsChgOfOwnerId")
                         .HasColumnType("integer");
 
+                    b.Property<string>("PacsConsideration")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
                     b.Property<decimal?>("PacsComputedRatio")
                         .HasColumnType("numeric");
 

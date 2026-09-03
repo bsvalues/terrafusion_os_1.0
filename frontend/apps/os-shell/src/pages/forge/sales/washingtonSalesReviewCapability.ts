@@ -379,8 +379,8 @@ function shardRecordProvenanceSupportsPosture(
   });
 }
 
-function isNullableFiniteNumber(value: unknown): value is number | null {
-  return value === null || (typeof value === 'number' && Number.isFinite(value) && value >= 0);
+function isNullableSafeRecordCount(value: unknown): value is number | null {
+  return value === null || (typeof value === 'number' && Number.isSafeInteger(value) && value >= 0);
 }
 
 function isNullableString(value: unknown): value is string | null {
@@ -415,7 +415,7 @@ export function parseWashingtonCountiesHubHandoff(
     typeof metadata.referenceDataPosture !== 'string' ||
     !(
       metadata.referenceRecordCount === undefined ||
-      isNullableFiniteNumber(metadata.referenceRecordCount)
+      isNullableSafeRecordCount(metadata.referenceRecordCount)
     ) ||
     !(
       metadata.latestReferenceSaleDate === undefined ||
@@ -466,6 +466,7 @@ export function parseWashingtonCountiesHubHandoff(
       metadata.referenceDataPosture !== 'county_provided_validated_upload' ||
       salesReviewAvailability !== 'available' ||
       referenceRecordCount === null ||
+      !Number.isSafeInteger(referenceRecordCount) ||
       referenceRecordCount <= 0 ||
       latestReferenceSaleDate === null ||
       !isStudyYear(metadata.taxYear) ||

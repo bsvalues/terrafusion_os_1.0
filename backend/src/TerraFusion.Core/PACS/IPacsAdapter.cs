@@ -367,6 +367,7 @@ namespace TerraFusion.Core.PACS
     /// </summary>
     public sealed record PacsComparableSale
     {
+        public int PacsChgOfOwnerId { get; init; }
         public int PropId { get; init; }
         public string GeoId { get; init; } = string.Empty;
         public DateTime SaleDate { get; init; }
@@ -377,6 +378,7 @@ namespace TerraFusion.Core.PACS
         public string? SaleRatioTypeCd { get; init; }
         public string? DeedTypeCd { get; init; }
         public string? Consideration { get; init; }
+        public string? SaleComment { get; init; }
         public DateTime? LastModified { get; init; }
     }
 

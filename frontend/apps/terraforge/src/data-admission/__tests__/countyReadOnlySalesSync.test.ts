@@ -45,6 +45,19 @@ describe('countyReadOnlySalesSync', () => {
     );
   });
 
+  it.each(['2026-13-01', '2026-02-31'])('rejects calendar-invalid date %s', async (date) => {
+    const apiFetch = vi.fn().mockResolvedValue(
+      new Response(JSON.stringify({ ...availability, latestSaleDate: date }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      })
+    );
+
+    await expect(fetchCountyReadOnlySalesSyncAvailability(apiFetch)).rejects.toThrow(
+      /invalid availability/i
+    );
+  });
+
   it('keeps previously synced rows unavailable after a later connection failure', async () => {
     const failedAvailability = {
       ...availability,
@@ -97,10 +110,13 @@ describe('countyReadOnlySalesSync', () => {
     });
 
     apiFetch.mockResolvedValueOnce(
-      new Response(JSON.stringify({
-        ...payload,
-        receipt: { ...payload.receipt, externalWrites: 1 },
-      }), { status: 200, headers: { 'Content-Type': 'application/json' } })
+      new Response(
+        JSON.stringify({
+          ...payload,
+          receipt: { ...payload.receipt, externalWrites: 1 },
+        }),
+        { status: 200, headers: { 'Content-Type': 'application/json' } }
+      )
     );
     await expect(runCountyReadOnlySalesSync(apiFetch)).rejects.toThrow(/invalid receipt/i);
   });

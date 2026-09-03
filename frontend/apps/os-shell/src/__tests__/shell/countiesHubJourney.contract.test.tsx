@@ -193,6 +193,59 @@ describe('Washington Counties Hub assessor journey', () => {
     );
   });
 
+  it('does not leak an in-flight county sync state into another county selection', async () => {
+    const connectedAvailability = {
+      contractId: 'wal.county-connected.readonly-sales-sync.v1',
+      countyId: '00000000-0000-0000-0000-000000000063',
+      countyKey: 'wa-spokane',
+      countyName: 'Spokane',
+      connectionConfigured: true,
+      sourceSystem: 'PACS',
+      lastSuccessfulSyncAtUtc: null,
+      availableSales: 0,
+      latestSaleDate: null,
+      recommendedStudyYear: null,
+      salesReviewAvailable: false,
+      status: 'connected-no-sales',
+    };
+    resolveWashingtonCountyStatusMock.mockResolvedValue(
+      countyStatusResolution([
+        countyStatus(),
+        countyStatus({
+          county: 'Adams',
+          countyCode: '001',
+          staticRoutes: {
+            detail: '/launch-data/washington/counties/001.json',
+            salesShard: '',
+          },
+        }),
+      ])
+    );
+    fetchCountyReadOnlySalesSyncAvailabilityMock.mockResolvedValue(connectedAvailability);
+    let resolveSync!: (value: unknown) => void;
+    runCountyReadOnlySalesSyncMock.mockImplementation(
+      () => new Promise((resolve) => (resolveSync = resolve))
+    );
+
+    render(<CountiesHub />);
+    fireEvent.click(await screen.findByRole('option', { name: /Select Spokane County/i }));
+    fireEvent.click(screen.getByRole('button', { name: 'Run read-only Sales sync' }));
+    expect(screen.getByRole('button', { name: 'Syncing sales…' })).toBeDisabled();
+
+    fireEvent.click(screen.getByRole('option', { name: /Select Adams County/i }));
+    expect(screen.getByRole('button', { name: 'Run read-only Sales sync' })).toBeDisabled();
+    expect(screen.queryByRole('button', { name: 'Syncing sales…' })).not.toBeInTheDocument();
+
+    resolveSync({
+      countyKey: 'wa-spokane',
+      countyName: 'Spokane',
+      receipt: { contractId: 'wal.county-connected.readonly-sales-sync.v1' },
+    });
+    await waitFor(() =>
+      expect(fetchCountyReadOnlySalesSyncAvailabilityMock).toHaveBeenCalledTimes(2)
+    );
+  });
+
   it('surfaces authenticated county-upload sales and opens TerraForge on its live API', async () => {
     fetchCountyCsvPromotedSalesAvailabilityMock.mockResolvedValue({
       contractId: 'wal.county-upload.terraforge-sales-promotion.v1',

@@ -1,5 +1,6 @@
 using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
@@ -67,6 +68,60 @@ public sealed class CountyReadOnlySalesSyncServiceTests
     }
 
     [Fact]
+    public async Task SyncRejectsAConnectionWhoseLoginStillHasWriteAuthority()
+    {
+        var factory = new InMemoryFactory();
+        var connectionId = Guid.Parse("55550055-5555-5555-5555-555555555555");
+        await using (var seed = factory.CreateDbContext())
+        {
+            seed.Counties.Add(new County
+            {
+                Id = BentonId,
+                Name = "Benton",
+                State = "WA",
+                FipsCode = "53005",
+            });
+            seed.SyncSourceConnections.Add(new SyncSourceConnection
+            {
+                Id = connectionId,
+                CountyId = BentonId,
+                Name = "Benton PACS source",
+                SourceSystem = "PACS",
+                ConnectionType = "SqlServer",
+                Server = "benton-pacs-ro",
+                Database = "benton_pacs",
+                AuthMode = "WindowsIntegrated",
+                AdditionalOptions = "Encrypt=True;ApplicationIntent=ReadOnly",
+                IsActive = true,
+            });
+            await seed.SaveChangesAsync();
+        }
+
+        var adapter = new Mock<IPacsAdapter>(MockBehavior.Strict);
+        adapter.As<IExternalReadOnlyPacsAdapter>()
+            .Setup(value => value.MatchesSource("benton-pacs-ro", "benton_pacs"))
+            .Returns(true);
+        adapter.As<IExternalReadOnlyPacsAdapter>()
+            .Setup(value => value.HasServerEnforcedReadOnlyAccessAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(false);
+        var service = new CountyReadOnlySalesSyncService(
+            factory,
+            adapter.Object,
+            NullLogger<CountyReadOnlySalesSyncService>.Instance);
+        var context = await CreateCountyContextAsync(Benton, BentonId, "benton-assessor");
+
+        var result = await service.SyncAsync(new CountyReadOnlySalesSyncRequest(context));
+
+        Assert.Equal(CountyReadOnlySalesSyncDisposition.Denied, result.Disposition);
+        Assert.Equal(CountyReadOnlySalesSyncDenialCode.SourceWriteAuthorityDetected, result.DenialCode);
+        await using var verify = factory.CreateDbContext();
+        var connection = await verify.SyncSourceConnections.SingleAsync();
+        Assert.Equal("SOURCE_WRITE_AUTHORITY_DETECTED", connection.LastConnectionErrorMessage);
+        Assert.Empty(await verify.ComparableSales.ToListAsync());
+        Assert.Empty(await verify.AuditEvents.ToListAsync());
+    }
+
+    [Fact]
     public async Task SyncIsCountyBoundDurableIdempotentAndNeverUsesDevelopmentAdapter()
     {
         var factory = new InMemoryFactory();
@@ -95,6 +150,9 @@ public sealed class CountyReadOnlySalesSyncServiceTests
         adapter.As<IExternalReadOnlyPacsAdapter>()
             .Setup(value => value.MatchesSource("benton-pacs-ro", "benton_pacs"))
             .Returns(true);
+        adapter.As<IExternalReadOnlyPacsAdapter>()
+            .Setup(value => value.HasServerEnforcedReadOnlyAccessAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(true);
         adapter.Setup(value => value.GetConnectionStatusAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(new PacsConnectionStatus
             {
@@ -109,28 +167,46 @@ public sealed class CountyReadOnlySalesSyncServiceTests
             {
                 Page = 1,
                 PageSize = 500,
-                TotalCount = 2,
+                TotalCount = 3,
                 Items = new[]
                 {
                     new PacsComparableSale
                     {
+                        PacsChgOfOwnerId = 5001,
                         PropId = 1001,
                         GeoId = "BEN-1001",
                         SaleDate = new DateTime(2026, 1, 15, 0, 0, 0, DateTimeKind.Utc),
                         SalePrice = 425_000m,
                         PropTypeCd = "R1",
+                        Consideration = "425000",
+                        SaleComment = "arms-length review pending",
                     },
                     new PacsComparableSale
                     {
+                        PacsChgOfOwnerId = 5002,
                         PropId = 1002,
                         GeoId = "BEN-1002",
                         SaleDate = new DateTime(2026, 1, 10, 0, 0, 0, DateTimeKind.Utc),
                         SalePrice = 390_000m,
                         PropTypeCd = "R1",
                     },
+                    new PacsComparableSale
+                    {
+                        PacsChgOfOwnerId = 5001,
+                        PropId = 1001,
+                        GeoId = "BEN-1001",
+                        SaleDate = new DateTime(2026, 1, 15, 0, 0, 0, DateTimeKind.Utc),
+                        SalePrice = 425_000m,
+                        PropTypeCd = "R1",
+                        Consideration = "425000",
+                        SaleComment = "arms-length review pending",
+                    },
                 },
             });
-        var service = new CountyReadOnlySalesSyncService(factory, adapter.Object);
+        var service = new CountyReadOnlySalesSyncService(
+            factory,
+            adapter.Object,
+            NullLogger<CountyReadOnlySalesSyncService>.Instance);
         var benton = await CreateCountyContextAsync(Benton, BentonId, "benton-assessor");
         var franklin = await CreateCountyContextAsync(Franklin, FranklinId, "franklin-assessor");
 
@@ -139,7 +215,8 @@ public sealed class CountyReadOnlySalesSyncServiceTests
         var foreign = await service.SyncAsync(new CountyReadOnlySalesSyncRequest(franklin));
 
         Assert.Equal(CountyReadOnlySalesSyncDisposition.Completed, first.Disposition);
-        Assert.Equal(2, first.Receipt!.AddedSales);
+        Assert.Equal(2, first.Receipt!.SourceRows);
+        Assert.Equal(2, first.Receipt.AddedSales);
         Assert.Equal(2, first.Receipt.AvailableSales);
         Assert.Equal(CountyReadOnlySalesSyncDisposition.Completed, second.Disposition);
         Assert.Equal(0, second.Receipt!.AddedSales);
@@ -154,7 +231,12 @@ public sealed class CountyReadOnlySalesSyncServiceTests
             Assert.Equal(BentonId, sale.CountyId);
             Assert.Equal("county-readonly-sync", sale.IngestedBy);
             Assert.StartsWith("county-readonly-sync:55550055-", sale.VerificationSource);
+            Assert.Equal("residential", sale.PropertyType);
+            Assert.Equal("R1", sale.ImprvTypeCode);
+            Assert.True(sale.PacsChgOfOwnerId > 0);
         });
+        Assert.Equal("425000", sales[0].PacsConsideration);
+        Assert.Equal("arms-length review pending", sales[0].RawComment);
         Assert.Equal(2, await verify.AuditEvents.CountAsync(trace =>
             trace.CountyId == BentonId
             && trace.UserId == "benton-assessor"
@@ -162,6 +244,97 @@ public sealed class CountyReadOnlySalesSyncServiceTests
         Assert.Empty(await verify.ComparableSales.Where(sale => sale.CountyId == FranklinId).ToListAsync());
         adapter.Verify(value => value.GetComparableSalesAsync(
             It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()), Times.Exactly(2));
+    }
+
+    [Fact]
+    public async Task RelationalPersistenceFailureRollsBackSalesSuccessStateAndAuditReceipt()
+    {
+        using var factory = new SqliteFactory();
+        var connectionId = Guid.Parse("55550055-5555-5555-5555-555555555555");
+        await using (var seed = factory.CreateDbContext())
+        {
+            seed.Counties.Add(new County
+            {
+                Id = BentonId,
+                Name = "Benton",
+                State = "WA",
+                FipsCode = "53005",
+            });
+            seed.SyncSourceConnections.Add(new SyncSourceConnection
+            {
+                Id = connectionId,
+                CountyId = BentonId,
+                Name = "Benton PACS source",
+                SourceSystem = "PACS",
+                ConnectionType = "SqlServer",
+                Server = "benton-pacs-ro",
+                Database = "benton_pacs",
+                AuthMode = "WindowsIntegrated",
+                AdditionalOptions = "Encrypt=True;ApplicationIntent=ReadOnly",
+                IsActive = true,
+            });
+            await seed.SaveChangesAsync();
+            await seed.Database.ExecuteSqlRawAsync("""
+                CREATE TRIGGER fail_county_sync_audit
+                BEFORE INSERT ON AuditEvents
+                WHEN NEW.Action = 'valuation.readonly-sales-synced'
+                BEGIN
+                    SELECT RAISE(ABORT, 'forced audit persistence failure');
+                END;
+                """);
+        }
+
+        var adapter = new Mock<IPacsAdapter>(MockBehavior.Strict);
+        adapter.As<IExternalReadOnlyPacsAdapter>()
+            .Setup(value => value.MatchesSource("benton-pacs-ro", "benton_pacs"))
+            .Returns(true);
+        adapter.As<IExternalReadOnlyPacsAdapter>()
+            .Setup(value => value.HasServerEnforcedReadOnlyAccessAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(true);
+        adapter.Setup(value => value.GetConnectionStatusAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new PacsConnectionStatus
+            {
+                IsConnected = true,
+                DatabaseName = "benton_pacs",
+                ServerName = "b***o",
+            });
+        adapter.Setup(value => value.ValidateContractAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new PacsContractProof { IsValid = true, ContractId = "pacscontract.v1" });
+        adapter.Setup(value => value.GetComparableSalesAsync(1, 500, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new PacsPagedResult<PacsComparableSale>
+            {
+                Page = 1,
+                PageSize = 500,
+                TotalCount = 1,
+                Items = new[]
+                {
+                    new PacsComparableSale
+                    {
+                        PacsChgOfOwnerId = 5001,
+                        PropId = 1001,
+                        GeoId = "BEN-1001",
+                        SaleDate = new DateTime(2026, 1, 15, 0, 0, 0, DateTimeKind.Utc),
+                        SalePrice = 425_000m,
+                        PropTypeCd = "R1",
+                    },
+                },
+            });
+        var service = new CountyReadOnlySalesSyncService(
+            factory,
+            adapter.Object,
+            NullLogger<CountyReadOnlySalesSyncService>.Instance);
+        var context = await CreateCountyContextAsync(Benton, BentonId, "benton-assessor");
+
+        var result = await service.SyncAsync(new CountyReadOnlySalesSyncRequest(context));
+
+        Assert.Equal(CountyReadOnlySalesSyncDisposition.Failed, result.Disposition);
+        await using var verify = factory.CreateDbContext();
+        Assert.Empty(await verify.ComparableSales.ToListAsync());
+        Assert.Empty(await verify.AuditEvents.ToListAsync());
+        var source = await verify.SyncSourceConnections.SingleAsync();
+        Assert.Null(source.LastSuccessfulConnectionAtUtc);
+        Assert.Null(source.UpdatedBy);
+        Assert.Equal("READ_ONLY_SYNC_FAILED", source.LastConnectionErrorMessage);
     }
 
     [Fact]
@@ -187,7 +360,10 @@ public sealed class CountyReadOnlySalesSyncServiceTests
             await seed.SaveChangesAsync();
         }
         var adapter = new Mock<IPacsAdapter>();
-        var service = new CountyReadOnlySalesSyncService(factory, adapter.Object);
+        var service = new CountyReadOnlySalesSyncService(
+            factory,
+            adapter.Object,
+            NullLogger<CountyReadOnlySalesSyncService>.Instance);
         var franklin = await CreateCountyContextAsync(Franklin, FranklinId, "franklin-assessor");
 
         var availability = await service.GetAvailabilityAsync(franklin);
@@ -254,7 +430,10 @@ public sealed class CountyReadOnlySalesSyncServiceTests
         adapter.As<IExternalReadOnlyPacsAdapter>()
             .Setup(value => value.MatchesSource("benton-pacs-ro", "benton_pacs"))
             .Returns(true);
-        var service = new CountyReadOnlySalesSyncService(factory, adapter.Object);
+        var service = new CountyReadOnlySalesSyncService(
+            factory,
+            adapter.Object,
+            NullLogger<CountyReadOnlySalesSyncService>.Instance);
         var benton = await CreateCountyContextAsync(Benton, BentonId, "benton-assessor");
 
         var failed = await service.GetAvailabilityAsync(benton);
@@ -382,6 +561,54 @@ public sealed class CountyReadOnlySalesSyncServiceTests
 
         public Task<TerraFusionDbContext> CreateDbContextAsync(
             CancellationToken cancellationToken = default) => Task.FromResult(CreateDbContext());
+    }
+
+    private sealed class SqliteFactory : IDbContextFactory<TerraFusionDbContext>, IDisposable
+    {
+        private readonly SqliteConnection _connection = new("Data Source=:memory:");
+        private readonly DbContextOptions<TerraFusionDbContext> _options;
+        private readonly IConfiguration _configuration = new ConfigurationBuilder().Build();
+
+        public SqliteFactory()
+        {
+            _connection.Open();
+            _options = new DbContextOptionsBuilder<TerraFusionDbContext>()
+                .UseSqlite(_connection)
+                .Options;
+            using var db = CreateDbContext();
+            db.Database.EnsureCreated();
+        }
+
+        public TerraFusionDbContext CreateDbContext() => new SqliteTerraFusionDbContext(_options, _configuration);
+
+        public Task<TerraFusionDbContext> CreateDbContextAsync(
+            CancellationToken cancellationToken = default) => Task.FromResult(CreateDbContext());
+
+        public void Dispose() => _connection.Dispose();
+    }
+
+    private sealed class SqliteTerraFusionDbContext(
+        DbContextOptions<TerraFusionDbContext> options,
+        IConfiguration configuration) : TerraFusionDbContext(options, configuration)
+    {
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            // SQLite ignores schemas. Prefix schema-qualified table names so the complete
+            // TerraFusion model can be created without unrelated cross-schema collisions.
+            foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+            {
+                var schema = entityType.GetSchema();
+                if (string.IsNullOrWhiteSpace(schema))
+                {
+                    continue;
+                }
+
+                entityType.SetTableName($"{schema}_{entityType.GetTableName()}");
+                entityType.SetSchema(null);
+            }
+        }
     }
 
     private sealed class StaticContextAccessor(RequestUserContext current)

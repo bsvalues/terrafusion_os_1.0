@@ -13,6 +13,14 @@ public interface IExternalReadOnlyPacsAdapter
     /// Implementations must not return or log credential material.
     /// </summary>
     bool MatchesSource(string server, string database);
+
+    /// <summary>
+    /// Verifies against the connected database principal that the source account has no
+    /// effective table DML permission. ApplicationIntent=ReadOnly is routing metadata only and
+    /// is never sufficient for this decision.
+    /// </summary>
+    Task<bool> HasServerEnforcedReadOnlyAccessAsync(
+        CancellationToken cancellationToken = default);
 }
 
 public enum CountyReadOnlySalesSyncDisposition
@@ -29,6 +37,7 @@ public enum CountyReadOnlySalesSyncDenialCode
     ConnectionNotConfigured,
     ConnectionAmbiguous,
     ConnectionNotReadOnly,
+    SourceWriteAuthorityDetected,
     ExternalAdapterRequired,
     SourceIdentityMismatch,
     SourceContractInvalid,
@@ -71,16 +80,3 @@ public sealed record CountyReadOnlySalesSyncAvailability(
     int? RecommendedStudyYear,
     bool SalesReviewAvailable,
     string Status);
-
-public interface ICountyReadOnlySalesSyncService
-{
-    public const string ContractId = "wal.county-connected.readonly-sales-sync.v1";
-
-    Task<CountyReadOnlySalesSyncResult> SyncAsync(
-        CountyReadOnlySalesSyncRequest request,
-        CancellationToken cancellationToken = default);
-
-    Task<CountyReadOnlySalesSyncAvailability> GetAvailabilityAsync(
-        AuthenticatedCanonicalCountyContextResult countyContext,
-        CancellationToken cancellationToken = default);
-}

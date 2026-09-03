@@ -229,6 +229,23 @@ describe('Forge-owned Washington sales-review capability', () => {
         dataTrustTier: 'county-connected-readonly',
         referencePackageSource: 'county-readonly-sync',
         referenceDataPosture: 'county_connected_readonly',
+        referenceRecordCount: 0.5,
+        latestReferenceSaleDate: '2026-02-03',
+        taxYear: 2027,
+        salesReviewAvailability: 'available',
+        salesReviewUnavailableMessage: null,
+      })
+    ).toBeNull();
+
+    expect(
+      parseWashingtonCountiesHubHandoff({
+        countyCode: '005',
+        countyName: 'Benton',
+        resetValuationScope: true,
+        launchContext: 'washington-counties-hub',
+        dataTrustTier: 'county-connected-readonly',
+        referencePackageSource: 'county-readonly-sync',
+        referenceDataPosture: 'county_connected_readonly',
         referenceRecordCount: 17,
         latestReferenceSaleDate: '2026-02-03',
         taxYear: 2027,

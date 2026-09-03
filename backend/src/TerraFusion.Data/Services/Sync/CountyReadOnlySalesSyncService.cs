@@ -4,10 +4,12 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using TerraFusion.Core.Counties;
 using TerraFusion.Core.DTOs;
 using TerraFusion.Core.Entities;
 using TerraFusion.Core.Entities.Sync;
+using TerraFusion.Core.Interfaces;
 using TerraFusion.Core.PACS;
 using TerraFusion.Core.Sync;
 using Task = System.Threading.Tasks.Task;
@@ -26,15 +28,18 @@ public sealed class CountyReadOnlySalesSyncService : ICountyReadOnlySalesSyncSer
     private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web);
     private readonly IDbContextFactory<TerraFusionDbContext> _dbContextFactory;
     private readonly IPacsAdapter _pacsAdapter;
+    private readonly ILogger<CountyReadOnlySalesSyncService> _logger;
     private readonly TimeProvider _timeProvider;
 
     public CountyReadOnlySalesSyncService(
         IDbContextFactory<TerraFusionDbContext> dbContextFactory,
         IPacsAdapter pacsAdapter,
+        ILogger<CountyReadOnlySalesSyncService> logger,
         TimeProvider? timeProvider = null)
     {
         _dbContextFactory = dbContextFactory ?? throw new ArgumentNullException(nameof(dbContextFactory));
         _pacsAdapter = pacsAdapter ?? throw new ArgumentNullException(nameof(pacsAdapter));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _timeProvider = timeProvider ?? TimeProvider.System;
     }
 
@@ -46,7 +51,7 @@ public sealed class CountyReadOnlySalesSyncService : ICountyReadOnlySalesSyncSer
         cancellationToken.ThrowIfCancellationRequested();
         if (!TryAuthority(request.CountyContext, out var countyId, out var actorId))
         {
-            return Denied(CountyReadOnlySalesSyncDenialCode.InvalidAuthority);
+            return Denied(CountyReadOnlySalesSyncDenialCode.InvalidAuthority, Guid.Empty);
         }
 
         await using var lookup = await _dbContextFactory.CreateDbContextAsync(cancellationToken)
@@ -57,31 +62,42 @@ public sealed class CountyReadOnlySalesSyncService : ICountyReadOnlySalesSyncSer
             .ToListAsync(cancellationToken).ConfigureAwait(false);
         if (connections.Count == 0)
         {
-            return Denied(CountyReadOnlySalesSyncDenialCode.ConnectionNotConfigured);
+            return Denied(CountyReadOnlySalesSyncDenialCode.ConnectionNotConfigured, countyId);
         }
         if (connections.Count != 1)
         {
-            return Denied(CountyReadOnlySalesSyncDenialCode.ConnectionAmbiguous);
+            return Denied(CountyReadOnlySalesSyncDenialCode.ConnectionAmbiguous, countyId);
         }
 
         var connection = connections[0];
         if (!IsReadOnlyPacsConnection(connection))
         {
-            return Denied(CountyReadOnlySalesSyncDenialCode.ConnectionNotReadOnly);
+            return Denied(CountyReadOnlySalesSyncDenialCode.ConnectionNotReadOnly, countyId, connection.Id);
         }
         if (_pacsAdapter is not IExternalReadOnlyPacsAdapter externalAdapter)
         {
-            return Denied(CountyReadOnlySalesSyncDenialCode.ExternalAdapterRequired);
+            return Denied(CountyReadOnlySalesSyncDenialCode.ExternalAdapterRequired, countyId, connection.Id);
         }
         if (!externalAdapter.MatchesSource(connection.Server!, connection.Database!))
         {
             await RecordConnectionFailureAsync(
                 connection.Id, "SOURCE_IDENTITY_MISMATCH", cancellationToken).ConfigureAwait(false);
-            return Denied(CountyReadOnlySalesSyncDenialCode.SourceIdentityMismatch);
+            return Denied(CountyReadOnlySalesSyncDenialCode.SourceIdentityMismatch, countyId, connection.Id);
         }
 
         try
         {
+            if (!await externalAdapter.HasServerEnforcedReadOnlyAccessAsync(cancellationToken)
+                .ConfigureAwait(false))
+            {
+                await RecordConnectionFailureAsync(
+                    connection.Id, "SOURCE_WRITE_AUTHORITY_DETECTED", cancellationToken).ConfigureAwait(false);
+                return Denied(
+                    CountyReadOnlySalesSyncDenialCode.SourceWriteAuthorityDetected,
+                    countyId,
+                    connection.Id);
+            }
+
             var status = await _pacsAdapter.GetConnectionStatusAsync(cancellationToken)
                 .ConfigureAwait(false);
             if (!status.IsConnected
@@ -89,7 +105,7 @@ public sealed class CountyReadOnlySalesSyncService : ICountyReadOnlySalesSyncSer
             {
                 await RecordConnectionFailureAsync(
                     connection.Id, "SOURCE_IDENTITY_MISMATCH", cancellationToken).ConfigureAwait(false);
-                return Denied(CountyReadOnlySalesSyncDenialCode.SourceIdentityMismatch);
+                return Denied(CountyReadOnlySalesSyncDenialCode.SourceIdentityMismatch, countyId, connection.Id);
             }
 
             var proof = await _pacsAdapter.ValidateContractAsync(cancellationToken)
@@ -98,7 +114,7 @@ public sealed class CountyReadOnlySalesSyncService : ICountyReadOnlySalesSyncSer
             {
                 await RecordConnectionFailureAsync(
                     connection.Id, "SOURCE_CONTRACT_INVALID", cancellationToken).ConfigureAwait(false);
-                return Denied(CountyReadOnlySalesSyncDenialCode.SourceContractInvalid);
+                return Denied(CountyReadOnlySalesSyncDenialCode.SourceContractInvalid, countyId, connection.Id);
             }
 
             var sourceRows = await ReadAllSalesAsync(cancellationToken).ConfigureAwait(false);
@@ -106,28 +122,33 @@ public sealed class CountyReadOnlySalesSyncService : ICountyReadOnlySalesSyncSer
             {
                 await RecordConnectionFailureAsync(
                     connection.Id, "SOURCE_RECORD_LIMIT_EXCEEDED", cancellationToken).ConfigureAwait(false);
-                return Denied(CountyReadOnlySalesSyncDenialCode.SourceRecordLimitExceeded);
+                return Denied(CountyReadOnlySalesSyncDenialCode.SourceRecordLimitExceeded, countyId, connection.Id);
             }
-            if (!ValidateRows(sourceRows))
+            if (!TryNormalizeRows(sourceRows, out var normalizedRows))
             {
                 await RecordConnectionFailureAsync(
                     connection.Id, "SOURCE_DATA_INVALID", cancellationToken).ConfigureAwait(false);
-                return Denied(CountyReadOnlySalesSyncDenialCode.SourceDataInvalid);
+                return Denied(CountyReadOnlySalesSyncDenialCode.SourceDataInvalid, countyId, connection.Id);
             }
 
             return await PersistAsync(
                 connection,
                 countyId,
                 actorId,
-                sourceRows,
+                normalizedRows,
                 cancellationToken).ConfigureAwait(false);
         }
         catch (OperationCanceledException)
         {
             throw;
         }
-        catch
+        catch (Exception exception)
         {
+            _logger.LogError(
+                exception,
+                "County read-only sales sync failed for county {CountyId} on connection {ConnectionId}",
+                countyId,
+                connection.Id);
             await RecordConnectionFailureAsync(
                 connection.Id, "READ_ONLY_SYNC_FAILED", CancellationToken.None).ConfigureAwait(false);
             return new(
@@ -387,12 +408,15 @@ public sealed class CountyReadOnlySalesSyncService : ICountyReadOnlySalesSyncSer
                 "ApplicationIntent=ReadOnly",
                 StringComparison.OrdinalIgnoreCase)) == true;
 
-    private static bool ValidateRows(IReadOnlyList<PacsComparableSale> rows)
+    private static bool TryNormalizeRows(
+        IReadOnlyList<PacsComparableSale> rows,
+        out IReadOnlyList<PacsComparableSale> normalizedRows)
     {
-        var identities = new HashSet<string>(StringComparer.Ordinal);
+        var identities = new Dictionary<string, PacsComparableSale>(StringComparer.Ordinal);
         foreach (var row in rows)
         {
-            if (row.PropId <= 0
+            if (row.PacsChgOfOwnerId <= 0
+                || row.PropId <= 0
                 || string.IsNullOrWhiteSpace(row.GeoId)
                 || row.GeoId.Length > 50
                 || row.GeoId != row.GeoId.Trim()
@@ -401,12 +425,25 @@ public sealed class CountyReadOnlySalesSyncService : ICountyReadOnlySalesSyncSer
                 || row.SaleDate.Year is < 1800 or > 9998
                 || row.SaleDate.Kind == DateTimeKind.Local
                 || row.SalePrice <= 0
-                || row.SalePrice > 10_000_000_000m
-                || !identities.Add(SourceIdentity(row)))
+                || row.SalePrice > 10_000_000_000m)
             {
+                normalizedRows = Array.Empty<PacsComparableSale>();
                 return false;
             }
+
+            var identity = SourceIdentity(row);
+            if (identities.TryGetValue(identity, out var existing))
+            {
+                if (existing != row)
+                {
+                    normalizedRows = Array.Empty<PacsComparableSale>();
+                    return false;
+                }
+                continue;
+            }
+            identities.Add(identity, row);
         }
+        normalizedRows = identities.Values.ToArray();
         return true;
     }
 
@@ -419,14 +456,17 @@ public sealed class CountyReadOnlySalesSyncService : ICountyReadOnlySalesSyncSer
         sale.ParcelId = source.GeoId;
         sale.SaleDate = DateTime.SpecifyKind(source.SaleDate.Date, DateTimeKind.Utc);
         sale.SalePrice = source.SalePrice;
-        sale.PropertyType = Bounded(source.PropTypeCd, 30) ?? "unknown";
+        sale.PacsChgOfOwnerId = source.PacsChgOfOwnerId;
+        sale.PropertyType = NormalizePropertyType(source.PropTypeCd);
+        sale.ImprvTypeCode = Bounded(source.PropTypeCd, 10);
         sale.Address = Bounded(source.SitusAddr, 200);
         sale.Neighborhood = Bounded(source.Neighborhood, 50);
         sale.RawRatioTypeCd = Bounded(source.SaleRatioTypeCd, 10);
         sale.RawSaleTypeCode = Bounded(source.DeedTypeCd, 5);
-        sale.RawComment = Bounded(source.Consideration, 500);
+        sale.PacsConsideration = Bounded(source.Consideration, 500);
+        sale.RawComment = Bounded(source.SaleComment, 500);
         sale.IsVerified = false;
-        sale.VerificationSource = $"county-readonly-sync:{connectionId:D}:{source.PropId.ToString(CultureInfo.InvariantCulture)}";
+        sale.VerificationSource = $"county-readonly-sync:{connectionId:D}:{source.PacsChgOfOwnerId.ToString(CultureInfo.InvariantCulture)}";
         sale.IngestedBy = "county-readonly-sync";
         sale.IngestedAt = ingestedAt;
     }
@@ -437,6 +477,23 @@ public sealed class CountyReadOnlySalesSyncService : ICountyReadOnlySalesSyncSer
         var canonical = value.Trim();
         if (canonical.Any(char.IsControl)) return null;
         return canonical.Length <= maximum ? canonical : canonical[..maximum];
+    }
+
+    private static string NormalizePropertyType(string? propertyTypeCode)
+    {
+        var normalized = Bounded(propertyTypeCode, 30)?.ToUpperInvariant();
+        return normalized switch
+        {
+            null or "" => "unknown",
+            "MFR" or "MULTIFAMILY" => "multifamily",
+            var value when value.StartsWith("C", StringComparison.Ordinal)
+                || value.Contains("COM", StringComparison.Ordinal) => "commercial",
+            var value when value.StartsWith("I", StringComparison.Ordinal)
+                || value.Contains("IND", StringComparison.Ordinal) => "industrial",
+            var value when value.StartsWith("A", StringComparison.Ordinal)
+                || value.Contains("AGR", StringComparison.Ordinal) => "agricultural",
+            _ => "residential",
+        };
     }
 
     private static Guid DeterministicSaleId(Guid connectionId, PacsComparableSale row)
@@ -454,6 +511,7 @@ public sealed class CountyReadOnlySalesSyncService : ICountyReadOnlySalesSyncSer
 
     private static string SourceIdentity(PacsComparableSale row) => string.Join(
         '|',
+        row.PacsChgOfOwnerId.ToString(CultureInfo.InvariantCulture),
         row.PropId.ToString(CultureInfo.InvariantCulture),
         row.GeoId.ToUpperInvariant(),
         row.SaleDate.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture));
@@ -480,6 +538,16 @@ public sealed class CountyReadOnlySalesSyncService : ICountyReadOnlySalesSyncSer
         return true;
     }
 
-    private static CountyReadOnlySalesSyncResult Denied(CountyReadOnlySalesSyncDenialCode code) =>
-        new(CountyReadOnlySalesSyncDisposition.Denied, code, null);
+    private CountyReadOnlySalesSyncResult Denied(
+        CountyReadOnlySalesSyncDenialCode code,
+        Guid countyId,
+        Guid? connectionId = null)
+    {
+        _logger.LogWarning(
+            "County read-only sales sync denied with {DenialCode} for county {CountyId} and connection {ConnectionId}",
+            code,
+            countyId,
+            connectionId);
+        return new(CountyReadOnlySalesSyncDisposition.Denied, code, null);
+    }
 }

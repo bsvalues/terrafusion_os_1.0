@@ -49,7 +49,19 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 }
 
 function isDate(value: unknown): value is string {
-  return typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value);
+  if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+  const [year, month, day] = value.split('-').map(Number);
+  if (year < 1 || month < 1 || month > 12 || day < 1) return false;
+  const leapYear = year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0);
+  const daysInMonth = [31, leapYear ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+  return day <= daysInMonth[month - 1]!;
+}
+
+function hasSafeReceiptCounts(receipt: Record<string, unknown>): boolean {
+  return ['sourceRows', 'addedSales', 'updatedSales', 'availableSales'].every((field) => {
+    const count = receipt[field];
+    return typeof count === 'number' && Number.isSafeInteger(count) && count >= 0;
+  });
 }
 
 const statuses = new Set<CountyReadOnlySalesSyncStatus>([
@@ -105,10 +117,7 @@ function requireReceipt(value: unknown): CountyReadOnlySalesSyncReceipt {
     typeof value.receipt.countyId !== 'string' ||
     typeof value.receipt.connectionId !== 'string' ||
     typeof value.receipt.sourceSystem !== 'string' ||
-    !['sourceRows', 'addedSales', 'updatedSales', 'availableSales'].every((field) => {
-      const number = value.receipt[field];
-      return typeof number === 'number' && Number.isSafeInteger(number) && number >= 0;
-    }) ||
+    !hasSafeReceiptCounts(value.receipt) ||
     value.receipt.externalWrites !== 0 ||
     (value.receipt.latestSaleDate !== null && !isDate(value.receipt.latestSaleDate)) ||
     (value.receipt.recommendedStudyYear !== null &&

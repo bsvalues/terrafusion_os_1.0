@@ -1653,7 +1653,7 @@ builder.Services.AddScoped<IEnhancementModuleRegistrationService, EnhancementMod
 builder.Services.AddScoped<TerraFusion.Core.Services.IDynamicPropertyService, TerraFusion.Core.Services.DynamicPropertyService>();
 // Register Property Service (REQUIRED by PropertiesController, SystemHub, QuantumMetricsHub)
 builder.Services.AddScoped<TerraFusion.Core.Services.IPropertyService, TerraFusion.Core.Services.PropertyService>();
-builder.Services.AddScoped<TerraFusion.Core.Sync.ICountyReadOnlySalesSyncService,
+builder.Services.AddScoped<TerraFusion.Core.Interfaces.ICountyReadOnlySalesSyncService,
   TerraFusion.Data.Services.Sync.CountyReadOnlySalesSyncService>();
 
 // Register Codex 3-6-9 Framework service (CodexController)

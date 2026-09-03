@@ -56,6 +56,9 @@ public class ComparableSale
   public int? PacsChgOfOwnerId { get; set; }            // chg_of_owner.chg_of_owner_id — PACS sale record ID (for traceability)
   public int? ExciseNumber { get; set; }                 // chg_of_owner.excise_number — WA recorder's office REET excise number
 
+  [StringLength(500)]
+  public string? PacsConsideration { get; set; }          // chg_of_owner.consideration — transfer consideration text/value as supplied by PACS
+
   // ── Qualification / ratio study codes ──
   [StringLength(10)]
   public string? RawSaleQualifier { get; set; }          // sale.sl_qualifier — generic sale qualifier code

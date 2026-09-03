@@ -110,6 +110,43 @@ namespace TerraFusion.Core.PACS
                 && string.Equals(builder.InitialCatalog, database, StringComparison.OrdinalIgnoreCase);
         }
 
+        public async Task<bool> HasServerEnforcedReadOnlyAccessAsync(
+            CancellationToken cancellationToken = default)
+        {
+            const string permissionSql = """
+                SELECT CASE WHEN
+                    IS_MEMBER('db_owner') = 1
+                    OR IS_MEMBER('db_datawriter') = 1
+                    OR COALESCE(HAS_PERMS_BY_NAME(DB_NAME(), 'DATABASE', 'CONTROL'), 0) = 1
+                    OR COALESCE(HAS_PERMS_BY_NAME(DB_NAME(), 'DATABASE', 'ALTER'), 0) = 1
+                    OR EXISTS (
+                        SELECT 1
+                        FROM sys.tables AS candidate
+                        CROSS APPLY sys.fn_my_permissions(
+                            QUOTENAME(OBJECT_SCHEMA_NAME(candidate.object_id)) + '.' + QUOTENAME(candidate.name),
+                            'OBJECT') AS permission
+                        WHERE permission.permission_name IN ('INSERT', 'UPDATE', 'DELETE', 'ALTER', 'CONTROL', 'TAKE OWNERSHIP')
+                    )
+                THEN 0 ELSE 1 END
+                """;
+
+            try
+            {
+                await using var connection = CreateSalesConnection();
+                await connection.OpenAsync(cancellationToken).ConfigureAwait(false);
+                var readOnly = await connection.ExecuteScalarAsync<int>(new CommandDefinition(
+                    permissionSql,
+                    commandTimeout: _commandTimeout,
+                    cancellationToken: cancellationToken)).ConfigureAwait(false);
+                return readOnly == 1;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "PACS server-enforced read-only permission check failed");
+                return false;
+            }
+        }
+
         // ═══════════════════════════════════════════════════════════════
         // CONTRACT PROOF & HEALTH
         // ═══════════════════════════════════════════════════════════════
@@ -465,6 +502,7 @@ namespace TerraFusion.Core.PACS
 
                 var sql = $@"
                     SELECT
+                        chg_of_owner_id AS PacsChgOfOwnerId,
                         prop_id AS PropId,
                         geo_id AS GeoId,
                         prop_type_cd AS PropTypeCd,
@@ -853,9 +891,10 @@ namespace TerraFusion.Core.PACS
                         sale_ratio_type_cd AS SaleRatioTypeCd,
                         deed_type_cd AS DeedTypeCd,
                         consideration AS Consideration,
+                        sale_comment AS SaleComment,
                         last_modified AS LastModified
                     FROM {ViewComparableSales}
-                    ORDER BY sale_date DESC, prop_id
+                    ORDER BY sale_date DESC, prop_id, chg_of_owner_id
                     OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY";
 
                 var items = await connection.QueryAsync<PacsComparableSale>(
