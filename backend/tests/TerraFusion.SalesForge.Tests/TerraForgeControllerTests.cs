@@ -115,15 +115,19 @@ public class TerraForgeControllerTests
     // ─── County Scope ─────────────────────────────────────────────────────────
 
     [Fact]
-    public void Controller_SupportsCountyIdHeader()
+    public void Controller_RequiresAssessorAuthorization()
     {
-        ControllerSource.Should().Contain("x-county-id");
+        ControllerSource.Should().Contain("[Authorize(Policy = \"RequireAssessor\")]");
     }
 
     [Fact]
-    public void Controller_SupportsCountyIdClaim()
+    public void Controller_UsesAuthenticatedCanonicalCountyContext()
     {
-        ControllerSource.Should().Contain("FindFirst(\"countyId\")");
+        ControllerSource.Should().Contain("AuthenticatedCanonicalCountyContextProvider");
+        ControllerSource.Should().Contain(".GetCurrentAsync(cancellationToken)");
+        ControllerSource.Should().Contain("return (Guid.Empty, Forbid())");
+        ControllerSource.Should().NotContain("Request.Headers[\"x-county-id\"]");
+        ControllerSource.Should().NotContain("FindFirst(\"countyId\")");
     }
 
     // ─── IAAO Compliance ──────────────────────────────────────────────────────
