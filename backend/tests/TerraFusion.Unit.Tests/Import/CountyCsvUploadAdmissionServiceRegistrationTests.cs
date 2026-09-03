@@ -366,11 +366,14 @@ public sealed class CountyCsvUploadAdmissionServiceRegistrationTests
 
         var migrations = context.Database.GetMigrations().ToArray();
         Assert.Equal(MigrationId, migrations[^1]);
-        foreach (var migration in migrations[..^1])
+        var previousMigration = migrations[^2];
+        foreach (var migration in migrations[..^2])
         {
             await context.Database.ExecuteSqlInterpolatedAsync(
                 $"INSERT INTO \"__EFMigrationsHistory\" (\"MigrationId\", \"ProductVersion\") VALUES ({migration}, {"8.0.0"})");
         }
+
+        await context.GetService<IMigrator>().MigrateAsync(previousMigration);
     }
 
     private static async Task<int> CountBatchesAsync(IServiceProvider services)
