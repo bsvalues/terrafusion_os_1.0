@@ -6,7 +6,9 @@ import { AuthGuard, AuthProvider } from './auth/AuthProvider';
 import { ErrorBoundary } from './components/errors/ErrorBoundary';
 import { LegacyRedirect } from './components/legacy/LegacyRedirect';
 import { getViteEnv } from './env/getViteEnv';
+import { apiFetch } from './lib/apiBase';
 import { activateFromRoute } from './orchestration/moduleActivation';
+import { WASHINGTON_COUNTIES } from './pages/forge/sales/washingtonLaunchApi';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -105,7 +107,9 @@ const ExperimentsList = lazy(() => import('./pages/experiments/ExperimentsList')
 const CreateExperiment = lazy(() => import('./pages/experiments/CreateExperiment'));
 const NotificationPreferences = lazy(() => import('./components/codex/NotificationPreferences'));
 const CountiesHub = lazy(() => import('./components/CountiesHub'));
-const CountyCsvAdmissionPage = lazy(() => import('./pages/canon/CountyCsvAdmissionPage'));
+const CountyCsvAdmissionPage = lazy(
+  () => import('../../terraforge/src/data-admission/CountyCsvAdmissionPage')
+);
 
 // TerraForge County Studio (Plan 2) + Atlas Live View (Plan 3)
 const CountyStudyPage = lazy(() =>
@@ -258,7 +262,12 @@ const Router: React.FC = () => {
                     <Route path='counties' element={<CountiesHub />} />
                     <Route
                       path='counties/:countyCode/upload'
-                      element={<CountyCsvAdmissionPage />}
+                      element={
+                        <CountyCsvAdmissionPage
+                          apiFetch={apiFetch}
+                          counties={WASHINGTON_COUNTIES}
+                        />
+                      }
                     />
                     <Route path='marketplace' element={<TerraFusionMarketplace />} />
                     <Route

@@ -1,6 +1,6 @@
-import { apiFetch } from '@/lib/apiBase';
-
 export type CountyCsvDataset = 'Parcels' | 'Sales';
+
+export type CountyCsvApiFetch = (path: string, init?: RequestInit) => Promise<Response>;
 
 export interface CountyCsvUploadBatchSummary {
   batchId: string;
@@ -116,6 +116,7 @@ async function requireOk(response: Response, fallback: string): Promise<unknown>
 }
 
 export async function fetchCountyCsvUploadHistory(
+  apiFetch: CountyCsvApiFetch,
   signal?: AbortSignal
 ): Promise<CountyCsvUploadHistory> {
   const response = await apiFetch('/upload/history', { signal });
@@ -123,6 +124,7 @@ export async function fetchCountyCsvUploadHistory(
 }
 
 export async function uploadCountyCsv(
+  apiFetch: CountyCsvApiFetch,
   file: File,
   dataset: CountyCsvDataset,
   signal?: AbortSignal

@@ -1,10 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const { apiFetchMock } = vi.hoisted(() => ({ apiFetchMock: vi.fn() }));
+const apiFetchMock = vi.fn();
 
-vi.mock('@/lib/apiBase', () => ({ apiFetch: apiFetchMock }));
-
-import { fetchCountyCsvUploadHistory, uploadCountyCsv } from '../canon/countyCsvUpload';
+import { fetchCountyCsvUploadHistory, uploadCountyCsv } from '../countyCsvUpload';
 
 function response(body: unknown, ok = true, status = 200): Response {
   return {
@@ -28,7 +26,7 @@ describe('county CSV upload client', () => {
     };
     apiFetchMock.mockResolvedValue(response(payload));
 
-    await expect(fetchCountyCsvUploadHistory()).resolves.toEqual(payload);
+    await expect(fetchCountyCsvUploadHistory(apiFetchMock)).resolves.toEqual(payload);
     expect(apiFetchMock).toHaveBeenCalledWith('/upload/history', { signal: undefined });
   });
 
@@ -51,7 +49,7 @@ describe('county CSV upload client', () => {
     };
     apiFetchMock.mockResolvedValue(response(payload));
 
-    await expect(uploadCountyCsv(file, 'Sales')).resolves.toEqual(payload);
+    await expect(uploadCountyCsv(apiFetchMock, file, 'Sales')).resolves.toEqual(payload);
     const [path, init] = apiFetchMock.mock.calls[0] as [string, RequestInit];
     expect(path).toBe('/upload');
     expect(init.method).toBe('POST');
@@ -63,7 +61,9 @@ describe('county CSV upload client', () => {
 
   it('fails closed on a malformed history response', async () => {
     apiFetchMock.mockResolvedValue(response({ countyName: 'Spokane', batches: [] }));
-    await expect(fetchCountyCsvUploadHistory()).rejects.toThrow(/invalid history response/i);
+    await expect(fetchCountyCsvUploadHistory(apiFetchMock)).rejects.toThrow(
+      /invalid history response/i
+    );
   });
 
   it("rejects a history payload that contains another county's batch", async () => {
@@ -90,13 +90,15 @@ describe('county CSV upload client', () => {
       })
     );
 
-    await expect(fetchCountyCsvUploadHistory()).rejects.toThrow(/invalid history response/i);
+    await expect(fetchCountyCsvUploadHistory(apiFetchMock)).rejects.toThrow(
+      /invalid history response/i
+    );
   });
 
   it('preserves protected HTTP denial instead of inventing a receipt', async () => {
     apiFetchMock.mockResolvedValue(response({ code: 'CSV_ADMISSION_DENIED' }, false, 400));
     await expect(
-      uploadCountyCsv(new File(['bad'], 'bad.csv', { type: 'text/csv' }), 'Parcels')
+      uploadCountyCsv(apiFetchMock, new File(['bad'], 'bad.csv', { type: 'text/csv' }), 'Parcels')
     ).rejects.toThrow(/HTTP 400.*CSV_ADMISSION_DENIED/i);
   });
 });

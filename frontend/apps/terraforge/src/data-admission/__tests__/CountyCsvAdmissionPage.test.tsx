@@ -12,12 +12,18 @@ const { fetchCountyCsvUploadHistoryMock, uploadCountyCsvMock } = vi.hoisted(() =
   uploadCountyCsvMock: vi.fn(),
 }));
 
-vi.mock('../../../services/canon/countyCsvUpload', () => ({
+vi.mock('../countyCsvUpload', () => ({
   fetchCountyCsvUploadHistory: fetchCountyCsvUploadHistoryMock,
   uploadCountyCsv: uploadCountyCsvMock,
 }));
 
 import CountyCsvAdmissionPage from '../CountyCsvAdmissionPage';
+
+const apiFetchMock = vi.fn();
+const WASHINGTON_COUNTIES = [
+  { code: '005', name: 'Benton' },
+  { code: '063', name: 'Spokane' },
+] as const;
 
 const SPOKANE_ID = '00000000-0000-0000-0000-000000000032';
 const BENTON_ID = '00000000-0000-0000-0000-000000000005';
@@ -32,7 +38,12 @@ function renderRoute(path = '/counties/063/upload') {
     <MemoryRouter initialEntries={[path]}>
       <TestNavigator />
       <Routes>
-        <Route path='/counties/:countyCode/upload' element={<CountyCsvAdmissionPage />} />
+        <Route
+          path='/counties/:countyCode/upload'
+          element={
+            <CountyCsvAdmissionPage apiFetch={apiFetchMock} counties={WASHINGTON_COUNTIES} />
+          }
+        />
       </Routes>
     </MemoryRouter>
   );
@@ -113,7 +124,9 @@ describe('county CSV admission domain surface', () => {
     fireEvent.change(screen.getByLabelText('Choose county CSV'), { target: { files: [file] } });
     fireEvent.click(screen.getByRole('button', { name: 'Admit county CSV' }));
 
-    await waitFor(() => expect(uploadCountyCsvMock).toHaveBeenCalledWith(file, 'Sales'));
+    await waitFor(() =>
+      expect(uploadCountyCsvMock).toHaveBeenCalledWith(apiFetchMock, file, 'Sales')
+    );
     expect(await screen.findByTestId('county-upload-receipt')).toHaveTextContent(
       /2 structurally valid rows/i
     );
@@ -121,6 +134,12 @@ describe('county CSV admission domain surface', () => {
       /spokane-sales.csv.*Sales.*2 structurally valid rows/i
     );
     expect(screen.getByText(/not staged or available to TerraForge/i)).toBeInTheDocument();
+
+    const fileInput = screen.getByLabelText('Choose county CSV') as HTMLInputElement;
+    expect(fileInput.value).toBe('');
+    fireEvent.change(fileInput, { target: { files: [file] } });
+    fireEvent.click(screen.getByRole('button', { name: 'Admit county CSV' }));
+    await waitFor(() => expect(uploadCountyCsvMock).toHaveBeenCalledTimes(2));
   });
 
   it('blocks controls when the authenticated county differs from the route county', async () => {

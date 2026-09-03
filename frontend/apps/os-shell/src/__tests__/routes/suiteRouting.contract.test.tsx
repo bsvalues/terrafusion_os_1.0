@@ -41,10 +41,14 @@ describe('Suite routing source contract — Router.tsx', () => {
       expect(routerSource).toContain("path='counties' element={<CountiesHub />}");
     });
 
-    it('routes county CSV admission to the canon-owned data surface', () => {
-      expect(routerSource).toContain("import('./pages/canon/CountyCsvAdmissionPage')");
+    it('routes county CSV admission to the TerraForge data-admission domain', () => {
+      expect(routerSource).toContain(
+        "import('../../terraforge/src/data-admission/CountyCsvAdmissionPage')"
+      );
       expect(routerSource).toContain("path='counties/:countyCode/upload'");
-      expect(routerSource).toContain('element={<CountyCsvAdmissionPage />}');
+      expect(routerSource).toContain('<CountyCsvAdmissionPage');
+      expect(routerSource).toContain('apiFetch={apiFetch}');
+      expect(routerSource).toContain('counties={WASHINGTON_COUNTIES}');
     });
   });
 

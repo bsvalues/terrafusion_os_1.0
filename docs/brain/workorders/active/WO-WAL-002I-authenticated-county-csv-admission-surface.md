@@ -8,15 +8,16 @@
 | Program | Washington Assessor Launch V1 |
 | Risk | R5 authenticated county-scoped upload UI and metadata history |
 | Contract | `wal.county-upload.authenticated-admission-surface.v1` |
-| Environment | `local-os-shell-and-disposable-api-sqlite` |
+| Environment | `local-os-shell-terraforge-and-disposable-api-sqlite` |
 | Terminal condition | `AUTHENTICATED_COUNTY_CSV_ADMISSION_AND_COUNTY_ONLY_HISTORY_VISIBLE` |
 
 ## Assessor outcome
 
-An assessor can choose a Washington county in Counties HUB, open the dedicated Canon data-admission
-surface, prove that the authenticated canonical county matches that selection, admit a bounded
-Parcels or Sales CSV through the protected API, and see durable admission metadata for that county
-only. The surface must state that admission is not staging, publication, or TerraForge availability.
+An assessor can choose a Washington county in Counties HUB, open the dedicated TerraForge
+data-admission surface, prove that the authenticated canonical county matches that selection, admit
+a bounded Parcels or Sales CSV through the protected API, and see durable admission metadata for
+that county only. The surface must state that admission is not staging, publication, or TerraForge
+availability.
 
 ## Exact reservations
 
@@ -29,21 +30,23 @@ only. The surface must state that admission is not staging, publication, or Terr
 - `backend/tests/TerraFusion.Unit.Tests/Import/CountyCsvUploadAdmissionServiceRegistrationTests.cs`
 - `frontend/apps/os-shell/src/Router.tsx`
 - `frontend/apps/os-shell/src/components/CountiesHub.tsx`
-- `frontend/apps/os-shell/src/pages/canon/CountyCsvAdmissionPage.tsx`
-- `frontend/apps/os-shell/src/pages/canon/__tests__/CountyCsvAdmissionPage.test.tsx`
-- `frontend/apps/os-shell/src/services/canon/countyCsvUpload.ts`
-- `frontend/apps/os-shell/src/services/__tests__/countyCsvUpload.test.ts`
 - `frontend/apps/os-shell/src/__tests__/routes/suiteRouting.contract.test.tsx`
 - `frontend/apps/os-shell/src/__tests__/shell/countiesHubJourney.contract.test.tsx`
+- `frontend/apps/terraforge/src/data-admission/CountyCsvAdmissionPage.tsx`
+- `frontend/apps/terraforge/src/data-admission/__tests__/CountyCsvAdmissionPage.test.tsx`
+- `frontend/apps/terraforge/src/data-admission/countyCsvUpload.ts`
+- `frontend/apps/terraforge/src/data-admission/__tests__/countyCsvUpload.test.ts`
+- `frontend/tsconfig.json`
 
 ## Contract
 
 1. Expose recent durable admission metadata through an assessor-protected endpoint. Resolve the
    county exclusively from authenticated canonical context and query only that immutable county ID.
-2. Keep Counties HUB department-agnostic: it selects county navigation context and links to the
-   dedicated Canon data-admission route; it does not execute the mutating upload workflow.
-3. The Canon surface recognizes only the 39 canonical Washington county codes and does not treat the
-   route or any form field as authority.
+2. Keep the OS Shell and Counties HUB department-agnostic: the shell composes the route and protected
+   API adapter, while Counties HUB selects county navigation context. The mutating workflow belongs
+   to TerraForge's separate county-data-admission domain.
+3. The county-data-admission surface recognizes only the 39 canonical Washington county codes and
+   does not treat the route or any form field as authority.
 4. Suppress upload controls unless the protected history response's county name and key exactly match
    the canonical route county. Reject cross-county history batches, malformed responses, and
    mismatched admission receipts.

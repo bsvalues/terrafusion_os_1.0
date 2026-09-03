@@ -17,14 +17,14 @@ import {
   ShieldOutlined as ShieldIcon,
 } from '@mui/icons-material';
 import { useParams } from 'react-router-dom';
-import { WASHINGTON_COUNTIES } from '../forge/sales/washingtonLaunchApi';
 import {
   fetchCountyCsvUploadHistory,
   uploadCountyCsv,
+  type CountyCsvApiFetch,
   type CountyCsvDataset,
   type CountyCsvUploadHistory,
   type CountyCsvUploadReceipt,
-} from '../../services/canon/countyCsvUpload';
+} from './countyCsvUpload';
 
 function normalizeCountyName(value: string): string {
   return value
@@ -44,11 +44,19 @@ function formatSnapshotDate(value: string): string {
     : new Intl.DateTimeFormat('en-US', { dateStyle: 'medium' }).format(date);
 }
 
-export default function CountyCsvAdmissionPage() {
+export interface CountyCsvAdmissionPageProps {
+  apiFetch: CountyCsvApiFetch;
+  counties: ReadonlyArray<{ code: string; name: string }>;
+}
+
+export default function CountyCsvAdmissionPage({
+  apiFetch,
+  counties,
+}: CountyCsvAdmissionPageProps) {
   const { countyCode } = useParams<{ countyCode: string }>();
   const county = useMemo(
-    () => WASHINGTON_COUNTIES.find((candidate) => candidate.code === countyCode) ?? null,
-    [countyCode]
+    () => counties.find((candidate) => candidate.code === countyCode) ?? null,
+    [counties, countyCode]
   );
   const [uploadContextLoading, setUploadContextLoading] = useState(false);
   const [uploadContext, setUploadContext] = useState<CountyCsvUploadHistory | null>(null);
@@ -58,6 +66,7 @@ export default function CountyCsvAdmissionPage() {
   const [uploading, setUploading] = useState(false);
   const [uploadReceipt, setUploadReceipt] = useState<CountyCsvUploadReceipt | null>(null);
   const requestGeneration = useRef(0);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     requestGeneration.current += 1;
@@ -65,6 +74,7 @@ export default function CountyCsvAdmissionPage() {
     setUploadContext(null);
     setUploadError(null);
     setUploadFile(null);
+    if (fileInputRef.current) fileInputRef.current.value = '';
     setUploadDataset('Sales');
     setUploading(false);
     setUploadReceipt(null);
@@ -85,7 +95,7 @@ export default function CountyCsvAdmissionPage() {
     setUploadError(null);
     setUploadReceipt(null);
     try {
-      const history = await fetchCountyCsvUploadHistory();
+      const history = await fetchCountyCsvUploadHistory(apiFetch);
       if (requestGeneration.current !== generation) return;
       setUploadContext(history);
       if (
@@ -107,7 +117,7 @@ export default function CountyCsvAdmissionPage() {
         setUploadContextLoading(false);
       }
     }
-  }, [county]);
+  }, [apiFetch, county]);
 
   const submitCountyUpload = useCallback(async () => {
     if (!county || !uploadContext || !authenticatedUploadMatchesSelection || !uploadFile) return;
@@ -117,7 +127,7 @@ export default function CountyCsvAdmissionPage() {
     setUploadError(null);
     setUploadReceipt(null);
     try {
-      const receipt = await uploadCountyCsv(uploadFile, uploadDataset);
+      const receipt = await uploadCountyCsv(apiFetch, uploadFile, uploadDataset);
       if (requestGeneration.current !== generation) return;
       if (
         receipt.countyId !== uploadContext.countyId ||
@@ -132,7 +142,8 @@ export default function CountyCsvAdmissionPage() {
       }
       setUploadReceipt(receipt);
       setUploadFile(null);
-      const refreshedHistory = await fetchCountyCsvUploadHistory();
+      if (fileInputRef.current) fileInputRef.current.value = '';
+      const refreshedHistory = await fetchCountyCsvUploadHistory(apiFetch);
       if (requestGeneration.current !== generation) return;
       if (
         refreshedHistory.countyId !== receipt.countyId ||
@@ -154,7 +165,14 @@ export default function CountyCsvAdmissionPage() {
         setUploading(false);
       }
     }
-  }, [authenticatedUploadMatchesSelection, county, uploadContext, uploadDataset, uploadFile]);
+  }, [
+    apiFetch,
+    authenticatedUploadMatchesSelection,
+    county,
+    uploadContext,
+    uploadDataset,
+    uploadFile,
+  ]);
 
   if (!county) {
     return (
@@ -196,7 +214,7 @@ export default function CountyCsvAdmissionPage() {
         </Button>
         <Box>
           <Typography variant='overline' color='text.secondary'>
-            Canon data admission
+            TerraForge data admission
           </Typography>
           <Typography variant='h4' component='h1' gutterBottom>
             {county.name} County CSV admission
@@ -254,6 +272,7 @@ export default function CountyCsvAdmissionPage() {
                     <Button component='label' variant='outlined'>
                       Choose CSV
                       <input
+                        ref={fileInputRef}
                         hidden
                         type='file'
                         accept='.csv,text/csv'

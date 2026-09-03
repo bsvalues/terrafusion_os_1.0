@@ -54,7 +54,8 @@
     }
   },
   "include": [
-    "apps/os-shell/src"
+    "apps/os-shell/src",
+    "apps/terraforge/src"
   ],
   "exclude": [
     "node_modules",
