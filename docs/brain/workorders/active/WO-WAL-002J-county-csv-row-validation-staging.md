@@ -22,6 +22,8 @@ are not yet promoted, published, or available in TerraForge workflows.
 
 - `docs/brain/workorders/active/WO-WAL-002J-county-csv-row-validation-staging.md`
 - `backend/src/TerraFusion.Core/Import/CountyCsvUploadRowStaging.cs`
+- `backend/src/TerraFusion.Core/Import/CountyCsvStreamParser.cs`
+- `backend/src/TerraFusion.Core/Import/CountyCsvIntakeEnvelope.cs`
 - `backend/src/TerraFusion.Core/Interfaces/ICountyCsvUploadRowStager.cs`
 - `backend/src/TerraFusion.Core/Import/CountyCsvUploadAdmissionLedger.cs`
 - `backend/src/TerraFusion.Core/Entities/Import/CountyCsvUploadRowStage.cs`
@@ -36,6 +38,11 @@ are not yet promoted, published, or available in TerraForge workflows.
 - `backend/TerraFusion.API.Tests/Controllers/DataImportControllerTests.cs`
 - `backend/tests/TerraFusion.Unit.Tests/Import/CountyCsvUploadAdmissionServiceRegistrationTests.cs`
 - `backend/tests/TerraFusion.Unit.Tests/Import/CountyCsvUploadRowValidatorTests.cs`
+- `backend/tests/TerraFusion.Unit.Tests/Import/CountyCsvUploadAdmissionLedgerTests.cs`
+- `backend/tests/TerraFusion.Unit.Tests/Import/CountyCsvIntakeDuplicateDecisionTests.cs`
+- `backend/tests/TerraFusion.Unit.Tests/Import/CountyCsvIntakeIdempotencyTests.cs`
+- `backend/tests/TerraFusion.Unit.Tests/Import/CountyCsvStreamParserTests.cs`
+- `backend/tests/TerraFusion.Unit.Tests/Import/CountyCsvIntakeEnvelopeTests.cs`
 - `frontend/apps/terraforge/src/data-admission/CountyCsvAdmissionPage.tsx`
 - `frontend/apps/terraforge/src/data-admission/countyCsvUpload.ts`
 - `frontend/apps/terraforge/src/data-admission/__tests__/CountyCsvAdmissionPage.test.tsx`
@@ -51,9 +58,11 @@ are not yet promoted, published, or available in TerraForge workflows.
 3. Parcels v1 requires `parcel_id`, `situs_address`, and bounded non-negative
    `assessed_value`. Reviewed aliases normalize to these fields; ambiguous aliases fail closed.
 4. Persist only normalized launch fields. Ignore and do not persist unknown source columns.
-5. Persist one immutable staging document per batch with source row numbers, accepted normalized
-   rows, quarantined row numbers/reasons, counts, schema version, county ID, and lineage batch ID.
-6. Duplicate/retry staging must converge on the same batch result. A mismatched replay fails closed.
+5. Persist the admission batch and its immutable staging document in one transaction, with source
+   row numbers, accepted normalized rows, quarantined row numbers/reasons, counts, schema version,
+   county ID, content digest, and lineage batch ID.
+6. Duplicate/retry staging must converge on the same batch result across PostgreSQL and the
+   disposable SQLite adapter. A mismatched replay fails closed.
 7. History and receipt surfaces expose county-only validation counts and reason classes and reject
    malformed or cross-county nested summaries.
 8. Label the entire result as validation staging only. It grants no canonical promotion or

@@ -38,6 +38,13 @@ public sealed record CountyCsvUploadRowValidationResult(
             .ToArray();
 }
 
+public sealed class CountyCsvUploadRowSchemaException(
+    string reasonCode,
+    string message) : FormatException(message)
+{
+    public string ReasonCode { get; } = reasonCode;
+}
+
 /// <summary>
 /// Pure validator for the bounded launch CSV templates. It persists only the canonical fields
 /// required for later promotion; unknown source columns are deliberately discarded rather than
@@ -94,6 +101,10 @@ public static class CountyCsvUploadRowValidator
             var detail = ambiguousHeaders.Count > 0
                 ? $"Multiple source headers map to: {string.Join(", ", ambiguousHeaders)}."
                 : $"Required headers are missing: {string.Join(", ", missingHeaders)}.";
+            if (document.Rows.Count == 0)
+            {
+                throw new CountyCsvUploadRowSchemaException(reason, detail);
+            }
             var quarantined = document.Rows
                 .Select((_, index) => new CountyCsvQuarantinedRow(index + 2, reason, detail))
                 .ToArray();
@@ -103,7 +114,7 @@ public static class CountyCsvUploadRowValidator
         var staged = new List<CountyCsvStagedRow>(document.Rows.Count);
         var quarantinedRows = new List<CountyCsvQuarantinedRow>();
         var parcelKeys = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-        var saleKeys = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        var saleKeys = new HashSet<(string ParcelId, DateOnly SaleDate, decimal SalePrice)>();
 
         for (var index = 0; index < document.Rows.Count; index++)
         {
@@ -178,9 +189,7 @@ public static class CountyCsvUploadRowValidator
                 assessedValue = parsedAssessed;
             }
 
-            var saleKey = string.Create(
-                CultureInfo.InvariantCulture,
-                $"{parcelId}\u001f{saleDate:yyyy-MM-dd}\u001f{salePrice}");
+            var saleKey = (parcelId.ToUpperInvariant(), saleDate, salePrice);
             if (!saleKeys.Add(saleKey))
             {
                 quarantinedRows.Add(new(sourceRowNumber, "DUPLICATE_SALE",

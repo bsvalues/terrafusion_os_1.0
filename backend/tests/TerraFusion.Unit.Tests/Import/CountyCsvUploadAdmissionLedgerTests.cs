@@ -72,11 +72,36 @@ public sealed class CountyCsvUploadAdmissionLedgerTests
         Assert.Equal(ICountyCsvUploadAdmissionLedger.ContractId, batch.LedgerContractId);
         Assert.Equal(CountyCsvUploadBatch.AdmittedStatus, batch.Status);
         Assert.Equal(ReceivedAt, batch.ReceivedAtUtc);
+        Assert.Equal(2, result.RowStaging!.StagedRowCount);
+        Assert.Equal(0, result.RowStaging.QuarantinedRowCount);
         Assert.Equal(1, await context.CountyCsvUploadBatches.CountAsync());
+        Assert.Equal(1, await context.CountyCsvUploadRowStages.CountAsync());
         Assert.Equal(1, await context.AuditLogs.CountAsync());
         Assert.All(
             typeof(CountyCsvUploadBatch).GetProperties(),
             property => Assert.False(property.SetMethod?.IsPublic == true));
+    }
+
+    [Fact]
+    public async Task AdmitAsync_RejectsHeaderOnlyInvalidSchemaWithoutPersistingABatch()
+    {
+        await using var database = await TestDatabase.CreateAsync((Benton, BentonId));
+        var request = await CreateRequestAsync(
+            Benton,
+            BentonId,
+            "assessor-1",
+            CountyCsvDataset.Sales,
+            "parcel_id,amount\n");
+        await using var context = database.CreateContext();
+
+        var result = await new CountyCsvUploadAdmissionLedger(database.CreateFactory())
+            .AdmitAsync(request);
+
+        Assert.Equal(CountyCsvUploadAdmissionDisposition.Denied, result.Disposition);
+        Assert.Equal(CountyCsvUploadAdmissionDenialCode.InvalidRowSchema, result.DenialCode);
+        Assert.Null(result.Batch);
+        Assert.Equal(0, await context.CountyCsvUploadBatches.CountAsync());
+        Assert.Equal(0, await context.CountyCsvUploadRowStages.CountAsync());
     }
 
     [Fact]
@@ -280,7 +305,8 @@ public sealed class CountyCsvUploadAdmissionLedgerTests
                                     {
                                         Array.AsReadOnly(new[] { "1", "Ada" }),
                                     }),
-                                intakeReceipt.Document.InputBytes),
+                                intakeReceipt.Document.InputBytes,
+                                intakeReceipt.Document.ContentSha256),
                         },
                     },
                 },
@@ -721,10 +747,15 @@ public sealed class CountyCsvUploadAdmissionLedgerTests
         WashingtonCountyIdentity county,
         Guid countyId,
         string actorId,
-        CountyCsvDataset dataset = CountyCsvDataset.Parcels)
+        CountyCsvDataset dataset = CountyCsvDataset.Parcels,
+        string? csv = null)
     {
         var context = await CreateCountyContextAsync(county, countyId, actorId);
-        var bytes = Encoding.UTF8.GetBytes("parcel_id,owner\n1,Ada\n2,Grace\n");
+        var bytes = Encoding.UTF8.GetBytes(
+            csv
+            ?? ("parcel_id,situs_address,assessed_value,sale_date,sale_price,owner\n"
+                + "1,100 Main St,250000,2026-01-15,240000,Ada\n"
+                + "2,200 Main St,300000,2026-02-16,310000,Grace\n"));
         var intake = new CountyCsvCountyBoundIntake(
             new CountyCsvParserOptions
             {

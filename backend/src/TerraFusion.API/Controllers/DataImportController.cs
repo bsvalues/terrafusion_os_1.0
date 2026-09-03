@@ -199,19 +199,25 @@ namespace TerraFusion.API.Controllers
                     _logger.LogWarning(
                         "County CSV durable admission denied with code {DenialCode}.",
                         durableAdmission.DenialCode);
-                    return AdmissionDenied(
-                        StatusCodes.Status409Conflict,
-                        "CSV_DURABLE_ADMISSION_DENIED");
+                    return durableAdmission.DenialCode
+                        == CountyCsvUploadAdmissionDenialCode.InvalidRowSchema
+                        ? AdmissionDenied(
+                            StatusCodes.Status400BadRequest,
+                            "CSV_ROW_SCHEMA_INVALID")
+                        : AdmissionDenied(
+                            StatusCodes.Status409Conflict,
+                            "CSV_DURABLE_ADMISSION_DENIED");
                 }
 
                 var batch = durableAdmission.Batch;
-                var staging = await _rowStager.StageAsync(
-                        new CountyCsvUploadRowStagingRequest(
-                            countyContext,
-                            batch,
-                            intakeReceipt.IntakeReceipt.Document),
-                        cancellationToken)
-                    .ConfigureAwait(false);
+                var staging = durableAdmission.RowStaging
+                    ?? await _rowStager.StageAsync(
+                            new CountyCsvUploadRowStagingRequest(
+                                countyContext,
+                                batch,
+                                intakeReceipt.IntakeReceipt.Document),
+                            cancellationToken)
+                        .ConfigureAwait(false);
                 return Ok(
                     new CountyCsvApiAdmissionReceipt(
                         UploadContractId,

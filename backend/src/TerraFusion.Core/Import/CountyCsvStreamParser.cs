@@ -1,4 +1,5 @@
 using System.Buffers;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace TerraFusion.Core.Import;
@@ -28,7 +29,8 @@ public sealed record CountyCsvParserOptions
 public sealed record CountyCsvDocument(
     IReadOnlyList<string> Headers,
     IReadOnlyList<IReadOnlyList<string>> Rows,
-    long InputBytes);
+    long InputBytes,
+    string ContentSha256);
 
 public enum CountyCsvErrorCode
 {
@@ -108,6 +110,7 @@ public sealed class CountyCsvStreamParser
         var charBuffer = ArrayPool<char>.Shared.Rent(StrictUtf8.GetMaxCharCount(ByteBufferSize));
         var decoder = StrictUtf8.GetDecoder();
         var state = new ParserState(_options);
+        using var contentHash = IncrementalHash.CreateHash(HashAlgorithmName.SHA256);
         long inputBytes = 0;
 
         try
@@ -130,6 +133,8 @@ public sealed class CountyCsvStreamParser
                         $"CSV input exceeds the {_options.MaxInputBytes}-byte limit.");
                 }
 
+                contentHash.AppendData(byteBuffer, 0, bytesRead);
+
                 DecodeAndProcess(
                     decoder,
                     byteBuffer.AsSpan(0, bytesRead),
@@ -147,7 +152,10 @@ public sealed class CountyCsvStreamParser
                 state,
                 cancellationToken);
 
-            return state.Complete(inputBytes);
+            var contentSha256 = Convert
+                .ToHexString(contentHash.GetHashAndReset())
+                .ToLowerInvariant();
+            return state.Complete(inputBytes, contentSha256);
         }
         catch (DecoderFallbackException exception)
         {
@@ -300,7 +308,7 @@ public sealed class CountyCsvStreamParser
             }
         }
 
-        public CountyCsvDocument Complete(long inputBytes)
+        public CountyCsvDocument Complete(long inputBytes, string contentSha256)
         {
             if (_fieldState == FieldState.Quoted)
             {
@@ -323,7 +331,8 @@ public sealed class CountyCsvStreamParser
             return new CountyCsvDocument(
                 _headers,
                 Array.AsReadOnly(_rows.ToArray()),
-                inputBytes);
+                inputBytes,
+                contentSha256);
         }
 
         private void ProcessFieldStart(char value)

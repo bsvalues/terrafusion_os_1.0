@@ -60,6 +60,17 @@ public sealed class CountyCsvUploadAdmissionLedger :
         }
 
         evidence = evidence with { AcceptedRowCount = contentRevalidation.AcceptedRowCount };
+        CountyCsvUploadRowValidationResult validation;
+        try
+        {
+            validation = CountyCsvUploadRowValidator.Validate(
+                evidence.Dataset,
+                contentRevalidation.Document!);
+        }
+        catch (CountyCsvUploadRowSchemaException)
+        {
+            return Denied(CountyCsvUploadAdmissionDenialCode.InvalidRowSchema);
+        }
 
         await using var dbContext = await _dbContextFactory
             .CreateDbContextAsync(cancellationToken)
@@ -85,21 +96,55 @@ public sealed class CountyCsvUploadAdmissionLedger :
             .ConfigureAwait(false);
         if (existing is not null)
         {
+            var resolution = ResolveExisting(existing, evidence);
+            if (resolution.Disposition == CountyCsvUploadAdmissionDisposition.Denied)
+            {
+                await transaction.CommitAsync(cancellationToken).ConfigureAwait(false);
+                return resolution;
+            }
+
+            var existingStage = await FindStageAsync(
+                    dbContext,
+                    existing.BatchId,
+                    existing.CountyId,
+                    cancellationToken)
+                .ConfigureAwait(false);
+            var candidateStage = CountyCsvUploadRowStager.CreateStage(
+                existing,
+                validation,
+                _timeProvider.GetUtcNow());
+            CountyCsvUploadRowStagingSummary staging;
+            if (existingStage is null)
+            {
+                dbContext.CountyCsvUploadRowStages.Add(candidateStage);
+                await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+                staging = CountyCsvUploadRowStager.Summary(candidateStage);
+            }
+            else
+            {
+                staging = CountyCsvUploadRowStager.RequireMatchingStage(
+                    existingStage,
+                    candidateStage);
+            }
             await transaction.CommitAsync(cancellationToken).ConfigureAwait(false);
-            return ResolveExisting(existing, evidence);
+            return Accepted(CountyCsvUploadAdmissionDisposition.Duplicate, existing, staging);
         }
 
-        var batch = evidence.CreateBatch(
-            Guid.NewGuid(),
-            _timeProvider.GetUtcNow());
+        var admittedAtUtc = _timeProvider.GetUtcNow();
+        var batch = evidence.CreateBatch(Guid.NewGuid(), admittedAtUtc);
+        var rowStage = CountyCsvUploadRowStager.CreateStage(batch, validation, admittedAtUtc);
         dbContext.CountyCsvUploadBatches.Add(batch);
+        dbContext.CountyCsvUploadRowStages.Add(rowStage);
 
         try
         {
             await dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
             await transaction.CommitAsync(cancellationToken).ConfigureAwait(false);
 
-            return Accepted(CountyCsvUploadAdmissionDisposition.FirstSeen, batch);
+            return Accepted(
+                CountyCsvUploadAdmissionDisposition.FirstSeen,
+                batch,
+                CountyCsvUploadRowStager.Summary(rowStage));
         }
         catch (DbUpdateException updateException)
         {
@@ -129,10 +174,42 @@ public sealed class CountyCsvUploadAdmissionLedger :
                 .ConfigureAwait(false);
             if (winner is not null)
             {
+                var resolution = ResolveExisting(winner, evidence);
+                if (resolution.Disposition == CountyCsvUploadAdmissionDisposition.Denied)
+                {
+                    await winnerTransaction
+                        .CommitAsync(CancellationToken.None)
+                        .ConfigureAwait(false);
+                    return resolution;
+                }
+
+                var winnerStage = await FindStageAsync(
+                        winnerContext,
+                        winner.BatchId,
+                        winner.CountyId,
+                        CancellationToken.None)
+                    .ConfigureAwait(false);
+                var candidateStage = CountyCsvUploadRowStager.CreateStage(
+                    winner,
+                    validation,
+                    _timeProvider.GetUtcNow());
+                CountyCsvUploadRowStagingSummary staging;
+                if (winnerStage is null)
+                {
+                    winnerContext.CountyCsvUploadRowStages.Add(candidateStage);
+                    await winnerContext.SaveChangesAsync(CancellationToken.None).ConfigureAwait(false);
+                    staging = CountyCsvUploadRowStager.Summary(candidateStage);
+                }
+                else
+                {
+                    staging = CountyCsvUploadRowStager.RequireMatchingStage(
+                        winnerStage,
+                        candidateStage);
+                }
                 await winnerTransaction
                     .CommitAsync(CancellationToken.None)
                     .ConfigureAwait(false);
-                return ResolveExisting(winner, evidence);
+                return Accepted(CountyCsvUploadAdmissionDisposition.Duplicate, winner, staging);
             }
 
             throw new InvalidOperationException(
@@ -280,6 +357,17 @@ public sealed class CountyCsvUploadAdmissionLedger :
                 batch => batch.IdempotencyKey == idempotencyKey,
                 cancellationToken)
             .ConfigureAwait(false);
+
+    private static Task<CountyCsvUploadRowStage?> FindStageAsync(
+        TerraFusionDbContext dbContext,
+        Guid batchId,
+        Guid countyId,
+        CancellationToken cancellationToken) =>
+        dbContext.CountyCsvUploadRowStages
+            .AsNoTracking()
+            .SingleOrDefaultAsync(
+                stage => stage.BatchId == batchId && stage.CountyId == countyId,
+                cancellationToken);
 
     private static Task<bool> MatchesPersistedCanonicalCountyAsync(
         TerraFusionDbContext dbContext,
@@ -553,7 +641,7 @@ public sealed class CountyCsvUploadAdmissionLedger :
                 claimedIntake.Document,
                 claimedDocumentShape)
             ? ContentRevalidationResult.Accepted(
-                regeneratedReceipt.IntakeReceipt.Document.Rows.Count)
+                regeneratedReceipt.IntakeReceipt.Document)
             : ContentRevalidationResult.Denied(
                 CountyCsvUploadAdmissionDenialCode.InvalidDocumentEvidence);
     }
@@ -598,6 +686,10 @@ public sealed class CountyCsvUploadAdmissionLedger :
                 || claimed.Rows is null
                 || regenerated.InputBytes != claimedShape.InputBytes
                 || claimed.InputBytes != claimedShape.InputBytes
+                || !string.Equals(
+                    regenerated.ContentSha256,
+                    claimed.ContentSha256,
+                    StringComparison.Ordinal)
                 || regenerated.Headers.Count != claimedShape.HeaderCount
                 || claimed.Headers.Count != claimedShape.HeaderCount
                 || regenerated.Rows.Count != claimedShape.RowCount
@@ -669,12 +761,14 @@ public sealed class CountyCsvUploadAdmissionLedger :
 
     private static CountyCsvUploadAdmissionResult Accepted(
         CountyCsvUploadAdmissionDisposition disposition,
-        CountyCsvUploadBatch batch) =>
+        CountyCsvUploadBatch batch,
+        CountyCsvUploadRowStagingSummary? rowStaging = null) =>
         new(
             ICountyCsvUploadAdmissionLedger.ContractId,
             disposition,
             CountyCsvUploadAdmissionDenialCode.None,
-            batch);
+            batch,
+            rowStaging);
 
     private static CountyCsvUploadAdmissionResult Denied(
         CountyCsvUploadAdmissionDenialCode denialCode) =>
@@ -686,14 +780,18 @@ public sealed class CountyCsvUploadAdmissionLedger :
 
     private sealed record ContentRevalidationResult(
         CountyCsvUploadAdmissionDenialCode DenialCode,
-        int AcceptedRowCount)
+        int AcceptedRowCount,
+        CountyCsvDocument? Document)
     {
-        public static ContentRevalidationResult Accepted(int acceptedRowCount) =>
-            new(CountyCsvUploadAdmissionDenialCode.None, acceptedRowCount);
+        public static ContentRevalidationResult Accepted(CountyCsvDocument document) =>
+            new(
+                CountyCsvUploadAdmissionDenialCode.None,
+                document.Rows.Count,
+                document);
 
         public static ContentRevalidationResult Denied(
             CountyCsvUploadAdmissionDenialCode denialCode) =>
-            new(denialCode, 0);
+            new(denialCode, 0, null);
     }
 
     private readonly record struct ClaimedDocumentShape(

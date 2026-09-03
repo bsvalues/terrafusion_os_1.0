@@ -1,5 +1,6 @@
 using System.Data;
 using System.Text.Json;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using TerraFusion.Core.Counties;
@@ -52,6 +53,7 @@ public sealed class CountyCsvUploadRowStager : ICountyCsvUploadRowStager
             || dataset is not CountyCsvDataset.Parcels and not CountyCsvDataset.Sales
             || batch.AcceptedRowCount != document.Rows.Count
             || batch.ContentByteLength != document.InputBytes
+            || !string.Equals(batch.ContentSha256, document.ContentSha256, StringComparison.Ordinal)
             || WashingtonCountyRegistry.Counties.All(candidate => candidate != context.County))
         {
             throw new InvalidOperationException("County CSV row staging authority or lineage is invalid.");
@@ -59,19 +61,7 @@ public sealed class CountyCsvUploadRowStager : ICountyCsvUploadRowStager
 
         var validation = CountyCsvUploadRowValidator.Validate(dataset, document);
         var validatedAtUtc = _timeProvider.GetUtcNow();
-        var entity = new CountyCsvUploadRowStage(
-            batch.BatchId,
-            batch.CountyId,
-            batch.Dataset,
-            ICountyCsvUploadRowStager.ContractId,
-            validation.SchemaVersion,
-            validation.TotalRowCount,
-            validation.StagedRowCount,
-            validation.QuarantinedRowCount,
-            JsonSerializer.Serialize(validation.StagedRows, JsonOptions),
-            JsonSerializer.Serialize(validation.QuarantinedRows, JsonOptions),
-            JsonSerializer.Serialize(validation.ReasonCounts, JsonOptions),
-            validatedAtUtc);
+        var entity = CreateStage(batch, validation, validatedAtUtc);
 
         for (var attempt = 1; attempt <= MaximumSerializationAttempts; attempt++)
         {
@@ -86,7 +76,7 @@ public sealed class CountyCsvUploadRowStager : ICountyCsvUploadRowStager
             }
             catch (Exception exception) when (
                 attempt < MaximumSerializationAttempts
-                && IsPostgresSerializationFailure(exception))
+                && IsTransientStoreFailure(exception))
             {
                 cancellationToken.ThrowIfCancellationRequested();
             }
@@ -154,17 +144,30 @@ public sealed class CountyCsvUploadRowStager : ICountyCsvUploadRowStager
         }
     }
 
-    private static bool IsPostgresSerializationFailure(Exception exception) =>
-        FindPostgresException(exception)?.SqlState == PostgresErrorCodes.SerializationFailure;
+    private static bool IsTransientStoreFailure(Exception exception)
+    {
+        if (FindPostgresException(exception)?.SqlState == PostgresErrorCodes.SerializationFailure)
+        {
+            return true;
+        }
+
+        var sqlite = FindSqliteException(exception);
+        return sqlite?.SqliteErrorCode is 5 or 6;
+    }
 
     private static bool IsBatchPrimaryKeyViolation(Exception exception)
     {
         var postgres = FindPostgresException(exception);
-        return postgres?.SqlState == PostgresErrorCodes.UniqueViolation
+        if (postgres?.SqlState == PostgresErrorCodes.UniqueViolation
             && string.Equals(
                 postgres.ConstraintName,
                 "PK_CountyCsvUploadRowStages",
-                StringComparison.Ordinal);
+                StringComparison.Ordinal))
+        {
+            return true;
+        }
+
+        return FindSqliteException(exception)?.SqliteExtendedErrorCode == 1555;
     }
 
     private static PostgresException? FindPostgresException(Exception exception)
@@ -174,6 +177,18 @@ public sealed class CountyCsvUploadRowStager : ICountyCsvUploadRowStager
             if (current is PostgresException postgres)
             {
                 return postgres;
+            }
+        }
+        return null;
+    }
+
+    private static SqliteException? FindSqliteException(Exception exception)
+    {
+        for (Exception? current = exception; current is not null; current = current.InnerException)
+        {
+            if (current is SqliteException sqlite)
+            {
+                return sqlite;
             }
         }
         return null;
@@ -250,6 +265,29 @@ public sealed class CountyCsvUploadRowStager : ICountyCsvUploadRowStager
             stage.QuarantinedRowCount,
             stage.ReasonCountsJson,
             stage.ValidatedAtUtc);
+
+    internal static CountyCsvUploadRowStage CreateStage(
+        CountyCsvUploadBatch batch,
+        CountyCsvUploadRowValidationResult validation,
+        DateTimeOffset validatedAtUtc) =>
+        new(
+            batch.BatchId,
+            batch.CountyId,
+            batch.Dataset,
+            ICountyCsvUploadRowStager.ContractId,
+            validation.SchemaVersion,
+            validation.TotalRowCount,
+            validation.StagedRowCount,
+            validation.QuarantinedRowCount,
+            JsonSerializer.Serialize(validation.StagedRows, JsonOptions),
+            JsonSerializer.Serialize(validation.QuarantinedRows, JsonOptions),
+            JsonSerializer.Serialize(validation.ReasonCounts, JsonOptions),
+            validatedAtUtc);
+
+    internal static CountyCsvUploadRowStagingSummary RequireMatchingStage(
+        CountyCsvUploadRowStage existing,
+        CountyCsvUploadRowStage candidate) =>
+        RequireMatching(existing, candidate);
 
     internal static CountyCsvUploadRowStagingSummary SummaryFromMetadata(
         Guid batchId,

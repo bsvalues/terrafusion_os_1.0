@@ -328,7 +328,8 @@ public sealed class CountyCsvIntakeDuplicateDecisionTests
                 new CountyCsvDocument(
                     Array.AsReadOnly(new[] { "parcel_id" }),
                     Array.AsReadOnly<IReadOnlyList<string>>([]),
-                    byteLength)));
+                    byteLength,
+                    content.Sha256)));
     }
 
     private static void AssertResult(

@@ -33,7 +33,10 @@ namespace TerraFusion.API.Tests.Controllers;
 
 public sealed class DataImportControllerTests
 {
-    private const string ValidCsv = "parcel_id,owner\n1,Ada\n2,Grace\n";
+    private const string ValidCsv =
+        "parcel_id,situs_address,assessed_value,sale_date,sale_price,owner\n"
+        + "1,100 Main St,250000,2026-01-15,240000,Ada\n"
+        + "2,200 Main St,300000,2026-02-16,310000,Grace\n";
 
     private static readonly IReadOnlyDictionary<string, Guid> CountyIds =
         WashingtonCountyRegistry.Counties
@@ -235,6 +238,20 @@ public sealed class DataImportControllerTests
         {
             File.Delete(databasePath);
         }
+    }
+
+    [Fact]
+    public async Task Upload_rejects_header_only_invalid_schema_without_durable_admission()
+    {
+        var ledger = new DenyingAdmissionLedger(
+            CountyCsvUploadAdmissionDenialCode.InvalidRowSchema);
+        var controller = BuildController(ledger);
+        var file = CsvFile("parcel_id,amount\n");
+        SetMultipartForm(controller, file, "Sales");
+
+        var result = await controller.UploadFile(file, "Sales", default);
+
+        AssertProblem(result, StatusCodes.Status400BadRequest, "CSV_ROW_SCHEMA_INVALID");
     }
 
     [Fact]
@@ -878,7 +895,10 @@ public sealed class DataImportControllerTests
         }
     }
 
-    private sealed class DenyingAdmissionLedger : ICountyCsvUploadAdmissionLedger
+    private sealed class DenyingAdmissionLedger(
+        CountyCsvUploadAdmissionDenialCode denialCode =
+            CountyCsvUploadAdmissionDenialCode.InvalidApiContract)
+        : ICountyCsvUploadAdmissionLedger
     {
         public Task<CountyCsvUploadAdmissionResult> AdmitAsync(
             CountyCsvUploadAdmissionRequest? request,
@@ -887,7 +907,7 @@ public sealed class DataImportControllerTests
                 new CountyCsvUploadAdmissionResult(
                     ICountyCsvUploadAdmissionLedger.ContractId,
                     CountyCsvUploadAdmissionDisposition.Denied,
-                    CountyCsvUploadAdmissionDenialCode.InvalidApiContract,
+                    denialCode,
                     Batch: null));
     }
 

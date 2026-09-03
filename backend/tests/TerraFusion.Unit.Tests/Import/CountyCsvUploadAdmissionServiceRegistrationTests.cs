@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Npgsql;
 using TerraFusion.API.Auth;
 using TerraFusion.Core.Auth;
 using TerraFusion.Core.Counties;
@@ -139,14 +139,14 @@ public sealed class CountyCsvUploadAdmissionServiceRegistrationTests
     public async Task Row_staging_retries_the_entire_serializable_attempt_with_a_fresh_context()
     {
         await using var database = new TemporaryDatabaseFile();
-        var serializationFailure = new SerializationFailureOnceInterceptor();
-        await using var provider = BuildProvider(database.ConnectionString, serializationFailure);
+        var transientFailure = new SqliteBusyOnceInterceptor();
+        await using var provider = BuildProvider(database.ConnectionString, transientFailure);
         await InitializeAsync(provider);
         await using var scope = provider.CreateAsyncScope();
         var request = await CreateRequestAsync(Benton, BentonId, "benton-assessor");
         var ledger = scope.ServiceProvider.GetRequiredService<ICountyCsvUploadAdmissionLedger>();
         var admission = await ledger.AdmitAsync(request);
-        serializationFailure.Arm();
+        transientFailure.Arm();
 
         var staging = await scope.ServiceProvider
             .GetRequiredService<ICountyCsvUploadRowStager>()
@@ -157,8 +157,62 @@ public sealed class CountyCsvUploadAdmissionServiceRegistrationTests
 
         Assert.Equal(2, staging.StagedRowCount);
         Assert.Equal(0, staging.QuarantinedRowCount);
-        Assert.True(serializationFailure.WasTriggered);
-        Assert.True(serializationFailure.ObservedContextCount >= 2);
+        Assert.True(transientFailure.WasTriggered);
+        Assert.True(transientFailure.ObservedContextCount >= 2);
+    }
+
+    [Fact]
+    public async Task Row_staging_rejects_a_document_not_bound_to_the_admitted_digest()
+    {
+        await using var database = new TemporaryDatabaseFile();
+        await using var provider = BuildProvider(database.ConnectionString);
+        await InitializeAsync(provider);
+        await using var scope = provider.CreateAsyncScope();
+        var request = await CreateRequestAsync(Benton, BentonId, "benton-assessor");
+        var admission = await scope.ServiceProvider
+            .GetRequiredService<ICountyCsvUploadAdmissionLedger>()
+            .AdmitAsync(request);
+        var reboundDocument = request.IntakeReceipt!.IntakeReceipt.Document with
+        {
+            ContentSha256 = new string('0', 64),
+        };
+
+        await Assert.ThrowsAsync<InvalidOperationException>(() =>
+            scope.ServiceProvider.GetRequiredService<ICountyCsvUploadRowStager>().StageAsync(new(
+                request.CountyContext,
+                admission.Batch,
+                reboundDocument)));
+    }
+
+    [Fact]
+    public async Task Parallel_sqlite_staging_calls_converge_on_one_batch_stage()
+    {
+        await using var database = new TemporaryDatabaseFile();
+        await using var provider = BuildProvider(database.ConnectionString);
+        await InitializeAsync(provider);
+        await using var scope = provider.CreateAsyncScope();
+        var request = await CreateRequestAsync(Benton, BentonId, "benton-assessor");
+        var admission = await scope.ServiceProvider
+            .GetRequiredService<ICountyCsvUploadAdmissionLedger>()
+            .AdmitAsync(request);
+        var factory = scope.ServiceProvider.GetRequiredService<IDbContextFactory<TerraFusionDbContext>>();
+        await using (var cleanupContext = await factory.CreateDbContextAsync())
+        {
+            await cleanupContext.CountyCsvUploadRowStages.ExecuteDeleteAsync();
+        }
+
+        var stager = scope.ServiceProvider.GetRequiredService<ICountyCsvUploadRowStager>();
+        var stagingRequest = new CountyCsvUploadRowStagingRequest(
+            request.CountyContext,
+            admission.Batch,
+            request.IntakeReceipt!.IntakeReceipt.Document);
+        var results = await Task.WhenAll(
+            stager.StageAsync(stagingRequest),
+            stager.StageAsync(stagingRequest));
+
+        Assert.All(results, result => Assert.Equal(2, result.StagedRowCount));
+        await using var verificationContext = await factory.CreateDbContextAsync();
+        Assert.Equal(1, await verificationContext.CountyCsvUploadRowStages.CountAsync());
     }
 
     [Fact]
@@ -224,7 +278,7 @@ public sealed class CountyCsvUploadAdmissionServiceRegistrationTests
             new ServiceProviderOptions { ValidateOnBuild = true, ValidateScopes = true });
     }
 
-    private sealed class SerializationFailureOnceInterceptor : DbCommandInterceptor
+    private sealed class SqliteBusyOnceInterceptor : DbCommandInterceptor
     {
         private readonly object _gate = new();
         private readonly HashSet<DbContext> _contexts = new(ReferenceEqualityComparer.Instance);
@@ -263,11 +317,7 @@ public sealed class CountyCsvUploadAdmissionServiceRegistrationTests
                 if (Volatile.Read(ref _armed) == 1
                     && Interlocked.CompareExchange(ref _triggered, 1, 0) == 0)
                 {
-                    throw new PostgresException(
-                        "serialization failure",
-                        "ERROR",
-                        "ERROR",
-                        PostgresErrorCodes.SerializationFailure);
+                    throw new SqliteException("database is busy", 5);
                 }
             }
 

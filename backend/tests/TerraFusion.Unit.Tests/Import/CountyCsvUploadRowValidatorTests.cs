@@ -79,8 +79,35 @@ public sealed class CountyCsvUploadRowValidatorTests
         Assert.Equal("AMBIGUOUS_HEADER", Assert.Single(result.QuarantinedRows).ReasonCode);
     }
 
+    [Fact]
+    public void Header_only_document_with_invalid_schema_is_rejected_instead_of_appearing_valid()
+    {
+        var exception = Assert.Throws<CountyCsvUploadRowSchemaException>(() =>
+            CountyCsvUploadRowValidator.Validate(
+                CountyCsvDataset.Sales,
+                Document(["parcel_id", "amount"], [])));
+
+        Assert.Equal("MISSING_REQUIRED_HEADER", exception.ReasonCode);
+    }
+
+    [Fact]
+    public void Equivalent_decimal_scales_are_one_duplicate_sale_identity()
+    {
+        var result = CountyCsvUploadRowValidator.Validate(
+            CountyCsvDataset.Sales,
+            Document(
+                ["parcel_id", "sale_date", "sale_price"],
+                [
+                    ["P-1", "2026-01-15", "325000.5"],
+                    ["p-1", "2026-01-15", "325000.50"],
+                ]));
+
+        Assert.Single(result.StagedRows);
+        Assert.Equal("DUPLICATE_SALE", Assert.Single(result.QuarantinedRows).ReasonCode);
+    }
+
     private static CountyCsvDocument Document(
         IReadOnlyList<string> headers,
         IReadOnlyList<IReadOnlyList<string>> rows) =>
-        new(headers, rows, 1);
+        new(headers, rows, 1, new string('a', 64));
 }

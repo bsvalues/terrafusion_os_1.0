@@ -27,6 +27,7 @@ public sealed class CountyCsvIntakeEnvelopeTests
         Assert.Equal(new[] { "parcel_id", "owner" }, receipt.Document.Headers);
         Assert.Equal(new[] { "1", "Ada" }, Assert.Single(receipt.Document.Rows));
         Assert.Equal(bytes.LongLength, receipt.Document.InputBytes);
+        Assert.Equal(receipt.Content.Sha256, receipt.Document.ContentSha256);
     }
 
     [Fact]
