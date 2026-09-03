@@ -15,6 +15,7 @@ using static TerraFusion.API.Security.EliteSecurityHardening;
 using TerraFusion.API.Extensions;
 using Microsoft.Extensions.FileProviders;
 using TerraFusion.Data;
+using TerraFusion.Data.Extensions;
 using TerraFusion.Core.Interfaces;
 using TerraFusion.Abstractions.Interfaces;
 using TerraFusion.AI.Extensions;
@@ -2313,6 +2314,7 @@ builder.Services.AddDbContext<TerraFusion.Data.TerraFusionDbContext>((sp, option
 
   options.AddInterceptors(sp.GetRequiredService<TerraFusion.Data.Auditing.AuditableEntityInterceptor>());
 });
+builder.Services.AddCountyCsvUploadAdmission();
 
 // Register TerraFusionContext (Identity context for TerraGaiaService)
 builder.Services.AddDbContext<TerraFusion.Data.TerraFusionContext>(options =>

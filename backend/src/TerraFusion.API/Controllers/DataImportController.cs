@@ -2,7 +2,6 @@ using System.Buffers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Caching.Memory;
 using TerraFusion.API.Auth;
 using TerraFusion.Core.Counties;
 using TerraFusion.Core.Import;
@@ -10,15 +9,15 @@ using TerraFusion.Core.Import;
 namespace TerraFusion.API.Controllers
 {
     /// <summary>
-    /// DataImport Controller — authenticated in-memory CSV admission plus existing import stubs.
-    /// Durable staging, promotion, rollback, and PACS synchronization remain later work.
+    /// DataImport Controller — authenticated durable CSV admission plus existing import stubs.
+    /// Staging, promotion, rollback, and PACS synchronization remain later work.
     /// </summary>
     [ApiController]
     [Produces("application/json")]
     public class DataImportController : ControllerBase
     {
         public const string UploadContractId =
-            "wal.county-upload.authenticated-csv-api-admission.v1";
+            "wal.county-upload.authenticated-durable-csv-api-admission.v1";
 
         public const long MaximumUploadBytes = 10L * 1024L * 1024L;
         public const long MaximumMultipartBodyBytes = MaximumUploadBytes + (64L * 1024L);
@@ -26,24 +25,21 @@ namespace TerraFusion.API.Controllers
         private const int MaximumDataRows = 100_000;
         private const int MaximumFieldsPerRow = 512;
         private const int MaximumCharactersPerField = 65_536;
-        private const int DuplicateDecisionCapacity = 4_096;
-        private const string DuplicateDecisionCacheKey =
-            "wal.county-upload.authenticated-csv-api-admission.v1/duplicate-decision";
-
         private readonly ILogger<DataImportController> _logger;
         private readonly AuthenticatedCanonicalCountyContextProvider _countyContextProvider;
         private readonly CountyCsvCountyBoundIntake _countyBoundIntake;
-        private readonly CountyCsvIntakeDuplicateDecision _duplicateDecision;
+        private readonly ICountyCsvUploadAdmissionLedger _admissionLedger;
 
         public DataImportController(
             ILogger<DataImportController> logger,
             AuthenticatedCanonicalCountyContextProvider countyContextProvider,
-            IMemoryCache memoryCache)
+            ICountyCsvUploadAdmissionLedger admissionLedger)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _countyContextProvider = countyContextProvider
                 ?? throw new ArgumentNullException(nameof(countyContextProvider));
-            ArgumentNullException.ThrowIfNull(memoryCache);
+            _admissionLedger = admissionLedger
+                ?? throw new ArgumentNullException(nameof(admissionLedger));
 
             _countyBoundIntake = new CountyCsvCountyBoundIntake(
                 new CountyCsvParserOptions
@@ -54,18 +50,6 @@ namespace TerraFusion.API.Controllers
                     MaxFieldsPerRow = MaximumFieldsPerRow,
                     MaxCharactersPerField = MaximumCharactersPerField,
                 });
-            lock (memoryCache)
-            {
-                _duplicateDecision = memoryCache.GetOrCreate(
-                        DuplicateDecisionCacheKey,
-                        entry =>
-                        {
-                            entry.Priority = CacheItemPriority.NeverRemove;
-                            return new CountyCsvIntakeDuplicateDecision(DuplicateDecisionCapacity);
-                        })
-                    ?? throw new InvalidOperationException(
-                        "County CSV duplicate-decision state could not be initialized.");
-            }
         }
 
         /// <summary>GET /api/files — list uploaded import files.</summary>
@@ -92,7 +76,7 @@ namespace TerraFusion.API.Controllers
             return Ok(new { history = Array.Empty<object>(), total = 0 });
         }
 
-        /// <summary>POST /api/upload — admit one assessor-authorized county CSV in memory.</summary>
+        /// <summary>POST /api/upload — durably admit one assessor-authorized county CSV.</summary>
         [HttpPost("api/upload")]
         [Authorize(Policy = "RequireAssessor")]
         [Consumes("multipart/form-data")]
@@ -190,29 +174,42 @@ namespace TerraFusion.API.Controllers
                         cancellationToken)
                     .ConfigureAwait(false);
                 var identity = CountyCsvIntakeIdempotency.Create(intakeReceipt);
-                var duplicateDecision = _duplicateDecision.Decide(identity);
+                var durableAdmission = await _admissionLedger
+                    .AdmitAsync(
+                        new CountyCsvUploadAdmissionRequest(
+                            ICountyCsvUploadAdmissionLedger.AuthenticatedCsvApiAdmissionContractId,
+                            countyContext,
+                            intakeReceipt,
+                            content,
+                            identity),
+                        cancellationToken)
+                    .ConfigureAwait(false);
 
-                if (duplicateDecision.Disposition == CountyCsvIntakeDuplicateDisposition.Denied)
+                if (durableAdmission.Disposition == CountyCsvUploadAdmissionDisposition.Denied
+                    || durableAdmission.Batch is null)
                 {
                     _logger.LogWarning(
-                        "County CSV admission duplicate decision denied with code {DenialCode}.",
-                        duplicateDecision.DenialCode);
+                        "County CSV durable admission denied with code {DenialCode}.",
+                        durableAdmission.DenialCode);
                     return AdmissionDenied(
                         StatusCodes.Status409Conflict,
-                        "CSV_DUPLICATE_DECISION_DENIED");
+                        "CSV_DURABLE_ADMISSION_DENIED");
                 }
 
+                var batch = durableAdmission.Batch;
                 return Ok(
                     new CountyCsvApiAdmissionReceipt(
                         UploadContractId,
-                        countyContext.CountyId.Value,
+                        durableAdmission.ContractId,
+                        batch.BatchId,
+                        batch.CountyId,
                         countyContext.County.Key,
                         countyContext.County.Name,
-                        countyDataset.ToString(),
-                        identity.Content.Sha256,
-                        identity.Content.ByteLength,
-                        intakeReceipt.IntakeReceipt.Document.Rows.Count,
-                        duplicateDecision.Disposition.ToString()));
+                        batch.Dataset,
+                        batch.ContentSha256,
+                        batch.ContentByteLength,
+                        batch.AcceptedRowCount,
+                        durableAdmission.Disposition.ToString()));
             }
             catch (OperationCanceledException)
             {
@@ -334,6 +331,8 @@ namespace TerraFusion.API.Controllers
 
     public sealed record CountyCsvApiAdmissionReceipt(
         string ContractId,
+        string LedgerContractId,
+        Guid BatchId,
         Guid CountyId,
         string CountyKey,
         string CountyName,
