@@ -29,17 +29,21 @@ namespace TerraFusion.API.Controllers
         private readonly AuthenticatedCanonicalCountyContextProvider _countyContextProvider;
         private readonly CountyCsvCountyBoundIntake _countyBoundIntake;
         private readonly ICountyCsvUploadAdmissionLedger _admissionLedger;
+        private readonly ICountyCsvUploadHistoryReader _historyReader;
 
         public DataImportController(
             ILogger<DataImportController> logger,
             AuthenticatedCanonicalCountyContextProvider countyContextProvider,
-            ICountyCsvUploadAdmissionLedger admissionLedger)
+            ICountyCsvUploadAdmissionLedger admissionLedger,
+            ICountyCsvUploadHistoryReader historyReader)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _countyContextProvider = countyContextProvider
                 ?? throw new ArgumentNullException(nameof(countyContextProvider));
             _admissionLedger = admissionLedger
                 ?? throw new ArgumentNullException(nameof(admissionLedger));
+            _historyReader = historyReader
+                ?? throw new ArgumentNullException(nameof(historyReader));
 
             _countyBoundIntake = new CountyCsvCountyBoundIntake(
                 new CountyCsvParserOptions
@@ -226,6 +230,39 @@ namespace TerraFusion.API.Controllers
             }
         }
 
+        /// <summary>
+        /// GET /api/upload/history — list metadata for this authenticated county's durable
+        /// admissions. Admitted rows are not represented as staged, published, or usable.
+        /// </summary>
+        [HttpGet("api/upload/history")]
+        [Authorize(Policy = "RequireAssessor")]
+        public async Task<IActionResult> GetCountyUploadHistory(
+            CancellationToken cancellationToken = default)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            var countyContext = await _countyContextProvider
+                .GetCurrentAsync(cancellationToken)
+                .ConfigureAwait(false);
+            if (countyContext.Decision != AuthenticatedCanonicalCountyContextDecision.Established
+                || countyContext.County is null
+                || countyContext.CountyId is null)
+            {
+                return Forbid();
+            }
+
+            var batches = await _historyReader
+                .ListRecentAsync(countyContext.CountyId.Value, 25, cancellationToken)
+                .ConfigureAwait(false);
+
+            return Ok(new CountyCsvUploadHistoryReceipt(
+                UploadContractId,
+                countyContext.CountyId.Value,
+                countyContext.County.Key,
+                countyContext.County.Name,
+                "admitted-not-staged",
+                batches));
+        }
+
         /// <summary>GET /api/preview-import/{fileId} — preview import rows.</summary>
         [HttpGet("api/preview-import/{fileId}")]
         [AllowAnonymous]
@@ -341,4 +378,12 @@ namespace TerraFusion.API.Controllers
         long ContentLength,
         int AcceptedRowCount,
         string DuplicateDisposition);
+
+    public sealed record CountyCsvUploadHistoryReceipt(
+        string ContractId,
+        Guid CountyId,
+        string CountyKey,
+        string CountyName,
+        string Availability,
+        IReadOnlyList<CountyCsvUploadBatchSummary> Batches);
 }

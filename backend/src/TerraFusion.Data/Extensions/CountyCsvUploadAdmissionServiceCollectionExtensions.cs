@@ -19,8 +19,11 @@ public static class CountyCsvUploadAdmissionServiceCollectionExtensions
 
         services.AddScoped<IDbContextFactory<TerraFusionDbContext>,
             ScopedTerraFusionDbContextFactory>();
-        services.AddScoped<ICountyCsvUploadAdmissionLedger,
-            CountyCsvUploadAdmissionLedger>();
+        services.AddScoped<CountyCsvUploadAdmissionLedger>();
+        services.AddScoped<ICountyCsvUploadAdmissionLedger>(provider =>
+            provider.GetRequiredService<CountyCsvUploadAdmissionLedger>());
+        services.AddScoped<ICountyCsvUploadHistoryReader>(provider =>
+            provider.GetRequiredService<CountyCsvUploadAdmissionLedger>());
 
         return services;
     }

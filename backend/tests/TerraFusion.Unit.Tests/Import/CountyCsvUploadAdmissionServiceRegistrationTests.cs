@@ -43,6 +43,9 @@ public sealed class CountyCsvUploadAdmissionServiceRegistrationTests
         Assert.Same(
             firstLedger,
             firstScope.ServiceProvider.GetRequiredService<ICountyCsvUploadAdmissionLedger>());
+        Assert.Same(
+            firstLedger,
+            firstScope.ServiceProvider.GetRequiredService<ICountyCsvUploadHistoryReader>());
         Assert.NotSame(
             firstLedger,
             secondScope.ServiceProvider.GetRequiredService<ICountyCsvUploadAdmissionLedger>());
@@ -93,6 +96,16 @@ public sealed class CountyCsvUploadAdmissionServiceRegistrationTests
             Assert.Equal(CountyCsvUploadAdmissionDisposition.Duplicate, duplicate.Disposition);
             Assert.Equal(bentonBatchId, duplicate.Batch!.BatchId);
             Assert.Equal(2, await CountBatchesAsync(scope.ServiceProvider));
+
+            var history = scope.ServiceProvider
+                .GetRequiredService<ICountyCsvUploadHistoryReader>();
+            var bentonHistory = await history.ListRecentAsync(BentonId, 25);
+            var franklinHistory = await history.ListRecentAsync(FranklinId, 25);
+            Assert.Equal(bentonBatchId, Assert.Single(bentonHistory).BatchId);
+            Assert.Equal(BentonId, Assert.Single(bentonHistory).CountyId);
+            Assert.Equal(FranklinId, Assert.Single(franklinHistory).CountyId);
+            Assert.DoesNotContain(bentonHistory, batch => batch.CountyId == FranklinId);
+            Assert.DoesNotContain(franklinHistory, batch => batch.CountyId == BentonId);
         }
     }
 
@@ -117,6 +130,27 @@ public sealed class CountyCsvUploadAdmissionServiceRegistrationTests
         await Assert.ThrowsAnyAsync<OperationCanceledException>(
             () => ledger.AdmitAsync(request, cancellation.Token));
         Assert.Equal(0, await CountBatchesAsync(scope.ServiceProvider));
+    }
+
+    [Fact]
+    public void Sql_server_history_query_is_provider_translated_and_composable()
+    {
+        var options = new DbContextOptionsBuilder<TerraFusionDbContext>()
+            .UseSqlServer(
+                "Server=localhost;Database=TerraFusionHistoryQuery;Trusted_Connection=True;TrustServerCertificate=True")
+            .Options;
+        using var context = new TerraFusionDbContext(
+            options,
+            new ConfigurationBuilder().Build());
+
+        var sql = CountyCsvUploadAdmissionLedger
+            .BuildProviderHistoryQuery(context, BentonId, 25)
+            .ToQueryString();
+
+        Assert.Contains("TOP", sql, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("ORDER BY", sql, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("[ReceivedAtUtc] DESC", sql, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("FROM (", sql, StringComparison.OrdinalIgnoreCase);
     }
 
     private static ServiceProvider BuildProvider(string connectionString)

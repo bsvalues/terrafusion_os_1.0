@@ -6,7 +6,9 @@ import { AuthGuard, AuthProvider } from './auth/AuthProvider';
 import { ErrorBoundary } from './components/errors/ErrorBoundary';
 import { LegacyRedirect } from './components/legacy/LegacyRedirect';
 import { getViteEnv } from './env/getViteEnv';
+import { apiFetch } from './lib/apiBase';
 import { activateFromRoute } from './orchestration/moduleActivation';
+import { WASHINGTON_COUNTIES } from './pages/forge/sales/washingtonLaunchApi';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -65,7 +67,7 @@ const PropertyAudit = lazy(() => import('./pages/workbench/tabs/PropertyAudit'))
 // surface that consumes the OPS-1-A backend facade. Per the OPS-1
 // policy at docs/workbench/sync-readiness-console-policy.md.
 const SyncReadinessConsole = lazy(
-  () => import('./pages/workbench/sync-readiness/SyncReadinessConsole'),
+  () => import('./pages/workbench/sync-readiness/SyncReadinessConsole')
 );
 
 // DASHBOARD-1: Sync Doctrine Console — read-only status board for
@@ -73,7 +75,7 @@ const SyncReadinessConsole = lazy(
 // snapshot from /api/sync/doctrine/state across canonical/truth/
 // raw/quarantine layers. Polls every 30s.
 const SyncDoctrineConsole = lazy(
-  () => import('./pages/workbench/sync-doctrine/SyncDoctrineConsole'),
+  () => import('./pages/workbench/sync-doctrine/SyncDoctrineConsole')
 );
 
 // SYNC-UX-1A: Sync Quarantine Triage — read-write operator surface
@@ -81,23 +83,19 @@ const SyncDoctrineConsole = lazy(
 // (new namespace, sibling to sync-doctrine). Wraps the
 // SYNC-WORKBENCH-F triage controller (route + dismiss decisions).
 const SyncQuarantinePage = lazy(
-  () => import('./pages/workbench/sync-quarantine/SyncQuarantinePage'),
+  () => import('./pages/workbench/sync-quarantine/SyncQuarantinePage')
 );
 
 // SYNC-UX-1B: Sync Commits page — operator surface for the
 // SYNC-WORKBENCH-G/H spine. Lists recent decision-commits, drills
 // into a single commit's snapshot, and downloads the signed
 // evidence ZIP / inspects the manifest.
-const SyncCommitsPage = lazy(
-  () => import('./pages/workbench/sync-commits/SyncCommitsPage'),
-);
+const SyncCommitsPage = lazy(() => import('./pages/workbench/sync-commits/SyncCommitsPage'));
 
 // SYNC-UX-1C: Full-Corpus Sync Runner — launcher + detail page
 // for durable 6+ hour PACS drains. Sibling to sync-readiness and
 // sync-doctrine; consumes /api/sync/corpus/* (FullCorpusController).
-const SyncCorpusPage = lazy(
-  () => import('./pages/workbench/sync-corpus/SyncCorpusPage'),
-);
+const SyncCorpusPage = lazy(() => import('./pages/workbench/sync-corpus/SyncCorpusPage'));
 
 const Monitoring = lazy(() => import('./pages/Monitoring'));
 const TerraFusionMarketplace = lazy(
@@ -109,10 +107,15 @@ const ExperimentsList = lazy(() => import('./pages/experiments/ExperimentsList')
 const CreateExperiment = lazy(() => import('./pages/experiments/CreateExperiment'));
 const NotificationPreferences = lazy(() => import('./components/codex/NotificationPreferences'));
 const CountiesHub = lazy(() => import('./components/CountiesHub'));
+const CountyCsvAdmissionPage = lazy(
+  () => import('../../terraforge/src/data-admission/CountyCsvAdmissionPage')
+);
 
 // TerraForge County Studio (Plan 2) + Atlas Live View (Plan 3)
 const CountyStudyPage = lazy(() =>
-  import('./pages/forge/county-studio/CountyStudyPage').then((m) => ({ default: m.CountyStudyPage }))
+  import('./pages/forge/county-studio/CountyStudyPage').then((m) => ({
+    default: m.CountyStudyPage,
+  }))
 );
 const AtlasLivePage = lazy(() =>
   import('./pages/forge/atlas-live/AtlasLivePage').then((m) => ({ default: m.AtlasLivePage }))
@@ -176,189 +179,183 @@ const ModuleRouteHandoff: React.FC<{ moduleId: string }> = ({ moduleId }) => {
 const Router: React.FC = () => {
   return (
     <QueryClientProvider client={queryClient}>
-    <BrowserRouter
-      future={{
-        v7_startTransition: true,
-        v7_relativeSplatPath: true,
-      }}
-    >
-      <AuthProvider>
-        <ErrorBoundary>
-          <Suspense fallback={<LoadingFallback />}>
-            <AuthGuard>
-              <Routes>
-                {/* Phase 18: Login (auth redirect target — AuthGuard exempts /login) */}
-                <Route path='/login' element={<LoginPage />} />
+      <BrowserRouter
+        future={{
+          v7_startTransition: true,
+          v7_relativeSplatPath: true,
+        }}
+      >
+        <AuthProvider>
+          <ErrorBoundary>
+            <Suspense fallback={<LoadingFallback />}>
+              <AuthGuard>
+                <Routes>
+                  {/* Phase 18: Login (auth redirect target — AuthGuard exempts /login) */}
+                  <Route path='/login' element={<LoginPage />} />
 
-                {/* ══════════════════════════════════════════════════════════
+                  {/* ══════════════════════════════════════════════════════════
                     TerraFusion OS Desktop — persistent shell chrome layout.
                     All OS routes nest here so Taskbar/TopBar/CommandPalette
                     remain mounted across navigations.
                     ══════════════════════════════════════════════════════════ */}
-                <Route path='/' element={<App />}>
-                  {/* Home — Desktop internally shows StageZeroState + icons */}
-                  <Route index element={null} />
+                  <Route path='/' element={<App />}>
+                    {/* Home — Desktop internally shows StageZeroState + icons */}
+                    <Route index element={null} />
 
-                  {/* Shell Home — deprecated; redirects to Desktop (Phase 7) */}
-                  <Route path='home' element={<Navigate to='/' replace />} />
+                    {/* Shell Home — deprecated; redirects to Desktop (Phase 7) */}
+                    <Route path='home' element={<Navigate to='/' replace />} />
 
-                  {/* Legacy: /desktop redirects to home */}
-                  <Route path='desktop' element={<Navigate to='/' replace />} />
+                    {/* Legacy: /desktop redirects to home */}
+                    <Route path='desktop' element={<Navigate to='/' replace />} />
 
-                  {/* Legacy: /launchpad bookmarks redirect to home */}
-                  <Route
-                    path='launchpad'
-                    element={<LegacyRedirect to='/' legacyAppId='launchpad.legacy-route' />}
-                  />
+                    {/* Legacy: /launchpad bookmarks redirect to home */}
+                    <Route
+                      path='launchpad'
+                      element={<LegacyRedirect to='/' legacyAppId='launchpad.legacy-route' />}
+                    />
 
-                  {/* Property Search — native TerraPrime replacement */}
-                  <Route path='property' element={<PropertySearch />} />
-                  <Route path='property/search' element={<PropertySearch />} />
+                    {/* Property Search — native TerraPrime replacement */}
+                    <Route path='property' element={<PropertySearch />} />
+                    <Route path='property/search' element={<PropertySearch />} />
 
-                  {/* Property Workbench - Parcel-context hub (Tier-0 OS Surface) */}
-                  <Route path='property/:parcelId' element={<PropertyWorkbench />}>
-                    <Route index element={<PropertySummary />} />
-                    <Route path='forge' element={<PropertyForge />} />
-                    <Route path='atlas' element={<PropertyAtlas />} />
-                    <Route path='dais' element={<PropertyDais />} />
-                    <Route path='clerk' element={<PropertyClerk />} />
-                    <Route path='treasury' element={<PropertyTreasury />} />
-                    <Route path='audit' element={<PropertyAudit />} />
-                    <Route path='dossier' element={<PropertyDossier />} />
-                    <Route path='pilot' element={<PropertyPilot />} />
-                  </Route>
+                    {/* Property Workbench - Parcel-context hub (Tier-0 OS Surface) */}
+                    <Route path='property/:parcelId' element={<PropertyWorkbench />}>
+                      <Route index element={<PropertySummary />} />
+                      <Route path='forge' element={<PropertyForge />} />
+                      <Route path='atlas' element={<PropertyAtlas />} />
+                      <Route path='dais' element={<PropertyDais />} />
+                      <Route path='clerk' element={<PropertyClerk />} />
+                      <Route path='treasury' element={<PropertyTreasury />} />
+                      <Route path='audit' element={<PropertyAudit />} />
+                      <Route path='dossier' element={<PropertyDossier />} />
+                      <Route path='pilot' element={<PropertyPilot />} />
+                    </Route>
 
-                  {/* Legacy Redirects - Demote broken defaults with telemetry */}
-                  <Route
-                    path='modules/property-workbench'
-                    element={<LegacyRedirect to='/' legacyAppId='modules.property-workbench' />}
-                  />
-                  <Route
-                    path='modules/property-workbench/*'
-                    element={<LegacyRedirect to='/' legacyAppId='modules.property-workbench' />}
-                  />
+                    {/* Legacy Redirects - Demote broken defaults with telemetry */}
+                    <Route
+                      path='modules/property-workbench'
+                      element={<LegacyRedirect to='/' legacyAppId='modules.property-workbench' />}
+                    />
+                    <Route
+                      path='modules/property-workbench/*'
+                      element={<LegacyRedirect to='/' legacyAppId='modules.property-workbench' />}
+                    />
 
-                  {/* OPS-1-B: Sync Readiness Console */}
-                  <Route
-                    path='workbench/sync-readiness'
-                    element={<SyncReadinessConsole />}
-                  />
+                    {/* OPS-1-B: Sync Readiness Console */}
+                    <Route path='workbench/sync-readiness' element={<SyncReadinessConsole />} />
 
-                  {/* DASHBOARD-1: Sync Doctrine Console (sibling) */}
-                  <Route
-                    path='workbench/sync-doctrine'
-                    element={<SyncDoctrineConsole />}
-                  />
+                    {/* DASHBOARD-1: Sync Doctrine Console (sibling) */}
+                    <Route path='workbench/sync-doctrine' element={<SyncDoctrineConsole />} />
 
-                  {/* SYNC-UX-1A: Sync Quarantine Triage (read-write) */}
-                  <Route
-                    path='workbench/sync/quarantine'
-                    element={<SyncQuarantinePage />}
-                  />
+                    {/* SYNC-UX-1A: Sync Quarantine Triage (read-write) */}
+                    <Route path='workbench/sync/quarantine' element={<SyncQuarantinePage />} />
 
-                  {/* SYNC-UX-1B: Workbench commits + evidence UI */}
-                  <Route
-                    path='workbench/sync/commits'
-                    element={<SyncCommitsPage />}
-                  />
-                  <Route
-                    path='workbench/sync/commits/:commitId'
-                    element={<SyncCommitsPage />}
-                  />
+                    {/* SYNC-UX-1B: Workbench commits + evidence UI */}
+                    <Route path='workbench/sync/commits' element={<SyncCommitsPage />} />
+                    <Route path='workbench/sync/commits/:commitId' element={<SyncCommitsPage />} />
 
-                  {/* SYNC-UX-1C: Full-Corpus Sync Runner */}
-                  <Route
-                    path='workbench/sync/corpus'
-                    element={<SyncCorpusPage />}
-                  />
-                  <Route
-                    path='workbench/sync/corpus/:runId'
-                    element={<SyncCorpusPage />}
-                  />
+                    {/* SYNC-UX-1C: Full-Corpus Sync Runner */}
+                    <Route path='workbench/sync/corpus' element={<SyncCorpusPage />} />
+                    <Route path='workbench/sync/corpus/:runId' element={<SyncCorpusPage />} />
 
-                  <Route path='monitoring' element={<Monitoring />} />
-                  <Route path='counties' element={<CountiesHub />} />
-                  <Route path='marketplace' element={<TerraFusionMarketplace />} />
-                  <Route
-                    path='elite-research'
-                    element={
-                      <ResearchProviders>
-                        <ResearchPortal />
-                      </ResearchProviders>
-                    }
-                  />
-                  <Route path='experiments' element={<ExperimentsList />} />
-                  <Route path='experiments/create' element={<CreateExperiment />} />
-                  <Route path='codex/preferences' element={<NotificationPreferences />} />
+                    <Route path='monitoring' element={<Monitoring />} />
+                    <Route path='counties' element={<CountiesHub />} />
+                    <Route
+                      path='counties/:countyCode/upload'
+                      element={
+                        <CountyCsvAdmissionPage
+                          apiFetch={apiFetch}
+                          counties={WASHINGTON_COUNTIES}
+                        />
+                      }
+                    />
+                    <Route path='marketplace' element={<TerraFusionMarketplace />} />
+                    <Route
+                      path='elite-research'
+                      element={
+                        <ResearchProviders>
+                          <ResearchPortal />
+                        </ResearchProviders>
+                      }
+                    />
+                    <Route path='experiments' element={<ExperimentsList />} />
+                    <Route path='experiments/create' element={<CreateExperiment />} />
+                    <Route path='codex/preferences' element={<NotificationPreferences />} />
 
-                  {/* Gen2 Module Routes - Internal OS modules */}
-                  <Route path='gen2/terraforge' element={<TerraForgeGen2 />} />
-                  <Route path='gen2/dossier' element={<TerraDossierGen2 />} />
+                    {/* Gen2 Module Routes - Internal OS modules */}
+                    <Route path='gen2/terraforge' element={<TerraForgeGen2 />} />
+                    <Route path='gen2/dossier' element={<TerraDossierGen2 />} />
                     <Route path='gen2/terralevy' element={<TerraLevyGen2 />} />
 
-                  {/* Suite Routes (Phase 5: MWUX Slices) */}
-                  {/* TerraPrime → migrated to native PropertySearch (legacy redirect with telemetry) */}
-                  <Route path='suites/terra-prime/*' element={<LegacyRedirect to='/property' legacyAppId='suites.terra-prime' />} />
+                    {/* Suite Routes (Phase 5: MWUX Slices) */}
+                    {/* TerraPrime → migrated to native PropertySearch (legacy redirect with telemetry) */}
+                    <Route
+                      path='suites/terra-prime/*'
+                      element={<LegacyRedirect to='/property' legacyAppId='suites.terra-prime' />}
+                    />
 
-                  {/* Constitutional Suite Home Routes (Phase 9) */}
-                  <Route path='forge' element={<ForgeHome />} />
-                  {/* TerraForge County Studio */}
-                  <Route path='forge/county-studio' element={<CountyStudyPage />} />
-                  {/* Atlas Live View */}
-                  <Route path='forge/atlas-live' element={<AtlasLivePage />} />
-                  <Route path='atlas' element={<AtlasHome />} />
-                  <Route path='dais' element={<DaisHome />} />
-                  <Route path='dossier' element={<DossierHome />} />
-                  <Route path='gpt' element={<GptHome />} />
+                    {/* Constitutional Suite Home Routes (Phase 9) */}
+                    <Route path='forge' element={<ForgeHome />} />
+                    {/* TerraForge County Studio */}
+                    <Route path='forge/county-studio' element={<CountyStudyPage />} />
+                    {/* Atlas Live View */}
+                    <Route path='forge/atlas-live' element={<AtlasLivePage />} />
+                    <Route path='atlas' element={<AtlasHome />} />
+                    <Route path='dais' element={<DaisHome />} />
+                    <Route path='dossier' element={<DossierHome />} />
+                    <Route path='gpt' element={<GptHome />} />
 
-                  {/* TerraFusion Academy — Institutional Intelligence layer */}
-                  <Route path='academy' element={<AcademyHome />} />
+                    {/* TerraFusion Academy — Institutional Intelligence layer */}
+                    <Route path='academy' element={<AcademyHome />} />
 
-                  {/* GovernanceLock - Single Choke Point UI (Slice 6: StandaloneHomeShell) */}
-                  <Route path='pilot' element={<PilotHome />} />
-                  {/* Legacy: Direct PilotConsole (for backwards compat during transition) */}
-                  <Route path='pilot/legacy' element={<PilotConsole />} />
-                  {/* Slice 6.1: TerraTrace - Observability & Telemetry */}
-                  <Route path='trace' element={<TraceHome />} />
-                  {/* Phase 30: TerraCanon - Integrated Development Environment */}
-                  <Route path='canon' element={<CanonHome />} />
+                    {/* GovernanceLock - Single Choke Point UI (Slice 6: StandaloneHomeShell) */}
+                    <Route path='pilot' element={<PilotHome />} />
+                    {/* Legacy: Direct PilotConsole (for backwards compat during transition) */}
+                    <Route path='pilot/legacy' element={<PilotConsole />} />
+                    {/* Slice 6.1: TerraTrace - Observability & Telemetry */}
+                    <Route path='trace' element={<TraceHome />} />
+                    {/* Phase 30: TerraCanon - Integrated Development Environment */}
+                    <Route path='canon' element={<CanonHome />} />
 
-                  {/* GovernanceLock - Dashboard (role-gated) */}
-                  <Route path='pilot/dashboard' element={<GovernanceDashboard />} />
-                  <Route path='pilot/api' element={<PilotApiDemo />} />
+                    {/* GovernanceLock - Dashboard (role-gated) */}
+                    <Route path='pilot/dashboard' element={<GovernanceDashboard />} />
+                    <Route path='pilot/api' element={<PilotApiDemo />} />
 
-                  {/* Phase 1: Error Display Demo */}
-                  <Route path='error-demo' element={<ErrorDisplayDemo />} />
+                    {/* Phase 1: Error Display Demo */}
+                    <Route path='error-demo' element={<ErrorDisplayDemo />} />
 
-                  {/* Phase 2: Pilot Tool Invocation Demo */}
-                  <Route path='pilot-demo' element={<PilotDemo />} />
+                    {/* Phase 2: Pilot Tool Invocation Demo */}
+                    <Route path='pilot-demo' element={<PilotDemo />} />
 
-                  {/* Phase 7: Dev-only Legacy Burn-Down Viewer (always registered, element guards) */}
-                  <Route
-                    path='dev/legacy-metrics'
-                    element={
-                      getViteEnv().DEV ? (
-                        <LegacyMetricsViewer />
-                      ) : (
-                        <div className='p-8 text-center' style={{ color: 'hsl(var(--tf-muted))' }}>
-                          Dev-only route. Not available in production.
-                        </div>
-                      )
-                    }
-                  />
+                    {/* Phase 7: Dev-only Legacy Burn-Down Viewer (always registered, element guards) */}
+                    <Route
+                      path='dev/legacy-metrics'
+                      element={
+                        getViteEnv().DEV ? (
+                          <LegacyMetricsViewer />
+                        ) : (
+                          <div
+                            className='p-8 text-center'
+                            style={{ color: 'hsl(var(--tf-muted))' }}
+                          >
+                            Dev-only route. Not available in production.
+                          </div>
+                        )
+                      }
+                    />
 
-                  {/* Legacy module routes - redirect to home with telemetry */}
-                  <Route
-                    path='modules/*'
-                    element={<LegacyRedirect to='/' legacyAppId='modules.unknown' />}
-                  />
-                </Route>
-              </Routes>
-            </AuthGuard>
-          </Suspense>
-        </ErrorBoundary>
-      </AuthProvider>
-    </BrowserRouter>
+                    {/* Legacy module routes - redirect to home with telemetry */}
+                    <Route
+                      path='modules/*'
+                      element={<LegacyRedirect to='/' legacyAppId='modules.unknown' />}
+                    />
+                  </Route>
+                </Routes>
+              </AuthGuard>
+            </Suspense>
+          </ErrorBoundary>
+        </AuthProvider>
+      </BrowserRouter>
     </QueryClientProvider>
   );
 };

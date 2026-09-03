@@ -65,3 +65,30 @@ public interface ICountyCsvUploadAdmissionLedger
       CountyCsvUploadAdmissionRequest? request,
       CancellationToken cancellationToken = default);
 }
+
+/// <summary>
+/// County-scoped, metadata-only view of a durable upload admission. The source bytes and row
+/// values are intentionally absent; this surface does not imply staging or promotion.
+/// </summary>
+public sealed record CountyCsvUploadBatchSummary(
+    Guid BatchId,
+    Guid CountyId,
+    string Dataset,
+    string SourceFileName,
+    string ContentSha256,
+    long ContentByteLength,
+    int AcceptedRowCount,
+    string Status,
+    DateTimeOffset ReceivedAtUtc);
+
+/// <summary>
+/// Reads recent durable admissions only for the authenticated county ID supplied by the protected
+/// API boundary. Implementations must never return another county's batches.
+/// </summary>
+public interface ICountyCsvUploadHistoryReader
+{
+  Task<IReadOnlyList<CountyCsvUploadBatchSummary>> ListRecentAsync(
+      Guid countyId,
+      int limit,
+      CancellationToken cancellationToken = default);
+}

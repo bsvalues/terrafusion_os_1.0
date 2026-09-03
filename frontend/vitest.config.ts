@@ -12,6 +12,7 @@ export default defineConfig({
     },
   },
   resolve: {
+    dedupe: ['react', 'react-dom', 'react-router-dom'],
     alias: {
       'monaco-editor/esm/vs/editor/editor.worker?worker': path.resolve(__dirname, '__mocks__/monaco-editor.ts'),
       'monaco-editor/esm/vs/language/css/css.worker?worker': path.resolve(__dirname, '__mocks__/monaco-editor.ts'),

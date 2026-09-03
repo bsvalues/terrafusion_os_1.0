@@ -68,11 +68,16 @@ public sealed class DataImportControllerTests
         Assert.Equal(
             "wal.county-upload.authenticated-durable-csv-api-admission.v1",
             DataImportController.UploadContractId);
-        Assert.All(
-            typeof(DataImportController)
-                .GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly)
-                .Where(method => method.Name != nameof(DataImportController.UploadFile)),
-            method => Assert.NotNull(method.GetCustomAttribute<AllowAnonymousAttribute>()));
+        var historyAction = typeof(DataImportController).GetMethod(
+            nameof(DataImportController.GetCountyUploadHistory));
+        Assert.NotNull(historyAction);
+        Assert.Equal(
+            "RequireAssessor",
+            Assert.Single(historyAction.GetCustomAttributes<AuthorizeAttribute>()).Policy);
+        Assert.Null(historyAction.GetCustomAttribute<AllowAnonymousAttribute>());
+        Assert.Equal(
+            new[] { typeof(CancellationToken) },
+            historyAction.GetParameters().Select(parameter => parameter.ParameterType));
 
         var services = new ServiceCollection();
         var configuration = new ConfigurationBuilder()
@@ -152,6 +157,47 @@ public sealed class DataImportControllerTests
         Assert.Equal(first.BatchId, second.BatchId);
         Assert.Equal(first.ContentSha256, second.ContentSha256);
         Assert.Equal(first.CountyId, second.CountyId);
+    }
+
+    [Fact]
+    public async Task History_returns_only_authenticated_county_admission_metadata()
+    {
+        var reader = new TrackingHistoryReader();
+        var controller = BuildController(
+            new TestAdmissionLedger(),
+            authorityCounty: "wa-benton",
+            historyReader: reader);
+
+        var result = await controller.GetCountyUploadHistory(default);
+
+        var ok = Assert.IsType<OkObjectResult>(result);
+        var receipt = Assert.IsType<CountyCsvUploadHistoryReceipt>(ok.Value);
+        Assert.Equal(CountyIds["wa-benton"], reader.RequestedCountyId);
+        Assert.Equal(25, reader.RequestedLimit);
+        Assert.Equal(CountyIds["wa-benton"], receipt.CountyId);
+        Assert.Equal("wa-benton", receipt.CountyKey);
+        Assert.Equal("Benton", receipt.CountyName);
+        Assert.Equal("admitted-not-staged", receipt.Availability);
+        var batch = Assert.Single(receipt.Batches);
+        Assert.Equal(CountyIds["wa-benton"], batch.CountyId);
+        Assert.Equal("Sales", batch.Dataset);
+        Assert.Equal("county-sales.csv", batch.SourceFileName);
+        Assert.Equal(2, batch.AcceptedRowCount);
+    }
+
+    [Fact]
+    public async Task History_fails_closed_before_query_when_authenticated_county_is_unresolved()
+    {
+        var reader = new TrackingHistoryReader();
+        var controller = BuildController(
+            new TestAdmissionLedger(),
+            authorityCounty: "unknown-county",
+            historyReader: reader);
+
+        var result = await controller.GetCountyUploadHistory(default);
+
+        Assert.IsType<ForbidResult>(result);
+        Assert.Null(reader.RequestedCountyId);
     }
 
     [Fact]
@@ -375,6 +421,7 @@ public sealed class DataImportControllerTests
                 typeof(ILogger<DataImportController>),
                 typeof(AuthenticatedCanonicalCountyContextProvider),
                 typeof(ICountyCsvUploadAdmissionLedger),
+                typeof(ICountyCsvUploadHistoryReader),
             },
             constructor.GetParameters().Select(parameter => parameter.ParameterType));
         Assert.DoesNotContain(
@@ -397,7 +444,8 @@ public sealed class DataImportControllerTests
 
     private static DataImportController BuildController(
         ICountyCsvUploadAdmissionLedger admissionLedger,
-        string authorityCounty = "wa-benton")
+        string authorityCounty = "wa-benton",
+        ICountyCsvUploadHistoryReader? historyReader = null)
     {
         var accessor = new StaticContextAccessor(
             new RequestUserContext(
@@ -412,7 +460,9 @@ public sealed class DataImportControllerTests
         var controller = new DataImportController(
             NullLogger<DataImportController>.Instance,
             provider,
-            admissionLedger)
+            admissionLedger,
+            historyReader ?? admissionLedger as ICountyCsvUploadHistoryReader
+                ?? new EmptyHistoryReader())
         {
             ControllerContext = new ControllerContext
             {
@@ -572,7 +622,9 @@ public sealed class DataImportControllerTests
         }
     }
 
-    private sealed class TestAdmissionLedger : ICountyCsvUploadAdmissionLedger
+    private sealed class TestAdmissionLedger :
+        ICountyCsvUploadAdmissionLedger,
+        ICountyCsvUploadHistoryReader
     {
         private readonly object _gate = new();
         private readonly Dictionary<string, CountyCsvUploadBatch> _batches =
@@ -627,6 +679,73 @@ public sealed class DataImportControllerTests
                         CountyCsvUploadAdmissionDenialCode.None,
                         batch));
             }
+        }
+
+        public Task<IReadOnlyList<CountyCsvUploadBatchSummary>> ListRecentAsync(
+            Guid countyId,
+            int limit,
+            CancellationToken cancellationToken = default)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            lock (_gate)
+            {
+                IReadOnlyList<CountyCsvUploadBatchSummary> batches = _batches.Values
+                    .Where(batch => batch.CountyId == countyId)
+                    .OrderByDescending(batch => batch.ReceivedAtUtc)
+                    .Take(limit)
+                    .Select(batch => new CountyCsvUploadBatchSummary(
+                        batch.BatchId,
+                        batch.CountyId,
+                        batch.Dataset,
+                        batch.SourceFileName,
+                        batch.ContentSha256,
+                        batch.ContentByteLength,
+                        batch.AcceptedRowCount,
+                        batch.Status,
+                        batch.ReceivedAtUtc))
+                    .ToArray();
+                return Task.FromResult(batches);
+            }
+        }
+    }
+
+    private sealed class EmptyHistoryReader : ICountyCsvUploadHistoryReader
+    {
+        public Task<IReadOnlyList<CountyCsvUploadBatchSummary>> ListRecentAsync(
+            Guid countyId,
+            int limit,
+            CancellationToken cancellationToken = default) =>
+            Task.FromResult<IReadOnlyList<CountyCsvUploadBatchSummary>>([]);
+    }
+
+    private sealed class TrackingHistoryReader : ICountyCsvUploadHistoryReader
+    {
+        public Guid? RequestedCountyId { get; private set; }
+
+        public int RequestedLimit { get; private set; }
+
+        public Task<IReadOnlyList<CountyCsvUploadBatchSummary>> ListRecentAsync(
+            Guid countyId,
+            int limit,
+            CancellationToken cancellationToken = default)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            RequestedCountyId = countyId;
+            RequestedLimit = limit;
+            IReadOnlyList<CountyCsvUploadBatchSummary> batches =
+            [
+                new(
+                    Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
+                    countyId,
+                    "Sales",
+                    "county-sales.csv",
+                    new string('a', 64),
+                    128,
+                    2,
+                    CountyCsvUploadBatch.AdmittedStatus,
+                    DateTimeOffset.Parse("2026-09-03T00:00:00Z")),
+            ];
+            return Task.FromResult(batches);
         }
     }
 

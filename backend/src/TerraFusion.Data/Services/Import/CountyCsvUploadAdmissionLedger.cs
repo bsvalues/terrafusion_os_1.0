@@ -11,7 +11,9 @@ namespace TerraFusion.Data.Services.Import;
 /// EF-backed upload admission ledger. Each operation owns a dedicated context, and its explicit
 /// transaction covers both entity persistence and TerraFusionDbContext's second audit-log save.
 /// </summary>
-public sealed class CountyCsvUploadAdmissionLedger : ICountyCsvUploadAdmissionLedger
+public sealed class CountyCsvUploadAdmissionLedger :
+    ICountyCsvUploadAdmissionLedger,
+    ICountyCsvUploadHistoryReader
 {
     private const int MaximumActorIdCharacters = 200;
     private const int MaximumFileNameCharacters = 255;
@@ -143,6 +145,82 @@ public sealed class CountyCsvUploadAdmissionLedger : ICountyCsvUploadAdmissionLe
             throw;
         }
     }
+
+    public async Task<IReadOnlyList<CountyCsvUploadBatchSummary>> ListRecentAsync(
+        Guid countyId,
+        int limit,
+        CancellationToken cancellationToken = default)
+    {
+        if (countyId == Guid.Empty)
+        {
+            throw new ArgumentException("County ID must be non-empty.", nameof(countyId));
+        }
+
+        if (limit is <= 0 or > 100)
+        {
+            throw new ArgumentOutOfRangeException(nameof(limit));
+        }
+
+        cancellationToken.ThrowIfCancellationRequested();
+        await using var dbContext = await _dbContextFactory
+            .CreateDbContextAsync(cancellationToken)
+            .ConfigureAwait(false);
+
+        if (!dbContext.Database.IsSqlite())
+        {
+            return await BuildProviderHistoryQuery(dbContext, countyId, limit)
+                .ToListAsync(cancellationToken)
+                .ConfigureAwait(false);
+        }
+
+        // SQLite cannot translate DateTimeOffset ordering through LINQ. Keep its county predicate
+        // and limit parameterized and make this raw query terminal so EF never composes around its
+        // ORDER BY. SQL Server and PostgreSQL use the provider-translated query above.
+        var batches = await dbContext.CountyCsvUploadBatches
+            .FromSqlInterpolated($@"
+                SELECT *
+                FROM ""CountyCsvUploadBatches""
+                WHERE ""CountyId"" = {countyId}
+                ORDER BY ""ReceivedAtUtc"" DESC, ""BatchId"" DESC
+                LIMIT {limit}")
+            .AsNoTracking()
+            .ToListAsync(cancellationToken)
+            .ConfigureAwait(false);
+
+        return batches
+            .Select(batch => new CountyCsvUploadBatchSummary(
+                batch.BatchId,
+                batch.CountyId,
+                batch.Dataset,
+                batch.SourceFileName,
+                batch.ContentSha256,
+                batch.ContentByteLength,
+                batch.AcceptedRowCount,
+                batch.Status,
+                batch.ReceivedAtUtc))
+            .ToList();
+    }
+
+    internal static IQueryable<CountyCsvUploadBatchSummary> BuildProviderHistoryQuery(
+        TerraFusionDbContext dbContext,
+        Guid countyId,
+        int limit) =>
+        dbContext.CountyCsvUploadBatches
+            .AsNoTracking()
+            .Where(batch => batch.CountyId == countyId)
+            .OrderByDescending(batch => batch.ReceivedAtUtc)
+            .ThenByDescending(batch => batch.BatchId)
+            .Take(limit)
+            .Select(batch => new CountyCsvUploadBatchSummary(
+                batch.BatchId,
+                batch.CountyId,
+                batch.Dataset,
+                batch.SourceFileName,
+                batch.ContentSha256,
+                batch.ContentByteLength,
+                batch.AcceptedRowCount,
+                batch.Status,
+                batch.ReceivedAtUtc));
 
     private static async Task<CountyCsvUploadBatch?> FindByIdempotencyKeyAsync(
         TerraFusionDbContext dbContext,
