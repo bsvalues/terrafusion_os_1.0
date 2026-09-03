@@ -1682,7 +1682,9 @@ public class TerraForgeController : ControllerBase
             // Join to CamaCharacteristics for QualityGrade
             var camaMap = await _db.CamaCharacteristics
                 .AsNoTracking()
-                .Where(cc => parcelIds.Contains(cc.ParcelId) && cc.TaxYear == taxYear)
+                .Where(cc => cc.CountyId == scopedCountyId
+                    && parcelIds.Contains(cc.ParcelId)
+                    && cc.TaxYear == taxYear)
                 .Select(cc => new { cc.ParcelId, cc.QualityGrade })
                 .ToListAsync(ct);
             var camaLookup = camaMap
@@ -2838,7 +2840,9 @@ public class TerraForgeController : ControllerBase
         var parcelIds = sales.Where(s => s.ParcelId != null).Select(s => s.ParcelId!).Distinct().ToHashSet();
         var cama = await _db.CamaCharacteristics
             .AsNoTracking()
-            .Where(c => parcelIds.Contains(c.ParcelId) && c.SquareFeet > 100)
+            .Where(c => c.CountyId == countyId
+                && parcelIds.Contains(c.ParcelId)
+                && c.SquareFeet > 100)
             .Select(c => new { c.ParcelId, c.SquareFeet, c.YearBuilt, c.QualityGrade })
             .ToListAsync(ct);
 

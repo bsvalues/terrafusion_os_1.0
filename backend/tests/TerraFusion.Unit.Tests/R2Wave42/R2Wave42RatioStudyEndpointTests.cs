@@ -472,4 +472,32 @@ public sealed class R2Wave42RatioStudyEndpointTests
         basement.GetProperty("saleCount").GetInt32().Should().Be(0,
             "a same-numbered parcel in another county must not supply improvement features");
     }
+
+    [Fact]
+    public async Task StratifiedRatioStudy_DoesNotBorrowForeignCountyQualityGrade()
+    {
+        await using var db = CreateDbContext(nameof(StratifiedRatioStudy_DoesNotBorrowForeignCountyQualityGrade));
+        await SeedCountyAsync(db);
+        var sale = await SeedSaleAsync(db, 400_000m, pacsRatio: 90m);
+        sale.SalesYear = 2026;
+        db.CamaCharacteristics.Add(new CamaCharacteristic
+        {
+            ParcelId = sale.ParcelId,
+            TaxYear = 2026,
+            BuildingType = "R1",
+            SquareFeet = 2_000m,
+            QualityGrade = "EXCELLENT",
+            CountyId = Guid.Parse("22222222-2222-2222-2222-222222222222")
+        });
+        await db.SaveChangesAsync();
+        var ctrl = CreateController(db);
+
+        var result = await ctrl.GetStratifiedRatioStudy(taxYear: 2026, minSales: 1);
+
+        var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+        using var body = JsonDocument.Parse(JsonSerializer.Serialize(ok.Value));
+        var stratum = body.RootElement.GetProperty("strata").EnumerateArray().Single();
+        stratum.GetProperty("qualityGrade").GetString().Should().Be("Unknown",
+            "a same-numbered parcel in another county must not supply its quality grade");
+    }
 }
