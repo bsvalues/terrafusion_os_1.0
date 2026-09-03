@@ -3,8 +3,8 @@
  */
 
 import '@testing-library/jest-dom';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { MemoryRouter, Route, Routes } from 'react-router-dom';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { MemoryRouter, Route, Routes, useNavigate } from 'react-router-dom';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const { fetchCountyCsvUploadHistoryMock, uploadCountyCsvMock } = vi.hoisted(() => ({
@@ -20,10 +20,17 @@ vi.mock('../../../services/canon/countyCsvUpload', () => ({
 import CountyCsvAdmissionPage from '../CountyCsvAdmissionPage';
 
 const SPOKANE_ID = '00000000-0000-0000-0000-000000000032';
+const BENTON_ID = '00000000-0000-0000-0000-000000000005';
+
+function TestNavigator() {
+  const navigate = useNavigate();
+  return <button onClick={() => navigate('/counties/005/upload')}>Open Benton upload</button>;
+}
 
 function renderRoute(path = '/counties/063/upload') {
   return render(
     <MemoryRouter initialEntries={[path]}>
+      <TestNavigator />
       <Routes>
         <Route path='/counties/:countyCode/upload' element={<CountyCsvAdmissionPage />} />
       </Routes>
@@ -144,5 +151,49 @@ describe('county CSV admission domain surface', () => {
     expect(
       screen.queryByRole('button', { name: 'Check authenticated county' })
     ).not.toBeInTheDocument();
+  });
+
+  it('resets county state and ignores an older request when the route county changes', async () => {
+    let resolveSpokaneHistory: ((value: unknown) => void) | undefined;
+    fetchCountyCsvUploadHistoryMock
+      .mockReturnValueOnce(
+        new Promise((resolve) => {
+          resolveSpokaneHistory = resolve;
+        })
+      )
+      .mockResolvedValueOnce({
+        contractId: 'wal.county-upload.authenticated-durable-csv-api-admission.v1',
+        countyId: BENTON_ID,
+        countyKey: 'wa-benton',
+        countyName: 'Benton',
+        availability: 'admitted-not-staged',
+        batches: [],
+      });
+
+    renderRoute();
+    fireEvent.click(screen.getByRole('button', { name: 'Check authenticated county' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Open Benton upload' }));
+
+    expect(
+      await screen.findByRole('heading', { name: 'Benton County CSV admission' })
+    ).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Check authenticated county' })).toBeInTheDocument();
+
+    await act(async () => {
+      resolveSpokaneHistory?.({
+        contractId: 'wal.county-upload.authenticated-durable-csv-api-admission.v1',
+        countyId: SPOKANE_ID,
+        countyKey: 'wa-spokane',
+        countyName: 'Spokane',
+        availability: 'admitted-not-staged',
+        batches: [],
+      });
+    });
+
+    expect(screen.queryByText(/Authenticated for Spokane County/i)).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Check authenticated county' })).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Check authenticated county' }));
+    expect(await screen.findByText(/Authenticated for Benton County/i)).toBeInTheDocument();
   });
 });

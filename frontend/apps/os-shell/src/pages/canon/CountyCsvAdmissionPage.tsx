@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   Alert,
   Box,
@@ -57,6 +57,18 @@ export default function CountyCsvAdmissionPage() {
   const [uploadDataset, setUploadDataset] = useState<CountyCsvDataset>('Sales');
   const [uploading, setUploading] = useState(false);
   const [uploadReceipt, setUploadReceipt] = useState<CountyCsvUploadReceipt | null>(null);
+  const requestGeneration = useRef(0);
+
+  useEffect(() => {
+    requestGeneration.current += 1;
+    setUploadContextLoading(false);
+    setUploadContext(null);
+    setUploadError(null);
+    setUploadFile(null);
+    setUploadDataset('Sales');
+    setUploading(false);
+    setUploadReceipt(null);
+  }, [countyCode]);
 
   const authenticatedUploadMatchesSelection = Boolean(
     county &&
@@ -67,11 +79,14 @@ export default function CountyCsvAdmissionPage() {
 
   const loadAuthenticatedUploadContext = useCallback(async () => {
     if (!county) return;
+    const generation = requestGeneration.current + 1;
+    requestGeneration.current = generation;
     setUploadContextLoading(true);
     setUploadError(null);
     setUploadReceipt(null);
     try {
       const history = await fetchCountyCsvUploadHistory();
+      if (requestGeneration.current !== generation) return;
       setUploadContext(history);
       if (
         normalizeCountyName(history.countyName) !== normalizeCountyName(county.name) ||
@@ -82,22 +97,28 @@ export default function CountyCsvAdmissionPage() {
         );
       }
     } catch (error) {
+      if (requestGeneration.current !== generation) return;
       setUploadContext(null);
       setUploadError(
         error instanceof Error ? error.message : 'Authenticated county upload is unavailable.'
       );
     } finally {
-      setUploadContextLoading(false);
+      if (requestGeneration.current === generation) {
+        setUploadContextLoading(false);
+      }
     }
   }, [county]);
 
   const submitCountyUpload = useCallback(async () => {
     if (!county || !uploadContext || !authenticatedUploadMatchesSelection || !uploadFile) return;
+    const generation = requestGeneration.current + 1;
+    requestGeneration.current = generation;
     setUploading(true);
     setUploadError(null);
     setUploadReceipt(null);
     try {
       const receipt = await uploadCountyCsv(uploadFile, uploadDataset);
+      if (requestGeneration.current !== generation) return;
       if (
         receipt.countyId !== uploadContext.countyId ||
         receipt.countyKey !== uploadContext.countyKey ||
@@ -112,6 +133,7 @@ export default function CountyCsvAdmissionPage() {
       setUploadReceipt(receipt);
       setUploadFile(null);
       const refreshedHistory = await fetchCountyCsvUploadHistory();
+      if (requestGeneration.current !== generation) return;
       if (
         refreshedHistory.countyId !== receipt.countyId ||
         refreshedHistory.countyKey !== receipt.countyKey ||
@@ -125,9 +147,12 @@ export default function CountyCsvAdmissionPage() {
       }
       setUploadContext(refreshedHistory);
     } catch (error) {
+      if (requestGeneration.current !== generation) return;
       setUploadError(error instanceof Error ? error.message : 'County CSV upload failed.');
     } finally {
-      setUploading(false);
+      if (requestGeneration.current === generation) {
+        setUploading(false);
+      }
     }
   }, [authenticatedUploadMatchesSelection, county, uploadContext, uploadDataset, uploadFile]);
 
