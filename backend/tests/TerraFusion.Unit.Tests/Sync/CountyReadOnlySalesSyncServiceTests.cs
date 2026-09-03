@@ -42,7 +42,7 @@ public sealed class CountyReadOnlySalesSyncServiceTests
             new Dictionary<string, string?>
             {
                 ["ConnectionStrings:PacsConnection"] =
-                    "Server=pacs;Database=benton_pacs;Encrypt=True;TrustServerCertificate=True;Application Name=TerraFusion-Test",
+                    "Server=pacs;Database=benton_pacs;Encrypt=True;TrustServerCertificate=False;Application Name=TerraFusion-Test",
             }).Build();
 
         using var adapter = new PacsSqlAdapter(NullLogger<PacsSqlAdapter>.Instance, configuration);
@@ -57,7 +57,7 @@ public sealed class CountyReadOnlySalesSyncServiceTests
             new Dictionary<string, string?>
             {
                 ["ConnectionStrings:PacsConnection"] =
-                    "Server=pacs;Database=benton_pacs;Encrypt=True;TrustServerCertificate=True;Application Name=TerraFusion-Test;ApplicationIntent=ReadOnly",
+                    "Server=pacs;Database=benton_pacs;Encrypt=True;TrustServerCertificate=False;Application Name=TerraFusion-Test;ApplicationIntent=ReadOnly",
             }).Build();
 
         using var adapter = new PacsSqlAdapter(NullLogger<PacsSqlAdapter>.Instance, configuration);
@@ -65,6 +65,23 @@ public sealed class CountyReadOnlySalesSyncServiceTests
         Assert.IsAssignableFrom<IExternalReadOnlyPacsAdapter>(adapter);
         Assert.True(adapter.MatchesSource("PACS", "BENTON_PACS"));
         Assert.False(adapter.MatchesSource("franklin-pacs", "benton_pacs"));
+    }
+
+    [Fact]
+    public void PacsSqlAdapterRejectsTrustServerCertificateBypass()
+    {
+        var configuration = new ConfigurationBuilder().AddInMemoryCollection(
+            new Dictionary<string, string?>
+            {
+                ["ConnectionStrings:PacsConnection"] =
+                    "Server=pacs;Database=benton_pacs;Encrypt=True;TrustServerCertificate=True;Application Name=TerraFusion-Test;ApplicationIntent=ReadOnly",
+            }).Build();
+
+        var exception = Assert.Throws<PacsContractViolationException>(() =>
+            new PacsSqlAdapter(NullLogger<PacsSqlAdapter>.Instance, configuration));
+
+        Assert.Equal(PacsErrorCodes.ConnectionFailed, exception.ErrorCode);
+        Assert.Contains("TrustServerCertificate=false", exception.Message, StringComparison.Ordinal);
     }
 
     [Fact]

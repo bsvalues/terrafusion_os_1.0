@@ -110,6 +110,7 @@ Performance indexes required for sub-second API response:
 ```yaml
 connection:
   encryption: required          # TLS 1.2+ mandatory
+  trust_server_certificate: false # Certificate chain and host identity must validate on the TerraFusion host
   timeout_seconds: 30           # Connection timeout
   command_timeout_seconds: 60   # Query timeout
   application_name: TerraFusion-OS

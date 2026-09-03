@@ -4,6 +4,7 @@
 
 import '@testing-library/jest-dom';
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type {
   WashingtonCountyStatusEntry,
@@ -135,6 +136,7 @@ describe('Washington Counties Hub assessor journey', () => {
   });
 
   it('runs a protected county read-only sync and opens TerraForge on connected sales', async () => {
+    const user = userEvent.setup({ skipHover: true });
     const connectedAvailability = {
       contractId: 'wal.county-connected.readonly-sales-sync.v1',
       countyId: '00000000-0000-0000-0000-000000000063',
@@ -170,14 +172,14 @@ describe('Washington Counties Hub assessor journey', () => {
     });
 
     render(<CountiesHub />);
-    fireEvent.click(await screen.findByRole('option', { name: /Select Spokane County/i }));
-    fireEvent.click(screen.getByRole('button', { name: 'Run read-only Sales sync' }));
+    await user.click(await screen.findByRole('option', { name: /Select Spokane County/i }));
+    await user.click(screen.getByRole('button', { name: 'Run read-only Sales sync' }));
 
     expect(await screen.findByTestId('county-connected-sales-availability')).toHaveTextContent(
       /Connected read-only PACS.*3 sales.*External writes: 0/i
     );
     expect(runCountyReadOnlySalesSyncMock).toHaveBeenCalledTimes(1);
-    fireEvent.click(screen.getByRole('button', { name: 'Open TerraForge' }));
+    await user.click(screen.getByRole('button', { name: 'Open TerraForge' }));
     await waitFor(() =>
       expect(activateModuleMock).toHaveBeenCalledWith('suite-forge', {
         source: 'system',

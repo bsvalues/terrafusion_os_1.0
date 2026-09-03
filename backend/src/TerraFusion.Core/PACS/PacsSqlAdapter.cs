@@ -91,6 +91,13 @@ namespace TerraFusion.Core.PACS
                     "PACS connection must use encryption (Encrypt=true) per pacscontract.v1");
             }
 
+            if (builder.TrustServerCertificate)
+            {
+                throw new PacsContractViolationException(
+                    PacsErrorCodes.ConnectionFailed,
+                    "PACS connection must validate a certificate trusted by the host (TrustServerCertificate=false)");
+            }
+
             // pacscontract.v1 requires application name for audit trail
             if (string.IsNullOrEmpty(builder.ApplicationName) || !builder.ApplicationName.Contains("TerraFusion"))
             {
@@ -502,7 +509,6 @@ namespace TerraFusion.Core.PACS
 
                 var sql = $@"
                     SELECT
-                        chg_of_owner_id AS PacsChgOfOwnerId,
                         prop_id AS PropId,
                         geo_id AS GeoId,
                         prop_type_cd AS PropTypeCd,
@@ -881,6 +887,7 @@ namespace TerraFusion.Core.PACS
                 var offset = (page - 1) * pageSize;
                 var sql = $@"
                     SELECT
+                        chg_of_owner_id AS PacsChgOfOwnerId,
                         prop_id AS PropId,
                         geo_id AS GeoId,
                         sale_date AS SaleDate,

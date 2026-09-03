@@ -119,6 +119,17 @@ describe('countyReadOnlySalesSync', () => {
       )
     );
     await expect(runCountyReadOnlySalesSync(apiFetch)).rejects.toThrow(/invalid receipt/i);
+
+    apiFetch.mockResolvedValueOnce(
+      new Response(
+        JSON.stringify({
+          ...payload,
+          receipt: { ...payload.receipt, recommendedStudyYear: null },
+        }),
+        { status: 200, headers: { 'Content-Type': 'application/json' } }
+      )
+    );
+    await expect(runCountyReadOnlySalesSync(apiFetch)).rejects.toThrow(/invalid receipt/i);
   });
 
   it('surfaces the stable fail-closed code', async () => {

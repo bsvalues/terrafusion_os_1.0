@@ -120,10 +120,10 @@ function requireReceipt(value: unknown): CountyReadOnlySalesSyncReceipt {
     !hasSafeReceiptCounts(value.receipt) ||
     value.receipt.externalWrites !== 0 ||
     (value.receipt.latestSaleDate !== null && !isDate(value.receipt.latestSaleDate)) ||
-    (value.receipt.recommendedStudyYear !== null &&
-      (!Number.isSafeInteger(value.receipt.recommendedStudyYear) ||
-        value.receipt.recommendedStudyYear !==
-          Number(String(value.receipt.latestSaleDate).slice(0, 4)) + 1)) ||
+    value.receipt.recommendedStudyYear !==
+      (isDate(value.receipt.latestSaleDate)
+        ? Number(value.receipt.latestSaleDate.slice(0, 4)) + 1
+        : null) ||
     typeof value.receipt.completedAtUtc !== 'string'
   ) {
     throw new Error('The county sync service returned an invalid receipt.');
