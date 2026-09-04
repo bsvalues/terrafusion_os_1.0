@@ -249,6 +249,7 @@ describe('Washington Counties Hub assessor journey', () => {
   }, 15_000);
 
   it('reports a post-sync availability refresh failure instead of claiming success', async () => {
+    const user = userEvent.setup({ skipHover: true });
     fetchCountyReadOnlySalesSyncAvailabilityMock
       .mockReset()
       .mockResolvedValueOnce({
@@ -273,11 +274,50 @@ describe('Washington Counties Hub assessor journey', () => {
     });
 
     render(<CountiesHub />);
-    fireEvent.click(await screen.findByRole('option', { name: /Select Spokane County/i }));
-    fireEvent.click(screen.getByRole('button', { name: 'Run read-only Sales sync' }));
+    await user.click(await screen.findByRole('option', { name: /Select Spokane County/i }));
+    await user.click(screen.getByRole('button', { name: 'Run read-only Sales sync' }));
 
     expect(await screen.findByText('Connected sales refresh failed.')).toBeInTheDocument();
     expect(runCountyReadOnlySalesSyncMock).toHaveBeenCalledTimes(1);
+  }, 15_000);
+
+  it('distinguishes an availability request failure and retries before enabling sync', async () => {
+    const user = userEvent.setup({ skipHover: true });
+    fetchCountyReadOnlySalesSyncAvailabilityMock
+      .mockReset()
+      .mockRejectedValueOnce(new Error('Availability endpoint offline.'))
+      .mockResolvedValueOnce({
+        contractId: 'wal.county-connected.readonly-sales-sync.v1',
+        countyId: '00000000-0000-0000-0000-000000000063',
+        countyKey: 'wa-spokane',
+        countyName: 'Spokane',
+        connectionConfigured: true,
+        sourceSystem: 'PACS',
+        lastSuccessfulSyncAtUtc: null,
+        availableSales: 0,
+        latestSaleDate: null,
+        recommendedStudyYear: null,
+        salesReviewAvailable: false,
+        status: 'connected-no-sales',
+      });
+
+    render(<CountiesHub />);
+    await user.click(await screen.findByRole('option', { name: /Select Spokane County/i }));
+
+    expect(await screen.findByTestId('county-connected-sales-load-error')).toHaveTextContent(
+      'Availability endpoint offline.'
+    );
+    expect(
+      screen.queryByText(/No single protected read-only PACS connection/i)
+    ).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Run read-only Sales sync' })).toBeDisabled();
+
+    await user.click(screen.getByRole('button', { name: 'Retry connected Sales' }));
+
+    await waitFor(() =>
+      expect(screen.queryByTestId('county-connected-sales-load-error')).not.toBeInTheDocument()
+    );
+    expect(screen.getByRole('button', { name: 'Run read-only Sales sync' })).toBeEnabled();
   }, 15_000);
 
   it('surfaces authenticated county-upload sales and opens TerraForge on its live API', async () => {
@@ -508,6 +548,7 @@ describe('Washington Counties Hub assessor journey', () => {
   });
 
   it('retries selected-county sales verification after a transient failure', async () => {
+    const user = userEvent.setup({ skipHover: true });
     const unverifiedStatus = countyStatus({
       salesShardVerification: 'unverified',
     });
@@ -566,13 +607,13 @@ describe('Washington Counties Hub assessor journey', () => {
     );
 
     render(<CountiesHub />);
-    fireEvent.click(await screen.findByRole('option', { name: 'Select Spokane County' }));
+    await user.click(await screen.findByRole('option', { name: 'Select Spokane County' }));
 
     const retrySalesData = await screen.findByRole('button', {
       name: 'Retry sales data',
     });
     expect(verifyWashingtonCountySalesShardMock).toHaveBeenCalledTimes(1);
-    fireEvent.click(retrySalesData);
+    await user.click(retrySalesData);
 
     await waitFor(() => {
       expect(verifyWashingtonCountySalesShardMock).toHaveBeenCalledTimes(2);

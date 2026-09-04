@@ -4,11 +4,9 @@
 -- Target: pacs_oltp (configured by ConnectionStrings:PacsConnection)
 -- Contract: PacsSqlAdapter primary/core connection.
 -- Run through the configured core connection after RESTORE DATABASE.
+-- This script intentionally does not switch databases; the connection selects the target.
 -- Idempotent: uses CREATE OR ALTER.
 -- =============================================================================
-
-USE [pacs_oltp];
-GO
 
 -- ─────────────────────────────────────────────────────────────────────────────
 -- VIEW 1: vw_TerraFusion_Property_Core

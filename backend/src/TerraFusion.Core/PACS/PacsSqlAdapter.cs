@@ -259,6 +259,57 @@ namespace TerraFusion.Core.PACS
             };
         }
 
+        public async Task<PacsContractProof> ValidateSalesContractAsync(
+            CancellationToken cancellationToken = default)
+        {
+            var errors = new List<string>();
+            var connectionStatus = await GetSalesConnectionStatusAsync(cancellationToken);
+            var configuredSalesDatabase = GetDatabaseName(_salesConnectionString);
+            var connectedToConfiguredDatabase = connectionStatus.IsConnected
+                && string.Equals(
+                    connectionStatus.DatabaseName,
+                    configuredSalesDatabase,
+                    StringComparison.OrdinalIgnoreCase);
+            var connectionCheck = new PacsProofItem
+            {
+                Name = "SalesDatabaseConnection",
+                Passed = connectedToConfiguredDatabase,
+                Severity = "error",
+                Details = connectedToConfiguredDatabase
+                    ? $"Connected to configured Sales database '{connectionStatus.DatabaseName}'"
+                    : connectionStatus.IsConnected
+                        ? $"Connected to '{connectionStatus.DatabaseName}' but configured Sales database is '{configuredSalesDatabase}'"
+                        : connectionStatus.ErrorMessage ?? "Sales database connection failed"
+            };
+            if (!connectionCheck.Passed)
+            {
+                errors.Add(connectionCheck.Details!);
+            }
+
+            var viewsCheck = connectionCheck.Passed
+                ? await CheckRequiredSalesViewsAsync(cancellationToken)
+                : new PacsProofItem
+                {
+                    Name = "RequiredSalesViews",
+                    Passed = false,
+                    Severity = "error",
+                    Details = "Sales views were not checked because the Sales database connection failed"
+                };
+            if (!viewsCheck.Passed)
+            {
+                errors.Add(viewsCheck.Details ?? "Required Sales views missing");
+            }
+
+            return new PacsContractProof
+            {
+                IsValid = errors.Count == 0,
+                ValidatedAt = DateTime.UtcNow,
+                DatabaseConnection = connectionCheck,
+                RequiredViews = viewsCheck,
+                Errors = errors
+            };
+        }
+
         private async Task<PacsProofItem> CheckDatabaseConnectionAsync(CancellationToken cancellationToken)
         {
             try
@@ -371,6 +422,50 @@ namespace TerraFusion.Core.PACS
                     Passed = false,
                     Severity = "error",
                     Details = $"View check failed: {ex.Message}"
+                };
+            }
+        }
+
+        private async Task<PacsProofItem> CheckRequiredSalesViewsAsync(CancellationToken cancellationToken)
+        {
+            try
+            {
+                await using var connection = CreateSalesConnection();
+                await connection.OpenAsync(cancellationToken);
+                var missingViews = new List<string>();
+                foreach (var view in new[] { ViewComparableSales, ViewCamaCharacteristics, ViewImprovementCostMatrices })
+                {
+                    var exists = await connection.ExecuteScalarAsync<int>(
+                        "SELECT COUNT(*) FROM sys.views WHERE name = @ViewName",
+                        new { ViewName = view });
+                    if (exists == 0)
+                    {
+                        missingViews.Add($"{connection.Database}.{view}");
+                    }
+                }
+
+                return new PacsProofItem
+                {
+                    Name = "RequiredSalesViews",
+                    Passed = missingViews.Count == 0,
+                    Severity = "error",
+                    Details = missingViews.Count == 0
+                        ? $"Sales/CAMA/matrix views present in {connection.Database}"
+                        : $"Missing views: {string.Join(", ", missingViews)}"
+                };
+            }
+            catch (OperationCanceledException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                return new PacsProofItem
+                {
+                    Name = "RequiredSalesViews",
+                    Passed = false,
+                    Severity = "error",
+                    Details = $"Sales view validation failed: {ex.Message}"
                 };
             }
         }
@@ -520,6 +615,10 @@ namespace TerraFusion.Core.PACS
                     LastConnectedAt = _lastConnectedAt,
                     LatencyMs = sw.Elapsed.TotalMilliseconds
                 };
+            }
+            catch (OperationCanceledException)
+            {
+                throw;
             }
             catch (Exception ex)
             {
@@ -904,7 +1003,13 @@ namespace TerraFusion.Core.PACS
             int pageSize = 500,
             CancellationToken cancellationToken = default)
         {
-            await EnsureContractValidAsync(cancellationToken);
+            var proof = await ValidateSalesContractAsync(cancellationToken);
+            if (!proof.IsValid)
+            {
+                throw new PacsContractViolationException(
+                    PacsErrorCodes.ConnectionFailed,
+                    $"PACS Sales contract validation failed: {string.Join("; ", proof.Errors)}");
+            }
 
             if (page < 1) page = 1;
             if (pageSize < 1 || pageSize > 1000) pageSize = 500;

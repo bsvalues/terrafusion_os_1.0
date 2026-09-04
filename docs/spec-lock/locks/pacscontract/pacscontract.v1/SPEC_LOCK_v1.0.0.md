@@ -87,9 +87,10 @@ queries these views only through that read-only sales connection:
 
 Deploy these objects through `ConnectionStrings:PacsSalesConnection` with
 `pacs-contract-views.pacs_golive.sql`. If no separate sales connection is configured,
-the adapter deliberately falls back to `PacsConnection` and both scripts must be
-applied to that one authorized database. Never deploy either group through the other
-configured connection by inference from a script name.
+the adapter deliberately falls back to `PacsConnection`; run both connection-scoped
+scripts through that one authorized connection. Neither script contains a `USE`
+statement, so the operator-selected connection remains the exact target. Never deploy
+either group through the other configured connection by inference from a script name.
 
 **Invariant**: Missing view → fail-closed with explicit error code `PACS_VIEW_MISSING`.
 

@@ -4,11 +4,9 @@
 -- Target: pacs_golive (configured by ConnectionStrings:PacsSalesConnection)
 -- Contract: PacsSqlAdapter sales connection.
 -- Run through the configured sales connection; never substitute the core database.
+-- This script intentionally does not switch databases; the connection selects the target.
 -- Idempotent: uses CREATE OR ALTER.
 -- =============================================================================
-
-USE [pacs_golive];
-GO
 
 -- VIEW 4: vw_TerraFusion_Comparable_Sales
 -- ─────────────────────────────────────────────────────────────────────────────

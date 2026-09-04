@@ -108,7 +108,7 @@ public sealed class CountyReadOnlySalesSyncService : ICountyReadOnlySalesSyncSer
                 return Denied(CountyReadOnlySalesSyncDenialCode.SourceIdentityMismatch, countyId, connection.Id);
             }
 
-            var proof = await _pacsAdapter.ValidateContractAsync(cancellationToken)
+            var proof = await externalAdapter.ValidateSalesContractAsync(cancellationToken)
                 .ConfigureAwait(false);
             if (!proof.IsValid || !string.Equals(proof.ContractId, "pacscontract.v1", StringComparison.Ordinal))
             {
@@ -288,7 +288,7 @@ public sealed class CountyReadOnlySalesSyncService : ICountyReadOnlySalesSyncSer
             .BeginTransactionAsync(IsolationLevel.Serializable, cancellationToken).ConfigureAwait(false);
         var completedAt = _timeProvider.GetUtcNow();
         var candidates = sourceRows
-            .GroupBy(row => DeterministicSaleId(connection.Id, row))
+            .GroupBy(row => DeterministicSaleId(countyId, row))
             .Select(group => new { Id = group.Key, Row = group.First() })
             .ToArray();
         var ids = candidates.Select(candidate => candidate.Id).ToArray();
@@ -501,12 +501,12 @@ public sealed class CountyReadOnlySalesSyncService : ICountyReadOnlySalesSyncSer
         };
     }
 
-    private static Guid DeterministicSaleId(Guid connectionId, PacsComparableSale row)
+    private static Guid DeterministicSaleId(Guid countyId, PacsComparableSale row)
     {
         var hash = SHA256.HashData(Encoding.UTF8.GetBytes(string.Join(
             '|',
             ICountyReadOnlySalesSyncService.ContractId,
-            connectionId.ToString("D", CultureInfo.InvariantCulture),
+            countyId.ToString("D", CultureInfo.InvariantCulture),
             SourceIdentity(row))));
         var bytes = hash[..16];
         bytes[7] = (byte)((bytes[7] & 0x0F) | 0x50);

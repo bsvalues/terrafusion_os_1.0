@@ -202,7 +202,8 @@ public sealed class CountyReadOnlySalesSyncServiceTests
                 DatabaseName = "benton_pacs",
                 ServerName = "b***o",
             });
-        adapter.Setup(value => value.ValidateContractAsync(It.IsAny<CancellationToken>()))
+        adapter.As<IExternalReadOnlyPacsAdapter>()
+            .Setup(value => value.ValidateSalesContractAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(new PacsContractProof { IsValid = true, ContractId = "pacscontract.v1" });
         adapter.Setup(value => value.GetComparableSalesAsync(1, 500, It.IsAny<CancellationToken>()))
             .ReturnsAsync(new PacsPagedResult<PacsComparableSale>
@@ -292,6 +293,76 @@ public sealed class CountyReadOnlySalesSyncServiceTests
     }
 
     [Fact]
+    public async Task ReplacingTheRegisteredConnectionPreservesCountyPacsSaleIdentity()
+    {
+        var factory = new InMemoryFactory();
+        var retiredConnectionId = Guid.Parse("55550055-5555-5555-5555-555555555555");
+        var replacementConnectionId = Guid.Parse("66660066-6666-6666-6666-666666666666");
+        await using (var seed = factory.CreateDbContext())
+        {
+            seed.Counties.Add(new County { Id = BentonId, Name = "Benton", State = "WA", FipsCode = "53005" });
+            seed.SyncSourceConnections.Add(ReadOnlyPacsConnection(retiredConnectionId));
+            await seed.SaveChangesAsync();
+        }
+
+        var adapter = new Mock<IPacsAdapter>(MockBehavior.Strict);
+        adapter.As<IExternalReadOnlyPacsAdapter>()
+            .Setup(value => value.MatchesSource("benton-pacs-ro", "benton_pacs"))
+            .Returns(true);
+        adapter.As<IExternalReadOnlyPacsAdapter>()
+            .Setup(value => value.HasServerEnforcedReadOnlyAccessAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(true);
+        adapter.As<IExternalReadOnlyPacsAdapter>()
+            .Setup(value => value.GetSalesConnectionStatusAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new PacsConnectionStatus { IsConnected = true, DatabaseName = "benton_pacs" });
+        adapter.As<IExternalReadOnlyPacsAdapter>()
+            .Setup(value => value.ValidateSalesContractAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new PacsContractProof { IsValid = true, ContractId = "pacscontract.v1" });
+        adapter.Setup(value => value.GetComparableSalesAsync(1, 500, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new PacsPagedResult<PacsComparableSale>
+            {
+                Page = 1,
+                PageSize = 500,
+                TotalCount = 1,
+                Items =
+                [
+                    new PacsComparableSale
+                    {
+                        PacsChgOfOwnerId = 5001,
+                        PropId = 1001,
+                        GeoId = "BEN-1001",
+                        SaleDate = new DateTime(2026, 1, 15, 0, 0, 0, DateTimeKind.Utc),
+                        SalePrice = 425_000m,
+                    },
+                ],
+            });
+        var service = new CountyReadOnlySalesSyncService(
+            factory,
+            adapter.Object,
+            NullLogger<CountyReadOnlySalesSyncService>.Instance);
+        var context = await CreateCountyContextAsync(Benton, BentonId, "benton-assessor");
+
+        var first = await service.SyncAsync(new CountyReadOnlySalesSyncRequest(context));
+        await using (var replace = factory.CreateDbContext())
+        {
+            (await replace.SyncSourceConnections.SingleAsync()).IsActive = false;
+            replace.SyncSourceConnections.Add(ReadOnlyPacsConnection(replacementConnectionId));
+            await replace.SaveChangesAsync();
+        }
+        var second = await service.SyncAsync(new CountyReadOnlySalesSyncRequest(context));
+
+        Assert.Equal(1, first.Receipt!.AddedSales);
+        Assert.Equal(0, second.Receipt!.AddedSales);
+        Assert.Equal(1, second.Receipt.UpdatedSales);
+        await using var verify = factory.CreateDbContext();
+        var persisted = await verify.ComparableSales.SingleAsync();
+        Assert.Equal(BentonId, persisted.CountyId);
+        Assert.Equal(5001, persisted.PacsChgOfOwnerId);
+        Assert.Equal(1001, persisted.PacsPropId);
+        Assert.StartsWith($"county-readonly-sync:{replacementConnectionId:D}:", persisted.VerificationSource);
+    }
+
+    [Fact]
     public async Task SyncRejectsConflictingDatesForTheSamePacsSourceIdentity()
     {
         var factory = new InMemoryFactory();
@@ -324,7 +395,8 @@ public sealed class CountyReadOnlySalesSyncServiceTests
         adapter.As<IExternalReadOnlyPacsAdapter>()
             .Setup(value => value.GetSalesConnectionStatusAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(new PacsConnectionStatus { IsConnected = true, DatabaseName = "benton_pacs" });
-        adapter.Setup(value => value.ValidateContractAsync(It.IsAny<CancellationToken>()))
+        adapter.As<IExternalReadOnlyPacsAdapter>()
+            .Setup(value => value.ValidateSalesContractAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(new PacsContractProof { IsValid = true, ContractId = "pacscontract.v1" });
         adapter.Setup(value => value.GetComparableSalesAsync(1, 500, It.IsAny<CancellationToken>()))
             .ReturnsAsync(new PacsPagedResult<PacsComparableSale>
@@ -421,7 +493,8 @@ public sealed class CountyReadOnlySalesSyncServiceTests
                     IsConnected = true,
                     DatabaseName = "benton_pacs",
                 });
-            adapter.Setup(value => value.ValidateContractAsync(It.IsAny<CancellationToken>()))
+            adapter.As<IExternalReadOnlyPacsAdapter>()
+                .Setup(value => value.ValidateSalesContractAsync(It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new PacsContractProof { IsValid = true, ContractId = "pacscontract.v1" });
             adapter.Setup(value => value.GetComparableSalesAsync(1, 500, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new PacsPagedResult<PacsComparableSale>
@@ -514,7 +587,8 @@ public sealed class CountyReadOnlySalesSyncServiceTests
                 DatabaseName = "benton_pacs",
                 ServerName = "b***o",
             });
-        adapter.Setup(value => value.ValidateContractAsync(It.IsAny<CancellationToken>()))
+        adapter.As<IExternalReadOnlyPacsAdapter>()
+            .Setup(value => value.ValidateSalesContractAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(new PacsContractProof { IsValid = true, ContractId = "pacscontract.v1" });
         adapter.Setup(value => value.GetComparableSalesAsync(1, 500, It.IsAny<CancellationToken>()))
             .ReturnsAsync(new PacsPagedResult<PacsComparableSale>
@@ -746,6 +820,20 @@ public sealed class CountyReadOnlySalesSyncServiceTests
             VerificationSource = $"county-readonly-sync:{connectionId:D}:{suffix}",
         };
     }
+
+    private static SyncSourceConnection ReadOnlyPacsConnection(Guid connectionId) => new()
+    {
+        Id = connectionId,
+        CountyId = BentonId,
+        Name = "Benton PACS production read replica",
+        SourceSystem = "PACS",
+        ConnectionType = "SqlServer",
+        Server = "benton-pacs-ro",
+        Database = "benton_pacs",
+        AuthMode = "WindowsIntegrated",
+        AdditionalOptions = "Encrypt=True;ApplicationIntent=ReadOnly",
+        IsActive = true,
+    };
 
     private static async Task<AuthenticatedCanonicalCountyContextResult> CreateCountyContextAsync(
         WashingtonCountyIdentity county,

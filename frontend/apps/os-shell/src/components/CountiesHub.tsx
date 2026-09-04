@@ -107,6 +107,8 @@ const CountiesHub = () => {
   const [connectedSales, setConnectedSales] = useState<CountyReadOnlySalesSyncAvailability | null>(
     null
   );
+  const [connectedSalesLoadError, setConnectedSalesLoadError] = useState<string | null>(null);
+  const [connectedSalesLoading, setConnectedSalesLoading] = useState(false);
   const [salesSyncState, setSalesSyncState] = useState<{
     countyCode: string;
     syncing: boolean;
@@ -160,12 +162,23 @@ const CountiesHub = () => {
   }, []);
 
   const loadConnectedSales = useCallback(async (signal?: AbortSignal) => {
+    setConnectedSalesLoading(true);
+    setConnectedSalesLoadError(null);
     try {
       const availability = await fetchCountyReadOnlySalesSyncAvailability(apiFetch, signal);
       if (!signal?.aborted) setConnectedSales(availability);
     } catch (error) {
-      if (!signal?.aborted) setConnectedSales(null);
+      if (!signal?.aborted) {
+        setConnectedSales(null);
+        setConnectedSalesLoadError(
+          error instanceof Error
+            ? error.message
+            : 'Connected Sales availability could not be verified.'
+        );
+      }
       throw error;
+    } finally {
+      if (!signal?.aborted) setConnectedSalesLoading(false);
     }
   }, []);
 
@@ -746,19 +759,44 @@ const CountiesHub = () => {
                                 )
                               }
                               disabled={
-                                syncingSales || !selectedConnectedSales?.connectionConfigured
+                                syncingSales ||
+                                connectedSalesLoading ||
+                                Boolean(connectedSalesLoadError) ||
+                                !selectedConnectedSales?.connectionConfigured
                               }
                               onClick={() => void runSelectedCountySync()}
                             >
                               {syncingSales ? 'Syncing sales…' : 'Run read-only Sales sync'}
                             </Button>
                           </Stack>
-                          {!selectedConnectedSales?.connectionConfigured && (
-                            <Alert severity='info'>
-                              No single protected read-only PACS connection is registered for this
-                              authenticated county. Connected sales remain unavailable.
+                          {connectedSalesLoadError && (
+                            <Alert
+                              severity='error'
+                              data-testid='county-connected-sales-load-error'
+                              action={
+                                <Button
+                                  color='inherit'
+                                  size='small'
+                                  startIcon={<RefreshIcon />}
+                                  disabled={connectedSalesLoading}
+                                  onClick={() => void loadConnectedSales().catch(() => undefined)}
+                                >
+                                  Retry connected Sales
+                                </Button>
+                              }
+                            >
+                              Connected Sales availability could not be verified:{' '}
+                              {connectedSalesLoadError}
                             </Alert>
                           )}
+                          {!connectedSalesLoadError &&
+                            !connectedSalesLoading &&
+                            !selectedConnectedSales?.connectionConfigured && (
+                              <Alert severity='info'>
+                                No single protected read-only PACS connection is registered for this
+                                authenticated county. Connected sales remain unavailable.
+                              </Alert>
+                            )}
                           {syncError && <Alert severity='error'>{syncError}</Alert>}
                         </Stack>
                       </CardContent>

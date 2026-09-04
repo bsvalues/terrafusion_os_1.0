@@ -44,38 +44,43 @@
             "prop_id",
             "geo_id",
             "prop_type_cd",
-            "prop_val_yr",
-            "assessed_val",
-            "taxable_val",
-            "situs_display",
+            "situs_addr",
             "situs_city",
-            "situs_state",
-            "situs_zip"
+            "situs_zip",
+            "legal_desc",
+            "assessed_val",
+            "market_val",
+            "land_val",
+            "imprv_val",
+            "appr_year",
+            "last_modified"
           ]
         },
         {
           "name": "vw_TerraFusion_Property_Ownership",
           "required_columns": [
             "prop_id",
-            "owner_id",
             "owner_name",
             "mail_addr_1",
+            "mail_addr_2",
             "mail_city",
             "mail_state",
             "mail_zip",
-            "ownership_pct"
+            "pct_ownership",
+            "deed_date"
           ]
         },
         {
           "name": "vw_TerraFusion_Assessment_History",
           "required_columns": [
             "prop_id",
-            "geo_id",
             "prop_val_yr",
             "assessed_val",
-            "taxable_val",
-            "improvement_value",
-            "land_value"
+            "market_val",
+            "land_val",
+            "imprv_val",
+            "appraised_by",
+            "appraisal_dt"
           ]
         }
       ],

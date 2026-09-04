@@ -29,6 +29,13 @@ public interface IExternalReadOnlyPacsAdapter
     /// </summary>
     Task<PacsConnectionStatus> GetSalesConnectionStatusAsync(
         CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Validates only the connection and views used by the Sales extraction path. A separately
+    /// configured healthy Sales source must not depend on the primary/core PACS database.
+    /// </summary>
+    Task<PacsContractProof> ValidateSalesContractAsync(
+        CancellationToken cancellationToken = default);
 }
 
 public enum CountyReadOnlySalesSyncDisposition
