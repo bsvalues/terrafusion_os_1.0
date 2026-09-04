@@ -11,26 +11,17 @@ public partial class WALComparableSalePacsSourceIdentity : Migration
 {
     protected override void Up(MigrationBuilder migrationBuilder)
     {
-        migrationBuilder.AddColumn<int>(
-            name: "PacsPropId",
-            table: "ComparableSales",
-            type: "integer",
-            nullable: true);
-
         migrationBuilder.CreateIndex(
-            name: "IX_ComparableSales_CountyId_PacsChgOfOwnerId_PacsPropId",
+            name: "IX_ComparableSales_County_PacsSourceIdentity",
             table: "ComparableSales",
-            columns: new[] { "CountyId", "PacsChgOfOwnerId", "PacsPropId" });
+            columns: new[] { "CountyId", "PacsChgOfOwnerId", "PacsPropId", "ParcelId" },
+            unique: true);
     }
 
     protected override void Down(MigrationBuilder migrationBuilder)
     {
         migrationBuilder.DropIndex(
-            name: "IX_ComparableSales_CountyId_PacsChgOfOwnerId_PacsPropId",
-            table: "ComparableSales");
-
-        migrationBuilder.DropColumn(
-            name: "PacsPropId",
+            name: "IX_ComparableSales_County_PacsSourceIdentity",
             table: "ComparableSales");
     }
 }

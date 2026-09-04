@@ -3881,7 +3881,9 @@ namespace TerraFusion.Data.Migrations
 
                     b.HasIndex("CountyId", "ParcelId");
 
-                    b.HasIndex("CountyId", "PacsChgOfOwnerId", "PacsPropId");
+                    b.HasIndex("CountyId", "PacsChgOfOwnerId", "PacsPropId", "ParcelId")
+                        .IsUnique()
+                        .HasDatabaseName("IX_ComparableSales_County_PacsSourceIdentity");
 
                     b.HasIndex("CountyId", "PropertyType", "SaleDate");
 
