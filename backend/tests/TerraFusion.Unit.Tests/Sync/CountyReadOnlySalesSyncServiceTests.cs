@@ -74,7 +74,7 @@ public sealed class CountyReadOnlySalesSyncServiceTests
             new Dictionary<string, string?>
             {
                 ["ConnectionStrings:PacsConnection"] =
-                    "Server=pacs;Database=benton_pacs;Encrypt=True;TrustServerCertificate=False;ApplicationIntent=ReadOnly",
+                    "Server=pacs;Database=benton_pacs;Encrypt=True;TrustServerCertificate=False;Application Name=TerraFusion-Other;ApplicationIntent=ReadOnly",
             }).Build();
 
         using var adapter = new PacsSqlAdapter(NullLogger<PacsSqlAdapter>.Instance, configuration);

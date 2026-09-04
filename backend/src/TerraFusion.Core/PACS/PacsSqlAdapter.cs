@@ -46,6 +46,9 @@ namespace TerraFusion.Core.PACS
         private const string ViewCamaCharacteristics = "vw_TerraFusion_Cama_Characteristics";
         private const string ViewImprovementCostMatrices = "vw_TerraFusion_Improvement_Cost_Matrices";
         private const string ProcHealthCheck = "sp_TerraFusion_HealthCheck";
+        private const string ContractSchema = "dbo";
+
+        private static string DboObject(string objectName) => $"[{ContractSchema}].[{objectName}]";
 
         // Contract-defined indexes (warning only)
         private static readonly string[] RequiredIndexes = new[]
@@ -99,7 +102,7 @@ namespace TerraFusion.Core.PACS
             }
 
             // pacscontract.v1 requires application name for audit trail
-            if (string.IsNullOrEmpty(builder.ApplicationName) || !builder.ApplicationName.Contains("TerraFusion"))
+            if (!string.Equals(builder.ApplicationName, "TerraFusion-OS", StringComparison.Ordinal))
             {
                 builder.ApplicationName = "TerraFusion-OS";
             }
@@ -124,16 +127,16 @@ namespace TerraFusion.Core.PACS
         {
             const string permissionSql = """
                 SELECT CASE WHEN
-                    IS_SRVROLEMEMBER('sysadmin') = 1
-                    OR IS_SRVROLEMEMBER('securityadmin') = 1
+                    COALESCE(IS_SRVROLEMEMBER('sysadmin'), 1) = 1
+                    OR COALESCE(IS_SRVROLEMEMBER('securityadmin'), 1) = 1
                     OR COALESCE(HAS_PERMS_BY_NAME(NULL, 'SERVER', 'CONTROL SERVER'), 0) = 1
                     OR COALESCE(HAS_PERMS_BY_NAME(NULL, 'SERVER', 'ALTER ANY LOGIN'), 0) = 1
                     OR COALESCE(HAS_PERMS_BY_NAME(NULL, 'SERVER', 'IMPERSONATE ANY LOGIN'), 0) = 1
-                    OR IS_MEMBER('db_owner') = 1
-                    OR IS_MEMBER('db_datawriter') = 1
-                    OR IS_MEMBER('db_securityadmin') = 1
-                    OR IS_MEMBER('db_ddladmin') = 1
-                    OR IS_MEMBER('db_accessadmin') = 1
+                    OR COALESCE(IS_MEMBER('db_owner'), 1) = 1
+                    OR COALESCE(IS_MEMBER('db_datawriter'), 1) = 1
+                    OR COALESCE(IS_MEMBER('db_securityadmin'), 1) = 1
+                    OR COALESCE(IS_MEMBER('db_ddladmin'), 1) = 1
+                    OR COALESCE(IS_MEMBER('db_accessadmin'), 1) = 1
                     OR COALESCE(HAS_PERMS_BY_NAME(DB_NAME(), 'DATABASE', 'CONTROL'), 0) = 1
                     OR COALESCE(HAS_PERMS_BY_NAME(DB_NAME(), 'DATABASE', 'ALTER'), 0) = 1
                     OR COALESCE(HAS_PERMS_BY_NAME(DB_NAME(), 'DATABASE', 'TAKE OWNERSHIP'), 0) = 1
@@ -368,7 +371,7 @@ namespace TerraFusion.Core.PACS
                     foreach (var view in new[] { ViewPropertyCore, ViewPropertyOwnership, ViewAssessmentHistory })
                     {
                         var exists = await connection.ExecuteScalarAsync<int>(
-                            "SELECT COUNT(*) FROM sys.views WHERE name = @ViewName",
+                            "SELECT COUNT(*) FROM sys.views WHERE name = @ViewName AND schema_id = SCHEMA_ID(N'dbo')",
                             new { ViewName = view });
 
                         if (exists == 0)
@@ -385,7 +388,7 @@ namespace TerraFusion.Core.PACS
                     foreach (var view in new[] { ViewComparableSales, ViewCamaCharacteristics, ViewImprovementCostMatrices })
                     {
                         var exists = await salesConnection.ExecuteScalarAsync<int>(
-                            "SELECT COUNT(*) FROM sys.views WHERE name = @ViewName",
+                            "SELECT COUNT(*) FROM sys.views WHERE name = @ViewName AND schema_id = SCHEMA_ID(N'dbo')",
                             new { ViewName = view });
 
                         if (exists == 0)
@@ -436,7 +439,7 @@ namespace TerraFusion.Core.PACS
                 foreach (var view in new[] { ViewComparableSales, ViewCamaCharacteristics, ViewImprovementCostMatrices })
                 {
                     var exists = await connection.ExecuteScalarAsync<int>(
-                        "SELECT COUNT(*) FROM sys.views WHERE name = @ViewName",
+                        "SELECT COUNT(*) FROM sys.views WHERE name = @ViewName AND schema_id = SCHEMA_ID(N'dbo')",
                         new { ViewName = view });
                     if (exists == 0)
                     {
@@ -530,7 +533,7 @@ namespace TerraFusion.Core.PACS
                 await connection.OpenAsync(cancellationToken);
 
                 var exists = await connection.ExecuteScalarAsync<int>(
-                    "SELECT COUNT(*) FROM sys.procedures WHERE name = @ProcName",
+                    "SELECT COUNT(*) FROM sys.procedures WHERE name = @ProcName AND schema_id = SCHEMA_ID(N'dbo')",
                     new { ProcName = ProcHealthCheck });
 
                 return new PacsProofItem
@@ -561,7 +564,7 @@ namespace TerraFusion.Core.PACS
                 await connection.OpenAsync(cancellationToken);
 
                 var result = await connection.QueryFirstOrDefaultAsync<dynamic>(
-                    ProcHealthCheck,
+                    DboObject(ProcHealthCheck),
                     commandType: CommandType.StoredProcedure,
                     commandTimeout: _commandTimeout);
 
@@ -667,7 +670,7 @@ namespace TerraFusion.Core.PACS
                         imprv_val AS ImprvVal,
                         appr_year AS ApprYear,
                         last_modified AS LastModified
-                    FROM {ViewPropertyCore}
+                    FROM {DboObject(ViewPropertyCore)}
                     WHERE prop_id = @PropId";
 
                 return await connection.QueryFirstOrDefaultAsync<PacsPropertyCore>(
@@ -703,7 +706,7 @@ namespace TerraFusion.Core.PACS
                         imprv_val AS ImprvVal,
                         appr_year AS ApprYear,
                         last_modified AS LastModified
-                    FROM {ViewPropertyCore}
+                    FROM {DboObject(ViewPropertyCore)}
                     WHERE geo_id = @GeoId";
 
                 return await connection.QueryFirstOrDefaultAsync<PacsPropertyCore>(
@@ -733,7 +736,7 @@ namespace TerraFusion.Core.PACS
 
                 var offset = (page - 1) * pageSize;
 
-                var countSql = $"SELECT COUNT(*) FROM {ViewPropertyCore}";
+                var countSql = $"SELECT COUNT(*) FROM {DboObject(ViewPropertyCore)}";
                 var totalCount = await connection.ExecuteScalarAsync<int>(countSql, commandTimeout: _commandTimeout);
 
                 var sql = $@"
@@ -751,7 +754,7 @@ namespace TerraFusion.Core.PACS
                         imprv_val AS ImprvVal,
                         appr_year AS ApprYear,
                         last_modified AS LastModified
-                    FROM {ViewPropertyCore}
+                    FROM {DboObject(ViewPropertyCore)}
                     ORDER BY prop_id
                     OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY";
 
@@ -798,7 +801,7 @@ namespace TerraFusion.Core.PACS
                 var offset = (page - 1) * pageSize;
 
                 var countSql = $@"
-                    SELECT COUNT(*) FROM {ViewPropertyCore}
+                    SELECT COUNT(*) FROM {DboObject(ViewPropertyCore)}
                     WHERE geo_id LIKE @Like
                        OR situs_addr LIKE @Like
                        OR situs_city LIKE @Like";
@@ -832,7 +835,7 @@ namespace TerraFusion.Core.PACS
                         imprv_val AS ImprvVal,
                         appr_year AS ApprYear,
                         last_modified AS LastModified
-                    FROM {ViewPropertyCore}
+                    FROM {DboObject(ViewPropertyCore)}
                     WHERE geo_id LIKE @Like
                        OR situs_addr LIKE @Like
                        OR situs_city LIKE @Like
@@ -881,7 +884,7 @@ namespace TerraFusion.Core.PACS
                         mail_zip AS MailZip,
                         pct_ownership AS PctOwnership,
                         deed_date AS DeedDate
-                    FROM {ViewPropertyOwnership}
+                    FROM {DboObject(ViewPropertyOwnership)}
                     WHERE prop_id = @PropId";
 
                 return await connection.QueryFirstOrDefaultAsync<PacsPropertyOwnership>(
@@ -926,7 +929,7 @@ namespace TerraFusion.Core.PACS
                         mail_zip AS MailZip,
                         pct_ownership AS PctOwnership,
                         deed_date AS DeedDate
-                    FROM {ViewPropertyOwnership}
+                    FROM {DboObject(ViewPropertyOwnership)}
                     WHERE prop_id IN @PropIds";
 
                 var ownership = await connection.QueryAsync<PacsPropertyOwnership>(
@@ -956,7 +959,7 @@ namespace TerraFusion.Core.PACS
 
             try
             {
-                await using var connection = CreateSalesConnection();
+                await using var connection = CreatePrimaryConnection();
                 await connection.OpenAsync(cancellationToken);
 
                 var sql = $@"
@@ -969,7 +972,7 @@ namespace TerraFusion.Core.PACS
                         imprv_val AS ImprvVal,
                         appraised_by AS AppraisedBy,
                         appraisal_dt AS AppraisalDt
-                    FROM {ViewAssessmentHistory}
+                    FROM {DboObject(ViewAssessmentHistory)}
                     WHERE prop_id = @PropId
                         AND (@YearFrom IS NULL OR prop_val_yr >= @YearFrom)
                         AND (@YearTo IS NULL OR prop_val_yr <= @YearTo)
@@ -1025,7 +1028,7 @@ namespace TerraFusion.Core.PACS
                     connection.Database);
 
                 var totalCount = await connection.ExecuteScalarAsync<int>(
-                    $"SELECT COUNT(*) FROM {ViewComparableSales}");
+                    $"SELECT COUNT(*) FROM {DboObject(ViewComparableSales)}");
 
                 _logger.LogInformation(
                     "PACS comparable sales source count: comparableView={ComparableViewCount}",
@@ -1047,7 +1050,7 @@ namespace TerraFusion.Core.PACS
                         consideration AS Consideration,
                         sale_comment AS SaleComment,
                         last_modified AS LastModified
-                    FROM {ViewComparableSales}
+                    FROM {DboObject(ViewComparableSales)}
                     ORDER BY sale_date DESC, prop_id, chg_of_owner_id
                     OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY";
 
@@ -1086,7 +1089,7 @@ namespace TerraFusion.Core.PACS
                 await connection.OpenAsync(cancellationToken);
 
                 var totalCount = await connection.ExecuteScalarAsync<int>(
-                    $"SELECT COUNT(*) FROM {ViewCamaCharacteristics}");
+                    $"SELECT COUNT(*) FROM {DboObject(ViewCamaCharacteristics)}");
 
                 var offset = (page - 1) * pageSize;
                 var sql = $@"
@@ -1124,7 +1127,7 @@ namespace TerraFusion.Core.PACS
                         neighborhood AS Neighborhood,
                         property_type_cd AS PropertyTypeCd,
                         last_modified AS LastModified
-                    FROM {ViewCamaCharacteristics}
+                    FROM {DboObject(ViewCamaCharacteristics)}
                     ORDER BY prop_id
                     OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY";
 
@@ -1163,7 +1166,7 @@ namespace TerraFusion.Core.PACS
                 await connection.OpenAsync(cancellationToken);
 
                 var totalCount = await connection.ExecuteScalarAsync<int>(
-                    $"SELECT COUNT(*) FROM {ViewImprovementCostMatrices}");
+                    $"SELECT COUNT(*) FROM {DboObject(ViewImprovementCostMatrices)}");
 
                 var offset = (page - 1) * pageSize;
                 var sql = $@"
@@ -1189,7 +1192,7 @@ namespace TerraFusion.Core.PACS
                         axis_2 AS Axis2,
                         adjustment_factor_raw AS AdjustmentFactorRaw,
                         matrix_label AS MatrixLabel
-                    FROM {ViewImprovementCostMatrices}
+                    FROM {DboObject(ViewImprovementCostMatrices)}
                     ORDER BY matrix_year DESC, source_matrix_id
                     OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY";
 
@@ -1249,7 +1252,7 @@ namespace TerraFusion.Core.PACS
                         imprv_val AS ImprvVal,
                         appr_year AS ApprYear,
                         last_modified AS LastModified
-                    FROM {ViewPropertyCore}
+                    FROM {DboObject(ViewPropertyCore)}
                     WHERE prop_id IN @PropIds";
 
                 var results = await connection.QueryAsync<PacsPropertyCore>(
@@ -1292,7 +1295,7 @@ namespace TerraFusion.Core.PACS
                         imprv_val AS ImprvVal,
                         appr_year AS ApprYear,
                         last_modified AS LastModified
-                    FROM {ViewPropertyCore}
+                    FROM {DboObject(ViewPropertyCore)}
                     WHERE last_modified > @Since
                     ORDER BY last_modified";
 
