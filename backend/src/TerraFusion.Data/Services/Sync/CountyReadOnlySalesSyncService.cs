@@ -497,7 +497,7 @@ public sealed class CountyReadOnlySalesSyncService : ICountyReadOnlySalesSyncSer
             "I" or "I1" or "IND" or "INDUSTRIAL" => "industrial",
             "AG" or "AGR" or "AGRICULTURAL" or "FARM" => "agricultural",
             "R" or "R1" or "R2" or "P" or "M" or "MN" => "residential",
-            _ => "residential",
+            _ => "unknown",
         };
     }
 

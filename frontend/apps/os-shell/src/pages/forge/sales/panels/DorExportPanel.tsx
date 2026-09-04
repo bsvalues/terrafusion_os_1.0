@@ -6,7 +6,7 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import { getSalesForgeCountyScope, useSalesForgeStore } from '../salesForgeStore';
-import { apiFetch } from '../../../../lib/apiBase';
+import { fetchAllSaleQualificationPages } from '../fetchAllSaleQualificationPages';
 import type { SaleQueueItem } from '../salesForgeTypes';
 import { formatSaleDate } from '../salesForgeDate';
 import { WASHINGTON_COUNTIES } from '../washingtonLaunchApi';
@@ -104,27 +104,18 @@ export function DorExportPanel() {
       const params = new URLSearchParams({
         taxYear: String(taxYear),
         status: 'qualified',
-        pageSize: '9999',
-        page: '1',
       });
       if (committedFilters.hood) params.set('hood', committedFilters.hood);
       if (committedFilters.propertyType) params.set('propertyType', committedFilters.propertyType);
       if (committedFilters.saleDateFrom) params.set('saleDateFrom', committedFilters.saleDateFrom);
       if (committedFilters.saleDateTo) params.set('saleDateTo', committedFilters.saleDateTo);
       if (countyScope.countyId) params.set('countyId', countyScope.countyId);
-      if (dataSource === 'county-readonly-sync') {
-        params.set('admissionSource', 'county-readonly-sync');
-      }
+      params.set('admissionSource', dataSource === 'county-readonly-sync' ? 'county-readonly-sync' : 'canonical');
 
       try {
-        const res = await apiFetch(`/terraforge/sale-qualification?${params}`, {
-          signal,
-          headers: countyScope.headers,
-        });
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const page = (await res.json()) as { total: number; items: SaleQueueItem[] };
+        const items = await fetchAllSaleQualificationPages(params, countyScope.headers, signal);
         if (signal?.aborted) return;
-        setExportData(page.items);
+        setExportData(items);
       } catch (e) {
         if ((e as Error)?.name === 'AbortError') return;
         setError(e instanceof Error ? e.message : 'Failed to load export data');

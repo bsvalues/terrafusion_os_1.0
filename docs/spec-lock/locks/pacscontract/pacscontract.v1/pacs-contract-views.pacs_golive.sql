@@ -181,13 +181,13 @@ SELECT @v = COUNT(*) FROM sys.views WHERE name IN (
     'vw_TerraFusion_Comparable_Sales',
     'vw_TerraFusion_Cama_Characteristics',
     'vw_TerraFusion_Improvement_Cost_Matrices'
-);
+) AND schema_id = SCHEMA_ID(N'dbo');
 PRINT 'Sales/CAMA/matrix views created: ' + CAST(@v AS VARCHAR) + '/3';
 
 DECLARE @salesCount INT, @camaCount INT, @matrixCount INT;
-SELECT @salesCount = COUNT(*) FROM vw_TerraFusion_Comparable_Sales;
-SELECT @camaCount = COUNT(*) FROM vw_TerraFusion_Cama_Characteristics;
-SELECT @matrixCount = COUNT(*) FROM vw_TerraFusion_Improvement_Cost_Matrices;
+SELECT @salesCount = COUNT(*) FROM [dbo].[vw_TerraFusion_Comparable_Sales];
+SELECT @camaCount = COUNT(*) FROM [dbo].[vw_TerraFusion_Cama_Characteristics];
+SELECT @matrixCount = COUNT(*) FROM [dbo].[vw_TerraFusion_Improvement_Cost_Matrices];
 PRINT 'vw_TerraFusion_Comparable_Sales rows:             ' + CAST(@salesCount AS VARCHAR);
 PRINT 'vw_TerraFusion_Cama_Characteristics rows:         ' + CAST(@camaCount AS VARCHAR);
 PRINT 'vw_TerraFusion_Improvement_Cost_Matrices rows:    ' + CAST(@matrixCount AS VARCHAR);

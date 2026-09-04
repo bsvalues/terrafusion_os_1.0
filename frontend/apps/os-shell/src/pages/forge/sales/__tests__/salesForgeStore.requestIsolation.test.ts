@@ -91,6 +91,9 @@ describe('SalesForge request isolation', () => {
     const detailUrl = String(launchApiMocks.apiFetch.mock.calls[1]?.[0]);
     expect(detailUrl).toContain('/terraforge/sale-qualification/uploaded-sale?');
     expect(detailUrl).toContain('taxYear=2025');
+    for (const call of launchApiMocks.apiFetch.mock.calls) {
+      expect(String(call[0])).toContain('admissionSource=canonical');
+    }
   });
 
   it('scopes connected-source requests to the exact protected admission source', async () => {

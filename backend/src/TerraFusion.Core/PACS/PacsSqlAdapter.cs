@@ -1006,13 +1006,7 @@ namespace TerraFusion.Core.PACS
             int pageSize = 500,
             CancellationToken cancellationToken = default)
         {
-            var proof = await ValidateSalesContractAsync(cancellationToken);
-            if (!proof.IsValid)
-            {
-                throw new PacsContractViolationException(
-                    PacsErrorCodes.ConnectionFailed,
-                    $"PACS Sales contract validation failed: {string.Join("; ", proof.Errors)}");
-            }
+            await EnsureSalesContractValidAsync(cancellationToken);
 
             if (page < 1) page = 1;
             if (pageSize < 1 || pageSize > 1000) pageSize = 500;
@@ -1316,6 +1310,8 @@ namespace TerraFusion.Core.PACS
 
         private PacsContractProof? _cachedProof;
         private DateTime? _proofCachedAt;
+        private PacsContractProof? _cachedSalesProof;
+        private DateTime? _salesProofCachedAt;
         private static readonly TimeSpan ProofCacheDuration = TimeSpan.FromMinutes(5);
 
         private async Task EnsureContractValidAsync(CancellationToken cancellationToken)
@@ -1342,6 +1338,31 @@ namespace TerraFusion.Core.PACS
                 throw new PacsContractViolationException(
                     PacsErrorCodes.ConnectionFailed,
                     $"PACS contract validation failed: {string.Join("; ", _cachedProof.Errors)}");
+            }
+        }
+
+        private async Task EnsureSalesContractValidAsync(CancellationToken cancellationToken)
+        {
+            if (_cachedSalesProof != null &&
+                _salesProofCachedAt.HasValue &&
+                DateTime.UtcNow - _salesProofCachedAt.Value < ProofCacheDuration)
+            {
+                ThrowIfInvalidSalesProof(_cachedSalesProof);
+                return;
+            }
+
+            _cachedSalesProof = await ValidateSalesContractAsync(cancellationToken);
+            _salesProofCachedAt = DateTime.UtcNow;
+            ThrowIfInvalidSalesProof(_cachedSalesProof);
+        }
+
+        private static void ThrowIfInvalidSalesProof(PacsContractProof proof)
+        {
+            if (!proof.IsValid)
+            {
+                throw new PacsContractViolationException(
+                    PacsErrorCodes.ConnectionFailed,
+                    $"PACS Sales contract validation failed: {string.Join("; ", proof.Errors)}");
             }
         }
 

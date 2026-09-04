@@ -22,6 +22,8 @@ namespace TerraFusion.API.Controllers;
 [Authorize(Policy = "RequireAssessor")]
 public class TerraForgeController : ControllerBase
 {
+    private const string CanonicalAdmissionSource = "canonical";
+    private const string ConnectedAdmissionSource = "county-readonly-sync";
     private readonly TerraFusionDbContext _db;
     private readonly ILogger<TerraForgeController> _logger;
     private readonly IOlsRegressionService _ols;
@@ -89,8 +91,15 @@ public class TerraForgeController : ControllerBase
         Guid countyId,
         CancellationToken cancellationToken)
     {
-        if (admissionSource is null) return (null, null);
-        if (!string.Equals(admissionSource, "county-readonly-sync", StringComparison.Ordinal))
+        if (string.IsNullOrWhiteSpace(admissionSource))
+        {
+            return (null, BadRequest(new { error = "Sales admission source is required." }));
+        }
+        if (string.Equals(admissionSource, CanonicalAdmissionSource, StringComparison.Ordinal))
+        {
+            return (CanonicalAdmissionSource, null);
+        }
+        if (!string.Equals(admissionSource, ConnectedAdmissionSource, StringComparison.Ordinal))
         {
             return (null, BadRequest(new { error = "Unsupported Sales admission source." }));
         }
@@ -116,16 +125,16 @@ public class TerraForgeController : ControllerBase
                 status = availability.Status,
             }));
         }
-        return ($"county-readonly-sync:{availability.ConnectionId.Value:D}:", null);
+        return ($"{ConnectedAdmissionSource}:{availability.ConnectionId.Value:D}:", null);
     }
 
     private static IQueryable<ComparableSaleEntity> ApplyAdmissionSourcePrefix(
         IQueryable<ComparableSaleEntity> query,
-        string? prefix) => prefix is null
-            ? query
-            : query.Where(sale => sale.IngestedBy == "county-readonly-sync"
+        string? prefix) => string.Equals(prefix, CanonicalAdmissionSource, StringComparison.Ordinal)
+            ? query.Where(sale => sale.IngestedBy != ConnectedAdmissionSource)
+            : query.Where(sale => sale.IngestedBy == ConnectedAdmissionSource
                 && sale.VerificationSource != null
-                && sale.VerificationSource.StartsWith(prefix));
+                && sale.VerificationSource.StartsWith(prefix!));
 
     // ── Sale Qualification ────────────────────────────────────────────────
 

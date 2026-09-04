@@ -54,6 +54,7 @@ public sealed class CountyReadOnlySalesSyncController : ControllerBase
     [HttpPost("run")]
     public async Task<IActionResult> Run(CancellationToken cancellationToken = default)
     {
+        Response.Headers["Cache-Control"] = "no-store";
         var context = await GetContextAsync(cancellationToken).ConfigureAwait(false);
         if (context is null) return Forbid();
         var result = await _syncService.SyncAsync(

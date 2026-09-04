@@ -231,7 +231,7 @@ public sealed class CountyReadOnlySalesSyncServiceTests
                         GeoId = "BEN-1002",
                         SaleDate = new DateTime(2026, 1, 10, 0, 0, 0, DateTimeKind.Utc),
                         SalePrice = 390_000m,
-                        PropTypeCd = "R1",
+                        PropTypeCd = "ZZ",
                     },
                     new PacsComparableSale
                     {
@@ -279,8 +279,8 @@ public sealed class CountyReadOnlySalesSyncServiceTests
         });
         Assert.Equal("multifamily", sales[0].PropertyType);
         Assert.Equal("A1", sales[0].ImprvTypeCode);
-        Assert.Equal("residential", sales[1].PropertyType);
-        Assert.Equal("R1", sales[1].ImprvTypeCode);
+        Assert.Equal("unknown", sales[1].PropertyType);
+        Assert.Equal("ZZ", sales[1].ImprvTypeCode);
         Assert.Equal(" 425000 ", sales[0].PacsConsideration);
         Assert.Equal(" arms-length review pending ", sales[0].RawComment);
         Assert.Equal(2, await verify.AuditEvents.CountAsync(trace =>
@@ -807,6 +807,20 @@ public sealed class CountyReadOnlySalesSyncServiceTests
         var body = JsonDocument.Parse(JsonSerializer.Serialize(ok.Value)).RootElement;
 
         Assert.Equal(1, body.GetProperty("total").GetInt32());
+
+        var missingSource = await controller.GetSaleQualification(
+            taxYear: 2026,
+            status: "pending");
+        Assert.IsType<BadRequestObjectResult>(missingSource);
+
+        var canonicalResult = await controller.GetSaleQualification(
+            taxYear: 2026,
+            admissionSource: "canonical",
+            status: "pending");
+        var canonicalOk = Assert.IsType<OkObjectResult>(canonicalResult);
+        var canonicalBody = JsonDocument.Parse(JsonSerializer.Serialize(canonicalOk.Value)).RootElement;
+        Assert.Equal(1, canonicalBody.GetProperty("total").GetInt32());
+        Assert.Equal("UPLOADED", canonicalBody.GetProperty("items")[0].GetProperty("parcelId").GetString());
 
         ComparableSale ConnectedSale(Guid connectionId, string suffix) => new()
         {

@@ -926,7 +926,11 @@ public sealed class PacsToTerraFusionSyncService
                     ? propertyAddress
                     : null))
             {
-                existingSalesByKey.Remove(legacyKey);
+                if (existingSalesByKey.TryGetValue(legacyKey, out var legacySale)
+                    && ReferenceEquals(legacySale, comparableSale))
+                {
+                    existingSalesByKey.Remove(legacyKey);
+                }
                 existingSalesByKey[comparisonKey] = comparableSale;
                 counters.SalesUpdated++;
             }
@@ -1371,7 +1375,7 @@ public sealed class PacsToTerraFusionSyncService
             "I" or "I1" or "IND" or "INDUSTRIAL" => "industrial",
             "AG" or "AGR" or "AGRICULTURAL" or "FARM" => "agricultural",
             "R" or "R1" or "R2" or "P" or "M" or "MN" => "residential",
-            _ => "residential"
+            _ => "unknown"
         };
     }
 

@@ -110,9 +110,10 @@ function usesWashingtonReferenceData(dataSource: SalesForgeDataSource): boolean 
 }
 
 function addAdmissionSourceParam(params: URLSearchParams, dataSource: SalesForgeDataSource): void {
-  if (dataSource === 'county-readonly-sync') {
-    params.set('admissionSource', 'county-readonly-sync');
-  }
+  params.set(
+    'admissionSource',
+    dataSource === 'county-readonly-sync' ? 'county-readonly-sync' : 'canonical'
+  );
 }
 
 function clearedDerivedData() {

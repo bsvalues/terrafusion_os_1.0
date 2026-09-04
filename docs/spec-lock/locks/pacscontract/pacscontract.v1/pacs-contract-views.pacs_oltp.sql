@@ -215,11 +215,12 @@ SELECT @v = COUNT(*) FROM sys.views WHERE name IN (
     'vw_TerraFusion_Property_Core',
     'vw_TerraFusion_Property_Ownership',
     'vw_TerraFusion_Assessment_History'
-);
+) AND schema_id = SCHEMA_ID(N'dbo');
 PRINT 'Core views created: ' + CAST(@v AS VARCHAR) + '/3';
 
 DECLARE @p INT;
-SELECT @p = COUNT(*) FROM sys.procedures WHERE name = 'sp_TerraFusion_HealthCheck';
+SELECT @p = COUNT(*) FROM sys.procedures
+WHERE name = 'sp_TerraFusion_HealthCheck' AND schema_id = SCHEMA_ID(N'dbo');
 PRINT 'Core procedures created: ' + CAST(@p AS VARCHAR) + '/1';
 
 DECLARE @i INT;
@@ -231,9 +232,9 @@ SELECT @i = COUNT(*) FROM sys.indexes WHERE name IN (
 PRINT 'Core indexes created: ' + CAST(@i AS VARCHAR) + '/3';
 
 DECLARE @coreCount INT, @ownCount INT, @histCount INT;
-SELECT @coreCount = COUNT(*) FROM vw_TerraFusion_Property_Core;
-SELECT @ownCount = COUNT(*) FROM vw_TerraFusion_Property_Ownership;
-SELECT @histCount = COUNT(*) FROM vw_TerraFusion_Assessment_History;
+SELECT @coreCount = COUNT(*) FROM [dbo].[vw_TerraFusion_Property_Core];
+SELECT @ownCount = COUNT(*) FROM [dbo].[vw_TerraFusion_Property_Ownership];
+SELECT @histCount = COUNT(*) FROM [dbo].[vw_TerraFusion_Assessment_History];
 PRINT 'vw_TerraFusion_Property_Core rows:       ' + CAST(@coreCount AS VARCHAR);
 PRINT 'vw_TerraFusion_Property_Ownership rows:   ' + CAST(@ownCount AS VARCHAR);
 PRINT 'vw_TerraFusion_Assessment_History rows:   ' + CAST(@histCount AS VARCHAR);

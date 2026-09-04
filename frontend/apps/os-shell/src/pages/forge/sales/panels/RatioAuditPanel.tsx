@@ -7,7 +7,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { getSalesForgeCountyScope, useSalesForgeStore } from '../salesForgeStore';
 import { QualDecisionButtons } from '../components/QualDecisionButtons';
-import { apiFetch } from '../../../../lib/apiBase';
+import { fetchAllSaleQualificationPages } from '../fetchAllSaleQualificationPages';
 import { SALESFORGE_STATISTICS_CONTRACT, type SaleQueueItem } from '../salesForgeTypes';
 import { formatSaleDate } from '../salesForgeDate';
 
@@ -79,24 +79,17 @@ export function RatioAuditPanel() {
     const params = new URLSearchParams({
       taxYear: String(taxYear),
       status: 'all',
-      pageSize: '2000',
-      page: '1',
     });
     if (committedFilters.hood)         params.set('hood', committedFilters.hood);
     if (committedFilters.propertyType) params.set('propertyType', committedFilters.propertyType);
     if (committedFilters.saleDateFrom) params.set('saleDateFrom', committedFilters.saleDateFrom);
     if (committedFilters.saleDateTo)   params.set('saleDateTo', committedFilters.saleDateTo);
     if (countyScope.countyId) params.set('countyId', countyScope.countyId);
-    if (dataSource === 'county-readonly-sync') {
-      params.set('admissionSource', 'county-readonly-sync');
-    }
+    params.set('admissionSource', dataSource === 'county-readonly-sync' ? 'county-readonly-sync' : 'canonical');
     try {
-      const res = await apiFetch(`/terraforge/sale-qualification?${params}`, { signal, headers: countyScope.headers });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const items = await fetchAllSaleQualificationPages(params, countyScope.headers, signal);
       if (signal?.aborted) return;
-      const page = await res.json() as { items: SaleQueueItem[] };
-      if (signal?.aborted) return;
-      setAuditSales(page.items);
+      setAuditSales(items);
     } catch (e) {
       if ((e as Error)?.name === 'AbortError') return;
       setAuditError(e instanceof Error ? e.message : 'Failed to load ratio audit data');
