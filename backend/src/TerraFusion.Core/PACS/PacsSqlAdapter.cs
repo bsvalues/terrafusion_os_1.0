@@ -491,17 +491,26 @@ namespace TerraFusion.Core.PACS
         }
 
         public async Task<PacsConnectionStatus> GetConnectionStatusAsync(CancellationToken cancellationToken = default)
+            => await GetConnectionStatusAsync(_connectionString, cancellationToken).ConfigureAwait(false);
+
+        public async Task<PacsConnectionStatus> GetSalesConnectionStatusAsync(
+            CancellationToken cancellationToken = default)
+            => await GetConnectionStatusAsync(_salesConnectionString, cancellationToken).ConfigureAwait(false);
+
+        private async Task<PacsConnectionStatus> GetConnectionStatusAsync(
+            string connectionString,
+            CancellationToken cancellationToken)
         {
             try
             {
-                await using var connection = CreatePrimaryConnection();
+                await using var connection = new SqlConnection(connectionString);
                 var sw = Stopwatch.StartNew();
                 await connection.OpenAsync(cancellationToken);
                 sw.Stop();
 
                 _lastConnectedAt = DateTime.UtcNow;
 
-                var builder = new SqlConnectionStringBuilder(_connectionString);
+                var builder = new SqlConnectionStringBuilder(connectionString);
 
                 return new PacsConnectionStatus
                 {

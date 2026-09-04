@@ -38,7 +38,8 @@ const DOR_COLUMNS: { key: keyof SaleQueueItem | string; label: string }[] = [
 
 function escCsv(val: string | number | null | undefined): string {
   if (val == null) return '';
-  const s = String(val);
+  const raw = String(val);
+  const s = typeof val === 'string' && /^\s*[=+\-@]/.test(raw) ? `'${raw}` : raw;
   if (s.includes(',') || s.includes('"') || s.includes('\n')) {
     return `"${s.replace(/"/g, '""')}"`;
   }
@@ -246,14 +247,14 @@ export function DorExportPanel() {
             </div>
 
             {pendingDecision > 0 && (
-              <div className='sf-data-alert' role='alert' style={{ marginTop: 8 }}>
+              <div className='sf-data-alert sf-data-alert--spaced' role='alert'>
                 <strong>⚠ {fmtNum(pendingDecision)} sales have no appraiser sign-off.</strong> These
                 are TF-recommended qualified but not yet confirmed by an appraiser. Consider
                 finishing decisions in the Queue tab before DOR submission.
               </div>
             )}
             {wacNullCount > 0 && (
-              <div className='sf-data-alert' role='alert' style={{ marginTop: 8 }}>
+              <div className='sf-data-alert sf-data-alert--spaced' role='alert'>
                 <strong>⚠ {fmtNum(wacNullCount)} sales missing WAC code.</strong> WAC codes are
                 required for DOR-exempt classification. Re-sync WAC codes from the source system
                 before final submission.

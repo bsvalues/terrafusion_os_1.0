@@ -35,6 +35,7 @@ public sealed class CountyReadOnlySalesSyncController : ControllerBase
         if (context is null) return Forbid();
         var availability = await _syncService.GetAvailabilityAsync(context, cancellationToken)
             .ConfigureAwait(false);
+        Response.Headers["Cache-Control"] = "no-store";
         return Ok(new CountyReadOnlySalesSyncAvailabilityResponse(
             availability.ContractId,
             availability.CountyId,

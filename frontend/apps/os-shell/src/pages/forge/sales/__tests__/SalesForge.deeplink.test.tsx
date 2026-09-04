@@ -606,6 +606,7 @@ describe('SalesForge — County Studio deeplink consumption (Task D2)', () => {
       expect(useSalesForgeStore.getState().committedFilters.countyCode).toBe('005');
       expect(useSalesForgeStore.getState().dataSource).toBe('county-readonly-sync');
       expect(useSalesForgeStore.getState().taxYear).toBe(2027);
+      expect(useSalesForgeStore.getState().activeTab).toBe('queue');
     });
     expect(washingtonCountyLaunchMocks.resolve).not.toHaveBeenCalled();
     expect(washingtonCountyLaunchMocks.verify).not.toHaveBeenCalled();

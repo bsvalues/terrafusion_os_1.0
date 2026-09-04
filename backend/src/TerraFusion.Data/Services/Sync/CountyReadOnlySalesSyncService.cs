@@ -98,7 +98,7 @@ public sealed class CountyReadOnlySalesSyncService : ICountyReadOnlySalesSyncSer
                     connection.Id);
             }
 
-            var status = await _pacsAdapter.GetConnectionStatusAsync(cancellationToken)
+            var status = await externalAdapter.GetSalesConnectionStatusAsync(cancellationToken)
                 .ConfigureAwait(false);
             if (!status.IsConnected
                 || !string.Equals(status.DatabaseName, connection.Database, StringComparison.OrdinalIgnoreCase))

@@ -395,10 +395,10 @@ export default function SalesForge({ metadata }: SalesForgeProps = {}) {
   }, [directHostedVerification.taxYear, hostedLaunchReady, setTaxYear]);
 
   useLayoutEffect(() => {
-    if (launchDataMode && activeTab !== renderedActiveTab) {
+    if (allowedTabs !== null && activeTab !== renderedActiveTab) {
       setActiveTab(renderedActiveTab);
     }
-  }, [activeTab, launchDataMode, renderedActiveTab, setActiveTab]);
+  }, [activeTab, allowedTabs, renderedActiveTab, setActiveTab]);
 
   // ── Consume County Studio handoff metadata before child fetch effects ───
   useLayoutEffect(() => {

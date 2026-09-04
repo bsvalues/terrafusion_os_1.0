@@ -67,14 +67,19 @@ describe('connected SalesForge panels', () => {
             parcelId: '063-0001',
             saleDate: '2026-01-15',
             salePrice: 450000,
+            address: ' =HYPERLINK("https://invalid.example")',
           },
         ],
       })
     );
     let downloadedFilename = '';
+    let downloadedBlob: Blob | null = null;
     Object.defineProperty(URL, 'createObjectURL', {
       configurable: true,
-      value: vi.fn(() => 'blob:spokane-dor-export'),
+      value: vi.fn((blob: Blob) => {
+        downloadedBlob = blob;
+        return 'blob:spokane-dor-export';
+      }),
     });
     Object.defineProperty(URL, 'revokeObjectURL', {
       configurable: true,
@@ -88,6 +93,13 @@ describe('connected SalesForge panels', () => {
 
     await user.click(await screen.findByRole('button', { name: /Export DOR CSV \(1 sales\)/i }));
     expect(downloadedFilename).toBe(`DOR_SaleQualification_SpokaneCounty_${taxYear}.csv`);
+    const downloadedCsv = await new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(String(reader.result));
+      reader.onerror = () => reject(reader.error);
+      reader.readAsText(downloadedBlob!);
+    });
+    expect(downloadedCsv).toContain(`' =HYPERLINK`);
     expect(screen.getByText(/DOR_SaleQualification_SpokaneCounty_/i)).toBeInTheDocument();
   });
 });

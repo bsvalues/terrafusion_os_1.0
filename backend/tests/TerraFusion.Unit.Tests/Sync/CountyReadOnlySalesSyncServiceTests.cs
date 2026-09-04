@@ -194,7 +194,8 @@ public sealed class CountyReadOnlySalesSyncServiceTests
         adapter.As<IExternalReadOnlyPacsAdapter>()
             .Setup(value => value.HasServerEnforcedReadOnlyAccessAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(true);
-        adapter.Setup(value => value.GetConnectionStatusAsync(It.IsAny<CancellationToken>()))
+        adapter.As<IExternalReadOnlyPacsAdapter>()
+            .Setup(value => value.GetSalesConnectionStatusAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(new PacsConnectionStatus
             {
                 IsConnected = true,
@@ -334,7 +335,8 @@ public sealed class CountyReadOnlySalesSyncServiceTests
             adapter.As<IExternalReadOnlyPacsAdapter>()
                 .Setup(value => value.HasServerEnforcedReadOnlyAccessAsync(It.IsAny<CancellationToken>()))
                 .ReturnsAsync(true);
-            adapter.Setup(value => value.GetConnectionStatusAsync(It.IsAny<CancellationToken>()))
+            adapter.As<IExternalReadOnlyPacsAdapter>()
+                .Setup(value => value.GetSalesConnectionStatusAsync(It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new PacsConnectionStatus
                 {
                     IsConnected = true,
@@ -425,7 +427,8 @@ public sealed class CountyReadOnlySalesSyncServiceTests
         adapter.As<IExternalReadOnlyPacsAdapter>()
             .Setup(value => value.HasServerEnforcedReadOnlyAccessAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(true);
-        adapter.Setup(value => value.GetConnectionStatusAsync(It.IsAny<CancellationToken>()))
+        adapter.As<IExternalReadOnlyPacsAdapter>()
+            .Setup(value => value.GetSalesConnectionStatusAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(new PacsConnectionStatus
             {
                 IsConnected = true,

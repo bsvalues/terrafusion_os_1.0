@@ -1,4 +1,5 @@
 using TerraFusion.Core.Counties;
+using TerraFusion.Core.PACS;
 
 namespace TerraFusion.Core.Sync;
 
@@ -20,6 +21,13 @@ public interface IExternalReadOnlyPacsAdapter
     /// is never sufficient for this decision.
     /// </summary>
     Task<bool> HasServerEnforcedReadOnlyAccessAsync(
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Gets status from the exact connection used for Sales extraction. This must not fall back
+    /// to a primary PACS database when a separate Sales source is configured.
+    /// </summary>
+    Task<PacsConnectionStatus> GetSalesConnectionStatusAsync(
         CancellationToken cancellationToken = default);
 }
 
