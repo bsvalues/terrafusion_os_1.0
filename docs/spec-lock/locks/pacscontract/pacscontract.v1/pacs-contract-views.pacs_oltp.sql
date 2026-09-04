@@ -92,6 +92,7 @@ FROM
     INNER JOIN (
         SELECT prop_id, owner_id, MAX(owner_tax_yr) AS max_yr
         FROM dbo.owner
+        WHERE sup_num = 0
         GROUP BY prop_id, owner_id
     ) latest ON o.prop_id = latest.prop_id
             AND o.owner_id = latest.owner_id

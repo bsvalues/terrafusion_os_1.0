@@ -167,6 +167,15 @@ public sealed class PacsAdapterBoundaryTests
     }
 
     [Fact]
+    public void PacsSqlAdapter_ComparableSalesExtraction_DoesNotRequireBaseSaleTable()
+    {
+        var path = Path.Combine(RepoRoot, "backend", "src", "TerraFusion.Core", "PACS", "PacsSqlAdapter.cs");
+        var content = File.ReadAllText(path);
+
+        Assert.DoesNotContain("FROM sale", content, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
     public void PacsSqlAdapter_Uses_HealthCheckProcedure()
     {
         var path = Path.Combine(RepoRoot, "backend", "src", "TerraFusion.Core", "PACS", "PacsSqlAdapter.cs");

@@ -1027,13 +1027,9 @@ namespace TerraFusion.Core.PACS
                 var totalCount = await connection.ExecuteScalarAsync<int>(
                     $"SELECT COUNT(*) FROM {ViewComparableSales}");
 
-                var rawSaleCount = await connection.ExecuteScalarAsync<int>(
-                    "SELECT COUNT(*) FROM sale WHERE COALESCE(NULLIF(adjusted_sl_price, 0), NULLIF(sl_price, 0)) > 0");
-
                 _logger.LogInformation(
-                    "PACS comparable sales source counts: comparableView={ComparableViewCount}, rawPositiveSales={RawSaleCount}",
-                    totalCount,
-                    rawSaleCount);
+                    "PACS comparable sales source count: comparableView={ComparableViewCount}",
+                    totalCount);
 
                 var offset = (page - 1) * pageSize;
                 var sql = $@"
