@@ -2557,7 +2557,7 @@ builder.Services.AddHealthChecks()
     // but the AddPacsReadiness extension was never called. Result: PACS down →
     // /healthz/ready returned 200. Now it returns 503 when PACS_REQUIRED=true
     // and the contract fails to validate.
-    .AddPacsReadiness("ready", "pacs")
+    .AddPacsReadiness("readiness", "pacs")
     .AddSpecLockCheck();
 
 // 🔒 SpecLock Runtime Guard (MACHINE MODE)

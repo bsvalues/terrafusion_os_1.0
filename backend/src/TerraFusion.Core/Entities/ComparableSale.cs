@@ -54,6 +54,7 @@ public class ComparableSale
 
   // ── PACS reference keys ──
   public int? PacsChgOfOwnerId { get; set; }            // chg_of_owner.chg_of_owner_id — PACS sale record ID (for traceability)
+  public int? PacsPropId { get; set; }                  // property.prop_id — PACS parcel identity paired with the transfer
   public int? ExciseNumber { get; set; }                 // chg_of_owner.excise_number — WA recorder's office REET excise number
 
   [StringLength(500)]

@@ -219,7 +219,7 @@ public sealed class CountyReadOnlySalesSyncServiceTests
                         GeoId = "BEN-1001",
                         SaleDate = new DateTime(2026, 1, 15, 0, 0, 0, DateTimeKind.Utc),
                         SalePrice = 425_000m,
-                        PropTypeCd = "R1",
+                        PropTypeCd = "A1",
                         Consideration = " 425000 ",
                         SaleComment = " arms-length review pending ",
                     },
@@ -239,7 +239,7 @@ public sealed class CountyReadOnlySalesSyncServiceTests
                         GeoId = "BEN-1001",
                         SaleDate = new DateTime(2026, 1, 15, 0, 0, 0, DateTimeKind.Utc),
                         SalePrice = 425_000m,
-                        PropTypeCd = "R1",
+                        PropTypeCd = "A1",
                         Consideration = " 425000 ",
                         SaleComment = " arms-length review pending ",
                     },
@@ -273,10 +273,13 @@ public sealed class CountyReadOnlySalesSyncServiceTests
             Assert.Equal(BentonId, sale.CountyId);
             Assert.Equal("county-readonly-sync", sale.IngestedBy);
             Assert.StartsWith("county-readonly-sync:55550055-", sale.VerificationSource);
-            Assert.Equal("residential", sale.PropertyType);
-            Assert.Equal("R1", sale.ImprvTypeCode);
             Assert.True(sale.PacsChgOfOwnerId > 0);
+            Assert.True(sale.PacsPropId > 0);
         });
+        Assert.Equal("multifamily", sales[0].PropertyType);
+        Assert.Equal("A1", sales[0].ImprvTypeCode);
+        Assert.Equal("residential", sales[1].PropertyType);
+        Assert.Equal("R1", sales[1].ImprvTypeCode);
         Assert.Equal(" 425000 ", sales[0].PacsConsideration);
         Assert.Equal(" arms-length review pending ", sales[0].RawComment);
         Assert.Equal(2, await verify.AuditEvents.CountAsync(trace =>

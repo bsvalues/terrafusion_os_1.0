@@ -460,6 +460,7 @@ public sealed class CountyReadOnlySalesSyncService : ICountyReadOnlySalesSyncSer
         sale.SaleDate = DateTime.SpecifyKind(source.SaleDate.Date, DateTimeKind.Utc);
         sale.SalePrice = source.SalePrice;
         sale.PacsChgOfOwnerId = source.PacsChgOfOwnerId;
+        sale.PacsPropId = source.PropId;
         sale.PropertyType = NormalizePropertyType(source.PropTypeCd);
         sale.ImprvTypeCode = Bounded(source.PropTypeCd, 10);
         sale.Address = Bounded(source.SitusAddr, 200);
@@ -491,13 +492,11 @@ public sealed class CountyReadOnlySalesSyncService : ICountyReadOnlySalesSyncSer
         return normalized switch
         {
             null or "" => "unknown",
-            "MFR" or "MULTIFAMILY" => "multifamily",
-            var value when value.StartsWith("C", StringComparison.Ordinal)
-                || value.Contains("COM", StringComparison.Ordinal) => "commercial",
-            var value when value.StartsWith("I", StringComparison.Ordinal)
-                || value.Contains("IND", StringComparison.Ordinal) => "industrial",
-            var value when value.StartsWith("A", StringComparison.Ordinal)
-                || value.Contains("AGR", StringComparison.Ordinal) => "agricultural",
+            "A" or "A1" or "A2" or "MFR" or "MULTIFAMILY" => "multifamily",
+            "C" or "C1" or "C2" or "C3" or "C4" or "COM" or "COMM" or "COMMERCIAL" => "commercial",
+            "I" or "I1" or "IND" or "INDUSTRIAL" => "industrial",
+            "AG" or "AGR" or "AGRICULTURAL" or "FARM" => "agricultural",
+            "R" or "R1" or "R2" or "P" or "M" or "MN" => "residential",
             _ => "residential",
         };
     }

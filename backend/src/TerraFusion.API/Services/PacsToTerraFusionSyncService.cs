@@ -884,9 +884,17 @@ public sealed class PacsToTerraFusionSyncService
         foreach (var sourceSale in filtered)
         {
             var normalizedParcelId = Normalize(sourceSale.GeoId) ?? $"PACS-{sourceSale.PropId.ToString(CultureInfo.InvariantCulture)}";
-            var comparisonKey = BuildComparableSaleKey(countyId, normalizedParcelId, sourceSale.SaleDate, sourceSale.SalePrice);
+            var comparisonKey = BuildComparableSaleKey(countyId, normalizedParcelId, sourceSale);
+            var legacyKey = BuildLegacyComparableSaleKey(
+                countyId,
+                normalizedParcelId,
+                sourceSale.SaleDate,
+                sourceSale.SalePrice);
 
-            if (!existingSalesByKey.TryGetValue(comparisonKey, out var comparableSale))
+            if (!existingSalesByKey.TryGetValue(comparisonKey, out var comparableSale)
+                && (!existingSalesByKey.TryGetValue(legacyKey, out comparableSale)
+                    || comparableSale.PacsChgOfOwnerId.HasValue
+                    || comparableSale.PacsPropId.HasValue))
             {
                 comparableSale = new CoreComparableSale
                 {
@@ -918,6 +926,8 @@ public sealed class PacsToTerraFusionSyncService
                     ? propertyAddress
                     : null))
             {
+                existingSalesByKey.Remove(legacyKey);
+                existingSalesByKey[comparisonKey] = comparableSale;
                 counters.SalesUpdated++;
             }
             else
@@ -1158,10 +1168,37 @@ public sealed class PacsToTerraFusionSyncService
 
     private static string BuildComparableSaleKey(CoreComparableSale sale)
     {
-        return BuildComparableSaleKey(sale.CountyId, sale.ParcelId, sale.SaleDate, sale.SalePrice);
+        return sale.PacsChgOfOwnerId is > 0 && sale.PacsPropId is > 0
+            ? BuildPacsComparableSaleKey(
+                sale.CountyId,
+                sale.ParcelId,
+                sale.PacsChgOfOwnerId.Value,
+                sale.PacsPropId.Value)
+            : BuildLegacyComparableSaleKey(sale.CountyId, sale.ParcelId, sale.SaleDate, sale.SalePrice);
     }
 
-    private static string BuildComparableSaleKey(Guid countyId, string parcelId, DateTime saleDate, decimal salePrice)
+    private static string BuildComparableSaleKey(
+        Guid countyId,
+        string parcelId,
+        PacsComparableSale sourceSale)
+    {
+        return BuildPacsComparableSaleKey(
+            countyId,
+            parcelId,
+            sourceSale.PacsChgOfOwnerId,
+            sourceSale.PropId);
+    }
+
+    private static string BuildPacsComparableSaleKey(
+        Guid countyId,
+        string parcelId,
+        int pacsChgOfOwnerId,
+        int pacsPropId)
+    {
+        return $"{countyId:N}:PACS:{pacsChgOfOwnerId}:{pacsPropId}:{parcelId.Trim().ToUpperInvariant()}";
+    }
+
+    private static string BuildLegacyComparableSaleKey(Guid countyId, string parcelId, DateTime saleDate, decimal salePrice)
     {
         return $"{countyId:N}:{parcelId.Trim().ToUpperInvariant()}:{saleDate:yyyyMMdd}:{salePrice:F2}";
     }
@@ -1179,6 +1216,8 @@ public sealed class PacsToTerraFusionSyncService
         ApplyString(target.ParcelId, normalizedParcelId, value => target.ParcelId = value ?? target.ParcelId, ref changed);
         ApplyValue(target.SaleDate, sourceSale.SaleDate, value => target.SaleDate = value, ref changed);
         ApplyValue(target.SalePrice, sourceSale.SalePrice, value => target.SalePrice = value, ref changed);
+        ApplyNullableValue(target.PacsChgOfOwnerId, sourceSale.PacsChgOfOwnerId, value => target.PacsChgOfOwnerId = value, ref changed);
+        ApplyNullableValue(target.PacsPropId, sourceSale.PropId, value => target.PacsPropId = value, ref changed);
         ApplyString(target.PropertyType, NormalizePropertyType(sourceSale.PropTypeCd), value => target.PropertyType = value ?? target.PropertyType, ref changed);
         ApplyString(target.Address, normalizedAddress, value => target.Address = value, ref changed);
         ApplyString(target.Neighborhood, NormalizeNeighborhood(sourceSale.Neighborhood), value => target.Neighborhood = value, ref changed);
@@ -1327,9 +1366,11 @@ public sealed class PacsToTerraFusionSyncService
         return normalized switch
         {
             null or "" => "unknown",
-            var value when value.Contains("COM") => "commercial",
-            var value when value.Contains("IND") => "industrial",
-            var value when value.Contains("AGR") => "agricultural",
+            "A" or "A1" or "A2" or "MFR" or "MULTIFAMILY" => "multifamily",
+            "C" or "C1" or "C2" or "C3" or "C4" or "COM" or "COMM" or "COMMERCIAL" => "commercial",
+            "I" or "I1" or "IND" or "INDUSTRIAL" => "industrial",
+            "AG" or "AGR" or "AGRICULTURAL" or "FARM" => "agricultural",
+            "R" or "R1" or "R2" or "P" or "M" or "MN" => "residential",
             _ => "residential"
         };
     }

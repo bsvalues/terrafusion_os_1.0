@@ -3741,6 +3741,9 @@ namespace TerraFusion.Data.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
 
+                    b.Property<int?>("PacsPropId")
+                        .HasColumnType("integer");
+
                     b.Property<decimal?>("PacsComputedRatio")
                         .HasColumnType("numeric");
 
@@ -3877,6 +3880,8 @@ namespace TerraFusion.Data.Migrations
                     b.HasIndex("CountyId", "Neighborhood");
 
                     b.HasIndex("CountyId", "ParcelId");
+
+                    b.HasIndex("CountyId", "PacsChgOfOwnerId", "PacsPropId");
 
                     b.HasIndex("CountyId", "PropertyType", "SaleDate");
 

@@ -74,6 +74,12 @@ TerraFusion ONLY queries these TerraFusion-specific views (not raw tables):
 
 **Invariant**: Missing view → fail-closed with explicit error code `PACS_VIEW_MISSING`.
 
+**Comparable-sale identity invariant**: every row from `vw_TerraFusion_Comparable_Sales`
+retains `chg_of_owner_id`, `prop_id`, and `geo_id` through operational persistence.
+The county-scoped `(chg_of_owner_id, prop_id, geo_id)` source identity distinguishes
+multi-property transfers and separate same-value transfers; date and price are not
+used as a substitute source identity.
+
 ### 2.2 pacs_oltp Indexes
 
 Performance indexes required for sub-second API response:
