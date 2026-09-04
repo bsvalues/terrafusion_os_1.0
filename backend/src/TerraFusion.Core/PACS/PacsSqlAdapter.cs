@@ -150,9 +150,12 @@ namespace TerraFusion.Core.PACS
                           AND (
                             permission.permission_name IN ('INSERT', 'UPDATE', 'DELETE', 'ALTER', 'CONTROL', 'TAKE OWNERSHIP')
                             OR (
-                                candidate.type IN ('P', 'PC')
-                                AND candidate.name <> 'sp_TerraFusion_HealthCheck'
-                                AND permission.permission_name = 'EXECUTE'
+                                permission.permission_name = 'EXECUTE'
+                                AND NOT (
+                                    candidate.type IN ('P', 'PC')
+                                    AND OBJECT_SCHEMA_NAME(candidate.object_id) = 'dbo'
+                                    AND candidate.name = 'sp_TerraFusion_HealthCheck'
+                                )
                             )
                           )
                     )
