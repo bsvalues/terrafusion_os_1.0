@@ -133,7 +133,14 @@ permissions:
   forbidden:
     - db_datawriter             # No write access by default
     - db_owner                  # Never
+    - db_securityadmin          # Cannot grant itself or others write authority
+    - db_ddladmin               # Cannot alter database objects
+    - db_accessadmin            # Cannot change database access
     - sysadmin                  # Never
+    - securityadmin             # Cannot grant server-level authority
+    - database CONTROL, ALTER, TAKE OWNERSHIP, ALTER ANY ROLE, or IMPERSONATE ANY USER
+    - object or schema INSERT, UPDATE, DELETE, ALTER, CONTROL, or TAKE OWNERSHIP
+    - EXECUTE on write-capable modules # Only the declared health-check procedure is permitted
 ```
 
 ---

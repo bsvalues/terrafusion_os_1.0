@@ -68,6 +68,30 @@ public sealed class CountyReadOnlySalesSyncServiceTests
     }
 
     [Fact]
+    public void PacsSqlAdapterPersistsTheRequiredAuditApplicationName()
+    {
+        var configuration = new ConfigurationBuilder().AddInMemoryCollection(
+            new Dictionary<string, string?>
+            {
+                ["ConnectionStrings:PacsConnection"] =
+                    "Server=pacs;Database=benton_pacs;Encrypt=True;TrustServerCertificate=False;ApplicationIntent=ReadOnly",
+            }).Build();
+
+        using var adapter = new PacsSqlAdapter(NullLogger<PacsSqlAdapter>.Instance, configuration);
+
+        foreach (var fieldName in new[] { "_connectionString", "_salesConnectionString" })
+        {
+            var field = typeof(PacsSqlAdapter).GetField(
+                fieldName,
+                System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+            var value = Assert.IsType<string>(field?.GetValue(adapter));
+            Assert.Equal(
+                "TerraFusion-OS",
+                new Microsoft.Data.SqlClient.SqlConnectionStringBuilder(value).ApplicationName);
+        }
+    }
+
+    [Fact]
     public void PacsSqlAdapterRejectsTrustServerCertificateBypass()
     {
         var configuration = new ConfigurationBuilder().AddInMemoryCollection(
@@ -195,8 +219,8 @@ public sealed class CountyReadOnlySalesSyncServiceTests
                         SaleDate = new DateTime(2026, 1, 15, 0, 0, 0, DateTimeKind.Utc),
                         SalePrice = 425_000m,
                         PropTypeCd = "R1",
-                        Consideration = "425000",
-                        SaleComment = "arms-length review pending",
+                        Consideration = " 425000 ",
+                        SaleComment = " arms-length review pending ",
                     },
                     new PacsComparableSale
                     {
@@ -215,8 +239,8 @@ public sealed class CountyReadOnlySalesSyncServiceTests
                         SaleDate = new DateTime(2026, 1, 15, 0, 0, 0, DateTimeKind.Utc),
                         SalePrice = 425_000m,
                         PropTypeCd = "R1",
-                        Consideration = "425000",
-                        SaleComment = "arms-length review pending",
+                        Consideration = " 425000 ",
+                        SaleComment = " arms-length review pending ",
                     },
                 },
             });
@@ -252,8 +276,8 @@ public sealed class CountyReadOnlySalesSyncServiceTests
             Assert.Equal("R1", sale.ImprvTypeCode);
             Assert.True(sale.PacsChgOfOwnerId > 0);
         });
-        Assert.Equal("425000", sales[0].PacsConsideration);
-        Assert.Equal("arms-length review pending", sales[0].RawComment);
+        Assert.Equal(" 425000 ", sales[0].PacsConsideration);
+        Assert.Equal(" arms-length review pending ", sales[0].RawComment);
         Assert.Equal(2, await verify.AuditEvents.CountAsync(trace =>
             trace.CountyId == BentonId
             && trace.UserId == "benton-assessor"
@@ -261,6 +285,99 @@ public sealed class CountyReadOnlySalesSyncServiceTests
         Assert.Empty(await verify.ComparableSales.Where(sale => sale.CountyId == FranklinId).ToListAsync());
         adapter.Verify(value => value.GetComparableSalesAsync(
             It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()), Times.Exactly(2));
+    }
+
+    [Fact]
+    public async Task SyncRejectsInvalidOrOverLimitVerbatimPacsFields()
+    {
+        var invalidFields = new (string? Consideration, string? SaleComment)[]
+        {
+            ("invalid\u0001consideration", null),
+            (new string('c', 501), null),
+            (null, "invalid\u0001comment"),
+            (null, new string('m', 501)),
+        };
+
+        foreach (var invalid in invalidFields)
+        {
+            var factory = new InMemoryFactory();
+            var connectionId = Guid.NewGuid();
+            await using (var seed = factory.CreateDbContext())
+            {
+                seed.Counties.Add(new County
+                {
+                    Id = BentonId,
+                    Name = "Benton",
+                    State = "WA",
+                    FipsCode = "53005",
+                });
+                seed.SyncSourceConnections.Add(new SyncSourceConnection
+                {
+                    Id = connectionId,
+                    CountyId = BentonId,
+                    Name = "Benton PACS source",
+                    SourceSystem = "PACS",
+                    ConnectionType = "SqlServer",
+                    Server = "benton-pacs-ro",
+                    Database = "benton_pacs",
+                    AuthMode = "WindowsIntegrated",
+                    AdditionalOptions = "Encrypt=True;ApplicationIntent=ReadOnly",
+                    IsActive = true,
+                });
+                await seed.SaveChangesAsync();
+            }
+
+            var adapter = new Mock<IPacsAdapter>(MockBehavior.Strict);
+            adapter.As<IExternalReadOnlyPacsAdapter>()
+                .Setup(value => value.MatchesSource("benton-pacs-ro", "benton_pacs"))
+                .Returns(true);
+            adapter.As<IExternalReadOnlyPacsAdapter>()
+                .Setup(value => value.HasServerEnforcedReadOnlyAccessAsync(It.IsAny<CancellationToken>()))
+                .ReturnsAsync(true);
+            adapter.Setup(value => value.GetConnectionStatusAsync(It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new PacsConnectionStatus
+                {
+                    IsConnected = true,
+                    DatabaseName = "benton_pacs",
+                });
+            adapter.Setup(value => value.ValidateContractAsync(It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new PacsContractProof { IsValid = true, ContractId = "pacscontract.v1" });
+            adapter.Setup(value => value.GetComparableSalesAsync(1, 500, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new PacsPagedResult<PacsComparableSale>
+                {
+                    Page = 1,
+                    PageSize = 500,
+                    TotalCount = 1,
+                    Items = new[]
+                    {
+                        new PacsComparableSale
+                        {
+                            PacsChgOfOwnerId = 5001,
+                            PropId = 1001,
+                            GeoId = "BEN-1001",
+                            SaleDate = new DateTime(2026, 1, 15, 0, 0, 0, DateTimeKind.Utc),
+                            SalePrice = 425_000m,
+                            Consideration = invalid.Consideration,
+                            SaleComment = invalid.SaleComment,
+                        },
+                    },
+                });
+            var service = new CountyReadOnlySalesSyncService(
+                factory,
+                adapter.Object,
+                NullLogger<CountyReadOnlySalesSyncService>.Instance);
+            var context = await CreateCountyContextAsync(Benton, BentonId, "benton-assessor");
+
+            var result = await service.SyncAsync(new CountyReadOnlySalesSyncRequest(context));
+
+            Assert.Equal(CountyReadOnlySalesSyncDisposition.Denied, result.Disposition);
+            Assert.Equal(CountyReadOnlySalesSyncDenialCode.SourceDataInvalid, result.DenialCode);
+            await using var verify = factory.CreateDbContext();
+            Assert.Empty(await verify.ComparableSales.ToListAsync());
+            Assert.Equal(
+                "SOURCE_DATA_INVALID",
+                (await verify.SyncSourceConnections.SingleAsync()).LastConnectionErrorMessage);
+        }
     }
 
     [Fact]

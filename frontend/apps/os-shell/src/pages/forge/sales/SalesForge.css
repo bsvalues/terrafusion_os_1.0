@@ -937,6 +937,27 @@
 
 /* ── DOR export panel ────────────────────────────────────────────────────────── */
 
+.sf-dor-toolbar__subtitle {
+  color: var(--sf-muted);
+  font-size: 0.8125rem;
+}
+
+.sf-dor-toolbar__actions {
+  display: flex;
+  gap: 8px;
+}
+
+.sf-dor-toolbar__refresh {
+  padding: 3px 10px;
+  font-size: 0.75rem;
+}
+
+.sf-dor-toolbar__export {
+  padding: 5px 14px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
 .sf-dor-summary {
   padding: 12px 16px;
   border-bottom: 1px solid var(--sf-border);

@@ -171,14 +171,13 @@ export function DorExportPanel() {
   return (
     <div className='sf-main'>
       <div className='sf-ratio-audit-toolbar'>
-        <span style={{ fontSize: '0.8125rem', color: 'var(--sf-muted)' }}>
+        <span className='sf-dor-toolbar__subtitle'>
           DOR-certified sale qualification export · {taxYear} tax year
         </span>
-        <div style={{ display: 'flex', gap: 8 }}>
+        <div className='sf-dor-toolbar__actions'>
           <button
             type='button'
-            className='sf-btn sf-btn--ghost'
-            style={{ fontSize: '0.75rem', padding: '3px 10px' }}
+            className='sf-btn sf-btn--ghost sf-dor-toolbar__refresh'
             onClick={() => void loadExportPreview()}
             disabled={loading}
           >
@@ -186,8 +185,7 @@ export function DorExportPanel() {
           </button>
           <button
             type='button'
-            className='sf-btn sf-btn--success'
-            style={{ fontSize: '0.8125rem', padding: '5px 14px', fontWeight: 600 }}
+            className='sf-btn sf-btn--success sf-dor-toolbar__export'
             onClick={handleExport}
             disabled={loading || exporting || qualifiedCount === 0}
             title={`Export ${qualifiedCount.toLocaleString()} qualified sales to DOR CSV`}

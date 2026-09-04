@@ -81,7 +81,7 @@ public sealed class CountyReadOnlySalesSyncService : ICountyReadOnlySalesSyncSer
         if (!externalAdapter.MatchesSource(connection.Server!, connection.Database!))
         {
             await RecordConnectionFailureAsync(
-                connection.Id, "SOURCE_IDENTITY_MISMATCH", cancellationToken).ConfigureAwait(false);
+                countyId, connection.Id, "SOURCE_IDENTITY_MISMATCH", cancellationToken).ConfigureAwait(false);
             return Denied(CountyReadOnlySalesSyncDenialCode.SourceIdentityMismatch, countyId, connection.Id);
         }
 
@@ -91,7 +91,7 @@ public sealed class CountyReadOnlySalesSyncService : ICountyReadOnlySalesSyncSer
                 .ConfigureAwait(false))
             {
                 await RecordConnectionFailureAsync(
-                    connection.Id, "SOURCE_WRITE_AUTHORITY_DETECTED", cancellationToken).ConfigureAwait(false);
+                    countyId, connection.Id, "SOURCE_WRITE_AUTHORITY_DETECTED", cancellationToken).ConfigureAwait(false);
                 return Denied(
                     CountyReadOnlySalesSyncDenialCode.SourceWriteAuthorityDetected,
                     countyId,
@@ -104,7 +104,7 @@ public sealed class CountyReadOnlySalesSyncService : ICountyReadOnlySalesSyncSer
                 || !string.Equals(status.DatabaseName, connection.Database, StringComparison.OrdinalIgnoreCase))
             {
                 await RecordConnectionFailureAsync(
-                    connection.Id, "SOURCE_IDENTITY_MISMATCH", cancellationToken).ConfigureAwait(false);
+                    countyId, connection.Id, "SOURCE_IDENTITY_MISMATCH", cancellationToken).ConfigureAwait(false);
                 return Denied(CountyReadOnlySalesSyncDenialCode.SourceIdentityMismatch, countyId, connection.Id);
             }
 
@@ -113,7 +113,7 @@ public sealed class CountyReadOnlySalesSyncService : ICountyReadOnlySalesSyncSer
             if (!proof.IsValid || !string.Equals(proof.ContractId, "pacscontract.v1", StringComparison.Ordinal))
             {
                 await RecordConnectionFailureAsync(
-                    connection.Id, "SOURCE_CONTRACT_INVALID", cancellationToken).ConfigureAwait(false);
+                    countyId, connection.Id, "SOURCE_CONTRACT_INVALID", cancellationToken).ConfigureAwait(false);
                 return Denied(CountyReadOnlySalesSyncDenialCode.SourceContractInvalid, countyId, connection.Id);
             }
 
@@ -121,13 +121,13 @@ public sealed class CountyReadOnlySalesSyncService : ICountyReadOnlySalesSyncSer
             if (sourceRows is null)
             {
                 await RecordConnectionFailureAsync(
-                    connection.Id, "SOURCE_RECORD_LIMIT_EXCEEDED", cancellationToken).ConfigureAwait(false);
+                    countyId, connection.Id, "SOURCE_RECORD_LIMIT_EXCEEDED", cancellationToken).ConfigureAwait(false);
                 return Denied(CountyReadOnlySalesSyncDenialCode.SourceRecordLimitExceeded, countyId, connection.Id);
             }
             if (!TryNormalizeRows(sourceRows, out var normalizedRows))
             {
                 await RecordConnectionFailureAsync(
-                    connection.Id, "SOURCE_DATA_INVALID", cancellationToken).ConfigureAwait(false);
+                    countyId, connection.Id, "SOURCE_DATA_INVALID", cancellationToken).ConfigureAwait(false);
                 return Denied(CountyReadOnlySalesSyncDenialCode.SourceDataInvalid, countyId, connection.Id);
             }
 
@@ -150,7 +150,7 @@ public sealed class CountyReadOnlySalesSyncService : ICountyReadOnlySalesSyncSer
                 countyId,
                 connection.Id);
             await RecordConnectionFailureAsync(
-                connection.Id, "READ_ONLY_SYNC_FAILED", CancellationToken.None).ConfigureAwait(false);
+                countyId, connection.Id, "READ_ONLY_SYNC_FAILED", CancellationToken.None).ConfigureAwait(false);
             return new(
                 CountyReadOnlySalesSyncDisposition.Failed,
                 CountyReadOnlySalesSyncDenialCode.None,
@@ -296,7 +296,7 @@ public sealed class CountyReadOnlySalesSyncService : ICountyReadOnlySalesSyncSer
         foreach (var chunk in ids.Chunk(500))
         {
             var sales = await db.ComparableSales
-                .Where(sale => chunk.Contains(sale.Id))
+                .Where(sale => sale.CountyId == countyId && chunk.Contains(sale.Id))
                 .ToListAsync(cancellationToken).ConfigureAwait(false);
             foreach (var sale in sales) existing.Add(sale.Id, sale);
         }
@@ -380,6 +380,7 @@ public sealed class CountyReadOnlySalesSyncService : ICountyReadOnlySalesSyncSer
     }
 
     private async Task RecordConnectionFailureAsync(
+        Guid countyId,
         Guid connectionId,
         string code,
         CancellationToken cancellationToken)
@@ -387,7 +388,7 @@ public sealed class CountyReadOnlySalesSyncService : ICountyReadOnlySalesSyncSer
         await using var db = await _dbContextFactory.CreateDbContextAsync(cancellationToken)
             .ConfigureAwait(false);
         var connection = await db.SyncSourceConnections.SingleOrDefaultAsync(
-            candidate => candidate.Id == connectionId,
+            candidate => candidate.Id == connectionId && candidate.CountyId == countyId,
             cancellationToken).ConfigureAwait(false);
         if (connection is null) return;
         var now = _timeProvider.GetUtcNow();
@@ -425,7 +426,9 @@ public sealed class CountyReadOnlySalesSyncService : ICountyReadOnlySalesSyncSer
                 || row.SaleDate.Year is < 1800 or > 9998
                 || row.SaleDate.Kind == DateTimeKind.Local
                 || row.SalePrice <= 0
-                || row.SalePrice > 10_000_000_000m)
+                || row.SalePrice > 10_000_000_000m
+                || !IsValidVerbatimSourceField(row.Consideration, 500)
+                || !IsValidVerbatimSourceField(row.SaleComment, 500))
             {
                 normalizedRows = Array.Empty<PacsComparableSale>();
                 return false;
@@ -463,8 +466,8 @@ public sealed class CountyReadOnlySalesSyncService : ICountyReadOnlySalesSyncSer
         sale.Neighborhood = Bounded(source.Neighborhood, 50);
         sale.RawRatioTypeCd = Bounded(source.SaleRatioTypeCd, 10);
         sale.RawSaleTypeCode = Bounded(source.DeedTypeCd, 5);
-        sale.PacsConsideration = Bounded(source.Consideration, 500);
-        sale.RawComment = Bounded(source.SaleComment, 500);
+        sale.PacsConsideration = source.Consideration;
+        sale.RawComment = source.SaleComment;
         sale.IsVerified = false;
         sale.VerificationSource = $"county-readonly-sync:{connectionId:D}:{source.PacsChgOfOwnerId.ToString(CultureInfo.InvariantCulture)}";
         sale.IngestedBy = "county-readonly-sync";
@@ -478,6 +481,9 @@ public sealed class CountyReadOnlySalesSyncService : ICountyReadOnlySalesSyncSer
         if (canonical.Any(char.IsControl)) return null;
         return canonical.Length <= maximum ? canonical : canonical[..maximum];
     }
+
+    private static bool IsValidVerbatimSourceField(string? value, int maximum) =>
+        value is null || (value.Length <= maximum && !value.Any(char.IsControl));
 
     private static string NormalizePropertyType(string? propertyTypeCode)
     {

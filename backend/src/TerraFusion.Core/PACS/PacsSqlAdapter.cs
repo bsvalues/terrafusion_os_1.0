@@ -62,24 +62,24 @@ namespace TerraFusion.Core.PACS
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
             // Get connection string from configuration
-            _connectionString = configuration.GetConnectionString("PacsConnection")
+            var connectionString = configuration.GetConnectionString("PacsConnection")
                 ?? configuration["PACS:ConnectionString"]
                 ?? throw new PacsContractViolationException(
                     PacsErrorCodes.ConnectionFailed,
                     "PACS connection string not configured. Set 'ConnectionStrings:PacsConnection' or 'PACS:ConnectionString'.");
 
-            _salesConnectionString = configuration.GetConnectionString("PacsSalesConnection")
+            _connectionString = ValidateConnectionString(connectionString);
+            var salesConnectionString = configuration.GetConnectionString("PacsSalesConnection")
                 ?? configuration["PACS:SalesConnectionString"]
                 ?? _connectionString;
 
             // Validate connection string has required properties per pacscontract.v1
-            ValidateConnectionString(_connectionString);
-            ValidateConnectionString(_salesConnectionString);
+            _salesConnectionString = ValidateConnectionString(salesConnectionString);
 
             _commandTimeout = configuration.GetValue("PACS:CommandTimeoutSeconds", 30);
         }
 
-        private static void ValidateConnectionString(string connectionString)
+        private static string ValidateConnectionString(string connectionString)
         {
             var builder = new SqlConnectionStringBuilder(connectionString);
 
@@ -103,6 +103,8 @@ namespace TerraFusion.Core.PACS
             {
                 builder.ApplicationName = "TerraFusion-OS";
             }
+
+            return builder.ConnectionString;
         }
 
         public bool MatchesSource(string server, string database)
@@ -122,17 +124,45 @@ namespace TerraFusion.Core.PACS
         {
             const string permissionSql = """
                 SELECT CASE WHEN
-                    IS_MEMBER('db_owner') = 1
+                    IS_SRVROLEMEMBER('sysadmin') = 1
+                    OR IS_SRVROLEMEMBER('securityadmin') = 1
+                    OR COALESCE(HAS_PERMS_BY_NAME(NULL, 'SERVER', 'CONTROL SERVER'), 0) = 1
+                    OR COALESCE(HAS_PERMS_BY_NAME(NULL, 'SERVER', 'ALTER ANY LOGIN'), 0) = 1
+                    OR COALESCE(HAS_PERMS_BY_NAME(NULL, 'SERVER', 'IMPERSONATE ANY LOGIN'), 0) = 1
+                    OR IS_MEMBER('db_owner') = 1
                     OR IS_MEMBER('db_datawriter') = 1
+                    OR IS_MEMBER('db_securityadmin') = 1
+                    OR IS_MEMBER('db_ddladmin') = 1
+                    OR IS_MEMBER('db_accessadmin') = 1
                     OR COALESCE(HAS_PERMS_BY_NAME(DB_NAME(), 'DATABASE', 'CONTROL'), 0) = 1
                     OR COALESCE(HAS_PERMS_BY_NAME(DB_NAME(), 'DATABASE', 'ALTER'), 0) = 1
+                    OR COALESCE(HAS_PERMS_BY_NAME(DB_NAME(), 'DATABASE', 'TAKE OWNERSHIP'), 0) = 1
+                    OR COALESCE(HAS_PERMS_BY_NAME(DB_NAME(), 'DATABASE', 'ALTER ANY ROLE'), 0) = 1
+                    OR COALESCE(HAS_PERMS_BY_NAME(DB_NAME(), 'DATABASE', 'IMPERSONATE ANY USER'), 0) = 1
                     OR EXISTS (
                         SELECT 1
-                        FROM sys.tables AS candidate
+                        FROM sys.objects AS candidate
                         CROSS APPLY sys.fn_my_permissions(
                             QUOTENAME(OBJECT_SCHEMA_NAME(candidate.object_id)) + '.' + QUOTENAME(candidate.name),
                             'OBJECT') AS permission
-                        WHERE permission.permission_name IN ('INSERT', 'UPDATE', 'DELETE', 'ALTER', 'CONTROL', 'TAKE OWNERSHIP')
+                        WHERE candidate.is_ms_shipped = 0
+                          AND candidate.type IN ('U', 'V', 'P', 'PC', 'IF', 'TF', 'FN', 'FS', 'FT', 'AF')
+                          AND (
+                            permission.permission_name IN ('INSERT', 'UPDATE', 'DELETE', 'ALTER', 'CONTROL', 'TAKE OWNERSHIP')
+                            OR (
+                                candidate.type IN ('P', 'PC')
+                                AND candidate.name <> 'sp_TerraFusion_HealthCheck'
+                                AND permission.permission_name = 'EXECUTE'
+                            )
+                          )
+                    )
+                    OR EXISTS (
+                        SELECT 1
+                        FROM sys.schemas AS candidate
+                        CROSS APPLY sys.fn_my_permissions(QUOTENAME(candidate.name), 'SCHEMA') AS permission
+                        WHERE candidate.name NOT IN ('sys', 'INFORMATION_SCHEMA')
+                          AND permission.permission_name IN (
+                            'INSERT', 'UPDATE', 'DELETE', 'EXECUTE', 'ALTER', 'CONTROL', 'TAKE OWNERSHIP')
                     )
                 THEN 0 ELSE 1 END
                 """;
@@ -146,6 +176,10 @@ namespace TerraFusion.Core.PACS
                     commandTimeout: _commandTimeout,
                     cancellationToken: cancellationToken)).ConfigureAwait(false);
                 return readOnly == 1;
+            }
+            catch (OperationCanceledException)
+            {
+                throw;
             }
             catch (Exception ex)
             {

@@ -370,10 +370,12 @@ public sealed class CountyCsvUploadAdmissionServiceRegistrationTests
 
         var migrations = context.Database.GetMigrations().ToArray();
         Assert.Contains(MigrationId, migrations);
+        var targetMigrationIndex = Array.IndexOf(migrations, MigrationId);
         var admissionLedgerMigrationIndex = Array.IndexOf(
             migrations,
             AdmissionLedgerMigrationId);
         Assert.InRange(admissionLedgerMigrationIndex, 0, migrations.Length - 1);
+        Assert.True(targetMigrationIndex > admissionLedgerMigrationIndex);
         foreach (var migration in migrations[..admissionLedgerMigrationIndex])
         {
             await context.Database.ExecuteSqlInterpolatedAsync(
