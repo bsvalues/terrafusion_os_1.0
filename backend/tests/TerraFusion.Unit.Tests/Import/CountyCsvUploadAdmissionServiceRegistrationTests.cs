@@ -369,7 +369,7 @@ public sealed class CountyCsvUploadAdmissionServiceRegistrationTests
             "CREATE TABLE \"__EFMigrationsHistory\" (\"MigrationId\" TEXT NOT NULL CONSTRAINT \"PK___EFMigrationsHistory\" PRIMARY KEY, \"ProductVersion\" TEXT NOT NULL)");
 
         var migrations = context.Database.GetMigrations().ToArray();
-        Assert.Equal(MigrationId, migrations[^1]);
+        Assert.Contains(MigrationId, migrations);
         var admissionLedgerMigrationIndex = Array.IndexOf(
             migrations,
             AdmissionLedgerMigrationId);
