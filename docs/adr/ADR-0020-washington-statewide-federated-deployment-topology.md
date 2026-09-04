@@ -1,4 +1,4 @@
-# ADR-0016: Washington Statewide Federated Deployment Topology
+# ADR-0020: Washington Statewide Federated Deployment Topology
 
 Status: **Accepted by owner directive; canonical on protected merge**  
 Date: 2026-09-01  
@@ -277,4 +277,4 @@ Implementation work must prove, before a statewide production claim:
 
 This ADR resolves the statewide physical deployment ambiguity. Future implementation documents,
 runbooks, IaC and county deployment plans must conform to this topology unless a later owner-ratified
-ADR explicitly supersedes `ADR-0016`.
+ADR explicitly supersedes `ADR-0020`.

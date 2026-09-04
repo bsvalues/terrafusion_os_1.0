@@ -68,7 +68,7 @@ This decision does not replace the current Washington Assessor Launch V1 product
 
 This Work Order authorizes only:
 
-- `docs/adr/ADR-0016-washington-statewide-federated-deployment-topology.md`
+- `docs/adr/ADR-0020-washington-statewide-federated-deployment-topology.md`
 - `docs/brain/workorders/active/WO-ARCH-WA-001-statewide-federated-deployment-topology.md`
 - `CANON_INDEX.md`
 
