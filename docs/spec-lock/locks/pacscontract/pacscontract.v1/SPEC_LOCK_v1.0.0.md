@@ -36,6 +36,10 @@ databases:
     - name: pacs_oltp
       purpose: Production PACS database (property, valuation, ownership)
       required: true
+    - name: pacs_golive
+      purpose: Read-only PACS sales, CAMA, and improvement-cost source
+      required: false
+      required_when: PacsSalesConnection differs from PacsConnection
     - name: CIAPS
       purpose: County Integrated Assessment & Permit System (building permits)
       required: false
@@ -57,7 +61,7 @@ databases:
 
 ## 2. Required Objects (TerraFusion Dependencies)
 
-### 2.1 pacs_oltp Views
+### 2.1 pacs_oltp Core Views
 
 TerraFusion ONLY queries these TerraFusion-specific views (not raw tables):
 
@@ -66,11 +70,26 @@ TerraFusion ONLY queries these TerraFusion-specific views (not raw tables):
 | `vw_TerraFusion_Property_Core` | Core property data for API | prop_id, geo_id, prop_type_cd, assessed_val, market_val, land_val, imprv_val, appr_year, situs_addr, situs_city, situs_zip, legal_desc, last_modified |
 | `vw_TerraFusion_Property_Ownership` | Ownership/mailing | prop_id, owner_name, mail_addr_1, mail_addr_2, mail_city, mail_state, mail_zip, pct_ownership, deed_date |
 | `vw_TerraFusion_Assessment_History` | Valuation history by year | prop_id, prop_val_yr, assessed_val, market_val, land_val, imprv_val, appraised_by, appraisal_dt |
+
+Deploy these objects through `ConnectionStrings:PacsConnection` with
+`pacs-contract-views.pacs_oltp.sql`.
+
+### 2.2 pacs_golive Sales/CAMA/Matrix Views
+
+When `ConnectionStrings:PacsSalesConnection` is configured separately, TerraFusion
+queries these views only through that read-only sales connection:
+
+| View Name | Purpose | Required Columns |
+|-----------|---------|------------------|
 | `vw_TerraFusion_Comparable_Sales` | Sale/transfer events for comp analysis | chg_of_owner_id, prop_id, geo_id, sale_date, sale_price, prop_type_cd, situs_addr, neighborhood, sale_ratio_type_cd, deed_type_cd, consideration, sale_comment, last_modified |
 | `vw_TerraFusion_Cama_Characteristics` | CAMA improvement/land characteristics | prop_id, geo_id, tax_year, building_type, square_feet, stories, basement_sqft, garage_sqft, quality_grade, condition_grade, year_built, effective_age, bedrooms, bathrooms, fireplaces, has_pool, functional_obsolescence, external_obsolescence, neighborhood, last_modified |
 | `vw_TerraFusion_Improvement_Cost_Matrices` | Cost schedule matrices for mass appraisal | source_matrix_id, matrix_year, matrix_type, base_rate, multiplier, region, building_type, base_cost, grade, condition, year_built, depreciation_rate, axis1, axis2, adjustment_factor_raw, matrix_label |
 
-**Note (Sprint 0 amendment 2026-03-19)**: Views 4–6 were implemented in `PacsSqlAdapter.cs` and `.tmp/pacs-contract-views.pacs_golive.sql` prior to this SpecLock update. This amendment declares them formally. No contract version increment required — all views are read-only and conform to existing connectivity and permission invariants.
+Deploy these objects through `ConnectionStrings:PacsSalesConnection` with
+`pacs-contract-views.pacs_golive.sql`. If no separate sales connection is configured,
+the adapter deliberately falls back to `PacsConnection` and both scripts must be
+applied to that one authorized database. Never deploy either group through the other
+configured connection by inference from a script name.
 
 **Invariant**: Missing view → fail-closed with explicit error code `PACS_VIEW_MISSING`.
 
@@ -80,7 +99,7 @@ The county-scoped `(chg_of_owner_id, prop_id, geo_id)` source identity distingui
 multi-property transfers and separate same-value transfers; date and price are not
 used as a substitute source identity.
 
-### 2.2 pacs_oltp Indexes
+### 2.3 pacs_oltp Indexes
 
 Performance indexes required for sub-second API response:
 
@@ -92,7 +111,7 @@ Performance indexes required for sub-second API response:
 
 **Invariant**: Missing index → log warning, continue (performance degradation acceptable).
 
-### 2.3 pacs_oltp Procedures
+### 2.4 pacs_oltp Procedures
 
 | Procedure Name | Purpose | Access Mode |
 |----------------|---------|-------------|
@@ -100,7 +119,7 @@ Performance indexes required for sub-second API response:
 
 **Invariant**: Missing procedure → fail-closed for health checks.
 
-### 2.4 CIAPS Objects (Optional)
+### 2.5 CIAPS Objects (Optional)
 
 | Object | Type | Purpose |
 |--------|------|---------|

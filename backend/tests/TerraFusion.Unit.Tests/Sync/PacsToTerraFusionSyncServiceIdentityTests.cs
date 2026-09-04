@@ -22,13 +22,28 @@ public sealed class PacsToTerraFusionSyncServiceIdentityTests
             .Options;
         var configuration = new ConfigurationBuilder().Build();
         await using var db = new TerraFusionDbContext(options, configuration);
-        db.Counties.Add(new County
-        {
-            Id = Guid.Parse("19190019-1919-1919-1919-191919191919"),
-            Name = "Benton",
-            State = "WA",
-            FipsCode = "53005",
-        });
+        var bentonId = Guid.Parse("19190019-1919-1919-1919-191919191919");
+        var franklinId = Guid.Parse("21210021-2121-2121-2121-212121212121");
+        db.Counties.AddRange(
+            new County { Id = bentonId, Name = "Benton", State = "WA", FipsCode = "53005" },
+            new County { Id = franklinId, Name = "Franklin", State = "WA", FipsCode = "53021" });
+        db.Properties.AddRange(
+            new Property
+            {
+                CountyId = bentonId,
+                PropertyId = "BEN-1001",
+                ParcelId = "BEN-1001",
+                ParcelNumber = "BEN-1001",
+                Address = "100 Benton Way",
+            },
+            new Property
+            {
+                CountyId = franklinId,
+                PropertyId = "FRA-BEN-1001",
+                ParcelId = "BEN-1001",
+                ParcelNumber = "BEN-1001",
+                Address = "200 Franklin Way",
+            });
         await db.SaveChangesAsync();
 
         var saleDate = new DateTime(2026, 1, 15, 0, 0, 0, DateTimeKind.Utc);
@@ -84,6 +99,9 @@ public sealed class PacsToTerraFusionSyncServiceIdentityTests
                 sale.PacsPropId!.Value,
                 sale.ParcelId)).ToArray());
         Assert.All(persisted, sale => Assert.Equal("multifamily", sale.PropertyType));
+        Assert.DoesNotContain(
+            persisted,
+            sale => string.Equals(sale.Address, "200 Franklin Way", StringComparison.Ordinal));
     }
 
     private static PacsComparableSale Sale(

@@ -518,8 +518,7 @@ public sealed class CountyReadOnlySalesSyncService : ICountyReadOnlySalesSyncSer
         '|',
         row.PacsChgOfOwnerId.ToString(CultureInfo.InvariantCulture),
         row.PropId.ToString(CultureInfo.InvariantCulture),
-        row.GeoId.ToUpperInvariant(),
-        row.SaleDate.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture));
+        row.GeoId.ToUpperInvariant());
 
     private static bool TryAuthority(
         AuthenticatedCanonicalCountyContextResult? context,

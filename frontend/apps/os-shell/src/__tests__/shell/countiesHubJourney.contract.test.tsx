@@ -3,7 +3,7 @@
  */
 
 import '@testing-library/jest-dom';
-import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type {
@@ -238,15 +238,47 @@ describe('Washington Counties Hub assessor journey', () => {
     expect(screen.getByRole('button', { name: 'Run read-only Sales sync' })).toBeDisabled();
     expect(screen.queryByRole('button', { name: 'Syncing sales…' })).not.toBeInTheDocument();
 
-    resolveSync({
+    await act(async () => {
+      resolveSync({
+        countyKey: 'wa-spokane',
+        countyName: 'Spokane',
+        receipt: { contractId: 'wal.county-connected.readonly-sales-sync.v1' },
+      });
+    });
+    expect(fetchCountyReadOnlySalesSyncAvailabilityMock).toHaveBeenCalledTimes(2);
+  }, 15_000);
+
+  it('reports a post-sync availability refresh failure instead of claiming success', async () => {
+    fetchCountyReadOnlySalesSyncAvailabilityMock
+      .mockReset()
+      .mockResolvedValueOnce({
+        contractId: 'wal.county-connected.readonly-sales-sync.v1',
+        countyId: '00000000-0000-0000-0000-000000000063',
+        countyKey: 'wa-spokane',
+        countyName: 'Spokane',
+        connectionConfigured: true,
+        sourceSystem: 'PACS',
+        lastSuccessfulSyncAtUtc: null,
+        availableSales: 0,
+        latestSaleDate: null,
+        recommendedStudyYear: null,
+        salesReviewAvailable: false,
+        status: 'connected-no-sales',
+      })
+      .mockRejectedValueOnce(new Error('Connected sales refresh failed.'));
+    runCountyReadOnlySalesSyncMock.mockResolvedValue({
       countyKey: 'wa-spokane',
       countyName: 'Spokane',
       receipt: { contractId: 'wal.county-connected.readonly-sales-sync.v1' },
     });
-    await waitFor(() =>
-      expect(fetchCountyReadOnlySalesSyncAvailabilityMock).toHaveBeenCalledTimes(2)
-    );
-  });
+
+    render(<CountiesHub />);
+    fireEvent.click(await screen.findByRole('option', { name: /Select Spokane County/i }));
+    fireEvent.click(screen.getByRole('button', { name: 'Run read-only Sales sync' }));
+
+    expect(await screen.findByText('Connected sales refresh failed.')).toBeInTheDocument();
+    expect(runCountyReadOnlySalesSyncMock).toHaveBeenCalledTimes(1);
+  }, 15_000);
 
   it('surfaces authenticated county-upload sales and opens TerraForge on its live API', async () => {
     fetchCountyCsvPromotedSalesAvailabilityMock.mockResolvedValue({

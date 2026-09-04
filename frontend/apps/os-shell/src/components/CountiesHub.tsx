@@ -163,14 +163,15 @@ const CountiesHub = () => {
     try {
       const availability = await fetchCountyReadOnlySalesSyncAvailability(apiFetch, signal);
       if (!signal?.aborted) setConnectedSales(availability);
-    } catch {
+    } catch (error) {
       if (!signal?.aborted) setConnectedSales(null);
+      throw error;
     }
   }, []);
 
   useEffect(() => {
     const controller = new AbortController();
-    void loadConnectedSales(controller.signal);
+    void loadConnectedSales(controller.signal).catch(() => undefined);
     return () => controller.abort();
   }, [loadConnectedSales]);
 

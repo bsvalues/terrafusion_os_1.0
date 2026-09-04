@@ -869,7 +869,7 @@ public sealed class PacsToTerraFusionSyncService
             StringComparer.OrdinalIgnoreCase);
 
         var propertyAddressByParcelId = await _db.Properties
-            .Where(property => parcelIds.Contains(property.ParcelId))
+            .Where(property => property.CountyId == countyId && parcelIds.Contains(property.ParcelId))
             .Select(property => new { property.ParcelId, property.Address })
             .ToDictionaryAsync(
                 property => property.ParcelId,

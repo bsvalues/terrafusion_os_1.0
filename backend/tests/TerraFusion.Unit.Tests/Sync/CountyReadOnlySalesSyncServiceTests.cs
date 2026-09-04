@@ -292,6 +292,82 @@ public sealed class CountyReadOnlySalesSyncServiceTests
     }
 
     [Fact]
+    public async Task SyncRejectsConflictingDatesForTheSamePacsSourceIdentity()
+    {
+        var factory = new InMemoryFactory();
+        await using (var seed = factory.CreateDbContext())
+        {
+            seed.Counties.Add(new County { Id = BentonId, Name = "Benton", State = "WA", FipsCode = "53005" });
+            seed.SyncSourceConnections.Add(new SyncSourceConnection
+            {
+                Id = Guid.Parse("56560056-5656-5656-5656-565656565656"),
+                CountyId = BentonId,
+                Name = "Benton PACS production read replica",
+                SourceSystem = "PACS",
+                ConnectionType = "SqlServer",
+                Server = "benton-pacs-ro",
+                Database = "benton_pacs",
+                AuthMode = "WindowsIntegrated",
+                AdditionalOptions = "Encrypt=True;ApplicationIntent=ReadOnly",
+                IsActive = true,
+            });
+            await seed.SaveChangesAsync();
+        }
+
+        var adapter = new Mock<IPacsAdapter>(MockBehavior.Strict);
+        adapter.As<IExternalReadOnlyPacsAdapter>()
+            .Setup(value => value.MatchesSource("benton-pacs-ro", "benton_pacs"))
+            .Returns(true);
+        adapter.As<IExternalReadOnlyPacsAdapter>()
+            .Setup(value => value.HasServerEnforcedReadOnlyAccessAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(true);
+        adapter.As<IExternalReadOnlyPacsAdapter>()
+            .Setup(value => value.GetSalesConnectionStatusAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new PacsConnectionStatus { IsConnected = true, DatabaseName = "benton_pacs" });
+        adapter.Setup(value => value.ValidateContractAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new PacsContractProof { IsValid = true, ContractId = "pacscontract.v1" });
+        adapter.Setup(value => value.GetComparableSalesAsync(1, 500, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new PacsPagedResult<PacsComparableSale>
+            {
+                Page = 1,
+                PageSize = 500,
+                TotalCount = 2,
+                Items = new[]
+                {
+                    new PacsComparableSale
+                    {
+                        PacsChgOfOwnerId = 5001,
+                        PropId = 1001,
+                        GeoId = "BEN-1001",
+                        SaleDate = new DateTime(2026, 1, 15, 0, 0, 0, DateTimeKind.Utc),
+                        SalePrice = 425_000m,
+                    },
+                    new PacsComparableSale
+                    {
+                        PacsChgOfOwnerId = 5001,
+                        PropId = 1001,
+                        GeoId = "BEN-1001",
+                        SaleDate = new DateTime(2026, 1, 16, 0, 0, 0, DateTimeKind.Utc),
+                        SalePrice = 425_000m,
+                    },
+                },
+            });
+        var service = new CountyReadOnlySalesSyncService(
+            factory,
+            adapter.Object,
+            NullLogger<CountyReadOnlySalesSyncService>.Instance);
+        var context = await CreateCountyContextAsync(Benton, BentonId, "benton-assessor");
+
+        var result = await service.SyncAsync(new CountyReadOnlySalesSyncRequest(context));
+
+        Assert.Equal(CountyReadOnlySalesSyncDisposition.Denied, result.Disposition);
+        Assert.Equal(CountyReadOnlySalesSyncDenialCode.SourceDataInvalid, result.DenialCode);
+        await using var verify = factory.CreateDbContext();
+        Assert.Empty(await verify.ComparableSales.ToListAsync());
+        Assert.Equal("SOURCE_DATA_INVALID", (await verify.SyncSourceConnections.SingleAsync()).LastConnectionErrorMessage);
+    }
+
+    [Fact]
     public async Task SyncRejectsInvalidOrOverLimitVerbatimPacsFields()
     {
         var invalidFields = new (string? Consideration, string? SaleComment)[]

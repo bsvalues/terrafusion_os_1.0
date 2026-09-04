@@ -15,7 +15,8 @@ public partial class WALComparableSalePacsSourceIdentity : Migration
             name: "IX_ComparableSales_County_PacsSourceIdentity",
             table: "ComparableSales",
             columns: new[] { "CountyId", "PacsChgOfOwnerId", "PacsPropId", "ParcelId" },
-            unique: true);
+            unique: true,
+            filter: "\"PacsChgOfOwnerId\" IS NOT NULL AND \"PacsPropId\" IS NOT NULL");
     }
 
     protected override void Down(MigrationBuilder migrationBuilder)
