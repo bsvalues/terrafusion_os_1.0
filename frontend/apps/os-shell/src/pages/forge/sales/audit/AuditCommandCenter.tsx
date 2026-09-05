@@ -16,8 +16,9 @@ const STUDY_YEARS = [2023, 2024, 2025, 2026];
 
 export function AuditCommandCenter({ taxYear: propTaxYear }: Props) {
   const qc = useQueryClient();
-  const { selectedStratumKey, setSelectedStratumKey } = useSalesForgeStore();
+  const { selectedStratumKey, setSelectedStratumKey, dataSource } = useSalesForgeStore();
   const countyScope = getSalesForgeCountyScope();
+  const admissionSource = dataSource === 'county-readonly-sync' ? 'county-readonly-sync' : 'canonical';
   const [localSales, setLocalSales] = useState<Record<string, string>>({}); // id → decision override
   const [filterOverride, setFilterOverride] = useState<'ai-flagged' | undefined>(undefined);
   // Local year override so the assessor can explore any study year without touching the global store
@@ -47,10 +48,10 @@ export function AuditCommandCenter({ taxYear: propTaxYear }: Props) {
   });
 
   const { data: runningStats } = useQuery({
-    queryKey: ['sales-forge-running-stats', taxYear, countyScope.countyId],
+    queryKey: ['sales-forge-running-stats', taxYear, countyScope.countyId, admissionSource],
     queryFn: () =>
       fetch(
-        `/api/terraforge/sale-qualification/running-stats?taxYear=${taxYear}${countyScope.countyId ? `&countyId=${encodeURIComponent(countyScope.countyId)}` : ''}`,
+        `/api/terraforge/sale-qualification/running-stats?taxYear=${taxYear}&admissionSource=${encodeURIComponent(admissionSource)}${countyScope.countyId ? `&countyId=${encodeURIComponent(countyScope.countyId)}` : ''}`,
         { headers: countyScope.headers },
       )
         .then(r => r.ok ? r.json() : null)

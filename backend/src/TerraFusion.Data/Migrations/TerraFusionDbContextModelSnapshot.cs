@@ -3737,6 +3737,13 @@ namespace TerraFusion.Data.Migrations
                     b.Property<int?>("PacsChgOfOwnerId")
                         .HasColumnType("integer");
 
+                    b.Property<string>("PacsConsideration")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<int?>("PacsPropId")
+                        .HasColumnType("integer");
+
                     b.Property<decimal?>("PacsComputedRatio")
                         .HasColumnType("numeric");
 
@@ -3873,6 +3880,11 @@ namespace TerraFusion.Data.Migrations
                     b.HasIndex("CountyId", "Neighborhood");
 
                     b.HasIndex("CountyId", "ParcelId");
+
+                    b.HasIndex("CountyId", "PacsChgOfOwnerId", "PacsPropId", "ParcelId")
+                        .IsUnique()
+                        .HasFilter("\"PacsChgOfOwnerId\" IS NOT NULL AND \"PacsPropId\" IS NOT NULL")
+                        .HasDatabaseName("IX_ComparableSales_County_PacsSourceIdentity");
 
                     b.HasIndex("CountyId", "PropertyType", "SaleDate");
 

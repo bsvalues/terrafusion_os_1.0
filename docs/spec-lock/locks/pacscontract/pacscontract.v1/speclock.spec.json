@@ -17,6 +17,11 @@
         "required": true
       },
       {
+        "name": "pacs_golive",
+        "purpose": "Read-only PACS sales, CAMA, and improvement-cost source",
+        "required": false
+      },
+      {
         "name": "CIAPS",
         "purpose": "County Integrated Assessment & Permit System",
         "required": false
@@ -39,38 +44,43 @@
             "prop_id",
             "geo_id",
             "prop_type_cd",
-            "prop_val_yr",
-            "assessed_val",
-            "taxable_val",
-            "situs_display",
+            "situs_addr",
             "situs_city",
-            "situs_state",
-            "situs_zip"
+            "situs_zip",
+            "legal_desc",
+            "assessed_val",
+            "market_val",
+            "land_val",
+            "imprv_val",
+            "appr_year",
+            "last_modified"
           ]
         },
         {
           "name": "vw_TerraFusion_Property_Ownership",
           "required_columns": [
             "prop_id",
-            "owner_id",
             "owner_name",
             "mail_addr_1",
+            "mail_addr_2",
             "mail_city",
             "mail_state",
             "mail_zip",
-            "ownership_pct"
+            "pct_ownership",
+            "deed_date"
           ]
         },
         {
           "name": "vw_TerraFusion_Assessment_History",
           "required_columns": [
             "prop_id",
-            "geo_id",
             "prop_val_yr",
             "assessed_val",
-            "taxable_val",
-            "improvement_value",
-            "land_value"
+            "market_val",
+            "land_val",
+            "imprv_val",
+            "appraised_by",
+            "appraisal_dt"
           ]
         }
       ],
@@ -95,6 +105,37 @@
         {
           "name": "sp_TerraFusion_HealthCheck",
           "severity": "error"
+        }
+      ]
+    },
+    "pacs_golive": {
+      "views": [
+        {
+          "name": "vw_TerraFusion_Comparable_Sales",
+          "required_columns": [
+            "chg_of_owner_id", "prop_id", "geo_id", "sale_date", "sale_price",
+            "prop_type_cd", "situs_addr", "neighborhood", "sale_ratio_type_cd",
+            "deed_type_cd", "consideration", "sale_comment", "last_modified"
+          ]
+        },
+        {
+          "name": "vw_TerraFusion_Cama_Characteristics",
+          "required_columns": [
+            "prop_id", "geo_id", "tax_year", "building_type", "square_feet",
+            "stories", "basement_sqft", "garage_sqft", "quality_grade",
+            "condition_grade", "year_built", "effective_age", "bedrooms",
+            "bathrooms", "fireplaces", "has_pool", "functional_obsolescence",
+            "external_obsolescence", "neighborhood", "last_modified"
+          ]
+        },
+        {
+          "name": "vw_TerraFusion_Improvement_Cost_Matrices",
+          "required_columns": [
+            "source_matrix_id", "matrix_year", "matrix_type", "base_rate",
+            "multiplier", "region", "building_type", "base_cost", "grade",
+            "condition", "year_built", "depreciation_rate", "axis1", "axis2",
+            "adjustment_factor_raw", "matrix_label"
+          ]
         }
       ]
     }

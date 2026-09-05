@@ -100,8 +100,14 @@ export interface WashingtonCountiesHubHandoff {
   countyName: string;
   resetValuationScope: true;
   launchContext: 'washington-counties-hub';
-  dataTrustTier: 'public-reference-not-county-certified' | 'county-provided-validated-upload';
-  referencePackageSource: WashingtonReferencePackageSource | 'county-upload';
+  dataTrustTier:
+    | 'public-reference-not-county-certified'
+    | 'county-provided-validated-upload'
+    | 'county-connected-readonly';
+  referencePackageSource:
+    | WashingtonReferencePackageSource
+    | 'county-upload'
+    | 'county-readonly-sync';
   referenceDataPosture: string;
   referenceRecordCount: number | null;
   latestReferenceSaleDate: string | null;
@@ -373,8 +379,8 @@ function shardRecordProvenanceSupportsPosture(
   });
 }
 
-function isNullableFiniteNumber(value: unknown): value is number | null {
-  return value === null || (typeof value === 'number' && Number.isFinite(value) && value >= 0);
+function isNullableSafeRecordCount(value: unknown): value is number | null {
+  return value === null || (typeof value === 'number' && Number.isSafeInteger(value) && value >= 0);
 }
 
 function isNullableString(value: unknown): value is string | null {
@@ -397,17 +403,19 @@ export function parseWashingtonCountiesHubHandoff(
     !metadata ||
     metadata.launchContext !== 'washington-counties-hub' ||
     (metadata.dataTrustTier !== 'public-reference-not-county-certified' &&
-      metadata.dataTrustTier !== 'county-provided-validated-upload') ||
+      metadata.dataTrustTier !== 'county-provided-validated-upload' &&
+      metadata.dataTrustTier !== 'county-connected-readonly') ||
     typeof metadata.countyCode !== 'string' ||
     typeof metadata.countyName !== 'string' ||
     metadata.resetValuationScope !== true ||
     (metadata.referencePackageSource !== 'hosted' &&
       metadata.referencePackageSource !== 'repository-reference' &&
-      metadata.referencePackageSource !== 'county-upload') ||
+      metadata.referencePackageSource !== 'county-upload' &&
+      metadata.referencePackageSource !== 'county-readonly-sync') ||
     typeof metadata.referenceDataPosture !== 'string' ||
     !(
       metadata.referenceRecordCount === undefined ||
-      isNullableFiniteNumber(metadata.referenceRecordCount)
+      isNullableSafeRecordCount(metadata.referenceRecordCount)
     ) ||
     !(
       metadata.latestReferenceSaleDate === undefined ||
@@ -458,6 +466,7 @@ export function parseWashingtonCountiesHubHandoff(
       metadata.referenceDataPosture !== 'county_provided_validated_upload' ||
       salesReviewAvailability !== 'available' ||
       referenceRecordCount === null ||
+      !Number.isSafeInteger(referenceRecordCount) ||
       referenceRecordCount <= 0 ||
       latestReferenceSaleDate === null ||
       !isStudyYear(metadata.taxYear) ||
@@ -481,7 +490,41 @@ export function parseWashingtonCountiesHubHandoff(
     };
   }
 
-  if (metadata.referencePackageSource === 'county-upload') return null;
+  if (metadata.dataTrustTier === 'county-connected-readonly') {
+    if (
+      metadata.referencePackageSource !== 'county-readonly-sync' ||
+      metadata.referenceDataPosture !== 'county_connected_readonly' ||
+      salesReviewAvailability !== 'available' ||
+      referenceRecordCount === null ||
+      referenceRecordCount <= 0 ||
+      latestReferenceSaleDate === null ||
+      !isStudyYear(metadata.taxYear) ||
+      salesReviewUnavailableMessage !== null
+    ) {
+      return null;
+    }
+    return {
+      countyCode: registeredCounty.code,
+      countyName: registeredCounty.name,
+      resetValuationScope: true,
+      launchContext: 'washington-counties-hub',
+      dataTrustTier: 'county-connected-readonly',
+      referencePackageSource: 'county-readonly-sync',
+      referenceDataPosture: 'county_connected_readonly',
+      referenceRecordCount,
+      latestReferenceSaleDate,
+      taxYear: metadata.taxYear,
+      salesReviewAvailability: 'available',
+      salesReviewUnavailableMessage: null,
+    };
+  }
+
+  if (
+    metadata.referencePackageSource === 'county-upload' ||
+    metadata.referencePackageSource === 'county-readonly-sync'
+  ) {
+    return null;
+  }
 
   // The tracked repository-reference package is a synthetic navigation fixture.
   // A structurally valid hosted availability claim remains navigation context;

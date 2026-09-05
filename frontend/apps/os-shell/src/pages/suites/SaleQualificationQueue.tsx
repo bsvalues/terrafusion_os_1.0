@@ -176,6 +176,7 @@ export function SaleQualificationQueue({ taxYear = TAX_YEAR }: Props) {
         status: state.status,
         page: String(state.page),
         pageSize: String(PAGE_SIZE),
+        admissionSource: 'canonical',
       });
       if (countyScope.countyId) params.set('countyId', countyScope.countyId);
       const res = await apiFetch(`/terraforge/sale-qualification?${params}`, { headers: countyScope.headers });
@@ -212,7 +213,7 @@ export function SaleQualificationQueue({ taxYear = TAX_YEAR }: Props) {
       }
 
       try {
-        const params = new URLSearchParams();
+        const params = new URLSearchParams({ admissionSource: 'canonical' });
         if (countyScope.countyId) params.set('countyId', countyScope.countyId);
         const query = params.toString();
         const res = await apiFetch(`/terraforge/sale-qualification/${saleId}${query ? `?${query}` : ''}`, {
