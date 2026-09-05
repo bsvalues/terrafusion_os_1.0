@@ -1108,12 +1108,13 @@ public sealed class CountyCsvUploadAdmissionLedgerTests
             "CREATE TABLE \"__EFMigrationsHistory\" (\"MigrationId\" TEXT NOT NULL CONSTRAINT \"PK___EFMigrationsHistory\" PRIMARY KEY, \"ProductVersion\" TEXT NOT NULL)");
 
         var migrations = context.Database.GetMigrations().ToArray();
-        Assert.Equal(MigrationId, migrations[^1]);
-        var previousMigration = migrations[^2];
+        var promotionMigrationIndex = Array.IndexOf(migrations, MigrationId);
+        Assert.InRange(promotionMigrationIndex, 2, migrations.Length - 1);
+        var previousMigration = migrations[promotionMigrationIndex - 1];
         // The upload feature has three ordered migrations: admission, row staging,
         // and promotion. Mark only the migrations before that chain as applied so
         // migrating to the row-staging predecessor actually creates both tables.
-        foreach (var migration in migrations[..^3])
+        foreach (var migration in migrations[..(promotionMigrationIndex - 2)])
         {
             await context.Database.ExecuteSqlInterpolatedAsync(
                 $"INSERT INTO \"__EFMigrationsHistory\" (\"MigrationId\", \"ProductVersion\") VALUES ({migration}, {"8.0.0"})");

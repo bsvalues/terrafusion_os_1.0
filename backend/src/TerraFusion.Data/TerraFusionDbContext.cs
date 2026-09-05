@@ -809,6 +809,10 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
       entity.HasIndex(e => new { e.CountyId, e.PropertyType, e.SaleDate });
       entity.HasIndex(e => new { e.CountyId, e.Neighborhood });
       entity.HasIndex(e => new { e.CountyId, e.ParcelId });
+      entity.HasIndex(e => new { e.CountyId, e.PacsChgOfOwnerId, e.PacsPropId, e.ParcelId })
+        .IsUnique()
+        .HasFilter("\"PacsChgOfOwnerId\" IS NOT NULL AND \"PacsPropId\" IS NOT NULL")
+        .HasDatabaseName("IX_ComparableSales_County_PacsSourceIdentity");
       entity.HasIndex(e => new { e.CountyId, e.QualificationDecision, e.QualificationRecommendation });
     });
 

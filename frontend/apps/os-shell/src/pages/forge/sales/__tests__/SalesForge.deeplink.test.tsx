@@ -577,6 +577,51 @@ describe('SalesForge — County Studio deeplink consumption (Task D2)', () => {
     expect(screen.getByTestId('stub-queue')).toBeInTheDocument();
   });
 
+  it('keeps a validated county read-only sync handoff on the protected live provider', async () => {
+    window.history.replaceState({}, '', '/?wa-launch-data=1');
+    act(() => {
+      useSalesForgeStore.getState().setActiveTab('ai-audit');
+    });
+
+    render(
+      <SalesForge
+        metadata={{
+          countyCode: '005',
+          countyName: 'Benton',
+          resetValuationScope: true,
+          launchContext: 'washington-counties-hub',
+          dataTrustTier: 'county-connected-readonly',
+          referencePackageSource: 'county-readonly-sync',
+          referenceDataPosture: 'county_connected_readonly',
+          referenceRecordCount: 17,
+          latestReferenceSaleDate: '2026-02-03',
+          taxYear: 2027,
+          salesReviewAvailability: 'available',
+          salesReviewUnavailableMessage: null,
+        }}
+      />
+    );
+
+    await waitFor(() => {
+      expect(useSalesForgeStore.getState().committedFilters.countyCode).toBe('005');
+      expect(useSalesForgeStore.getState().dataSource).toBe('county-readonly-sync');
+      expect(useSalesForgeStore.getState().taxYear).toBe(2027);
+      expect(useSalesForgeStore.getState().activeTab).toBe('queue');
+    });
+    expect(washingtonCountyLaunchMocks.resolve).not.toHaveBeenCalled();
+    expect(washingtonCountyLaunchMocks.verify).not.toHaveBeenCalled();
+    expect(screen.getByTestId('stub-queue')).toBeInTheDocument();
+    expect(screen.queryByRole('tab', { name: 'AI Audit' })).not.toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: 'Ratio Audit' })).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: 'DOR Export' })).toBeInTheDocument();
+    expect(screen.getByText(/Active read-only county connection only/i)).toHaveTextContent(
+      /exact connection/i
+    );
+    expect(screen.getByText(/Active read-only county connection only/i)).toHaveTextContent(
+      /AI Audit remains unavailable/i
+    );
+  });
+
   it('fails closed instead of retaining Benton when a Counties Hub handoff is invalid', async () => {
     render(
       <SalesForge

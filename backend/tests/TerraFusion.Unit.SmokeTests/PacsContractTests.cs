@@ -131,6 +131,24 @@ public sealed class PacsContractTests
     Assert.True(pacsOltp!["required"]?.GetValue<bool>(), "pacs_oltp must be marked as required");
   }
 
+  [Fact]
+  public void PacsOltpOwnershipView_SelectsLatestBaseSupplementOnly()
+  {
+    var path = Path.Combine(
+      RepoRoot,
+      "docs",
+      "spec-lock",
+      "locks",
+      "pacscontract",
+      "pacscontract.v1",
+      "pacs-contract-views.pacs_oltp.sql");
+    var content = File.ReadAllText(path);
+
+    Assert.Matches(
+      @"SELECT\s+prop_id,\s*owner_id,\s*MAX\(owner_tax_yr\)\s+AS\s+max_yr\s+FROM\s+dbo\.owner\s+WHERE\s+sup_num\s*=\s*0\s+GROUP\s+BY\s+prop_id,\s*owner_id",
+      content);
+  }
+
   // ═══════════════════════════════════════════════════════════════
   // 3. ALL REQUIRED VIEWS DEFINED
   // ═══════════════════════════════════════════════════════════════

@@ -91,6 +91,25 @@ describe('SalesForge request isolation', () => {
     const detailUrl = String(launchApiMocks.apiFetch.mock.calls[1]?.[0]);
     expect(detailUrl).toContain('/terraforge/sale-qualification/uploaded-sale?');
     expect(detailUrl).toContain('taxYear=2025');
+    for (const call of launchApiMocks.apiFetch.mock.calls) {
+      expect(String(call[0])).toContain('admissionSource=canonical');
+    }
+  });
+
+  it('scopes connected-source requests to the exact protected admission source', async () => {
+    useSalesForgeStore.getState().setDataSource('county-readonly-sync');
+    launchApiMocks.apiFetch
+      .mockResolvedValueOnce(Response.json({ total: 1, page: 1, pageSize: 50, items: [] }))
+      .mockResolvedValueOnce(Response.json({ saleId: 'connected-sale' }));
+
+    await useSalesForgeStore.getState().fetchQueue();
+    await useSalesForgeStore.getState().fetchSaleDetail('connected-sale');
+
+    expect(launchApiMocks.fetchQueue).not.toHaveBeenCalled();
+    expect(launchApiMocks.fetchDetail).not.toHaveBeenCalled();
+    for (const call of launchApiMocks.apiFetch.mock.calls) {
+      expect(String(call[0])).toContain('admissionSource=county-readonly-sync');
+    }
   });
 
   it('lets only the latest same-county queue request own data and loading state', async () => {

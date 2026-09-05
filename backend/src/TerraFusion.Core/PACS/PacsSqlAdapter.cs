@@ -21,6 +21,7 @@ using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Dapper;
+using TerraFusion.Core.Sync;
 
 namespace TerraFusion.Core.PACS
 {
@@ -28,7 +29,7 @@ namespace TerraFusion.Core.PACS
     /// SQL Server implementation of IPacsAdapter.
     /// Implements pacscontract.v1 with fail-closed semantics.
     /// </summary>
-    public sealed class PacsSqlAdapter : IPacsAdapter, IDisposable
+    public sealed class PacsSqlAdapter : IPacsAdapter, IExternalReadOnlyPacsAdapter, IDisposable
     {
         private readonly ILogger<PacsSqlAdapter> _logger;
         private readonly string _connectionString;
@@ -45,6 +46,9 @@ namespace TerraFusion.Core.PACS
         private const string ViewCamaCharacteristics = "vw_TerraFusion_Cama_Characteristics";
         private const string ViewImprovementCostMatrices = "vw_TerraFusion_Improvement_Cost_Matrices";
         private const string ProcHealthCheck = "sp_TerraFusion_HealthCheck";
+        private const string ContractSchema = "dbo";
+
+        private static string DboObject(string objectName) => $"[{ContractSchema}].[{objectName}]";
 
         // Contract-defined indexes (warning only)
         private static readonly string[] RequiredIndexes = new[]
@@ -61,24 +65,24 @@ namespace TerraFusion.Core.PACS
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
             // Get connection string from configuration
-            _connectionString = configuration.GetConnectionString("PacsConnection")
+            var connectionString = configuration.GetConnectionString("PacsConnection")
                 ?? configuration["PACS:ConnectionString"]
                 ?? throw new PacsContractViolationException(
                     PacsErrorCodes.ConnectionFailed,
                     "PACS connection string not configured. Set 'ConnectionStrings:PacsConnection' or 'PACS:ConnectionString'.");
 
-            _salesConnectionString = configuration.GetConnectionString("PacsSalesConnection")
+            _connectionString = ValidateConnectionString(connectionString);
+            var salesConnectionString = configuration.GetConnectionString("PacsSalesConnection")
                 ?? configuration["PACS:SalesConnectionString"]
                 ?? _connectionString;
 
             // Validate connection string has required properties per pacscontract.v1
-            ValidateConnectionString(_connectionString);
-            ValidateConnectionString(_salesConnectionString);
+            _salesConnectionString = ValidateConnectionString(salesConnectionString);
 
             _commandTimeout = configuration.GetValue("PACS:CommandTimeoutSeconds", 30);
         }
 
-        private static void ValidateConnectionString(string connectionString)
+        private static string ValidateConnectionString(string connectionString)
         {
             var builder = new SqlConnectionStringBuilder(connectionString);
 
@@ -90,10 +94,103 @@ namespace TerraFusion.Core.PACS
                     "PACS connection must use encryption (Encrypt=true) per pacscontract.v1");
             }
 
+            if (builder.TrustServerCertificate)
+            {
+                throw new PacsContractViolationException(
+                    PacsErrorCodes.ConnectionFailed,
+                    "PACS connection must validate a certificate trusted by the host (TrustServerCertificate=false)");
+            }
+
             // pacscontract.v1 requires application name for audit trail
-            if (string.IsNullOrEmpty(builder.ApplicationName) || !builder.ApplicationName.Contains("TerraFusion"))
+            if (!string.Equals(builder.ApplicationName, "TerraFusion-OS", StringComparison.Ordinal))
             {
                 builder.ApplicationName = "TerraFusion-OS";
+            }
+
+            return builder.ConnectionString;
+        }
+
+        public bool MatchesSource(string server, string database)
+        {
+            if (string.IsNullOrWhiteSpace(server) || string.IsNullOrWhiteSpace(database))
+            {
+                return false;
+            }
+            var builder = new SqlConnectionStringBuilder(_salesConnectionString);
+            return builder.ApplicationIntent == ApplicationIntent.ReadOnly
+                && string.Equals(builder.DataSource, server, StringComparison.OrdinalIgnoreCase)
+                && string.Equals(builder.InitialCatalog, database, StringComparison.OrdinalIgnoreCase);
+        }
+
+        public async Task<bool> HasServerEnforcedReadOnlyAccessAsync(
+            CancellationToken cancellationToken = default)
+        {
+            const string permissionSql = """
+                SELECT CASE WHEN
+                    COALESCE(IS_SRVROLEMEMBER('sysadmin'), 1) = 1
+                    OR COALESCE(IS_SRVROLEMEMBER('securityadmin'), 1) = 1
+                    OR COALESCE(HAS_PERMS_BY_NAME(NULL, 'SERVER', 'CONTROL SERVER'), 0) = 1
+                    OR COALESCE(HAS_PERMS_BY_NAME(NULL, 'SERVER', 'ALTER ANY LOGIN'), 0) = 1
+                    OR COALESCE(HAS_PERMS_BY_NAME(NULL, 'SERVER', 'IMPERSONATE ANY LOGIN'), 0) = 1
+                    OR COALESCE(IS_MEMBER('db_owner'), 1) = 1
+                    OR COALESCE(IS_MEMBER('db_datawriter'), 1) = 1
+                    OR COALESCE(IS_MEMBER('db_securityadmin'), 1) = 1
+                    OR COALESCE(IS_MEMBER('db_ddladmin'), 1) = 1
+                    OR COALESCE(IS_MEMBER('db_accessadmin'), 1) = 1
+                    OR COALESCE(HAS_PERMS_BY_NAME(DB_NAME(), 'DATABASE', 'CONTROL'), 0) = 1
+                    OR COALESCE(HAS_PERMS_BY_NAME(DB_NAME(), 'DATABASE', 'ALTER'), 0) = 1
+                    OR COALESCE(HAS_PERMS_BY_NAME(DB_NAME(), 'DATABASE', 'TAKE OWNERSHIP'), 0) = 1
+                    OR COALESCE(HAS_PERMS_BY_NAME(DB_NAME(), 'DATABASE', 'ALTER ANY ROLE'), 0) = 1
+                    OR COALESCE(HAS_PERMS_BY_NAME(DB_NAME(), 'DATABASE', 'IMPERSONATE ANY USER'), 0) = 1
+                    OR EXISTS (
+                        SELECT 1
+                        FROM sys.objects AS candidate
+                        CROSS APPLY sys.fn_my_permissions(
+                            QUOTENAME(OBJECT_SCHEMA_NAME(candidate.object_id)) + '.' + QUOTENAME(candidate.name),
+                            'OBJECT') AS permission
+                        WHERE candidate.is_ms_shipped = 0
+                          AND candidate.type IN ('U', 'V', 'P', 'PC', 'IF', 'TF', 'FN', 'FS', 'FT', 'AF')
+                          AND (
+                            permission.permission_name IN ('INSERT', 'UPDATE', 'DELETE', 'ALTER', 'CONTROL', 'TAKE OWNERSHIP')
+                            OR (
+                                permission.permission_name = 'EXECUTE'
+                                AND NOT (
+                                    candidate.type IN ('P', 'PC')
+                                    AND OBJECT_SCHEMA_NAME(candidate.object_id) = 'dbo'
+                                    AND candidate.name = 'sp_TerraFusion_HealthCheck'
+                                )
+                            )
+                          )
+                    )
+                    OR EXISTS (
+                        SELECT 1
+                        FROM sys.schemas AS candidate
+                        CROSS APPLY sys.fn_my_permissions(QUOTENAME(candidate.name), 'SCHEMA') AS permission
+                        WHERE candidate.name NOT IN ('sys', 'INFORMATION_SCHEMA')
+                          AND permission.permission_name IN (
+                            'INSERT', 'UPDATE', 'DELETE', 'EXECUTE', 'ALTER', 'CONTROL', 'TAKE OWNERSHIP')
+                    )
+                THEN 0 ELSE 1 END
+                """;
+
+            try
+            {
+                await using var connection = CreateSalesConnection();
+                await connection.OpenAsync(cancellationToken).ConfigureAwait(false);
+                var readOnly = await connection.ExecuteScalarAsync<int>(new CommandDefinition(
+                    permissionSql,
+                    commandTimeout: _commandTimeout,
+                    cancellationToken: cancellationToken)).ConfigureAwait(false);
+                return readOnly == 1;
+            }
+            catch (OperationCanceledException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "PACS server-enforced read-only permission check failed");
+                return false;
             }
         }
 
@@ -165,6 +262,57 @@ namespace TerraFusion.Core.PACS
             };
         }
 
+        public async Task<PacsContractProof> ValidateSalesContractAsync(
+            CancellationToken cancellationToken = default)
+        {
+            var errors = new List<string>();
+            var connectionStatus = await GetSalesConnectionStatusAsync(cancellationToken);
+            var configuredSalesDatabase = GetDatabaseName(_salesConnectionString);
+            var connectedToConfiguredDatabase = connectionStatus.IsConnected
+                && string.Equals(
+                    connectionStatus.DatabaseName,
+                    configuredSalesDatabase,
+                    StringComparison.OrdinalIgnoreCase);
+            var connectionCheck = new PacsProofItem
+            {
+                Name = "SalesDatabaseConnection",
+                Passed = connectedToConfiguredDatabase,
+                Severity = "error",
+                Details = connectedToConfiguredDatabase
+                    ? $"Connected to configured Sales database '{connectionStatus.DatabaseName}'"
+                    : connectionStatus.IsConnected
+                        ? $"Connected to '{connectionStatus.DatabaseName}' but configured Sales database is '{configuredSalesDatabase}'"
+                        : connectionStatus.ErrorMessage ?? "Sales database connection failed"
+            };
+            if (!connectionCheck.Passed)
+            {
+                errors.Add(connectionCheck.Details!);
+            }
+
+            var viewsCheck = connectionCheck.Passed
+                ? await CheckRequiredSalesViewsAsync(cancellationToken)
+                : new PacsProofItem
+                {
+                    Name = "RequiredSalesViews",
+                    Passed = false,
+                    Severity = "error",
+                    Details = "Sales views were not checked because the Sales database connection failed"
+                };
+            if (!viewsCheck.Passed)
+            {
+                errors.Add(viewsCheck.Details ?? "Required Sales views missing");
+            }
+
+            return new PacsContractProof
+            {
+                IsValid = errors.Count == 0,
+                ValidatedAt = DateTime.UtcNow,
+                DatabaseConnection = connectionCheck,
+                RequiredViews = viewsCheck,
+                Errors = errors
+            };
+        }
+
         private async Task<PacsProofItem> CheckDatabaseConnectionAsync(CancellationToken cancellationToken)
         {
             try
@@ -223,7 +371,7 @@ namespace TerraFusion.Core.PACS
                     foreach (var view in new[] { ViewPropertyCore, ViewPropertyOwnership, ViewAssessmentHistory })
                     {
                         var exists = await connection.ExecuteScalarAsync<int>(
-                            "SELECT COUNT(*) FROM sys.views WHERE name = @ViewName",
+                            "SELECT COUNT(*) FROM sys.views WHERE name = @ViewName AND schema_id = SCHEMA_ID(N'dbo')",
                             new { ViewName = view });
 
                         if (exists == 0)
@@ -240,7 +388,7 @@ namespace TerraFusion.Core.PACS
                     foreach (var view in new[] { ViewComparableSales, ViewCamaCharacteristics, ViewImprovementCostMatrices })
                     {
                         var exists = await salesConnection.ExecuteScalarAsync<int>(
-                            "SELECT COUNT(*) FROM sys.views WHERE name = @ViewName",
+                            "SELECT COUNT(*) FROM sys.views WHERE name = @ViewName AND schema_id = SCHEMA_ID(N'dbo')",
                             new { ViewName = view });
 
                         if (exists == 0)
@@ -277,6 +425,50 @@ namespace TerraFusion.Core.PACS
                     Passed = false,
                     Severity = "error",
                     Details = $"View check failed: {ex.Message}"
+                };
+            }
+        }
+
+        private async Task<PacsProofItem> CheckRequiredSalesViewsAsync(CancellationToken cancellationToken)
+        {
+            try
+            {
+                await using var connection = CreateSalesConnection();
+                await connection.OpenAsync(cancellationToken);
+                var missingViews = new List<string>();
+                foreach (var view in new[] { ViewComparableSales, ViewCamaCharacteristics, ViewImprovementCostMatrices })
+                {
+                    var exists = await connection.ExecuteScalarAsync<int>(
+                        "SELECT COUNT(*) FROM sys.views WHERE name = @ViewName AND schema_id = SCHEMA_ID(N'dbo')",
+                        new { ViewName = view });
+                    if (exists == 0)
+                    {
+                        missingViews.Add($"{connection.Database}.{view}");
+                    }
+                }
+
+                return new PacsProofItem
+                {
+                    Name = "RequiredSalesViews",
+                    Passed = missingViews.Count == 0,
+                    Severity = "error",
+                    Details = missingViews.Count == 0
+                        ? $"Sales/CAMA/matrix views present in {connection.Database}"
+                        : $"Missing views: {string.Join(", ", missingViews)}"
+                };
+            }
+            catch (OperationCanceledException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                return new PacsProofItem
+                {
+                    Name = "RequiredSalesViews",
+                    Passed = false,
+                    Severity = "error",
+                    Details = $"Sales view validation failed: {ex.Message}"
                 };
             }
         }
@@ -341,7 +533,7 @@ namespace TerraFusion.Core.PACS
                 await connection.OpenAsync(cancellationToken);
 
                 var exists = await connection.ExecuteScalarAsync<int>(
-                    "SELECT COUNT(*) FROM sys.procedures WHERE name = @ProcName",
+                    "SELECT COUNT(*) FROM sys.procedures WHERE name = @ProcName AND schema_id = SCHEMA_ID(N'dbo')",
                     new { ProcName = ProcHealthCheck });
 
                 return new PacsProofItem
@@ -372,7 +564,7 @@ namespace TerraFusion.Core.PACS
                 await connection.OpenAsync(cancellationToken);
 
                 var result = await connection.QueryFirstOrDefaultAsync<dynamic>(
-                    ProcHealthCheck,
+                    DboObject(ProcHealthCheck),
                     commandType: CommandType.StoredProcedure,
                     commandTimeout: _commandTimeout);
 
@@ -397,17 +589,26 @@ namespace TerraFusion.Core.PACS
         }
 
         public async Task<PacsConnectionStatus> GetConnectionStatusAsync(CancellationToken cancellationToken = default)
+            => await GetConnectionStatusAsync(_connectionString, cancellationToken).ConfigureAwait(false);
+
+        public async Task<PacsConnectionStatus> GetSalesConnectionStatusAsync(
+            CancellationToken cancellationToken = default)
+            => await GetConnectionStatusAsync(_salesConnectionString, cancellationToken).ConfigureAwait(false);
+
+        private async Task<PacsConnectionStatus> GetConnectionStatusAsync(
+            string connectionString,
+            CancellationToken cancellationToken)
         {
             try
             {
-                await using var connection = CreatePrimaryConnection();
+                await using var connection = new SqlConnection(connectionString);
                 var sw = Stopwatch.StartNew();
                 await connection.OpenAsync(cancellationToken);
                 sw.Stop();
 
                 _lastConnectedAt = DateTime.UtcNow;
 
-                var builder = new SqlConnectionStringBuilder(_connectionString);
+                var builder = new SqlConnectionStringBuilder(connectionString);
 
                 return new PacsConnectionStatus
                 {
@@ -417,6 +618,10 @@ namespace TerraFusion.Core.PACS
                     LastConnectedAt = _lastConnectedAt,
                     LatencyMs = sw.Elapsed.TotalMilliseconds
                 };
+            }
+            catch (OperationCanceledException)
+            {
+                throw;
             }
             catch (Exception ex)
             {
@@ -465,7 +670,7 @@ namespace TerraFusion.Core.PACS
                         imprv_val AS ImprvVal,
                         appr_year AS ApprYear,
                         last_modified AS LastModified
-                    FROM {ViewPropertyCore}
+                    FROM {DboObject(ViewPropertyCore)}
                     WHERE prop_id = @PropId";
 
                 return await connection.QueryFirstOrDefaultAsync<PacsPropertyCore>(
@@ -501,7 +706,7 @@ namespace TerraFusion.Core.PACS
                         imprv_val AS ImprvVal,
                         appr_year AS ApprYear,
                         last_modified AS LastModified
-                    FROM {ViewPropertyCore}
+                    FROM {DboObject(ViewPropertyCore)}
                     WHERE geo_id = @GeoId";
 
                 return await connection.QueryFirstOrDefaultAsync<PacsPropertyCore>(
@@ -531,7 +736,7 @@ namespace TerraFusion.Core.PACS
 
                 var offset = (page - 1) * pageSize;
 
-                var countSql = $"SELECT COUNT(*) FROM {ViewPropertyCore}";
+                var countSql = $"SELECT COUNT(*) FROM {DboObject(ViewPropertyCore)}";
                 var totalCount = await connection.ExecuteScalarAsync<int>(countSql, commandTimeout: _commandTimeout);
 
                 var sql = $@"
@@ -549,7 +754,7 @@ namespace TerraFusion.Core.PACS
                         imprv_val AS ImprvVal,
                         appr_year AS ApprYear,
                         last_modified AS LastModified
-                    FROM {ViewPropertyCore}
+                    FROM {DboObject(ViewPropertyCore)}
                     ORDER BY prop_id
                     OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY";
 
@@ -596,7 +801,7 @@ namespace TerraFusion.Core.PACS
                 var offset = (page - 1) * pageSize;
 
                 var countSql = $@"
-                    SELECT COUNT(*) FROM {ViewPropertyCore}
+                    SELECT COUNT(*) FROM {DboObject(ViewPropertyCore)}
                     WHERE geo_id LIKE @Like
                        OR situs_addr LIKE @Like
                        OR situs_city LIKE @Like";
@@ -630,7 +835,7 @@ namespace TerraFusion.Core.PACS
                         imprv_val AS ImprvVal,
                         appr_year AS ApprYear,
                         last_modified AS LastModified
-                    FROM {ViewPropertyCore}
+                    FROM {DboObject(ViewPropertyCore)}
                     WHERE geo_id LIKE @Like
                        OR situs_addr LIKE @Like
                        OR situs_city LIKE @Like
@@ -679,7 +884,7 @@ namespace TerraFusion.Core.PACS
                         mail_zip AS MailZip,
                         pct_ownership AS PctOwnership,
                         deed_date AS DeedDate
-                    FROM {ViewPropertyOwnership}
+                    FROM {DboObject(ViewPropertyOwnership)}
                     WHERE prop_id = @PropId";
 
                 return await connection.QueryFirstOrDefaultAsync<PacsPropertyOwnership>(
@@ -724,7 +929,7 @@ namespace TerraFusion.Core.PACS
                         mail_zip AS MailZip,
                         pct_ownership AS PctOwnership,
                         deed_date AS DeedDate
-                    FROM {ViewPropertyOwnership}
+                    FROM {DboObject(ViewPropertyOwnership)}
                     WHERE prop_id IN @PropIds";
 
                 var ownership = await connection.QueryAsync<PacsPropertyOwnership>(
@@ -754,7 +959,7 @@ namespace TerraFusion.Core.PACS
 
             try
             {
-                await using var connection = CreateSalesConnection();
+                await using var connection = CreatePrimaryConnection();
                 await connection.OpenAsync(cancellationToken);
 
                 var sql = $@"
@@ -767,7 +972,7 @@ namespace TerraFusion.Core.PACS
                         imprv_val AS ImprvVal,
                         appraised_by AS AppraisedBy,
                         appraisal_dt AS AppraisalDt
-                    FROM {ViewAssessmentHistory}
+                    FROM {DboObject(ViewAssessmentHistory)}
                     WHERE prop_id = @PropId
                         AND (@YearFrom IS NULL OR prop_val_yr >= @YearFrom)
                         AND (@YearTo IS NULL OR prop_val_yr <= @YearTo)
@@ -801,7 +1006,7 @@ namespace TerraFusion.Core.PACS
             int pageSize = 500,
             CancellationToken cancellationToken = default)
         {
-            await EnsureContractValidAsync(cancellationToken);
+            await EnsureSalesContractValidAsync(cancellationToken);
 
             if (page < 1) page = 1;
             if (pageSize < 1 || pageSize > 1000) pageSize = 500;
@@ -817,19 +1022,16 @@ namespace TerraFusion.Core.PACS
                     connection.Database);
 
                 var totalCount = await connection.ExecuteScalarAsync<int>(
-                    $"SELECT COUNT(*) FROM {ViewComparableSales}");
-
-                var rawSaleCount = await connection.ExecuteScalarAsync<int>(
-                    "SELECT COUNT(*) FROM sale WHERE COALESCE(NULLIF(adjusted_sl_price, 0), NULLIF(sl_price, 0)) > 0");
+                    $"SELECT COUNT(*) FROM {DboObject(ViewComparableSales)}");
 
                 _logger.LogInformation(
-                    "PACS comparable sales source counts: comparableView={ComparableViewCount}, rawPositiveSales={RawSaleCount}",
-                    totalCount,
-                    rawSaleCount);
+                    "PACS comparable sales source count: comparableView={ComparableViewCount}",
+                    totalCount);
 
                 var offset = (page - 1) * pageSize;
                 var sql = $@"
                     SELECT
+                        chg_of_owner_id AS PacsChgOfOwnerId,
                         prop_id AS PropId,
                         geo_id AS GeoId,
                         sale_date AS SaleDate,
@@ -840,9 +1042,10 @@ namespace TerraFusion.Core.PACS
                         sale_ratio_type_cd AS SaleRatioTypeCd,
                         deed_type_cd AS DeedTypeCd,
                         consideration AS Consideration,
+                        sale_comment AS SaleComment,
                         last_modified AS LastModified
-                    FROM {ViewComparableSales}
-                    ORDER BY sale_date DESC, prop_id
+                    FROM {DboObject(ViewComparableSales)}
+                    ORDER BY sale_date DESC, prop_id, chg_of_owner_id
                     OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY";
 
                 var items = await connection.QueryAsync<PacsComparableSale>(
@@ -880,7 +1083,7 @@ namespace TerraFusion.Core.PACS
                 await connection.OpenAsync(cancellationToken);
 
                 var totalCount = await connection.ExecuteScalarAsync<int>(
-                    $"SELECT COUNT(*) FROM {ViewCamaCharacteristics}");
+                    $"SELECT COUNT(*) FROM {DboObject(ViewCamaCharacteristics)}");
 
                 var offset = (page - 1) * pageSize;
                 var sql = $@"
@@ -918,7 +1121,7 @@ namespace TerraFusion.Core.PACS
                         neighborhood AS Neighborhood,
                         property_type_cd AS PropertyTypeCd,
                         last_modified AS LastModified
-                    FROM {ViewCamaCharacteristics}
+                    FROM {DboObject(ViewCamaCharacteristics)}
                     ORDER BY prop_id
                     OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY";
 
@@ -957,7 +1160,7 @@ namespace TerraFusion.Core.PACS
                 await connection.OpenAsync(cancellationToken);
 
                 var totalCount = await connection.ExecuteScalarAsync<int>(
-                    $"SELECT COUNT(*) FROM {ViewImprovementCostMatrices}");
+                    $"SELECT COUNT(*) FROM {DboObject(ViewImprovementCostMatrices)}");
 
                 var offset = (page - 1) * pageSize;
                 var sql = $@"
@@ -983,7 +1186,7 @@ namespace TerraFusion.Core.PACS
                         axis_2 AS Axis2,
                         adjustment_factor_raw AS AdjustmentFactorRaw,
                         matrix_label AS MatrixLabel
-                    FROM {ViewImprovementCostMatrices}
+                    FROM {DboObject(ViewImprovementCostMatrices)}
                     ORDER BY matrix_year DESC, source_matrix_id
                     OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY";
 
@@ -1043,7 +1246,7 @@ namespace TerraFusion.Core.PACS
                         imprv_val AS ImprvVal,
                         appr_year AS ApprYear,
                         last_modified AS LastModified
-                    FROM {ViewPropertyCore}
+                    FROM {DboObject(ViewPropertyCore)}
                     WHERE prop_id IN @PropIds";
 
                 var results = await connection.QueryAsync<PacsPropertyCore>(
@@ -1086,7 +1289,7 @@ namespace TerraFusion.Core.PACS
                         imprv_val AS ImprvVal,
                         appr_year AS ApprYear,
                         last_modified AS LastModified
-                    FROM {ViewPropertyCore}
+                    FROM {DboObject(ViewPropertyCore)}
                     WHERE last_modified > @Since
                     ORDER BY last_modified";
 
@@ -1107,6 +1310,8 @@ namespace TerraFusion.Core.PACS
 
         private PacsContractProof? _cachedProof;
         private DateTime? _proofCachedAt;
+        private PacsContractProof? _cachedSalesProof;
+        private DateTime? _salesProofCachedAt;
         private static readonly TimeSpan ProofCacheDuration = TimeSpan.FromMinutes(5);
 
         private async Task EnsureContractValidAsync(CancellationToken cancellationToken)
@@ -1133,6 +1338,31 @@ namespace TerraFusion.Core.PACS
                 throw new PacsContractViolationException(
                     PacsErrorCodes.ConnectionFailed,
                     $"PACS contract validation failed: {string.Join("; ", _cachedProof.Errors)}");
+            }
+        }
+
+        private async Task EnsureSalesContractValidAsync(CancellationToken cancellationToken)
+        {
+            if (_cachedSalesProof != null &&
+                _salesProofCachedAt.HasValue &&
+                DateTime.UtcNow - _salesProofCachedAt.Value < ProofCacheDuration)
+            {
+                ThrowIfInvalidSalesProof(_cachedSalesProof);
+                return;
+            }
+
+            _cachedSalesProof = await ValidateSalesContractAsync(cancellationToken);
+            _salesProofCachedAt = DateTime.UtcNow;
+            ThrowIfInvalidSalesProof(_cachedSalesProof);
+        }
+
+        private static void ThrowIfInvalidSalesProof(PacsContractProof proof)
+        {
+            if (!proof.IsValid)
+            {
+                throw new PacsContractViolationException(
+                    PacsErrorCodes.ConnectionFailed,
+                    $"PACS Sales contract validation failed: {string.Join("; ", proof.Errors)}");
             }
         }
 

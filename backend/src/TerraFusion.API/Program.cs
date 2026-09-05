@@ -1653,6 +1653,8 @@ builder.Services.AddScoped<IEnhancementModuleRegistrationService, EnhancementMod
 builder.Services.AddScoped<TerraFusion.Core.Services.IDynamicPropertyService, TerraFusion.Core.Services.DynamicPropertyService>();
 // Register Property Service (REQUIRED by PropertiesController, SystemHub, QuantumMetricsHub)
 builder.Services.AddScoped<TerraFusion.Core.Services.IPropertyService, TerraFusion.Core.Services.PropertyService>();
+builder.Services.AddScoped<TerraFusion.Core.Interfaces.ICountyReadOnlySalesSyncService,
+  TerraFusion.Data.Services.Sync.CountyReadOnlySalesSyncService>();
 
 // Register Codex 3-6-9 Framework service (CodexController)
 builder.Services.AddScoped<TerraFusion.Core.Interfaces.ICodexService, TerraFusion.Core.Services.CodexService>();
@@ -2555,7 +2557,7 @@ builder.Services.AddHealthChecks()
     // but the AddPacsReadiness extension was never called. Result: PACS down →
     // /healthz/ready returned 200. Now it returns 503 when PACS_REQUIRED=true
     // and the contract fails to validate.
-    .AddPacsReadiness("ready", "pacs")
+    .AddPacsReadiness("readiness", "pacs")
     .AddSpecLockCheck();
 
 // 🔒 SpecLock Runtime Guard (MACHINE MODE)

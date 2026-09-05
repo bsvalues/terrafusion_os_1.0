@@ -56,7 +56,7 @@ public class PacsReadinessHealthCheckRegistrationTests
         services.AddLogging();
         services.AddSingleton(adapter);
         services.AddHealthChecks()
-            .AddPacsReadiness("ready", "pacs");
+            .AddPacsReadiness("readiness", "pacs");
         return services.BuildServiceProvider();
     }
 
@@ -71,7 +71,7 @@ public class PacsReadinessHealthCheckRegistrationTests
         sp.Should().NotBeNull();
         var svc = sp!.GetRequiredService<HealthCheckService>();
 
-        var report = await svc.CheckHealthAsync(reg => reg.Tags.Contains("ready"));
+        var report = await svc.CheckHealthAsync(reg => reg.Tags.Contains("readiness"));
 
         report.Status.Should().Be(HealthStatus.Unhealthy);
         report.Entries.Should().ContainKey("pacs-contract");
@@ -89,7 +89,7 @@ public class PacsReadinessHealthCheckRegistrationTests
         sp.Should().NotBeNull();
         var svc = sp!.GetRequiredService<HealthCheckService>();
 
-        var report = await svc.CheckHealthAsync(reg => reg.Tags.Contains("ready"));
+        var report = await svc.CheckHealthAsync(reg => reg.Tags.Contains("readiness"));
 
         // Degraded keeps overall 200 — but it is NOT Healthy: the
         // distinction matters because alerting can wire on Degraded.
@@ -108,7 +108,7 @@ public class PacsReadinessHealthCheckRegistrationTests
         sp.Should().NotBeNull();
         var svc = sp!.GetRequiredService<HealthCheckService>();
 
-        var report = await svc.CheckHealthAsync(reg => reg.Tags.Contains("ready"));
+        var report = await svc.CheckHealthAsync(reg => reg.Tags.Contains("readiness"));
 
         report.Status.Should().Be(HealthStatus.Healthy);
         report.Entries["pacs-contract"].Status.Should().Be(HealthStatus.Healthy);
@@ -121,7 +121,7 @@ public class PacsReadinessHealthCheckRegistrationTests
         services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
         services.AddLogging();
         services.AddSingleton(new Mock<IPacsAdapter>().Object);
-        services.AddHealthChecks().AddPacsReadiness("ready", "pacs");
+        services.AddHealthChecks().AddPacsReadiness("readiness", "pacs");
 
         using var sp = services.BuildServiceProvider();
         var options = sp.GetRequiredService<
@@ -129,7 +129,7 @@ public class PacsReadinessHealthCheckRegistrationTests
 
         var reg = options.Registrations.SingleOrDefault(r => r.Name == "pacs-contract");
         reg.Should().NotBeNull("PR-3 fix #2: PacsReadinessHealthCheck must be registered");
-        reg!.Tags.Should().Contain("ready");
+        reg!.Tags.Should().Contain("readiness");
         reg.Tags.Should().Contain("pacs");
         reg.FailureStatus.Should().Be(HealthStatus.Unhealthy);
     }

@@ -355,12 +355,15 @@ namespace TerraFusion.API.Services
                 .AsNoTracking()
                 .Include(s => s.Parcel)
                 .OrderByDescending(s => s.SaleDate)
+                .ThenBy(s => s.PacsPropId)
+                .ThenBy(s => s.PacsChgOfOwnerId)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync(cancellationToken);
 
             var items = sales.Select(s => new PacsComparableSale
             {
+                PacsChgOfOwnerId = s.PacsChgOfOwnerId,
                 PropId = s.PacsPropId,
                 GeoId = s.Parcel?.GeoId ?? string.Empty,
                 SaleDate = s.SaleDate ?? DateTime.MinValue,
@@ -370,7 +373,8 @@ namespace TerraFusion.API.Services
                 Neighborhood = null,
                 SaleRatioTypeCd = s.SaleRatioTypeCd,
                 DeedTypeCd = s.SaleTypeCd,
-                Consideration = s.SaleComment,
+                Consideration = null,
+                SaleComment = s.SaleComment,
                 LastModified = s.UpdatedAt,
             }).ToList();
 

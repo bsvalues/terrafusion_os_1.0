@@ -71,7 +71,7 @@ describe('SalesForge contract posture', () => {
     resetStore();
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
       ok: true,
-      json: async () => ({ items: [] }),
+      json: async () => ({ total: 0, items: [] }),
     }));
   });
 
