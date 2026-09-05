@@ -5,6 +5,7 @@
 // =============================================================================
 
 using System.Reflection;
+using System.Text.RegularExpressions;
 using Xunit;
 
 namespace TerraFusion.Unit.SmokeTests;
@@ -164,6 +165,112 @@ public sealed class PacsAdapterBoundaryTests
         var content = File.ReadAllText(path);
 
         Assert.Contains("vw_TerraFusion_Assessment_History", content);
+    }
+
+    [Fact]
+    public void PacsSqlAdapter_ComparableSalesExtraction_DoesNotRequireBaseSaleTable()
+    {
+        var path = Path.Combine(RepoRoot, "backend", "src", "TerraFusion.Core", "PACS", "PacsSqlAdapter.cs");
+        var content = File.ReadAllText(path);
+
+        var rawSaleReference = new Regex(
+            @"\b(?:FROM|JOIN)(?:\s|/\*[\s\S]*?\*/|--[^\r\n]*(?:\r?\n|$))+(?:(?:\[[^\]]+\]|""[^""]+""|[A-Za-z_][A-Za-z0-9_$#@]*)\s*\.\s*)*(?:\.\s*)?(?:\[sale\]|""sale""|sale)(?![\w])",
+            RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+
+        foreach (var forbiddenSql in new[]
+        {
+            "FROM sale",
+            "FROM [dbo].[sale]",
+            "FROM [pacs]..[sale]",
+            "FROM [server].[pacs]..[sale]",
+            "FROM \"dbo\".\"sale\"",
+            "FROM /* contract bypass */ [dbo].[sale]",
+            "JOIN\r\n[dbo].[sale]",
+        })
+        {
+            Assert.Matches(rawSaleReference, forbiddenSql);
+        }
+
+        Assert.DoesNotMatch(rawSaleReference, content);
+        Assert.Contains("DboObject(ViewComparableSales)", content, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void PacsSqlAdapter_ContractObjectsAreBoundToDboSchema()
+    {
+        var path = Path.Combine(RepoRoot, "backend", "src", "TerraFusion.Core", "PACS", "PacsSqlAdapter.cs");
+        var content = File.ReadAllText(path);
+
+        var viewCatalogChecks = Regex.Matches(
+            content,
+            "SELECT COUNT\\(\\*\\) FROM sys\\.views WHERE name = @ViewName AND schema_id = SCHEMA_ID\\(N'dbo'\\)",
+            RegexOptions.CultureInvariant);
+        var procedureCatalogChecks = Regex.Matches(
+            content,
+            "SELECT COUNT\\(\\*\\) FROM sys\\.procedures WHERE name = @ProcName AND schema_id = SCHEMA_ID\\(N'dbo'\\)",
+            RegexOptions.CultureInvariant);
+
+        Assert.True(viewCatalogChecks.Count == 3, "Every PACS view catalog check must bind to dbo.");
+        Assert.Single(procedureCatalogChecks);
+        Assert.Equal(
+            viewCatalogChecks.Count,
+            Regex.Matches(content, "SELECT COUNT\\(\\*\\) FROM sys\\.views", RegexOptions.CultureInvariant).Count);
+        Assert.Equal(
+            procedureCatalogChecks.Count,
+            Regex.Matches(content, "SELECT COUNT\\(\\*\\) FROM sys\\.procedures", RegexOptions.CultureInvariant).Count);
+        Assert.Contains("DboObject(ProcHealthCheck)", content, StringComparison.Ordinal);
+        Assert.DoesNotMatch(
+            new Regex(
+                @"\{View(?:PropertyCore|PropertyOwnership|AssessmentHistory|ComparableSales|CamaCharacteristics|ImprovementCostMatrices)\}",
+                RegexOptions.CultureInvariant),
+            content);
+        foreach (var view in new[]
+        {
+            "ViewPropertyCore",
+            "ViewPropertyOwnership",
+            "ViewAssessmentHistory",
+            "ViewComparableSales",
+            "ViewCamaCharacteristics",
+            "ViewImprovementCostMatrices",
+        })
+        {
+            Assert.Contains($"DboObject({view})", content, StringComparison.Ordinal);
+        }
+    }
+
+    [Fact]
+    public void PacsSqlAdapter_ReadOnlyRoleChecksFailClosedWhenIndeterminate()
+    {
+        var path = Path.Combine(RepoRoot, "backend", "src", "TerraFusion.Core", "PACS", "PacsSqlAdapter.cs");
+        var content = File.ReadAllText(path);
+
+        foreach (var role in new[]
+        {
+            "IS_SRVROLEMEMBER('sysadmin')",
+            "IS_SRVROLEMEMBER('securityadmin')",
+            "IS_MEMBER('db_owner')",
+            "IS_MEMBER('db_datawriter')",
+            "IS_MEMBER('db_securityadmin')",
+            "IS_MEMBER('db_ddladmin')",
+            "IS_MEMBER('db_accessadmin')",
+        })
+        {
+            Assert.Contains($"COALESCE({role}, 1) = 1", content, StringComparison.Ordinal);
+        }
+    }
+
+    [Fact]
+    public void PacsSqlAdapter_AssessmentHistoryUsesValidatedPrimaryConnection()
+    {
+        var path = Path.Combine(RepoRoot, "backend", "src", "TerraFusion.Core", "PACS", "PacsSqlAdapter.cs");
+        var content = File.ReadAllText(path);
+        var start = content.IndexOf("GetAssessmentHistoryAsync(", StringComparison.Ordinal);
+        var end = content.IndexOf("GetCurrentAssessmentAsync(", start, StringComparison.Ordinal);
+        Assert.True(start >= 0 && end > start);
+        var method = content[start..end];
+
+        Assert.Contains("CreatePrimaryConnection()", method, StringComparison.Ordinal);
+        Assert.DoesNotContain("CreateSalesConnection()", method, StringComparison.Ordinal);
     }
 
     [Fact]

@@ -340,6 +340,7 @@ function useRuntimeForgeMetrics(
       page: '1',
       pageSize: '1',
       countyId: countyScope.countyId,
+      admissionSource: 'canonical',
     });
     const compsParams = new URLSearchParams({
       taxYear: String(taxYear),

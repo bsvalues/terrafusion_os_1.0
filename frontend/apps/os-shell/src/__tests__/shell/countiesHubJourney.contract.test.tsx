@@ -3,7 +3,8 @@
  */
 
 import '@testing-library/jest-dom';
-import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type {
   WashingtonCountyStatusEntry,
@@ -17,6 +18,8 @@ const {
   getWashingtonSalesReviewCapabilityMock,
   isWashingtonSalesReviewLaunchEnabledMock,
   fetchCountyCsvPromotedSalesAvailabilityMock,
+  fetchCountyReadOnlySalesSyncAvailabilityMock,
+  runCountyReadOnlySalesSyncMock,
 } = vi.hoisted(() => ({
   activateModuleMock: vi.fn(),
   resolveWashingtonCountyStatusMock: vi.fn(),
@@ -24,10 +27,17 @@ const {
   getWashingtonSalesReviewCapabilityMock: vi.fn(),
   isWashingtonSalesReviewLaunchEnabledMock: vi.fn(),
   fetchCountyCsvPromotedSalesAvailabilityMock: vi.fn(),
+  fetchCountyReadOnlySalesSyncAvailabilityMock: vi.fn(),
+  runCountyReadOnlySalesSyncMock: vi.fn(),
 }));
 
 vi.mock('../../../../terraforge/src/data-admission/countyCsvUpload', () => ({
   fetchCountyCsvPromotedSalesAvailability: fetchCountyCsvPromotedSalesAvailabilityMock,
+}));
+
+vi.mock('../../../../terraforge/src/data-admission/countyReadOnlySalesSync', () => ({
+  fetchCountyReadOnlySalesSyncAvailability: fetchCountyReadOnlySalesSyncAvailabilityMock,
+  runCountyReadOnlySalesSync: runCountyReadOnlySalesSyncMock,
 }));
 
 vi.mock('../../orchestration/moduleActivation', () => ({
@@ -119,7 +129,196 @@ describe('Washington Counties Hub assessor journey', () => {
     fetchCountyCsvPromotedSalesAvailabilityMock
       .mockReset()
       .mockRejectedValue(new Error('not authenticated'));
+    fetchCountyReadOnlySalesSyncAvailabilityMock
+      .mockReset()
+      .mockRejectedValue(new Error('not authenticated'));
+    runCountyReadOnlySalesSyncMock.mockReset();
   });
+
+  it('runs a protected county read-only sync and opens TerraForge on connected sales', async () => {
+    const user = userEvent.setup({ skipHover: true });
+    const connectedAvailability = {
+      contractId: 'wal.county-connected.readonly-sales-sync.v1',
+      countyId: '00000000-0000-0000-0000-000000000063',
+      countyKey: 'wa-spokane',
+      countyName: 'Spokane',
+      connectionConfigured: true,
+      sourceSystem: 'PACS',
+      lastSuccessfulSyncAtUtc: null,
+      availableSales: 0,
+      latestSaleDate: null,
+      recommendedStudyYear: null,
+      salesReviewAvailable: false,
+      status: 'connected-no-sales',
+    };
+    fetchCountyReadOnlySalesSyncAvailabilityMock
+      .mockResolvedValueOnce(connectedAvailability)
+      .mockResolvedValueOnce({
+        ...connectedAvailability,
+        lastSuccessfulSyncAtUtc: '2026-09-03T20:00:00Z',
+        availableSales: 3,
+        latestSaleDate: '2026-02-12',
+        recommendedStudyYear: 2027,
+        salesReviewAvailable: true,
+        status: 'connected-sales-available',
+      });
+    runCountyReadOnlySalesSyncMock.mockResolvedValue({
+      countyKey: 'wa-spokane',
+      countyName: 'Spokane',
+      receipt: {
+        contractId: 'wal.county-connected.readonly-sales-sync.v1',
+        availableSales: 3,
+      },
+    });
+
+    render(<CountiesHub />);
+    await user.click(await screen.findByRole('option', { name: /Select Spokane County/i }));
+    await user.click(screen.getByRole('button', { name: 'Run read-only Sales sync' }));
+
+    expect(await screen.findByTestId('county-connected-sales-availability')).toHaveTextContent(
+      /Connected read-only PACS.*3 sales.*External writes: 0/i
+    );
+    expect(runCountyReadOnlySalesSyncMock).toHaveBeenCalledTimes(1);
+    await user.click(screen.getByRole('button', { name: 'Open TerraForge' }));
+    await waitFor(() =>
+      expect(activateModuleMock).toHaveBeenCalledWith('suite-forge', {
+        source: 'system',
+        metadata: expect.objectContaining({
+          countyCode: '063',
+          dataTrustTier: 'county-connected-readonly',
+          referencePackageSource: 'county-readonly-sync',
+          referenceRecordCount: 3,
+          taxYear: 2027,
+          salesReviewAvailability: 'available',
+        }),
+      })
+    );
+  });
+
+  it('does not leak an in-flight county sync state into another county selection', async () => {
+    const connectedAvailability = {
+      contractId: 'wal.county-connected.readonly-sales-sync.v1',
+      countyId: '00000000-0000-0000-0000-000000000063',
+      countyKey: 'wa-spokane',
+      countyName: 'Spokane',
+      connectionConfigured: true,
+      sourceSystem: 'PACS',
+      lastSuccessfulSyncAtUtc: null,
+      availableSales: 0,
+      latestSaleDate: null,
+      recommendedStudyYear: null,
+      salesReviewAvailable: false,
+      status: 'connected-no-sales',
+    };
+    resolveWashingtonCountyStatusMock.mockResolvedValue(
+      countyStatusResolution([
+        countyStatus(),
+        countyStatus({
+          county: 'Adams',
+          countyCode: '001',
+          staticRoutes: {
+            detail: '/launch-data/washington/counties/001.json',
+            salesShard: '',
+          },
+        }),
+      ])
+    );
+    fetchCountyReadOnlySalesSyncAvailabilityMock.mockResolvedValue(connectedAvailability);
+    let resolveSync!: (value: unknown) => void;
+    runCountyReadOnlySalesSyncMock.mockImplementation(
+      () => new Promise((resolve) => (resolveSync = resolve))
+    );
+
+    render(<CountiesHub />);
+    fireEvent.click(await screen.findByRole('option', { name: /Select Spokane County/i }));
+    fireEvent.click(screen.getByRole('button', { name: 'Run read-only Sales sync' }));
+    expect(screen.getByRole('button', { name: 'Syncing sales…' })).toBeDisabled();
+
+    fireEvent.click(screen.getByRole('option', { name: /Select Adams County/i }));
+    expect(screen.getByRole('button', { name: 'Run read-only Sales sync' })).toBeDisabled();
+    expect(screen.queryByRole('button', { name: 'Syncing sales…' })).not.toBeInTheDocument();
+
+    await act(async () => {
+      resolveSync({
+        countyKey: 'wa-spokane',
+        countyName: 'Spokane',
+        receipt: { contractId: 'wal.county-connected.readonly-sales-sync.v1' },
+      });
+    });
+    expect(fetchCountyReadOnlySalesSyncAvailabilityMock).toHaveBeenCalledTimes(2);
+  }, 15_000);
+
+  it('reports a post-sync availability refresh failure instead of claiming success', async () => {
+    const user = userEvent.setup({ skipHover: true });
+    fetchCountyReadOnlySalesSyncAvailabilityMock
+      .mockReset()
+      .mockResolvedValueOnce({
+        contractId: 'wal.county-connected.readonly-sales-sync.v1',
+        countyId: '00000000-0000-0000-0000-000000000063',
+        countyKey: 'wa-spokane',
+        countyName: 'Spokane',
+        connectionConfigured: true,
+        sourceSystem: 'PACS',
+        lastSuccessfulSyncAtUtc: null,
+        availableSales: 0,
+        latestSaleDate: null,
+        recommendedStudyYear: null,
+        salesReviewAvailable: false,
+        status: 'connected-no-sales',
+      })
+      .mockRejectedValueOnce(new Error('Connected sales refresh failed.'));
+    runCountyReadOnlySalesSyncMock.mockResolvedValue({
+      countyKey: 'wa-spokane',
+      countyName: 'Spokane',
+      receipt: { contractId: 'wal.county-connected.readonly-sales-sync.v1' },
+    });
+
+    render(<CountiesHub />);
+    await user.click(await screen.findByRole('option', { name: /Select Spokane County/i }));
+    await user.click(screen.getByRole('button', { name: 'Run read-only Sales sync' }));
+
+    expect(await screen.findByText('Connected sales refresh failed.')).toBeInTheDocument();
+    expect(runCountyReadOnlySalesSyncMock).toHaveBeenCalledTimes(1);
+  }, 15_000);
+
+  it('distinguishes an availability request failure and retries before enabling sync', async () => {
+    const user = userEvent.setup({ skipHover: true });
+    fetchCountyReadOnlySalesSyncAvailabilityMock
+      .mockReset()
+      .mockRejectedValueOnce(new Error('Availability endpoint offline.'))
+      .mockResolvedValueOnce({
+        contractId: 'wal.county-connected.readonly-sales-sync.v1',
+        countyId: '00000000-0000-0000-0000-000000000063',
+        countyKey: 'wa-spokane',
+        countyName: 'Spokane',
+        connectionConfigured: true,
+        sourceSystem: 'PACS',
+        lastSuccessfulSyncAtUtc: null,
+        availableSales: 0,
+        latestSaleDate: null,
+        recommendedStudyYear: null,
+        salesReviewAvailable: false,
+        status: 'connected-no-sales',
+      });
+
+    render(<CountiesHub />);
+    await user.click(await screen.findByRole('option', { name: /Select Spokane County/i }));
+
+    expect(await screen.findByTestId('county-connected-sales-load-error')).toHaveTextContent(
+      'Availability endpoint offline.'
+    );
+    expect(
+      screen.queryByText(/No single protected read-only PACS connection/i)
+    ).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Run read-only Sales sync' })).toBeDisabled();
+
+    await user.click(screen.getByRole('button', { name: 'Retry connected Sales' }));
+
+    await waitFor(() =>
+      expect(screen.queryByTestId('county-connected-sales-load-error')).not.toBeInTheDocument()
+    );
+    expect(screen.getByRole('button', { name: 'Run read-only Sales sync' })).toBeEnabled();
+  }, 15_000);
 
   it('surfaces authenticated county-upload sales and opens TerraForge on its live API', async () => {
     fetchCountyCsvPromotedSalesAvailabilityMock.mockResolvedValue({
@@ -349,6 +548,7 @@ describe('Washington Counties Hub assessor journey', () => {
   });
 
   it('retries selected-county sales verification after a transient failure', async () => {
+    const user = userEvent.setup({ skipHover: true });
     const unverifiedStatus = countyStatus({
       salesShardVerification: 'unverified',
     });
@@ -407,13 +607,13 @@ describe('Washington Counties Hub assessor journey', () => {
     );
 
     render(<CountiesHub />);
-    fireEvent.click(await screen.findByRole('option', { name: 'Select Spokane County' }));
+    await user.click(await screen.findByRole('option', { name: 'Select Spokane County' }));
 
     const retrySalesData = await screen.findByRole('button', {
       name: 'Retry sales data',
     });
     expect(verifyWashingtonCountySalesShardMock).toHaveBeenCalledTimes(1);
-    fireEvent.click(retrySalesData);
+    await user.click(retrySalesData);
 
     await waitFor(() => {
       expect(verifyWashingtonCountySalesShardMock).toHaveBeenCalledTimes(2);

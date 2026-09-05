@@ -1,0 +1,142 @@
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Data.Sqlite;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging.Abstractions;
+using Moq;
+using TerraFusion.API.Services;
+using TerraFusion.Core.Entities;
+using TerraFusion.Core.Interfaces;
+using TerraFusion.Core.PACS;
+using TerraFusion.Data;
+using Xunit;
+using Task = System.Threading.Tasks.Task;
+
+namespace TerraFusion.Unit.Tests.Sync;
+
+public sealed class PacsToTerraFusionSyncServiceIdentityTests
+{
+    [Fact]
+    public async Task ComparableSalesPreserveMultiPropertyAndSameValueTransferIdentity()
+    {
+        await using var connection = new SqliteConnection("Data Source=:memory:");
+        await connection.OpenAsync();
+        var options = new DbContextOptionsBuilder<TerraFusionDbContext>()
+            .UseSqlite(connection)
+            .Options;
+        var configuration = new ConfigurationBuilder().Build();
+        await using var db = new SqliteTerraFusionDbContext(options, configuration);
+        await db.Database.EnsureCreatedAsync();
+        var bentonId = Guid.Parse("19190019-1919-1919-1919-191919191919");
+        var franklinId = Guid.Parse("21210021-2121-2121-2121-212121212121");
+        db.Counties.AddRange(
+            new County { Id = bentonId, Name = "Benton", State = "WA", FipsCode = "53005" },
+            new County { Id = franklinId, Name = "Franklin", State = "WA", FipsCode = "53021" });
+        db.Properties.AddRange(
+            new Property
+            {
+                CountyId = bentonId,
+                PropertyId = "BEN-1001",
+                ParcelId = "BEN-1001",
+                ParcelNumber = "BEN-1001",
+                Address = "100 Benton Way, Richland, WA",
+            },
+            new Property
+            {
+                CountyId = franklinId,
+                PropertyId = "FRA-BEN-1001",
+                ParcelId = "FRA-1001",
+                ParcelNumber = "FRA-1001",
+                Address = "200 Franklin Way, Pasco, WA",
+            });
+        await db.SaveChangesAsync();
+
+        var saleDate = new DateTime(2026, 1, 15, 0, 0, 0, DateTimeKind.Utc);
+        var rows = new[]
+        {
+            Sale(5001, 1001, "BEN-1001", saleDate, 425_000m),
+            Sale(5001, 1002, "BEN-1002", saleDate, 425_000m),
+            Sale(5002, 1001, "BEN-1001", saleDate, 425_000m),
+        };
+        var adapter = new Mock<IPacsAdapter>(MockBehavior.Strict);
+        adapter.Setup(value => value.ValidateContractAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new PacsContractProof { IsValid = true });
+        adapter.Setup(value => value.GetComparableSalesAsync(1, 500, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new PacsPagedResult<PacsComparableSale>
+            {
+                Page = 1,
+                PageSize = 500,
+                TotalCount = rows.Length,
+                Items = rows,
+            });
+        var service = new PacsToTerraFusionSyncService(
+            NullLogger<PacsToTerraFusionSyncService>.Instance,
+            db,
+            adapter.Object);
+        var syncOptions = new SyncOptions
+        {
+            FullSync = true,
+            BatchSize = 500,
+            DataTypes = ["Sales"],
+        };
+
+        var first = await service.SyncCountyDataAsync("Benton", "WA", syncOptions);
+        var second = await service.SyncCountyDataAsync("Benton", "WA", syncOptions);
+
+        Assert.True(first.Success);
+        Assert.True(second.Success);
+        var persisted = await db.ComparableSales
+            .AsNoTracking()
+            .OrderBy(sale => sale.PacsChgOfOwnerId)
+            .ThenBy(sale => sale.PacsPropId)
+            .ToListAsync();
+        Assert.Equal(3, persisted.Count);
+        var expectedIdentity = new (int ChangeOfOwnerId, int PropId, string ParcelId)[]
+        {
+            (5001, 1001, "BEN-1001"),
+            (5001, 1002, "BEN-1002"),
+            (5002, 1001, "BEN-1001"),
+        };
+        Assert.Equal(
+            expectedIdentity,
+            persisted.Select(sale => (
+                sale.PacsChgOfOwnerId!.Value,
+                sale.PacsPropId!.Value,
+                sale.ParcelId)).ToArray());
+        Assert.All(persisted, sale => Assert.Equal("multifamily", sale.PropertyType));
+        Assert.Equal(
+            "100 Benton Way, Richland, WA",
+            persisted.Single(sale => sale.PacsChgOfOwnerId == 5001 && sale.PacsPropId == 1001).Address);
+    }
+
+    private static PacsComparableSale Sale(
+        int changeOfOwnerId,
+        int propId,
+        string geoId,
+        DateTime saleDate,
+        decimal salePrice) => new()
+        {
+            PacsChgOfOwnerId = changeOfOwnerId,
+            PropId = propId,
+            GeoId = geoId,
+            SaleDate = saleDate,
+            SalePrice = salePrice,
+            PropTypeCd = "A1",
+        };
+
+    private sealed class SqliteTerraFusionDbContext(
+        DbContextOptions<TerraFusionDbContext> options,
+        IConfiguration configuration) : TerraFusionDbContext(options, configuration)
+    {
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+            foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+            {
+                var schema = entityType.GetSchema();
+                if (string.IsNullOrWhiteSpace(schema)) continue;
+                entityType.SetTableName($"{schema}_{entityType.GetTableName()}");
+                entityType.SetSchema(null);
+            }
+        }
+    }
+}
