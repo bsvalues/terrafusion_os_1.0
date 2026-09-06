@@ -18,6 +18,15 @@ The OMEN acceptance target must have:
 4. all optional external providers disabled or unavailable; and
 5. the machine physically disconnected from the network before the first run.
 
+The payload is assembled from the HERMES Lab fabric, not recovered from an
+OMEN-attached external drive. HERMES supplies build/runtime artifacts; the
+authoritative Benton county source is the lab's ATLAS `/forge` estate. The
+portable payload must be a bounded, manifest-digested conference subset staged
+onto OMEN internal storage. Its manifest must contain no external-drive
+letters, HERMES or ATLAS network paths, lab-only mounts, or runtime dependency
+on any lab node. A lab image or database volume without current commit,
+package-provenance, and county-data evidence is not a conference payload.
+
 The runner requires an explicit `--offline-confirmed` attestation and enforces
 that `--base-url` is `127.0.0.1`, `localhost`, or `[::1]`. It also fails on any
 non-loopback request, any mutation method, synthetic/reference package marker,
