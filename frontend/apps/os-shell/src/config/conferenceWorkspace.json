@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "workspaceId": "waco-2026-conference",
+  "displayName": "WACO 2026 Conference",
+  "startup": {
+    "mode": "cold",
+    "networkPolicy": "local-only"
+  },
+  "views": [
+    {
+      "id": "shell",
+      "label": "TerraFusion Shell",
+      "moduleId": "shell",
+      "route": "/",
+      "purpose": "Shell and county context"
+    },
+    {
+      "id": "counties-hub",
+      "label": "Counties HUB",
+      "moduleId": "county-studio",
+      "route": "/forge/county-studio",
+      "purpose": "County selection and real county-data entry point"
+    },
+    {
+      "id": "sales-forge",
+      "label": "SalesForge",
+      "moduleId": "sales-forge",
+      "route": "/forge",
+      "purpose": "SalesForge module hosted by the TerraForge surface"
+    },
+    {
+      "id": "terra-canon",
+      "label": "TerraCanon",
+      "moduleId": "os-canon",
+      "route": "/canon",
+      "purpose": "Local governance, editor, gate, and evidence cockpit"
+    }
+  ],
+  "requiredLocalChecks": [
+    "shell-loads",
+    "county-context-is-present",
+    "salesforge-loads",
+    "canon-editor-loads",
+    "canon-gate-runner-is-local"
+  ]
+}
