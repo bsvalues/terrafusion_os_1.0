@@ -5,7 +5,12 @@ PR #1555 is preparation evidence only and cannot satisfy this contract.
 
 ## Preconditions
 
-Run the acceptance on the target conference-machine shape with:
+Run the acceptance on **OMEN**, the portable WACO conference appliance. HERMES
+remains the lab/runtime anchor and must not be a runtime dependency for the
+conference product; DAEDALUS/P620 remains a heavy-compute lab node and is not
+the travel-machine target.
+
+The OMEN acceptance target must have:
 
 1. the actual TerraFusion Shell and Counties HUB deployed;
 2. a governed county package containing real county sales data;
@@ -68,3 +73,14 @@ between them, can advance WO-103 toward terminal acceptance. A local pass with
 the repository-reference package, an nginx mock, a hosted public-data fallback,
 a network-connected machine, or two browser contexts without a runtime reset
 is not terminal evidence.
+
+The terminal evidence label for this deployment is:
+
+```text
+OMEN_WACO_REAL_OFFLINE_TWO_RUN_ACCEPTANCE_PASS
+```
+
+It may only be recorded after the two OMEN invocations and the external
+runtime restart/reset evidence above are complete. This document records the
+deployment assignment; it does not claim that OMEN is currently provisioned or
+that WO-103 is complete.
