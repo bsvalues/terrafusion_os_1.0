@@ -1,0 +1,23 @@
+{
+  "manifestVersion": "1.0.0",
+  "manifestEvent": "Benton-WACO-E-step-1-PII-readiness",
+  "tableExhaustive": [],
+  "tables": [
+    {
+      "name": "account",
+      "classification": "Direct",
+      "reason": "The repository identifies account.file_as_name as the canonical owner-name source; classify the containing table conservatively until every column is operator-reviewed."
+    },
+    {
+      "name": "address",
+      "classification": "Direct",
+      "reason": "The repository identifies address.addr_line* as a personal-address surface; classify the containing table conservatively until every column is operator-reviewed."
+    },
+    {
+      "name": "owner",
+      "classification": "Direct",
+      "reason": "The repository identifies owner-linked identity and social-security data; classify the containing table conservatively until every column is operator-reviewed."
+    }
+  ],
+  "columns": []
+}
