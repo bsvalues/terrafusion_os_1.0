@@ -17,6 +17,7 @@
 //    12.  Items sorted by SaleDate descending
 
 using System.Text.Json;
+using System.Threading;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
@@ -24,6 +25,7 @@ using TerraFusion.API.Controllers;
 using TerraFusion.API.Services;
 using TerraFusion.API.Tests.TestHelpers;
 using TerraFusion.Core.Entities;
+using TerraFusion.Core.Sync.Doctrine;
 using Xunit;
 using Task = System.Threading.Tasks.Task;
 using ComparableSale = TerraFusion.Core.Entities.ComparableSale;
@@ -51,18 +53,36 @@ public sealed class RatioStudyTests : IDisposable
 
     private readonly TerraFusion.Data.TerraFusionDbContext _db;
     private readonly TerraForgeController _sut;
+    private readonly Mock<IRatioQualificationPolicy> _ratioPolicy;
 
     public RatioStudyTests()
     {
         _db  = TestDbContextFactory.CreateInMemoryContext();
         var resolver = ControllerTestSetup.CountyResolverFor(BentonId);
+        _ratioPolicy = new Mock<IRatioQualificationPolicy>();
+        _ratioPolicy
+            .Setup(policy => policy.EvaluateAsync(
+                It.IsAny<string>(),
+                "DOR_RATIO",
+                It.IsAny<int>(),
+                It.IsAny<string?>(),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync((string county, string study, int year, string? code, CancellationToken _) =>
+                new RatioPolicyEvaluation(
+                    Reviewed: !string.IsNullOrWhiteSpace(code),
+                    Qualified: code == "00",
+                    Code: code,
+                    StudyName: study,
+                    RuleId: Guid.NewGuid(),
+                    EvidenceSource: "test-doctrine"));
         _sut = new TerraForgeController(
             _db,
             NullLogger<TerraForgeController>.Instance,
             Mock.Of<IOlsRegressionService>(),
             Mock.Of<ISaleQualificationService>(),
             resolver,
-            ControllerTestSetup.CountyContextProviderFor(BentonId))
+            ControllerTestSetup.CountyContextProviderFor(BentonId),
+            ratioQualificationPolicy: _ratioPolicy.Object)
         {
             ControllerContext = ControllerTestSetup.WithCountyClaim(BentonId),
         };
@@ -473,6 +493,47 @@ public sealed class RatioStudyTests : IDisposable
 
         Assert.Equal(0, adv.GetProperty("qualifiedSales").GetInt32());
         Assert.Equal("unavailable", adv.GetProperty("state").GetString());
+    }
+
+    [Fact]
+    public async Task GetRatioStudyReadiness_UsesDorPolicy_ReadOnlyAndCountyScoped()
+    {
+        _db.Counties.Add(new County
+        {
+            Id = BentonId,
+            Name = "Benton",
+            State = "WA",
+            FipsCode = "53005",
+        });
+
+        var qualified = MakeSale();
+        qualified.RawRatioTypeCd = "00";
+        var unqualified = MakeSale();
+        unqualified.RawRatioTypeCd = "10";
+        var foreign = MakeSale(countyId: OtherCountyId);
+        foreign.RawRatioTypeCd = "00";
+        Seed(qualified, unqualified, foreign);
+
+        var body = Body(await _sut.GetRatioStudyReadiness(taxYear: 2026));
+
+        Assert.Equal("Benton", body.GetProperty("county").GetString());
+        Assert.Equal("benton-wa", body.GetProperty("countySlug").GetString());
+        Assert.Equal("DOR_RATIO", body.GetProperty("studyName").GetString());
+        Assert.Equal("qualifiedSalesObserved", body.GetProperty("state").GetString());
+        Assert.Equal("present", body.GetProperty("policyCoverage").GetString());
+        Assert.Equal(2, body.GetProperty("candidateSales").GetInt32());
+        Assert.Equal(2, body.GetProperty("reviewedSales").GetInt32());
+        Assert.Equal(1, body.GetProperty("qualifiedSales").GetInt32());
+        Assert.Equal(0, body.GetProperty("unreviewedSales").GetInt32());
+        Assert.True(body.GetProperty("advisoryOnly").GetBoolean());
+        Assert.False(body.GetProperty("certificationClaim").GetBoolean());
+
+        _ratioPolicy.Verify(policy => policy.EvaluateAsync(
+            "benton-wa",
+            "DOR_RATIO",
+            2026,
+            It.IsAny<string?>(),
+            It.IsAny<CancellationToken>()), Times.AtLeastOnce);
     }
 
     [Fact]
