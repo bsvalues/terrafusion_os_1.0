@@ -963,6 +963,53 @@ public class TerraForgeController : ControllerBase
         if (prb.HasValue)   complianceNotes.Add($"PRB {prb.Value:F3} {(prbPass ? "✓" : "✗")} (|PRB| < 0.05)");
         if (medianRatio.HasValue) complianceNotes.Add($"Median {medianRatio.Value:F3} {(medPass ? "✓" : "✗")} (0.90–1.10)");
 
+        // ── V1a: Sample-size adequacy advisory (TerraFusion internal policy) ──
+        // Advisory metadata only. The ratio statistics above are unchanged; this block
+        // derives nothing from them and never feeds back into their computation.
+        //
+        // LANGUAGE RULE / PROVENANCE: the thresholds (>=30 adequate, 10-29 marginal,
+        // <10 insufficient) are a **TerraFusion internal operating policy**, chosen as a
+        // conservative floor for small-county Washington ratio strata. They are NOT
+        // encoded here as "IAAO §5.2 compliance": no exact current authoritative IAAO
+        // provision is cited for these counts, so the advisory state is exposed under
+        // the neutral name "terraFusionPolicy" with the thresholds explicit.
+        //
+        // Classification is computed from the UNTRIMMED countWithRatio (the count of
+        // qualified sales with a computable ratio), because adequacy is a property of
+        // the raw sample size before outlier review.
+        const int policyAdequateFloor = 30;
+        const int policyMarginalFloor = 10;
+
+        string sampleSizeAdequacy;
+        bool   ratioDataAvailable;
+        if (countWithRatio <= 0 && total <= 0)
+        {
+            // No qualified sales in the population at all.
+            sampleSizeAdequacy = "unavailable";
+            ratioDataAvailable = false;
+        }
+        else if (countWithRatio <= 0)
+        {
+            // Qualified sales exist but none have a computable ratio.
+            sampleSizeAdequacy = "noRatioData";
+            ratioDataAvailable = false;
+        }
+        else if (countWithRatio >= policyAdequateFloor)
+        {
+            sampleSizeAdequacy = "adequate";
+            ratioDataAvailable = true;
+        }
+        else if (countWithRatio >= policyMarginalFloor)
+        {
+            sampleSizeAdequacy = "marginal";
+            ratioDataAvailable = true;
+        }
+        else
+        {
+            sampleSizeAdequacy = "insufficient";
+            ratioDataAvailable = true;
+        }
+
         // Paginated detail — TF computes sales ratio from Properties.AssessedValue / SalePrice.
         var rawItems = await baseQuery
             .OrderByDescending(s => s.SaleDate)
@@ -1015,6 +1062,22 @@ public class TerraForgeController : ControllerBase
             outliersExcluded = trimmedCount,
             iaaoCompliant,
             complianceNotes,
+            // V1a additive advisory metadata. Never mutates statistics; safe to ignore.
+            sampleSizeAdequacy = new
+            {
+                state              = sampleSizeAdequacy,
+                ratioDataAvailable = ratioDataAvailable,
+                qualifiedSales     = total,
+                countWithRatio,
+                policy             = "terraFusionPolicy",
+                advisoryOnly       = true,
+                thresholds         = new
+                {
+                    adequateFloor = policyAdequateFloor,
+                    marginalFloor = policyMarginalFloor,
+                },
+                provenance = "TerraFusion internal operating policy; NOT encoded as IAAO §5.2 compliance (no exact current authoritative provision cited).",
+            },
             stats = new
             {
                 medianRatio       = medianRatio.HasValue       ? Math.Round(medianRatio.Value,       4) : (double?)null,
