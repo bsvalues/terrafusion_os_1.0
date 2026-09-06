@@ -5,8 +5,8 @@ defines one deterministic cold-open order in
 `frontend/apps/os-shell/src/config/conferenceWorkspace.json`:
 
 1. TerraFusion Shell
-2. Counties HUB
-3. SalesForge
+2. Counties HUB (the canonical `/forge/county-studio` route)
+3. SalesForge (the SalesForge module hosted by `/forge`)
 4. TerraCanon
 
 The manifest is deliberately local-only. It is a launch contract and a

@@ -18,15 +18,15 @@
       "id": "counties-hub",
       "label": "Counties HUB",
       "moduleId": "county-studio",
-      "route": "/county-studio",
+      "route": "/forge/county-studio",
       "purpose": "County selection and real county-data entry point"
     },
     {
       "id": "sales-forge",
       "label": "SalesForge",
       "moduleId": "sales-forge",
-      "route": "/sales-forge",
-      "purpose": "Sales Intelligence and ratio-study surface"
+      "route": "/forge",
+      "purpose": "SalesForge module hosted by the TerraForge surface"
     },
     {
       "id": "terra-canon",

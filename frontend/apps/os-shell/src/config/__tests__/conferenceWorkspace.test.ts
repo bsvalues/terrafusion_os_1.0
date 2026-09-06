@@ -16,6 +16,12 @@ describe('WACO conference workspace manifest', () => {
       'sales-forge',
       'terra-canon',
     ]);
+    expect(WACO_CONFERENCE_WORKSPACE.views.map((view) => view.route)).toEqual([
+      '/',
+      '/forge/county-studio',
+      '/forge',
+      '/canon',
+    ]);
   });
 
   it('rejects duplicate views and external routes', () => {
