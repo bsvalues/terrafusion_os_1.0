@@ -1,0 +1,48 @@
+name: terrafusion-offline-demo
+
+# WACO 2026 offline conference demo.
+# Requires images pre-loaded via scripts/offline-demo-load.sh. No network at demo time.
+
+services:
+  db:
+    image: postgis/postgis:15-3.4
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-demo}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-demo}
+      POSTGRES_DB: ${POSTGRES_DB:-terrafusion_demo}
+    ports:
+      - "5432:5432"
+    networks:
+      - demo
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-demo}"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  api:
+    image: nginx:alpine
+    ports:
+      - "8080:80"
+    networks:
+      - demo
+    volumes:
+      - ./nginx-demo.conf:/etc/nginx/conf.d/default.conf:ro
+      # Optional: mount prebuilt frontend dist or demo data here at demo time.
+    depends_on:
+      db:
+        condition: service_healthy
+
+  ui:
+    image: nginx:alpine
+    ports:
+      - "3000:80"
+    networks:
+      - demo
+    # Optional: bind-mount a prebuilt frontend dist at demo time:
+    # volumes:
+    #   - ../../frontend/dist:/usr/share/nginx/html:ro
+
+networks:
+  demo:
+    driver: bridge
