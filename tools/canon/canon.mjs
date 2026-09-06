@@ -10,6 +10,7 @@
  * - doctor: delegates to existing doctor (supports --dry/--json)
  * - gatefast: runs minimal gates (doctor + naming lint if available)
  * - ping: end-to-end read-only tool invocation through TerraPilot ToolRunner
+ * - conference: validate and print the deterministic WACO cold-open plan
  */
 
 import { spawnSync } from "node:child_process";
@@ -61,6 +62,7 @@ function help() {
       "  doctor     Run Canon Doctor health report",
       "  gatefast   Run minimal safe gates (doctor + naming lint if available)",
       "  ping       Run read-only TerraPilot ping slice",
+      "  conference Validate and print the local-only WACO conference workspace",
       "",
       "Examples:",
       "  pnpm canon:doctor",
@@ -128,6 +130,39 @@ function resolveManifest(cwd, flags) {
   const provided = valueAfterFlag(flags, "--manifest", undefined);
   if (!provided) return path.resolve(cwd, "tools/registry/terrapilot.tools.json");
   return path.resolve(cwd, provided);
+}
+
+function loadConferenceWorkspace(cwd) {
+  const manifestPath = path.resolve(
+    cwd,
+    "frontend/apps/os-shell/src/config/conferenceWorkspace.json",
+  );
+  const raw = fs.readFileSync(manifestPath, "utf8");
+  const manifest = parseJsonStrict("conference workspace", raw);
+  if (manifest.schemaVersion !== 1 || manifest.startup?.mode !== "cold") {
+    throw new Error("conference workspace: unsupported schema or startup mode");
+  }
+  if (manifest.startup.networkPolicy !== "local-only") {
+    throw new Error("conference workspace: network policy must be local-only");
+  }
+  if (!Array.isArray(manifest.views) || manifest.views.length === 0) {
+    throw new Error("conference workspace: views must be non-empty");
+  }
+  const ids = new Set();
+  for (const view of manifest.views) {
+    if (
+      !view ||
+      typeof view.id !== "string" ||
+      ids.has(view.id) ||
+      typeof view.route !== "string" ||
+      !view.route.startsWith("/") ||
+      view.route.startsWith("//")
+    ) {
+      throw new Error("conference workspace: invalid or duplicate view");
+    }
+    ids.add(view.id);
+  }
+  return manifest;
 }
 
 async function runPingLive(cwd, flags) {
@@ -367,6 +402,47 @@ async function main() {
       eprint(`\n${failure}\n`);
     }
     process.exit(overallOk ? 0 : 1);
+  }
+
+  if (cmd === "conference") {
+    const started = new Date().toISOString();
+    try {
+      const workspace = loadConferenceWorkspace(process.cwd());
+      const report = {
+        tool: "terracanon-conference",
+        version: 1,
+        startedAt: started,
+        overallOk: true,
+        workspace,
+      };
+      if (json) {
+        print(JSON.stringify(report, null, 2) + "\n");
+      } else {
+        print("=== TerraCanon WACO Conference Workspace ===\n");
+        print(`Started: ${started}\n`);
+        print("Mode: COLD\n");
+        print("Network policy: LOCAL-ONLY\n\n");
+        for (const view of workspace.views) {
+          print(`PASS ${view.id} -> ${view.route} (${view.moduleId})\n`);
+        }
+        print("\nPASS conference manifest\n");
+      }
+      process.exit(0);
+    } catch (err) {
+      const message = err?.message ?? String(err);
+      if (json) {
+        print(JSON.stringify({
+          tool: "terracanon-conference",
+          version: 1,
+          startedAt: started,
+          overallOk: false,
+          error: message,
+        }, null, 2) + "\n");
+      } else {
+        eprint(`FAIL conference manifest: ${message}\n`);
+      }
+      process.exit(1);
+    }
   }
 
   eprint(`Unknown command: ${cmd}\n\n`);
