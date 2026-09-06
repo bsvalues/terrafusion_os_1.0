@@ -13,11 +13,12 @@ Run the acceptance on the target conference-machine shape with:
 4. all optional external providers disabled or unavailable; and
 5. the machine physically disconnected from the network before the first run.
 
-The runner requires an explicit `--offline-confirmed` attestation. It also
-fails on any non-loopback request, any mutation method, synthetic/reference
-package marker, missing real county sales shard, or unavailable SalesForge
-state. The runner does not manufacture county data and does not treat a
-repository fixture as real evidence.
+The runner requires an explicit `--offline-confirmed` attestation and enforces
+that `--base-url` is `127.0.0.1`, `localhost`, or `[::1]`. It also fails on any
+non-loopback request, any mutation method, synthetic/reference package marker,
+missing real county sales shard, or unavailable SalesForge state. The runner
+does not manufacture county data and does not treat a repository fixture as
+real evidence.
 
 ## Execute
 
@@ -29,23 +30,41 @@ node scripts/waco-conference/real-offline-acceptance.mjs \
   --county "Kitsap" \
   --sales-sentinel "<known real sale identifier>" \
   --offline-confirmed \
-  --runs 2
+  --journey-id 1
 ```
 
-The runner creates a fresh browser context for every repetition. Each
-repetition proves:
+Each invocation proves one fresh browser-context journey:
 
 ```text
-cold start -> Shell -> Counties HUB -> governed county -> TerraForge -> SalesForge
-close/reset -> fresh context -> repeat
+Shell -> Counties HUB -> governed county -> TerraForge -> SalesForge
 ```
+
+The runner intentionally does **not** call a fresh browser context a cold
+start, reset, runtime restart, or package reload. No supported TerraFusion
+restart mechanism was found in this bounded slice, so the runtime boundary is
+owned by the target-machine supervisor.
+
+To prove the two-journey acceptance, run the command once, then use the
+existing supported conference supervisor mechanism to stop/reset/restart the
+real TerraFusion stack and reload the governed county package. Run the command
+again with `--journey-id 2`. Only when both invocations pass, with that actual
+runtime boundary between them, may the evidence be labelled:
+
+```text
+REAL_OFFLINE_TWO_FRESH_CONTEXT_JOURNEYS_PASS
+```
+
+That label is not emitted by this runner and must not be recorded without the
+external runtime restart/reset evidence.
 
 `--sales-sentinel` must be a value known from the governed conference package,
 not from `frontend/apps/os-shell/src/lib/washingtonAssessorReferencePackage.json`.
 
 ## Evidence boundary
 
-Only a passing run on the target machine with the machine physically
-disconnected can advance WO-103 toward terminal acceptance. A local pass with
+Only two passing invocations on the target machine, with the machine
+physically disconnected and an actual supported runtime restart/reset boundary
+between them, can advance WO-103 toward terminal acceptance. A local pass with
 the repository-reference package, an nginx mock, a hosted public-data fallback,
-or a network-connected machine is not terminal evidence.
+a network-connected machine, or two browser contexts without a runtime reset
+is not terminal evidence.
