@@ -368,6 +368,113 @@ public sealed class RatioStudyTests : IDisposable
         Assert.Equal(prb, tierSlope, precision: 4);
     }
 
+    // ── V1a: sample-size adequacy advisory ─────────────────────────────────
+    //
+    // Thresholds under test are the TerraFusion internal operating policy
+    // (adequate >= 30, marginal 10–29, insufficient 1–9, noRatioData / unavailable
+    // for empty samples). They are NOT asserted as IAAO §5.2 compliance; the
+    // response labels them "terraFusionPolicy" with explicit thresholds.
+
+    [Fact]
+    public async Task GetRatioStudy_SampleSizeAdvisory_EmptyDb_Unavailable_NeverThrows()
+    {
+        var body = Body(await _sut.GetRatioStudy(taxYear: 2026));
+
+        var adv = body.GetProperty("sampleSizeAdequacy");
+        Assert.Equal("unavailable", adv.GetProperty("state").GetString());
+        Assert.False(adv.GetProperty("ratioDataAvailable").GetBoolean());
+        Assert.True(adv.GetProperty("advisoryOnly").GetBoolean());
+        Assert.Equal("terraFusionPolicy", adv.GetProperty("policy").GetString());
+        Assert.Equal(30, adv.GetProperty("thresholds").GetProperty("adequateFloor").GetInt32());
+        Assert.Equal(10, adv.GetProperty("thresholds").GetProperty("marginalFloor").GetInt32());
+        // Stats still truthful-null on empty sample.
+        Assert.Equal(JsonValueKind.Null, body.GetProperty("stats").GetProperty("medianRatio").ValueKind);
+    }
+
+    [Fact]
+    public async Task GetRatioStudy_SampleSizeAdvisory_SalesWithoutRatios_NoRatioData()
+    {
+        // Qualified sales exist but no Property rows → countWithRatio 0.
+        Seed(MakeSale(), MakeSale());
+
+        var body = Body(await _sut.GetRatioStudy(taxYear: 2026));
+        var adv  = body.GetProperty("sampleSizeAdequacy");
+
+        Assert.Equal(2, adv.GetProperty("qualifiedSales").GetInt32());
+        Assert.Equal(0, adv.GetProperty("countWithRatio").GetInt32());
+        Assert.Equal("noRatioData", adv.GetProperty("state").GetString());
+        Assert.False(adv.GetProperty("ratioDataAvailable").GetBoolean());
+    }
+
+    [Fact]
+    public async Task GetRatioStudy_SampleSizeAdvisory_ClassifiesThresholds()
+    {
+        async Task<string> StateForCount(int n)
+        {
+            // Reset the in-memory store between classifications.
+            _db.ComparableSales.RemoveRange(_db.ComparableSales);
+            _db.Properties.RemoveRange(_db.Properties);
+            _db.SaveChanges();
+
+            for (var i = 0; i < n; i++)
+            {
+                var price = 200_000m + i * 1_000m;
+                var sale  = MakeSale(salePrice: price);
+                Seed(sale);
+                SeedProperty(sale.ParcelId!, 2026, assessedValue: price * 0.95m);
+            }
+            var body = Body(await _sut.GetRatioStudy(taxYear: 2026));
+            return body.GetProperty("sampleSizeAdequacy").GetProperty("state").GetString()!;
+        }
+
+        Assert.Equal("insufficient", await StateForCount(1));
+        Assert.Equal("insufficient", await StateForCount(9));
+        Assert.Equal("marginal",     await StateForCount(10));
+        Assert.Equal("marginal",     await StateForCount(29));
+        Assert.Equal("adequate",     await StateForCount(30));
+    }
+
+    [Fact]
+    public async Task GetRatioStudy_SampleSizeAdvisory_NeverAltersExistingStatistics()
+    {
+        // 12-row sample with known stats; advisory must be additive only.
+        double[] ratios = { 0.85, 0.87, 0.90, 0.92, 0.94, 0.95, 0.96, 0.97, 0.98, 0.99, 1.00, 1.02 };
+        for (var i = 0; i < ratios.Length; i++)
+        {
+            var price = 100_000m + i * 50_000m;
+            var sale  = MakeSale(salePrice: price);
+            Seed(sale);
+            SeedProperty(sale.ParcelId!, 2026, assessedValue: price * (decimal)ratios[i]);
+        }
+
+        var body  = Body(await _sut.GetRatioStudy(taxYear: 2026));
+        var stats = body.GetProperty("stats");
+
+        // Existing statistic values unchanged (same assertions as the pre-V1a tests).
+        Assert.Equal(0.87, stats.GetProperty("tierMedians").GetProperty("q1").GetDouble(), precision: 4);
+        Assert.Equal(1.00, stats.GetProperty("tierMedians").GetProperty("q4").GetDouble(), precision: 4);
+        Assert.Equal(12, body.GetProperty("countWithRatio").GetInt32());
+
+        // Advisory block agrees with counts and is marked marginal (10–29).
+        var adv = body.GetProperty("sampleSizeAdequacy");
+        Assert.Equal("marginal", adv.GetProperty("state").GetString());
+        Assert.Equal(12, adv.GetProperty("countWithRatio").GetInt32());
+    }
+
+    [Fact]
+    public async Task GetRatioStudy_SampleSizeAdvisory_CountyIsolation_OtherCountyExcluded()
+    {
+        var foreign = MakeSale(countyId: OtherCountyId);
+        Seed(foreign);
+        SeedProperty(foreign.ParcelId!, 2026, assessedValue: 285_000m);
+
+        var body = Body(await _sut.GetRatioStudy(taxYear: 2026));
+        var adv  = body.GetProperty("sampleSizeAdequacy");
+
+        Assert.Equal(0, adv.GetProperty("qualifiedSales").GetInt32());
+        Assert.Equal("unavailable", adv.GetProperty("state").GetString());
+    }
+
     [Fact]
     public async Task GetRatioStudy_Pagination_Page2ReturnsSecondItem()
     {
