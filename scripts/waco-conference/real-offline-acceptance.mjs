@@ -20,6 +20,7 @@ const SYNTHETIC_MARKERS = [
 ];
 
 const SAFE_METHODS = new Set(['GET', 'HEAD', 'OPTIONS']);
+const LOOPBACK_HOSTNAMES = new Set(['127.0.0.1', 'localhost', '[::1]']);
 
 function usage(message) {
   if (message) console.error(`ERROR: ${message}\n`);
@@ -28,7 +29,7 @@ function usage(message) {
     --base-url http://127.0.0.1:5173 \\
     --county "Kitsap" \\
     --sales-sentinel "<known real sale identifier>" \\
-    --offline-confirmed [--runs 2]
+    --offline-confirmed [--journey-id 1]
 
 Required:
   --base-url              Loopback URL for the real Shell deployment.
@@ -38,7 +39,9 @@ Required:
                           physically disconnected before the run begins.
 
 Optional:
-  --runs                  Cold-start/reset repetitions; defaults to 2.
+  --journey-id            Evidence label for this one fresh-context journey;
+                          defaults to 1. Run this command again only after an
+                          external supported TerraFusion restart/reset boundary.
   --timeout-ms            Per-step timeout; defaults to 45000.
   --help                  Show this help.
 `);
@@ -62,9 +65,9 @@ function parseArgs(argv) {
     index += 1;
   }
 
-  const runs = Number(args.runs ?? 2);
+  const journeyId = Number(args['journey-id'] ?? 1);
   const timeoutMs = Number(args['timeout-ms'] ?? 45_000);
-  if (!Number.isInteger(runs) || runs < 2) usage('--runs must be an integer >= 2');
+  if (!Number.isInteger(journeyId) || journeyId < 1) usage('--journey-id must be a positive integer');
   if (!Number.isInteger(timeoutMs) || timeoutMs < 5_000) usage('--timeout-ms must be an integer >= 5000');
   if (!args['base-url']) usage('--base-url is required');
   if (!args.county) usage('--county is required');
@@ -78,12 +81,15 @@ function parseArgs(argv) {
     usage('--base-url must be a valid URL');
   }
   if (!['http:', 'https:'].includes(baseUrl.protocol)) usage('--base-url must use http or https');
+  if (!LOOPBACK_HOSTNAMES.has(baseUrl.hostname.toLowerCase())) {
+    usage('--base-url must use loopback hostname 127.0.0.1, localhost, or [::1]');
+  }
 
   return {
     baseUrl,
     county: String(args.county),
     salesSentinel: String(args['sales-sentinel']),
-    runs,
+    journeyId,
     timeoutMs,
   };
 }
@@ -104,7 +110,7 @@ function assertNoSyntheticPayload(payload, source) {
 
 function isAllowedOfflineUrl(url, baseOrigin) {
   if (url.origin === baseOrigin) return true;
-  return ['127.0.0.1', 'localhost', '::1'].includes(url.hostname);
+  return LOOPBACK_HOSTNAMES.has(url.hostname.toLowerCase());
 }
 
 async function readJsonResponse(response) {
@@ -121,7 +127,7 @@ async function waitForText(page, text, timeoutMs) {
   await page.getByText(text, { exact: false }).first().waitFor({ state: 'visible', timeout: timeoutMs });
 }
 
-async function runJourney({ browser, config, runNumber }) {
+async function runJourney({ browser, config }) {
   const context = await browser.newContext({ serviceWorkers: 'block' });
   const page = await context.newPage();
   const observedJson = [];
@@ -186,7 +192,7 @@ async function runJourney({ browser, config, runNumber }) {
     for (const item of observedJson) assertNoSyntheticPayload(item.payload, item.path);
     assert(observedJson.some((item) => item.path.includes('/sales/by-county/')), 'no governed county sales shard was observed');
     assert(violations.length === 0, violations.join('; '));
-    console.log(`PASS run ${runNumber}: real county data reached Shell -> Counties HUB -> TerraForge -> SalesForge`);
+    console.log('PASS one fresh browser-context journey: real county data reached Shell -> Counties HUB -> TerraForge -> SalesForge');
   } finally {
     await context.close();
   }
@@ -203,13 +209,11 @@ async function main() {
 
   const browser = await playwright.chromium.launch({ headless: true });
   try {
-    for (let runNumber = 1; runNumber <= config.runs; runNumber += 1) {
-      await runJourney({ browser, config, runNumber });
-    }
+    await runJourney({ browser, config });
   } finally {
     await browser.close();
   }
-  console.log(`PASS WACO Lane B terminal acceptance: ${config.runs} cold-start/reset runs completed offline.`);
+  console.log(`REAL_OFFLINE_BROWSER_JOURNEY_HARNESS_READY journey=${config.journeyId}`);
 }
 
 main().catch((error) => {
