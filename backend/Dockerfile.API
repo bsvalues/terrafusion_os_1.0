@@ -21,6 +21,7 @@ COPY src/TerraFusion.Operations/TerraFusion.Operations.csproj src/TerraFusion.Op
 COPY src/TerraFusion.Levy/TerraFusion.Levy.csproj src/TerraFusion.Levy/
 COPY src/TerraFusion.CostForge/TerraFusion.CostForge.csproj src/TerraFusion.CostForge/
 COPY src/TerraFusion.Sync/TerraFusion.Sync.csproj src/TerraFusion.Sync/
+COPY src/TerraFusion.CurrentUse/TerraFusion.CurrentUse.csproj src/TerraFusion.CurrentUse/
 COPY TerraFusion.Gateway/TerraFusion.Gateway.csproj TerraFusion.Gateway/
 
 # Restore NuGet packages with caching optimization
