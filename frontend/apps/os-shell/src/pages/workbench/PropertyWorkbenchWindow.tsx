@@ -123,6 +123,16 @@ const TABS: readonly TabDef[] = [
   { id: 'pilot', label: 'Pilot' },
 ] as const;
 
+// Historical implementations remain above; staged offices are not operational navigation.
+const RESERVED_OFFICE_TABS = new Set<WorkbenchTabSlug>(['clerk', 'treasury', 'audit']);
+export function ReservedOfficeUnavailable() {
+  return <section role="status" className="p-6 space-y-2">
+    <h2>Reserved office unavailable</h2>
+    <p>Clerk, Treasury, and Audit office operations are forward-staged and are not active in this release.</p>
+    <p>Evidence exports remain available in Dossier.</p>
+  </section>;
+}
+
 // ============================================================================
 // Loading Fallback
 // ============================================================================
@@ -799,17 +809,17 @@ const PropertyWorkbenchWindow: React.FC<PropertyWorkbenchWindowProps> = ({ metad
     () => (auth.roles.length > 0 ? [...auth.roles] : session.role ? [session.role] : []),
     [auth.roles, session.role]
   );
-  const { visibleTabs, hiddenCount, showAll, toggleShowAll } = useWorkbenchRoles(roles);
+  const { visibleTabs, showAll, toggleShowAll } = useWorkbenchRoles(roles);
 
   /** Tabs filtered by role visibility — order preserved */
   const filteredTabs = useMemo(() => {
-    const base = TABS.filter((tab) => visibleTabs.includes(tab.id));
+    const base = TABS.filter((tab) => !RESERVED_OFFICE_TABS.has(tab.id) && (String(tab.id) === 'pilot' || visibleTabs.includes(tab.id)));
     // Always keep the active tab renderable: a deep-launch (metadata.tabId) into a
     // tab hidden by the current role's defaults would otherwise leave activeTab
     // absent from the render loop and show a blank workbench. Force the requested
     // tab into the visible set so its panel mounts (role hiding is a UX declutter
     // with a show-all toggle, not a host-boundary gate — that is validateWorkbenchHost).
-    if (!base.some((tab) => tab.id === activeTab)) {
+    if (!RESERVED_OFFICE_TABS.has(activeTab) && !base.some((tab) => tab.id === activeTab)) {
       const active = TABS.find((tab) => tab.id === activeTab);
       if (active) return [...base, active];
     }
@@ -945,7 +955,7 @@ const PropertyWorkbenchWindow: React.FC<PropertyWorkbenchWindowProps> = ({ metad
               activeTab={activeTab}
               onTabChange={handleTabChange}
               tabs={filteredTabs}
-              hiddenCount={hiddenCount}
+              hiddenCount={TABS.filter(tab => !RESERVED_OFFICE_TABS.has(tab.id) && !filteredTabs.some(visible => visible.id === tab.id)).length}
               showAll={showAll}
               onToggleShowAll={toggleShowAll}
             />
@@ -956,6 +966,7 @@ const PropertyWorkbenchWindow: React.FC<PropertyWorkbenchWindowProps> = ({ metad
               Content is only mounted when the tab is active (lazy).
             */}
             <main className="flex-1 overflow-auto">
+              {RESERVED_OFFICE_TABS.has(activeTab) && <ReservedOfficeUnavailable />}
               {filteredTabs.map((tab) => {
                 const isActive = activeTab === tab.id;
                 const ActiveTabComponent = TAB_COMPONENTS[tab.id];

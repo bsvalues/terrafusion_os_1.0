@@ -1,3 +1,7 @@
+import { useDossierWorkflowContext, useWorkflowAction } from '../../../hooks/useDossierWorkflowContext';
+import { WorkflowContextPicker } from '../../../components/dossier/WorkflowContextPicker';
+import { WorkflowExportResult } from '../../../components/dossier/WorkflowExportResult';
+import { requireWorkflowExport, type WorkflowExport } from '../../../services/dossierWorkflowService';
 /**
  * PropertyDossier.tsx
  *
@@ -107,20 +111,6 @@ interface OpenAppealPacketResult {
   payloadRef: string;
   sections: string[];
   chainOfCustody: string[];
-}
-
-interface EqualizationPackageResult {
-  packageRef: string;
-  payloadRef: string;
-  artifactCount: number;
-  checklist: string[];
-}
-
-interface AuditBundleResult {
-  bundleRef: string;
-  payloadRef: string;
-  artifactCount: number;
-  traceRef: string;
 }
 
 type DossierToolState<T> = { status: 'idle' | 'loading' | 'success' | 'error'; result?: T; correlationId?: string; error?: ErrorInfo };
@@ -359,12 +349,14 @@ export const PropertyDossier: React.FC = () => {
   const [synthesizeState, setSynthesizeState] = useState<SynthesizeState>({ status: 'idle' });
   const [casefileState, setCasefileState] = useState<DossierToolState<CasefileResult>>({ status: 'idle' });
   const [noteState, setNoteState] = useState<DossierToolState<DossierNoteResult>>({ status: 'idle' });
-  const [appealPacketState, setAppealPacketState] = useState<DossierToolState<OpenAppealPacketResult>>({ status: 'idle' });
-  const [appealPacketId, setAppealPacketId] = useState<string>('');
-  const [equalizationState, setEqualizationState] = useState<DossierToolState<EqualizationPackageResult>>({ status: 'idle' });
-  const [auditBundleState, setAuditBundleState] = useState<DossierToolState<AuditBundleResult>>({ status: 'idle' });
-  const [draftVersion, setDraftVersion] = useState<string>('benton-2026-working');
-  const [exportTaxYear, setExportTaxYear] = useState<number>(new Date().getFullYear());
+  const [appealPacketId, setAppealPacketId] = useState('');
+  const workflow = useDossierWorkflowContext(parcelId);
+  const packet = useWorkflowAction<OpenAppealPacketResult>(workflow, appealPacketId);
+  const equalization = useWorkflowAction<WorkflowExport>(workflow);
+  const audit = useWorkflowAction<WorkflowExport>(workflow, appealPacketId);
+  const appealPacketState = packet.state;
+  const equalizationState = equalization.state;
+  const auditBundleState = audit.state;
   const [noteText, setNoteText] = useState('');
   const [invocationHistory, setInvocationHistory] = useState<InvocationRecord[]>([]);
   const [documentManagement, setDocumentManagement] = useState<DocumentManagementState>({
@@ -527,76 +519,32 @@ export const PropertyDossier: React.FC = () => {
     }
   }, []);
 
-  const handleOpenAppealPacket = useCallback(async () => {
-    if (!appealPacketId.trim()) {
-      setAppealPacketState({ status: 'error', error: { code: 'VALIDATION', message: 'Appeal ID is required', severity: 'error' } });
-      return;
-    }
-    setAppealPacketState({ status: 'loading' });
-    try {
-      const response = await invokeTool({ toolId: 'open_appeal_packet', params: { county: 'benton', appealId: appealPacketId.trim() }, parcelId });
-      if (response.success && response.result) {
-        const parsed = typeof response.result.output === 'string' ? JSON.parse(response.result.output) : response.result.output;
-        setAppealPacketState({ status: 'success', result: parsed, correlationId: response.correlationId });
-        setInvocationHistory(prev => [{ id: `inv-${Date.now()}`, toolId: 'open_appeal_packet', status: 'success', correlationId: response.correlationId || 'unknown', timestamp: new Date() }, ...prev]);
-      } else {
-        setAppealPacketState({ status: 'error', correlationId: response.correlationId, error: { code: response.error?.code || 'APPEAL_PACKET_FAILED', message: response.error?.message || 'Appeal packet lookup failed', severity: 'error', correlationId: response.correlationId } });
-      }
-    } catch (err) {
-      const cid = createStableId('net');
-      setAppealPacketState({ status: 'error', correlationId: cid, error: { code: 'NETWORK_ERROR', message: err instanceof Error ? err.message : 'Network error', severity: 'error', correlationId: cid } });
-    }
-  }, [appealPacketId, parcelId]);
-
-  const handleExportEqualizationPackage = useCallback(async () => {
-    setEqualizationState({ status: 'loading' });
-    try {
-      const response = await invokeTool({
-        toolId: 'export_equalization_package',
-        params: { county: 'benton', draftVersion, taxYear: exportTaxYear, reasonCode: 'annual_certification' },
-        confirmation: { confirmed: true, reasonCode: 'annual_certification' },
-        parcelId,
-      });
-      if (response.success && response.result) {
-        const parsed = typeof response.result.output === 'string' ? JSON.parse(response.result.output) : response.result.output;
-        setEqualizationState({ status: 'success', result: parsed, correlationId: response.correlationId });
-        setInvocationHistory(prev => [{ id: `inv-${Date.now()}`, toolId: 'export_equalization_package', status: 'success', correlationId: response.correlationId || 'unknown', timestamp: new Date() }, ...prev]);
-      } else {
-        setEqualizationState({ status: 'error', correlationId: response.correlationId, error: { code: response.error?.code || 'EQUALIZATION_EXPORT_FAILED', message: response.error?.message || 'Equalization package export failed', severity: 'error', correlationId: response.correlationId } });
-      }
-    } catch (err) {
-      const cid = createStableId('net');
-      setEqualizationState({ status: 'error', correlationId: cid, error: { code: 'NETWORK_ERROR', message: err instanceof Error ? err.message : 'Network error', severity: 'error', correlationId: cid } });
-    }
-  }, [draftVersion, exportTaxYear, parcelId]);
-
-  const handleExportAuditBundle = useCallback(async () => {
-    setAuditBundleState({ status: 'loading' });
-    try {
-      const response = await invokeTool({
-        toolId: 'export_audit_bundle',
-        params: {
-          county: 'benton',
-          taxYear: exportTaxYear,
-          bundleScope: 'county',
-          subjectId: appealPacketId.trim() || parcelId,
-          reasonCode: 'annual_certification',
-        },
-        confirmation: { confirmed: true, reasonCode: 'annual_certification' },
-        parcelId,
-      });
-      if (response.success && response.result) {
-        const parsed = typeof response.result.output === 'string' ? JSON.parse(response.result.output) : response.result.output;
-        setAuditBundleState({ status: 'success', result: parsed, correlationId: response.correlationId });
-        setInvocationHistory(prev => [{ id: `inv-${Date.now()}`, toolId: 'export_audit_bundle', status: 'success', correlationId: response.correlationId || 'unknown', timestamp: new Date() }, ...prev]);
-      } else {
-        setAuditBundleState({ status: 'error', correlationId: response.correlationId, error: { code: response.error?.code || 'AUDIT_EXPORT_FAILED', message: response.error?.message || 'Audit bundle export failed', severity: 'error', correlationId: response.correlationId } });
-      }
-    } catch (err) {
-      const cid = createStableId('net');
-      setAuditBundleState({ status: 'error', correlationId: cid, error: { code: 'NETWORK_ERROR', message: err instanceof Error ? err.message : 'Network error', severity: 'error', correlationId: cid } });
-    }
-  }, [appealPacketId, exportTaxYear, parcelId]);
+  const recordWorkflow = (toolId: string, response: { correlationId?: string } | undefined) => {
+    if (response) setInvocationHistory(prev => [{ id: crypto.randomUUID(), toolId, status: 'success',
+      correlationId: response.correlationId || 'unknown', timestamp: new Date() }, ...prev]);
+  };
+  const handleOpenAppealPacket = async () => {
+    if (!appealPacketId.trim()) return;
+    recordWorkflow('open_appeal_packet', await packet.run({
+      toolId: 'open_appeal_packet', mode: 'pilot', parcelId,
+      params: { county: workflow.countyId, taxYear: workflow.taxYear, appealId: appealPacketId.trim(), parcelId },
+    }));
+  };
+  const handleExportEqualizationPackage = async () => {
+    if (!workflow.draft) return;
+    recordWorkflow('export_equalization_package', await equalization.run({
+      toolId: 'export_equalization_package', mode: 'pilot', parcelId,
+      params: { county: workflow.countyId, taxYear: workflow.taxYear,
+        draftVersion: workflow.draft.draftId, revision: workflow.draft.revision },
+    }, value => requireWorkflowExport(value, workflow.countyId, workflow.taxYear!, workflow.draft)));
+  };
+  const handleExportAuditBundle = async () => {
+    recordWorkflow('export_audit_bundle', await audit.run({
+      toolId: 'export_audit_bundle', mode: 'pilot', parcelId,
+      params: { county: workflow.countyId, taxYear: workflow.taxYear, bundleScope: 'county',
+        subjectId: appealPacketId.trim() || parcelId },
+    }, value => requireWorkflowExport(value, workflow.countyId, workflow.taxYear!)));
+  };
 
   /** Invoke summarize_dossier tool via pilotApi (retained for R2 document integration) */
   const handleSummarize = useCallback(async (dossierId: string) => {
@@ -818,18 +766,20 @@ export const PropertyDossier: React.FC = () => {
         </BentoGrid>
       )}
 
+      <WorkflowContextPicker context={workflow} />
       <BentoGrid columns='auto' gap={1} padding={0}>
         <BentoCard title='Appeal Packet Access' actions={<span>📦</span>}>
           <p className='tf-text-tertiary text-sm mb-3'>
             Open a governed appeal packet and review its chain of custody before BOE work.
           </p>
           <input
+            aria-label='Appeal ID'
             value={appealPacketId}
             onChange={(event) => setAppealPacketId(event.target.value)}
             placeholder={appeals?.[0]?.appealId ? `Appeal ID (for example ${appeals[0].appealId})` : 'Appeal ID'}
             className='w-full p-3 rounded-lg tf-input mb-3'
           />
-          <button onClick={handleOpenAppealPacket} disabled={appealPacketState.status === 'loading'} className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-dossier-cta mb-3'>
+          <button onClick={handleOpenAppealPacket} disabled={!workflow.ready || !appealPacketId.trim() || appealPacketState.status === 'loading'} className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-dossier-cta mb-3'>
             {appealPacketState.status === 'loading' ? 'Opening...' : 'Open Appeal Packet'}
           </button>
           {appealPacketState.status === 'success' && appealPacketState.result && (
@@ -853,43 +803,21 @@ export const PropertyDossier: React.FC = () => {
           <p className='tf-text-tertiary text-sm mb-3'>
             Export certification and audit artifacts from the governed dossier lane.
           </p>
+          <label className='block text-sm mb-2'><input type='checkbox' checked={equalization.confirmed} onChange={event => equalization.setConfirmed(event.target.checked)} /> Confirm equalization export</label>
+          <label className='block text-sm mb-2'><input type='checkbox' checked={audit.confirmed} onChange={event => audit.setConfirmed(event.target.checked)} /> Confirm audit export</label>
           <div className='grid grid-cols-1 md:grid-cols-2 gap-3 mb-3'>
-            <input
-              value={draftVersion}
-              onChange={(event) => setDraftVersion(event.target.value)}
-              placeholder='Draft version'
-              className='w-full p-3 rounded-lg tf-input'
-            />
-            <input
-              type='number'
-              value={exportTaxYear}
-              onChange={(event) => setExportTaxYear(Number(event.target.value) || new Date().getFullYear())}
-              className='w-full p-3 rounded-lg tf-input'
-              min={2020}
-              max={2100}
-            />
-          </div>
-          <div className='grid grid-cols-1 md:grid-cols-2 gap-3 mb-3'>
-            <button onClick={handleExportEqualizationPackage} disabled={equalizationState.status === 'loading'} className='py-2 px-4 rounded-lg font-semibold transition-all tf-suite-dossier-cta'>
+            <button onClick={handleExportEqualizationPackage} disabled={!workflow.ready || !workflow.draft || !equalization.confirmed || equalizationState.status === 'loading'} className='py-2 px-4 rounded-lg font-semibold transition-all tf-suite-dossier-cta'>
               {equalizationState.status === 'loading' ? 'Exporting...' : 'Export Equalization Package'}
             </button>
-            <button onClick={handleExportAuditBundle} disabled={auditBundleState.status === 'loading'} className='py-2 px-4 rounded-lg font-semibold transition-all tf-suite-dossier-cta'>
+            <button onClick={handleExportAuditBundle} disabled={!workflow.ready || !audit.confirmed || auditBundleState.status === 'loading'} className='py-2 px-4 rounded-lg font-semibold transition-all tf-suite-dossier-cta'>
               {auditBundleState.status === 'loading' ? 'Bundling...' : 'Export Audit Bundle'}
             </button>
           </div>
           {equalizationState.status === 'success' && equalizationState.result && (
-            <div className='tf-panel p-3 mb-3'>
-              <div className='tf-text font-semibold'>Equalization Package: {equalizationState.result.packageRef}</div>
-              <div className='tf-text-dim text-xs mt-1'>Artifacts: {equalizationState.result.artifactCount} | Checklist: {equalizationState.result.checklist.join(', ')}</div>
-              {equalizationState.correlationId && <div className='text-xs tf-text-dim flex items-center gap-2 mt-2'>Ref: <code className='tf-suite-accent-text font-mono'>{equalizationState.correlationId.slice(0, 16)}...</code> <WorkbenchSourceBadge source='live' /></div>}
-            </div>
+            <WorkflowExportResult result={equalizationState.result} context={workflow} />
           )}
           {auditBundleState.status === 'success' && auditBundleState.result && (
-            <div className='tf-panel p-3 mb-3'>
-              <div className='tf-text font-semibold'>Audit Bundle: {auditBundleState.result.bundleRef}</div>
-              <div className='tf-text-dim text-xs mt-1'>Artifacts: {auditBundleState.result.artifactCount} | Trace: {auditBundleState.result.traceRef}</div>
-              {auditBundleState.correlationId && <div className='text-xs tf-text-dim flex items-center gap-2 mt-2'>Ref: <code className='tf-suite-accent-text font-mono'>{auditBundleState.correlationId.slice(0, 16)}...</code> <WorkbenchSourceBadge source='live' /></div>}
-            </div>
+            <WorkflowExportResult result={auditBundleState.result} context={workflow} />
           )}
           {equalizationState.status === 'error' && equalizationState.error && <ErrorDisplay error={{ message: equalizationState.error.message, errorCode: equalizationState.error.code, correlationId: equalizationState.correlationId }} />}
           {auditBundleState.status === 'error' && auditBundleState.error && <ErrorDisplay error={{ message: auditBundleState.error.message, errorCode: auditBundleState.error.code, correlationId: auditBundleState.correlationId }} />}

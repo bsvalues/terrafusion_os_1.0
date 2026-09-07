@@ -36,6 +36,17 @@ function unwrapBackend(result, label) {
     }
     return result.data;
 }
+function requestUrl(path, options) {
+    const base = resolveBaseUrl();
+    if (options?.callerAuthorization) {
+        const target = new URL(base);
+        if (!options.token || !['http:', 'https:'].includes(target.protocol) ||
+            !['127.0.0.1', 'localhost', '[::1]'].includes(target.hostname) ||
+            target.username || target.password || target.pathname !== '/' || target.search || target.hash)
+            throw new Error('Caller authorization requires a loopback backend destination.');
+    }
+    return `${base}${path}`;
+}
 // ============================================================================
 // Client
 // ============================================================================
@@ -43,8 +54,8 @@ function unwrapBackend(result, label) {
  * POST JSON to a backend endpoint. Returns typed result.
  */
 async function backendPost(path, body, options) {
-    const url = `${resolveBaseUrl()}${path}`;
     try {
+        const url = requestUrl(path, options);
         const headers = { 'Content-Type': 'application/json' };
         if (options?.token) {
             headers['Authorization'] = `Bearer ${options.token}`;
@@ -54,6 +65,7 @@ async function backendPost(path, body, options) {
             headers,
             body: JSON.stringify(body),
             signal: AbortSignal.timeout(15000),
+            redirect: options?.callerAuthorization ? 'error' : 'follow',
         });
         const text = await res.text();
         if (!res.ok) {
@@ -71,8 +83,8 @@ async function backendPost(path, body, options) {
  * GET from a backend endpoint. Returns typed result.
  */
 async function backendGet(path, options) {
-    const url = `${resolveBaseUrl()}${path}`;
     try {
+        const url = requestUrl(path, options);
         const headers = { 'Accept': 'application/json' };
         if (options?.token) {
             headers['Authorization'] = `Bearer ${options.token}`;
@@ -81,6 +93,7 @@ async function backendGet(path, options) {
             method: 'GET',
             headers,
             signal: AbortSignal.timeout(15000),
+            redirect: options?.callerAuthorization ? 'error' : 'follow',
         });
         const text = await res.text();
         if (!res.ok) {

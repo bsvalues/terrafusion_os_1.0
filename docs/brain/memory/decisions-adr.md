@@ -333,3 +333,87 @@
 - **Consequences:** Suite COMPS POOL metric reads 9,102 from the same response. Ratio-study and
   sale-queue population rules intentionally NOT changed (different doctrine question; change only on
   operator decision). Recorded in `canon/surface-contract.json` → `compsforge_pool_doctrine`.
+## ADR-OS-COUNTY-CONTEXT-001-MANIFEST — Separate active tools from preserved future offices
+
+- **Date:** 2026-09-07. **Status:** Owner-authorized implementation candidate; not committed,
+  merged, deployed, or integrated product acceptance. Exclusive prerequisite lane of expanded
+  OS-COUNTY-CONTEXT-001, base `e16572b09da89ca9f8e421ffadcb82aa211126e3`.
+- **Authority and precedence:** The owner authorized the exact five-file manifest prerequisite,
+  preservation of 18 future-office declarations, Dossier ownership of `export_audit_bundle`, and
+  tighter parameter contracts for the four existing workflows. TF-052 and ADR-EXEC-001 remain
+  controlling. This does not activate a reserved suite or amend constitutional ownership.
+- **Observed baseline:** `node scripts/spec-gates/write-lanes.mjs` reports 21 inherited violations
+  across 116 declarations: 19 reserved-suite declarations and two additional Trace violations on
+  `export_audit_bundle`. ADR-0012/0013/0014 below record historical UI gating, runtime filtering,
+  and a static exception whose referenced helpers are absent on this base. The current runtime
+  directly loads `tools/registry/terrapilot.tools.json`; historical green claims are not current proof.
+- **Bounded supersession:** For this manifest split, replace ADR-0013's filtered temporary-copy
+  mechanism and ADR-0014's static exemption with an active manifest containing 98 tools and an
+  inert `tools/registry/terrapilot.tools.forward-staged.json` containing the exact 18 future-office
+  objects. No validator assertions, suite enums, loader architecture, or activation flags change.
+  ADR-0012's preserve-and-gate policy remains; its implementation must be verified by the UI owner.
+  The historical entries below remain intact as provenance, not present-tense acceptance.
+- **Preservation:** Move the six Clerk, seven Treasury, and five remaining Audit declarations
+  without changing any field or their relative order. Retain all 116 identities across the two
+  files, with no duplicates. Record the original 19 IDs and source commit in
+  `docs/brain/canon/reserved-staging.json`. No controller, component, handler, or capability is deleted.
+  The staged file is not imported by the default runtime. A manifest-path override or environment
+  flag does not constitute authority to activate it; recombining it must fail the unchanged gate.
+- **Dossier export contract:** Retain `export_audit_bundle` for its existing assessor/Dossier
+  consumers. Set suite, write lane, and payload store to `dossier`, with touches limited to
+  `dossier` and `workflow`. Preserve mode, risk, confirmation/reason requirements, PII handling,
+  trace policy, and assessor office scope. The real backend must assemble authorized persisted
+  Dossier records and their existing trace/evidence references, with **no direct Trace store read
+  or write**. Any Trace query belongs in a separate OS read-only operation. Changing metadata
+  while retaining direct Trace access or the demonstration handler is not a legitimate repair.
+- **Four bounded parameter contracts:**
+  - Equalization requires `county`, `draftVersion` (non-nil GUID of an actual persisted assessment
+    draft), `revision` (64 hexadecimal SHA-256 characters), `taxYear` (integer), and `requestId`
+    (non-nil UUID). The schema cannot prove record existence, authorization, or revision equality;
+    those checks remain mandatory in the real backend.
+  - Audit bundle requires `county`, `taxYear`, and `requestId`; existing `bundleScope`, `subjectId`,
+    and reason selection remain optional and bounded. It does not invent an assessment-draft dependency.
+  - Appeal packet requires `county`, `appealId`, and `taxYear`, with optional `parcelId` checked by
+    the backend against the authorized relationship.
+  - Morning brief requires `county`, `taxYear`, and the existing role enum; preserve the optional
+    existing queue selector and Muse mode.
+  - All four reject undeclared properties and blank identifiers. Client-supplied raw sources,
+    source-privacy overrides, and additional authority fields are not accepted parameters.
+    Export reason selections remain bounded to the existing confirmation reason codes.
+- **Exclusive files:** `tools/registry/terrapilot.tools.json`,
+  `tools/registry/terrapilot.tools.forward-staged.json`, `docs/brain/canon/reserved-staging.json`,
+  this decision record, and `os-platform/core/tests/active-staged-manifest.test.mjs`.
+- **Proof contract:** Run the new test with Node and the repository's existing Ajv dependency.
+  Prove the exact staged objects against the source commit, disjoint complete identity inventory,
+  unchanged controls and unrelated active tools, normal registry exclusion, positive and negative
+  parameter validation, and the actual write-lanes command. In-memory fixture tests execute the
+  unchanged gate body and must reject staged recombination, new reserved tools, cross-lane writes,
+  missing high-risk confirmation, read-only write lanes, duplicate IDs, and direct Trace access.
+  No alternate production validator or static blanket exception is introduced.
+- **Integration boundary:** Backend persistence/registration, runtime parameter enforcement,
+  reserved-office UI navigation and deep-link gating, and real browser acceptance are coordinator
+  responsibilities outside this exclusive lane. No integrated or production completion is claimed.
+  Existing reserved-office UI remains an acceptance dependency; this prerequisite must not be
+  represented as safe standalone product delivery. Production/WACO work is untouched.
+- **Observed prerequisite proof (2026-09-07):** New regression test before the manifest repair:
+  27 tests, 8 pass / 19 fail, exit 1. After repair: 27/27 pass, exit 0. The unchanged write-lanes
+  command validates all 98 active tools. Test execution uses bundled Node 24.19.0 with child-only
+  `NODE_PATH` pointing at the existing canonical checkout dependencies; no installation is performed.
+- **Remaining checks, explicitly not green:** `phase83-tools.test.mjs` reports 56 tests:
+  47 pass / 6 fail / 3 cancelled. The split exposes its hard-coded 116-tool assertion and
+  `registerR1Handlers` unconditionally registering `search_recorded_documents` at
+  `os-platform/core/pilot/handlers.real.ts:2570`; the latter also affects real configured startup.
+  The coordinator must reconcile registration with the active inventory and preserve risk-enforcement
+  coverage in the separate test lane. Do not weaken `ToolRunner.registerHandler` to accept unknown tools.
+  `risk-policy.mjs` reports five violations, all reproduced on the pinned base (eight on that base)
+  and all on unchanged active declarations: `apply_rate_adjustment_to_draft`,
+  `sign_off_certification_step`, `canon_delete_file`, `cu_initiate_removal`, and `cu_enroll_parcel`.
+  The configured core type-check cannot resolve `@types/node` in this isolated checkout (TS2688);
+  no dependency files are added outside the five-file reservation. These results are not protected
+  delivery, backend integration, or UI acceptance.
+  Full JSON-schema validation of the active manifest also reports 16 inherited TouchTarget enum
+  failures on untouched CurrentUse/report declarations; normalized tool/path failures match the
+  pinned base exactly. The new 18-tool staged file passes the existing manifest schema. The four
+  changed parameter schemas pass their focused Ajv positive/negative cases; this does not assert
+  whole-manifest schema compliance. Final focused run: 27 new regression tests plus 42 existing
+  P7 write-lane invariant tests, 69/69 passing; unchanged write-lanes command passes with 98 tools.

@@ -14,6 +14,7 @@
  */
 
 import { getToken } from '../auth/authStorage';
+import { decodeAuthClaims } from '../auth/useAuthContext';
 import { getSession } from '../auth/session';
 import { ErrorInfo } from '../hooks/useErrorHandler';
 import { getApiBase } from '../lib/apiBase';
@@ -32,6 +33,13 @@ function buildPilotHeaders(): Record<string, string> {
   const token = getToken();
   if (token) {
     headers.Authorization = `Bearer ${token}`;
+    // Bearer claims take precedence over the separately persisted dev session.
+    // Missing claims stay missing; the server remains the authorization authority.
+    const claims = decodeAuthClaims(token);
+    if (claims.userId) headers['x-user-id'] = claims.userId;
+    if (claims.countyId) headers['x-county-id'] = claims.countyId;
+    if (claims.roles.length) headers['x-role'] = claims.roles[0];
+    return headers;
   }
   const session = getSession();
   if (session) {

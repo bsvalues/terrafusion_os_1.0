@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using TerraFusion.Core.DTOs.Pilot;
 using TerraFusion.Core.Interfaces;
 using Microsoft.Extensions.Logging;
+using TerraFusion.API.Services;
 
 namespace TerraFusion.API.Controllers;
 
@@ -147,8 +148,10 @@ public sealed class PilotController : ControllerBase
     /// <summary>Stub: returns empty tool list when pilot runtime is offline.</summary>
     [HttpGet("tools")]
     [AllowAnonymous]
-    public IActionResult GetTools([FromQuery] string? mode = null)
+    public async Task<IActionResult> GetTools([FromQuery] string? mode = null)
     {
+        var forwarded = await PilotRuntimeProxy.ForwardAsync(Request, "tools");
+        if (forwarded is not null) return forwarded;
         _logger.LogDebug("Pilot tools stub hit (mode={Mode}) — pilot runtime offline", mode);
         return Ok(new { tools = Array.Empty<object>(), source = "stub", runtimeOnline = false });
     }
@@ -156,8 +159,10 @@ public sealed class PilotController : ControllerBase
     /// <summary>Stub: returns graceful error when pilot invoke is hit without runtime.</summary>
     [HttpPost("invoke")]
     [AllowAnonymous]
-    public IActionResult InvokeTool([FromBody] object? body = null)
+    public async Task<IActionResult> InvokeTool([FromBody] object? body = null)
     {
+        var forwarded = await PilotRuntimeProxy.ForwardAsync(Request, "invoke", body);
+        if (forwarded is not null) return forwarded;
         _logger.LogDebug("Pilot invoke stub hit — pilot runtime offline");
         return Ok(new
         {
@@ -184,8 +189,10 @@ public sealed class PilotController : ControllerBase
     /// <summary>Stub: returns health indicating pilot runtime is offline.</summary>
     [HttpGet("health")]
     [AllowAnonymous]
-    public IActionResult GetPilotHealth()
+    public async Task<IActionResult> GetPilotHealth()
     {
+        var forwarded = await PilotRuntimeProxy.ForwardAsync(Request, "health");
+        if (forwarded is not null) return forwarded;
         _logger.LogDebug("Pilot health stub hit — pilot runtime offline");
         return Ok(new { status = "degraded", runtimeOnline = false, message = "Pilot runtime offline — using .NET fallback stubs" });
     }
@@ -193,8 +200,10 @@ public sealed class PilotController : ControllerBase
     /// <summary>Stub: returns empty for validate when pilot runtime is offline.</summary>
     [HttpPost("validate")]
     [AllowAnonymous]
-    public IActionResult ValidateTool([FromBody] object? body = null)
+    public async Task<IActionResult> ValidateTool([FromBody] object? body = null)
     {
+        var forwarded = await PilotRuntimeProxy.ForwardAsync(Request, "validate", body);
+        if (forwarded is not null) return forwarded;
         return Ok(new { valid = false, runtimeOnline = false });
     }
 }

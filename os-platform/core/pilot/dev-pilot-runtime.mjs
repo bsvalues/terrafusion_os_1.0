@@ -7,6 +7,7 @@ import path from "node:path";
 import fs from "node:fs";
 import { fileURLToPath } from "node:url";
 import { ToolRegistry, ToolRunner, registerPhase84Handlers, registerR1Handlers } from "./index.js";
+import { bindCountyWorkflowAuthorization, registerCountyWorkflowHandlers } from "./countyWorkflowHandlers.js";
 import { traceService } from "../trace/index.js";
 import { preInvokeCheck, buildExecutionContextFromRequest } from "./src/router/index.mjs";
 import { runAcademyLocalOpsJourney } from "./localops-academy-journey.mjs";
@@ -215,7 +216,7 @@ function buildPilotExecutionContext(req, body) {
     ? body.mode
     : firstHeaderValue(req.headers["x-mode"], "pilot");
 
-  return {
+  const context = {
     countyId: firstHeaderValue(req.headers["x-county-id"], "benton"),
     userId: firstHeaderValue(req.headers["x-user-id"], "dev-user"),
     roles: [firstHeaderValue(req.headers["x-role"], "appraiser")],
@@ -223,12 +224,14 @@ function buildPilotExecutionContext(req, body) {
     parcelId: body.parcelId || normalizedParams.parcelId,
     dossierId: body.dossierId,
     officeId: optionalHeaderValue(req.headers["x-office-id"]),
-    confirmation: !!body.confirmation,
+    confirmation: body.confirmation === true,
     reasonCode: typeof body.reasonCode === "string" && body.reasonCode.trim().length > 0
       ? body.reasonCode
       : undefined,
     supervisorApproval: body.supervisorApproval || undefined,
   };
+  bindCountyWorkflowAuthorization(context, req.headers.authorization);
+  return context;
 }
 
 function normalizeEcho(value) {
@@ -593,6 +596,8 @@ async function getCompareRunner() {
       sharedRegistry = registry;
       const runner = new ToolRunner({ registry });
       registerPhase84Handlers(runner);
+      // Always use real fail-closed workflows. Missing backend/auth is not a demo fallback.
+      registerCountyWorkflowHandlers(runner);
       // Register R1 real handlers when backend is available.
       // Presence of TF_API_BASE_URL or TF_API_PORT signals a running backend.
       if (process.env.TF_API_BASE_URL || process.env.TF_API_PORT) {

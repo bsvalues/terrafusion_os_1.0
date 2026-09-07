@@ -24,6 +24,32 @@ namespace TerraFusion.Data.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("TerraFusion.Core.Entities.DossierWorkflowRecord", b =>
+                {
+                    b.Property<Guid>("Id").ValueGeneratedOnAdd().HasColumnType("uuid");
+                    b.Property<Guid>("CountyId").HasColumnType("uuid");
+                    b.Property<string>("Kind").IsRequired().HasMaxLength(30).HasColumnType("character varying(30)");
+                    b.Property<int>("TaxYear").HasColumnType("integer");
+                    b.Property<Guid?>("StudyId").HasColumnType("uuid");
+                    b.Property<Guid?>("DraftId").HasColumnType("uuid");
+                    b.Property<string>("RequestId").IsRequired().HasMaxLength(200).HasColumnType("character varying(200)");
+                    b.Property<string>("RequestHash").IsRequired().HasMaxLength(64).HasColumnType("character varying(64)");
+                    b.Property<string>("Revision").IsRequired().HasMaxLength(64).HasColumnType("character varying(64)");
+                    b.Property<string>("ContentHash").IsRequired().HasMaxLength(64).HasColumnType("character varying(64)");
+                    b.Property<string>("PayloadJson").IsRequired().HasColumnType("text");
+                    b.Property<string>("CreatedBy").IsRequired().HasMaxLength(200).HasColumnType("character varying(200)");
+                    b.Property<DateTime>("CreatedAt").HasColumnType("timestamp with time zone");
+                    b.HasKey("Id");
+                    b.HasIndex("CountyId", "RequestId").IsUnique();
+                    b.HasIndex("CountyId", "TaxYear", "Kind");
+                    b.HasIndex("StudyId");
+                    b.HasIndex("DraftId");
+                    b.ToTable("DossierWorkflowRecords");
+                    b.HasOne("TerraFusion.Core.Entities.County", null).WithMany().HasForeignKey("CountyId").OnDelete(DeleteBehavior.Restrict).IsRequired();
+                    b.HasOne("TerraFusion.Core.Entities.CountyStudySession", null).WithMany().HasForeignKey("StudyId").OnDelete(DeleteBehavior.Restrict);
+                    b.HasOne("TerraFusion.Core.Entities.DossierWorkflowRecord", null).WithMany().HasForeignKey("DraftId").OnDelete(DeleteBehavior.Restrict);
+                });
+
             modelBuilder.Entity("TerraFusion.AI.Entities.GPTAudit", b =>
                 {
                     b.Property<int>("Id")
@@ -5554,6 +5580,12 @@ namespace TerraFusion.Data.Migrations
 
             modelBuilder.Entity("TerraFusion.Core.Entities.DossierPacket", b =>
                 {
+                    b.Property<int?>("TaxYear").HasColumnType("integer");
+                    b.Property<Guid?>("AppealId").HasColumnType("uuid");
+                    b.HasIndex("AppealId");
+                    b.HasIndex("CountyId", "AppealId");
+                    b.HasIndex("CountyId", "TaxYear");
+                    b.HasOne("TerraFusion.Core.Entities.Appeal", null).WithMany().HasForeignKey("AppealId").OnDelete(DeleteBehavior.Restrict);
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
