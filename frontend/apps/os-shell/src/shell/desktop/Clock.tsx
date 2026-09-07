@@ -20,6 +20,20 @@ export interface ClockProps {
   className?: string;
 }
 
+/**
+ * Browser locale detectors can return POSIX suffixes such as `en-US@posix`.
+ * ECMA-402 rejects those tags, so normalize the detector value before using
+ * it for locale-sensitive formatting in the shell.
+ */
+export function normalizeLocale(locale?: string): string {
+  const candidate = (locale ?? 'en-US').split('@', 1)[0].replace(/_/g, '-');
+  try {
+    return Intl.getCanonicalLocales(candidate)[0] ?? 'en-US';
+  } catch {
+    return 'en-US';
+  }
+}
+
 // ============================================================================
 // Clock Component
 // ============================================================================
@@ -27,6 +41,7 @@ export interface ClockProps {
 export const Clock: React.FC<ClockProps> = ({ className }) => {
   const { t, i18n } = useTranslation();
   const [time, setTime] = useState(new Date());
+  const locale = normalizeLocale(i18n.language);
 
   useEffect(() => {
     // Update every minute
@@ -47,18 +62,18 @@ export const Clock: React.FC<ClockProps> = ({ className }) => {
   }, []);
 
   // Formatted strings
-  const formattedTime = time.toLocaleTimeString(i18n.language, {
+  const formattedTime = time.toLocaleTimeString(locale, {
     hour: 'numeric',
     minute: '2-digit',
     hour12: true,
   });
 
-  const formattedShortDate = time.toLocaleDateString(i18n.language, {
+  const formattedShortDate = time.toLocaleDateString(locale, {
     month: 'short',
     day: 'numeric',
   });
 
-  const formattedFullDate = time.toLocaleDateString(i18n.language, {
+  const formattedFullDate = time.toLocaleDateString(locale, {
     weekday: 'long',
     year: 'numeric',
     month: 'long',

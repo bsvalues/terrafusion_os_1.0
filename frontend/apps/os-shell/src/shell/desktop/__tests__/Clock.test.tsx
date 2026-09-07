@@ -16,7 +16,7 @@ import '@testing-library/jest-dom';
 import { render, screen, cleanup, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-import { Clock } from '../Clock';
+import { Clock, normalizeLocale } from '../Clock';
 
 
 
@@ -34,6 +34,20 @@ afterEach(() => {
 });
 
 describe('Clock', () => {
+  describe('Locale normalization', () => {
+    it('removes POSIX locale suffixes rejected by ECMA-402', () => {
+      expect(normalizeLocale('en-US@posix')).toBe('en-US');
+    });
+
+    it('normalizes underscore-separated locale tags', () => {
+      expect(normalizeLocale('en_US')).toBe('en-US');
+    });
+
+    it('falls back when the detected locale is invalid', () => {
+      expect(normalizeLocale('en-@posix')).toBe('en-US');
+    });
+  });
+
   describe('Rendering', () => {
     it('renders clock component', () => {
       render(<Clock />);
