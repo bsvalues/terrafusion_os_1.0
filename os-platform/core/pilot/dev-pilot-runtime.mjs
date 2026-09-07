@@ -1246,6 +1246,10 @@ const server = createServer(async (req, res) => {
     // CANON ENDPOINTS (existing)
     // ═══════════════════════════════════════════════════════════════
 
+    const canonTraceContext = conferenceOnly
+      ? localOpsTraceContext(req)
+      : { countyId: "system", userId: "canon", mode: "pilot" };
+
     if (method === "POST" && pathname === "/pilot/canon/ping") {
       const body = await readJsonBody(req);
       const echo = normalizeEcho(body.echo);
@@ -1255,7 +1259,7 @@ const server = createServer(async (req, res) => {
         toolId: "canon_ping",
         correlationId,
         summary: `Canon ping invoked (echo=${echo})`,
-        context: { countyId: "system", userId: "canon", mode: "pilot" },
+        context: canonTraceContext,
       });
       const result = await runCanonCommand("canon:ping", ["--json", "--echo", echo]);
       const parsed = parseCanonResponse("canon:ping", result.stdout, result.stderr, result.exitCode, {
@@ -1266,7 +1270,7 @@ const server = createServer(async (req, res) => {
         toolId: "canon_ping",
         correlationId,
         summary: parsed.overallOk ? "Canon ping succeeded" : `Canon ping failed: ${parsed.error ?? "unknown"}`,
-        context: { countyId: "system", userId: "canon", mode: "pilot" },
+        context: canonTraceContext,
       });
       writeJson(res, 200, parsed);
       return;
@@ -1279,7 +1283,7 @@ const server = createServer(async (req, res) => {
         toolId: "canon_doctor",
         correlationId,
         summary: "Canon doctor invoked",
-        context: { countyId: "system", userId: "canon", mode: "pilot" },
+        context: canonTraceContext,
       });
       const result = await runCanonCommand("canon:doctor", ["--json"]);
       const parsed = parseCanonResponse("canon:doctor", result.stdout, result.stderr, result.exitCode);
@@ -1288,7 +1292,7 @@ const server = createServer(async (req, res) => {
         toolId: "canon_doctor",
         correlationId,
         summary: parsed.overallOk ? "Canon doctor passed" : `Canon doctor failed: ${parsed.error ?? "unknown"}`,
-        context: { countyId: "system", userId: "canon", mode: "pilot" },
+        context: canonTraceContext,
       });
       writeJson(res, 200, parsed);
       return;
@@ -1301,7 +1305,7 @@ const server = createServer(async (req, res) => {
         toolId: "canon_gatefast",
         correlationId,
         summary: "Canon gatefast invoked",
-        context: { countyId: "system", userId: "canon", mode: "pilot" },
+        context: canonTraceContext,
       });
       const result = await runCanonCommand("canon:gatefast", ["--json"]);
       const parsed = parseCanonResponse("canon:gatefast", result.stdout, result.stderr, result.exitCode);
@@ -1310,7 +1314,7 @@ const server = createServer(async (req, res) => {
         toolId: "canon_gatefast",
         correlationId,
         summary: parsed.overallOk ? "Canon gatefast passed" : `Canon gatefast failed: ${parsed.error ?? "unknown"}`,
-        context: { countyId: "system", userId: "canon", mode: "pilot" },
+        context: canonTraceContext,
       });
       writeJson(res, 200, parsed);
       return;
@@ -1324,7 +1328,7 @@ const server = createServer(async (req, res) => {
         toolId: "canon_corpus_status",
         correlationId,
         summary: "Canon corpus status invoked",
-        context: { countyId: "system", userId: "canon", mode: "pilot" },
+        context: canonTraceContext,
       });
       try {
         const lockPath = path.join(REPO_ROOT, "golden", "GOLDEN_CORPUS.lock.json");
@@ -1345,7 +1349,7 @@ const server = createServer(async (req, res) => {
           toolId: "canon_corpus_status",
           correlationId,
           summary: `Golden Corpus: ${result.artifactCount} artifacts, release ${result.releaseTag}`,
-          context: { countyId: "system", userId: "canon", mode: "pilot" },
+          context: canonTraceContext,
         });
         writeJson(res, 200, result);
       } catch (err) {
@@ -1354,7 +1358,7 @@ const server = createServer(async (req, res) => {
           toolId: "canon_corpus_status",
           correlationId,
           summary: `Canon corpus status failed: ${err?.message ?? String(err)}`,
-          context: { countyId: "system", userId: "canon", mode: "pilot" },
+          context: canonTraceContext,
         });
         writeJson(res, 200, {
           ok: false,

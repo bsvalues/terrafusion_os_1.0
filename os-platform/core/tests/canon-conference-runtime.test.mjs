@@ -14,7 +14,17 @@ test(
     const port = reservation.address().port;
     await new Promise(resolve => reservation.close(resolve));
     const token = 'synthetic-test-host-credential-0123456789';
-    const child = spawn(process.execPath, ['os-platform/core/pilot/dev-pilot-runtime.mjs'], {
+    // Observe the actual trace emissions without exposing a production trace route.
+    const bootstrap = `
+      import { traceService } from './os-platform/core/trace/index.js';
+      const emit = traceService.emit.bind(traceService);
+      traceService.emit = event => {
+        if (event.toolId?.startsWith('canon_')) console.log('CANON_TEST_TRACE=' + JSON.stringify(event));
+        return emit(event);
+      };
+      await import('./os-platform/core/pilot/dev-pilot-runtime.mjs');
+    `;
+    const child = spawn(process.execPath, ['--input-type=module', '-e', bootstrap], {
       cwd: fileURLToPath(new URL('../../../', import.meta.url)),
       env: {
         ...process.env,
@@ -68,6 +78,25 @@ test(
       assert.ok(result.normalized.inputCount > 0);
       const corpus = await post('/pilot/canon/corpus', headers);
       assert.equal((await corpus.json()).ok, true);
+      const secondHeaders = {
+        ...headers,
+        'X-TerraFusion-County-Id': '11111111-1111-4111-8111-111111111111',
+        'X-TerraFusion-User-Id': 'second-conference-test',
+      };
+      assert.equal((await post('/pilot/canon/corpus', secondHeaders)).status, 200);
+      const traces = () => output.split(/\r?\n/)
+        .filter(line => line.startsWith('CANON_TEST_TRACE='))
+        .map(line => JSON.parse(line.slice('CANON_TEST_TRACE='.length)));
+      const traceDeadline = Date.now() + 3000;
+      while (traces().length < 6 && Date.now() < traceDeadline) {
+        await new Promise(resolve => setTimeout(resolve, 25));
+      }
+      assert.equal(traces().length, 6, 'only admitted invocations and outcomes emit traces');
+      for (const [index, event] of traces().entries()) {
+        const identity = index < 4 ? headers : secondHeaders;
+        assert.equal(event.context.countyId, identity['X-TerraFusion-County-Id']);
+        assert.equal(event.context.userId, identity['X-TerraFusion-User-Id']);
+      }
     } finally {
       const stopped = new Promise(resolve => child.once('exit', resolve));
       if (child.exitCode === null) {
