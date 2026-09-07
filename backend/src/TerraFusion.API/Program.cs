@@ -1265,6 +1265,9 @@ builder.Services.AddScoped<TerraFusion.API.Services.ISaleQualificationService, T
 
 // Slice C38-B — Sync comps read endpoint backed by the C37-B canonical landing reader.
 // Read-only EF projection per C37-A's selection rule (ComputedDecision = Qualified).
+// WO-106: the HTTP eligible-comps consumer requires explicitly bound offline
+// PII metadata. Missing coverage denies this route without resolving live PACS.
+builder.Services.AddScoped<TerraFusion.API.Services.Sync.CanonicalLandingPiiBoundary>();
 builder.Services.AddScoped<
     TerraFusion.Sync.Workbench.Comps.Sales.ISalesCompEligibilityReader,
     TerraFusion.Sync.Workbench.Comps.Sales.SalesCompEligibilityReader>();
