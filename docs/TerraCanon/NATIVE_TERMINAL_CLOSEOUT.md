@@ -44,6 +44,18 @@ bytes without claiming the historical evidence is currently available or the pro
 single-use and command-specific. Unknown profiles/options, duplicates and missing values fail closed.
 `runReleaseCloseout(argv)` returns `{ code, result }`; entrypoints print the result as JSON.
 
+The same commands are available inside `tf repl` as `canon release ...`. Raw release tokens reach the
+strict parser, including duplicate boolean flags and unknown options. REPL `.json` mode adds JSON output
+only when no explicit `--json` token exists. The existing REPL whitespace tokenization is unchanged;
+use the direct CLI for paths requiring shell quoting. Other REPL commands keep their existing behavior.
+
+The module loads its sole fixed checked-in JSON Schema through Node's `createRequire`, compatible with
+the declared minimum Node18.0.0. It does not require JSON import-attribute syntax, substitute a second
+schema, change the schema bytes or alter package engines. Minimum-runtime regression tests run from
+the bundled Node24 test runner with `TF_CANON_COMPAT_NODE` pointing to an existing verified Node18.0.0
+binary; actual production modules and CLI/REPL child processes run on that older binary. That test-only
+variable is not a native command option or runtime selector.
+
 `--evidence-root` is the runtime root, containing both `evidence/` and `releases/`, because the accepted
 archive is in `releases/`. `--source-root` is the frozen accepted checkout, containing the original
 `frontend/apps/os-shell/waco-conference-package/launch-data/washington` package. The reviewed profile

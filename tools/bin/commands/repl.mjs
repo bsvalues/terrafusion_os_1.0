@@ -108,7 +108,12 @@ export default async function repl({ root, flags }) {
         continue;
       }
 
-      await mod.default({ root, flags: cmdFlags, rest: positional, argv: [] });
+      // Only native release needs raw tokens: its strict parser must see duplicate/unknown flags.
+      const argv = command === "canon" && positional[0] === "release"
+        ? [process.execPath, path.resolve(__dirname, "../tf.mjs"), ...parts,
+          ...(jsonMode && !parts.includes("--json") ? ["--json"] : [])]
+        : [];
+      await mod.default({ root, flags: cmdFlags, rest: positional, argv });
     } catch (err) {
       process.stderr.write(`Error: ${err.message}\n`);
     }

@@ -41,7 +41,9 @@ export default async function canon({ root, flags, rest, argv }) {
   if (rest[0] === "release") {
     const { runReleaseCloseout } = await import("../../canon/release-closeout.mjs");
     // Preserve raw arguments: the top-level parser collapses duplicate boolean flags.
-    const raw = argv ? argv.slice(2) : ["canon", ...rest, ...(flags.json ? ["--json"] : []), ...(flags.dry ? ["--dry"] : [])];
+    const raw = Array.isArray(argv) && argv.length > 2 ? argv.slice(2) : ["canon", ...rest,
+      ...(flags.json ? ["--json"] : []), ...(flags.dry ? ["--dry"] : []),
+      ...(flags.help ? ["--help"] : []), ...(flags.verbose ? ["--verbose"] : [])];
     const releaseIndex = raw.indexOf("release");
     const prefix = raw.slice(0, releaseIndex).filter(arg => arg !== "canon");
     const { code, result } = await runReleaseCloseout([...raw.slice(releaseIndex + 1), ...prefix]);

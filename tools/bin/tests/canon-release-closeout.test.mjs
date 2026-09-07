@@ -30,7 +30,7 @@ function installation(t, change) {
   const install = path.join(temp, 'installed'), source = path.join(temp, 'source'), evidence = path.join(temp, 'evidence');
   const store = path.join(temp, 'store');
   const files = ['tools/canon/canon.mjs', 'tools/canon/release-closeout.mjs', 'tools/bin/tf.mjs',
-    'tools/bin/commands/canon.mjs', 'tools/bin/lib/spawn-delegate.mjs', 'os-platform/core/canon/release-closeout.mjs',
+    'tools/bin/commands/canon.mjs', 'tools/bin/commands/repl.mjs', 'tools/bin/lib/spawn-delegate.mjs', 'os-platform/core/canon/release-closeout.mjs',
     'os-platform/core/canon/canon-evidence.mjs', 'os-platform/core/canon/product-terminal-receipt.schema.json'];
   for (const file of files) {
     mkdirSync(path.dirname(path.join(install, file)), { recursive: true });
@@ -253,4 +253,99 @@ test('argument metacharacters remain literal paths in both entrypoints', t => {
     succeeds(result);
   }
   assert.deepEqual(readdirSync(store), ['waco-2026.product-terminal.json']);
+});
+
+async function runRepl(f, lines, executable = process.execPath) {
+  // Keep stdin open and send commands at real prompts, matching an interactive session.
+  const result = await new Promise((resolve, reject) => {
+    const child = spawn(executable, ['tools/bin/tf.mjs', 'repl'], { cwd: f.install, shell: false });
+    const commands = [...lines, '.exit'];
+    let stdout = '', stderr = '', sent = 0;
+    const timeout = setTimeout(() => { child.kill(); reject(new Error('REPL prompt timeout')); }, 15000);
+    child.stdout.on('data', chunk => {
+      stdout += chunk;
+      const prompts = (stdout.match(/(?:^|\n)tf> /g) ?? []).length;
+      if (prompts > sent && sent < commands.length) child.stdin.write(commands[sent++] + '\n');
+    });
+    child.stderr.on('data', chunk => { stderr += chunk; });
+    child.on('error', error => { clearTimeout(timeout); reject(error); });
+    child.on('close', status => { clearTimeout(timeout); resolve({ status, stdout, stderr }); });
+  });
+  assert.equal(result.status, 0, (result.stdout + result.stderr).slice(-2000));
+  assert.equal(result.stderr, '');
+  return (result.stdout.match(/\{\r?\n[\s\S]*?\r?\n\}/g) ?? []).map(text => JSON.parse(text));
+}
+
+test('real REPL preserves release verify, record, show and dry-run arguments', async t => {
+  const f = installation(t);
+  const roots = `--profile waco-2026 --evidence-root ${f.evidence} --source-root ${f.source}`;
+  const dry = await runRepl(f, [`.json`, `canon release verify ${roots}`, `canon release record ${roots} --store ${f.store} --dry`]);
+  assert.equal(dry.length, 2);
+  assert.equal(dry[0].ok, true, JSON.stringify(dry));
+  assert.equal(dry[1].ok, true, JSON.stringify(dry));
+  assert.equal(dry[1].persistence, 'NOT_WRITTEN');
+  assert.equal(existsSync(f.store), false);
+  const recorded = await runRepl(f, [`canon release record ${roots} --store ${f.store} --json`,
+    `canon release show --profile waco-2026 --store ${f.store} --json`]);
+  assert.equal(recorded.length, 2);
+  assert.equal(recorded[0].ok, true, JSON.stringify(recorded));
+  assert.equal(recorded[0].persistence, 'CREATED');
+  assert.deepEqual(recorded[1].receipt, recorded[0].receipt);
+  assert.deepEqual(recorded[0].receipt, dry[0].receipt);
+});
+
+test('real REPL retains duplicate booleans and rejects unknown or missing release flags', async t => {
+  const f = installation(t);
+  const base = `canon release record --profile waco-2026 --evidence-root ${f.evidence} --source-root ${f.source}`;
+  const cases = [
+    [`${base} --store ${f.store} --dry --dry`, 'duplicate option --dry'],
+    [`${base} --store ${f.store} --json --json`, 'duplicate option --json'],
+    [`${base} --store ${f.store} --help`, 'unknown option --help'],
+    [`${base} --store ${f.store} --verbose`, 'unknown option --verbose'],
+    [`${base} --store ${f.store} --trusted true`, 'unknown option --trusted'],
+    [`${base} --store`, 'missing value --store'],
+    [`${base} --store ${f.store} --profile waco-2026`, 'duplicate option --profile'],
+  ];
+  const results = await runRepl(f, ['.json', ...cases.map(([line]) => line)]);
+  assert.equal(results.length, cases.length);
+  for (let i = 0; i < cases.length; i++) {
+    assert.equal(results[i].ok, false);
+    assert.equal(results[i].error.code, 'RELEASE_INVALID');
+    assert.ok(results[i].error.message.includes(cases[i][1]), JSON.stringify(results[i]));
+  }
+  assert.equal(existsSync(f.store), false);
+});
+
+test('Canon handler accepts structured arguments with an empty raw argv', t => {
+  const f = installation(t);
+  const code = `const { default: canon } = await import(${JSON.stringify(pathToFileURL(path.join(f.install, 'tools/bin/commands/canon.mjs')).href)});
+    process.exitCode = await canon(${JSON.stringify({ root: f.install, argv: [], flags: { json: true, dry: true },
+      rest: ['release', 'record', '--profile', 'waco-2026', '--evidence-root', f.evidence, '--source-root', f.source, '--store', f.store] })});`;
+  const result = spawnSync(process.execPath, ['--input-type=module', '-e', code], { cwd: f.install, encoding: 'utf8', shell: false });
+  assert.equal(succeeds(result).persistence, 'NOT_WRITTEN');
+  assert.equal(existsSync(f.store), false);
+});
+
+test('minimum supported Node parses, loads and executes the real native command paths', {
+  skip: !process.env.TF_CANON_COMPAT_NODE && 'Set TF_CANON_COMPAT_NODE to an existing Node 18.0.0 executable',
+}, async t => {
+  const f = installation(t), executable = process.env.TF_CANON_COMPAT_NODE;
+  const version = spawnSync(executable, ['--version'], { encoding: 'utf8', shell: false });
+  assert.equal(version.status, 0, version.stderr);
+  assert.equal(version.stdout.trim(), 'v18.0.0');
+  const syntax = spawnSync(executable, ['--check', 'os-platform/core/canon/release-closeout.mjs'], {
+    cwd: f.install, encoding: 'utf8', shell: false,
+  });
+  assert.equal(syntax.status, 0, syntax.stdout + syntax.stderr);
+  const roots = ['--profile', 'waco-2026', '--evidence-root', f.evidence, '--source-root', f.source];
+  const run = args => spawnSync(executable, args, { cwd: f.install, encoding: 'utf8', shell: false });
+  const verified = succeeds(run(['tools/canon/canon.mjs', 'release', 'verify', ...roots, '--json']));
+  const recorded = succeeds(run(['tools/bin/tf.mjs', 'canon', 'release', 'record', ...roots, '--store', f.store, '--json']));
+  assert.deepEqual(recorded.receipt, verified.receipt);
+  const results = await runRepl(f, [`canon release show --profile waco-2026 --store ${f.store} --json`,
+    `canon release record ${roots.join(' ')} --store ${f.store} --dry --dry`], executable);
+  assert.equal(results.length, 2);
+  assert.deepEqual(results[0].receipt, verified.receipt);
+  assert.equal(results[1].ok, false);
+  assert.match(results[1].error.message, /duplicate option --dry/);
 });

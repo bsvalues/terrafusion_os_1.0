@@ -116,3 +116,19 @@ runtime/evidence, producer code, schema, policy, guard and allowlists remain unc
 retest is required. Validate catalog bindings and diffs, commit only the revised reservation, then
 run the existing guard on corrected committed HEAD because it reads `git ls-tree HEAD`. The parent
 retains push, PR and protected delivery ownership.
+
+## Bounded source-review correction
+
+At `5bacb7632d14d4a44fa802755708b50c8e57f153`, review confirmed two P2 defects: JSON import attributes
+prevented module loading on the declared minimum Node18.0.0, and the REPL's empty raw argv discarded
+release arguments. The narrow correction loads the same fixed schema with `createRequire` and preserves
+raw tokens only for `canon release` in the existing REPL. Duplicate boolean flags must remain visible
+to the strict release parser; `.json` mode must not introduce a duplicate of an explicit flag.
+
+Write meaningful failing minimum-runtime and real interactive-REPL tests before changing source. Prove
+verify/record/show/dry-run, empty-argv fallback, and duplicate/unknown/missing rejection. Run the original
+72 tests plus focused regressions under bundled Node24. Use the parent's isolated checksum-verified
+Node18.0.0 for actual parse/load and CLI/REPL child execution; do not confuse modern test-runner flags
+with product compatibility. Policy/schema/receipt/catalog bytes and package engines remain unchanged.
+The revised WO grants `tools/bin/commands/repl.mjs` only for this new release path. Commit exact paths
+and return to independent review; parent owns all push, PR and protected delivery operations.

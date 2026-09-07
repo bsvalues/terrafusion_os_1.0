@@ -1,7 +1,8 @@
 /** Pure native product receipt contract. No filesystem, clock, network or issuer attestation. */
 import { createHash } from 'node:crypto';
+import { createRequire } from 'node:module';
 import { canonicalize } from './canon-evidence.mjs';
-import schema from './product-terminal-receipt.schema.json' with { type: 'json' };
+const schema = createRequire(import.meta.url)('./product-terminal-receipt.schema.json');
 
 function requireThat(ok, message) {
   if (!ok) throw Object.assign(new Error(`RELEASE_INVALID: ${message}`), { code: 'RELEASE_INVALID' });

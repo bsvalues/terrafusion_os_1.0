@@ -104,6 +104,7 @@ Only these paths may change in this Work Order:
     "tools/canon/release-closeout.mjs",
     "tools/canon/canon.mjs",
     "tools/bin/commands/canon.mjs",
+    "tools/bin/commands/repl.mjs",
     "tools/bin/tests/canon-release-closeout.test.mjs",
     "docs/TerraCanon/NATIVE_TERMINAL_CLOSEOUT.md",
     "docs/brain/workorders/active/WO-TF-NATIVE-TERMINAL-CLOSEOUT-001.md",
@@ -131,6 +132,16 @@ change native source, policy, schema, the native store, accepted runtime/evidenc
 Validation is the existing repo-shape guard on corrected committed HEAD plus narrow catalog binding
 and diff checks; no product retest. No push or PR mutation is delegated. Earlier Task1 absent-output
 statements are historical and do not describe the subsequently issued Task2 artifacts.
+
+Source-review correction at base `5bacb7632d14d4a44fa802755708b50c8e57f153`: fix the two confirmed P2s
+in the native schema loader and Canon REPL argument forwarding. `tools/bin/commands/repl.mjs` is added
+only for raw-token forwarding on `canon release`; other command behavior stays unchanged. This phase
+may change the existing core/Canon command, focused test, native docs/plan/proof/WO paths. It may not
+change policy, schema, receipt, catalog, backend/frontend/CI, dependencies or package engines. Preserve
+the native store and accepted runtime/evidence. Require meaningful RED before each fix, the full
+72-test baseline plus focused regressions on bundled Node24, and actual Node18.0.0 parse/load/CLI proof
+using the parent's isolated verified executable. No project dependency install, global runtime change,
+push or PR mutation; return the exact commit and digests for independent review.
 
 ## Acceptance and delivery
 
