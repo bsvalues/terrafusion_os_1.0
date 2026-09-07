@@ -35,15 +35,12 @@ public sealed class CanonicalLandingPiiBoundary(IConfiguration configuration)
 
         try
         {
-            // Keep both files open without write sharing while validating this
-            // request. No positive decision is cached across artifact changes.
-            using var manifestFile = File.Open(manifestPath!, FileMode.Open, FileAccess.Read, FileShare.Read);
-            using var schemaFile = File.Open(schemaPath!, FileMode.Open, FileAccess.Read, FileShare.Read);
-            if (manifestFile.Length > MaxArtifactBytes || schemaFile.Length > MaxArtifactBytes) return false;
-            if (!HashMatches(manifestFile, manifestHash!)) return false;
-            var bytes = new byte[checked((int)schemaFile.Length)];
-            await schemaFile.ReadExactlyAsync(bytes, ct);
-            if (!string.Equals(Convert.ToHexString(SHA256.HashData(bytes)), schemaHash, StringComparison.OrdinalIgnoreCase)) return false;
+            // Own immutable-for-this-request snapshots. Hash, shape validation
+            // and parsing consume these bytes, never a second pathname lookup.
+            var manifestBytes = await ReadSnapshotAsync(manifestPath!, ct);
+            var bytes = await ReadSnapshotAsync(schemaPath!, ct);
+            if (manifestBytes is null || bytes is null) return false;
+            if (!HashMatches(manifestBytes, manifestHash!) || !HashMatches(bytes, schemaHash!)) return false;
             var snapshot = JsonSerializer.Deserialize<ReviewedSchema>(bytes, JsonOptions);
             if (snapshot is null || snapshot.CountyId != countyId || snapshot.Consumer != Consumer
                 || !string.Equals(snapshot.ManifestSha256, manifestHash, StringComparison.OrdinalIgnoreCase)
@@ -60,9 +57,9 @@ public sealed class CanonicalLandingPiiBoundary(IConfiguration configuration)
                     || t.DictionaryReferences.Any(d => d is null))
                 || data.Columns.Any(c => c is null) || data.Dictionaries.Any(d => d is null)) return false;
 
-            if (!await HasNonNullManifestEntriesAsync(manifestFile, ct)) return false;
-            var manifest = await new JsonFilePacsPiiManifestSource(manifestPath).ReadAsync(ct);
-            if (manifest is null || !HashMatches(manifestFile, manifestHash!)) return false;
+            if (!await HasNonNullManifestEntriesAsync(manifestBytes, ct)) return false;
+            var manifest = await new JsonFilePacsPiiManifestSource(manifestPath).ReadAsync(manifestBytes, ct);
+            if (manifest is null) return false;
             var tableNames = data.Tables.Select(t => t.TableName).ToHashSet(StringComparer.Ordinal);
             var columnNames = data.Columns.Select(c => (c.TableName, c.ColumnName)).ToHashSet();
             if (manifest.TableExhaustiveFlags.Any(t => !tableNames.Contains(t))
@@ -107,13 +104,22 @@ public sealed class CanonicalLandingPiiBoundary(IConfiguration configuration)
         }
     }
 
-    private static async Task<bool> HasNonNullManifestEntriesAsync(FileStream file, CancellationToken ct)
+    private static async Task<byte[]?> ReadSnapshotAsync(string path, CancellationToken ct)
+    {
+        using var file = File.Open(path, FileMode.Open, FileAccess.Read, FileShare.Read);
+        if (file.Length > MaxArtifactBytes) return null;
+        var bytes = new byte[checked((int)file.Length)];
+        await file.ReadExactlyAsync(bytes, ct);
+        return bytes;
+    }
+
+    private static async Task<bool> HasNonNullManifestEntriesAsync(byte[] snapshot, CancellationToken ct)
     {
         // The shared parser validates entry fields but dereferences null array
         // elements. Validate that input shape here, not via a programming-error
         // catch. Match its BOM, comments, trailing commas and property casing.
-        file.Position = 0;
-        using var reader = new StreamReader(file, leaveOpen: true);
+        using var stream = new MemoryStream(snapshot, writable: false);
+        using var reader = new StreamReader(stream);
         using var document = JsonDocument.Parse(await reader.ReadToEndAsync(ct), new JsonDocumentOptions
         {
             CommentHandling = JsonCommentHandling.Skip,
@@ -136,11 +142,8 @@ public sealed class CanonicalLandingPiiBoundary(IConfiguration configuration)
 
     private static bool IsHash(string? hash) => hash is { Length: 64 } && hash.All(Uri.IsHexDigit);
 
-    private static bool HashMatches(FileStream file, string expected)
-    {
-        file.Position = 0;
-        return string.Equals(Convert.ToHexString(SHA256.HashData(file)), expected, StringComparison.OrdinalIgnoreCase);
-    }
+    private static bool HashMatches(ReadOnlySpan<byte> snapshot, string expected) =>
+        string.Equals(Convert.ToHexString(SHA256.HashData(snapshot)), expected, StringComparison.OrdinalIgnoreCase);
 
     // County/consumer binding belongs to this consumer envelope, not the
     // existing county-agnostic PACS schema records. Projection is reviewed

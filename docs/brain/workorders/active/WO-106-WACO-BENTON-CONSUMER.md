@@ -16,6 +16,8 @@ Isolated worktree: C:/Users/bsval/.codex-worktrees/waco-benton-consumer-repair.
 - backend/tests/TerraFusion.Unit.Tests/Sync/Comps/Api/SyncControllerHeadMethodTests.cs
 - backend/tests/TerraFusion.Unit.Tests/Sync/Comps/Api/SyncHttpCacheHeadersTests.cs (explicit reservation expansion)
 - backend/tests/TerraFusion.Unit.Tests/Sync/Comps/Api/SyncCacheStaleWhileRevalidateTests.cs (explicit reservation expansion)
+- backend/src/TerraFusion.Sync/Workbench/Schema/JsonFilePacsPiiManifestSource.cs (P1 snapshot-parser expansion)
+- backend/tests/TerraFusion.Unit.Tests/Sync/Schema/PacsPiiManifestTests.cs (P1 parser-regression expansion)
 - this work order
 
 Only GET/HEAD /api/sync/comps/eligible is gated. Input and county authorization precede the gate; the gate precedes every reader call, ETag/304 and HEAD success. Missing or unverified coverage produces 503 / PII_CANONICAL_LANDING_UNVERIFIED / UNKNOWN_DENY with no-store and no data/ETag disclosure. Reuse the shipped manifest parser and RequirePiiFreeCanonicalLanding preflight. Bind reviewed offline schema, manifest and county explicitly; do not resolve live SQL metadata or fabricate coverage. A reviewed-safe synthetic control must pass.
@@ -131,3 +133,37 @@ Green API build: exit 0, zero warnings/errors, 41.7071785 seconds. The broader f
 passed 91/91, zero skips, exit 0, 31.5280166 seconds, including both new regressions and the
 reviewed-safe controls. This remediates the reported P2; it does not claim independent approval.
 Independent re-review and parent PR/push/deployment ownership remain unchanged.
+
+## PR 1568 P1 — immutable manifest snapshot
+
+Owner-reported review thread 3952025229 / PRRT_kwDOPgG4O86gAQOe identified a pathname
+reopen after descriptor verification: Linux atomic replacement or symlink retarget could make
+the parser read unpinned bytes while the final hash still read the original descriptor. This
+supersedes any earlier implication that holding the descriptor alone established byte binding.
+Auto-merge is disabled per the owner; this child does not alter PR state.
+
+Exact reservation is now eleven paths: the prior nine plus the shared parser and its existing
+PacsPiiManifestTests.cs. No further test path is needed. The parser exposes a ReadOnlyMemory<byte>
+overload which never accesses the configured path. Both file and snapshot callers share the same
+Parse implementation, preserving file callers and wire semantics. A null snapshot provenance path
+maps to empty ManifestPath, not a fabricated filesystem path; null-path file reads still return null.
+
+The boundary owns bounded byte arrays for manifest and schema. It hashes, null-validates and parses
+the same unmodified manifest snapshot; neither parsing nor a final hash reopens the pathname.
+The reusable parser copies supplied snapshot bytes before awaiting and preserves StreamReader BOM,
+comments, trailing commas and case-insensitive JSON properties. No new catch hides errors.
+
+Deterministic regression captures original bytes, replaces the now-closed synthetic pathname with
+a different valid manifest, verifies the on-disk hash differs, and invokes the snapshot overload.
+Both Direct-to-None and None-to-Direct replacement cases assert the captured classification wins.
+The tests were written first; a temporary overload forwarding to the old path read supplied a
+behavior-preserving red seam before implementation. Seven cases failed as expected, including both
+wrong replacement classifications, four BOM/syntax/null-provenance cases and malformed-byte handling.
+That forwarding seam is removed from the final implementation. This is deterministic helper proof,
+not a timing-dependent Linux exploit or a deployed assertion. The helper is used by the actual boundary.
+
+The full PacsPiiManifestTests class and the prior 91-test consumer/cache set are the required green
+filter. Commands, results and exact-head review evidence remain external under snapshot-*.
+Green verified: 109 passed, zero failed/skipped, dotnet exit 0 (30.7173086 seconds). Rebuilt Sync
+and API both passed with zero warnings/errors (5.2349255 and 30.0241599 seconds respectively).
+Parent owns push/PR/deployment; F owns independent re-review.

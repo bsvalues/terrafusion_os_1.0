@@ -39,6 +39,19 @@ public sealed class JsonFilePacsPiiManifestSource : IPacsPiiManifestSource
         _manifestPath = manifestPath;
     }
 
+    /// <summary>
+    /// Parses supplied bytes without accessing the configured path. The path is
+    /// provenance only; when absent, ManifestPath is empty (no fabricated path).
+    /// Copies the input before awaiting, preserving StreamReader BOM semantics.
+    /// </summary>
+    public async Task<PacsPiiManifest?> ReadAsync(ReadOnlyMemory<byte> snapshot, CancellationToken ct)
+    {
+        ct.ThrowIfCancellationRequested();
+        using var stream = new MemoryStream(snapshot.ToArray(), writable: false);
+        using var reader = new StreamReader(stream);
+        return Parse(await reader.ReadToEndAsync(ct).ConfigureAwait(false));
+    }
+
     /// <inheritdoc />
     public async Task<PacsPiiManifest?> ReadAsync(CancellationToken ct)
     {
@@ -62,6 +75,11 @@ public sealed class JsonFilePacsPiiManifestSource : IPacsPiiManifestSource
             raw = await reader.ReadToEndAsync().ConfigureAwait(false);
         }
 
+        return Parse(raw);
+    }
+
+    private PacsPiiManifest Parse(string raw)
+    {
         WireFormat parsed;
         try
         {
@@ -138,7 +156,7 @@ public sealed class JsonFilePacsPiiManifestSource : IPacsPiiManifestSource
         }
 
         return new PacsPiiManifest(
-            ManifestPath: _manifestPath,
+            ManifestPath: _manifestPath ?? string.Empty,
             ManifestVersion: manifestVersion,
             ManifestEvent: manifestEvent,
             TableExhaustiveFlags: tableExhaustive,
@@ -146,7 +164,7 @@ public sealed class JsonFilePacsPiiManifestSource : IPacsPiiManifestSource
             ColumnEntries: columnEntries);
     }
 
-    private static PiiClassification ParseClassification(string? raw, string context, string manifestPath)
+    private static PiiClassification ParseClassification(string? raw, string context, string? manifestPath)
     {
         if (!Enum.TryParse<PiiClassification>(raw, ignoreCase: false, out var classification))
         {

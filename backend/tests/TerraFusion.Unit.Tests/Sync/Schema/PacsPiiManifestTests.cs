@@ -1,6 +1,8 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading;
 using FluentAssertions;
 using TerraFusion.Sync.Workbench.Schema;
@@ -320,5 +322,69 @@ public sealed class PacsPiiManifestTests : IDisposable
         var result = await sut.ReadAsync(CancellationToken.None);
 
         result.Should().BeNull();
+    }
+
+    [Theory]
+    [InlineData("Direct", "None")]
+    [InlineData("None", "Direct")]
+    public async Task SnapshotRead_PathReplaced_ParsesOnlyVerifiedSnapshot(string original, string replacement)
+    {
+        string Manifest(string classification) => $$"""
+            { "manifestVersion": "1.0.0", "manifestEvent": "synthetic-snapshot",
+              "tableExhaustive": ["sale"],
+              "tables": [{ "name": "sale", "classification": "{{classification}}", "reason": "Synthetic." }] }
+            """;
+        var path = WriteManifest(Manifest(original));
+        var snapshot = File.ReadAllBytes(path);
+        var verifiedHash = SHA256.HashData(snapshot);
+        var replacementPath = Path.Combine(_tempDir, "replacement.json");
+        File.WriteAllText(replacementPath, Manifest(replacement));
+        File.Move(replacementPath, path, overwrite: true);
+        SHA256.HashData(File.ReadAllBytes(path)).Should().NotEqual(verifiedHash);
+        var source = new JsonFilePacsPiiManifestSource(path);
+        (await source.ReadAsync(CancellationToken.None))!.TableEntries.Single().Classification
+            .Should().Be(Enum.Parse<PiiClassification>(replacement));
+
+        var parsed = await source.ReadAsync(snapshot, CancellationToken.None);
+
+        parsed!.TableEntries.Single().Classification.Should().Be(Enum.Parse<PiiClassification>(original));
+        parsed.TableExhaustiveFlags.Should().Contain("sale");
+        parsed.ManifestPath.Should().Be(path);
+        SHA256.HashData(snapshot).Should().Equal(verifiedHash);
+    }
+
+    [Theory]
+    [InlineData("utf-8")]
+    [InlineData("utf-16")]
+    [InlineData("utf-16BE")]
+    [InlineData("utf-32")]
+    public async Task SnapshotRead_PreservesBomCommentsTrailingCommaCasing_WithoutPath(string encodingName)
+    {
+        var encoding = Encoding.GetEncoding(encodingName);
+        var json = """
+            { // Existing parser wire syntax remains accepted.
+              "MANIFESTVERSION": "1.0.0", "ManifestEvent": "synthetic-syntax",
+              "TABLEEXHAUSTIVE": ["sale",],
+              "Tables": [{"Name":"sale", "Classification":"Direct", "Reason":"Synthetic.",}],
+            }
+            """;
+        var bytes = encoding.GetPreamble().Concat(encoding.GetBytes(json)).ToArray();
+        var source = new JsonFilePacsPiiManifestSource(null);
+
+        var parsed = await source.ReadAsync(bytes, CancellationToken.None);
+
+        parsed.Should().NotBeNull();
+        parsed!.ManifestPath.Should().BeEmpty("a snapshot without a source path must not fabricate file provenance");
+        parsed.TableEntries.Single().Classification.Should().Be(PiiClassification.Direct);
+        parsed.TableExhaustiveFlags.Should().Contain("sale");
+    }
+
+    [Fact]
+    public async Task SnapshotRead_MalformedBytes_UsesExistingInvalidDataContract()
+    {
+        var source = new JsonFilePacsPiiManifestSource(null);
+        var act = () => source.ReadAsync(Encoding.UTF8.GetBytes("{"), CancellationToken.None);
+
+        await act.Should().ThrowAsync<InvalidDataException>().WithMessage("*not valid JSON*");
     }
 }
