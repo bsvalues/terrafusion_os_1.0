@@ -81,5 +81,25 @@ temporary file; subsequent calls ignore it and never delete another invocation's
 A digest proves integrity, **not authenticity**. External consumers must independently authenticate
 the producer's protected-history provenance, exact receipt/catalog paths and raw hashes, then validate
 schema and content digest. They must also validate their own authority before settling their own
-state. Caller-provided issuer flags or hashes alone are insufficient. Receipt/catalog issuance and
-protected delivery are the coordinator's Task2; this implementation does not issue those artifacts.
+state. Caller-provided issuer flags or hashes alone are insufficient.
+
+## Issued WACO record and protected-history catalog
+
+The native command issued the historical WACO record on OMEN on 2026-09-07, then verified a read and
+identical retry without altering the record. Its mirror is
+`operations/evidence/receipts/waco-2026.product-terminal.json`. Its raw SHA-256 is
+`20c517e6dbd9b3d9c6dffffa007c6f8951d697168f6e063141c0c545ce70c8ca` (23,373 bytes), and its semantic
+digest is `86f349a305c3aa1000f0f1756cfca6f36cd44b1ca712813ebe8070339fed3c56`.
+
+`os-platform/core/canon/release-closeout/catalog.json` publishes the data-only
+`terrafusion.product-terminal-catalog.v1` contract: product/repository and a `releases` array, each
+entry binding releaseId, terminalState, releaseSha, deploymentId, and exact receipt/profile paths and
+raw SHA-256 values. It does not grant trust to itself or supply its own commit identity. A consumer
+must establish the protected commit independently and read every blob from that same immutable
+commit. Do not trim blob bytes, normalize line endings, execute foreign code, or accept caller-picked
+paths or trust flags. The native local store remains independently useful without any consumer.
+
+The catalog/receipt mirror gains protected-history provenance only after this exact change passes
+review and merges through the protected PR boundary. Maintenance code history and accepted application
+history are distinct: this addition does not replace accepted application SHA
+`35e32462d9758473e3a193388cd50786dc63cc17` or reopen WO-103.

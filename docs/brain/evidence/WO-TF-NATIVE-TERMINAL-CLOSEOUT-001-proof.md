@@ -1,8 +1,8 @@
 # Native terminal closeout — Task1 implementation proof
 
-Task1 implementation and synthetic verification complete on 2026-09-07. Parent independent assurance,
-Task2 actual receipt/catalog issuance and protected delivery remain outstanding. This file is not
-product acceptance or an issued terminal receipt.
+Task1 implementation, independent source assurance and Task2 native issuance completed on 2026-09-07.
+Final artifact assurance and protected delivery remain outstanding at this commit. This proof records
+maintenance closeout, not a new product test or live deployment acceptance.
 
 Base application: `35e32462d9758473e3a193388cd50786dc63cc17`.
 Parent docs commit: `3d331814915e12ee2ec6ace40b6e06d0947bd1bb`.
@@ -86,3 +86,57 @@ provenance. Atomic no-replace publication requires filesystem hard-link support 
 without it. Concurrent hostile directory mutation by an actor with OS write authority is outside
 that trust boundary. A crash may retain its own temporary file; subsequent invocations do not clean
 other invocations' files. No power-loss/full-machine recovery guarantee is claimed.
+
+## Coordinator verification and native issuance
+
+Task1 reviewed implementation: `570aa299e19a4814b4c8bd485fb6b55a7cdffdb7`.
+Coordinator reran the four reported suites on that exact clean head: **72/72 PASS**, zero failures,
+zero skips. Independent Kepler review returned spec and quality PASS, no findings. Its external
+report SHA-256 is `b8bf698413c7fdeffeb40cf631f659d3071ee09bc2e7bbbb38767cdca7102371`.
+The reviewer separately rehashed 68 non-archive inputs, checked all 69 lengths, 47 sealed-copy
+mappings and eight selected-source mappings against the immutable historical evidence.
+
+The coordinator then used the real native command with a child environment containing only
+`SystemRoot`, `TEMP`, and `TMP`. No provider keys, orchestration environment, agent session, HERMES
+campaign/process identity, or service connection was supplied. The installed Node binary was invoked
+directly; there was no package-manager wrapper. Exact commands and observed outcomes:
+
+```text
+tf canon release verify --profile waco-2026 --evidence-root C:/Users/bsval/waco-omen-runtime --source-root C:/Users/bsval/.codex-worktrees/waco-release-final --json
+  exit=0 ok=true historical=true persistence=NOT_WRITTEN inputs=69
+tf canon release record --profile waco-2026 --evidence-root C:/Users/bsval/waco-omen-runtime --source-root C:/Users/bsval/.codex-worktrees/waco-release-final --store C:/Users/bsval/tf-native-receipts --json
+  exit=0 ok=true historical=true persistence=CREATED
+node tools/canon/canon.mjs release show --profile waco-2026 --store C:/Users/bsval/tf-native-receipts --json
+  exit=0 ok=true historical=true read-only
+tf canon release record [identical arguments]
+  exit=0 ok=true historical=true persistence=IDENTICAL
+```
+
+Full native verification included the streamed 2,982,295,552-byte image archive, with expected
+SHA-256 `4e8c71df030c673d5cad147c4c94ed0c618fa808fe8614f0401b071f23a44ee1`.
+No input was skipped. The record/show/retry sequence compared the complete stored bytes and mtime;
+both remained identical after initial creation. This proves metadata issuance and retry semantics,
+not a fresh application/network-loss rehearsal.
+
+| Native artifact | Exact identity |
+| --- | --- |
+| Terminal state | `WACO_2026_TERRAFUSION_RELEASE_READY` |
+| Accepted application | `35e32462d9758473e3a193388cd50786dc63cc17` |
+| Native receipt ID | `tf-product-terminal:86f349a305c3aa1000f0f1756cfca6f36cd44b1ca712813ebe8070339fed3c56` |
+| Receipt raw file SHA-256 | `20c517e6dbd9b3d9c6dffffa007c6f8951d697168f6e063141c0c545ce70c8ca` |
+| Receipt length | 23,373 bytes |
+| Profile raw SHA-256 | `de0ab7b5432534996c533abc00c8d1b6db5998bf591b0fe4aa94ceb1cf88aa35` |
+| Catalog raw SHA-256 | `5a6b8f8b4b2337670146a36beefe246b5346d6ef9698ad25fb6f0eca2d6edda2` |
+
+Local native state: `C:/Users/bsval/tf-native-receipts/waco-2026.product-terminal.json`.
+The checked-in receipt mirror has the exact same bytes/hash as that native state. The catalog binds
+receipt and policy as data for independent consumers; it contains no WilliamOS identifiers.
+
+All original evidence and the accepted runtime remain unchanged. No build, restart, deploy, Wi-Fi
+operation, county-data mutation, or application acceptance test was performed by this issuance.
+WO-103 remains complete. Statewide/production completion, restored archive, tested rollback and
+database backup remain false. All eight original limitations remain in the receipt.
+
+Protected delivery and final artifact review are required before an external consumer can claim
+protected-source provenance. WilliamOS must separately authenticate its own completion operation and
+atomically settle its own admitted work. Issuing this native record does not close any external work.
