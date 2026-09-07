@@ -165,7 +165,7 @@ async function stop(child: ChildProcess | undefined): Promise<void> {
     throw new Error('Owned application did not exit after shutdown.');
 }
 
-async function startApi(defaultCounty = county): Promise<void> {
+async function startApi(defaultCounty = county, frontendPort?: number): Promise<void> {
   api = spawn(
     dotnet,
     [
@@ -178,6 +178,7 @@ async function startApi(defaultCounty = county): Promise<void> {
       detached: process.platform !== 'win32',
       stdio: ['ignore', 'pipe', 'pipe'],
       env: environment({
+        ...(frontendPort === undefined ? {} : { TF_FRONTEND_PORT: String(frontendPort) }),
         ASPNETCORE_ENVIRONMENT: 'Development',
         ASPNETCORE_URLS: baseURL,
         DatabaseProvider: 'SQLite',
@@ -479,6 +480,44 @@ test('owner saves, exports, retrieves, retries and reopens exact persisted work 
       headers: { Origin: origin, 'Access-Control-Request-Method': 'GET' },
     });
     expect(preflight.headers.get('access-control-allow-origin')).toBe(allowed ? origin : null);
+  }
+  // The real legacy command now honors the same configured origin as the API.
+  const previewPort = await freePort();
+  const previewOrigin = `http://localhost:${previewPort}`;
+  const previewEnv = environment({ TF_FRONTEND_PORT: String(previewPort) });
+  const previewArgs = [resolve(root, 'scripts/utilities/serve-test-frontend.mjs')];
+  const preview = spawn(process.execPath, previewArgs, {
+    cwd: root,
+    env: previewEnv,
+    windowsHide: true,
+    detached: process.platform !== 'win32',
+    stdio: ['ignore', 'pipe', 'pipe'],
+  });
+  fixtureProcesses.add(preview);
+  const previewPage = await page.context().newPage();
+  try {
+    await ready(preview, previewOrigin);
+    await expect(run(process.execPath, previewArgs, previewEnv)).rejects.toThrow(/already in use/);
+    await stop(api);
+    await startApi(county, previewPort);
+    await previewPage.goto(previewOrigin);
+    const previewResult = await previewPage.evaluate(
+      async ({ apiUrl, bearer, countyId }) => {
+        const response = await fetch(`${apiUrl}/api/dossier/workflows/context?county=${countyId}`, {
+          headers: { Authorization: `Bearer ${bearer}` },
+        });
+        const body = await response.json();
+        return { status: response.status, countyId: body.countyId };
+      },
+      { apiUrl: baseURL, bearer: token, countyId: county }
+    );
+    expect(previewResult).toEqual({ status: 200, countyId: county });
+  } finally {
+    await previewPage.close();
+    await stop(preview);
+    fixtureProcesses.delete(preview);
+    await stop(api);
+    await startApi();
   }
   await open(page, '/dossier', token);
   await page.getByRole('combobox', { name: 'Assessment year', exact: true }).selectOption('2024');

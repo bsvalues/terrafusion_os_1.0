@@ -1,6 +1,11 @@
 # OS-COUNTY-CONTEXT-001 — County-context continuation handoff
 
-Status: ACTIVE — expanded owner authority recorded; implementation in progress, NOT COMPLETE.
+Status at this committed checkpoint: ACTIVE — protected delivery and delivered-revision verification are pending, NOT COMPLETE.
+
+Final delivery status and the post-merge runtime receipt are recorded in the existing
+[delivery PR #1569](https://github.com/bsvalues/terrafusion_os_1.0/pull/1569).
+This source-controlled pre-merge ledger is historical evidence, not a claim about a
+later merge or runtime run that had not occurred when it was committed.
 
 ## September 7 expansion — controlling continuation
 
@@ -30,6 +35,47 @@ Independent bridge assurance: Herschel, `01a07d23-b1c8-7571-aea0-f4cba2c37d52`,
 read-only, no builder reservation. Exact delivered-head assurance remains required.
 
 ### Current integration checkpoint (not delivery acceptance)
+
+- Combined review-repair acceptance: actual browser PASS, 53.9 seconds (1.2 minutes
+  including bootstrap), with the real frontend-local Vite preview, occupied-port
+  refusal, configured-origin browser authorization and all four persisted workflows.
+  Integrated backend regression: 106 passed, zero failed, one explicit bootstrap skip;
+  actual browser bootstrap passed separately. Preview helper tests: 3/3, including
+  actual frontend Vite version resolution (6.4.3, not root 5.4.21). Independent
+  bounded source re-review passes both review repairs. The two generated browser
+  JSON files and images are preserved in `.tmp/county-context/acceptance-combined-review-repair`,
+  outside source delivery. New committed-head assurance and protected delivery remain.
+
+- Review repairs are integrated: Context queries valuation-derived years only with
+  `access:costforge`; authenticated Dais study metadata/year visibility and existing
+  valuation-free audit semantics remain unchanged. Four source-separated HTTP
+  permission cases reproduced two valuation-year disclosures, then passed after
+  the repair; worker broader regression passed 79 with one explicit bootstrap skip.
+  The legacy preview command now uses the governed port and strict localhost binding;
+  two focused tests pass. Real preview startup, occupied-port refusal and an actual
+  authenticated browser CORS request passed with the original four-workflow journey
+  (42.3 seconds). Report SHA256:
+  `0D0DF14B0F6789161180E0013493398CCE4F3F206490D29EAFD5AB59C5EB58A9`.
+  These are bounded repair proofs, not a renewed protected delivery result.
+  The prior exact candidate had full local UI 8,124 passed / 211 existing skips /
+  zero failed, unchanged skip ceiling PASS, backend 102 passed / one bootstrap skip,
+  and an exact-commit actual browser PASS in 28.729 seconds. Full browser proof is
+  repeated after this backend repair; new exact-head reviews and protected checks
+  are mandatory. No source UI implementation changed in this review repair.
+
+- Post-CI review continuation: all nine branch-protection checks plus the separate
+  ruleset `🔒 SEAL` passed at `487a7b961`, but protected merge correctly refused two
+  unresolved review conversations. Independent review confirms a valuation-only
+  year disclosure in Context; study metadata remains legitimately Dais-scoped under
+  the existing study/audit contract and must not be incorrectly Forge-gated.
+  Backend owner retains the Context method and HTTP regression tests for that repair.
+  Coordinator additionally reserves root `package.json` only for `frontend:serve:test`,
+  `scripts/utilities/serve-test-frontend.mjs`, its adjacent `.test.mjs`, and the already-owned
+  browser harness: align legacy preview startup to `TF_FRONTEND_PORT` (default 3102),
+  reject invalid ports and use strict binding. Keep API CORS restrictive and preserve
+  the command name. No new API origin allowance, gate waiver, audit-policy change,
+  production action or protected merge is claimed. Prior exact-head assurance is
+  withdrawn pending repair and renewed exact-head review.
 
 - Repeated complete browser journey passes with viewport evidence: 34.151 seconds
   (52.5 seconds including bootstrap). [Saved receipt/trace screenshot](../../evidence/OS-COUNTY-CONTEXT-001-receipt.png)
@@ -460,6 +506,11 @@ merge, package publication, production deployment, or parallel dispatch is claim
   "risk": "R3",
   "suite": "OS integration",
   "allowed_files": [
+    "scripts/utilities/serve-test-frontend.mjs",
+    "scripts/utilities/serve-test-frontend.test.mjs",
+    "package.json",
+    "scripts/dev/serve-test-frontend.mjs",
+    "scripts/dev/serve-test-frontend.test.mjs",
     "docs/brain/workorders/active/OS-COUNTY-CONTEXT-001.md",
     "docs/brain/workorders/evidence/OS-COUNTY-CONTEXT-001-backing-reproduction.mjs",
     "docs/brain/evidence/OS-COUNTY-CONTEXT-001-proof.md",

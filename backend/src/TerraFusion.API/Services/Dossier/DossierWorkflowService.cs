@@ -23,8 +23,10 @@ public sealed class DossierWorkflowService(TerraFusionDbContext db)
     {
         if (year.HasValue) Year(year.Value);
         var studies = await db.CountyStudySessions.AsNoTracking().Where(x => x.CountyId == county).ToListAsync(ct);
+        var valuationYears = canReadValuations
+            ? await db.ValuationRecords.Where(x => x.CountyId == county).Select(x => x.TaxYear).Distinct().ToListAsync(ct) : [];
         var years = studies.Select(x => x.TaxYear)
-            .Concat(await db.ValuationRecords.Where(x => x.CountyId == county).Select(x => x.TaxYear).Distinct().ToListAsync(ct))
+            .Concat(valuationYears)
             .Concat(await db.Appeals.Where(x => x.CountyId == county).Select(x => x.TaxYear).Distinct().ToListAsync(ct))
             .Concat(await db.CertificationSteps.Where(x => x.CountyId == county).Select(x => x.TaxYear).Distinct().ToListAsync(ct))
             .Distinct().OrderByDescending(x => x).ToArray();

@@ -283,6 +283,46 @@ public sealed class DossierWorkflowsTests
         Assert.Empty(body.GetProperty("drafts").EnumerateArray());
     }
 
+    [Theory]
+    [InlineData(false, null)]
+    [InlineData(false, 2024)]
+    [InlineData(true, null)]
+    [InlineData(true, 2024)]
+    public async Task Context_ValuationOnlyYearsRequireCostForge_WhileStudyMetadataAndDaisYearsRemain(bool canReadValuations, int? selectedYear)
+    {
+        await using var f = await Fixture.Create();
+        await using (var db = f.Db())
+        {
+            db.CountyStudySessions.Add(new CountyStudySession { StudyId = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaa21"),
+                CountyId = Guid.Parse(County), CountyName = "Synthetic County", TaxYear = 2021, BaselineVersion = "visible-study-only-baseline", CreatedBy = "synthetic-user" });
+            db.ValuationRecords.Add(new ValuationRecord { CountyId = Guid.Parse(County), ParcelId = Parcel, TaxYear = 2027,
+                FinalReconciledValue = 111000m, CreatedBy = "synthetic-user" });
+            db.Appeals.Add(new Appeal { CountyId = Guid.Parse(County), ParcelId = Parcel, TaxYear = 2022, Status = "filed", AppealGround = "MARKET_VALUE" });
+            db.CertificationSteps.Add(new CertificationStep { CountyId = Guid.Parse(County), TaxYear = 2023, StepCode = "DATA_VALIDATION", Status = "pending" });
+            db.Appeals.Add(new Appeal { CountyId = Guid.Parse(OtherCounty), ParcelId = Parcel, TaxYear = 2028, Status = "filed", AppealGround = "MARKET_VALUE" });
+            await db.SaveChangesAsync();
+        }
+        f.Client.DefaultRequestHeaders.Add("Test-Permissions", canReadValuations ? "read:dossier,read:dais,access:costforge" : "read:dossier,read:dais");
+        var response = await f.Client.GetAsync($"{Root}/context?county={County}" + (selectedYear.HasValue ? $"&taxYear={selectedYear}" : ""));
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        var body = await Json(response);
+        Assert.Equal(County, body.GetProperty("countyId").GetString());
+        var studies = body.GetProperty("studies");
+        Assert.Equal(selectedYear.HasValue ? 1 : 2, studies.GetArrayLength());
+        var study = Assert.Single(studies.EnumerateArray().Where(x => x.GetProperty("studyId").GetString() == Study));
+        Assert.Equal(2024, study.GetProperty("taxYear").GetInt32());
+        Assert.Equal("stored-baseline", study.GetProperty("baselineVersion").GetString());
+        Assert.False(string.IsNullOrWhiteSpace(study.GetProperty("status").GetString()));
+        if (!selectedYear.HasValue)
+            Assert.Contains(studies.EnumerateArray(), x => x.GetProperty("taxYear").GetInt32() == 2021 &&
+                x.GetProperty("baselineVersion").GetString() == "visible-study-only-baseline");
+        Assert.Equal(canReadValuations ? new[] { 2027, 2024, 2023, 2022, 2021 } : new[] { 2024, 2023, 2022, 2021 },
+            body.GetProperty("taxYears").EnumerateArray().Select(x => x.GetInt32()).ToArray());
+        if (!canReadValuations) Assert.DoesNotContain("2027", body.GetRawText());
+        Assert.Empty(body.GetProperty("drafts").EnumerateArray());
+        Assert.Empty(body.GetProperty("exports").EnumerateArray());
+    }
+
     private static async Task<JsonElement> Json(HttpResponseMessage response) =>
         JsonDocument.Parse(await response.Content.ReadAsStringAsync()).RootElement.Clone();
 

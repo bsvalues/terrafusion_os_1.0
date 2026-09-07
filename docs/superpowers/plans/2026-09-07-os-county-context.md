@@ -102,6 +102,10 @@ Tasks 1–4 are implemented, integrated and bounded-review findings are closed.
 The checklist above remains the original acceptance plan; current execution evidence
 is recorded here and in the existing work-order ledger, not inferred from checkboxes.
 Task 5 remains active through protected delivery and delivered-revision verification.
+The immutable source ledger records evidence available before its commit. Final
+protected-merge status, actual delivered revision, post-merge runtime evidence and
+the terminal assignment status are recorded in the existing delivery PR #1569 and
+this task's handoff, without inventing a later runtime result inside an earlier commit.
 
 Latest integrated evidence: 77 backend workflow/proxy/certification HTTP tests pass,
 including fresh synthetic bootstrap, transaction interruption/retry and restart.
