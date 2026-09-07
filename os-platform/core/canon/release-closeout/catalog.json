@@ -9,7 +9,7 @@
       "releaseSha": "35e32462d9758473e3a193388cd50786dc63cc17",
       "deploymentId": "omen-waco-2026",
       "receipt": {
-        "path": "operations/evidence/receipts/waco-2026.product-terminal.json",
+        "path": "os-platform/core/canon/release-closeout/receipts/waco-2026.product-terminal.json",
         "sha256": "20c517e6dbd9b3d9c6dffffa007c6f8951d697168f6e063141c0c545ce70c8ca"
       },
       "profile": {

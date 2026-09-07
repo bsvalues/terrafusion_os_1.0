@@ -89,7 +89,7 @@ Coordinator executes this task only after Task 1 independent review is clean; no
   orchestrator/provider environment absent. Verification reads existing bytes only.
 - [ ] Run `release record` into a new dedicated native receipt store, never the accepted evidence tree.
   Run `release show` and an identical record retry; require exact receiptId/digest/bytes preservation.
-- [ ] Admit the generated native receipt at `operations/evidence/receipts/waco-2026.product-terminal.json`
+- [ ] Admit the generated native receipt at `os-platform/core/canon/release-closeout/receipts/waco-2026.product-terminal.json`
   and catalog at `os-platform/core/canon/release-closeout/catalog.json` with fixed schemaVersion, product,
   release ID, native receipt relative path/raw SHA-256 and policy path/raw SHA-256. No absolute paths or
   caller trust booleans. Write the proof record with exact test/issuance identity and limits.
@@ -103,3 +103,16 @@ Coordinator executes this task only after Task 1 independent review is clean; no
 Task 1 implements all native command, receipt, safety and isolation requirements. Task 2 performs
 actual receipt issuance and protected provenance without changing accepted runtime. Consumer authority
 is a separate repository task gated on the stable producer, not an unimplemented producer dependency.
+
+## Task2 bounded CI correction
+
+Task1's no-issued-outputs boundary is historical: Task2 issuance was committed at
+`ee072025c68d25f7fa596b094e72bf5ad5833c73`. CI run `34165522326`, job `101875831926`, rejected the
+new root `operations` via `repo-shape-guard`. The revised reservation moves only that committed mirror
+to the Canon receipts path above, with exact raw SHA-256
+`20c517e6dbd9b3d9c6dffffa007c6f8951d697168f6e063141c0c545ce70c8ca`, and updates catalog/documentation.
+Removal of the old mirror is authorized only as part of this byte-exact move. Native store, accepted
+runtime/evidence, producer code, schema, policy, guard and allowlists remain unchanged. No product
+retest is required. Validate catalog bindings and diffs, commit only the revised reservation, then
+run the existing guard on corrected committed HEAD because it reads `git ls-tree HEAD`. The parent
+retains push, PR and protected delivery ownership.

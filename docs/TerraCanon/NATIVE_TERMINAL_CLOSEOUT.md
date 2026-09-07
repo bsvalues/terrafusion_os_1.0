@@ -87,7 +87,7 @@ state. Caller-provided issuer flags or hashes alone are insufficient.
 
 The native command issued the historical WACO record on OMEN on 2026-09-07, then verified a read and
 identical retry without altering the record. Its mirror is
-`operations/evidence/receipts/waco-2026.product-terminal.json`. Its raw SHA-256 is
+`os-platform/core/canon/release-closeout/receipts/waco-2026.product-terminal.json`. Its raw SHA-256 is
 `20c517e6dbd9b3d9c6dffffa007c6f8951d697168f6e063141c0c545ce70c8ca` (23,373 bytes), and its semantic
 digest is `86f349a305c3aa1000f0f1756cfca6f36cd44b1ca712813ebe8070339fed3c56`.
 
@@ -103,3 +103,10 @@ The catalog/receipt mirror gains protected-history provenance only after this ex
 review and merges through the protected PR boundary. Maintenance code history and accepted application
 history are distinct: this addition does not replace accepted application SHA
 `35e32462d9758473e3a193388cd50786dc63cc17` or reopen WO-103.
+
+The Task2 CI correction relocated only the committed mirror from the former
+`operations/evidence/receipts/waco-2026.product-terminal.json` path into Canon's existing repository
+root. The receipt bytes, native store, schema, policy and acceptance are unchanged. The catalog's
+receipt path and therefore its raw hash change; consumers must bind the corrected catalog and mirror
+from the same protected commit. The earlier Task1 statement that issuance outputs were absent describes
+the Task1 handoff only; Task2 subsequently issued and committed them.

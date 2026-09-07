@@ -109,7 +109,8 @@ Only these paths may change in this Work Order:
     "docs/brain/workorders/active/WO-TF-NATIVE-TERMINAL-CLOSEOUT-001.md",
     "docs/brain/evidence/WO-TF-NATIVE-TERMINAL-CLOSEOUT-001-proof.md",
     "docs/superpowers/plans/2026-09-07-tf-native-terminal-closeout.md",
-    "operations/evidence/receipts/waco-2026.product-terminal.json"
+    "operations/evidence/receipts/waco-2026.product-terminal.json",
+    "os-platform/core/canon/release-closeout/receipts/waco-2026.product-terminal.json"
   ],
   "forbidden_patterns": ["backend/**", "frontend/**", ".github/**", "os-platform/core/pilot/**", "package.json", "pnpm-lock.yaml"],
   "required_proof": ["node --test os-platform/core/tests/canon-release-closeout.test.mjs tools/bin/tests/canon-release-closeout.test.mjs", "node --test os-platform/core/tests/canon-evidence.test.mjs os-platform/core/tests/tf-canon.test.mjs", "git diff --check"]
@@ -120,6 +121,16 @@ Contract reservation: `terrafusion.product-terminal-receipt.v1` producer and `tf
 Environment: isolated `C:/Users/bsval/tf-native-terminal-closeout`; accepted OMEN sources/evidence
 read-only; a NEW local native receipt store may be created. No live application mutation.
 The independently coordinated WilliamOS consumer has no write reservation in this repository.
+
+Task2 CI correction at base `ee072025c68d25f7fa596b094e72bf5ad5833c73`: the old
+`operations/evidence/receipts/waco-2026.product-terminal.json` reservation is removal-only for a
+byte-exact relocation to `os-platform/core/canon/release-closeout/receipts/waco-2026.product-terminal.json`.
+The corrected catalog references the new path. This bounded correction may update only those two
+mirror paths, the catalog, and the native documentation/plan/proof/this WO listed above. It must not
+change native source, policy, schema, the native store, accepted runtime/evidence, guard or allowlists.
+Validation is the existing repo-shape guard on corrected committed HEAD plus narrow catalog binding
+and diff checks; no product retest. No push or PR mutation is delegated. Earlier Task1 absent-output
+statements are historical and do not describe the subsequently issued Task2 artifacts.
 
 ## Acceptance and delivery
 

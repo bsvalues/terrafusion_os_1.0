@@ -55,13 +55,15 @@ A read-only profile compatibility check rehashed JSON/text inputs and successful
 in-memory contract against the actual historical record shapes: day `2026-09-07`, 69 pins, all eight
 original limitations. Binary pins were taken from existing immutable seal/verdict records and their
 existing lengths; this check did not rehash the 2,982,295,552-byte archive, issue a record, or replace
-Task2's complete verified read. Task2 must run the actual `release verify` after independent review.
+Task2's complete verified read. This is historical Task1 evidence; the coordinator subsequently ran
+the complete `release verify` after independent review, as recorded below.
 
 The original county-derived classification, Benton identity, 50 records/zero ratios, six images,
 four restart identities, three retained rollback containers and pending-F/subsequent-addendum
 semantics are preserved. The record has no issuance clock or orchestrator identifiers. No runtime
 test, container operation, Wi-Fi change, build, deployment, acceptance-record edit or package install
-was performed. The two Task2 output files remain absent/unmodified.
+was performed during Task1. At that historical Task1 handoff the two Task2 output files were absent;
+Task2 subsequently issued and committed the receipt mirror and catalog, as recorded below.
 
 ## Brain and delivery concerns
 
@@ -126,7 +128,7 @@ not a fresh application/network-loss rehearsal.
 | Receipt raw file SHA-256 | `20c517e6dbd9b3d9c6dffffa007c6f8951d697168f6e063141c0c545ce70c8ca` |
 | Receipt length | 23,373 bytes |
 | Profile raw SHA-256 | `de0ab7b5432534996c533abc00c8d1b6db5998bf591b0fe4aa94ceb1cf88aa35` |
-| Catalog raw SHA-256 | `5a6b8f8b4b2337670146a36beefe246b5346d6ef9698ad25fb6f0eca2d6edda2` |
+| Original issuance catalog raw SHA-256 (historical, before mirror relocation) | `5a6b8f8b4b2337670146a36beefe246b5346d6ef9698ad25fb6f0eca2d6edda2` |
 
 Local native state: `C:/Users/bsval/tf-native-receipts/waco-2026.product-terminal.json`.
 The checked-in receipt mirror has the exact same bytes/hash as that native state. The catalog binds
@@ -140,3 +142,37 @@ database backup remain false. All eight original limitations remain in the recei
 Protected delivery and final artifact review are required before an external consumer can claim
 protected-source provenance. WilliamOS must separately authenticate its own completion operation and
 atomically settle its own admitted work. Issuing this native record does not close any external work.
+
+## Task2 CI mirror relocation
+
+Parent delegated the clean worktree at `ee072025c68d25f7fa596b094e72bf5ad5833c73` for the exact
+repo-shape failure in CI run `34165522326`, job `101875831926`. Before edits, the unchanged guard
+reproduced exit 1: 89 visible / 140 total root entries, 88 allowed, one violation `operations`.
+This is a root-layout failure introduced by the committed mirror, not Gate8/9 or the baseline
+tool-manifest findings. No guard, allowlist, protected-check or branch-protection change is authorized.
+
+The committed mirror moved byte-exactly from
+`operations/evidence/receipts/waco-2026.product-terminal.json` to
+`os-platform/core/canon/release-closeout/receipts/waco-2026.product-terminal.json`.
+Its 23,373 bytes and raw SHA-256
+`20c517e6dbd9b3d9c6dffffa007c6f8951d697168f6e063141c0c545ce70c8ca` are preserved. The catalog changes
+only its receipt path; its receipt/profile hashes and all native identities remain unchanged.
+Corrected catalog raw SHA-256:
+`64398327023ba7d2fce0c886d51c88daf37459d4337d4e3476f340ba064d1e87`.
+Task1 absent-output prose above is explicitly historical. Producer source, policy and schema are
+unchanged from the delegated base. The native store and accepted runtime/evidence are untouched.
+
+The narrow checks PASS: the new raw mirror equals the old committed blob, its existing schema/content
+digest validates, and catalog product/repository/release/deployment/terminal identity and receipt/profile
+hashes bind exactly. Nine producer/schema/policy/guard/allowlist files were also compared byte-for-byte
+with the delegated base and are unchanged. Diff checks pass; the revised exact reservation is checked
+before commit.
+The existing guard must then be run against the corrected committed HEAD; an unstaged filesystem
+move cannot prove this guard passes. The full committed HEAD, guard outcome and corrected catalog
+raw SHA-256 are reported at handoff. No product tests, issuance retry, runtime operations, push or PR
+mutation are part of this correction.
+
+Local execution note: initial guard attempts could not resolve Git in their child shell. A short
+command-local PATH containing installed Git, bundled Node and Windows directories resolved that
+launcher issue before the actual `operations` violation was reproduced. No persistent environment
+or script change was made.
