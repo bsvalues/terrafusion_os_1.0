@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, URL as NodeURL } from 'node:url';
 import { runInNewContext } from 'node:vm';
 import nodeTest from 'node:test';
 
@@ -45,10 +45,10 @@ function mountEditor(actions = []) {
   const modules = new Map();
   function load(file) {
     if (modules.has(file)) return modules.get(file).exports;
-    if (file.endsWith('.json')) return JSON.parse(readFileSync(new URL(file), 'utf8'));
+    if (file.endsWith('.json')) return JSON.parse(readFileSync(new NodeURL(file), 'utf8'));
     const module = { exports: {} };
     modules.set(file, module);
-    const { outputText } = ts.transpileModule(readFileSync(new URL(file), 'utf8'), {
+    const { outputText } = ts.transpileModule(readFileSync(new NodeURL(file), 'utf8'), {
       compilerOptions: { jsx: ts.JsxEmit.React, module: ts.ModuleKind.CommonJS, esModuleInterop: true },
       fileName: fileURLToPath(file),
     });
@@ -64,13 +64,14 @@ function mountEditor(actions = []) {
         if (id === '../api/canonFs') return {
           fetchCodeActions: async () => ({ actions }),
         };
-        if (id.startsWith('.')) return load(new URL(id.endsWith('.json') ? id : `${id}.ts`, file).href);
+        if (id.startsWith('.')) return load(new NodeURL(id.endsWith('.json') ? id : `${id}.ts`, file).href);
         return require(id);
       },
     }, { filename: fileURLToPath(file) });
     return module.exports;
   }
-  const { CanonEditor } = load(new URL('./CanonEditor.tsx', import.meta.url).href);
+  // Use Node's URL explicitly and avoid Vite's new URL(..., import.meta.url) asset rewrite.
+  const { CanonEditor } = load(new NodeURL('./CanonEditor.tsx', import.meta.url).href);
   renderToStaticMarkup(React.createElement(CanonEditor, {
     fileName: 'README.md', value: '# Workspace',
   }));
