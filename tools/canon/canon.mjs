@@ -357,8 +357,9 @@ async function main() {
       try {
         const rawJson = JSON.stringify(live.raw);
         toolRunnerPayload = parseJsonStrict("toolrunner output", rawJson);
-        const normalizedSource =
-          toolRunnerPayload?.normalized ?? toolRunnerPayload?.result ?? live.output;
+        // The domain result contains model inputs, not the ping envelope.
+        // runPingLive derives ping metadata from that actual ToolRunner result.
+        const normalizedSource = live.output;
         const normalizedJson = JSON.stringify(normalizedSource);
         normalized = parseJsonStrict("normalized result", normalizedJson);
         validatePingNormalized(normalized);

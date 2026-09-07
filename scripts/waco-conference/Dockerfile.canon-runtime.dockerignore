@@ -1,0 +1,16 @@
+**
+!package.json
+!os-platform/
+!os-platform/core/
+!os-platform/core/**
+!tools/
+!tools/canon/
+!tools/canon/**
+!tools/registry/
+!tools/registry/**
+!golden/
+!golden/GOLDEN_CORPUS.lock.json
+**/node_modules
+**/bin
+**/obj
+**/.env*

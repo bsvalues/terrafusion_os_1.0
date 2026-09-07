@@ -1,4 +1,5 @@
 import { getViteEnv } from '@/env/getViteEnv';
+import { canonConferenceFetch } from './canonConferenceTransport';
 
 export interface CanonDoctorResponse {
   tool: string;
@@ -29,7 +30,7 @@ function failureResponse(error: string): CanonDoctorResponse {
 
 export async function runCanonDoctor(): Promise<CanonDoctorResponse> {
   try {
-    const response = await fetch(`${API_BASE_URL}/pilot/canon/doctor`, {
+    const response = await canonConferenceFetch('doctor', `${API_BASE_URL}/pilot/canon/doctor`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({}),
