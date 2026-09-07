@@ -39,8 +39,10 @@ namespace TerraFusion.Unit.Tests.Sync.Comps.Api;
 /// caching error responses; for now we lock the 4xx side
 /// mechanically.</para>
 /// </summary>
-public class SyncHttpCacheHeadersTests
+public class SyncHttpCacheHeadersTests : IDisposable
 {
+    private readonly ReviewedPiiFixture _pii = new();
+    public void Dispose() => _pii.Dispose();
     private const string OperatorId = "c45b-test";
 
     // ── Test scaffolding ────────────────────────────────────────────────
@@ -60,7 +62,7 @@ public class SyncHttpCacheHeadersTests
         return new TerraFusionDbContext(options, configuration);
     }
 
-    private static SyncController BuildController(
+    private SyncController BuildController(
         TerraFusionDbContext db,
         Guid? principalCountyClaim,
         string? principalName = null,
@@ -87,7 +89,11 @@ public class SyncHttpCacheHeadersTests
             identity.AddClaim(new Claim(ClaimsIdentity.DefaultNameClaimType, principalName));
         }
 
-        var http = new DefaultHttpContext { User = new ClaimsPrincipal(identity) };
+        var http = new DefaultHttpContext
+        {
+            User = new ClaimsPrincipal(identity),
+            RequestServices = _pii.ForCounty(principalCountyClaim ?? Guid.Empty),
+        };
         if (extraRequestHeaders is not null)
         {
             foreach (var kv in extraRequestHeaders)

@@ -37,8 +37,10 @@ namespace TerraFusion.Unit.Tests.Sync.Comps.Api;
 /// for up to N seconds longer," which contradicts that mental
 /// model.</para>
 /// </summary>
-public class SyncCacheStaleWhileRevalidateTests
+public class SyncCacheStaleWhileRevalidateTests : IDisposable
 {
+    private readonly ReviewedPiiFixture _pii = new();
+    public void Dispose() => _pii.Dispose();
     private const string OperatorId = "c45e-test";
 
     private static TerraFusionDbContext CreateDb(string name)
@@ -56,7 +58,7 @@ public class SyncCacheStaleWhileRevalidateTests
         return new TerraFusionDbContext(options, configuration);
     }
 
-    private static SyncController BuildController(
+    private SyncController BuildController(
         TerraFusionDbContext db,
         Guid? principalCountyClaim,
         IDictionary<string, string>? extraRequestHeaders = null)
@@ -76,7 +78,11 @@ public class SyncCacheStaleWhileRevalidateTests
         {
             identity.AddClaim(new Claim("countyId", principalCountyClaim.Value.ToString()));
         }
-        var http = new DefaultHttpContext { User = new ClaimsPrincipal(identity) };
+        var http = new DefaultHttpContext
+        {
+            User = new ClaimsPrincipal(identity),
+            RequestServices = _pii.ForCounty(principalCountyClaim ?? Guid.Empty),
+        };
         if (extraRequestHeaders is not null)
         {
             foreach (var kv in extraRequestHeaders)
