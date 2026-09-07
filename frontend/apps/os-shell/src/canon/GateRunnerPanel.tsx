@@ -6,6 +6,7 @@
  * "Run All" executes doctor → gatefast → ping sequentially.
  */
 import React, { useCallback, useImperativeHandle, useState } from 'react';
+import { getViteEnv } from '../env/getViteEnv';
 import { runCanonDoctor, type CanonDoctorResponse } from '../api/canonDoctor';
 import { runCanonGateFast, type CanonGateFastResponse } from '../api/canonGateFast';
 import { runCanonPing, type CanonPingResponse } from '../api/canonPing';
@@ -208,6 +209,13 @@ export const GateRunnerPanel = React.forwardRef<GateRunnerHandle>(function GateR
       </div>
 
       {/* ── Gate Cards ─────────────────────────────────────────── */}
+      {String(getViteEnv().VITE_WASHINGTON_CONFERENCE_LOCAL_PACKAGE) === 'true' && (
+        <p data-testid='terracanon-conference-gate-scope'>
+          Portable conference check: Ping. Doctor and GateFast require a full development
+          checkout and are outside portable conference acceptance. Their results and the
+          Run All status remain independent; Ping success does not mean all gates passed.
+        </p>
+      )}
       <div className='gate-runner__grid'>
         {/* Doctor */}
         <div className={gateStatusClass(doctor.status)} data-testid='terracanon-run-canon-doctor'>

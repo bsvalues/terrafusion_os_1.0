@@ -1,4 +1,5 @@
 import { getViteEnv } from '@/env/getViteEnv';
+import { canonConferenceFetch } from './canonConferenceTransport';
 
 export interface CanonPingNormalized {
   ok: boolean;
@@ -47,7 +48,7 @@ function failureResponse(error: string): CanonPingResponse {
 
 export async function runCanonPing(echoInput: string): Promise<CanonPingResponse> {
   try {
-    const response = await fetch(`${API_BASE_URL}/pilot/canon/ping`, {
+    const response = await canonConferenceFetch('ping', `${API_BASE_URL}/pilot/canon/ping`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ echo: coerceEcho(echoInput) }),

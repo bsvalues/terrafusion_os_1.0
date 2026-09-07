@@ -1,0 +1,17 @@
+# Build from repository root with the matching narrow Dockerfile.dockerignore.
+# Existing Pilot runtime, confined to Canon conference actions; no new daemon.
+FROM node:20-alpine
+ARG GIT_SHA
+LABEL org.opencontainers.image.revision="${GIT_SHA}"
+WORKDIR /app
+COPY package.json ./
+COPY os-platform/core/ ./os-platform/core/
+COPY tools/canon/ ./tools/canon/
+COPY tools/registry/ ./tools/registry/
+COPY golden/GOLDEN_CORPUS.lock.json ./golden/GOLDEN_CORPUS.lock.json
+ENV TF_CANON_CONFERENCE_ONLY=1
+ENV TF_PILOT_PORT=4317
+USER node
+# No published port. Run in the API container's network namespace, read-only,
+# cap-drop ALL, no-new-privileges. Supply the internal host credential separately.
+ENTRYPOINT ["node", "os-platform/core/pilot/dev-pilot-runtime.mjs"]
