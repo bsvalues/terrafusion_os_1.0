@@ -98,13 +98,27 @@ Coordinator/test reservation: existing browser harness extended in new county-co
 | 1 / 5 | Persistent test data | Real application DB, explicitly synthetic records, isolated runtime only. |
 | All | Independent mutable files | Separate worktrees; coordinator integrates exact paths; no shared builders. |
 
-Tasks 1–4 are integrated and undergoing review remediation; task 5 is active.
-UI bounded re-review passed and 110 integrated focused tests pass. Backend's three
-permission/reason/cohort findings passed re-review and 60 integrated tests pass
-with no skips. Actual API startup identified a strict Dossier manifest-profile
-prerequisite; its separate two-file repair is integrated and independently reviewed.
-Full frontend found 14 failed assertions in six files; the four-file repair has
-230 focused builder passes and is undergoing integrated full validation/re-review.
-Harness review gaps in owned process cleanup, Workbench exports/downloads and
-fixture-derived briefing assertions are repaired pending re-review and execution.
-Protected delivery and real browser acceptance are not complete.
+Tasks 1–4 are implemented, integrated and bounded-review findings are closed.
+The checklist above remains the original acceptance plan; current execution evidence
+is recorded here and in the existing work-order ledger, not inferred from checkboxes.
+Task 5 remains active through protected delivery and delivered-revision verification.
+
+Latest integrated evidence: 77 backend workflow/proxy/certification HTTP tests pass,
+including fresh synthetic bootstrap, transaction interruption/retry and restart.
+Full frontend passes 8,094 assertions, 211 existing skips, zero failures across
+718 files; unchanged skip checker passes. Latest strict source-graph differential
+has zero introduced diagnostics (1,049 baseline / 1,039 candidate), not a globally
+clean typecheck. Manifest/handlers/Phase83/85/86 pass 125/125; diagnostic regression
+continuation passes 3/3. Runtime registration profile tests previously passed
+112 with two existing host-gated skips; original pins remain unchanged.
+
+Complete actual browser journey passed (1 test / 41.8 seconds): actual draft save,
+all four handlers, persisted output inspection/download, retry, API restart/reopen,
+distinct year artifact sets, shared Roll Readiness selection, A-to-B and A-to-B-to-A
+late-response invalidation, and foreign-county denial. Synthetic records only.
+The inherited Program.cs legacy CORS-origin gate prerequisite was then reproduced
+with an actual failing preflight test; only the unconditional legacy default is
+removed. Rebuilt API and whole-browser rerun pass (1 test / 33.8 seconds), including
+actual preflight allow/deny assertions. Brain proof passes with unchanged gates.
+No production county acceptance, live county writes, statutory certification,
+protected merge or final delivered-revision proof is claimed yet.

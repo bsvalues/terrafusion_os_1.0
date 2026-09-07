@@ -38,7 +38,8 @@ function buildPilotHeaders(): Record<string, string> {
     const claims = decodeAuthClaims(token);
     if (claims.userId) headers['x-user-id'] = claims.userId;
     if (claims.countyId) headers['x-county-id'] = claims.countyId;
-    if (claims.roles.length) headers['x-role'] = claims.roles[0];
+    // Pilot parses the existing header as a comma-separated list; preserve issuer roles.
+    if (claims.roles.length) headers['x-role'] = claims.roles.join(',');
     return headers;
   }
   const session = getSession();

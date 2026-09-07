@@ -535,8 +535,7 @@ export const PropertyDossier: React.FC = () => {
   const handleExportAuditBundle = async () => {
     recordWorkflow('export_audit_bundle', await audit.run({
       toolId: 'export_audit_bundle', mode: 'pilot', parcelId,
-      params: { county: workflow.countyId, taxYear: workflow.taxYear, bundleScope: 'county',
-        subjectId: appealPacketId.trim() || parcelId },
+      params: { county: workflow.countyId, taxYear: workflow.taxYear, bundleScope: 'county' },
     }, value => requireWorkflowExport(value, workflow.countyId, workflow.taxYear!)));
   };
 

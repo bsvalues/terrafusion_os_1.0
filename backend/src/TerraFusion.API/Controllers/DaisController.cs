@@ -153,6 +153,12 @@ public class DaisController : ControllerBase
     if (county is null)
       return (null, Forbid());
 
+    if (Guid.TryParseExact(requestedCountyValue, "D", out var requestedCountyId))
+      return requestedCountyId != Guid.Empty &&
+        requestedCountyValue == requestedCountyId.ToString("D") && requestedCountyId == countyId.Value
+        ? (countyId.Value, null)
+        : (null, Forbid());
+
     var matchesName = string.Equals(county.Name, requestedCountyValue, StringComparison.OrdinalIgnoreCase);
     var matchesFips = !string.IsNullOrWhiteSpace(county.FipsCode) &&
       string.Equals(county.FipsCode, requestedCountyValue, StringComparison.OrdinalIgnoreCase);

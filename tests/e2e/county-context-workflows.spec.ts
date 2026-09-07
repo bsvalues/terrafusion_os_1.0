@@ -208,6 +208,15 @@ async function devToken(): Promise<string> {
   expect(response.status).toBe(200);
   const { token } = await response.json();
   expect(typeof token).toBe('string');
+  // Inspect the real issuer response, without logging or synthesizing a credential.
+  const claims = JSON.parse(Buffer.from(token.split('.')[1], 'base64url').toString('utf8'));
+  expect(claims.roles ?? claims.role).toEqual([
+    'Developer',
+    'Assessor',
+    'GovernmentUser',
+    'appraiser',
+  ]);
+  expect(claims.perm).toContain('read:dais');
   return token;
 }
 
@@ -238,6 +247,8 @@ async function invokeFromUI(page: Page, toolId: string, action: () => Promise<un
   // Assert identity without retaining the bearer value in an assertion diff.
   expect(!!browserToken && headers.authorization === `Bearer ${browserToken}`).toBe(true);
   expect(headers['x-county-id']).toBe(county);
+  expect(headers['x-role']).toBe('Developer,Assessor,GovernmentUser,appraiser');
+  expect(headers['x-office-id']).toBeUndefined();
   expect(!!headers['x-user-id']).toBe(true);
   const envelope = await response.json();
   expect(envelope.ok, envelope.error ?? 'Actual Pilot invocation failed').toBe(true);
@@ -315,9 +326,22 @@ test('owner saves, exports, retrieves, retries and reopens exact persisted work 
 }) => {
   test.setTimeout(300_000);
   const token = await devToken();
+  // Default CORS admits only configured/current dev frontends, not legacy ports.
+  for (const [port, allowed] of [
+    [3102, true],
+    [5173, true],
+    [3000, false],
+  ] as const) {
+    const origin = `http://localhost:${port}`;
+    const preflight = await fetch(`${baseURL}/api/dossier/workflows/context`, {
+      method: 'OPTIONS',
+      headers: { Origin: origin, 'Access-Control-Request-Method': 'GET' },
+    });
+    expect(preflight.headers.get('access-control-allow-origin')).toBe(allowed ? origin : null);
+  }
   await open(page, '/dossier', token);
-  await page.getByLabel('Assessment year', { exact: true }).selectOption('2024');
-  await expect(page.getByLabel('Saved draft', { exact: true })).toHaveValue('');
+  await page.getByRole('combobox', { name: 'Assessment year', exact: true }).selectOption('2024');
+  await expect(page.getByRole('combobox', { name: 'Saved draft', exact: true })).toHaveValue('');
   await expect(
     page.getByRole('button', { name: 'Equalization Package', exact: true })
   ).toBeDisabled();
@@ -331,7 +355,9 @@ test('owner saves, exports, retrieves, retries and reopens exact persisted work 
   expect(savedResponse.status()).toBe(200);
   const draft = await savedResponse.json();
   expect(draft).toMatchObject({ countyId: county, taxYear: 2024 });
-  await expect(page.getByLabel('Saved draft', { exact: true })).toHaveValue(draft.draftId);
+  await expect(page.getByRole('combobox', { name: 'Saved draft', exact: true })).toHaveValue(
+    draft.draftId
+  );
   await page.getByRole('checkbox', { name: 'Confirm equalization export', exact: true }).check();
   const { output, wire } = await invokeFromUI(page, 'export_equalization_package', () =>
     page.getByRole('button', { name: 'Equalization Package', exact: true }).click()
@@ -403,7 +429,9 @@ test('owner saves, exports, retrieves, retries and reopens exact persisted work 
   await stop(api);
   await startApi();
   await page.reload();
-  await expect(page.getByLabel('Saved draft', { exact: true })).toHaveValue(draft.draftId);
+  await expect(page.getByRole('combobox', { name: 'Saved draft', exact: true })).toHaveValue(
+    draft.draftId
+  );
   await page.getByRole('button', { name: 'Reopen saved export', exact: true }).click();
   await page
     .getByRole('region', { name: 'Completed export' })
@@ -422,13 +450,15 @@ test('owner saves, exports, retrieves, retries and reopens exact persisted work 
   });
 
   // The second stored year has different real input records, not a constant artifact count.
-  await page.getByLabel('Assessment year', { exact: true }).selectOption('2025');
+  await page.getByRole('combobox', { name: 'Assessment year', exact: true }).selectOption('2025');
   await expect(
     page.getByRole('checkbox', { name: 'Confirm equalization export', exact: true })
   ).not.toBeChecked();
   await expect(page.getByRole('region', { name: 'Completed export' })).toHaveCount(0);
   await page.getByRole('button', { name: 'Save study snapshot', exact: true }).click();
-  await expect(page.getByLabel('Saved draft', { exact: true })).not.toHaveValue('');
+  await expect(page.getByRole('combobox', { name: 'Saved draft', exact: true })).not.toHaveValue(
+    ''
+  );
   await page.getByRole('checkbox', { name: 'Confirm equalization export', exact: true }).check();
   const second = await invokeFromUI(page, 'export_equalization_package', () =>
     page.getByRole('button', { name: 'Equalization Package', exact: true }).click()
@@ -437,7 +467,7 @@ test('owner saves, exports, retrieves, retries and reopens exact persisted work 
   expect(second.output.artifactCount).toBe(second.output.artifacts.length);
   expect(second.output.artifactCount).not.toBe(output.artifactCount);
 
-  await page.getByLabel('Assessment year', { exact: true }).selectOption('2024');
+  await page.getByRole('combobox', { name: 'Assessment year', exact: true }).selectOption('2024');
   await page.getByRole('textbox', { name: 'Appeal ID', exact: true }).fill(appeal);
   const packet = await invokeFromUI(page, 'open_appeal_packet', () =>
     page.getByRole('button', { name: 'Open Packet', exact: true }).click()
@@ -473,7 +503,7 @@ test('owner saves, exports, retrieves, retries and reopens exact persisted work 
   await expect(page.getByLabel('Export JSON').last()).toContainText('Synthetic recorded evidence');
 
   await page.goto(`${baseURL}/property/${parcel}/dossier`);
-  await page.getByLabel('Assessment year', { exact: true }).selectOption('2024');
+  await page.getByRole('combobox', { name: 'Assessment year', exact: true }).selectOption('2024');
   await page.getByRole('textbox', { name: 'Appeal ID', exact: true }).fill(appeal);
   const workbenchPacket = await invokeFromUI(page, 'open_appeal_packet', () =>
     page.getByRole('button', { name: 'Open Appeal Packet', exact: true }).click()
@@ -543,7 +573,10 @@ test('owner saves, exports, retrieves, retries and reopens exact persisted work 
   }
 
   await page.goto(`${baseURL}/dais`);
-  await page.getByLabel('Assessment year', { exact: true }).first().selectOption('2024');
+  await page
+    .getByRole('combobox', { name: 'Assessment year', exact: true })
+    .first()
+    .selectOption('2024');
   const brief = await invokeFromUI(page, 'generate_morning_brief', () =>
     page.getByRole('button', { name: 'Refresh Brief', exact: true }).click()
   );
@@ -572,12 +605,20 @@ test('owner saves, exports, retrieves, retries and reopens exact persisted work 
   await expect(page.getByTestId('county-morning-brief-result')).toContainText(
     'Review the existing study in County Studio.'
   );
-  await page.getByLabel('Assessment year', { exact: true }).first().selectOption('2025');
+  await page
+    .getByRole('combobox', { name: 'Assessment year', exact: true })
+    .first()
+    .selectOption('2025');
   await expect(page.getByTestId('county-morning-brief-result')).toHaveCount(0);
-  await page.getByLabel('Assessment year', { exact: true }).first().selectOption('2024');
+  await page
+    .getByRole('combobox', { name: 'Assessment year', exact: true })
+    .first()
+    .selectOption('2024');
   await page.getByRole('button', { name: 'Roll readiness', exact: true }).click();
   const readiness = page.getByTestId('roll-readiness');
-  await expect(readiness.getByLabel('Assessment year', { exact: true })).toHaveValue('2024');
+  await expect(
+    readiness.getByRole('combobox', { name: 'Assessment year', exact: true })
+  ).toHaveValue('2024');
   await readiness
     .getByRole('checkbox', { name: 'Confirm equalization export', exact: true })
     .check();
@@ -597,53 +638,94 @@ test('owner saves, exports, retrieves, retries and reopens exact persisted work 
   );
 
   // Delay the actual completed backend response, not a fabricated response body.
-  let release!: () => void;
-  let received!: () => void;
-  const held = new Promise<void>(resolve => {
-    release = resolve;
-  });
-  const reachedBackend = new Promise<void>(resolve => {
-    received = resolve;
-  });
-  const routePattern = '**/api/pilot/invoke';
-  await page.route(routePattern, async route => {
-    if (route.request().postDataJSON()?.toolId !== 'generate_morning_brief')
-      return route.continue();
-    const actual = await route.fetch();
-    expect(actual.status()).toBe(200);
-    expect((await actual.json()).ok).toBe(true);
-    received();
-    await held;
-    await route.fulfill({ response: actual });
-  });
-  try {
-    await page.getByRole('button', { name: 'Refresh Brief', exact: true }).click();
-    await reachedBackend;
-    await page.getByLabel('Assessment year', { exact: true }).first().selectOption('2025');
-    await expect(page.getByTestId('county-morning-brief-result')).toHaveCount(0);
-    const delivered = page.waitForResponse(
-      response => response.url() === `${baseURL}/api/pilot/invoke`
+  for (const switchedYears of [['2025'], ['2025', '2024']]) {
+    await page
+      .getByRole('combobox', { name: 'Assessment year', exact: true })
+      .first()
+      .selectOption('2024');
+    await expect(page.getByRole('button', { name: 'Refresh Brief', exact: true })).toBeEnabled();
+    const finalYear = switchedYears[switchedYears.length - 1];
+    let release!: () => void;
+    let received!: () => void;
+    let failed!: (error: unknown) => void;
+    const handlers: Promise<void>[] = [];
+    const handlerErrors: unknown[] = [];
+    const held = new Promise<void>(resolve => {
+      release = resolve;
+    });
+    const reachedBackend = new Promise<void>((resolve, reject) => {
+      received = resolve;
+      failed = reject;
+    });
+    // Attach immediately: route failure can precede completion of the click.
+    void reachedBackend.catch(() => {});
+    const deadline = setTimeout(
+      () => failed(new Error('Actual morning-brief response did not arrive within 30 seconds.')),
+      30_000
     );
-    release();
-    await (await delivered).finished();
-    await page.evaluate(
-      () =>
-        new Promise<void>(resolve =>
-          requestAnimationFrame(() => requestAnimationFrame(() => resolve()))
-        )
-    );
-    await expect(page.getByTestId('county-morning-brief-result')).toHaveCount(0);
-    await expect(page.getByLabel('Assessment year', { exact: true }).first()).toHaveValue('2025');
-    await expect(readiness.getByLabel('Assessment year', { exact: true })).toHaveValue('2025');
-    await expect(
-      readiness.getByRole('checkbox', { name: 'Confirm equalization export', exact: true })
-    ).not.toBeChecked();
-    await expect(
-      readiness.getByRole('region', { name: 'Completed export', exact: true })
-    ).toHaveCount(0);
-  } finally {
-    release();
-    await page.unroute(routePattern);
+    const routePattern = '**/api/pilot/invoke';
+    await page.route(routePattern, route => {
+      if (route.request().postDataJSON()?.toolId !== 'generate_morning_brief')
+        return route.continue();
+      const handler = (async () => {
+        const actual = await route.fetch({ timeout: 25_000 });
+        expect(actual.status()).toBe(200);
+        expect((await actual.json()).ok).toBe(true);
+        received();
+        await held;
+        await route.fulfill({ response: actual });
+      })().catch(error => {
+        handlerErrors.push(error);
+        failed(error);
+      });
+      handlers.push(handler);
+      return handler;
+    });
+    try {
+      await page.getByRole('button', { name: 'Refresh Brief', exact: true }).click();
+      await reachedBackend;
+      for (const year of switchedYears) {
+        await page
+          .getByRole('combobox', { name: 'Assessment year', exact: true })
+          .first()
+          .selectOption(year);
+        await expect(
+          readiness.getByRole('combobox', { name: 'Assessment year', exact: true })
+        ).toHaveValue(year);
+      }
+      await expect(page.getByTestId('county-morning-brief-result')).toHaveCount(0);
+      const delivered = page.waitForResponse(
+        response => response.url() === `${baseURL}/api/pilot/invoke`
+      );
+      release();
+      await (await delivered).finished();
+      await page.evaluate(
+        () =>
+          new Promise<void>(resolve =>
+            requestAnimationFrame(() => requestAnimationFrame(() => resolve()))
+          )
+      );
+      await expect(page.getByTestId('county-morning-brief-result')).toHaveCount(0);
+      await expect(
+        page.getByRole('combobox', { name: 'Assessment year', exact: true }).first()
+      ).toHaveValue(finalYear);
+      await expect(
+        readiness.getByRole('combobox', { name: 'Assessment year', exact: true })
+      ).toHaveValue(finalYear);
+      await expect(
+        readiness.getByRole('checkbox', { name: 'Confirm equalization export', exact: true })
+      ).not.toBeChecked();
+      await expect(
+        readiness.getByRole('region', { name: 'Completed export', exact: true })
+      ).toHaveCount(0);
+    } finally {
+      clearTimeout(deadline);
+      release();
+      // Unroute alone does not settle a handler already fetching/fulfilling.
+      await page.unrouteAll({ behavior: 'wait' });
+      await Promise.all(handlers);
+      if (handlerErrors.length) throw handlerErrors[0];
+    }
   }
 
   // Obtain the second county through the real development issuer, not a forged header.

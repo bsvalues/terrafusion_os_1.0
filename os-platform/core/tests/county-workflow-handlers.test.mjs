@@ -1,9 +1,105 @@
 import assert from 'node:assert/strict';
+import { spawn } from 'node:child_process';
 import { createServer } from 'node:http';
 import { createRequire } from 'node:module';
+import { fileURLToPath } from 'node:url';
 import test from 'node:test';
 const require = createRequire(import.meta.url);
 const { registerR1Handlers } = require('../pilot/handlers.real.js');
+
+test('live workflow ingress rejects schema violations before tracing or backend dispatch', { timeout: 30000 }, async () => {
+  const county = '11111111-1111-1111-1111-111111111111';
+  let dispatches = 0;
+  const backend = createServer((req, res) => {
+    dispatches++;
+    req.resume();
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ countyId: county, taxYear: 2024 }));
+  });
+  await new Promise(resolve => backend.listen(0, '127.0.0.1', resolve));
+  const portProbe = createServer();
+  await new Promise(resolve => portProbe.listen(0, '127.0.0.1', resolve));
+  const port = portProbe.address().port;
+  await new Promise(resolve => portProbe.close(resolve));
+  const env = {};
+  for (const key of ['PATH', 'Path', 'SystemRoot', 'WINDIR', 'ComSpec', 'PATHEXT', 'TEMP', 'TMP', 'USERPROFILE', 'HOME'])
+    if (process.env[key]) env[key] = process.env[key];
+  const child = spawn(process.execPath, [fileURLToPath(new URL('../pilot/dev-pilot-runtime.mjs', import.meta.url))], {
+    windowsHide: true, stdio: ['ignore', 'pipe', 'pipe'],
+    env: { ...env, TF_PILOT_PORT: String(port), TF_API_BASE_URL: `http://127.0.0.1:${backend.address().port}` },
+  });
+  let logs = '';
+  child.stdout.on('data', value => { logs = (logs + value).slice(-8000); });
+  child.stderr.on('data', value => { logs = (logs + value).slice(-8000); });
+  const base = `http://127.0.0.1:${port}`;
+  let roleHeader = 'Developer,Assessor,GovernmentUser,appraiser';
+  const post = async (path, body) => {
+    const response = await fetch(base + path, { method: 'POST', signal: AbortSignal.timeout(5000),
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer synthetic-test', 'x-county-id': county, 'x-user-id': 'synthetic-operator', ...(roleHeader ? { 'x-role': roleHeader } : {}) },
+      body: JSON.stringify(body) });
+    assert.equal(response.status, 200);
+    return response.json();
+  };
+  try {
+    let ready = false;
+    for (let attempt = 0; attempt < 100 && !ready; attempt++) {
+      if (child.exitCode !== null) throw new Error(`Owned Pilot exited: ${logs}`);
+      try { ready = (await fetch(base + '/pilot/health', { signal: AbortSignal.timeout(200) })).ok; } catch { /* owned startup */ }
+      if (!ready) await new Promise(resolve => setTimeout(resolve, 50));
+    }
+    assert.equal(ready, true, logs);
+    const cases = [
+      { toolId: 'generate_morning_brief', mode: 'muse', params: { county, taxYear: 2024, role: 'chief_appraiser' } },
+      { toolId: 'open_appeal_packet', mode: 'pilot', params: { county, taxYear: 2024, appealId: '33333333-3333-3333-3333-333333333333' } },
+      { toolId: 'export_equalization_package', mode: 'pilot', confirmation: true, reasonCode: 'annual_certification', params: { county, taxYear: 2024, draftVersion: '33333333-3333-3333-3333-333333333333', revision: 'a'.repeat(64), requestId: '44444444-4444-4444-4444-444444444444' } },
+      { toolId: 'export_audit_bundle', mode: 'pilot', confirmation: true, reasonCode: 'legal_compliance', params: { county, taxYear: 2024, bundleScope: 'county', requestId: '44444444-4444-4444-4444-444444444444' } },
+    ];
+    const initialTrace = await (await fetch(base + `/pilot/trace?countyId=${county}`)).json();
+    for (const request of cases) {
+      const invalids = [
+        { ...request.params, sourceRecords: ['synthetic-do-not-trace'] },
+        { ...request.params, sourcePrivacy: 'none' },
+        { ...request.params, taxYear: '2024' },
+        { ...request.params, taxYear: 2024.5 },
+        ...(request.params.requestId ? [{ ...request.params, requestId: '00000000-0000-0000-0000-000000000000' }] : []),
+      ];
+      for (const params of invalids) {
+        const validation = await post('/pilot/validate', { ...request, params });
+        assert.equal(validation.valid, false, `${request.toolId} must reject malformed input at validation ingress`);
+        assert.ok(validation.violations.some(value => value.includes('PARAMS_SCHEMA_INVALID')));
+        const invocation = await post('/pilot/invoke', { ...request, params });
+        assert.equal(invocation.ok, false);
+        assert.equal(invocation.errorCode, 'PARAMS_SCHEMA_INVALID');
+        assert.equal(invocation.result, null);
+        assert.equal(dispatches, 0, 'invalid input must never dispatch to backend');
+      }
+    }
+    assert.deepEqual(await (await fetch(base + `/pilot/trace?countyId=${county}`)).json(), initialTrace, 'invalid input must not enter invocation tracing');
+    assert.equal(logs.includes('synthetic-do-not-trace'), false);
+    for (const request of cases) {
+      const validation = await post('/pilot/validate', request);
+      assert.equal(validation.valid, true, JSON.stringify({ toolId: request.toolId, validation }));
+      const invocation = await post('/pilot/invoke', request);
+      assert.equal(invocation.ok, true, JSON.stringify({ toolId: request.toolId, invocation }));
+    }
+    assert.equal(dispatches, 4, 'valid schemas must still reach the four actual registered adapters');
+    for (const deniedRoles of [undefined, 'Developer', 'GovernmentUser', 'Developer,Assessor,GovernmentUser', 'Developer,Treasurer']) {
+      roleHeader = deniedRoles;
+      assert.equal((await post('/pilot/validate', cases[0])).valid, false, 'bearer without assessor role is not an appraiser');
+      assert.equal((await post('/pilot/invoke', cases[0])).ok, false);
+      assert.equal(dispatches, 4);
+    }
+  } finally {
+    if (child.exitCode === null && child.signalCode === null) {
+      await new Promise((resolve, reject) => {
+        const timer = setTimeout(() => reject(new Error('Owned Pilot cleanup timed out.')), 5000);
+        child.once('exit', () => { clearTimeout(timer); resolve(); });
+        child.kill();
+      });
+    }
+    await new Promise(resolve => backend.close(resolve));
+  }
+});
 
 test('active real registration excludes the 18 preserved forward-staged office tools', () => {
   const ids = new Set();

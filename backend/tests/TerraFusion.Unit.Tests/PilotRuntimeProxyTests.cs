@@ -18,6 +18,57 @@ namespace TerraFusion.Unit.Tests;
 public sealed class PilotRuntimeProxyTests
 {
     [Fact]
+    public async System.Threading.Tasks.Task DiscoveryOnlyAdvertisesTheFourSupportedWorkflowDispatches()
+    {
+        using var client = new HttpClient(new InventoryTransport("""
+            {"count":5,"tools":[
+              {"toolId":"generate_morning_brief","mode":"muse","displayName":"Morning Brief"},
+              {"toolId":"open_appeal_packet","mode":"pilot"},
+              {"toolId":"export_equalization_package","mode":"pilot","requiresConfirmation":true},
+              {"toolId":"export_audit_bundle","mode":"pilot","requiresConfirmation":true},
+              {"toolId":"register_document","mode":"pilot"}
+            ]}
+            """));
+        var factory = new Mock<IHttpClientFactory>();
+        factory.Setup(f => f.CreateClient("county-workflow-pilot-runtime")).Returns(client);
+        using var services = Services("http://localhost:19417", factory.Object);
+        var controller = CreateController(services);
+        controller.Request.Method = "GET";
+        var result = (await controller.GetTools()).Should().BeOfType<ContentResult>().Subject;
+        result.StatusCode.Should().Be(200);
+        using var payload = System.Text.Json.JsonDocument.Parse(result.Content!);
+        payload.RootElement.GetProperty("count").GetInt32().Should().Be(4);
+        var tools = payload.RootElement.GetProperty("tools").EnumerateArray().ToArray();
+        tools.Select(tool => tool.GetProperty("toolId").GetString()).Should().Equal(
+            "generate_morning_brief", "open_appeal_packet", "export_equalization_package", "export_audit_bundle");
+        tools[0].GetProperty("displayName").GetString().Should().Be("Morning Brief");
+        tools[2].GetProperty("requiresConfirmation").GetBoolean().Should().BeTrue();
+    }
+
+    [Theory]
+    [InlineData("not-json")]
+    [InlineData("{\"tools\":null}")]
+    [InlineData("{\"tools\":[{\"toolId\":1}]}")]
+    public async System.Threading.Tasks.Task InvalidDiscoveryFailsClosed(string response)
+    {
+        using var client = new HttpClient(new InventoryTransport(response));
+        var factory = new Mock<IHttpClientFactory>();
+        factory.Setup(f => f.CreateClient("county-workflow-pilot-runtime")).Returns(client);
+        using var services = Services("http://localhost:19417", factory.Object);
+        var controller = CreateController(services);
+        controller.Request.Method = "GET";
+        var result = (await controller.GetTools()).Should().BeOfType<ObjectResult>().Subject;
+        result.StatusCode.Should().Be(503);
+        System.Text.Json.JsonSerializer.Serialize(result.Value).Should().Contain("PILOT_RUNTIME_RESPONSE_INVALID");
+    }
+
+    private sealed class InventoryTransport(string json) : HttpMessageHandler
+    {
+        protected override System.Threading.Tasks.Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken ct)
+            => System.Threading.Tasks.Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent(json) });
+    }
+
+    [Fact]
     public async System.Threading.Tasks.Task ActualNamedApplicationClientRefusesCredentialBearingRedirects()
     {
         using var port = new System.Net.Sockets.TcpListener(IPAddress.Loopback, 0);

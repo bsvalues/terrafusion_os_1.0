@@ -1,6 +1,6 @@
 # Proof Bundle — OS-COUNTY-CONTEXT-001
 
-- Generated: 2026-09-07T19:56:25.654Z
+- Generated: 2026-09-07T20:38:36.368Z
 - Work order: OS-COUNTY-CONTEXT-001
 
 ## Commands run
@@ -11,7 +11,7 @@
 (record per slice — e.g. drift→fail→restore. See the slice ADR for evidence; `proof` runs positive checks.)
 
 ## Working tree
-- changed (tracked) files: 12
+- changed (tracked) files: 14
 - staged files at proof time: 0 (commit-race hazard if > 0 — WO-0011)
 
 ## Known risks (open drift)

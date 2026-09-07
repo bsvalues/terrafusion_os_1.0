@@ -94,6 +94,24 @@ beforeEach(() => {
 afterEach(async () => { await act(async () => {}); cleanup(); vi.unstubAllGlobals(); });
 
 describe('persisted county workflow screens', () => {
+  it.each(['', appealId])('Property Dossier county audit omits subjectId even with appeal input %j', async selectedAppeal => {
+    const countyAudit = { ...exported, draftId: null, revision: null };
+    invokeResponse = async wire => wire.body.params.subjectId
+      ? json({ ok: false, errorCode: 'EXECUTION_FAILED', error: 'subjectId must match bundleScope.', correlationId: 'county-audit-rejected' })
+      : json({ ok: true, result: countyAudit, correlationId: 'county-audit' });
+    await mount(wrapper(<PropertyDossier />));
+    if (selectedAppeal) await act(async () => { fireEvent.change(screen.getByLabelText('Appeal ID'), { target: { value: selectedAppeal } }); });
+    const exportButton = screen.getByRole('button', { name: 'Export Audit Bundle', exact: true });
+    expect(exportButton).toBeDisabled();
+    await act(async () => { fireEvent.click(screen.getByLabelText('Confirm audit export')); });
+    await act(async () => { fireEvent.click(exportButton); });
+    const invocation = requests.find(request => request.path === '/api/pilot/invoke')!;
+    expect(invocation.body).toMatchObject({ toolId: 'export_audit_bundle', mode: 'pilot', confirmation: true, reasonCode: 'annual_certification' });
+    expect(invocation.body.params).toEqual({ county: countyA, taxYear: 2024, bundleScope: 'county', requestId: expect.stringMatching(/^[0-9a-f-]{36}$/) });
+    expect(invocation.body.params).not.toHaveProperty('subjectId');
+    expect(await screen.findByRole('region', { name: 'Completed export' })).toHaveTextContent(packageRef);
+  });
+
   it('downloads exact authenticated packet bytes without treating the payloadRef as a trusted link', async () => {
     const raw = '\n' + JSON.stringify(actualPacket, null, 2) + '\n';
     const downloads: Blob[] = [];

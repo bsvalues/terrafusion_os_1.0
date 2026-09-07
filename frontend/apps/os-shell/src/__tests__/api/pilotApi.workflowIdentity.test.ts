@@ -5,6 +5,43 @@ describe('Pilot caller identity', () => {
   beforeEach(() => localStorage.clear());
   afterEach(() => vi.unstubAllGlobals());
 
+  it.each(['generate_morning_brief', 'open_appeal_packet', 'export_equalization_package', 'export_audit_bundle'])('preserves all Development issuer roles for %s without substituting an office or role', async toolId => {
+    // Mirrors the released Development-only issuer shape; not proof of a live-issued JWT.
+    const roles = ['Developer', 'Assessor', 'GovernmentUser', 'appraiser'];
+    const token = `e30.${btoa(JSON.stringify({ sub: 'development-operator', countyId: '20200020-2020-2020-2020-202020202020', roles }))}.signature`;
+    localStorage.setItem('authToken', token);
+    localStorage.setItem('tf.session.dev', JSON.stringify({ userId: 'old-user', countyId: 'benton', role: 'appraiser' }));
+    let headers = new Headers();
+    vi.stubGlobal('fetch', async (_: unknown, init: RequestInit) => {
+      headers = new Headers(init.headers);
+      return new Response(JSON.stringify({ ok: true, result: {}, correlationId: 'corr-issuer-roles' }));
+    });
+    await invokePilotTool({ toolId, mode: toolId === 'generate_morning_brief' ? 'muse' : 'pilot', params: {} });
+    expect(headers.get('x-role')).toBe('Developer,Assessor,GovernmentUser,appraiser');
+    expect(headers.get('x-county-id')).toBe('20200020-2020-2020-2020-202020202020');
+    expect(headers.get('x-user-id')).toBe('development-operator');
+    expect(headers.get('Authorization') === `Bearer ${token}`).toBe(true);
+    expect(headers.has('x-office-id')).toBe(false);
+  });
+
+  it.each([
+    { roles: [], expected: null },
+    { roles: ['Developer'], expected: 'Developer' },
+    { roles: ['Developer', 'Assessor', 'GovernmentUser'], expected: 'Developer,Assessor,GovernmentUser' },
+  ])('does not invent a canonical role when JWT roles are $roles', async ({ roles, expected }) => {
+    const token = `e30.${btoa(JSON.stringify({ sub: 'unmapped-operator', countyId: '20200020-2020-2020-2020-202020202020', roles }))}.signature`;
+    localStorage.setItem('authToken', token);
+    localStorage.setItem('tf.session.dev', JSON.stringify({ role: 'appraiser' }));
+    let headers = new Headers();
+    vi.stubGlobal('fetch', async (_: unknown, init: RequestInit) => {
+      headers = new Headers(init.headers);
+      return new Response(JSON.stringify({ ok: false, error: 'Denied', correlationId: 'corr-unmapped' }));
+    });
+    await invokePilotTool({ toolId: 'export_audit_bundle', params: {} });
+    expect(headers.get('x-role')).toBe(expected);
+    expect(headers.has('x-office-id')).toBe(false);
+  });
+
   it('sends JWT county/user/role instead of a contradictory development session', async () => {
     const token = `e30.${btoa(JSON.stringify({ sub: 'operator-2', countyId: '20200020-2020-2020-2020-202020202020', roles: ['appraiser'] }))}.signature`;
     localStorage.setItem('authToken', token);

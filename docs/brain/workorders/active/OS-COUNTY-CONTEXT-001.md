@@ -31,6 +31,81 @@ read-only, no builder reservation. Exact delivered-head assurance remains requir
 
 ### Current integration checkpoint (not delivery acceptance)
 
+- Final pre-delivery browser rerun after CORS repair: PASS, 1 test / 33.8 seconds.
+  The same complete actual workflow journey passed, plus real preflight allowance
+  for current 3102/5173 origins and rejection of the unconditional legacy 3000
+  origin. This follows the observed RED response, not a changed expectation.
+  Brain check and generated-wiki consistency proof pass; generated wiki/report
+  files are preserved in this worktree's ignored temporary evidence, not source.
+  Live protected main requires nine named checks with strict up-to-date enforcement
+  and admin enforcement. Protected push/PR/CI/merge and delivered-revision runtime
+  verification remain pending; the assignment is NOT COMPLETE.
+- Complete isolated browser journey passed (1 test, 41.8 seconds), including
+  actual Roll Readiness export, A-to-B and A-to-B-to-A delayed-response invalidation,
+  restart retrieval and foreign-county refusal. No production acceptance inferred.
+- Brain subsequently exposed an inherited Program.cs CORS default on legacy port
+  3000. The unchanged port gate rejects this touched file. Remove that unconditional
+  fallback only: `Cors:AllowedOrigins` still takes precedence and intentional
+  legacy use remains available via `TF_FRONTEND_PORT=3000`. Default origins narrow
+  to configured/current frontend plus Vite; credentials and exact-origin rules
+  stay unchanged. Actual preflight RED reproduced the legacy allowance; rebuild
+  and complete browser GREEN remain required after this prerequisite repair.
+- Latest integrated validation: frontend 8,094 passed assertions, 211 skipped,
+  zero failed across 718 files; unchanged skip ceiling passes (211 <= 222).
+  Worker strict TypeScript source-graph differential is 1,049 baseline versus
+  1,039 candidate diagnostics, zero introduced; not a globally clean typecheck.
+  Core manifest/handlers/Phase83/85/86 pass 125/125, original diagnostic tests 3/3.
+- Dais canonical GUID repair is integrated and independently reviewed. Latest API
+  build passes with zero warnings/errors; integrated workflow/proxy/certification
+  HTTP tests pass 77/77 with fresh synthetic bootstrap enabled and no skips.
+  An earlier coordinator run used the old API binary and an invalid bootstrap
+  filename: 4 failures. Rebuilding the API and using the existing required
+  `workflow-*.db` filename fixed the invocation; no guard was weakened.
+  API SHA256: `D75D1420F757DAA89F0A25B44670AE9695B967E4C2BA4D194AB0B5EDC4972BDF`.
+  Frontend index SHA256: `4CB14CDE57B40F79DA983C0CE4CADEE536ECD29DA0132C05E4E8EC8DDA57C498`.
+- Acceptance harness review closed the delayed-response lifetime finding with
+  bounded rejectable handshake, actual response retention and awaited route
+  cleanup. Fresh real browser execution is active; no overall PASS claimed yet.
+- WACO released all source reservations after its separately sealed release at
+  `35e32462d`; its containers, data and pinned candidate remain frozen and untouched.
+
+Previous integration checkpoint observations:
+
+- The unpublished branch is now based on protected `35e32462d` (#1568), with
+  integrated review checkpoint `74ce1be54` (normal hooks passed before rebase).
+  Program.cs has the Development-token `read:dais` addition and canonical
+  `appraiser` role alongside retained legacy roles. The production owner released
+  the heavy build slot; rebuilt API and UI have been exercised in the isolated
+  browser up to the Roll Readiness failure described below.
+  No push, PR, or protected delivery has occurred for this assignment.
+- Integration assurance subsequently identified live-ingress schema enforcement,
+  issuer-role propagation/office mapping, Workbench county-audit parameters and
+  bridge discovery/dispatch alignment gaps. Coordinator owns the runtime/bridge
+  repairs; the existing UI builder owns its original four relevant UI paths.
+  WACO released ToolRunner.ts and generated ToolRunner.js for an office mapping,
+  but the attempted change was withdrawn before commit: the frozen role vocabulary
+  prohibits aliases and existing role-to-claim checks correctly reject legacy names.
+  ToolRunner remains unchanged. The correct integration is the Development issuer
+  emitting the existing canonical `appraiser` role in addition to retained legacy
+  roles, with full role propagation; missing or legacy-only role sets remain denied.
+- Subsequent real browser execution passed draft save, first export/retry/refusal,
+  API restart and byte-identical reopen, distinct 2025 export, packet inspection/
+  download, both Workbench exports/downloads, and fixture-derived Dais briefing.
+  It then stopped at Roll Readiness: the existing Dais county helper rejects a
+  matching authenticated county GUID query because it compares names/FIPS only.
+  This is not a passed overall journey. Reserve DaisController's bounded GUID
+  comparison repair with existing workflow tests; preserve foreign-county refusal,
+  existing name/FIPS behavior and persisted county existence checks.
+- Full-frontend skip gate independently passes: 211 skips against ceiling 222,
+  zero per-file violations or unclassified skips. The canonical local JSON report
+  is generated evidence, excluded from commits alongside `wiki/` and `output/`.
+- Latest role/audit UI slice passes 73/73 integrated tests; runtime ingress and
+  unchanged canonical role-map regression pass 15/15; proxy discovery/transport
+  passes 12/12. All returned source-review findings are closed within their
+  reviewed scopes. A new full-frontend run is active on the latest source; the
+  earlier 8,083-pass JSON is retained in `frontend/.tmp/` rather than overwritten.
+  These tests/reviews are not a final exact-head delivery seal.
+
 - Normal commit hooks passed for checkpoint `3b0958c55`, then the unpublished
   branch rebased successfully onto protected WACO main `02aa83731` as `225df2c17`.
   The three Pilot startup hunks preserve the merged conference guard, lease and
@@ -304,6 +379,7 @@ merge, package publication, production deployment, or parallel dispatch is claim
     "os-platform/core/pilot/handlers.real.ts",
     "os-platform/core/pilot/handlers.real.js",
     "os-platform/core/pilot/dev-pilot-runtime.mjs",
+    "os-platform/core/tests/phase86-toolrunner.test.mjs",
     "os-platform/core/tests/county-workflow-handlers.test.mjs",
     "tools/registry/build-core-js.mjs",
     "tools/registry/check-generated-js.mjs",
@@ -313,6 +389,7 @@ merge, package publication, production deployment, or parallel dispatch is claim
     "backend/src/TerraFusion.API/Services/PilotRuntimeProxy.cs",
     "backend/tests/TerraFusion.Unit.Tests/PilotRuntimeProxyTests.cs",
     "backend/src/TerraFusion.API/Controllers/DossierController.cs",
+    "backend/src/TerraFusion.API/Controllers/DaisController.cs",
     "backend/src/TerraFusion.API/Controllers/DossierWorkflowsController.cs",
     "backend/src/TerraFusion.API/DTOs/DossierWorkflowDtos.cs",
     "backend/src/TerraFusion.API/Services/Dossier/DossierMutationRuntimeRegistration.cs",

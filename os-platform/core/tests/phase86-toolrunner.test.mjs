@@ -90,6 +90,20 @@ function assertErrorCode(err, code) {
 }
 
 describe('Phase 8.6 ToolRunner - canonical execution', () => {
+  it('canonical appraiser role works beside legacy issuer roles without granting aliases authority', async () => {
+    const { runner } = await setupRunner();
+    const fx = loadToolFixture('explain_model_inputs', 'happy');
+    const context = { ...BENTON_MUSE, officeId: undefined, roles: ['Developer', 'Assessor', 'GovernmentUser', 'appraiser'] };
+    assert.equal(runner.validate({ toolId: 'explain_model_inputs', params: fx.params, context }).valid, true);
+    assert.equal((await runner.run('explain_model_inputs', fx.params, context)).ok, true);
+    for (const roles of [[], ['Developer'], ['GovernmentUser'], ['Developer', 'Assessor', 'GovernmentUser'], ['Developer', 'Treasurer']]) {
+      const validation = runner.validate({ toolId: 'explain_model_inputs', params: fx.params, context: { ...context, roles } });
+      assert.equal(validation.valid, false);
+      assert.ok(validation.violations.some(value => value.includes('OFFICE_SCOPE_DENIED')));
+    }
+    assert.equal(runner.validate({ toolId: 'explain_model_inputs', params: fx.params,
+      context: { ...context, officeId: 'treasurer' } }).valid, false, 'an explicit conflicting office still governs');
+  });
   it('runs muse read_only tool via ToolRunner.run', async () => {
     const { runner } = await setupRunner();
     const fx = loadToolFixture('explain_model_inputs', 'happy');

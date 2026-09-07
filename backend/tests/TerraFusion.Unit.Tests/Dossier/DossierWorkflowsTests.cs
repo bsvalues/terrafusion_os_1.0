@@ -38,6 +38,52 @@ public sealed class DossierWorkflowsTests
     private const string Parcel = "SYNTHETIC-WORKFLOW";
     private const string Root = "/api/dossier/workflows";
 
+    [Theory]
+    [InlineData(County, County, 200)]
+    [InlineData(County, "Synthetic County", 200)]
+    [InlineData(County, "99001", 200)]
+    [InlineData("Synthetic County", County, 200)]
+    [InlineData("99001", County, 200)]
+    [InlineData(County, OtherCounty, 403)]
+    [InlineData(County, "00000000-0000-0000-0000-000000000000", 403)]
+    [InlineData(County, "33333333-3333-3333-3333-333333333333", 403)]
+    [InlineData(County, "{11111111-1111-1111-1111-111111111111}", 403)]
+    [InlineData("33333333-3333-3333-3333-333333333333", "33333333-3333-3333-3333-333333333333", 403)]
+    [InlineData("00000000-0000-0000-0000-000000000000", "00000000-0000-0000-0000-000000000000", 403)]
+    [InlineData("33333333-3333-3333-3333-333333333333", "Synthetic County", 403)]
+    public async Task DaisCertificationCountyQuery_UsesRealCanonicalStepsAndPreservesCountyBoundary(string claim, string requested, int expected)
+    {
+        await using var f = await Fixture.Create();
+        f.Client.DefaultRequestHeaders.Add("Test-County", claim);
+        await using (var before = f.Db()) Assert.Empty(await before.CertificationSteps.ToListAsync());
+        foreach (var url in new[] { $"/api/dais/cert/status?county={Uri.EscapeDataString(requested)}&taxYear=2024",
+            $"/api/dais/certification/{Uri.EscapeDataString(requested)}/2024" })
+        {
+            var response = await f.Client.GetAsync(url);
+            Assert.Equal(expected, (int)response.StatusCode);
+            await using var persisted = f.Db();
+            var steps = await persisted.CertificationSteps.ToListAsync();
+            if (expected == 403)
+            {
+                Assert.Empty(steps); // County rejection must occur before the real service initializes steps.
+                continue;
+            }
+            var body = await Json(response);
+            Assert.Equal(2024, body.GetProperty("taxYear").GetInt32());
+            Assert.Equal(1, body.GetProperty("totalParcelCount").GetInt32());
+            Assert.Equal(6, body.GetProperty("steps").GetArrayLength());
+            Assert.Equal(6, steps.Count);
+            Assert.All(steps, step =>
+            {
+                Assert.Equal(Guid.Parse(County), step.CountyId);
+                Assert.Equal(2024, step.TaxYear);
+                Assert.Equal("blocked", step.Status); // No levy truth is seeded or fabricated.
+            });
+            Assert.Equal(new[] { "ASSESSOR_SIGNOFF", "DATA_VALIDATION", "DOR_ACCEPTANCE", "DOR_SUBMISSION", "RATIO_STUDY", "SUPERVISORY_REVIEW" },
+                steps.Select(step => step.StepCode).Order().ToArray());
+        }
+    }
+
     [Fact]
     public async Task Context_UsesStoredYearsAndStudies_WithoutCalendarDefault()
     {
@@ -733,7 +779,7 @@ public sealed class DossierWorkflowsTests
             {
                 var tables = new HashSet<string> { "Counties", "Properties", "CountyStudySessions", "CountyScenarios", "CountyCohorts",
                     "ValuationRecords", "DossierPackets", "DossierPacketItems", "DossierDocuments", "DossierEvidenceItems",
-                    "DossierCustodyEvents", "Appeals", "CertificationSteps", "AuditLogs", "DossierWorkflowRecords" };
+                    "DossierCustodyEvents", "Appeals", "CertificationSteps", "LevyCertifications", "AuditLogs", "DossierWorkflowRecords" };
                 var script = db.Database.GenerateCreateScript();
                 var createdTables = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
                 foreach (Match statement in Regex.Matches(script, "CREATE TABLE \"([^\"]+)\"[\\s\\S]*?;"))
@@ -764,6 +810,15 @@ public sealed class DossierWorkflowsTests
             builder.Services.AddScoped(_ => Db());
             builder.Services.AddDossierMutationRuntime(builder.Configuration, builder.Environment);
             builder.Services.AddSingleton(Mock.Of<ICostForgeService>());
+            builder.Services.AddScoped<ICertificationService>(provider => new CertificationService(
+                provider.GetRequiredService<TerraFusionDbContext>(), provider.GetRequiredService<ILogger<CertificationService>>()));
+            // Unused Dais constructor dependencies only; certification HTTP requests execute the real service above.
+            builder.Services.AddSingleton(Mock.Of<IExemptionService>());
+            builder.Services.AddSingleton(Mock.Of<IAppealService>());
+            builder.Services.AddSingleton(Mock.Of<INoticeService>());
+            builder.Services.AddSingleton(Mock.Of<IQueueService>());
+            builder.Services.AddSingleton(Mock.Of<TerraFusion.Core.Auth.IRequestUserContextAccessor>());
+            builder.Services.AddSingleton(Mock.Of<TerraFusion.API.Services.IGovernedToolAuditService>());
             if (PacketDecision != null) builder.Services.AddSingleton(PacketDecision);
             builder.Services.AddControllers().AddApplicationPart(typeof(DossierController).Assembly);
             builder.Services.AddAuthentication("synthetic").AddScheme<AuthenticationSchemeOptions, SyntheticAuthentication>("synthetic", _ => { });

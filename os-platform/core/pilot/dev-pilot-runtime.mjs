@@ -6,6 +6,7 @@ import { createServer } from "node:http";
 import path from "node:path";
 import fs from "node:fs";
 import { fileURLToPath } from "node:url";
+import Ajv from "ajv";
 import { ToolRegistry, ToolRunner, registerPhase84Handlers, registerR1Handlers } from "./index.js";
 import { bindCountyWorkflowAuthorization, registerCountyWorkflowHandlers } from "./countyWorkflowHandlers.js";
 import { traceService } from "../trace/index.js";
@@ -148,6 +149,17 @@ function normalizeToolParams(params) {
 }
 
 const REQUIRED_PARAMS_ERROR_CODE = "PARAMS_REQUIRED_MISSING";
+const WORKFLOW_SCHEMA_ERROR_CODE = "PARAMS_SCHEMA_INVALID";
+const workflowToolIds = new Set([
+  "generate_morning_brief", "open_appeal_packet", "export_equalization_package", "export_audit_bundle",
+]);
+const workflowParamsValidators = new Map();
+
+function workflowParamsValid(toolId, params) {
+  if (!workflowToolIds.has(toolId)) return true;
+  // Fail closed if the canonical schema was not compiled; never coerce or remove input.
+  return workflowParamsValidators.get(toolId)?.(params) === true;
+}
 
 function collectMissingRequiredParams(tool, params) {
   const required = Array.isArray(tool?.paramsSchema?.required)
@@ -212,6 +224,12 @@ function buildValidateEnvelope({
 
 function buildPilotExecutionContext(req, body) {
   const normalizedParams = normalizeToolParams(body.params);
+  const roleHeader = req.headers["x-role"];
+  const roles = (Array.isArray(roleHeader) ? roleHeader : [roleHeader])
+    .filter(value => typeof value === "string")
+    .flatMap(value => value.split(",").map(role => role.trim()).filter(Boolean));
+  // Preserve all supplied roles. A bearer caller with no roles must fail closed.
+  if (roles.length === 0 && !req.headers.authorization) roles.push("appraiser");
   const requestedMode = typeof body.mode === "string" && body.mode.trim().length > 0
     ? body.mode
     : firstHeaderValue(req.headers["x-mode"], "pilot");
@@ -219,7 +237,7 @@ function buildPilotExecutionContext(req, body) {
   const context = {
     countyId: firstHeaderValue(req.headers["x-county-id"], "benton"),
     userId: firstHeaderValue(req.headers["x-user-id"], "dev-user"),
-    roles: [firstHeaderValue(req.headers["x-role"], "appraiser")],
+    roles,
     mode: requestedMode,
     parcelId: body.parcelId || normalizedParams.parcelId,
     dossierId: body.dossierId,
@@ -593,6 +611,12 @@ async function getCompareRunner() {
     compareRunnerPromise = (async () => {
       const registry = new ToolRegistry();
       await registry.initialize(path.resolve(REPO_ROOT, "tools/registry/terrapilot.tools.json"));
+      const ajv = new Ajv({ strict: true, coerceTypes: false, removeAdditional: false, useDefaults: false });
+      for (const toolId of workflowToolIds) {
+        const tool = registry.getTool(toolId);
+        if (!tool?.paramsSchema) throw new Error(`Missing workflow schema: ${toolId}`);
+        workflowParamsValidators.set(toolId, ajv.compile(tool.paramsSchema));
+      }
       sharedRegistry = registry;
       const runner = new ToolRunner({ registry });
       registerPhase84Handlers(runner);
@@ -1022,6 +1046,15 @@ const server = createServer(async (req, res) => {
           return;
         }
 
+        if (!workflowParamsValid(toolId, body.params)) {
+          writeJson(res, 200, buildInvokeEnvelope({
+            ok: false, correlationId: `err-${Date.now()}`, result: null,
+            error: "Workflow params do not match the declared schema.",
+            errorCode: WORKFLOW_SCHEMA_ERROR_CODE, traceEventId: null,
+          }));
+          return;
+        }
+
         // Mode mismatch short-circuit: ensure request mode aligns with manifest
         if (body.mode && tool.mode && body.mode !== tool.mode) {
           writeJson(
@@ -1147,6 +1180,13 @@ const server = createServer(async (req, res) => {
       }
 
       const normalizedParams = normalizeToolParams(body.params);
+      if (!workflowParamsValid(toolId, body.params)) {
+        writeJson(res, 200, buildValidateEnvelope({
+          valid: false, violations: [`[${WORKFLOW_SCHEMA_ERROR_CODE}] Workflow params do not match the declared schema.`],
+          tool: { toolId }, preflight: null,
+        }));
+        return;
+      }
       const executionContext = buildPilotExecutionContext(req, body);
 
       const validation = runner.validate({

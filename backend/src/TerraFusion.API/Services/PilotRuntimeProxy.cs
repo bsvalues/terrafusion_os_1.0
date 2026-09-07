@@ -45,12 +45,33 @@ public static class PilotRuntimeProxy
         try
         {
             using var response = await factory.CreateClient("county-workflow-pilot-runtime").SendAsync(message, timeout.Token);
+            var content = await response.Content.ReadAsStringAsync(timeout.Token);
+            if (operation == "tools" && response.IsSuccessStatusCode)
+            {
+                // Discovery must expose only the same bounded IDs this bridge can dispatch.
+                using var inventory = JsonDocument.Parse(content);
+                if (inventory.RootElement.ValueKind != JsonValueKind.Object ||
+                    !inventory.RootElement.TryGetProperty("tools", out var tools) || tools.ValueKind != JsonValueKind.Array)
+                    return Failure("PILOT_RUNTIME_RESPONSE_INVALID", StatusCodes.Status503ServiceUnavailable);
+                var supported = new List<JsonElement>();
+                foreach (var tool in tools.EnumerateArray())
+                {
+                    if (tool.ValueKind != JsonValueKind.Object || !tool.TryGetProperty("toolId", out var id) || id.ValueKind != JsonValueKind.String)
+                        return Failure("PILOT_RUNTIME_RESPONSE_INVALID", StatusCodes.Status503ServiceUnavailable);
+                    if (WorkflowTools.Contains(id.GetString()!)) supported.Add(tool);
+                }
+                content = JsonSerializer.Serialize(new { count = supported.Count, tools = supported });
+            }
             return new ContentResult
             {
                 StatusCode = (int)response.StatusCode,
                 ContentType = "application/json",
-                Content = await response.Content.ReadAsStringAsync(timeout.Token),
+                Content = content,
             };
+        }
+        catch (JsonException)
+        {
+            return Failure("PILOT_RUNTIME_RESPONSE_INVALID", StatusCodes.Status503ServiceUnavailable);
         }
         catch (Exception ex) when (ex is HttpRequestException or OperationCanceledException)
         {
