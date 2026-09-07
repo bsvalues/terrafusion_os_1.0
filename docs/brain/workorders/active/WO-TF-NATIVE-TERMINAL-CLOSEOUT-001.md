@@ -92,6 +92,8 @@ Only these paths may change in this Work Order:
 ```json
 {
   "id": "WO-TF-NATIVE-TERMINAL-CLOSEOUT-001",
+  "task": "Implement native TerraCanon historical product terminal closeout",
+  "suite": "OS Core",
   "risk": "R3",
   "allowed_files": [
     "os-platform/core/canon/release-closeout.mjs",

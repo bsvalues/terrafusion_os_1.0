@@ -1,0 +1,391 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "terrafusion.product-terminal-receipt.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "productId",
+    "repository",
+    "terminalState",
+    "releaseId",
+    "releaseSha",
+    "deploymentId",
+    "machine",
+    "authority",
+    "acceptedAt",
+    "countyPackage",
+    "deployment",
+    "assurance",
+    "recovery",
+    "acceptanceEvidence",
+    "limitations",
+    "statewideLaunchComplete",
+    "productionDeployed",
+    "receiptId",
+    "contentSha256"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "terrafusion.product-terminal-receipt.v1"
+    },
+    "productId": {
+      "const": "terrafusion"
+    },
+    "repository": {
+      "const": "bsvalues/terrafusion_os_1.0"
+    },
+    "terminalState": {
+      "const": "WACO_2026_TERRAFUSION_RELEASE_READY"
+    },
+    "releaseId": {
+      "const": "waco-2026"
+    },
+    "releaseSha": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "deploymentId": {
+      "const": "omen-waco-2026"
+    },
+    "machine": {
+      "const": "OMEN"
+    },
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "surface",
+        "mode",
+        "profileId",
+        "profileSha256"
+      ],
+      "properties": {
+        "surface": {
+          "const": "terracanon"
+        },
+        "mode": {
+          "const": "local-maintenance"
+        },
+        "profileId": {
+          "const": "waco-2026"
+        },
+        "profileSha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      }
+    },
+    "acceptedAt": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+    },
+    "countyPackage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "countyId",
+        "county",
+        "countyCode",
+        "classification",
+        "sales",
+        "computableRatios",
+        "manifestSha256",
+        "salesSha256",
+        "sourcePayloadSha256"
+      ],
+      "properties": {
+        "countyId": {
+          "const": "b7c9fef3-cf48-45f4-967f-d3b9d265876d"
+        },
+        "county": {
+          "const": "Benton"
+        },
+        "countyCode": {
+          "const": "005"
+        },
+        "classification": {
+          "const": "COUNTY_DERIVED_CONFERENCE_SAFE_BOUNDED_READ_ONLY_NOT_DOR_CERTIFIED"
+        },
+        "sales": {
+          "const": 50
+        },
+        "computableRatios": {
+          "const": 0
+        },
+        "manifestSha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "salesSha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "sourcePayloadSha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      }
+    },
+    "deployment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "scope",
+        "containers",
+        "restart",
+        "restorationProven"
+      ],
+      "properties": {
+        "scope": {
+          "type": "string",
+          "minLength": 1
+        },
+        "containers": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "name",
+              "id",
+              "image"
+            ],
+            "properties": {
+              "name": {
+                "type": "string",
+                "minLength": 1
+              },
+              "id": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              },
+              "image": {
+                "type": "string",
+                "pattern": "^sha256:[0-9a-f]{64}$"
+              }
+            }
+          },
+          "minItems": 6,
+          "maxItems": 6,
+          "uniqueItems": true
+        },
+        "restart": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "name",
+              "id",
+              "image",
+              "before",
+              "after"
+            ],
+            "properties": {
+              "name": {
+                "type": "string",
+                "minLength": 1
+              },
+              "id": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              },
+              "image": {
+                "type": "string",
+                "pattern": "^sha256:[0-9a-f]{64}$"
+              },
+              "before": {
+                "type": "string",
+                "minLength": 1
+              },
+              "after": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "minItems": 4,
+          "maxItems": 4,
+          "uniqueItems": true
+        },
+        "restorationProven": {
+          "const": true
+        }
+      }
+    },
+    "assurance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "executionVerdict",
+        "sealVerdict",
+        "originalSealStatus",
+        "executionReviewSha256",
+        "sealReviewSha256"
+      ],
+      "properties": {
+        "executionVerdict": {
+          "const": "INDEPENDENT_F_BOUNDED_EXECUTION_PASS"
+        },
+        "sealVerdict": {
+          "const": "SEAL_REVIEW_PASS"
+        },
+        "originalSealStatus": {
+          "const": "FINAL_RC_LOCAL_SEAL_PENDING_INDEPENDENT_F"
+        },
+        "executionReviewSha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "sealReviewSha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      }
+    },
+    "recovery": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "rollbackContainers",
+        "archive",
+        "databaseBackup",
+        "recoveryTested"
+      ],
+      "properties": {
+        "rollbackContainers": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "name",
+              "id",
+              "image",
+              "original"
+            ],
+            "properties": {
+              "name": {
+                "type": "string",
+                "minLength": 1
+              },
+              "id": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              },
+              "image": {
+                "type": "string",
+                "pattern": "^sha256:[0-9a-f]{64}$"
+              },
+              "original": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "minItems": 3,
+          "maxItems": 3,
+          "uniqueItems": true
+        },
+        "archive": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "sha256",
+            "bytes",
+            "imageCount",
+            "restoredFromArchive"
+          ],
+          "properties": {
+            "sha256": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            "bytes": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "imageCount": {
+              "const": 6
+            },
+            "restoredFromArchive": {
+              "const": false
+            }
+          }
+        },
+        "databaseBackup": {
+          "const": false
+        },
+        "recoveryTested": {
+          "const": false
+        }
+      }
+    },
+    "acceptanceEvidence": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "root",
+          "path",
+          "sha256",
+          "bytes"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "root": {
+            "enum": [
+              "source",
+              "evidence"
+            ]
+          },
+          "path": {
+            "type": "string",
+            "pattern": "^(?![/\\\\])(?!.*(?:^|/)\\.\\.?(/|$))(?!.*[:\\\\])[A-Za-z0-9_./-]+$"
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "bytes": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      },
+      "minItems": 16,
+      "maxItems": 256,
+      "uniqueItems": true
+    },
+    "limitations": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 8,
+      "maxItems": 64,
+      "uniqueItems": true
+    },
+    "statewideLaunchComplete": {
+      "const": false
+    },
+    "productionDeployed": {
+      "const": false
+    },
+    "receiptId": {
+      "type": "string",
+      "pattern": "^tf-product-terminal:[0-9a-f]{64}$"
+    },
+    "contentSha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  }
+}
