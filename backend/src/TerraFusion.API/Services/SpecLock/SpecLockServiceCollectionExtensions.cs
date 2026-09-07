@@ -77,6 +77,12 @@ public static class SpecLockServiceCollectionExtensions
         {
           AllowAutoRedirect = false,
         });
+    services.AddHttpClient("CanonLocal")
+        .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
+        {
+          AllowAutoRedirect = false,
+          UseProxy = false,
+        });
     services.AddSingleton<IPublicReceiptProofService, PublicReceiptProofService>();
 
     // 🔒 FINAL SEAL: Citizen-verifiable state reports

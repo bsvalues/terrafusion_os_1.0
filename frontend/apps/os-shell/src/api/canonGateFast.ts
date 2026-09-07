@@ -1,4 +1,5 @@
 import { getViteEnv } from '@/env/getViteEnv';
+import { canonConferenceFetch } from './canonConferenceTransport';
 
 export interface CanonGateFastResponse {
   tool: string;
@@ -29,7 +30,7 @@ function failureResponse(error: string): CanonGateFastResponse {
 
 export async function runCanonGateFast(): Promise<CanonGateFastResponse> {
   try {
-    const response = await fetch(`${API_BASE_URL}/pilot/canon/gatefast`, {
+    const response = await canonConferenceFetch('gatefast', `${API_BASE_URL}/pilot/canon/gatefast`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({}),

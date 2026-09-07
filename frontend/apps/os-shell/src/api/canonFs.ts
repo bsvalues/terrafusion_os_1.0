@@ -13,6 +13,8 @@ import {
   getTraceContext,
 } from '../services/terraTrace';
 
+import { canonConferenceFetch } from './canonConferenceTransport';
+
 const PILOT_BASE = '/pilot';
 
 /** Shared JSON request headers */
@@ -40,7 +42,7 @@ export interface CorpusStatusResponse {
 
 export async function fetchCorpusStatus(): Promise<CorpusStatusResponse> {
   try {
-    const res = await fetch(`${PILOT_BASE}/canon/corpus`, {
+    const res = await canonConferenceFetch('corpus', `${PILOT_BASE}/canon/corpus`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: '{}',
