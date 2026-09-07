@@ -10,6 +10,7 @@ import { ToolRegistry, ToolRunner, registerPhase84Handlers, registerR1Handlers }
 import { traceService } from "../trace/index.js";
 import { preInvokeCheck, buildExecutionContextFromRequest } from "./src/router/index.mjs";
 import { runAcademyLocalOpsJourney } from "./localops-academy-journey.mjs";
+import { checkCanonConferenceRequest } from "./canon-conference-boundary.mjs";
 
 /** Alias for traceService.emit — used by Canon tool routes */
 const traceEvent = traceService?.emit?.bind(traceService);
@@ -861,17 +862,42 @@ async function handleSummarizeSalesCompsRationale(body) {
   }
 }
 
+let conferenceRequestsInFlight = 0;
 const server = createServer(async (req, res) => {
+  const conferenceOnly = process.env.TF_CANON_CONFERENCE_ONLY === "1";
+  let requestUrl;
+  try {
+    requestUrl = new URL(req.url || "/", `http://localhost:${PILOT_PORT}`);
+  } catch {
+    writeJson(res, 400, { ok: false, overallOk: false, error: "INVALID_REQUEST_TARGET" });
+    return;
+  }
+  const method = req.method || "GET";
+  const pathname = requestUrl.pathname;
+  if (conferenceOnly) {
+    const boundary = checkCanonConferenceRequest({
+      enabled: true,
+      expectedToken: process.env.LOCALOPS_PILOT_HOST_TOKEN,
+      method: req.method,
+      pathname,
+      headers: req.headers,
+    });
+    if (boundary.status !== 200) {
+      writeJson(res, boundary.status, { ok: false, overallOk: false, error: boundary.reason });
+      return;
+    }
+    if (conferenceRequestsInFlight >= 2) {
+      writeJson(res, 429, { ok: false, overallOk: false, error: "CANON_LOCAL_CAPACITY_BUSY" });
+      return;
+    }
+    conferenceRequestsInFlight++;
+  }
   setCors(res);
   if (req.method === "OPTIONS") {
     res.statusCode = 204;
     res.end();
     return;
   }
-
-  const method = req.method || "GET";
-  const requestUrl = new URL(req.url || "/", `http://localhost:${PILOT_PORT}`);
-  const pathname = requestUrl.pathname;
 
   try {
     if (method === "GET" && pathname === "/pilot/health") {
@@ -4848,6 +4874,10 @@ const server = createServer(async (req, res) => {
       error: "INTERNAL_ERROR",
       message: err?.message ?? String(err),
     });
+  } finally {
+    // Client disconnects must neither leak a lease nor release it while the
+    // underlying fixed command is still running.
+    if (conferenceOnly) conferenceRequestsInFlight--;
   }
 });
 
