@@ -15,7 +15,7 @@ import htmlWorker from 'monaco-editor/esm/vs/language/html/html.worker?worker';
 import jsonWorker from 'monaco-editor/esm/vs/language/json/json.worker?worker';
 import tsWorker from 'monaco-editor/esm/vs/language/typescript/ts.worker?worker';
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
-import { fetchCodeActions, fetchCompletions, fetchDocumentHighlights, fetchDocumentLinks, fetchFindReferences, fetchFoldingRanges, fetchGitDiff, fetchGotoDefinition, fetchHoverInfo, fetchInlayHints, fetchRenameSymbol, fetchSignatureHelp, type CodeActionKind, type CompletionKind, type LineMarker } from '../api/canonFs';
+import { fetchCodeActions, fetchCompletions, fetchDocumentHighlights, fetchDocumentLinks, fetchFindReferences, fetchFoldingRanges, fetchGitDiff, fetchGotoDefinition, fetchHoverInfo, fetchInlayHints, fetchRenameSymbol, fetchSignatureHelp, type CompletionKind, type LineMarker } from '../api/canonFs';
 import { detectLanguage } from './canonLanguage';
 import { CANON_THEME_NAME, CANON_THEMES, type CanonThemeId } from './canonEditorTheme';
 
@@ -417,12 +417,6 @@ export const CanonEditor: React.FC<CanonEditorProps> = React.memo(function Canon
       });
 
       // Register code action provider (backed by canon_code_actions tool)
-      const codeActionKindMap: Record<CodeActionKind, monaco.languages.CodeActionKind> = {
-        quickfix: monaco.languages.CodeActionKind.QuickFix,
-        refactor: monaco.languages.CodeActionKind.Refactor,
-        'refactor.extract': monaco.languages.CodeActionKind.RefactorExtract,
-        source: monaco.languages.CodeActionKind.Source,
-      };
       const codeActionDisposable = monaco.languages.registerCodeActionProvider('*', {
         provideCodeActions: async (model, range) => {
           const content = model.getValue();
@@ -441,7 +435,7 @@ export const CanonEditor: React.FC<CanonEditorProps> = React.memo(function Canon
             return {
               actions: resp.actions.map((act) => ({
                 title: act.title,
-                kind: codeActionKindMap[act.kind]?.value ?? act.kind,
+                kind: act.kind,
                 isPreferred: act.isPreferred ?? false,
                 diagnostics: [],
                 edit: act.edit
