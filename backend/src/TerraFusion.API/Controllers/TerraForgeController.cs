@@ -6,6 +6,7 @@ using TerraFusion.API.Services;
 using TerraFusion.Core.Counties;
 using TerraFusion.Core.Interfaces;
 using TerraFusion.Core.Sync;
+using TerraFusion.Core.Sync.Doctrine;
 using ComparableSaleEntity = TerraFusion.Core.Entities.ComparableSale;
 using TerraFusion.Data;
 using ICountyResolver = TerraFusion.Core.Services.ICountyResolver;
@@ -31,6 +32,7 @@ public class TerraForgeController : ControllerBase
     private readonly ICountyResolver _countyResolver;
     private readonly AuthenticatedCanonicalCountyContextProvider? _authenticatedCountyContext;
     private readonly ICountyReadOnlySalesSyncService? _countyReadOnlySalesSync;
+    private readonly IRatioQualificationPolicy? _ratioQualificationPolicy;
 
     public TerraForgeController(
         TerraFusionDbContext db,
@@ -39,7 +41,8 @@ public class TerraForgeController : ControllerBase
         ISaleQualificationService saleQual,
         ICountyResolver countyResolver,
         AuthenticatedCanonicalCountyContextProvider? authenticatedCountyContext = null,
-        ICountyReadOnlySalesSyncService? countyReadOnlySalesSync = null)
+        ICountyReadOnlySalesSyncService? countyReadOnlySalesSync = null,
+        IRatioQualificationPolicy? ratioQualificationPolicy = null)
     {
         _db             = db;
         _logger         = logger;
@@ -48,6 +51,7 @@ public class TerraForgeController : ControllerBase
         _countyResolver = countyResolver;
         _authenticatedCountyContext = authenticatedCountyContext;
         _countyReadOnlySalesSync = countyReadOnlySalesSync;
+        _ratioQualificationPolicy = ratioQualificationPolicy;
     }
 
     private async Task<(Guid CountyId, IActionResult? Error)> TryResolveCountyScopeAsync(string? countyId, CancellationToken ct)
@@ -1102,6 +1106,175 @@ public class TerraForgeController : ControllerBase
             page,
             pageSize,
             items
+        });
+    }
+
+    // ── Washington study-readiness advisory ─────────────────────────────
+
+    /// <summary>
+    /// Read-only Washington DoR study-readiness advisory for the authenticated
+    /// county. This reports observed DOR_RATIO policy coverage and raw sale
+    /// counts only; it is not a DoR certification or a qualification mutation.
+    /// </summary>
+    [HttpGet("ratio-study/readiness")]
+    public async Task<IActionResult> GetRatioStudyReadiness(
+        [FromQuery] int taxYear = 2026,
+        [FromQuery] string? countyId = null,
+        CancellationToken ct = default)
+    {
+        var countyScope = await TryResolveAuthenticatedCountyScopeAsync(countyId, ct);
+        if (countyScope.Error is not null) return countyScope.Error;
+
+        var countyName = await _db.Counties
+            .AsNoTracking()
+            .Where(c => c.Id == countyScope.CountyId)
+            .Select(c => c.Name)
+            .SingleOrDefaultAsync(ct);
+
+        if (!WashingtonCountyRegistry.TryResolve(countyName, out var countyIdentity))
+        {
+            return Ok(new
+            {
+                county = countyName,
+                taxYear,
+                studyName = "DOR_RATIO",
+                state = "unavailable",
+                advisoryOnly = true,
+                certificationClaim = false,
+                candidateSales = 0,
+                reviewedSales = 0,
+                qualifiedSales = 0,
+                unreviewedSales = 0,
+                policyCoverage = "countyIdentityUnavailable",
+                note = "No canonical Washington county identity is available for the authenticated county.",
+            });
+        }
+
+        if (_ratioQualificationPolicy is null)
+        {
+            return Ok(new
+            {
+                county = countyIdentity.Name,
+                countySlug = countyIdentity.Slug,
+                taxYear,
+                studyName = "DOR_RATIO",
+                state = "unavailable",
+                advisoryOnly = true,
+                certificationClaim = false,
+                candidateSales = 0,
+                reviewedSales = 0,
+                qualifiedSales = 0,
+                unreviewedSales = 0,
+                policyCoverage = "serviceUnavailable",
+                note = "The DOR_RATIO doctrine policy service is unavailable; no readiness conclusion is made.",
+            });
+        }
+
+        RatioPolicyEvaluation policyProbe;
+        try
+        {
+            // A non-null sentinel distinguishes "a rule exists" from the
+            // policy service's intentional Reviewed=false result for null code.
+            policyProbe = await _ratioQualificationPolicy.EvaluateAsync(
+                countyIdentity.Slug,
+                "DOR_RATIO",
+                taxYear,
+                "__waco_policy_probe__",
+                ct);
+        }
+        catch (Exception ex) when (ex is not OperationCanceledException)
+        {
+            _logger.LogWarning(ex,
+                "[TerraForge] DOR_RATIO readiness policy lookup unavailable for county={County} year={Year}",
+                countyIdentity.Slug, taxYear);
+
+            return Ok(new
+            {
+                county = countyIdentity.Name,
+                countySlug = countyIdentity.Slug,
+                taxYear,
+                studyName = "DOR_RATIO",
+                state = "unavailable",
+                advisoryOnly = true,
+                certificationClaim = false,
+                candidateSales = 0,
+                reviewedSales = 0,
+                qualifiedSales = 0,
+                unreviewedSales = 0,
+                policyCoverage = "lookupFailed",
+                note = "The DOR_RATIO doctrine policy could not be read; no readiness conclusion is made.",
+            });
+        }
+
+        var lookbackStart = new DateTime(taxYear - 2, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        var lookbackEnd = new DateTime(taxYear, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        var candidateSales = await _db.ComparableSales
+            .AsNoTracking()
+            .Where(s => s.CountyId == countyScope.CountyId)
+            .Where(s => s.SalesYear == taxYear
+                     || (s.SalesYear == null
+                         && s.SaleDate >= lookbackStart
+                         && s.SaleDate < lookbackEnd))
+            .Where(s => s.SuppressOnRatioRptCd != "T")
+            .Where(s => s.IncludeNoCalc != true)
+            .Select(s => new
+            {
+                saleYear = s.SalesYear ?? taxYear,
+                dorRatioCode = s.RawRatioTypeCd,
+            })
+            .ToListAsync(ct);
+
+        var evaluationCache = new Dictionary<(int SaleYear, string? Code), RatioPolicyEvaluation>();
+        var reviewedSales = 0;
+        var qualifiedSales = 0;
+        var unreviewedSales = 0;
+
+        foreach (var sale in candidateSales)
+        {
+            var key = (sale.saleYear, sale.dorRatioCode);
+            if (!evaluationCache.TryGetValue(key, out var evaluation))
+            {
+                evaluation = await _ratioQualificationPolicy.EvaluateAsync(
+                    countyIdentity.Slug,
+                    "DOR_RATIO",
+                    sale.saleYear,
+                    sale.dorRatioCode,
+                    ct);
+                evaluationCache[key] = evaluation;
+            }
+
+            if (evaluation.Reviewed)
+            {
+                reviewedSales++;
+                if (evaluation.Qualified) qualifiedSales++;
+            }
+            else
+            {
+                unreviewedSales++;
+            }
+        }
+
+        var policyCoverage = policyProbe.Reviewed ? "present" : "missing";
+        var state = policyProbe.Reviewed
+            ? qualifiedSales > 0 ? "qualifiedSalesObserved" : "noQualifiedSales"
+            : "policyUnavailable";
+
+        return Ok(new
+        {
+            county = countyIdentity.Name,
+            countySlug = countyIdentity.Slug,
+            taxYear,
+            studyName = "DOR_RATIO",
+            state,
+            advisoryOnly = true,
+            certificationClaim = false,
+            candidateSales = candidateSales.Count,
+            reviewedSales,
+            qualifiedSales,
+            unreviewedSales,
+            policyCoverage,
+            sourceField = "sale.sl_ratio_type_cd",
+            note = "Read-only TerraFusion advisory; this does not constitute Washington Department of Revenue certification.",
         });
     }
 
