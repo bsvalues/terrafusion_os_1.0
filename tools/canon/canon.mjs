@@ -63,6 +63,7 @@ function help() {
       "  gatefast   Run minimal safe gates (doctor + naming lint if available)",
       "  ping       Run read-only TerraPilot ping slice",
       "  conference Validate and print the local-only WACO conference workspace",
+      "  release    Verify, record or show a historical native product receipt",
       "",
       "Examples:",
       "  pnpm canon:doctor",
@@ -214,6 +215,13 @@ async function main() {
   }
 
   const flags = argv.slice(1);
+  if (cmd === "release") {
+    const { runReleaseCloseout } = await import("./release-closeout.mjs");
+    const { code, result } = await runReleaseCloseout(flags);
+    print(JSON.stringify(result, null, 2) + "\n");
+    process.exitCode = code;
+    return;
+  }
   const dry = flags.includes("--dry");
   const json = flags.includes("--json");
   const passthrough = flags.filter((f) => f !== "--json");

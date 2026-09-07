@@ -1,0 +1,21 @@
+{
+  "schemaVersion": "terrafusion.product-terminal-catalog.v1",
+  "productId": "terrafusion",
+  "repository": "bsvalues/terrafusion_os_1.0",
+  "releases": [
+    {
+      "releaseId": "waco-2026",
+      "terminalState": "WACO_2026_TERRAFUSION_RELEASE_READY",
+      "releaseSha": "35e32462d9758473e3a193388cd50786dc63cc17",
+      "deploymentId": "omen-waco-2026",
+      "receipt": {
+        "path": "os-platform/core/canon/release-closeout/receipts/waco-2026.product-terminal.json",
+        "sha256": "20c517e6dbd9b3d9c6dffffa007c6f8951d697168f6e063141c0c545ce70c8ca"
+      },
+      "profile": {
+        "path": "os-platform/core/canon/release-closeout/waco-2026.policy.json",
+        "sha256": "de0ab7b5432534996c533abc00c8d1b6db5998bf591b0fe4aa94ceb1cf88aa35"
+      }
+    }
+  ]
+}
