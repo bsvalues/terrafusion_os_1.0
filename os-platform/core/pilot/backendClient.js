@@ -57,6 +57,8 @@ async function backendPost(path, body, options) {
     try {
         const url = requestUrl(path, options);
         const headers = { 'Content-Type': 'application/json' };
+        if (options?.correlationId && /^[A-Za-z0-9._-]{1,128}$/.test(options.correlationId))
+            headers['X-Correlation-ID'] = options.correlationId;
         if (options?.token) {
             headers['Authorization'] = `Bearer ${options.token}`;
         }
@@ -86,6 +88,8 @@ async function backendGet(path, options) {
     try {
         const url = requestUrl(path, options);
         const headers = { 'Accept': 'application/json' };
+        if (options?.correlationId && /^[A-Za-z0-9._-]{1,128}$/.test(options.correlationId))
+            headers['X-Correlation-ID'] = options.correlationId;
         if (options?.token) {
             headers['Authorization'] = `Bearer ${options.token}`;
         }

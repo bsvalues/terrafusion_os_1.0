@@ -7,7 +7,8 @@
 
 import React, { useEffect, useState } from 'react';
 import { useDossierWorkflowContext, useWorkflowAction, type DossierWorkflowContext } from '../../hooks/useDossierWorkflowContext';
-import { WorkflowContextPicker } from '../../components/dossier/WorkflowContextPicker';
+import { WorkflowContextPicker } from '../../components/workflow/WorkflowContextPicker';
+import { WorkflowActionEvidence } from '../../components/workflow/WorkflowEvidence';
 import { WorkflowExportResult } from '../../components/dossier/WorkflowExportResult';
 import { requireWorkflowExport, type WorkflowExport } from '../../services/dossierWorkflowService';
 import {
@@ -328,14 +329,9 @@ function RollReadinessContent({ workflow }: { workflow: DossierWorkflowContext }
             </button>
           )}
 
-          {certState.status === 'error' && (
-            <div className="rounded-md bg-destructive/20 px-3 py-2 text-xs text-red-400" data-testid="cert-gate-error">
-              <span className="font-semibold">Export failed:</span> {certState.error?.message}
-              {certState.correlationId && (
-                <span className="ml-2 opacity-60">({certState.correlationId})</span>
-              )}
-            </div>
-          )}
+          <div data-testid={certState.status === 'error' ? 'cert-gate-error' : undefined}>
+            <WorkflowActionEvidence state={certState} context={workflow} />
+          </div>
 
           {certState.status === 'success' && certState.result && (
             <WorkflowExportResult result={certState.result} context={workflow} />

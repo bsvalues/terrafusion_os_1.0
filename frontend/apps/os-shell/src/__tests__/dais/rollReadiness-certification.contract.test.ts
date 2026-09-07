@@ -3,6 +3,7 @@
  * Pilot client and export retrieval. Only HTTP and browser download APIs are doubled.
  */
 import { createElement } from 'react';
+import { Buffer } from 'node:buffer';
 import { createHash, webcrypto } from 'node:crypto';
 import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -34,9 +35,21 @@ let denied: boolean;
 let downloads: Blob[];
 let downloadNames: string[];
 let invoke: () => Promise<Response>;
-const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json' } });
+function jsonResponse(body: string, status = 200) {
+  const response = new Response(body, { status, headers: { 'Content-Type': 'application/json' } });
+  // Node 20 Web Crypto rejects jsdom-realm ArrayBuffers. Adapt HTTP fixture bytes,
+  // not digest: retain real Web Crypto and the exact UTF-8 body (no pooled bytes).
+  response.arrayBuffer = async () => {
+    const bytes = Buffer.from(body, 'utf8');
+    return bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength) as ArrayBuffer;
+  };
+  return response;
+}
+const json = (body: unknown, status = 200) => jsonResponse(JSON.stringify(body), status);
 
 beforeEach(() => {
+  vi.stubGlobal('matchMedia', (media: string) => ({ matches: false, media, onchange: null,
+    addListener() {}, removeListener() {}, addEventListener() {}, removeEventListener() {}, dispatchEvent: () => true }));
   localStorage.clear();
   localStorage.setItem('authToken', token);
   localStorage.setItem('tf.session.dev', JSON.stringify({ countyId: 'stale-county', userId: 'stale-user', role: 'admin' }));
@@ -67,7 +80,7 @@ beforeEach(() => {
     }]);
     if (url.pathname === '/api/pilot/invoke') return invoke();
     if (url.pathname === exported.payloadRef) return json(exported);
-    if (url.pathname === exported.downloadUrl) return new Response(tampered ? '{"records":["tampered"]}' : content, { headers: { 'Content-Type': 'application/json' } });
+    if (url.pathname === exported.downloadUrl) return jsonResponse(tampered ? '{"records":["tampered"]}' : content);
     return json({ error: 'Unexpected test request' }, 404);
   });
 });
@@ -177,6 +190,9 @@ describe('RollReadiness persisted certification export gates', () => {
     expect(result).not.toHaveTextContent('checklist');
     await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'Inspect output' })); });
     await screen.findByText('Retrieved bytes verified against the saved SHA-256.');
+    const evidence = screen.getByRole('region', { name: 'Action evidence: workflow_export.retrieve' });
+    expect(evidence).toHaveTextContent(/Client elapsed: [\d.]+ ms/);
+    expect(evidence).toHaveTextContent(/Correlation ID:/);
     expect(screen.getByLabelText('Export JSON').textContent).toBe(content);
     const reads = requests.filter(r => r.url.pathname === exported.payloadRef || r.url.pathname === exported.downloadUrl);
     expect(reads.map(r => r.url.pathname)).toEqual([exported.payloadRef, exported.downloadUrl]);

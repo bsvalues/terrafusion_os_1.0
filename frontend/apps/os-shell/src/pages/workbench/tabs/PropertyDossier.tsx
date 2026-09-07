@@ -1,5 +1,6 @@
 import { useDossierWorkflowContext, useWorkflowAction } from '../../../hooks/useDossierWorkflowContext';
-import { WorkflowContextPicker } from '../../../components/dossier/WorkflowContextPicker';
+import { WorkflowContextPicker } from '../../../components/workflow/WorkflowContextPicker';
+import { WorkflowActionEvidence } from '../../../components/workflow/WorkflowEvidence';
 import { WorkflowExportResult } from '../../../components/dossier/WorkflowExportResult';
 import { WorkflowAppealPacketResult } from '../../../components/dossier/WorkflowAppealPacketResult';
 import { requireWorkflowAppealPacket, type WorkflowAppealPacket, requireWorkflowExport, type WorkflowExport } from '../../../services/dossierWorkflowService';
@@ -514,8 +515,8 @@ export const PropertyDossier: React.FC = () => {
   }, []);
 
   const recordWorkflow = (toolId: string, response: { correlationId?: string } | undefined) => {
-    if (response) setInvocationHistory(prev => [{ id: crypto.randomUUID(), toolId, status: 'success',
-      correlationId: response.correlationId || 'unknown', timestamp: new Date() }, ...prev]);
+    if (response?.correlationId) setInvocationHistory(prev => [{ id: response.correlationId!, toolId, status: 'success',
+      correlationId: response.correlationId!, timestamp: new Date() }, ...prev.filter(item => item.id !== response.correlationId)]);
   };
   const handleOpenAppealPacket = async () => {
     if (!appealPacketId.trim()) return;
@@ -781,7 +782,7 @@ export const PropertyDossier: React.FC = () => {
               {appealPacketState.correlationId && <div className='text-xs tf-text-dim flex items-center gap-2'>Ref: <code className='tf-suite-accent-text font-mono'>{appealPacketState.correlationId.slice(0, 16)}...</code> <WorkbenchSourceBadge source='live' /></div>}
             </div>
           )}
-          {appealPacketState.status === 'error' && appealPacketState.error && <ErrorDisplay error={{ message: appealPacketState.error.message, errorCode: appealPacketState.error.code, correlationId: appealPacketState.correlationId }} />}
+          <WorkflowActionEvidence state={appealPacketState} context={workflow} />
         </BentoCard>
 
         <BentoCard title='County Exports' actions={<span className='text-xs tf-badge-warning px-2 py-0.5 rounded'>write_low</span>}>
@@ -804,8 +805,8 @@ export const PropertyDossier: React.FC = () => {
           {auditBundleState.status === 'success' && auditBundleState.result && (
             <WorkflowExportResult result={auditBundleState.result} context={workflow} />
           )}
-          {equalizationState.status === 'error' && equalizationState.error && <ErrorDisplay error={{ message: equalizationState.error.message, errorCode: equalizationState.error.code, correlationId: equalizationState.correlationId }} />}
-          {auditBundleState.status === 'error' && auditBundleState.error && <ErrorDisplay error={{ message: auditBundleState.error.message, errorCode: auditBundleState.error.code, correlationId: auditBundleState.correlationId }} />}
+          <WorkflowActionEvidence state={equalizationState} context={workflow} />
+          <WorkflowActionEvidence state={auditBundleState} context={workflow} />
         </BentoCard>
       </BentoGrid>
 

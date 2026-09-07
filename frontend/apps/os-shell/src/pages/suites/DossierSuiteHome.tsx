@@ -19,7 +19,8 @@
 import { useEffect, useState } from 'react';
 import { useDossierWorkflowContext, useWorkflowAction } from '../../hooks/useDossierWorkflowContext';
 import { requireWorkflowAppealPacket, type WorkflowAppealPacket, requireWorkflowExport, type WorkflowExport } from '../../services/dossierWorkflowService';
-import { WorkflowContextPicker } from '../../components/dossier/WorkflowContextPicker';
+import { WorkflowContextPicker } from '../../components/workflow/WorkflowContextPicker';
+import { WorkflowActionEvidence } from '../../components/workflow/WorkflowEvidence';
 import { WorkflowExportResult } from '../../components/dossier/WorkflowExportResult';
 import { WorkflowAppealPacketResult } from '../../components/dossier/WorkflowAppealPacketResult';
 import { ParcelContextBanner } from '../../components/workbench/ParcelContextBanner';
@@ -484,11 +485,7 @@ export default function DossierSuiteHome({ metadata }: DossierSuiteHomeProps = {
                 {packetState.status === 'success' && packetState.result && (
                   <WorkflowAppealPacketResult result={packetState.result} context={workflow} />
                 )}
-                {packetState.status === 'error' && (
-                  <div className="mt-4 rounded-lg border px-4 py-3 text-sm" style={{ borderColor: 'hsl(var(--tf-suite-dossier) / 0.24)', background: 'hsl(var(--tf-suite-dossier) / 0.08)', color: 'hsl(var(--tf-suite-dossier))' }}>
-                    {packetState.error?.message}
-                  </div>
-                )}
+                <WorkflowActionEvidence state={packetState} context={workflow} />
               </div>
 
               <div
@@ -539,11 +536,8 @@ export default function DossierSuiteHome({ metadata }: DossierSuiteHomeProps = {
                   {auditBundleState.status === 'success' && auditBundleState.result && <WorkflowExportResult context={workflow} result={auditBundleState.result} />}
                 </div>
 
-                {(equalizationState.status === 'error' || auditBundleState.status === 'error') && (
-                  <div className="mt-4 rounded-lg border px-4 py-3 text-sm" style={{ borderColor: 'hsl(var(--tf-suite-dossier) / 0.24)', background: 'hsl(var(--tf-suite-dossier) / 0.08)', color: 'hsl(var(--tf-suite-dossier))' }}>
-                    {equalizationState.error?.message || auditBundleState.error?.message}
-                  </div>
-                )}
+                <WorkflowActionEvidence state={equalizationState} context={workflow} />
+                <WorkflowActionEvidence state={auditBundleState} context={workflow} />
               </div>
             </div>
           </div>

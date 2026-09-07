@@ -191,6 +191,7 @@ export interface PilotInvokeResponse {
   errorCode?: string;
   traceEventId?: string;
   status?: number;
+  metrics?: { operation: string; correlationId: string; durationMs: number; measurement: string; environment: string; ok: boolean; errorCode: string | null };
 }
 
 /** Request to validate a tool invocation */
@@ -400,20 +401,34 @@ export async function invokePilotTool(request: PilotInvokeRequest): Promise<Pilo
     if (supervisorApproval) wireBody.supervisorApproval = supervisorApproval;
   }
 
-  const response = await fetch(url, {
-    method: 'POST',
-    headers: buildPilotHeaders(),
-    body: JSON.stringify(wireBody),
-  });
-
-  // Always parse JSON response even for errors
-  const data = (await response.json()) as PilotInvokeResponse;
-
-  // Propagate HTTP status so callers can distinguish 401/403/500
-  data.status = response.status;
-
-  // Return the response directly - it contains ok: true/false
-  return data;
+  let correlationId: string = crypto.randomUUID();
+  let status: number | undefined;
+  const countyWorkflow = ['generate_morning_brief', 'open_appeal_packet', 'export_equalization_package', 'export_audit_bundle'].includes(request.toolId);
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: { ...buildPilotHeaders(), 'X-Correlation-ID': correlationId },
+      body: JSON.stringify(wireBody),
+    });
+    status = response.status;
+    const returnedCid = countyWorkflow ? response.headers.get('X-Correlation-ID') : null;
+    if (returnedCid && /^[A-Za-z0-9._-]{1,128}$/.test(returnedCid)) correlationId = returnedCid;
+    const data = (await response.json()) as PilotInvokeResponse;
+    if (countyWorkflow) {
+      if (!data || typeof data !== 'object' || Array.isArray(data)) throw new Error('Invalid Pilot response.');
+      if (typeof data.correlationId !== 'string' || !/^[A-Za-z0-9._-]{1,128}$/.test(data.correlationId)) data.correlationId = correlationId;
+    }
+    data.status = response.status;
+    return data;
+  } catch (error) {
+    if (!countyWorkflow) throw error;
+    // Retain the CID actually sent/returned. A missing response does not prove execution failed or a trace exists.
+    return { ok: false, correlationId, status,
+      errorCode: status === undefined ? 'NETWORK_ERROR' : status >= 400 ? `HTTP_${status}` : 'RESPONSE_ERROR',
+      error: status === 401 || status === 403 ? 'Workflow access denied.'
+        : `${error instanceof Error ? error.message : 'Workflow response unavailable.'} Execution outcome may be unknown; reopen saved work before retrying.`,
+    };
+  }
 }
 
 /**
@@ -426,6 +441,7 @@ export async function invokePilotTool(request: PilotInvokeRequest): Promise<Pilo
 export async function invokeTool(request: PilotInvokeRequest): Promise<{
   success: boolean;
   correlationId: string;
+  metrics?: PilotInvokeResponse['metrics'];
   result?: {
     toolId: string;
     output: string;
@@ -442,6 +458,7 @@ export async function invokeTool(request: PilotInvokeRequest): Promise<{
     return {
       success: true,
       correlationId: response.correlationId,
+      metrics: response.metrics,
       result: {
         toolId: request.toolId,
         output:
@@ -452,6 +469,7 @@ export async function invokeTool(request: PilotInvokeRequest): Promise<{
     return {
       success: false,
       correlationId: response.correlationId,
+      metrics: response.metrics,
       error: {
         code: response.errorCode || 'UNKNOWN_ERROR',
         message: response.error || 'Tool invocation failed',

@@ -15,7 +15,13 @@ export default defineConfig({
   timeout: 180_000,
   expect: { timeout: 20_000 },
   outputDir: resolve(root, 'output/playwright/county-context'),
-  reporter: [['list']],
+  reporter: [
+    ['list'],
+    [
+      'json',
+      { outputFile: resolve(root, 'output/playwright/county-context/acceptance-results.json') },
+    ],
+  ],
   use: {
     ...devices['Desktop Chrome'],
     viewport: { width: 1440, height: 1000 },

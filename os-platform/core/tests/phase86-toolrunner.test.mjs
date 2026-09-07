@@ -90,6 +90,18 @@ function assertErrorCode(err, code) {
 }
 
 describe('Phase 8.6 ToolRunner - canonical execution', () => {
+  it('preserves a safe ingress correlation ID through execution and both trace events', async () => {
+    const { runner, traceService } = await setupRunner();
+    const fx = loadToolFixture('explain_model_inputs', 'happy');
+    const correlationId = 'tf-county-workflow-test-123';
+    const result = await runner.execute({ toolId: 'explain_model_inputs', params: fx.params,
+      context: { ...BENTON_MUSE, correlationId } });
+    assert.equal(result.ok, true);
+    assert.equal(result.correlationId, correlationId);
+    const events = traceService.getByCorrelationId(correlationId);
+    assert.deepEqual(events.map(event => event.type).sort(), ['tool_completed', 'tool_invoked']);
+  });
+
   it('canonical appraiser role works beside legacy issuer roles without granting aliases authority', async () => {
     const { runner } = await setupRunner();
     const fx = loadToolFixture('explain_model_inputs', 'happy');

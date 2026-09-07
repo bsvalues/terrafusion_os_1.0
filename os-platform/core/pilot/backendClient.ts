@@ -61,6 +61,8 @@ export interface BackendCallOptions {
   token?: string;
   /** Actual caller credentials: local application only, never follow redirects. */
   callerAuthorization?: boolean;
+  /** Correlation metadata only; never used as authorization. */
+  correlationId?: string;
 }
 
 function requestUrl(path: string, options?: BackendCallOptions): string {
@@ -90,6 +92,8 @@ export async function backendPost<T = unknown>(
   try {
     const url = requestUrl(path, options);
     const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+    if (options?.correlationId && /^[A-Za-z0-9._-]{1,128}$/.test(options.correlationId))
+      headers['X-Correlation-ID'] = options.correlationId;
     if (options?.token) {
       headers['Authorization'] = `Bearer ${options.token}`;
     }
@@ -122,6 +126,8 @@ export async function backendGet<T = unknown>(
   try {
     const url = requestUrl(path, options);
     const headers: Record<string, string> = { 'Accept': 'application/json' };
+    if (options?.correlationId && /^[A-Za-z0-9._-]{1,128}$/.test(options.correlationId))
+      headers['X-Correlation-ID'] = options.correlationId;
     if (options?.token) {
       headers['Authorization'] = `Bearer ${options.token}`;
     }

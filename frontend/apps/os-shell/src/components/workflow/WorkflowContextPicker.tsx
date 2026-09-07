@@ -1,8 +1,9 @@
 import { useId, useState } from 'react';
-import { useWorkflowGeneration, type DossierWorkflowContext } from '../../hooks/useDossierWorkflowContext';
+import { useWorkflowGeneration, useWorkflowTask, type DossierWorkflowContext } from '../../hooks/useDossierWorkflowContext';
 import { dossierWorkflowService, requireWorkflowExport, type WorkflowExport } from '../../services/dossierWorkflowService';
-import { WorkflowExportResult } from './WorkflowExportResult';
+import { WorkflowExportResult } from '../dossier/WorkflowExportResult';
 import { getToken } from '../../auth/authStorage';
+import { WorkflowActionEvidence, WorkflowReceiptView } from './WorkflowEvidence';
 
 export function WorkflowContextPicker({ context, drafts = true }: { context: DossierWorkflowContext; drafts?: boolean }) {
   const id = useId();
@@ -12,18 +13,17 @@ export function WorkflowContextPicker({ context, drafts = true }: { context: Dos
   const exportId = (selectedExport.epoch === epoch && context.exports.some(item => item.packageRef === selectedExport.id) ? selectedExport.id : context.exports[0]?.packageRef) ?? '';
   const [opened, setOpened] = useState<{ epoch: number; result?: WorkflowExport; error?: string; loading?: boolean }>({ epoch });
   const current = opened.epoch === epoch ? opened : { epoch };
+  const task = useWorkflowTask(context, 'workflow_export.reopen', JSON.stringify([epoch, exportId]));
   const reopen = async () => {
     if (!context.ready || !exportId || current.loading) return;
     const ticket = generation.current.value;
     setOpened({ epoch: ticket, loading: true });
-    try {
-      const result = requireWorkflowExport(await dossierWorkflowService.export(context.token, context.countyId, exportId), context.countyId, context.taxYear!);
-      if (ticket !== generation.current.value || getToken() !== context.token) return;
+    const response = await task.run(async observe => {
+      const result = requireWorkflowExport(await dossierWorkflowService.export(context.token, context.countyId, exportId, observe), context.countyId, context.taxYear!);
       if (result.packageRef !== exportId) throw new Error('The saved export identity changed.');
-      setOpened({ epoch: ticket, result });
-    } catch (error) {
-      if (ticket === generation.current.value) setOpened({ epoch: ticket, error: error instanceof Error ? error.message : 'Saved export unavailable.' });
-    }
+      return result;
+    });
+    if (ticket === generation.current.value && getToken() === context.token) setOpened({ epoch: ticket, result: response?.result });
   };
   return <section aria-label="Persisted workflow context" className="my-4 space-y-3 rounded-lg border p-4">
     <p className="text-sm">County: {context.countyId || 'Unavailable'}</p>
@@ -42,7 +42,7 @@ export function WorkflowContextPicker({ context, drafts = true }: { context: Dos
         </select>
       </label>
       <button type="button" onClick={() => void context.saveDraft()} disabled={!context.ready || !context.studyId || context.saving}>{context.saving ? 'Saving snapshot…' : 'Save study snapshot'}</button>
-      {context.saveError && <p role="alert">{context.saveError}</p>}
+      <WorkflowActionEvidence state={context.saveEvidence} context={context} />
       <label htmlFor={`${id}-draft`} className="block">Saved draft
         <select id={`${id}-draft`} value={context.draft?.draftId ?? ''} onChange={event => context.selectDraft(event.target.value)} className="tf-input ml-2">
           {!context.drafts.length && <option value="">No saved draft</option>}
@@ -50,6 +50,7 @@ export function WorkflowContextPicker({ context, drafts = true }: { context: Dos
         </select>
       </label>
       {context.draft && <p className="text-xs">Immutable revision: {context.draft.revision} · {context.draft.artifactCount} source artifacts</p>}
+      {context.draft && <WorkflowReceiptView record={context.draft} context={context} label="Saved draft receipt" />}
     </>}
     {drafts && context.exports.length > 0 && <div className="space-y-2">
       <label htmlFor={`${id}-export`}>Saved export
@@ -59,7 +60,7 @@ export function WorkflowContextPicker({ context, drafts = true }: { context: Dos
       </label>{' '}
       <button type="button" disabled={!context.ready || current.loading} onClick={() => void reopen()}>Reopen saved export</button>
       {current.loading && <p role="status">Opening saved export…</p>}
-      {current.error && <p role="alert">{current.error}</p>}
+      <WorkflowActionEvidence state={task.state} context={context} />
       {current.result && <WorkflowExportResult result={current.result} context={context} />}
     </div>}
     {!context.loading && (!context.years.length || (drafts && !context.studies.length)) && context.authenticated &&

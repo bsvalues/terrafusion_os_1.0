@@ -167,7 +167,7 @@ public sealed class PilotController : ControllerBase
         return Ok(new
         {
             success = false,
-            correlationId = $"stub-{Guid.NewGuid():N}",
+            correlationId = HttpContext.Items["CorrelationId"] as string ?? $"stub-{Guid.NewGuid():N}",
             error = new
             {
                 code = "PILOT_RUNTIME_OFFLINE",
@@ -177,7 +177,15 @@ public sealed class PilotController : ControllerBase
         });
     }
 
-    /// <summary>Stub: returns empty traces when pilot runtime is offline.</summary>
+    /// <summary>Returns authenticated workflow trace metadata, or an explicit unavailable response.</summary>
+    [HttpGet("trace/{correlationId}")]
+    public async Task<IActionResult> GetWorkflowTrace(string correlationId)
+    {
+        return await PilotRuntimeProxy.ForwardAsync(Request, $"trace/{correlationId}")
+            ?? StatusCode(503, new { code = "PILOT_RUNTIME_OFFLINE", error = "Execution trace is unavailable." });
+    }
+
+    /// <summary>Legacy list fallback; does not fabricate workflow execution evidence.</summary>
     [HttpGet("traces")]
     [AllowAnonymous]
     public IActionResult GetTraces()

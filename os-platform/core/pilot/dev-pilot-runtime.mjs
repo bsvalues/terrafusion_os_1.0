@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import { spawn } from "node:child_process";
-import { timingSafeEqual } from "node:crypto";
+import { randomUUID, timingSafeEqual } from "node:crypto";
 import { createServer } from "node:http";
 import path from "node:path";
 import fs from "node:fs";
@@ -9,6 +9,7 @@ import { fileURLToPath } from "node:url";
 import Ajv from "ajv";
 import { ToolRegistry, ToolRunner, registerPhase84Handlers, registerR1Handlers } from "./index.js";
 import { bindCountyWorkflowAuthorization, registerCountyWorkflowHandlers } from "./countyWorkflowHandlers.js";
+import { createCountyWorkflowTrace } from "./countyWorkflowTrace.mjs";
 import { traceService } from "../trace/index.js";
 import { preInvokeCheck, buildExecutionContextFromRequest } from "./src/router/index.mjs";
 import { runAcademyLocalOpsJourney } from "./localops-academy-journey.mjs";
@@ -235,6 +236,8 @@ function buildPilotExecutionContext(req, body) {
     : firstHeaderValue(req.headers["x-mode"], "pilot");
 
   const context = {
+    correlationId: /^[A-Za-z0-9._-]{1,128}$/.test(firstHeaderValue(req.headers['x-correlation-id'], ''))
+      ? firstHeaderValue(req.headers['x-correlation-id'], '') : randomUUID(),
     countyId: firstHeaderValue(req.headers["x-county-id"], "benton"),
     userId: firstHeaderValue(req.headers["x-user-id"], "dev-user"),
     roles,
@@ -605,6 +608,21 @@ function normalizeSalesCompsInput(body) {
 
 let compareRunnerPromise = null;
 let sharedRegistry = null;
+const countyWorkflowTrace = process.env.TF_COUNTY_WORKFLOW_TRACE_PATH
+  ? createCountyWorkflowTrace(process.env.TF_COUNTY_WORKFLOW_TRACE_PATH) : null;
+const countyWorkflowAuthority = countyWorkflowTrace ?? createCountyWorkflowTrace();
+let countyWorkflowRunner = null;
+
+async function authenticateCountyWorkflow(req) {
+  const result = await countyWorkflowAuthority.authenticate(req);
+  if (result.status === 200) {
+    req.headers["x-county-id"] = result.principal.countyId;
+    req.headers["x-user-id"] = result.principal.userId;
+    req.headers["x-role"] = result.principal.roles.join(",");
+    delete req.headers["x-roles"];
+  }
+  return result;
+}
 
 async function getCompareRunner() {
   if (!compareRunnerPromise) {
@@ -619,6 +637,10 @@ async function getCompareRunner() {
       }
       sharedRegistry = registry;
       const runner = new ToolRunner({ registry });
+      if (countyWorkflowTrace) {
+        countyWorkflowRunner = new ToolRunner({ registry, trace: countyWorkflowTrace.service });
+        registerCountyWorkflowHandlers(countyWorkflowRunner);
+      }
       registerPhase84Handlers(runner);
       // Always use real fail-closed workflows. Missing backend/auth is not a demo fallback.
       registerCountyWorkflowHandlers(runner);
@@ -989,16 +1011,30 @@ const server = createServer(async (req, res) => {
 
     // POST /pilot/invoke — invoke a tool (pilotApi.invokePilotTool)
     if (method === "POST" && pathname === "/pilot/invoke") {
+      const invocationStarted = performance.now();
       const body = await readJsonBody(req);
       const { toolId } = body;
+      const suppliedCid = firstHeaderValue(req.headers["x-correlation-id"], "");
+      const requestCorrelationId = /^[A-Za-z0-9._-]{1,128}$/.test(suppliedCid) ? suppliedCid : randomUUID();
+      req.headers["x-correlation-id"] = requestCorrelationId;
+      const sendInvoke = (status, envelope) => {
+        if (!workflowToolIds.has(toolId)) return writeJson(res, status, envelope);
+        const metrics = {
+          operation: toolId, correlationId: envelope.correlationId,
+          durationMs: Math.max(0, performance.now() - invocationStarted),
+          measurement: "pilot-request-to-response", environment: process.env.NODE_ENV || "development",
+          ok: envelope.ok === true, errorCode: envelope.ok === true ? null : envelope.errorCode,
+        };
+        // Record logical tool failures even when their transport status is HTTP 200.
+        console.info(JSON.stringify({ event: "county_workflow_execution", ...metrics }));
+        return writeJson(res, status, { ...envelope, metrics });
+      };
 
       if (!toolId || typeof toolId !== "string") {
-        writeJson(
-          res,
-          400,
+        sendInvoke(400,
           buildInvokeEnvelope({
             ok: false,
-            correlationId: `err-${Date.now()}`,
+            correlationId: requestCorrelationId,
             result: null,
             error: "toolId is required",
             errorCode: "VALIDATION",
@@ -1012,12 +1048,10 @@ const server = createServer(async (req, res) => {
       const tool = sharedRegistry.getTool(toolId);
 
       if (!tool) {
-        writeJson(
-          res,
-          404,
+        sendInvoke(404,
           buildInvokeEnvelope({
             ok: false,
-            correlationId: `err-${Date.now()}`,
+            correlationId: requestCorrelationId,
             result: null,
             error: `Tool not found: ${toolId}`,
             errorCode: "NOT_FOUND",
@@ -1031,12 +1065,10 @@ const server = createServer(async (req, res) => {
         const normalizedParams = normalizeToolParams(body.params);
         const missingRequiredParams = collectMissingRequiredParams(tool, normalizedParams);
         if (missingRequiredParams.length > 0) {
-          writeJson(
-            res,
-            200,
+          sendInvoke(200,
             buildInvokeEnvelope({
               ok: false,
-              correlationId: `err-${Date.now()}`,
+              correlationId: requestCorrelationId,
               result: null,
               error: requiredParamsViolation(missingRequiredParams),
               errorCode: REQUIRED_PARAMS_ERROR_CODE,
@@ -1047,8 +1079,8 @@ const server = createServer(async (req, res) => {
         }
 
         if (!workflowParamsValid(toolId, body.params)) {
-          writeJson(res, 200, buildInvokeEnvelope({
-            ok: false, correlationId: `err-${Date.now()}`, result: null,
+          sendInvoke(200, buildInvokeEnvelope({
+            ok: false, correlationId: requestCorrelationId, result: null,
             error: "Workflow params do not match the declared schema.",
             errorCode: WORKFLOW_SCHEMA_ERROR_CODE, traceEventId: null,
           }));
@@ -1057,12 +1089,10 @@ const server = createServer(async (req, res) => {
 
         // Mode mismatch short-circuit: ensure request mode aligns with manifest
         if (body.mode && tool.mode && body.mode !== tool.mode) {
-          writeJson(
-            res,
-            200,
+          sendInvoke(200,
             buildInvokeEnvelope({
               ok: false,
-              correlationId: `err-${Date.now()}`,
+              correlationId: requestCorrelationId,
               result: null,
               error: `Mode mismatch: tool requires ${tool.mode}, got ${body.mode}`,
               errorCode: "MODE_MISMATCH",
@@ -1072,17 +1102,28 @@ const server = createServer(async (req, res) => {
           return;
         }
 
+        // Direct loopback callers must not forge durable trace identity through headers.
+        if (workflowToolIds.has(toolId)) {
+          const authorization = await authenticateCountyWorkflow(req);
+          if (authorization.status !== 200) {
+            sendInvoke(authorization.status, buildInvokeEnvelope({
+              ok: false, correlationId: requestCorrelationId, result: null,
+              error: "Workflow caller authorization is unavailable or denied.",
+              errorCode: authorization.body.error, traceEventId: null,
+            }));
+            return;
+          }
+        }
+
         // Policy pre-invoke check
         const execCtx = buildExecutionContextFromRequest(req, body);
         const policy = preInvokeCheck(tool, execCtx, { ...normalizedParams, supervisorApproval: body.supervisorApproval, reasonCode: body.reasonCode || body.reason });
         if (!policy.allowed) {
           const code = policy.errors[0] || 'PERMISSION_DENIED';
-          writeJson(
-            res,
-            200,
+          sendInvoke(200,
             buildInvokeEnvelope({
               ok: false,
-              correlationId: `err-${Date.now()}`,
+              correlationId: requestCorrelationId,
               result: null,
               error: `policy_violation: ${policy.errors.join('; ')}`,
               errorCode: code,
@@ -1092,19 +1133,30 @@ const server = createServer(async (req, res) => {
           return;
         }
 
-        const result = await runner.execute({
+        const selectedRunner = workflowToolIds.has(toolId) && countyWorkflowRunner ? countyWorkflowRunner : runner;
+        const result = await selectedRunner.execute({
           toolId,
           params: normalizedParams,
           context: buildPilotExecutionContext(req, body),
         });
 
+        if (workflowToolIds.has(toolId) && countyWorkflowTrace) {
+          try { await countyWorkflowTrace.flush(); }
+          catch {
+            sendInvoke(503, buildInvokeEnvelope({
+              ok: false, correlationId: result.correlationId || requestCorrelationId, result: null,
+              error: "Execution trace is unavailable. The operation may have completed; reopen saved work before retrying.",
+              errorCode: "COUNTY_WORKFLOW_TRACE_UNAVAILABLE", traceEventId: null,
+            }));
+            return;
+          }
+        }
+
         if (result.ok === false) {
-          writeJson(
-            res,
-            200,
+          sendInvoke(200,
             buildInvokeEnvelope({
               ok: false,
-              correlationId: result.correlationId || `corr-${Date.now()}`,
+              correlationId: result.correlationId || requestCorrelationId,
               result: null,
               error: result.error || "Tool execution failed. See trace with the correlationId for details.",
               errorCode: result.errorCode || "EXECUTION_FAILED",
@@ -1114,12 +1166,10 @@ const server = createServer(async (req, res) => {
           return;
         }
 
-        writeJson(
-          res,
-          200,
+        sendInvoke(200,
           buildInvokeEnvelope({
             ok: true,
-            correlationId: result.correlationId || `corr-${Date.now()}`,
+            correlationId: result.correlationId || requestCorrelationId,
             result: result.result ?? null,
             error: null,
             errorCode: null,
@@ -1127,12 +1177,10 @@ const server = createServer(async (req, res) => {
           })
         );
       } catch (err) {
-        writeJson(
-          res,
-          200,
+        sendInvoke(200,
           buildInvokeEnvelope({
             ok: false,
-            correlationId: `err-${Date.now()}`,
+            correlationId: requestCorrelationId,
             result: null,
             error: "Tool execution failed. See trace with the correlationId for details.",
             errorCode: "EXECUTION_FAILED",
@@ -1187,6 +1235,15 @@ const server = createServer(async (req, res) => {
         }));
         return;
       }
+      if (workflowToolIds.has(toolId)) {
+        const authorization = await authenticateCountyWorkflow(req);
+        if (authorization.status !== 200) {
+          writeJson(res, authorization.status, buildValidateEnvelope({
+            valid: false, violations: [authorization.body.error], tool: { toolId }, preflight: null,
+          }));
+          return;
+        }
+      }
       const executionContext = buildPilotExecutionContext(req, body);
 
       const validation = runner.validate({
@@ -1238,6 +1295,14 @@ const server = createServer(async (req, res) => {
           },
         })
       );
+      return;
+    }
+
+    // Opt-in durable workflow reads must never fall through to legacy anonymous memory readers.
+    if (countyWorkflowTrace && method === "GET" && (pathname === "/pilot/trace" || pathname.startsWith("/pilot/trace/"))) {
+      const suffix = pathname === "/pilot/trace" ? undefined : pathname.slice("/pilot/trace/".length);
+      const result = await countyWorkflowTrace.queryAuthenticated(req, suffix);
+      writeJson(res, result.status, result.body);
       return;
     }
 

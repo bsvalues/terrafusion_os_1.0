@@ -49,7 +49,7 @@ const generateMorningBriefRealHandler = async (params, context) => {
     if (!params.role?.trim())
         throw new Error('A briefing role is required.');
     const query = new URLSearchParams({ county: params.county, taxYear: String(params.taxYear), role: params.role });
-    return scopedResult((0, backendClient_js_1.unwrapBackend)(await (0, backendClient_js_1.backendGet)(`${base}/morning-brief?${query}`, { token, callerAuthorization: true }), 'Briefing unavailable'), params.county, params.taxYear);
+    return scopedResult((0, backendClient_js_1.unwrapBackend)(await (0, backendClient_js_1.backendGet)(`${base}/morning-brief?${query}`, { token, callerAuthorization: true, correlationId: context.correlationId }), 'Briefing unavailable'), params.county, params.taxYear);
 };
 exports.generateMorningBriefRealHandler = generateMorningBriefRealHandler;
 const openAppealPacketRealHandler = async (params, context) => {
@@ -60,7 +60,7 @@ const openAppealPacketRealHandler = async (params, context) => {
     const parcelId = params.parcelId ?? context.parcelId;
     if (parcelId)
         query.set('parcelId', parcelId);
-    return scopedResult((0, backendClient_js_1.unwrapBackend)(await (0, backendClient_js_1.backendGet)(`${base}/appeals/${params.appealId}/packet?${query}`, { token, callerAuthorization: true }), 'Appeal packet unavailable'), params.county, params.taxYear);
+    return scopedResult((0, backendClient_js_1.unwrapBackend)(await (0, backendClient_js_1.backendGet)(`${base}/appeals/${params.appealId}/packet?${query}`, { token, callerAuthorization: true, correlationId: context.correlationId }), 'Appeal packet unavailable'), params.county, params.taxYear);
 };
 exports.openAppealPacketRealHandler = openAppealPacketRealHandler;
 const exportEqualizationPackageRealHandler = async (params, context) => {
@@ -72,7 +72,7 @@ const exportEqualizationPackageRealHandler = async (params, context) => {
         county: params.county, draftId: params.draftVersion, revision: params.revision,
         taxYear: params.taxYear, requestId: params.requestId,
         confirmed: context.confirmation, reasonCode: context.reasonCode,
-    }, { token, callerAuthorization: true }), 'Equalization export failed');
+    }, { token, callerAuthorization: true, correlationId: context.correlationId }), 'Equalization export failed');
     return scopedResult(result, params.county, params.taxYear);
 };
 exports.exportEqualizationPackageRealHandler = exportEqualizationPackageRealHandler;
@@ -88,7 +88,7 @@ const exportAuditBundleRealHandler = async (params, context) => {
         county: params.county, taxYear: params.taxYear, bundleScope: scope,
         subjectId: params.subjectId, requestId: params.requestId,
         confirmed: context.confirmation, reasonCode: context.reasonCode,
-    }, { token, callerAuthorization: true }), 'Evidence bundle export failed');
+    }, { token, callerAuthorization: true, correlationId: context.correlationId }), 'Evidence bundle export failed');
     return scopedResult(result, params.county, params.taxYear);
 };
 exports.exportAuditBundleRealHandler = exportAuditBundleRealHandler;

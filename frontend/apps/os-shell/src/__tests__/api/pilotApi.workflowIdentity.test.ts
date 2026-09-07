@@ -1,9 +1,32 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { invokePilotTool } from '../../api/pilotApi';
+import { invokePilotTool, invokeTool } from '../../api/pilotApi';
 
 describe('Pilot caller identity', () => {
   beforeEach(() => localStorage.clear());
   afterEach(() => vi.unstubAllGlobals());
+
+  it.each(['network', 'empty401', 'invalidJson', 'unsafeHeader'])('retains the actual request or valid response CID when %s loses the envelope', async failure => {
+    let sentCid = '';
+    vi.stubGlobal('fetch', async (_: unknown, init: RequestInit) => {
+      sentCid = new Headers(init.headers).get('X-Correlation-ID')!;
+      if (failure === 'network') throw new TypeError('Network disconnected');
+      return new Response('', { status: failure === 'empty401' ? 401 : 200,
+        headers: { 'X-Correlation-ID': failure === 'unsafeHeader' ? 'unsafe/cid' : 'tf-returned-cid' } });
+    });
+    const response = await invokeTool({ toolId: 'export_equalization_package', params: {} });
+    expect(response.success).toBe(false);
+    expect(response.correlationId).toBe(failure === 'network' || failure === 'unsafeHeader' ? sentCid : 'tf-returned-cid');
+    expect(response.metrics).toBeUndefined();
+    expect(response.error?.code).toBe(failure === 'network' ? 'NETWORK_ERROR' : failure === 'empty401' ? 'HTTP_401' : 'RESPONSE_ERROR');
+  });
+
+  it.each([true, false])('preserves measured runtime evidence for normalized success=%s', async ok => {
+    const metrics = { operation: 'generate_morning_brief', correlationId: 'corr-measured', durationMs: 12.5, measurement: 'pilot-request-to-response', environment: 'development', ok, errorCode: ok ? null : 'PERMISSION_DENIED' };
+    vi.stubGlobal('fetch', async () => new Response(JSON.stringify({ ok, correlationId: metrics.correlationId, result: ok ? { brief: {} } : undefined, errorCode: metrics.errorCode, error: ok ? undefined : 'Denied', metrics })));
+    const response = await invokeTool({ toolId: 'generate_morning_brief', params: {}, mode: 'muse' });
+    expect(response.success).toBe(ok);
+    expect(response.metrics).toEqual(metrics);
+  });
 
   it.each(['generate_morning_brief', 'open_appeal_packet', 'export_equalization_package', 'export_audit_bundle'])('preserves all Development issuer roles for %s without substituting an office or role', async toolId => {
     // Mirrors the released Development-only issuer shape; not proof of a live-issued JWT.
@@ -22,6 +45,7 @@ describe('Pilot caller identity', () => {
     expect(headers.get('x-user-id')).toBe('development-operator');
     expect(headers.get('Authorization') === `Bearer ${token}`).toBe(true);
     expect(headers.has('x-office-id')).toBe(false);
+    expect(headers.get('X-Correlation-ID')).toMatch(/^[0-9a-f-]{36}$/);
   });
 
   it.each([

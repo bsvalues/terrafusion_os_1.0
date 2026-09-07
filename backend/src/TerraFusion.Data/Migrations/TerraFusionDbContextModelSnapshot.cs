@@ -5583,8 +5583,6 @@ namespace TerraFusion.Data.Migrations
                     b.Property<int?>("TaxYear").HasColumnType("integer");
                     b.Property<Guid?>("AppealId").HasColumnType("uuid");
                     b.HasIndex("AppealId");
-                    b.HasIndex("CountyId", "AppealId");
-                    b.HasIndex("CountyId", "TaxYear");
                     b.HasOne("TerraFusion.Core.Entities.Appeal", null).WithMany().HasForeignKey("AppealId").OnDelete(DeleteBehavior.Restrict);
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -5636,6 +5634,9 @@ namespace TerraFusion.Data.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CountyId", "ParcelId");
+
+                    b.HasIndex("CountyId", "AppealId");
+                    b.HasIndex("CountyId", "TaxYear");
 
                     b.ToTable("DossierPackets");
                 });

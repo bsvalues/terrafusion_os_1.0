@@ -15,6 +15,7 @@ const appeal = 'cccccccc-cccc-cccc-cccc-cccccccccccc';
 const parcel = 'SYNTHETIC-WORKFLOW';
 const directory = resolve(root, '.tmp/county-context');
 const database = resolve(directory, `workflow-${process.pid}-${randomUUID()}.db`);
+const tracePath = database.replace(/\.db$/, '-trace.jsonl');
 const dotnet = process.env.OS_COUNTY_CONTEXT_DOTNET ?? 'dotnet';
 const signingKey = randomBytes(64).toString('hex');
 let baseURL: string;
@@ -220,6 +221,22 @@ async function devToken(): Promise<string> {
   return token;
 }
 
+async function startPilot(): Promise<void> {
+  pilot = spawn(process.execPath, ['os-platform/core/pilot/dev-pilot-runtime.mjs'], {
+    cwd: root,
+    windowsHide: true,
+    detached: process.platform !== 'win32',
+    stdio: ['ignore', 'pipe', 'pipe'],
+    env: environment({
+      TF_PILOT_PORT: String(pilotPort),
+      TF_API_BASE_URL: baseURL,
+      TF_COUNTY_WORKFLOW_TRACE_PATH: tracePath,
+      NODE_ENV: 'development',
+    }),
+  });
+  await ready(pilot, `http://127.0.0.1:${pilotPort}/pilot/health`);
+}
+
 async function open(page: Page, path: string, token: string): Promise<void> {
   await page.addInitScript(value => localStorage.setItem('authToken', value), token);
   const contextResponse = page.waitForResponse(
@@ -232,7 +249,12 @@ async function open(page: Page, path: string, token: string): Promise<void> {
   ).toBeVisible();
 }
 
-async function invokeFromUI(page: Page, toolId: string, action: () => Promise<unknown>) {
+async function invokeFromUI(
+  page: Page,
+  toolId: string,
+  action: () => Promise<unknown>,
+  expectedSuccess = true
+) {
   const pending = page.waitForResponse(
     response =>
       response.url() === `${baseURL}/api/pilot/invoke` &&
@@ -251,8 +273,74 @@ async function invokeFromUI(page: Page, toolId: string, action: () => Promise<un
   expect(headers['x-office-id']).toBeUndefined();
   expect(!!headers['x-user-id']).toBe(true);
   const envelope = await response.json();
-  expect(envelope.ok, envelope.error ?? 'Actual Pilot invocation failed').toBe(true);
-  return { output: envelope.result, wire: response.request().postDataJSON() };
+  expect(envelope.ok, envelope.error ?? 'Actual Pilot invocation failed').toBe(expectedSuccess);
+  expect(envelope.correlationId).toBe(headers['x-correlation-id']);
+  expect(response.headers()['x-correlation-id']).toBe(envelope.correlationId);
+  expect(envelope.metrics).toMatchObject({
+    operation: toolId,
+    correlationId: envelope.correlationId,
+    measurement: 'pilot-request-to-response',
+    environment: 'development',
+    ok: expectedSuccess,
+    errorCode: expectedSuccess ? null : envelope.errorCode,
+  });
+  expect(Number.isFinite(envelope.metrics.durationMs) && envelope.metrics.durationMs >= 0).toBe(
+    true
+  );
+  if (expectedSuccess && toolId.startsWith('export_')) {
+    expect(envelope.result.receipt).toMatchObject({
+      correlationId: envelope.correlationId,
+      operation: toolId,
+      countyId: county,
+      schemaVersion: '1.0',
+    });
+  }
+  const trace = await request(`/api/pilot/trace/${envelope.correlationId}`, browserToken!);
+  expect(trace.status).toBe(200);
+  expect(trace.value.events).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        type: 'tool_invoked',
+        toolId,
+        correlationId: envelope.correlationId,
+      }),
+      expect.objectContaining({
+        type: expectedSuccess ? 'tool_completed' : 'tool_failed',
+        toolId,
+        correlationId: envelope.correlationId,
+      }),
+    ])
+  );
+  await test.info().attach(`measured-${toolId}-${envelope.correlationId}`, {
+    body: JSON.stringify({
+      metrics: envelope.metrics,
+      trace: trace.value,
+      receiptId: envelope.result?.receipt?.receiptId,
+    }),
+    contentType: 'application/json',
+  });
+  return {
+    output: envelope.result,
+    wire: response.request().postDataJSON(),
+    correlationId: envelope.correlationId,
+  };
+}
+
+async function pilotFailureCount(token: string, operation: string) {
+  const response = await fetch(`${baseURL}/metrics`, {
+    headers: { Authorization: `Bearer ${token}` },
+    redirect: 'error',
+  });
+  expect(response.status).toBe(200);
+  const lines = (await response.text())
+    .split('\n')
+    .filter(
+      line =>
+        line.startsWith('pilot_workflow_errors_total{') &&
+        line.includes(`operation="${operation}"`) &&
+        line.includes('environment="Development"')
+    );
+  return lines.reduce((total, line) => total + Number(line.slice(line.lastIndexOf(' ') + 1)), 0);
 }
 
 async function request(path: string, token: string, body?: unknown) {
@@ -297,14 +385,7 @@ test.beforeAll(async () => {
     ],
     environment({ OS_COUNTY_CONTEXT_DATABASE_PATH: database })
   );
-  pilot = spawn(process.execPath, ['os-platform/core/pilot/dev-pilot-runtime.mjs'], {
-    cwd: root,
-    windowsHide: true,
-    detached: process.platform !== 'win32',
-    stdio: ['ignore', 'pipe', 'pipe'],
-    env: environment({ TF_PILOT_PORT: String(pilotPort), TF_API_BASE_URL: baseURL }),
-  });
-  await ready(pilot, `http://127.0.0.1:${pilotPort}/pilot/health`);
+  await startPilot();
   await startApi();
 });
 
@@ -326,6 +407,66 @@ test('owner saves, exports, retrieves, retries and reopens exact persisted work 
 }) => {
   test.setTimeout(300_000);
   const token = await devToken();
+  // The direct loopback route also derives trace ownership from the validated bearer.
+  const directCid = randomUUID();
+  const directBody = {
+    toolId: 'generate_morning_brief',
+    mode: 'muse',
+    params: { county, taxYear: 2024, role: 'chief_appraiser' },
+  };
+  const direct = await fetch(`http://127.0.0.1:${pilotPort}/pilot/invoke`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+      'X-Correlation-ID': directCid,
+      'x-county-id': foreignCounty,
+      'x-user-id': 'forged-actor',
+      'x-role': 'administrator',
+    },
+    body: JSON.stringify(directBody),
+  });
+  if (direct.status !== 200) {
+    const claims = JSON.parse(Buffer.from(token.split('.')[1], 'base64url').toString('utf8'));
+    const context = await request(`/api/dossier/workflows/context?county=${county}`, token);
+    throw new Error(
+      JSON.stringify({
+        directStatus: direct.status,
+        backendContextStatus: context.status,
+        claimShapes: Object.fromEntries(
+          Object.entries(claims).map(([key, value]) => [
+            key,
+            Array.isArray(value) ? 'array' : typeof value,
+          ])
+        ),
+      })
+    );
+  }
+  expect(direct.status).toBe(200);
+  expect((await direct.json()).ok).toBe(true);
+  const directTrace = await request(`/api/pilot/trace/${directCid}`, token);
+  expect(directTrace.status).toBe(200);
+  expect(directTrace.value.events).toHaveLength(2);
+  expect(
+    directTrace.value.events.every(
+      (event: { context: { countyId: string; userId: string } }) =>
+        event.context.countyId === county && event.context.userId !== 'forged-actor'
+    )
+  ).toBe(true);
+  const traceBeforeUnauthorized = readFileSync(tracePath, 'utf8');
+  const unauthorized = await fetch(`http://127.0.0.1:${pilotPort}/pilot/invoke`, {
+    method: 'POST',
+    headers: {
+      Authorization: 'Bearer invalid',
+      'Content-Type': 'application/json',
+      'x-county-id': county,
+      'x-user-id': 'forged-actor',
+      'x-role': 'administrator',
+    },
+    body: JSON.stringify(directBody),
+  });
+  expect(unauthorized.status).toBe(401);
+  expect(readFileSync(tracePath, 'utf8')).toBe(traceBeforeUnauthorized);
   // Default CORS admits only configured/current dev frontends, not legacy ports.
   for (const [port, allowed] of [
     [3102, true],
@@ -355,6 +496,13 @@ test('owner saves, exports, retrieves, retries and reopens exact persisted work 
   expect(savedResponse.status()).toBe(200);
   const draft = await savedResponse.json();
   expect(draft).toMatchObject({ countyId: county, taxYear: 2024 });
+  expect(draft.receipt).toMatchObject({
+    receiptId: draft.draftId,
+    operation: 'assessment_draft.create',
+    countyId: county,
+    taxYear: 2024,
+    correlationId: savedResponse.headers()['x-correlation-id'],
+  });
   await expect(page.getByRole('combobox', { name: 'Saved draft', exact: true })).toHaveValue(
     draft.draftId
   );
@@ -395,6 +543,7 @@ test('owner saves, exports, retrieves, retries and reopens exact persisted work 
   });
   expect(replay.status).toBe(200);
   expect(replay.value.packageRef).toBe(output.packageRef);
+  expect(replay.value.receipt).toEqual(output.receipt);
   const beforeRefusals = await request(
     `/api/dossier/workflows/context?county=${county}&taxYear=2024`,
     token
@@ -427,7 +576,25 @@ test('owner saves, exports, retrieves, retries and reopens exact persisted work 
   expect(afterRefusals.status).toBe(200);
   expect(afterRefusals.value.exports).toEqual(beforeRefusals.value.exports);
   await stop(api);
+  await stop(pilot);
+  await startPilot();
   await startApi();
+  for (const record of [draft, output]) {
+    const evidence = await request(record.receipt.executionEvidence.payloadRef, token);
+    expect(evidence.status).toBe(200);
+    expect(evidence.value.receipt).toEqual(record.receipt);
+    expect(evidence.value.executionEvidence.data.recordId).toBe(record.receipt.receiptId);
+  }
+  const persistedTrace = await request(`/api/pilot/trace/${output.receipt.correlationId}`, token);
+  expect(persistedTrace.status).toBe(200);
+  expect(persistedTrace.value.events).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        type: 'tool_completed',
+        correlationId: output.receipt.correlationId,
+      }),
+    ])
+  );
   await page.reload();
   await expect(page.getByRole('combobox', { name: 'Saved draft', exact: true })).toHaveValue(
     draft.draftId
@@ -445,6 +612,28 @@ test('owner saves, exports, retrieves, retries and reopens exact persisted work 
     token
   );
   expect(reopened.text).toBe(content.text);
+  const draftReceipt = page.getByRole('region', { name: 'Saved draft receipt', exact: true });
+  await draftReceipt
+    .getByRole('button', { name: 'Inspect persisted receipt', exact: true })
+    .click();
+  await expect(draftReceipt.getByLabel('Persisted receipt JSON', { exact: true })).toContainText(
+    draft.receipt.executionEvidence.auditLogId
+  );
+  const exportReceipt = page.getByRole('region', { name: 'Saved export receipt', exact: true });
+  await exportReceipt
+    .getByRole('button', { name: 'Inspect persisted receipt', exact: true })
+    .click();
+  await expect(exportReceipt.getByLabel('Persisted receipt JSON', { exact: true })).toContainText(
+    output.receipt.executionEvidence.auditLogId
+  );
+  await exportReceipt.getByRole('button', { name: 'View action evidence', exact: true }).click();
+  await exportReceipt.getByText('Trace metadata JSON', { exact: true }).click();
+  await expect(exportReceipt.getByLabel('Trace metadata JSON', { exact: true })).toContainText(
+    output.receipt.correlationId
+  );
+  await page.screenshot({
+    path: resolve(root, 'output/playwright/county-context/persisted-receipt-trace-reopened.png'),
+  });
   await page.screenshot({
     path: resolve(root, 'output/playwright/county-context/persisted-export-reopened.png'),
   });
@@ -490,6 +679,44 @@ test('owner saves, exports, retrieves, retries and reopens exact persisted work 
   const downloadPath = await download.path();
   expect(downloadPath).not.toBeNull();
   expect(readFileSync(downloadPath!, 'utf8')).toBe(packetRead.text);
+  // Real missing-record failure: no replacement handler or fabricated response.
+  const failuresBefore = await pilotFailureCount(token, 'open_appeal_packet');
+  await page.getByRole('textbox', { name: 'Appeal ID', exact: true }).fill(randomUUID());
+  const failedPacket = await invokeFromUI(
+    page,
+    'open_appeal_packet',
+    () => page.getByRole('button', { name: 'Open Packet', exact: true }).click(),
+    false
+  );
+  const failuresAfter = await pilotFailureCount(token, 'open_appeal_packet');
+  expect(failuresAfter).toBe(failuresBefore + 1);
+  await expect(page.getByText(failedPacket.correlationId, { exact: false }).first()).toBeVisible();
+  const failureEvidence = page.getByRole('region', {
+    name: 'Action evidence: open_appeal_packet',
+    exact: true,
+  });
+  await expect(failureEvidence).toContainText('Server duration:');
+  await expect(failureEvidence).toContainText('EXECUTION_FAILED');
+  await failureEvidence.getByRole('button', { name: 'View action evidence', exact: true }).click();
+  await failureEvidence.getByText('Trace metadata JSON', { exact: true }).click();
+  await expect(failureEvidence.getByLabel('Trace metadata JSON', { exact: true })).toContainText(
+    'tool_failed'
+  );
+  await failureEvidence.screenshot({
+    path: resolve(root, 'output/playwright/county-context/actual-failure-trace-metric.png'),
+  });
+  await test.info().attach('actual-pilot-error-counter-delta', {
+    body: JSON.stringify({
+      operation: 'open_appeal_packet',
+      correlationId: failedPacket.correlationId,
+      before: failuresBefore,
+      after: failuresAfter,
+      environment: 'Development',
+      source: 'authenticated /metrics scrape',
+    }),
+    contentType: 'application/json',
+  });
+  await page.getByRole('textbox', { name: 'Appeal ID', exact: true }).fill(appeal);
   await page.getByRole('checkbox', { name: 'Confirm audit export', exact: true }).check();
   const audit = await invokeFromUI(page, 'export_audit_bundle', () =>
     page.getByRole('button', { name: 'Audit Bundle', exact: true }).click()
@@ -738,6 +965,17 @@ test('owner saves, exports, retrieves, retries and reopens exact persisted work 
   );
   expect(denied.status).toBe(404);
   expect(denied.text).not.toContain('Actual synthetic persisted valuation');
+  const deniedReceipt = await request(
+    `/api/dossier/workflows/receipts/${output.receipt.receiptId}?county=${foreignCounty}`,
+    foreignToken
+  );
+  expect(deniedReceipt.status).toBe(404);
+  const foreignTrace = await request(
+    `/api/pilot/trace/${output.receipt.correlationId}`,
+    foreignToken
+  );
+  expect(foreignTrace.status).toBe(200);
+  expect(foreignTrace.value.events).toEqual([]);
   const foreignPage = await page.context().newPage();
   await open(foreignPage, '/dossier', foreignToken);
   await expect(

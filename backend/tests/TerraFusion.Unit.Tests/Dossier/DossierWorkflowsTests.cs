@@ -1,4 +1,6 @@
 using System.Net;
+using System.Diagnostics.Metrics;
+using System.Collections.Concurrent;
 using System.Net.Http.Json;
 using System.Security.Claims;
 using System.Security.Cryptography;
@@ -37,6 +39,191 @@ public sealed class DossierWorkflowsTests
     private const string Study = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa";
     private const string Parcel = "SYNTHETIC-WORKFLOW";
     private const string Root = "/api/dossier/workflows";
+
+    [Theory]
+    [InlineData("drafts", "assessment_draft.create")]
+    [InlineData("exports/equalization", "export_equalization_package")]
+    [InlineData("exports/audit", "export_audit_bundle")]
+    public async Task Receipt_PersistsActualExecutionWithPayload_RetryAndRestartRetainOriginal(string route, string operation)
+    {
+        await using var f = await Fixture.Create();
+        object request = route == "exports/equalization" ? ExportRequest(await Draft(f)) : route == "drafts"
+            ? new { county = County, studyId = Study, requestId = "receipt-request" }
+            : new { county = County, taxYear = 2024, bundleScope = "county", requestId = "receipt-request", confirmed = true, reasonCode = "legal_compliance" };
+        f.Client.DefaultRequestHeaders.Add("X-Correlation-ID", "receipt.actual-CID_01");
+        var before = DateTime.UtcNow;
+        var response = await f.Client.PostAsJsonAsync($"{Root}/{route}", request);
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        var summary = await Json(response);
+        Assert.True(summary.TryGetProperty("receipt", out var receipt), "Completed backend writes must return their persisted receipt.");
+        Assert.Equal("receipt.actual-CID_01", receipt.GetProperty("correlationId").GetString());
+        Assert.Equal(receipt.GetProperty("correlationId").GetString(), response.Headers.GetValues("X-Correlation-ID").Single());
+        Assert.Equal(operation, receipt.GetProperty("operation").GetString());
+        Assert.Equal(route == "exports/equalization" ? "export-1" : "receipt-request", receipt.GetProperty("requestId").GetString());
+        Assert.Equal(route == "drafts" ? null : route == "exports/audit" ? "legal_compliance" : "annual_certification", receipt.GetProperty("reasonCode").GetString());
+        Assert.Equal("synthetic-user", receipt.GetProperty("actorId").GetString());
+        Assert.Equal(County, receipt.GetProperty("countyId").GetString());
+        Assert.Equal(2024, receipt.GetProperty("taxYear").GetInt32());
+        Assert.Equal("Testing", receipt.GetProperty("system").GetProperty("environment").GetString());
+        Assert.Equal(typeof(DossierWorkflowService).Assembly.ManifestModule.ModuleVersionId.ToString(), receipt.GetProperty("system").GetProperty("moduleVersionId").GetString());
+        Assert.InRange(receipt.GetProperty("recordedAt").GetDateTime(), before, DateTime.UtcNow);
+        Assert.Equal("api-start-to-precommit-receipt", receipt.GetProperty("timing").GetProperty("measurement").GetString());
+        Assert.True(receipt.GetProperty("timing").GetProperty("elapsedMs").GetDouble() >= 0);
+        Assert.Equal(summary.GetProperty("artifactCount").GetInt32(), receipt.GetProperty("outputs").GetProperty("artifacts").GetArrayLength());
+        Assert.Equal("not_verified", receipt.GetProperty("traceReference").GetProperty("availability").GetString());
+        Assert.Equal("/api/pilot/trace/receipt.actual-CID_01", receipt.GetProperty("traceReference").GetProperty("payloadRef").GetString());
+        var id = receipt.GetProperty("receiptId").GetGuid();
+        var evidenceUrl = receipt.GetProperty("executionEvidence").GetProperty("payloadRef").GetString();
+        await using (var db = f.Db())
+        {
+            var row = await db.DossierWorkflowRecords.SingleAsync(x => x.Id == id);
+            Assert.Equal(row.ContentHash, Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(row.PayloadJson))).ToLowerInvariant());
+            if (route == "drafts") Assert.Equal(row.ContentHash, summary.GetProperty("revision").GetString());
+            var persisted = JsonDocument.Parse(row.PayloadJson).RootElement.GetProperty("receipt");
+            Assert.Equal(receipt.GetProperty("correlationId").GetString(), persisted.GetProperty("correlationId").GetString());
+            var audit = await db.AuditLogs.SingleAsync(x => x.Id == receipt.GetProperty("executionEvidence").GetProperty("auditLogId").GetGuid());
+            Assert.Equal("synthetic-user", audit.UserId);
+            Assert.Equal("DossierWorkflowService", audit.Source);
+            Assert.Equal(row.ContentHash, JsonDocument.Parse(audit.Data!).RootElement.GetProperty("contentHash").GetString());
+        }
+        await f.Restart();
+        f.Client.DefaultRequestHeaders.Add("X-Correlation-ID", "different-retry-CID");
+        var retry = await Json(await f.Client.PostAsJsonAsync($"{Root}/{route}", request));
+        Assert.Equal(receipt.GetRawText(), retry.GetProperty("receipt").GetRawText());
+        var evidenceResponse = await f.Client.GetAsync(evidenceUrl);
+        Assert.Equal(HttpStatusCode.OK, evidenceResponse.StatusCode);
+        var evidence = await Json(evidenceResponse);
+        Assert.Equal(receipt.GetRawText(), evidence.GetProperty("receipt").GetRawText());
+        Assert.Equal("synthetic-user", evidence.GetProperty("executionEvidence").GetProperty("actorId").GetString());
+        Assert.Equal(id, evidence.GetProperty("executionEvidence").GetProperty("data").GetProperty("recordId").GetGuid());
+        var retrieved = await Json(await f.Client.GetAsync(route == "drafts" ? $"{Root}/drafts/{id}?county={County}" : $"{Root}/exports/{id}?county={County}"));
+        Assert.Equal(receipt.GetProperty("receiptId").GetString(), retrieved.GetProperty("receipt").GetProperty("receiptId").GetString());
+        var context = await Json(await f.Client.GetAsync($"{Root}/context?county={County}&taxYear=2024"));
+        Assert.Contains(context.GetProperty(route == "drafts" ? "drafts" : "exports").EnumerateArray(),
+            x => x.GetProperty("receipt").GetProperty("receiptId").GetGuid() == id);
+        if (route != "drafts")
+        {
+            var content = await Json(await f.Client.GetAsync(summary.GetProperty("payloadRef").GetString()));
+            Assert.Equal(id, content.GetProperty("receipt").GetProperty("receiptId").GetGuid());
+        }
+        f.Client.DefaultRequestHeaders.Add("Test-Permissions", "read:dossier,read:dais");
+        Assert.Equal(route == "exports/audit" ? HttpStatusCode.OK : HttpStatusCode.Forbidden, (await f.Client.GetAsync(evidenceUrl)).StatusCode);
+        f.Client.DefaultRequestHeaders.Remove("Test-Permissions");
+        f.Client.DefaultRequestHeaders.Add("Test-County", OtherCounty);
+        Assert.Equal(HttpStatusCode.NotFound, (await f.Client.GetAsync($"{Root}/receipts/{id}?county={OtherCounty}")).StatusCode);
+    }
+
+    [Theory]
+    [InlineData("drafts")]
+    [InlineData("exports/equalization")]
+    [InlineData("exports/audit")]
+    public async Task Receipt_AuditWriteFailureRollsBackPayloadAndReceipt(string route)
+    {
+        await using var f = await Fixture.Create();
+        object request = route == "exports/equalization" ? ExportRequest(await Draft(f)) : route == "drafts"
+            ? new { county = County, studyId = Study, requestId = "atomic-receipt" }
+            : new { county = County, taxYear = 2024, bundleScope = "county", requestId = "atomic-receipt", confirmed = true, reasonCode = "legal_compliance" };
+        int records; int audits;
+        await using (var db = f.Db())
+        {
+            records = await db.DossierWorkflowRecords.CountAsync(); audits = await db.AuditLogs.CountAsync();
+            await db.Database.ExecuteSqlRawAsync("CREATE TRIGGER receipt_failure BEFORE INSERT ON AuditLogs WHEN NEW.Source='DossierWorkflowService' BEGIN SELECT RAISE(ABORT, 'receipt interruption'); END;");
+        }
+        var response = await f.Client.PostAsJsonAsync($"{Root}/{route}", request);
+        Assert.Equal(HttpStatusCode.ServiceUnavailable, response.StatusCode);
+        await using (var db = f.Db())
+        {
+            Assert.Equal(records, await db.DossierWorkflowRecords.CountAsync());
+            Assert.Equal(audits, await db.AuditLogs.CountAsync());
+            await db.Database.ExecuteSqlRawAsync("DROP TRIGGER receipt_failure;");
+        }
+        await f.Restart();
+        f.Client.DefaultRequestHeaders.Add("X-Correlation-ID", "successful-retry");
+        var retried = await Json(await f.Client.PostAsJsonAsync($"{Root}/{route}", request));
+        Assert.Equal("successful-retry", retried.GetProperty("receipt").GetProperty("correlationId").GetString());
+    }
+
+    [Fact]
+    public async Task Receipt_UsesMiddlewareSanitizedCid_NotAnIndependentFallback()
+    {
+        await using var f = await Fixture.Create();
+        f.Client.DefaultRequestHeaders.Add("X-Correlation-ID", "unsafe/CID");
+        var response = await f.Client.PostAsJsonAsync($"{Root}/drafts", new { county = County, studyId = Study, requestId = "safe-cid" });
+        var body = await Json(response);
+        Assert.True(body.TryGetProperty("receipt", out var receipt), "Receipt missing.");
+        var cid = response.Headers.GetValues("X-Correlation-ID").Single();
+        Assert.StartsWith("tf-", cid);
+        Assert.Equal(cid, receipt.GetProperty("correlationId").GetString());
+    }
+
+    [Fact]
+    public async Task Receipt_WriteTelemetryCountsActualSuccessAndRejectedExport_WithCidAndEnvironment()
+    {
+        var measurements = new ConcurrentQueue<(string Name, double Value, Dictionary<string, object?> Tags)>();
+        using var listener = new MeterListener();
+        listener.InstrumentPublished = (instrument, target) =>
+        {
+            if (instrument.Meter.Name == "TerraFusion.Government" && instrument.Name.StartsWith("dossier.workflow."))
+                target.EnableMeasurementEvents(instrument);
+        };
+        listener.SetMeasurementEventCallback<double>((instrument, value, tags, _) => measurements.Enqueue((instrument.Name, value, tags.ToArray().ToDictionary(x => x.Key, x => x.Value))));
+        listener.SetMeasurementEventCallback<long>((instrument, value, tags, _) => measurements.Enqueue((instrument.Name, value, tags.ToArray().ToDictionary(x => x.Key, x => x.Value))));
+        listener.Start();
+        await using var f = await Fixture.Create();
+        var draft = await Draft(f);
+        f.Client.DefaultRequestHeaders.Add("X-Correlation-ID", "actual-rejected-export");
+        var failed = await f.Client.PostAsJsonAsync($"{Root}/exports/equalization", ExportRequest(draft, reason: "arbitrary"));
+        Assert.Equal(HttpStatusCode.BadRequest, failed.StatusCode);
+        Assert.Equal("actual-rejected-export", failed.Headers.GetValues("X-Correlation-ID").Single());
+        Assert.Contains(measurements, x => x.Name == "dossier.workflow.duration" && x.Value >= 0 &&
+            Equals(x.Tags["operation"], "assessment_draft.create") && Equals(x.Tags["outcome"], "success") && Equals(x.Tags["environment"], "Testing"));
+        Assert.Contains(measurements, x => x.Name == "dossier.workflow.errors" && x.Value == 1 &&
+            Equals(x.Tags["operation"], "export_equalization_package") && Equals(x.Tags["outcome"], "failure") &&
+            Equals(x.Tags["error.category"], "http.400") && Equals(x.Tags["environment"], "Testing"));
+        await using var db = f.Db();
+        Assert.Single(await db.DossierWorkflowRecords.ToListAsync());
+    }
+
+    [Fact]
+    public async Task Receipt_MissingLinkedAuditFailsClosed_WithoutRecreatingEvidence()
+    {
+        await using var f = await Fixture.Create();
+        var draft = await Draft(f);
+        var evidence = draft.GetProperty("receipt").GetProperty("executionEvidence");
+        await using (var db = f.Db())
+            await db.AuditLogs.Where(x => x.Id == evidence.GetProperty("auditLogId").GetGuid()).ExecuteDeleteAsync();
+        await f.Restart();
+        Assert.Equal(HttpStatusCode.UnprocessableEntity, (await f.Client.GetAsync(evidence.GetProperty("payloadRef").GetString())).StatusCode);
+        await using var verify = f.Db();
+        Assert.False(await verify.AuditLogs.AnyAsync(x => x.Id == evidence.GetProperty("auditLogId").GetGuid()));
+    }
+
+    [Fact]
+    public async Task Receipt_LegacyPayloadRemainsUnchangedAndHasNoInventedReceiptOnRetry()
+    {
+        await using var f = await Fixture.Create();
+        var created = await Draft(f);
+        var id = created.GetProperty("draftId").GetGuid();
+        string legacyJson; int auditCount;
+        await using (var db = f.Db())
+        {
+            var row = await db.DossierWorkflowRecords.SingleAsync(x => x.Id == id);
+            var legacy = System.Text.Json.Nodes.JsonNode.Parse(row.PayloadJson)!;
+            legacy.AsObject().Remove("receipt");
+            legacyJson = legacy.ToJsonString();
+            var hash = Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(legacyJson))).ToLowerInvariant();
+            // Isolated upgrade fixture: represent the exact pre-receipt persisted payload shape.
+            await db.Database.ExecuteSqlInterpolatedAsync($"UPDATE DossierWorkflowRecords SET PayloadJson={legacyJson}, ContentHash={hash}, Revision={hash} WHERE Id={id}");
+            auditCount = await db.AuditLogs.CountAsync();
+        }
+        await f.Restart();
+        var retry = await Draft(f);
+        Assert.Equal(JsonValueKind.Null, retry.GetProperty("receipt").ValueKind);
+        Assert.Equal(HttpStatusCode.NotFound, (await f.Client.GetAsync($"{Root}/receipts/{id}?county={County}")).StatusCode);
+        await using var verify = f.Db();
+        Assert.Equal(legacyJson, (await verify.DossierWorkflowRecords.SingleAsync(x => x.Id == id)).PayloadJson);
+        Assert.Equal(auditCount, await verify.AuditLogs.CountAsync());
+    }
 
     [Theory]
     [InlineData(County, County, 200)]
@@ -829,6 +1016,7 @@ public sealed class DossierWorkflowsTests
                         context.User.Claims.Any(c => c.Type == "perm" && string.Equals(c.Value, permission, StringComparison.OrdinalIgnoreCase))));
             });
             _app = builder.Build();
+            _app.UseMiddleware<TerraFusion.API.Middleware.CorrelationIdMiddleware>();
             _app.UseAuthentication();
             _app.UseAuthorization();
             _app.MapControllers();

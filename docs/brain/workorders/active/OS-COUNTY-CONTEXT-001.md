@@ -31,6 +31,99 @@ read-only, no builder reservation. Exact delivered-head assurance remains requir
 
 ### Current integration checkpoint (not delivery acceptance)
 
+- Repeated complete browser journey passes with viewport evidence: 34.151 seconds
+  (52.5 seconds including bootstrap). [Saved receipt/trace screenshot](../../evidence/OS-COUNTY-CONTEXT-001-receipt.png)
+  shows actual CID `566bd438-5abd-4a6d-aa80-fd367365d997`, package/receipt
+  `68f4ab8e-922e-40fc-b6c7-aa74971cad6d`, actor `dev-user-001`, intent
+  `annual_certification`, audit `56016321-b3c7-4385-96f3-ba244e88e5ae`,
+  recorded at `2026-09-07T21:43:42.8544815Z`. Pilot duration is 93.3012 ms;
+  receipt precommit timing is separately 17.0861 ms. The receipt identifies the
+  actual API assembly version/MVID, not a claim that uncommitted source was released.
+  [Failure/trace screenshot](../../evidence/OS-COUNTY-CONTEXT-001-failure.png)
+  shows real missing-packet CID `4c09290a-1fc0-4b14-8b6f-882658c5ab3f`,
+  59.9830 ms, with error counter observed 0 -> 1 through authenticated `/metrics`.
+  Report SHA256 `BE634A85B39E78BBF21F2C126E74917E6FAD1FE2BCB8067D6C893956E2BED5C2`.
+  Full frontend regression finished 8,123 passed / 211 existing skips / 1 failed:
+  the legacy `explain_value_change` client mock lacked response headers. The new
+  header CID read is now restricted to the four authorized workflows, preserving
+  the unrelated client contract. Both relevant client suites pass 18/18. No test
+  was removed or weakened; a full-suite pass remains required before merge.
+
+- Real Tier-1 browser evidence now passes on the rebuilt candidate: 1 test,
+  31.233 seconds of journey / 49.6 seconds including bootstrap. It proves all
+  four actual tools, UI/API/Pilot/backend CID continuity, original receipt on retry,
+  API AND Pilot restart with persistent trace and database receipt retrieval in UI,
+  direct-loopback forged-header correction with a real issued JWT, invalid bearer
+  no-append, foreign receipt denial/trace isolation, real missing-packet failure
+  and authenticated Prometheus error counter 0 -> 1. All data is isolated synthetic.
+  First export CID `91551660-66a0-4e03-9e87-55238d3ea142`, receipt/package
+  `c31473ff-0291-4210-9e22-ac5b705edc69`, audit
+  `1c2fcd3f-a81e-44bf-9839-1e7615c36394`, actual 17 source artifacts.
+  Pilot duration 65.7700 ms is request-to-response, not a performance certification.
+  Failure CID `aa486491-9b04-4fd7-91bc-a45db8998f77`, `EXECUTION_FAILED`,
+  61.5475 ms, matching `tool_failed` trace and visible UI error.
+  Preserved raw report: `.tmp/county-context/acceptance-tier1-20260907-213926/acceptance-results.json`,
+  SHA256 `DB4E5790BF9017AFB88E69A1250FC781B89AD3E4796B17969A492042737638E9`.
+  API binary SHA256 `447C838EF202AB4634578E726C4B476D717E4B221C1B4F8CB88EDA438ECCBF43`;
+  frontend index SHA256 `9C37B86C8EAC3AC7657DA1B79088C93AAFEB414CCEEF12EF6421C68E65925E70`.
+  Screenshot capture is being narrowed to the actual viewport (the prior element
+  capture included white space outside the shell viewport); no UI behavior change.
+  Current focused auth/trace/handler tests pass 25/25; suite ownership 6/6;
+  source diagnostic continuation 3/3; full frontend regression remains running.
+  Fresh exact-head review, protected CI/merge and delivered-revision proof remain.
+
+- Follow-up integration: the initial PR introduced an EF snapshot ordering defect
+  (`CountyCsvUploadAdmissionLedgerTests.ModelSnapshotMatchesTheRuntimeBoundedLedgerShape`).
+  Its two DossierPacket indexes now follow typed properties; no index/model semantics
+  changed. Existing RED reproduced, integrated snapshot/proxy tests pass 29/29.
+  The Pilot proxy now records bounded logical outcome counters and durations through
+  the existing Prometheus registry and `/metrics`, independently of backend write
+  counters. HTTP-200 logical failure +1 and success +0 are tested. Configuration/
+  transport failures preserve middleware CID after five observed RED cases.
+  Independent source review passes these changes and the four-file backend receipt
+  slice. Snyk diff relevance at `ca6cc92` versus `35e32462d` establishes no introduced
+  important finding in the 41 Pilot / 50 registry findings; it does not dismiss or
+  resolve those vulnerabilities, and subsequent changes need fresh relevance review.
+  A direct-loopback forged-header trace attribution finding was repaired by validating
+  the bearer through the existing backend before four-tool policy/runner execution;
+  JWT-derived county/user/roles replace both caller role-header spellings. Source
+  re-review passes; integrated auth/trace/handler tests pass 22/22. Actual-issued-JWT
+  spoofing and no-append browser negatives are added but not yet accepted.
+  The newest browser attempt stopped because the existing frontend dist predated
+  the client CID header change. This is not current-source browser acceptance;
+  rebuild after the UI receipt slice is integrated, then rerun the whole journey.
+
+- Draft PR #1569 is open at pushed `ca6cc92c86d075e948341b7cca84a645a60924b5`.
+  It is not merge-ready. Current uncommitted Tier-1 repairs supersede that head's
+  bounded functional acceptance: immutable receipts plus linked AuditLogs commit
+  atomically in the existing transaction; retries preserve the original receipt
+  and legacy payloads are not backfilled. Integrated backend/proxy tests pass
+  99/99 with one explicit browser-bootstrap skip. Core trace/handler tests pass
+  19/19; Pilot client identity/metric preservation tests pass 11/11 after two
+  observed missing-metric failures. Actual API/Pilot restart acceptance is running.
+  UI receipt presentation and final exact-head assurance remain pending.
+  Ohm's two-file trace reservation reuses the existing FileTraceStore through a
+  separate four-tool runner, preserving the legacy singleton/runner. Persistent
+  reads authenticate through the real API and filter county/actor metadata.
+  Flush failure is explicit and does not claim a completed write was rolled back.
+  Mencius additionally owns the exact shared `components/workflow/WorkflowEvidence.tsx`
+  path; `WorkflowContextPicker` moves physically to the same shared directory.
+  Initial CI exposed staged-tool inventory accounting, shared-picker import ownership,
+  and Node 20 crypto test-buffer realm failures. Repairs retain original assertions
+  and gates. A later failing required backend job is under separate read-only diagnosis.
+
+- Exact-head Tier-1 assurance at `ca6cc92c86d075e948341b7cca84a645a60924b5`
+  returned FAIL despite successful functional browser acceptance: CID propagation,
+  authenticated trace retrieval, durable receipt linkage and measured operation
+  evidence remain incomplete. Repair these existing connections before merge.
+  Backend builder retains DTO/controller/service/tests for receipts in the existing
+  immutable payload and audit transaction (no new store); UI builder retains original
+  workflow components/hooks/screens/tests. Coordinator reserves additive correlation
+  metadata in core execution context and ToolRunner plus existing Pilot bridge/client
+  paths. Canonical roles, suite ownership and policy gates remain unchanged.
+  The normal push completed through strict hooks: full Release solution build and
+  API publish passed, root tests 201/201. Actual Snyk returned 91 findings, not a clean
+  scan; bounded introduced-versus-inherited triage is assigned. No merge yet.
 - Final pre-delivery browser rerun after CORS repair: PASS, 1 test / 33.8 seconds.
   The same complete actual workflow journey passed, plus real preflight allowance
   for current 3102/5173 origins and rejection of the unconditional legacy 3000
@@ -370,9 +463,15 @@ merge, package publication, production deployment, or parallel dispatch is claim
     "docs/brain/workorders/active/OS-COUNTY-CONTEXT-001.md",
     "docs/brain/workorders/evidence/OS-COUNTY-CONTEXT-001-backing-reproduction.mjs",
     "docs/brain/evidence/OS-COUNTY-CONTEXT-001-proof.md",
+    "docs/brain/evidence/OS-COUNTY-CONTEXT-001-receipt.png",
+    "docs/brain/evidence/OS-COUNTY-CONTEXT-001-failure.png",
     "frontend/apps/os-shell/src/components/dossier/WorkflowAppealPacketResult.tsx",
+    "frontend/apps/os-shell/src/components/workflow/WorkflowContextPicker.tsx",
+    "frontend/apps/os-shell/src/components/workflow/WorkflowEvidence.tsx",
     "docs/superpowers/plans/2026-09-07-os-county-context.md",
     "os-platform/core/pilot/countyWorkflowHandlers.ts",
+    "os-platform/core/pilot/countyWorkflowTrace.mjs",
+    "os-platform/core/tests/county-workflow-trace.test.mjs",
     "os-platform/core/pilot/countyWorkflowHandlers.js",
     "os-platform/core/pilot/backendClient.ts",
     "os-platform/core/pilot/backendClient.js",
@@ -380,6 +479,9 @@ merge, package publication, production deployment, or parallel dispatch is claim
     "os-platform/core/pilot/handlers.real.js",
     "os-platform/core/pilot/dev-pilot-runtime.mjs",
     "os-platform/core/tests/phase86-toolrunner.test.mjs",
+    "os-platform/core/types/index.ts",
+    "os-platform/core/pilot/ToolRunner.ts",
+    "os-platform/core/pilot/ToolRunner.js",
     "os-platform/core/tests/county-workflow-handlers.test.mjs",
     "tools/registry/build-core-js.mjs",
     "tools/registry/check-generated-js.mjs",
@@ -415,6 +517,7 @@ merge, package publication, production deployment, or parallel dispatch is claim
     "frontend/apps/os-shell/src/__tests__/suites/wave3-placeholder-integrity.test.tsx",
     "frontend/apps/os-shell/src/__tests__/workbench/PropertyWorkbenchWindow.realSurfaces.acceptance.test.tsx",
     "os-platform/core/tests/phase83-tools.test.mjs",
+    "os-platform/core/tests/tool-maturity.test.mjs",
     "tools/registry/terrapilot.tools.json",
     "tools/registry/terrapilot.tools.forward-staged.json",
     "docs/brain/canon/reserved-staging.json",

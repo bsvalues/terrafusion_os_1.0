@@ -1,4 +1,6 @@
 using System.Data;
+using System.Diagnostics;
+using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
@@ -36,7 +38,7 @@ public sealed class DossierWorkflowService(TerraFusionDbContext db)
             exports = visible.Where(x => x.Kind != DraftKind).OrderByDescending(x => x.CreatedAt).Select(ExportSummary) };
     }
 
-    public async Task<object> CreateDraft(Guid county, string actor, AssessmentDraftRequest request, CancellationToken ct)
+    public async Task<object> CreateDraft(Guid county, string actor, AssessmentDraftRequest request, WorkflowExecutionContext execution, CancellationToken ct)
     {
         if (request.StudyId == Guid.Empty) throw Invalid("studyId is required.");
         var record = await Persist(county, actor, request.RequestId, DraftKind, request, async () =>
@@ -51,7 +53,7 @@ public sealed class DossierWorkflowService(TerraFusionDbContext db)
             await AddScenariosAndCohorts(artifacts, county, study.TaxYear, [study.StudyId], ct);
             await AddPackets(artifacts, county, study.TaxYear, null, null, ct);
             return new WorkflowPayload(county, study.TaxYear, DraftKind, study.StudyId, null, null, null, null, null, actor, DateTime.UtcNow, Ordered(artifacts));
-        }, ct);
+        }, execution, ct);
         return DraftSummary(record);
     }
 
@@ -62,10 +64,10 @@ public sealed class DossierWorkflowService(TerraFusionDbContext db)
         var payload = Payload(row);
         // Use the storage encoder so embedded JSON definitions retain their hashed bytes.
         return JsonSerializer.Serialize(new { draftId = row.Id, row.StudyId, row.CountyId, row.TaxYear, row.Revision,
-            artifactCount = payload.Artifacts.Count, row.CreatedAt, payload.Artifacts }, Json);
+            artifactCount = payload.Artifacts.Count, row.CreatedAt, payload.Artifacts, payload.Receipt }, Json);
     }
 
-    public async Task<object> Equalization(Guid county, string actor, EqualizationExportRequest request, CancellationToken ct)
+    public async Task<object> Equalization(Guid county, string actor, EqualizationExportRequest request, WorkflowExecutionContext execution, CancellationToken ct)
     {
         Confirm(request.Confirmed, request.ReasonCode, audit: false); Year(request.TaxYear);
         if (request.DraftId == Guid.Empty || string.IsNullOrWhiteSpace(request.Revision)) throw Invalid("draftId and revision are required.");
@@ -78,11 +80,11 @@ public sealed class DossierWorkflowService(TerraFusionDbContext db)
             if (source.Artifacts.Count == 0) throw Incomplete("Draft has no stored artifacts.");
             return new WorkflowPayload(county, draft.TaxYear, "equalization", draft.StudyId, draft.Id, draft.Revision,
                 null, null, request.ReasonCode, actor, DateTime.UtcNow, source.Artifacts);
-        }, ct);
+        }, execution, ct);
         return ExportSummary(row);
     }
 
-    public async Task<object> Audit(Guid county, string actor, AuditBundleRequest request, CancellationToken ct)
+    public async Task<object> Audit(Guid county, string actor, AuditBundleRequest request, WorkflowExecutionContext execution, CancellationToken ct)
     {
         Confirm(request.Confirmed, request.ReasonCode, audit: true); Year(request.TaxYear);
         if (request.BundleScope is not ("county" or "parcel" or "appeal")) throw Invalid("Unknown bundleScope.");
@@ -117,7 +119,7 @@ public sealed class DossierWorkflowService(TerraFusionDbContext db)
             if (artifacts.Count == 0) throw Incomplete("No persisted records exist for the requested scope and year.");
             return new WorkflowPayload(county, request.TaxYear, "audit", null, null, null, request.BundleScope,
                 request.SubjectId, request.ReasonCode, actor, DateTime.UtcNow, Ordered(artifacts));
-        }, ct);
+        }, execution, ct);
         return ExportSummary(row);
     }
 
@@ -138,8 +140,32 @@ public sealed class DossierWorkflowService(TerraFusionDbContext db)
         return row.PayloadJson;
     }
 
+    public async Task<object> GetReceipt(Guid county, Guid id, bool canReadValuations, CancellationToken ct)
+    {
+        var row = await Find(county, id, ct);
+        RequireSourcePermission(row, canReadValuations);
+        var receipt = Payload(row).Receipt ?? throw Missing();
+        // This exact linked audit is execution evidence, never an audit-export source input.
+        var audit = await db.AuditLogs.AsNoTracking().SingleOrDefaultAsync(x => x.Id == receipt.ExecutionEvidence.AuditLogId, ct);
+        if (audit == null || audit.Source != "DossierWorkflowService" || audit.UserId != row.CreatedBy ||
+            audit.CorrelationId != receipt.CorrelationId || audit.Type != $"DOSSIER_WORKFLOW:{receipt.Operation}" ||
+            receipt.ReceiptId != row.Id || receipt.CountyId != row.CountyId || receipt.TaxYear != row.TaxYear)
+            throw Incomplete("Persisted receipt audit linkage is unavailable.");
+        JsonElement data;
+        try
+        {
+            data = JsonSerializer.Deserialize<JsonElement>(audit.Data ?? "null", Json);
+            if (data.GetProperty("recordId").GetGuid() != row.Id || data.GetProperty("contentHash").GetString() != row.ContentHash)
+                throw Incomplete("Persisted receipt audit linkage does not match.");
+        }
+        catch (Exception ex) when (ex is JsonException or InvalidOperationException or KeyNotFoundException or FormatException)
+        { throw Incomplete("Persisted receipt audit metadata is invalid."); }
+        return new { row.CountyId, row.TaxYear, receipt, executionEvidence = new { auditLogId = audit.Id,
+            source = audit.Source, type = audit.Type, actorId = audit.UserId, recordedAt = audit.Timestamp, data } };
+    }
+
     private async Task<DossierWorkflowRecord> Persist(Guid county, string actor, string requestId, string kind, object request,
-        Func<Task<WorkflowPayload>> assemble, CancellationToken ct)
+        Func<Task<WorkflowPayload>> assemble, WorkflowExecutionContext execution, CancellationToken ct)
     {
         if (string.IsNullOrWhiteSpace(requestId) || requestId.Length > 200 || requestId != requestId.Trim()) throw Invalid("A requestId of 1-200 characters is required.");
         var requestHash = Hash(JsonSerializer.Serialize(new { kind, actor, request }, Json));
@@ -158,13 +184,32 @@ public sealed class DossierWorkflowService(TerraFusionDbContext db)
                     return prior;
                 }
                 var payload = await assemble();
+                var id = Guid.NewGuid();
+                var auditId = Guid.NewGuid();
+                var operation = kind switch { DraftKind => "assessment_draft.create", "equalization" => "export_equalization_package", _ => "export_audit_bundle" };
+                var assembly = typeof(DossierWorkflowService).Assembly;
+                var recordedAt = DateTime.UtcNow;
+                var receipt = new WorkflowReceipt(id, "1.0", execution.CorrelationId, requestId, actor, county,
+                    payload.TaxYear, operation, payload.ReasonCode, JsonSerializer.SerializeToElement(request, Json),
+                    new(id, payload.StudyId, kind == DraftKind ? id : payload.DraftId, kind == DraftKind ? null : id,
+                        payload.SourceRevision, payload.Artifacts.Count, payload.Artifacts.Select(x => new WorkflowArtifactReference(x.Name, x.Sha256, x.MediaType, x.SourceId)).ToArray()),
+                    recordedAt, new(execution.StartedAt, Stopwatch.GetElapsedTime(execution.StartedTimestamp).TotalMilliseconds, "api-start-to-precommit-receipt"),
+                    new(assembly.GetName().Version?.ToString() ?? "unavailable", assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? "unavailable",
+                        assembly.ManifestModule.ModuleVersionId.ToString("D"), execution.Environment),
+                    new("application-db", auditId, $"/api/dossier/workflows/receipts/{id:D}?county={county:D}"),
+                    new(execution.CorrelationId, $"/api/pilot/trace/{execution.CorrelationId}", "pilot", "not_verified"));
+                // Final payload includes the receipt; no receipt field contains its own resulting hash.
+                payload = payload with { Receipt = receipt };
                 var json = JsonSerializer.Serialize(payload, Json);
                 var hash = Hash(json);
-                var row = new DossierWorkflowRecord { CountyId = county, Kind = kind, TaxYear = payload.TaxYear,
+                var row = new DossierWorkflowRecord { Id = id, CountyId = county, Kind = kind, TaxYear = payload.TaxYear,
                     StudyId = payload.StudyId, DraftId = payload.DraftId, RequestId = requestId, RequestHash = requestHash,
                     Revision = payload.SourceRevision ?? hash, ContentHash = hash, PayloadJson = json,
                     CreatedBy = actor, CreatedAt = payload.CreatedAt };
                 db.DossierWorkflowRecords.Add(row);
+                db.AuditLogs.Add(new AuditLog { Id = auditId, Type = $"DOSSIER_WORKFLOW:{operation}",
+                    Source = "DossierWorkflowService", UserId = actor, CorrelationId = execution.CorrelationId, Timestamp = recordedAt,
+                    Data = JsonSerializer.Serialize(new { recordId = id, receipt, contentHash = hash }, Json) });
                 await db.SaveChangesAsync(ct);
                 await transaction.CommitAsync(ct);
                 return row;
@@ -305,14 +350,14 @@ public sealed class DossierWorkflowService(TerraFusionDbContext db)
     }
 
     private static object DraftSummary(DossierWorkflowRecord row) => new { draftId = row.Id, row.StudyId, row.CountyId,
-        row.TaxYear, row.Revision, artifactCount = Payload(row).Artifacts.Count, row.CreatedAt };
+        row.TaxYear, row.Revision, artifactCount = Payload(row).Artifacts.Count, row.CreatedAt, Payload(row).Receipt };
     private static object ExportSummary(DossierWorkflowRecord row)
     {
         var artifacts = Payload(row).Artifacts;
         var url = $"/api/dossier/workflows/exports/{row.Id:D}/content?county={row.CountyId:D}";
         return new { packageRef = row.Id, payloadRef = url, row.CountyId, row.TaxYear, row.DraftId, row.Revision,
             artifactCount = artifacts.Count, artifacts = artifacts.Select(x => new { x.Name, x.Sha256, x.MediaType, x.SourceId }),
-            row.ContentHash, downloadUrl = url, row.CreatedAt, status = "complete", certification = false };
+            row.ContentHash, downloadUrl = url, row.CreatedAt, status = "complete", certification = false, Payload(row).Receipt };
     }
 
     private WorkflowArtifact Capture<T>(T entity, Guid id, Guid county, int year) where T : class

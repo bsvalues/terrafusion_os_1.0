@@ -1,4 +1,5 @@
 import React from 'react';
+import { Buffer } from 'node:buffer';
 import { createHash, webcrypto } from 'node:crypto';
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -11,6 +12,7 @@ import PropertyWorkbenchWindow from '../../pages/workbench/PropertyWorkbenchWind
 import PropertyWorkbench from '../../pages/workbench/PropertyWorkbench';
 import { AuthContext } from '../../auth/authContextDef';
 import { WorkbenchTabCtx, type WorkbenchTabData } from '../../context/workbenchTabContext';
+import type { WorkflowReceipt } from '../../services/dossierWorkflowService';
 
 const countyA = '19190019-1919-1919-1919-191919191919';
 const countyB = '20200020-2020-2020-2020-202020202020';
@@ -34,7 +36,7 @@ const actualPacket = { countyId: countyA, taxYear: 2024, appealId, parcelId: 'PA
 function token(county = countyA, role = 'appraiser', user = 'operator-1') {
   return `e30.${btoa(JSON.stringify({ sub: user, countyId: county, roles: [role], exp: 4102444800 }))}.signature`;
 }
-const draft = { draftId, studyId, countyId: countyA, taxYear: 2024, revision, artifactCount: 2, createdAt: '2026-09-07T12:00:00Z' };
+const draft = { draftId, studyId, countyId: countyA, taxYear: 2024, revision, artifactCount: 2, createdAt: '2026-09-07T12:00:00Z', receipt: null as WorkflowReceipt | null };
 const exported = { packageRef, payloadRef: `/api/dossier/workflows/exports/${packageRef}`, countyId: countyA, taxYear: 2024, draftId, revision, artifactCount: 2, artifacts: [{ name: 'study.json', sha256: '2'.repeat(64), mediaType: 'application/json', sourceId: studyId }, { name: 'evidence.json', sha256: '3'.repeat(64), mediaType: 'application/json', sourceId: 'evidence-1' }], contentHash: '4'.repeat(64), downloadUrl: `/api/dossier/workflows/exports/${packageRef}/content`, createdAt: '2026-09-07T12:01:00Z', status: 'complete', certification: false };
 type Wire = { path: string; query: URLSearchParams; headers: Headers; body: any; method: string };
 let requests: Wire[];
@@ -45,7 +47,37 @@ let contentTampered: boolean;
 let saveResponse: (() => Promise<Response>) | undefined;
 let invokeResponse: (wire: Wire) => Promise<Response>;
 let packetResponse: () => Promise<Response>;
-const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json', 'X-Correlation-ID': 'corr-http' } });
+let traceResponse: () => Promise<Response>;
+let receiptResponse: () => Promise<Response>;
+const receiptId = '16161616-1616-1616-1616-161616161616';
+const auditLogId = '17171717-1717-1717-1717-171717171717';
+function receipt(recordId = draftId, operation: WorkflowReceipt['operation'] = 'assessment_draft.create'): WorkflowReceipt {
+  const isDraft = operation === 'assessment_draft.create';
+  return { receiptId: recordId, schemaVersion: '1.0', correlationId: 'committed-cid', requestId: receiptId,
+    actorId: 'original-operator', countyId: countyA, taxYear: 2024, operation, reasonCode: isDraft ? null : 'annual_certification',
+    inputs: isDraft ? { county: countyA, studyId, requestId: receiptId } : { county: countyA, draftId, revision, taxYear: 2024, requestId: receiptId, confirmed: true, reasonCode: 'annual_certification' },
+    outputs: { recordId, studyId, draftId: isDraft ? recordId : draftId, packageRef: isDraft ? null : recordId, sourceRevision: isDraft ? null : revision, artifactCount: 2, artifacts: exported.artifacts },
+    recordedAt: '2026-09-07T12:00:00Z', timing: { startedAt: '2026-09-07T11:59:59Z', elapsedMs: 24.5, measurement: 'api-start-to-precommit-receipt' },
+    system: { assemblyVersion: '1.0.0', informationalVersion: 'fixture-build', moduleVersionId: receiptId, environment: 'Development' },
+    executionEvidence: { source: 'application-db', auditLogId, payloadRef: `/api/dossier/workflows/receipts/${recordId}?county=${countyA}` },
+    traceReference: { correlationId: 'committed-cid', payloadRef: '/api/pilot/trace/committed-cid', provider: 'pilot', availability: 'not_verified' } };
+}
+function auditReceiptResponse(value = receipt()) {
+  return json({ countyId: countyA, taxYear: 2024, receipt: value,
+    executionEvidence: { auditLogId, source: 'DossierWorkflowService', type: `DOSSIER_WORKFLOW:${value.operation}`, actorId: value.actorId, recordedAt: value.recordedAt,
+      data: { recordId: value.receiptId, receipt: value, contentHash: revision, persisted: 'Actual audit row fixture' } } });
+}
+function jsonResponse(body: string, status = 200) {
+  const response = new Response(body, { status, headers: { 'Content-Type': 'application/json', 'X-Correlation-ID': 'corr-http' } });
+  // Node 20 Web Crypto rejects jsdom-realm ArrayBuffers. Adapt HTTP fixture bytes,
+  // not digest: retain real Web Crypto and the exact UTF-8 body (no pooled bytes).
+  response.arrayBuffer = async () => {
+    const bytes = Buffer.from(body, 'utf8');
+    return bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength) as ArrayBuffer;
+  };
+  return response;
+}
+const json = (body: unknown, status = 200) => jsonResponse(JSON.stringify(body), status);
 function wrapper(children: React.ReactNode, jwt = token(), parcelId = 'PARCEL-1', route = '/') {
   localStorage.setItem('authToken', jwt);
   return <AuthContext.Provider value={{ token: jwt, isAuthenticated: true, login() {}, logout() {} }}>
@@ -60,6 +92,8 @@ async function mount(element: React.ReactElement) {
 }
 
 beforeEach(() => {
+  traceResponse = async () => json({ events: [] });
+  receiptResponse = async () => auditReceiptResponse();
   localStorage.clear();
   requests = []; drafts = [draft]; years = [2024, 2023]; exports = []; contentTampered = false; saveResponse = undefined;
   vi.stubGlobal('crypto', webcrypto);
@@ -72,6 +106,8 @@ beforeEach(() => {
     const path = url.pathname;
     const wire = { path, query: url.searchParams, headers: new Headers(init.headers), method: init.method ?? 'GET', body: init.body ? JSON.parse(String(init.body)) : null };
     requests.push(wire);
+    if (path.startsWith('/api/pilot/trace/')) return traceResponse();
+    if (path.startsWith('/api/dossier/workflows/receipts/')) return receiptResponse();
     if (path.startsWith('/api/properties/parcel/')) return json({ id: 'property-1', parcelNumber: decodeURIComponent(path.split('/').pop()!), address: 'Synthetic test parcel', ownerName: 'Synthetic Owner', assessedValue: 100000, landValue: 40000, improvementValue: 60000, marketValue: 100000, taxYear: 2024 });
     if (path.startsWith('/api/dossier/workflows/context')) {
       const county = wire.headers.get('Authorization') === `Bearer ${token(countyB)}` ? countyB : countyA;
@@ -94,6 +130,220 @@ beforeEach(() => {
 afterEach(async () => { await act(async () => {}); cleanup(); vi.unstubAllGlobals(); });
 
 describe('persisted county workflow screens', () => {
+  it('refuses a receipt whose output study is not the selected saved draft study', async () => {
+    const wrong = receipt();
+    wrong.outputs.studyId = 'other-study';
+    drafts = [{ ...draft, receipt: wrong }];
+    await mount(wrapper(<DossierSuiteHome />));
+    const panel = await screen.findByRole('region', { name: 'Saved draft receipt' });
+    expect(panel).toHaveTextContent('does not match');
+    expect(within(panel).queryByRole('button', { name: 'Inspect persisted receipt' })).not.toBeInTheDocument();
+  });
+  it('preserves the backend save refusal code, actual CID and elapsed time without a receipt', async () => {
+    drafts = [];
+    saveResponse = async () => json({ code: 'STORAGE_UNAVAILABLE', error: 'No completed result was committed. Retry with the same requestId.' }, 503);
+    await mount(wrapper(<DossierSuiteHome />));
+    await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'Save study snapshot' })); });
+    const panel = await screen.findByRole('region', { name: 'Action evidence: assessment_draft.create' });
+    expect(panel).toHaveTextContent('STORAGE_UNAVAILABLE');
+    expect(panel).toHaveTextContent('corr-http');
+    expect(panel).toHaveTextContent(/Client elapsed: [\d.]+ ms/);
+    expect(screen.queryByRole('region', { name: 'Saved draft receipt' })).not.toBeInTheDocument();
+  });
+  it.each([false, true])('binds the export receipt to the exact hash-verified immutable JSON (mismatch=%s)', async mismatch => {
+    const savedReceipt = receipt(packageRef, 'export_equalization_package');
+    const contentReceipt = mismatch ? { ...savedReceipt, actorId: 'different-actor' } : savedReceipt;
+    const raw = JSON.stringify({ records: persistedContent.records, receipt: contentReceipt });
+    const savedExport = { ...exported, receipt: savedReceipt, contentHash: createHash('sha256').update(raw).digest('hex') };
+    const priorFetch = fetch;
+    vi.stubGlobal('fetch', async (input: string | URL | Request, init?: RequestInit) => {
+      const path = new URL(String(input), 'http://localhost').pathname;
+      if (path === exported.payloadRef) return json(savedExport);
+      if (path === exported.downloadUrl) return jsonResponse(raw);
+      return priorFetch(input, init);
+    });
+    invokeResponse = async () => json({ ok: true, result: savedExport, correlationId: 'export-receipt-cid' });
+    await mount(wrapper(<DossierSuiteHome />));
+    await act(async () => { fireEvent.click(screen.getByLabelText('Confirm equalization export')); });
+    await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'Equalization Package' })); });
+    const panel = await screen.findByRole('region', { name: 'Saved export receipt' });
+    expect(panel).toHaveTextContent('committed-cid');
+    await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'Inspect output' })); });
+    if (mismatch) {
+      expect(await screen.findByRole('alert')).toHaveTextContent('embedded receipt differs');
+      expect(screen.queryByLabelText('Export JSON')).not.toBeInTheDocument();
+    } else expect((await screen.findByLabelText('Export JSON')).textContent).toBe(raw);
+  });
+
+  it.each(['county', 'actor', 'cid', 'operation'])('rejects trace metadata with mismatched %s', async field => {
+    const event = { eventId: 'bad-event', type: 'tool_failed', toolId: 'export_equalization_package', correlationId: 'trace-cid',
+      summary: 'Mismatched trace payload', timestamp: '2026-09-07T12:00:00Z', context: { countyId: countyA, userId: 'operator-1', mode: 'pilot' } };
+    if (field === 'county') event.context.countyId = countyB;
+    if (field === 'actor') event.context.userId = 'other-actor';
+    if (field === 'cid') event.correlationId = 'other-cid';
+    if (field === 'operation') event.toolId = 'other-tool';
+    traceResponse = async () => json({ events: [event] });
+    invokeResponse = async () => json({ ok: false, correlationId: 'trace-cid', error: 'Refused', errorCode: 'REFUSED' });
+    await mount(wrapper(<DossierSuiteHome />));
+    await act(async () => { fireEvent.click(screen.getByLabelText('Confirm equalization export')); });
+    await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'Equalization Package' })); });
+    await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'View action evidence' })); });
+    expect(await screen.findByTestId('evidence-error')).toHaveTextContent('does not match');
+    expect(screen.queryByText('Mismatched trace payload')).not.toBeInTheDocument();
+  });
+
+  it('does not resurrect a held trace response after year A to B to A', async () => {
+    let finish!: (value: Response) => void;
+    traceResponse = () => new Promise(resolve => { finish = resolve; });
+    invokeResponse = async () => json({ ok: true, result: exported, correlationId: 'trace-cid' });
+    await mount(wrapper(<DossierSuiteHome />));
+    await act(async () => { fireEvent.click(screen.getByLabelText('Confirm equalization export')); });
+    await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'Equalization Package' })); });
+    await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'View action evidence' })); });
+    await waitFor(() => expect(finish).toBeTypeOf('function'));
+    await act(async () => { fireEvent.change(screen.getByLabelText('Assessment year'), { target: { value: '2023' } }); });
+    await act(async () => { fireEvent.change(screen.getByLabelText('Assessment year'), { target: { value: '2024' } }); });
+    await act(async () => { finish(json({ events: [{ eventId: 'late', type: 'tool_completed', toolId: 'export_equalization_package', correlationId: 'trace-cid', summary: 'Stale trace', timestamp: '2026-09-07T12:00:00Z', context: { countyId: countyA, userId: 'operator-1', mode: 'pilot' } }] })); });
+    expect(screen.queryByTestId('timeline-event')).not.toBeInTheDocument();
+    expect(screen.queryByRole('region', { name: 'Action evidence: export_equalization_package' })).not.toBeInTheDocument();
+  });
+  it('retrieves and copies actual scoped trace metadata, then clears it on context change', async () => {
+    const events = [{ eventId: 'real-event-1', type: 'tool_completed', toolId: 'export_equalization_package', correlationId: 'trace-cid',
+      summary: 'Actual execution event fixture', timestamp: '2026-09-07T12:00:00Z', context: { countyId: countyA, userId: 'operator-1', mode: 'pilot' } }];
+    traceResponse = async () => json({ events });
+    invokeResponse = async () => json({ ok: true, result: exported, correlationId: 'trace-cid' });
+    const copied: string[] = [];
+    vi.stubGlobal('navigator', Object.assign(Object.create(navigator), { clipboard: { writeText: async (text: string) => { copied.push(text); } } }));
+    await mount(wrapper(<DossierSuiteHome />));
+    await act(async () => { fireEvent.click(screen.getByLabelText('Confirm equalization export')); });
+    await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'Equalization Package' })); });
+    const panel = await screen.findByRole('region', { name: 'Action evidence: export_equalization_package' });
+    await act(async () => { fireEvent.click(within(panel).getByRole('button', { name: 'View action evidence' })); });
+    expect(await within(panel).findByTestId('event-summary')).toHaveTextContent('Actual execution event fixture');
+    await act(async () => { fireEvent.click(within(panel).getByRole('button', { name: 'Copy trace chain' })); });
+    expect(JSON.parse(copied[0])).toEqual([{ ...events[0], type: 'tool_succeeded' }]);
+    expect(requests.find(r => r.path === '/api/pilot/trace/trace-cid')?.headers.get('Authorization')).toBe('Bearer ' + token());
+    await act(async () => { fireEvent.change(screen.getByLabelText('Assessment year'), { target: { value: '2023' } }); });
+    expect(screen.queryByTestId('event-summary')).not.toBeInTheDocument();
+  });
+
+  it('invalidates an in-flight receipt lookup through year A to B to A', async () => {
+    drafts = [{ ...draft, receipt: receipt() } as typeof draft];
+    let finish!: (value: Response) => void;
+    receiptResponse = () => new Promise(resolve => { finish = resolve; });
+    await mount(wrapper(<DossierSuiteHome />));
+    await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'Inspect persisted receipt' })); });
+    await waitFor(() => expect(finish).toBeTypeOf('function'));
+    await act(async () => { fireEvent.change(screen.getByLabelText('Assessment year'), { target: { value: '2023' } }); });
+    await act(async () => { fireEvent.change(screen.getByLabelText('Assessment year'), { target: { value: '2024' } }); });
+    await act(async () => { finish(auditReceiptResponse()); });
+    expect(screen.queryByLabelText('Persisted receipt JSON')).not.toBeInTheDocument();
+  });
+
+  it('rejects trace metadata from a different actor or county without displaying it', async () => {
+    invokeResponse = async () => json({ ok: true, result: exported, correlationId: 'trace-cid' });
+    traceResponse = async () => json({ events: [{ eventId: 'wrong', type: 'tool_completed', toolId: 'export_equalization_package', correlationId: 'trace-cid',
+      summary: 'Wrong county secret fixture', timestamp: '2026-09-07T12:00:00Z', context: { countyId: countyB, userId: 'other', mode: 'pilot' } }] });
+    await mount(wrapper(<DossierSuiteHome />));
+    await act(async () => { fireEvent.click(screen.getByLabelText('Confirm equalization export')); });
+    await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'Equalization Package' })); });
+    await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'View action evidence' })); });
+    expect(await screen.findByTestId('evidence-error')).toHaveTextContent('does not match');
+    expect(screen.queryByText('Wrong county secret fixture')).not.toBeInTheDocument();
+  });
+
+  it('shows save success CID and elapsed time while adopting the newly saved immutable draft', async () => {
+    drafts = [];
+    saveResponse = async () => { const saved = { ...draft, receipt: receipt() }; drafts = [saved]; return json(saved, 201); };
+    await mount(wrapper(<DossierSuiteHome />));
+    await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'Save study snapshot' })); });
+    expect(await screen.findByRole('region', { name: 'Action evidence: assessment_draft.create' })).toHaveTextContent('corr-http');
+    expect(screen.getByRole('region', { name: 'Saved draft receipt' })).toHaveTextContent('committed-cid');
+    expect(screen.getByLabelText('Confirm equalization export')).not.toBeChecked();
+  });
+  it.each([true, false])('shows actual action CID, server duration and outcome (ok=%s)', async ok => {
+    invokeResponse = async () => json({ ok, correlationId: 'metrics-cid', result: ok ? exported : undefined,
+      error: ok ? undefined : 'Controlled logical refusal', errorCode: ok ? undefined : 'REFUSED',
+      metrics: { operation: 'export_equalization_package', correlationId: 'metrics-cid', durationMs: 17.25,
+        measurement: 'pilot-request-to-response', environment: 'development', ok, errorCode: ok ? null : 'REFUSED' } });
+    await mount(wrapper(<DossierSuiteHome />));
+    await act(async () => { fireEvent.click(screen.getByLabelText('Confirm equalization export')); });
+    await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'Equalization Package' })); });
+    const panel = await screen.findByRole('region', { name: 'Action evidence: export_equalization_package' });
+    expect(panel).toHaveTextContent('metrics-cid');
+    expect(panel).toHaveTextContent('Server duration: 17.25 ms');
+    expect(panel).toHaveTextContent('development');
+    expect(panel).toHaveTextContent(/Client elapsed: [\d.]+ ms/);
+    expect(within(panel).getByRole('button', { name: /Copy correlation ID/i })).toBeEnabled();
+    if (!ok) expect(panel).toHaveTextContent('REFUSED');
+  });
+
+  it.each([{ correlationId: 'wrong' }, { operation: 'other-operation' }, { durationMs: -1 }, { durationMs: '17' }, { ok: false }])('does not attribute invalid server metrics %j to the action', async invalid => {
+    invokeResponse = async () => json({ ok: true, result: exported, correlationId: 'metrics-cid', metrics: {
+      operation: 'export_equalization_package', correlationId: 'metrics-cid', durationMs: 17.25,
+      measurement: 'pilot-request-to-response', environment: 'development', ok: true, errorCode: null, ...invalid } });
+    await mount(wrapper(<DossierSuiteHome />));
+    await act(async () => { fireEvent.click(screen.getByLabelText('Confirm equalization export')); });
+    await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'Equalization Package' })); });
+    const panel = await screen.findByRole('region', { name: 'Action evidence: export_equalization_package' });
+    expect(panel).not.toHaveTextContent('Server duration:');
+    expect(panel).toHaveTextContent('Server metrics unavailable');
+  });
+
+  it('retains the actual outgoing CID and measured client failure without inventing server metrics or a trace', async () => {
+    invokeResponse = async () => { throw new TypeError('Network disconnected'); };
+    await mount(wrapper(<DossierSuiteHome />));
+    await act(async () => { fireEvent.click(screen.getByLabelText('Confirm equalization export')); });
+    await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'Equalization Package' })); });
+    const panel = await screen.findByRole('region', { name: 'Action evidence: export_equalization_package' });
+    expect(panel).toHaveTextContent('Network disconnected');
+    expect(panel).toHaveTextContent(/Client elapsed: [\d.]+ ms/);
+    const outgoingCid = requests.find(request => request.path === '/api/pilot/invoke')?.headers.get('X-Correlation-ID');
+    expect(outgoingCid).toMatch(/^[a-f0-9-]{36}$/);
+    expect(panel).toHaveTextContent(outgoingCid!);
+    expect(within(panel).getByRole('button', { name: /Copy correlation ID/i })).toBeEnabled();
+    expect(panel).toHaveTextContent('Server metrics unavailable');
+    expect(within(panel).queryByTestId('timeline-event')).not.toBeInTheDocument();
+    expect(within(panel).queryByRole('button', { name: 'Copy trace chain' })).not.toBeInTheDocument();
+  });
+
+  it('retrieves a saved draft receipt and actual audit evidence after remount, without claiming a trace exists', async () => {
+    const saved = { ...draft, receipt: receipt() };
+    drafts = [saved];
+    const first = await mount(wrapper(<DossierSuiteHome />));
+    first.unmount();
+    await mount(wrapper(<DossierSuiteHome />));
+    const panel = await screen.findByRole('region', { name: 'Saved draft receipt' });
+    expect(panel).toHaveTextContent('original-operator');
+    expect(panel).toHaveTextContent('committed-cid');
+    expect(panel).toHaveTextContent('Trace availability not verified');
+    await act(async () => { fireEvent.click(within(panel).getByRole('button', { name: 'Inspect persisted receipt' })); });
+    expect(await within(panel).findByLabelText('Persisted receipt JSON')).toHaveTextContent('Actual audit row fixture');
+    expect(within(panel).getAllByRole('button', { name: 'View action evidence' })).toHaveLength(1);
+    const read = requests.find(r => r.path === `/api/dossier/workflows/receipts/${draftId}`)!;
+    expect(read.query.get('county')).toBe(countyA);
+    expect(read.headers.get('Authorization')).toBe('Bearer ' + token());
+    expect(read.headers.get('X-Correlation-ID')).toMatch(/^[a-f0-9-]{36}$/);
+    const cids = requests.filter(r => r.path.startsWith('/api/dossier/workflows/')).map(r => r.headers.get('X-Correlation-ID'));
+    expect(new Set(cids).size).toBe(cids.length);
+  });
+
+  it('explicitly reports missing legacy receipts without reconstructing one', async () => {
+    await mount(wrapper(<DossierSuiteHome />));
+    const panel = await screen.findByRole('region', { name: 'Saved draft receipt' });
+    expect(panel).toHaveTextContent('Receipt unavailable');
+    expect(within(panel).queryByRole('button', { name: 'Inspect persisted receipt' })).not.toBeInTheDocument();
+  });
+
+  it('rejects an authorized receipt response for a different county', async () => {
+    drafts = [{ ...draft, receipt: receipt() } as typeof draft];
+    receiptResponse = async () => auditReceiptResponse({ ...receipt(), countyId: countyB });
+    await mount(wrapper(<DossierSuiteHome />));
+    const panel = await screen.findByRole('region', { name: 'Saved draft receipt' });
+    await act(async () => { fireEvent.click(within(panel).getByRole('button', { name: 'Inspect persisted receipt' })); });
+    expect(await within(panel).findByRole('alert')).toHaveTextContent(/receipt.*match/i);
+    expect(within(panel).queryByLabelText('Persisted receipt JSON')).not.toBeInTheDocument();
+  });
   it.each(['', appealId])('Property Dossier county audit omits subjectId even with appeal input %j', async selectedAppeal => {
     const countyAudit = { ...exported, draftId: null, revision: null };
     invokeResponse = async wire => wire.body.params.subjectId
@@ -123,7 +373,7 @@ describe('persisted county workflow screens', () => {
     const click = vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => {});
     try {
       invokeResponse = async () => json({ ok: true, result: { ...actualPacket, payloadRef: 'https://untrusted.invalid/packet' }, correlationId: 'packet-read' });
-      packetResponse = async () => new Response(raw, { headers: { 'Content-Type': 'application/json' } });
+      packetResponse = async () => jsonResponse(raw);
       await mount(wrapper(<DossierSuiteHome />));
       await act(async () => { fireEvent.change(screen.getByLabelText('Appeal ID'), { target: { value: appealId } }); });
       await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'Open Packet', exact: true })); });

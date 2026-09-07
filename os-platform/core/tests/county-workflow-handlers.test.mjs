@@ -10,8 +10,16 @@ const { registerR1Handlers } = require('../pilot/handlers.real.js');
 test('live workflow ingress rejects schema violations before tracing or backend dispatch', { timeout: 30000 }, async () => {
   const county = '11111111-1111-1111-1111-111111111111';
   let dispatches = 0;
+  const downstreamCids = [];
   const backend = createServer((req, res) => {
+    if (req.url.startsWith('/api/dossier/workflows/context?')) {
+      req.resume();
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ countyId: county }));
+      return;
+    }
     dispatches++;
+    downstreamCids.push(req.headers['x-correlation-id']);
     req.resume();
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ countyId: county, taxYear: 2024 }));
@@ -34,8 +42,10 @@ test('live workflow ingress rejects schema violations before tracing or backend 
   const base = `http://127.0.0.1:${port}`;
   let roleHeader = 'Developer,Assessor,GovernmentUser,appraiser';
   const post = async (path, body) => {
+    // Parser fixture only. The real browser proof obtains its JWT from the actual API issuer.
+    const token = `e30.${Buffer.from(JSON.stringify({ sub: 'synthetic-operator', countyId: county, roles: roleHeader?.split(',') ?? [] })).toString('base64url')}.signature`;
     const response = await fetch(base + path, { method: 'POST', signal: AbortSignal.timeout(5000),
-      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer synthetic-test', 'x-county-id': county, 'x-user-id': 'synthetic-operator', ...(roleHeader ? { 'x-role': roleHeader } : {}) },
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}`, 'X-Correlation-ID': 'tf-controlled-live-ingress', 'x-county-id': county, 'x-user-id': 'forged-header-operator', 'x-role': 'administrator', 'x-roles': 'administrator' },
       body: JSON.stringify(body) });
     assert.equal(response.status, 200);
     return response.json();
@@ -70,6 +80,9 @@ test('live workflow ingress rejects schema violations before tracing or backend 
         const invocation = await post('/pilot/invoke', { ...request, params });
         assert.equal(invocation.ok, false);
         assert.equal(invocation.errorCode, 'PARAMS_SCHEMA_INVALID');
+        assert.equal(invocation.metrics.operation, request.toolId);
+        assert.equal(invocation.metrics.ok, false);
+        assert.equal(invocation.metrics.errorCode, 'PARAMS_SCHEMA_INVALID');
         assert.equal(invocation.result, null);
         assert.equal(dispatches, 0, 'invalid input must never dispatch to backend');
       }
@@ -81,8 +94,13 @@ test('live workflow ingress rejects schema violations before tracing or backend 
       assert.equal(validation.valid, true, JSON.stringify({ toolId: request.toolId, validation }));
       const invocation = await post('/pilot/invoke', request);
       assert.equal(invocation.ok, true, JSON.stringify({ toolId: request.toolId, invocation }));
+      assert.equal(invocation.correlationId, 'tf-controlled-live-ingress');
+      assert.equal(invocation.metrics.operation, request.toolId);
+      assert.equal(invocation.metrics.ok, true);
+      assert.ok(Number.isFinite(invocation.metrics.durationMs) && invocation.metrics.durationMs >= 0);
     }
     assert.equal(dispatches, 4, 'valid schemas must still reach the four actual registered adapters');
+    assert.deepEqual(downstreamCids, Array(4).fill('tf-controlled-live-ingress'));
     for (const deniedRoles of [undefined, 'Developer', 'GovernmentUser', 'Developer,Assessor,GovernmentUser', 'Developer,Treasurer']) {
       roleHeader = deniedRoles;
       assert.equal((await post('/pilot/validate', cases[0])).valid, false, 'bearer without assessor role is not an appraiser');

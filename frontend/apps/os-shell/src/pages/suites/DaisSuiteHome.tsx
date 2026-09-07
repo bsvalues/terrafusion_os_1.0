@@ -14,7 +14,8 @@
 
 import { useEffect, useState } from 'react';
 import { useDossierWorkflowContext, useWorkflowAction } from '../../hooks/useDossierWorkflowContext';
-import { WorkflowContextPicker } from '../../components/dossier/WorkflowContextPicker';
+import { WorkflowContextPicker } from '../../components/workflow/WorkflowContextPicker';
+import { WorkflowActionEvidence } from '../../components/workflow/WorkflowEvidence';
 import RollReadiness from '../dais/RollReadiness';
 import { ParcelContextBanner } from '../../components/workbench/ParcelContextBanner';
 import { SuiteModuleGrid, type SuiteModuleDef } from '../../components/suites/SuiteModuleGrid';
@@ -421,18 +422,7 @@ export default function DaisSuiteHome({ metadata }: DaisSuiteHomeProps = {}) {
               </div>
             )}
 
-            {briefState.status === 'error' && (
-              <div
-                className="mt-4 rounded-lg border px-4 py-3 text-sm"
-                style={{
-                  borderColor: 'hsl(var(--tf-suite-dais) / 0.24)',
-                  background: 'hsl(var(--tf-suite-dais) / 0.08)',
-                  color: 'hsl(var(--tf-suite-dais))',
-                }}
-              >
-                {briefState.error?.message}
-              </div>
-            )}
+            <WorkflowActionEvidence state={briefState} context={workflow} />
           </div>
         </section>
 

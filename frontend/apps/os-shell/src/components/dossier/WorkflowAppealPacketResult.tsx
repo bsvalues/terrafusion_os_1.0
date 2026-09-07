@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { getToken } from '../../auth/authStorage';
-import { useWorkflowGeneration, type DossierWorkflowContext } from '../../hooks/useDossierWorkflowContext';
+import { useWorkflowGeneration, useWorkflowTask, type DossierWorkflowContext } from '../../hooks/useDossierWorkflowContext';
+import { WorkflowActionEvidence } from '../workflow/WorkflowEvidence';
 import { dossierWorkflowService, requireWorkflowAppealPacket, type WorkflowAppealPacket } from '../../services/dossierWorkflowService';
 
 export function WorkflowAppealPacketResult({ result, context }: { result: WorkflowAppealPacket; context: DossierWorkflowContext }) {
@@ -8,23 +9,26 @@ export function WorkflowAppealPacketResult({ result, context }: { result: Workfl
   const epoch = generation.current.value;
   const [output, setOutput] = useState<{ epoch: number; loading?: boolean; content?: string; error?: string }>({ epoch });
   const current = output.epoch === epoch ? output : { epoch };
+  const task = useWorkflowTask(context, 'appeal_packet.retrieve', JSON.stringify([result.packetRef, result.appealId, result.parcelId]));
   const retrieve = async (download: boolean) => {
     if (!context.ready || getToken() !== context.token) return;
     const ticket = generation.current.value;
     setOutput({ epoch: ticket, loading: true });
-    try {
-      const bytes = await dossierWorkflowService.appealPacketContent(context.token, context.countyId, context.taxYear!, result.appealId, result.parcelId);
-      if (generation.current.value !== ticket || getToken() !== context.token) return;
+    const response = await task.run(async (observe, active) => {
+      const bytes = await dossierWorkflowService.appealPacketContent(context.token, context.countyId, context.taxYear!, result.appealId, result.parcelId, observe);
+      if (!active()) return;
       const content = new TextDecoder('utf-8', { fatal: true }).decode(bytes);
       requireWorkflowAppealPacket(JSON.parse(content), context.countyId, context.taxYear!, result.appealId, result.parcelId, result.packetRef);
-      setOutput({ epoch: ticket, content });
+      return { bytes, content };
+    });
+    if (generation.current.value !== ticket || getToken() !== context.token) return;
+    setOutput({ epoch: ticket, content: response?.result?.content });
+    if (response?.result) {
       if (download) {
-        const url = URL.createObjectURL(new Blob([bytes], { type: 'application/json' }));
+        const url = URL.createObjectURL(new Blob([response.result.bytes], { type: 'application/json' }));
         const link = document.createElement('a'); link.href = url; link.download = `appeal-packet-${result.packetRef}.json`; link.click();
         URL.revokeObjectURL(url);
       }
-    } catch (error) {
-      if (generation.current.value === ticket && getToken() === context.token) setOutput({ epoch: ticket, error: error instanceof Error ? error.message : 'Packet unavailable.' });
     }
   };
   return <section aria-label="Appeal packet records" className="my-3 space-y-2 rounded border p-3">
@@ -35,7 +39,7 @@ export function WorkflowAppealPacketResult({ result, context }: { result: Workfl
     <button type="button" disabled={current.loading || !context.ready} onClick={() => void retrieve(false)}>Inspect packet content</button>{' '}
     <button type="button" disabled={current.loading || !context.ready} onClick={() => void retrieve(true)}>Download packet JSON</button>
     {current.loading && <p role="status">Retrieving authorized packet records…</p>}
-    {current.error && <p role="alert">{current.error}</p>}
+    <WorkflowActionEvidence state={task.state} context={context} />
     {current.content && <pre aria-label="Appeal packet JSON" className="max-h-80 overflow-auto whitespace-pre-wrap text-xs">{current.content}</pre>}
   </section>;
 }
