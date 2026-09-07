@@ -15,6 +15,7 @@ import { fileURLToPath } from 'node:url';
 const __dirname = fileURLToPath(new URL('.', import.meta.url));
 const MANIFEST_PATH = resolve(__dirname, '../../../tools/registry/terrapilot.tools.json');
 const MATURITY_PATH = resolve(__dirname, '../../../tools/registry/tool-maturity.json');
+const STAGED_PATH = resolve(__dirname, '../../../tools/registry/terrapilot.tools.forward-staged.json');
 
 const VALID_STATES = new Set([
   'declared',
@@ -34,16 +35,19 @@ const STATE_TO_LEVEL = {
 
 const manifest = JSON.parse(readFileSync(MANIFEST_PATH, 'utf8'));
 const maturity = JSON.parse(readFileSync(MATURITY_PATH, 'utf8'));
+const staged = JSON.parse(readFileSync(STAGED_PATH, 'utf8'));
 
 describe('TerraPilot tool maturity metadata', () => {
-  it('has one maturity entry for every manifest tool and no extras', () => {
-    const manifestIds = manifest.tools.map(tool => tool.toolId).sort();
+  it('has one maturity entry for every active or preserved staged tool and no extras', () => {
+    // Metadata preserves declarations; only the active manifest is runtime-loaded.
+    const manifestIds = [...manifest.tools, ...staged.tools].map(tool => tool.toolId).sort();
+    assert.strictEqual(new Set(manifestIds).size, manifestIds.length, 'active/staged identities must be disjoint and unique');
     const maturityIds = maturity.tools.map(tool => tool.toolId).sort();
 
     assert.deepStrictEqual(
       maturityIds,
       manifestIds,
-      'tool-maturity.json must exactly match manifest tool IDs'
+      'tool-maturity.json must exactly match the active and preserved staged tool IDs'
     );
   });
 

@@ -220,7 +220,7 @@ export const PropertyWorkbench: React.FC<PropertyWorkbenchProps> = ({ className 
 
   /** Tabs filtered by role visibility — order preserved, never mutated */
   const filteredTabs = useMemo(
-    () => WORKBENCH_TABS.filter((tab) => visibleTabs.includes(tab.id)),
+    () => WORKBENCH_TABS.filter((tab) => !['clerk', 'treasury', 'audit'].includes(tab.id) && (String(tab.id) === 'pilot' || visibleTabs.includes(tab.id))),
     [visibleTabs]
   );
 

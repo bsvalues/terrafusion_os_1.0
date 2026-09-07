@@ -30,6 +30,10 @@ public class DossierPacket
   public string Status { get; set; } = "draft";
 
   public double CompletenessPercent { get; set; }
+  /// <summary>Explicit assessment context; legacy packets remain unassigned.</summary>
+  public int? TaxYear { get; set; }
+  /// <summary>Explicit Dais appeal handoff. Never inferred from ParcelId.</summary>
+  public Guid? AppealId { get; set; }
   public int SatisfiedCount { get; set; }
   public int TotalRequired { get; set; }
 

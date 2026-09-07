@@ -337,8 +337,9 @@ class ToolRunner {
      * Execute a tool with full enforcement and tracing.
      */
     async execute(input) {
-        const correlationId = (0, crypto_1.randomUUID)();
         const { toolId, params, context } = input;
+        const correlationId = typeof context.correlationId === 'string' && /^[A-Za-z0-9._-]{1,128}$/.test(context.correlationId)
+            ? context.correlationId : (0, crypto_1.randomUUID)();
         // Lookup tool
         const tool = this.registry.getTool(toolId);
         if (!tool) {

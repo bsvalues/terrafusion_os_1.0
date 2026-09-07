@@ -62,6 +62,9 @@ const PropertyPilot = lazy(() => import('./pages/workbench/tabs/PropertyPilot'))
 const PropertyClerk = lazy(() => import('./pages/workbench/tabs/PropertyClerk'));
 const PropertyTreasury = lazy(() => import('./pages/workbench/tabs/PropertyTreasury'));
 const PropertyAudit = lazy(() => import('./pages/workbench/tabs/PropertyAudit'));
+// Preserve historical lazy declarations, but only their route names are active.
+export const HISTORICAL_RESERVED_OFFICES = { clerk: PropertyClerk, treasury: PropertyTreasury, audit: PropertyAudit };
+const ReservedOfficeUnavailable = lazy(() => import('./pages/workbench/PropertyWorkbenchWindow').then(module => ({ default: module.ReservedOfficeUnavailable })));
 
 // OPS-1-B: Sync Readiness Console — read-only operator control
 // surface that consumes the OPS-1-A backend facade. Per the OPS-1
@@ -224,9 +227,9 @@ const Router: React.FC = () => {
                       <Route path='forge' element={<PropertyForge />} />
                       <Route path='atlas' element={<PropertyAtlas />} />
                       <Route path='dais' element={<PropertyDais />} />
-                      <Route path='clerk' element={<PropertyClerk />} />
-                      <Route path='treasury' element={<PropertyTreasury />} />
-                      <Route path='audit' element={<PropertyAudit />} />
+                      <Route path='clerk' element={<ReservedOfficeUnavailable />} />
+                      <Route path='treasury' element={<ReservedOfficeUnavailable />} />
+                      <Route path='audit' element={<ReservedOfficeUnavailable />} />
                       <Route path='dossier' element={<PropertyDossier />} />
                       <Route path='pilot' element={<PropertyPilot />} />
                     </Route>

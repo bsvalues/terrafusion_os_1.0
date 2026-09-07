@@ -35,7 +35,8 @@ vi.mock('../../stores/desktopStore', () => ({
   useDesktopStore: () => ({ launchModule: vi.fn(), modules: [] }),
 }));
 
-vi.mock('../../auth/useAuthContext', () => ({
+vi.mock('../../auth/useAuthContext', async (importOriginal) => ({
+  ...await importOriginal<typeof import('../../auth/useAuthContext')>(),
   useAuthContext: vi.fn(() => ({
     isAuthenticated: true,
     userId: 'u-test',
@@ -116,5 +117,8 @@ describe('Wave 3 — Placeholder Integrity', () => {
     const match = hasPlaceholderText(container);
     expect(match, `DossierSuiteHome contains placeholder text matching /${match}/`).toBeNull();
     expect(screen.getByTestId('suite-dossier-root')).toBeDefined();
+    // The real optional auth hook must fail closed outside an AuthProvider.
+    expect(screen.getByText('Sign in with a county-scoped identity to use workflows.')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Equalization Package', exact: true })).toBeDisabled();
   });
 });

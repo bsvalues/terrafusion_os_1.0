@@ -1,0 +1,623 @@
+{
+  "$schema": "./terrapilot.tools.schema.json",
+  "version": "2.0.0",
+  "description": "Frozen future-office declarations preserved for review only; not an active runtime manifest.",
+  "activation": "not-authorized",
+  "sourceCommit": "e16572b09da89ca9f8e421ffadcb82aa211126e3",
+  "sourceManifest": "tools/registry/terrapilot.tools.json",
+  "tools": [
+    {
+      "toolId": "search_recorded_documents",
+      "displayName": "Search Recorded Documents",
+      "suite": "clerk",
+      "mode": "pilot",
+      "risk": "read_only",
+      "writeLane": null,
+      "touches": ["recording"],
+      "description": "Search clerk recordings by parcel, grantor, grantee, or document type",
+      "piiHandling": "sanitize",
+      "tracePolicy": "summary_only",
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "county": {
+            "type": "string",
+            "description": "County code"
+          },
+          "parcelId": {
+            "type": "string",
+            "description": "Parcel identifier"
+          },
+          "grantor": {
+            "type": "string",
+            "description": "Grantor name search"
+          },
+          "grantee": {
+            "type": "string",
+            "description": "Grantee name search"
+          },
+          "documentType": {
+            "type": "string",
+            "enum": ["deed", "lien", "mortgage", "easement", "all"],
+            "default": "all"
+          }
+        },
+        "required": ["county"]
+      },
+      "officeScope": "clerk"
+    },
+    {
+      "toolId": "get_title_chain",
+      "displayName": "Get Title Chain",
+      "suite": "clerk",
+      "mode": "muse",
+      "risk": "read_only",
+      "writeLane": null,
+      "touches": ["recording"],
+      "description": "Retrieve the chain of title for a parcel with chronological ownership history",
+      "piiHandling": "sanitize",
+      "tracePolicy": "summary_only",
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "county": {
+            "type": "string",
+            "description": "County code"
+          },
+          "parcelId": {
+            "type": "string",
+            "description": "Parcel identifier"
+          }
+        },
+        "required": ["county", "parcelId"]
+      },
+      "officeScope": "clerk"
+    },
+    {
+      "toolId": "explain_recording_fees",
+      "displayName": "Explain Recording Fees",
+      "suite": "clerk",
+      "mode": "muse",
+      "risk": "read_only",
+      "writeLane": null,
+      "touches": ["recording"],
+      "description": "Explain the fee schedule for document recording with statutory references",
+      "piiHandling": "none",
+      "tracePolicy": "summary_only",
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "county": {
+            "type": "string",
+            "description": "County code"
+          },
+          "documentType": {
+            "type": "string",
+            "enum": ["deed", "lien", "mortgage", "easement"]
+          },
+          "pageCount": {
+            "type": "integer",
+            "description": "Number of pages"
+          }
+        },
+        "required": ["county", "documentType"]
+      },
+      "officeScope": "clerk"
+    },
+    {
+      "toolId": "record_document",
+      "displayName": "Record Document",
+      "suite": "clerk",
+      "mode": "pilot",
+      "risk": "write_high",
+      "writeLane": "clerk",
+      "touches": ["recording"],
+      "description": "Record a new document (deed, lien, mortgage) in the county recording system",
+      "requiresConfirmation": true,
+      "reasonCodeRequired": true,
+      "reasonCodes": ["new_recording", "corrective_recording"],
+      "piiHandling": "sanitize",
+      "tracePolicy": "payload_ref",
+      "payloadStore": "clerk",
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "county": {
+            "type": "string",
+            "description": "County code"
+          },
+          "parcelId": {
+            "type": "string",
+            "description": "Parcel identifier"
+          },
+          "documentType": {
+            "type": "string",
+            "enum": ["deed", "lien", "mortgage", "easement"]
+          },
+          "grantor": {
+            "type": "string",
+            "description": "Grantor name"
+          },
+          "grantee": {
+            "type": "string",
+            "description": "Grantee name"
+          },
+          "consideration": {
+            "type": "number",
+            "description": "Consideration amount"
+          }
+        },
+        "required": ["county", "parcelId", "documentType", "grantor", "grantee"]
+      },
+      "officeScope": "clerk"
+    },
+    {
+      "toolId": "release_lien",
+      "displayName": "Release Lien",
+      "suite": "clerk",
+      "mode": "pilot",
+      "risk": "write_low",
+      "writeLane": "clerk",
+      "touches": ["recording"],
+      "description": "Release an existing lien on a parcel",
+      "requiresConfirmation": true,
+      "reasonCodeRequired": true,
+      "reasonCodes": ["satisfied", "discharged", "expired"],
+      "piiHandling": "sanitize",
+      "tracePolicy": "payload_ref",
+      "payloadStore": "clerk",
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "county": {
+            "type": "string",
+            "description": "County code"
+          },
+          "lienId": {
+            "type": "string",
+            "description": "Lien ID to release"
+          },
+          "releaseReason": {
+            "type": "string",
+            "description": "Reason for release"
+          }
+        },
+        "required": ["county", "lienId"]
+      },
+      "officeScope": "clerk"
+    },
+    {
+      "toolId": "summarize_parcel_recordings",
+      "displayName": "Summarize Parcel Recordings",
+      "suite": "clerk",
+      "mode": "muse",
+      "risk": "read_only",
+      "writeLane": null,
+      "touches": ["recording"],
+      "description": "Summarize all recordings for a parcel with narrative overview",
+      "piiHandling": "sanitize",
+      "tracePolicy": "summary_only",
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "county": {
+            "type": "string",
+            "description": "County code"
+          },
+          "parcelId": {
+            "type": "string",
+            "description": "Parcel identifier"
+          }
+        },
+        "required": ["county", "parcelId"]
+      },
+      "officeScope": "clerk"
+    },
+    {
+      "toolId": "get_tax_statement",
+      "displayName": "Get Tax Statement",
+      "suite": "treasury",
+      "mode": "pilot",
+      "risk": "read_only",
+      "writeLane": null,
+      "touches": ["tax"],
+      "description": "Retrieve the current property tax statement with levy breakdown",
+      "piiHandling": "sanitize",
+      "tracePolicy": "summary_only",
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "county": {
+            "type": "string",
+            "description": "County code"
+          },
+          "parcelId": {
+            "type": "string",
+            "description": "Parcel identifier"
+          },
+          "taxYear": {
+            "type": "integer",
+            "description": "Tax year"
+          }
+        },
+        "required": ["county", "parcelId"]
+      },
+      "officeScope": "treasurer"
+    },
+    {
+      "toolId": "explain_tax_breakdown",
+      "displayName": "Explain Tax Breakdown",
+      "suite": "treasury",
+      "mode": "muse",
+      "risk": "read_only",
+      "writeLane": null,
+      "touches": ["tax"],
+      "description": "Explain the levy components on a tax statement in plain language",
+      "piiHandling": "none",
+      "tracePolicy": "summary_only",
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "county": {
+            "type": "string",
+            "description": "County code"
+          },
+          "parcelId": {
+            "type": "string",
+            "description": "Parcel identifier"
+          },
+          "taxYear": {
+            "type": "integer",
+            "description": "Tax year"
+          }
+        },
+        "required": ["county", "parcelId"]
+      },
+      "officeScope": "treasurer"
+    },
+    {
+      "toolId": "record_payment",
+      "displayName": "Record Payment",
+      "suite": "treasury",
+      "mode": "pilot",
+      "risk": "write_low",
+      "writeLane": "treasury",
+      "touches": ["tax"],
+      "description": "Record a property tax payment",
+      "requiresConfirmation": true,
+      "reasonCodeRequired": true,
+      "reasonCodes": ["regular_payment", "partial_payment", "penalty_waiver"],
+      "piiHandling": "sanitize",
+      "tracePolicy": "payload_ref",
+      "payloadStore": "treasury",
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "county": {
+            "type": "string",
+            "description": "County code"
+          },
+          "parcelId": {
+            "type": "string",
+            "description": "Parcel identifier"
+          },
+          "amount": {
+            "type": "number",
+            "description": "Payment amount"
+          },
+          "paymentMethod": {
+            "type": "string",
+            "enum": ["check", "cash", "electronic", "escrow"],
+            "default": "check"
+          }
+        },
+        "required": ["county", "parcelId", "amount"]
+      },
+      "officeScope": "treasurer"
+    },
+    {
+      "toolId": "check_delinquency_status",
+      "displayName": "Check Delinquency Status",
+      "suite": "treasury",
+      "mode": "pilot",
+      "risk": "read_only",
+      "writeLane": null,
+      "touches": ["tax"],
+      "description": "Check delinquency status and deadlines for a parcel",
+      "piiHandling": "sanitize",
+      "tracePolicy": "summary_only",
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "county": {
+            "type": "string",
+            "description": "County code"
+          },
+          "parcelId": {
+            "type": "string",
+            "description": "Parcel identifier"
+          }
+        },
+        "required": ["county", "parcelId"]
+      },
+      "officeScope": "treasurer"
+    },
+    {
+      "toolId": "create_installment_plan",
+      "displayName": "Create Installment Plan",
+      "suite": "treasury",
+      "mode": "pilot",
+      "risk": "write_low",
+      "writeLane": "treasury",
+      "touches": ["tax"],
+      "description": "Create a statutory-compliant installment payment plan for delinquent taxes",
+      "requiresConfirmation": true,
+      "reasonCodeRequired": true,
+      "reasonCodes": ["hardship", "standard_plan"],
+      "piiHandling": "sanitize",
+      "tracePolicy": "payload_ref",
+      "payloadStore": "treasury",
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "county": {
+            "type": "string",
+            "description": "County code"
+          },
+          "parcelId": {
+            "type": "string",
+            "description": "Parcel identifier"
+          },
+          "numberOfPayments": {
+            "type": "integer",
+            "description": "Number of installments",
+            "default": 12
+          }
+        },
+        "required": ["county", "parcelId"]
+      },
+      "officeScope": "treasurer"
+    },
+    {
+      "toolId": "summarize_collection_stats",
+      "displayName": "Summarize Collection Stats",
+      "suite": "treasury",
+      "mode": "muse",
+      "risk": "read_only",
+      "writeLane": null,
+      "touches": ["tax"],
+      "description": "Summarize tax collection statistics for the county",
+      "piiHandling": "none",
+      "tracePolicy": "summary_only",
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "county": {
+            "type": "string",
+            "description": "County code"
+          },
+          "taxYear": {
+            "type": "integer",
+            "description": "Tax year"
+          }
+        },
+        "required": ["county"]
+      },
+      "officeScope": "treasurer"
+    },
+    {
+      "toolId": "initiate_tax_sale",
+      "displayName": "Initiate Tax Sale",
+      "suite": "treasury",
+      "mode": "pilot",
+      "risk": "write_high",
+      "writeLane": "treasury",
+      "touches": ["tax"],
+      "description": "Initiate tax sale process for delinquent property per RCW 84.64",
+      "requiresConfirmation": true,
+      "reasonCodeRequired": true,
+      "reasonCodes": ["statutory_delinquency", "three_year_default"],
+      "piiHandling": "sanitize",
+      "tracePolicy": "payload_ref",
+      "payloadStore": "treasury",
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "county": {
+            "type": "string",
+            "description": "County code"
+          },
+          "parcelId": {
+            "type": "string",
+            "description": "Parcel identifier"
+          },
+          "delinquentYears": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            },
+            "description": "Delinquent tax years"
+          }
+        },
+        "required": ["county", "parcelId", "delinquentYears"]
+      },
+      "officeScope": "treasurer"
+    },
+    {
+      "toolId": "audit_roll_summary",
+      "displayName": "Audit Roll Summary",
+      "suite": "audit",
+      "mode": "muse",
+      "risk": "read_only",
+      "writeLane": null,
+      "touches": ["compliance"],
+      "description": "Summarize assessment roll audit status with parcel statistics",
+      "piiHandling": "none",
+      "tracePolicy": "summary_only",
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "county": {
+            "type": "string",
+            "description": "County code"
+          },
+          "taxYear": {
+            "type": "integer",
+            "description": "Tax year"
+          }
+        },
+        "required": ["county", "taxYear"]
+      },
+      "officeScope": "auditor"
+    },
+    {
+      "toolId": "check_levy_compliance",
+      "displayName": "Check Levy Compliance",
+      "suite": "audit",
+      "mode": "pilot",
+      "risk": "read_only",
+      "writeLane": null,
+      "touches": ["compliance"],
+      "description": "Verify levy limit compliance against RCW 84.52 and 84.55",
+      "piiHandling": "none",
+      "tracePolicy": "summary_only",
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "county": {
+            "type": "string",
+            "description": "County code"
+          },
+          "taxYear": {
+            "type": "integer",
+            "description": "Tax year"
+          },
+          "districtCode": {
+            "type": "string",
+            "description": "Taxing district code"
+          }
+        },
+        "required": ["county", "taxYear"]
+      },
+      "officeScope": "auditor"
+    },
+    {
+      "toolId": "submit_audit_finding",
+      "displayName": "Submit Audit Finding",
+      "suite": "audit",
+      "mode": "pilot",
+      "risk": "write_low",
+      "writeLane": "audit",
+      "touches": ["compliance"],
+      "description": "Submit an audit finding for a parcel or district",
+      "requiresConfirmation": true,
+      "reasonCodeRequired": true,
+      "reasonCodes": [
+        "valuation_discrepancy",
+        "procedural_gap",
+        "statutory_violation"
+      ],
+      "piiHandling": "sanitize",
+      "tracePolicy": "payload_ref",
+      "payloadStore": "audit",
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "county": {
+            "type": "string",
+            "description": "County code"
+          },
+          "parcelId": {
+            "type": "string",
+            "description": "Parcel identifier (optional for district-level)"
+          },
+          "findingType": {
+            "type": "string",
+            "enum": ["valuation", "procedural", "statutory"]
+          },
+          "description": {
+            "type": "string",
+            "description": "Finding description"
+          },
+          "severity": {
+            "type": "string",
+            "enum": ["low", "medium", "high", "critical"],
+            "default": "medium"
+          }
+        },
+        "required": ["county", "findingType", "description"]
+      },
+      "officeScope": "auditor"
+    },
+    {
+      "toolId": "reconcile_cross_office",
+      "displayName": "Reconcile Cross-Office",
+      "suite": "audit",
+      "mode": "pilot",
+      "risk": "write_high",
+      "writeLane": "audit",
+      "touches": ["compliance"],
+      "description": "Cross-office financial reconciliation between Assessor values and Treasurer collections",
+      "requiresConfirmation": true,
+      "reasonCodeRequired": true,
+      "reasonCodes": ["annual_reconciliation", "discrepancy_investigation"],
+      "piiHandling": "sanitize",
+      "tracePolicy": "payload_ref",
+      "payloadStore": "audit",
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "county": {
+            "type": "string",
+            "description": "County code"
+          },
+          "taxYear": {
+            "type": "integer",
+            "description": "Tax year"
+          },
+          "offices": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Offices to reconcile"
+          }
+        },
+        "required": ["county", "taxYear"]
+      },
+      "officeScope": "auditor"
+    },
+    {
+      "toolId": "generate_compliance_report",
+      "displayName": "Generate Compliance Report",
+      "suite": "audit",
+      "mode": "muse",
+      "risk": "read_only",
+      "writeLane": null,
+      "touches": ["compliance"],
+      "description": "Generate a compliance report with statutory references and findings summary",
+      "piiHandling": "none",
+      "tracePolicy": "summary_only",
+      "paramsSchema": {
+        "type": "object",
+        "properties": {
+          "county": {
+            "type": "string",
+            "description": "County code"
+          },
+          "taxYear": {
+            "type": "integer",
+            "description": "Tax year"
+          },
+          "scope": {
+            "type": "string",
+            "enum": ["full", "levy_only", "roll_only"],
+            "default": "full"
+          }
+        },
+        "required": ["county", "taxYear"]
+      },
+      "officeScope": "auditor"
+    }
+  ]
+}

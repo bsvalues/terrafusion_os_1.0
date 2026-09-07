@@ -247,6 +247,16 @@ internal sealed class DossierEvidenceRegistryReadArtifactVerifier
         "transport",
     };
 
+    private static readonly IReadOnlySet<string> MutationManifestFields = new HashSet<string>(
+        ManifestFields, StringComparer.Ordinal)
+    {
+        "moduleGitBlob",
+        "schemaGitBlob",
+        "sourceManifestLength",
+        "sourceManifestGitBlob",
+        "contractReviewedHeadSha",
+    };
+
     private readonly string _sovereignRoot;
     private readonly string _artifactSlot;
     private readonly DossierEvidenceRegistryReadArtifactExpectation _expected;
@@ -433,13 +443,19 @@ internal sealed class DossierEvidenceRegistryReadArtifactVerifier
             throw Fail("Dossier provenance manifest must be an object.");
         }
 
+        // Select the exact profile from the trusted expectation, never from manifest input.
+        var isMutation = string.Equals(
+                _expected.ArtifactType, DossierMutationOptions.ExpectedArtifactType, StringComparison.Ordinal)
+            && string.Equals(
+                _expected.Contract, DossierMutationOptions.ExpectedContract, StringComparison.Ordinal);
+        var manifestFields = isMutation ? MutationManifestFields : ManifestFields;
         var properties = root.EnumerateObject().ToArray();
         var distinct = properties.Select(property => property.Name)
             .Distinct(StringComparer.Ordinal)
             .ToArray();
-        if (properties.Length != ManifestFields.Count
-            || distinct.Length != ManifestFields.Count
-            || distinct.Any(field => !ManifestFields.Contains(field)))
+        if (properties.Length != manifestFields.Count
+            || distinct.Length != manifestFields.Count
+            || distinct.Any(field => !manifestFields.Contains(field)))
         {
             throw Fail("Dossier provenance manifest fields did not match the exact schema.");
         }
@@ -463,6 +479,15 @@ internal sealed class DossierEvidenceRegistryReadArtifactVerifier
         RequireManifestString(root, "contractSourceSha", _expected.ContractSourceSha);
         RequireManifestString(root, "sourceDtoSha256", _expected.SourceDtoSha256);
         RequireManifestString(root, "transport", _expected.Transport);
+
+        if (isMutation)
+        {
+            RequireManifestString(root, "moduleGitBlob", DossierMutationOptions.ExpectedModuleGitBlob);
+            RequireManifestString(root, "schemaGitBlob", DossierMutationOptions.ExpectedSchemaGitBlob);
+            RequireManifestInteger(root, "sourceManifestLength", DossierMutationOptions.ExpectedSourceManifestLength);
+            RequireManifestString(root, "sourceManifestGitBlob", DossierMutationOptions.ExpectedSourceManifestGitBlob);
+            RequireManifestString(root, "contractReviewedHeadSha", DossierMutationOptions.ExpectedContractReviewedHeadSha);
+        }
     }
 
     private static void RequireManifestString(JsonElement root, string name, string expected)

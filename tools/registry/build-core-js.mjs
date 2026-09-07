@@ -21,6 +21,10 @@ function collectTsTargets(dir) {
 
 const targets = [
   {
+    source: 'os-platform/core/pilot/countyWorkflowHandlers.ts',
+    out: 'os-platform/core/pilot/countyWorkflowHandlers.js',
+  },
+  {
     source: 'os-platform/core/types/commandGovernance.ts',
     out: 'os-platform/core/types/commandGovernance.js',
   },

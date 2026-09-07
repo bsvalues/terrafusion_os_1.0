@@ -14,8 +14,9 @@
  */
 
 import '@testing-library/jest-dom';
-import { render, screen } from '@testing-library/react';
+import { act, render, screen, within } from '@testing-library/react';
 import React from 'react';
+import { AuthContext } from '../../auth/authContextDef';
 import { vi } from 'vitest';
 
 // ---------------------------------------------------------------------------
@@ -119,31 +120,14 @@ vi.mock('../../api/pilotApi', () => ({
 }));
 
 // ---------------------------------------------------------------------------
-// Mocks — daisService (getCertificationStatus)
+// Certification fixtures are HTTP-only; the real service and auth/context hook run.
 // ---------------------------------------------------------------------------
-
-vi.mock('@/services/suites/daisService', () => ({
-  getCertificationStatus: vi.fn().mockResolvedValue([
-    {
-      area: 'Richland North',
-      totalParcels: 5000,
-      completedParcels: 4500,
-      percentComplete: 90,
-      status: 'on-track',
-      deadline: '2026-06-30',
-      assignedTo: 'Team Alpha',
-    },
-    {
-      area: 'Kennewick South',
-      totalParcels: 3000,
-      completedParcels: 1800,
-      percentComplete: 60,
-      status: 'at-risk',
-      deadline: '2026-06-30',
-      assignedTo: 'Team Beta',
-    },
-  ]),
-}));
+const workflowCounty = '19190019-1919-1919-1919-191919191919';
+const workflowToken = 'e30.' + btoa(JSON.stringify({ sub: 'test-operator', countyId: workflowCounty, roles: ['appraiser'], exp: 4102444800 })) + '.fixture';
+const certificationRecords = [
+  { area: 'Synthetic North', totalParcels: 5000, completedParcels: 4500, percentComplete: 90, status: 'on-track', deadline: '2026-06-30', assignedTo: 'Team Alpha' },
+  { area: 'Synthetic South', totalParcels: 3000, completedParcels: 1800, percentComplete: 60, status: 'at-risk', deadline: '2026-06-30', assignedTo: 'Team Beta' },
+];
 
 // ---------------------------------------------------------------------------
 // Mocks — dossierService (assemblePacket, getDocuments)
@@ -250,11 +234,36 @@ describe('Phase 9: Dais Operations Contract', () => {
     });
 
     it('summary cards have data-material="bento"', async () => {
-      render(<RollReadiness />);
-      // Wait for async cert data to load and summary cards to render
-      await screen.findByTestId('readiness-summary');
-      const cards = document.querySelectorAll('[data-material="bento"]');
-      expect(cards.length).toBeGreaterThanOrEqual(1);
+      const previousToken = localStorage.getItem('authToken');
+      localStorage.setItem('authToken', workflowToken);
+      const requests: Array<{ url: URL; headers: Headers }> = [];
+      const http = vi.spyOn(globalThis, 'fetch').mockImplementation(async (input, init) => {
+        const url = new URL(String(input), 'http://localhost');
+        requests.push({ url, headers: new Headers(init?.headers) });
+        if (url.pathname === '/api/dossier/workflows/context') return new Response(JSON.stringify({
+          countyId: workflowCounty, taxYears: [2024], studies: [], drafts: [], exports: [],
+        }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+        if (url.pathname === '/api/dais/cert/status') return new Response(JSON.stringify(certificationRecords), {
+          status: 200, headers: { 'Content-Type': 'application/json' },
+        });
+        throw new Error('Unexpected summary HTTP request: ' + url.pathname);
+      });
+      let view: ReturnType<typeof render> | undefined;
+      try {
+        await act(async () => {
+          view = render(<AuthContext.Provider value={{ token: workflowToken, isAuthenticated: true, login() {}, logout() {} }}><RollReadiness /></AuthContext.Provider>);
+        });
+        const summary = await screen.findByTestId('readiness-summary');
+        expect(summary.querySelectorAll('[data-material="bento"]')).toHaveLength(4);
+        expect(within(summary).getByText('78.8%')).toBeInTheDocument();
+        const certification = requests.find(request => request.url.pathname === '/api/dais/cert/status')!;
+        expect(Object.fromEntries(certification.url.searchParams)).toEqual({ county: workflowCounty, taxYear: '2024' });
+        expect(certification.headers.get('Authorization')).toBe('Bearer ' + workflowToken);
+        expect(requests.find(request => request.url.pathname === '/api/dossier/workflows/context')?.url.searchParams.get('county')).toBe(workflowCounty);
+      } finally {
+        view?.unmount(); http.mockRestore();
+        if (previousToken === null) localStorage.removeItem('authToken'); else localStorage.setItem('authToken', previousToken);
+      }
     });
 
     it('no light-mode classes in rendered output', async () => {

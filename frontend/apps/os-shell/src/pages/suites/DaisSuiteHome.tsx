@@ -12,8 +12,11 @@
  * Per-parcel appeal work routes to the Workbench Dais tab.
  */
 
-import { useCallback, useEffect, useState } from 'react';
-import { invokeTool } from '../../api/pilotApi';
+import { useEffect, useState } from 'react';
+import { useDossierWorkflowContext, useWorkflowAction } from '../../hooks/useDossierWorkflowContext';
+import { WorkflowContextPicker } from '../../components/workflow/WorkflowContextPicker';
+import { WorkflowActionEvidence } from '../../components/workflow/WorkflowEvidence';
+import RollReadiness from '../dais/RollReadiness';
 import { ParcelContextBanner } from '../../components/workbench/ParcelContextBanner';
 import { SuiteModuleGrid, type SuiteModuleDef } from '../../components/suites/SuiteModuleGrid';
 import { OperationalQueue } from '../../components/suites/OperationalQueue';
@@ -51,10 +54,11 @@ type AssessorStaffRole =
   | 'assessor_leadership';
 
 interface BriefFindingSummary {
+  findingId?: string;
   findingType: string;
   severity: string;
   recommendedAction: string;
-  correlationId: string;
+  correlationId?: string;
 }
 
 interface MorningBriefResult {
@@ -127,12 +131,10 @@ export default function DaisSuiteHome({ metadata }: DaisSuiteHomeProps = {}) {
   const createDraft = useSegmentWorkflowDraftStore((s) => s.createDraft);
   const recordDraftReceipt = useDownstreamClosureReceiptStore((s) => s.recordDraft);
   const [selectedRole, setSelectedRole] = useState<AssessorStaffRole>('chief_appraiser');
-  const [briefState, setBriefState] = useState<{
-    status: 'idle' | 'loading' | 'success' | 'error';
-    result?: MorningBriefResult;
-    correlationId?: string;
-    error?: string;
-  }>({ status: 'idle' });
+  const workflow = useDossierWorkflowContext();
+  const [showReadiness, setShowReadiness] = useState(false);
+  const brief = useWorkflowAction<MorningBriefResult>(workflow, selectedRole);
+  const briefState = brief.state;
 
   useEffect(() => {
     if (!metadata) return;
@@ -188,54 +190,27 @@ export default function DaisSuiteHome({ metadata }: DaisSuiteHomeProps = {}) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const parseToolOutput = <T,>(output: unknown, fallback: T): T => {
-    try {
-      return typeof output === 'string' ? JSON.parse(output) as T : output as T;
-    } catch {
-      return fallback;
+  const handleRefreshBrief = () => brief.run({
+    toolId: 'generate_morning_brief', mode: 'muse',
+    params: { county: workflow.countyId, taxYear: workflow.taxYear, role: selectedRole },
+  }, value => {
+    const response = value as { countyId: string; taxYear: number; brief: MorningBriefResult; findings: BriefFindingSummary[] } | null;
+    const result = response?.brief;
+    if (!response || response.countyId !== workflow.countyId || response.taxYear !== workflow.taxYear || !result || result.role !== selectedRole
+      || ![result.queueType, result.priority, result.dueWindow, result.recommendedTool].every(item => typeof item === 'string')
+      || !Array.isArray(result.blockingDependencies) || !result.blockingDependencies.every(item => typeof item === 'string')
+      || !Array.isArray(response.findings) || response.findings.some(item => !item || ![item.findingType, item.severity, item.recommendedAction].every(field => typeof field === 'string'))) {
+      throw new Error('The returned briefing does not match the selected county, year, role, or persisted record contract.');
     }
-  };
-
-  const handleRefreshBrief = useCallback(async () => {
-    setBriefState({ status: 'loading' });
-    try {
-      const response = await invokeTool({
-        toolId: 'generate_morning_brief',
-        params: { county: 'benton', taxYear: 2026, role: selectedRole },
-      });
-      if (response.success && response.result) {
-        const parsed = parseToolOutput<MorningBriefResult>(response.result.output, {
-          role: selectedRole,
-          queueType: 'morning_brief',
-          priority: 'medium',
-          dueWindow: 'next business day',
-          blockingDependencies: [],
-          recommendedTool: 'generate_morning_brief',
-          readyToAct: false,
-          findings: [],
-        });
-        setBriefState({ status: 'success', result: parsed, correlationId: response.correlationId });
-      } else {
-        setBriefState({
-          status: 'error',
-          correlationId: response.correlationId,
-          error: response.error?.message || 'Failed to load role briefing.',
-        });
-      }
-    } catch (toolError) {
-      setBriefState({
-        status: 'error',
-        correlationId: `net-${crypto.randomUUID().slice(0, 8)}`,
-        error: toolError instanceof Error ? toolError.message : 'Failed to load role briefing.',
-      });
-    }
-  }, [selectedRole]);
+    return { ...result, findings: response.findings };
+  });
 
   return (
     <div data-testid="suite-dais-root" className="h-full flex flex-col" style={{ background: 'hsl(var(--tf-bg))' }}>
       <ParcelContextBanner suiteTabId="dais" />
 
       <DaisWorkflowDraftPanel />
+      <WorkflowContextPicker context={workflow} drafts={false} />
 
       {loading && !stats && (
         <div data-testid="dais-loading" role="status" className="px-6 py-3 text-sm" style={{ color: 'hsl(var(--tf-muted))' }}>Loading stats...</div>
@@ -287,6 +262,12 @@ export default function DaisSuiteHome({ metadata }: DaisSuiteHomeProps = {}) {
 
       {/* Module Grid + Operational Queue */}
       <main className="flex-1 min-h-0 overflow-y-auto">
+        <div className="px-6 py-3">
+          <button type="button" aria-expanded={showReadiness} onClick={() => setShowReadiness(value => !value)}>
+            Roll readiness
+          </button>
+        </div>
+        {showReadiness && <RollReadiness context={workflow} />}
         <section
           data-testid="dais-role-briefs"
           className="px-6 pt-6"
@@ -310,13 +291,13 @@ export default function DaisSuiteHome({ metadata }: DaisSuiteHomeProps = {}) {
                   Morning Briefs & Queue Posture
                 </h2>
                 <p className="mt-2 max-w-3xl text-sm" style={{ color: 'hsl(var(--tf-muted))' }}>
-                  Governed role briefings for Benton County staff lanes. Use this to rank work, see blockers, and route the next action before opening parcel execution surfaces.
+                  Governed role briefings for the selected county’s staff lanes. Use this to rank work, see blockers, and route the next action before opening parcel execution surfaces.
                 </p>
               </div>
               <button
                 type="button"
                 onClick={handleRefreshBrief}
-                disabled={briefState.status === 'loading'}
+                disabled={!workflow.ready || briefState.status === 'loading'}
                 className="rounded-md border px-3 py-2 text-xs font-semibold uppercase tracking-[0.08em] transition-opacity disabled:opacity-50"
                 style={{
                   borderColor: 'hsl(var(--tf-suite-dais) / 0.35)',
@@ -347,7 +328,7 @@ export default function DaisSuiteHome({ metadata }: DaisSuiteHomeProps = {}) {
             </div>
 
             {briefState.status === 'success' && briefState.result && (
-              <div className="mt-5 grid gap-4 xl:grid-cols-[1.3fr_1fr]">
+              <div data-testid="county-morning-brief-result" className="mt-5 grid gap-4 xl:grid-cols-[1.3fr_1fr]">
                 <div
                   className="rounded-lg border p-4"
                   style={{ borderColor: 'hsl(var(--tf-border))', background: 'hsl(var(--tf-bg) / 0.35)' }}
@@ -416,7 +397,7 @@ export default function DaisSuiteHome({ metadata }: DaisSuiteHomeProps = {}) {
                     ) : (
                       briefState.result.findings.slice(0, 4).map((finding) => (
                         <div
-                          key={finding.correlationId}
+                          key={finding.findingId ?? finding.correlationId}
                           className="rounded-lg border p-3"
                           style={{ borderColor: 'hsl(var(--tf-border))', background: 'hsl(var(--tf-card-bg) / 0.35)' }}
                         >
@@ -441,18 +422,7 @@ export default function DaisSuiteHome({ metadata }: DaisSuiteHomeProps = {}) {
               </div>
             )}
 
-            {briefState.status === 'error' && (
-              <div
-                className="mt-4 rounded-lg border px-4 py-3 text-sm"
-                style={{
-                  borderColor: 'hsl(var(--tf-suite-dais) / 0.24)',
-                  background: 'hsl(var(--tf-suite-dais) / 0.08)',
-                  color: 'hsl(var(--tf-suite-dais))',
-                }}
-              >
-                {briefState.error}
-              </div>
-            )}
+            <WorkflowActionEvidence state={briefState} context={workflow} />
           </div>
         </section>
 

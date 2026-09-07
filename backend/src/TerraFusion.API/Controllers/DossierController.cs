@@ -2229,7 +2229,8 @@ public class DossierController : ControllerBase
 
   // ── Packet Operations ────────────────────────────────────────
 
-  public sealed record CreatePacketRequest(string ParcelId, string PacketType);
+  public sealed record CreatePacketRequest(string ParcelId, string PacketType,
+      string? County = null, int? TaxYear = null, Guid? AppealId = null);
 
   /// <summary>
   /// Create an assessment packet from a template. Links matching documents and computes completeness.
@@ -2247,12 +2248,47 @@ public class DossierController : ControllerBase
     if (string.IsNullOrWhiteSpace(request.PacketType))
       return BadRequest(new { error = "Packet type is required" });
 
-    var countyId = await ResolveCountyIdAsync();
+    var scopedHandoff = request.County is not null || request.TaxYear.HasValue || request.AppealId.HasValue;
+    var countyId = scopedHandoff ? ResolveStrictAuthenticatedCountyId() : await ResolveCountyIdAsync();
     if (countyId is null)
       return Forbid();
 
     var parcelId = request.ParcelId.Trim();
     var packetType = request.PacketType.Trim();
+
+    string? handoffActor = null;
+    if (scopedHandoff)
+    {
+      handoffActor = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? User.FindFirst("sub")?.Value;
+      if (User.Identity?.IsAuthenticated != true || User.FindAll("countyId").Count() != 1 ||
+          User.FindFirst("countyId")?.Value != countyId.Value.ToString("D") ||
+          string.IsNullOrWhiteSpace(handoffActor) || handoffActor.Length > 200 ||
+          !User.HasClaim("perm", "write:dossier") || !User.HasClaim("perm", "read:dossier") || !User.HasClaim("perm", "read:dais"))
+        return Forbid();
+      if (!Guid.TryParseExact(request.County, "D", out var requestedCounty) || requestedCounty == Guid.Empty ||
+          request.County != requestedCounty.ToString("D") || request.TaxYear is null or < 1900 or > 9999)
+        return BadRequest(new { error = "Canonical county and selected taxYear are required for an explicit packet handoff." });
+      if (requestedCounty != countyId) return Forbid();
+
+      // Enclose the Dais relationship check, suite decision inputs and persistence in one snapshot.
+      if (_db.Database.CurrentTransaction is null)
+        return await _db.Database.CreateExecutionStrategy().ExecuteAsync(async () =>
+        {
+          await using var transaction = await _db.Database.BeginTransactionAsync(System.Data.IsolationLevel.Serializable, HttpContext.RequestAborted);
+          try
+          {
+            var result = await CreatePacket(request);
+            if (result is CreatedAtActionResult) await transaction.CommitAsync(HttpContext.RequestAborted);
+            return result;
+          }
+          catch { _db.ChangeTracker.Clear(); throw; }
+        });
+
+      if (request.AppealId.HasValue && (packetType != "boe-appeal-defense" ||
+          !await _db.Appeals.AsNoTracking().AnyAsync(a => a.Id == request.AppealId && a.CountyId == countyId &&
+              a.ParcelId == parcelId && a.TaxYear == request.TaxYear, HttpContext.RequestAborted)))
+        return NotFound(new { error = "Record not found." });
+    }
 
     var template = BentonDocumentData.PacketTemplates
         .FirstOrDefault(t => t.PacketType.Equals(packetType, StringComparison.OrdinalIgnoreCase));
@@ -2271,7 +2307,7 @@ public class DossierController : ControllerBase
         .Where(d => d.ParcelId == parcelId && d.CountyId == countyId.Value)
         .ToListAsync();
 
-    var actor = User.Identity?.Name ?? "system";
+    var actor = handoffActor ?? User.Identity?.Name ?? "system";
     DossierMutationPortResult<DossierCreatePacketMutation> decision;
     try
     {
@@ -2294,6 +2330,7 @@ public class DossierController : ControllerBase
       Id=Guid.Parse(mutation.PacketId),ParcelId=parcelId,PacketType=mutation.PacketType,Name=mutation.Name,
       Status=mutation.Status.ToString(),CompletenessPercent=(double)mutation.CompletenessPercent,
       SatisfiedCount=mutation.SatisfiedCount,TotalRequired=mutation.TotalRequired,CountyId=countyId.Value,
+      TaxYear=request.TaxYear,AppealId=request.AppealId,
       CreatedBy=mutation.CreatedBy,CreatedAt=mutation.CreatedAt.UtcDateTime,UpdatedAt=mutation.CreatedAt.UtcDateTime,
     };
 
@@ -2320,6 +2357,8 @@ public class DossierController : ControllerBase
     {
       id = packet.Id,
       parcelId = packet.ParcelId,
+      taxYear = packet.TaxYear,
+      appealId = packet.AppealId,
       packetType = packet.PacketType,
       name = packet.Name,
       status = packet.Status,

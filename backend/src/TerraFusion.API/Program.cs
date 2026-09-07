@@ -2672,7 +2672,6 @@ builder.Services.AddCors(options =>
           {
                 $"http://localhost:{Environment.GetEnvironmentVariable("TF_FRONTEND_PORT") ?? "3102"}",
                 "http://localhost:5173",  // Vite dev server
-                "http://localhost:3000",  // Legacy frontend port
           };
     policy.WithOrigins(allowedOrigins)
             .AllowAnyMethod()
@@ -2841,6 +2840,7 @@ if (app.Environment.IsDevelopment())
       ["perm"] = new List<string>
           {
                 "read:dossier",
+                "read:dais",
                 "write:dossier",
                 "read:property",
                 "read:properties",
@@ -2868,7 +2868,7 @@ if (app.Environment.IsDevelopment())
           userId: "dev-user-001",
           email: "dev@terrafusion.local",
           // GovernmentUser satisfies OSCoreAccess policy (AIModulesController, AISwarmController, etc.)
-          roles: new[] { "Developer", "Assessor", "GovernmentUser" },
+          roles: new[] { "Developer", "Assessor", "GovernmentUser", "appraiser" },
           customClaims: customClaims);
 
     return Results.Ok(new

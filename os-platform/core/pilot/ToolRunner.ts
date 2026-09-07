@@ -475,8 +475,9 @@ export class ToolRunner {
   async execute<TParams = unknown, TResult = unknown>(
     input: ToolExecutionInput<TParams>
   ): Promise<ToolExecutionResult<TResult>> {
-    const correlationId = randomUUID();
     const { toolId, params, context } = input;
+    const correlationId = typeof context.correlationId === 'string' && /^[A-Za-z0-9._-]{1,128}$/.test(context.correlationId)
+      ? context.correlationId : randomUUID();
 
     // Lookup tool
     const tool = this.registry.getTool(toolId);

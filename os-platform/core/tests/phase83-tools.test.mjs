@@ -179,9 +179,9 @@ describe('Phase 8.3 Tools - Gate Validation', () => {
     await registry.initialize(MANIFEST_PATH);
   });
 
-  it('loads the canonical manifest (v2.0.0, 116 tools)', () => {
+  it('loads the canonical active manifest (v2.0.0, 98 tools; 18 forward-staged)', () => {
     assert.strictEqual(registry.getVersion(), '2.0.0');
-    assert.strictEqual(registry.listTools().length, 116);
+    assert.strictEqual(registry.listTools().length, 98);
   });
 
   it('enforces registry invariants', () => {
@@ -593,10 +593,10 @@ describe('Phase 8.3 Tools - Dashboard Metrics', () => {
 });
 
 // ============================================================================
-// Lane 1: 116/116 Handler Coverage Verification
+// Lane 1: Complete active Handler Coverage Verification
 // ============================================================================
 
-describe('Lane 1 — 116/116 Handler Coverage', () => {
+describe('Lane 1 — 98/98 Active Handler Coverage', () => {
   let registry;
   let runner;
   let traceStore;
@@ -624,7 +624,7 @@ describe('Lane 1 — 116/116 Handler Coverage', () => {
     registerR1Handlers(runner, traceServiceLocal);
   });
 
-  it('every manifest tool has a registered handler (116/116)', () => {
+  it('every active manifest tool has a registered handler (98/98)', () => {
     const manifestToolIds = registry.listTools().map(t => t.toolId).sort();
     const registeredIds = runner.getRegisteredHandlers().sort();
 
