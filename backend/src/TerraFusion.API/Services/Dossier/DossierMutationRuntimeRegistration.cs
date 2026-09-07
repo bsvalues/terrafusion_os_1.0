@@ -14,6 +14,9 @@ public static class DossierMutationRuntimeRegistration
         ArgumentNullException.ThrowIfNull(services);
         ArgumentNullException.ThrowIfNull(configuration);
         ArgumentNullException.ThrowIfNull(environment);
+        services.AddScoped<DossierWorkflowService>();
+        services.AddHttpClient("county-workflow-pilot-runtime")
+            .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler { AllowAutoRedirect = false, UseCookies = false });
 
         var options = configuration
             .GetSection(DossierMutationOptions.SectionName)

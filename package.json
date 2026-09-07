@@ -244,7 +244,7 @@
     "test:verbose": "vitest run --reporter=verbose",
     "validate:ai-models": "node scripts/validate-ai-models.mjs",
     "backend:start:test": "cross-env ASPNETCORE_ENVIRONMENT=Test pnpm run backend:launch -- dotnet run --project backend/src/TerraFusion.API/TerraFusion.API.csproj",
-    "frontend:serve:test": "cd frontend && npm run preview -- --host --port 3000",
+    "frontend:serve:test": "node scripts/utilities/serve-test-frontend.mjs",
     "logs:collect": "mkdir -p logs && docker-compose logs > logs/docker-compose.log 2>&1 || echo 'No docker compose logs available'",
     "db:seed": "dotnet run --project backend/src/TerraFusion.API/TerraFusion.API.csproj -- --seed",
     "db:reset": "dotnet ef database drop --project backend/src/TerraFusion.Data/TerraFusion.Data.csproj && npm run db:seed",

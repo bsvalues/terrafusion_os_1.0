@@ -1,17 +1,8 @@
 /**
- * PropertyWorkbenchWindow.tabMapping.test.tsx
- *
- * WO-WB-G2-FIX-004 — proves the G2 Option D fix: the desktop window adapter mounts
- * the REAL Clerk/Treasury/Audit components (matching the route-based Workbench),
- * fixing BOTH alias mechanisms:
- *   - TAB_COMPONENTS map (tab-switch path): selecting Clerk/Treasury/Audit renders
- *     the real component, not Dossier/Dais.
- *   - resolvedInitialTab launch remap (launch path): launching with tabId =
- *     clerk/treasury/audit opens that real tab, not dossier/dais.
- * Plus a regression check that the six always-real tabs still render.
- *
- * The nine tab modules are stubbed to lightweight testid markers so this test
- * exercises the window's tab→component mapping, not each tab's internals.
+ * Window navigation/hosting boundary after reserved-office forward staging.
+ * The window and role-visibility hook are real. Existing lazy-tab sentinels
+ * isolate component selection; domain execution is covered by workflowScreens.
+ * A reserved component must never mount, even when deep-launched or shown-all.
  */
 
 import '@testing-library/jest-dom';
@@ -19,14 +10,15 @@ import React from 'react';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const ALL_TABS = ['summary', 'forge', 'atlas', 'dais', 'clerk', 'treasury', 'audit', 'dossier', 'pilot'];
+const ACTIVE_LABELS = ['Summary', 'Forge', 'Atlas', 'Dais', 'Dossier', 'Pilot'];
+const RESERVED = ['clerk', 'treasury', 'audit'];
 
-const { activateModuleMock, selectParcelMock, openWorkbenchWindowMock, visibleTabsHolder } = vi.hoisted(() => ({
+const { activateModuleMock, selectParcelMock, openWorkbenchWindowMock, authIdentity } = vi.hoisted(() => ({
+  // Stable roles mirror the production hook: recreating them on every render loops effects.
+  authIdentity: { roles: ['assessor'] },
   activateModuleMock: vi.fn(),
   selectParcelMock: vi.fn(),
   openWorkbenchWindowMock: vi.fn(),
-  // Mutable so a test can simulate a role whose defaults hide clerk/treasury/audit.
-  visibleTabsHolder: { value: ['summary', 'forge', 'atlas', 'dais', 'clerk', 'treasury', 'audit', 'dossier', 'pilot'] },
 }));
 
 // ── Tab module stubs (named exports mirror the window's lazy imports) ──────────
@@ -89,17 +81,7 @@ vi.mock('../../auth/useSession', () => ({
 }));
 
 vi.mock('../../auth/useAuthContext', () => ({
-  useAuthContext: () => ({ countyId: 'benton', userId: 'u-test', roles: ['assessor'] }),
-}));
-
-// Visible-tab set is mutable per test (defaults to all nine).
-vi.mock('../../hooks/useWorkbenchRoles', () => ({
-  useWorkbenchRoles: () => ({
-    visibleTabs: visibleTabsHolder.value,
-    hiddenCount: 0,
-    showAll: true,
-    toggleShowAll: vi.fn(),
-  }),
+  useAuthContext: () => ({ countyId: 'benton', userId: 'u-test', roles: authIdentity.roles }),
 }));
 
 vi.mock('../../services/badges', () => ({ BADGE_PROVIDERS: [] }));
@@ -116,71 +98,73 @@ import PropertyWorkbenchWindow from '../../pages/workbench/PropertyWorkbenchWind
 const renderWindow = (tabId: string) =>
   render(<PropertyWorkbenchWindow metadata={{ parcelId: 'BC-1', tabId }} />);
 
-describe('PropertyWorkbenchWindow tab→component mapping (G2 Option D)', () => {
+describe('PropertyWorkbenchWindow active/staged navigation', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    visibleTabsHolder.value = [...ALL_TABS];
+    localStorage.clear();
+    authIdentity.roles = ['assessor'];
   });
 
-  // ── Launch path (proves the resolvedInitialTab remap is removed) ────────────
+  const expectReservedUnmounted = () => {
+    for (const office of RESERVED) {
+      expect(screen.queryByRole('tab', { name: new RegExp(office, 'i') })).not.toBeInTheDocument();
+      expect(screen.queryByTestId(`stub-${office}`)).not.toBeInTheDocument();
+    }
+  };
 
-  it('launching with tabId=clerk opens the real Clerk tab (not Dossier)', async () => {
-    renderWindow('clerk');
-    expect(await screen.findByTestId('stub-clerk')).toBeInTheDocument();
-    expect(screen.queryByTestId('stub-dossier')).not.toBeInTheDocument();
+  it.each(RESERVED)('deep-launching %s shows unavailable, never an alias or reserved implementation', async office => {
+    renderWindow(office);
+    expect(await screen.findByText('Reserved office unavailable')).toBeInTheDocument();
+    expectReservedUnmounted();
+    for (const tab of ['summary', 'forge', 'atlas', 'dais', 'dossier', 'pilot']) {
+      expect(screen.queryByTestId(`stub-${tab}`)).not.toBeInTheDocument();
+    }
+    expect(screen.getAllByRole('tab').map(tab => tab.textContent)).toEqual(ACTIVE_LABELS);
   });
 
-  it('launching with tabId=treasury opens the real Treasury tab (not Dais)', async () => {
-    renderWindow('treasury');
-    expect(await screen.findByTestId('stub-treasury')).toBeInTheDocument();
-    expect(screen.queryByTestId('stub-dais')).not.toBeInTheDocument();
-  });
-
-  it('launching with tabId=audit opens the real Audit tab (not Dossier)', async () => {
-    renderWindow('audit');
-    expect(await screen.findByTestId('stub-audit')).toBeInTheDocument();
-    expect(screen.queryByTestId('stub-dossier')).not.toBeInTheDocument();
-  });
-
-  // ── Tab-switch path (proves the TAB_COMPONENTS map points at the real components) ──
-
-  it('selecting the Clerk tab renders the real Clerk component', async () => {
-    renderWindow('summary');
-    expect(await screen.findByTestId('stub-summary')).toBeInTheDocument();
-    fireEvent.click(screen.getByRole('tab', { name: /clerk/i }));
-    expect(await screen.findByTestId('stub-clerk')).toBeInTheDocument();
-    expect(screen.queryByTestId('stub-dossier')).not.toBeInTheDocument();
-  });
-
-  it('selecting the Treasury tab renders the real Treasury component', async () => {
+  it('keeps canonical six-tab order across selection and never offers staged offices', async () => {
     renderWindow('summary');
     await screen.findByTestId('stub-summary');
-    fireEvent.click(screen.getByRole('tab', { name: /treasury/i }));
-    expect(await screen.findByTestId('stub-treasury')).toBeInTheDocument();
-    expect(screen.queryByTestId('stub-dais')).not.toBeInTheDocument();
+    for (const label of ACTIVE_LABELS) {
+      fireEvent.click(screen.getByRole('tab', { name: label, exact: true }));
+      expect(await screen.findByTestId(`stub-${label.toLowerCase()}`)).toBeInTheDocument();
+      expect(screen.getByRole('tab', { name: label, exact: true })).toHaveAttribute('aria-selected', 'true');
+      expect(screen.getAllByRole('tab').map(tab => tab.textContent)).toEqual(ACTIVE_LABELS);
+      expectReservedUnmounted();
+    }
   });
 
-  it('selecting the Audit tab renders the real Audit component', async () => {
+  it.each(RESERVED)('show-all cannot resurrect a role-hidden %s deep launch', async office => {
+    authIdentity.roles = ['residential_appraiser'];
+    renderWindow(office);
+    await screen.findByText('Reserved office unavailable');
+    expect(screen.queryByRole('tab', { name: 'Dais', exact: true })).not.toBeInTheDocument();
+    fireEvent.click(screen.getByTitle(/Show all tabs/));
+    expect(screen.getAllByRole('tab').map(tab => tab.textContent)).toEqual(ACTIVE_LABELS);
+    expect(screen.getByText('Reserved office unavailable')).toBeInTheDocument();
+    expectReservedUnmounted();
+    fireEvent.click(screen.getByRole('tab', { name: 'Dossier', exact: true }));
+    expect(await screen.findByTestId('stub-dossier')).toBeInTheDocument();
+    expect(screen.queryByText('Reserved office unavailable')).not.toBeInTheDocument();
+    expectReservedUnmounted();
+  });
+
+  it('persisted show-all still exposes only the canonical six active tabs', async () => {
+    localStorage.setItem('tf_workbench_show_all_tabs', 'true');
+    authIdentity.roles = ['residential_appraiser'];
     renderWindow('summary');
     await screen.findByTestId('stub-summary');
-    fireEvent.click(screen.getByRole('tab', { name: /audit/i }));
-    expect(await screen.findByTestId('stub-audit')).toBeInTheDocument();
+    expect(screen.getAllByRole('tab').map(tab => tab.textContent)).toEqual(ACTIVE_LABELS);
+    expectReservedUnmounted();
   });
 
-  // ── Deep-launch into a role-hidden tab still renders (no blank workbench) ────
-
-  it('deep-launching into a role-hidden tab (clerk) still mounts the real tab, not a blank panel', async () => {
-    // Simulate a role whose defaults hide clerk/treasury/audit. Removing the old
-    // remap must not leave activeTab absent from the render loop; the active tab is
-    // forced into the visible set so its panel still mounts.
-    visibleTabsHolder.value = ['summary', 'forge', 'atlas', 'dossier'];
-    renderWindow('clerk');
-    expect(await screen.findByTestId('stub-clerk')).toBeInTheDocument();
-    expect(screen.queryByTestId('stub-dossier')).not.toBeInTheDocument();
+  // Preserve all six pre-existing lazy-component mapping regressions.
+  it('places a GIS role deep-launched Forge in canonical order, not after Pilot', async () => {
+    authIdentity.roles = ['gis_technician'];
+    renderWindow('forge');
+    await screen.findByTestId('stub-forge');
+    expect(screen.getAllByRole('tab').map(tab => tab.textContent)).toEqual(['Summary', 'Forge', 'Atlas', 'Dossier', 'Pilot']);
   });
-
-  // ── Regression: the six always-real tabs still render their own components ───
-
   it.each([
     ['summary', 'stub-summary'],
     ['forge', 'stub-forge'],
@@ -188,7 +172,7 @@ describe('PropertyWorkbenchWindow tab→component mapping (G2 Option D)', () => 
     ['dais', 'stub-dais'],
     ['dossier', 'stub-dossier'],
     ['pilot', 'stub-pilot'],
-  ])('launching with tabId=%s still renders its real component', async (tabId, testid) => {
+  ])('launching with tabId=%s still selects its own component', async (tabId, testid) => {
     renderWindow(tabId);
     expect(await screen.findByTestId(testid)).toBeInTheDocument();
   });

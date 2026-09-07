@@ -54,6 +54,7 @@ exports.createRequestTraceRedactionHandler = createRequestTraceRedactionHandler;
 exports.registerR1Handlers = registerR1Handlers;
 const backendClient_js_1 = require("./backendClient.js");
 const pilotAuth_js_1 = require("./pilotAuth.js");
+const countyWorkflowHandlers_js_1 = require("./countyWorkflowHandlers.js");
 // ============================================================================
 // Utility: County Match Enforcement
 // ============================================================================
@@ -1535,13 +1536,15 @@ exports.generateComplianceReportRealHandler = generateComplianceReportRealHandle
 // Registration
 // ============================================================================
 /**
- * Register all 53 real handlers (R1 + Wave 1–3 + R2.9 + R3.2–R3.4).
+ * Register active real handlers. Forward-staged office implementations below
+ * remain exported source, but are not registered in the operational inventory.
  * These OVERRIDE canned stubs when called after registerAllHandlers().
  *
  * @param runner - ToolRunner instance (must have initialized registry)
  * @param traceService - TraceService instance for search_trace_by_correlation
  */
 function registerR1Handlers(runner, traceService) {
+    (0, countyWorkflowHandlers_js_1.registerCountyWorkflowHandlers)(runner);
     // Week 1 MVP handlers (5)
     runner.registerHandler('run_valuation_model', exports.runValuationModelHandler);
     runner.registerHandler('explain_value_change', exports.explainValueChangeHandler);
@@ -1584,25 +1587,6 @@ function registerR1Handlers(runner, traceService) {
     runner.registerHandler('queue_notice_for_mailing', exports.queueNoticeForMailingRealHandler);
     runner.registerHandler('get_queue_statistics', exports.getQueueStatisticsRealHandler);
     runner.registerHandler('escalate_task', exports.escalateTaskRealHandler);
-    // R3.2 TerraClerk handlers (6)
-    runner.registerHandler('search_recorded_documents', exports.searchRecordedDocumentsRealHandler);
-    runner.registerHandler('get_title_chain', exports.getTitleChainRealHandler);
-    runner.registerHandler('explain_recording_fees', exports.explainRecordingFeesRealHandler);
-    runner.registerHandler('record_document', exports.recordDocumentRealHandler);
-    runner.registerHandler('release_lien', exports.releaseLienRealHandler);
-    runner.registerHandler('summarize_parcel_recordings', exports.summarizeParcelRecordingsRealHandler);
-    // R3.3 TerraTreasury handlers (7)
-    runner.registerHandler('get_tax_statement', exports.getTaxStatementRealHandler);
-    runner.registerHandler('explain_tax_breakdown', exports.explainTaxBreakdownRealHandler);
-    runner.registerHandler('record_payment', exports.recordPaymentRealHandler);
-    runner.registerHandler('check_delinquency_status', exports.checkDelinquencyStatusRealHandler);
-    runner.registerHandler('create_installment_plan', exports.createInstallmentPlanRealHandler);
-    runner.registerHandler('summarize_collection_stats', exports.summarizeCollectionStatsRealHandler);
-    runner.registerHandler('initiate_tax_sale', exports.initiateTaxSaleRealHandler);
-    // R3.4 TerraAudit handlers (5)
-    runner.registerHandler('audit_roll_summary', exports.auditRollSummaryRealHandler);
-    runner.registerHandler('check_levy_compliance', exports.checkLevyComplianceRealHandler);
-    runner.registerHandler('submit_audit_finding', exports.submitAuditFindingRealHandler);
-    runner.registerHandler('reconcile_cross_office', exports.reconcileCrossOfficeRealHandler);
-    runner.registerHandler('generate_compliance_report', exports.generateComplianceReportRealHandler);
+    // Clerk/Treasury/Audit declarations are preserved in the non-loaded forward-
+    // staged manifest. Their activation requires its existing governed successor.
 }

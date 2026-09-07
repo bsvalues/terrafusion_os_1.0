@@ -59,6 +59,22 @@ export function unwrapBackend<T>(result: BackendResult<T>, label: string): T {
 export interface BackendCallOptions {
   /** Bearer token. When provided, sets Authorization header. */
   token?: string;
+  /** Actual caller credentials: local application only, never follow redirects. */
+  callerAuthorization?: boolean;
+  /** Correlation metadata only; never used as authorization. */
+  correlationId?: string;
+}
+
+function requestUrl(path: string, options?: BackendCallOptions): string {
+  const base = resolveBaseUrl();
+  if (options?.callerAuthorization) {
+    const target = new URL(base);
+    if (!options.token || !['http:', 'https:'].includes(target.protocol) ||
+        !['127.0.0.1', 'localhost', '[::1]'].includes(target.hostname) ||
+        target.username || target.password || target.pathname !== '/' || target.search || target.hash)
+      throw new Error('Caller authorization requires a loopback backend destination.');
+  }
+  return `${base}${path}`;
 }
 
 // ============================================================================
@@ -73,9 +89,11 @@ export async function backendPost<T = unknown>(
   body: unknown,
   options?: BackendCallOptions
 ): Promise<BackendResult<T>> {
-  const url = `${resolveBaseUrl()}${path}`;
   try {
+    const url = requestUrl(path, options);
     const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+    if (options?.correlationId && /^[A-Za-z0-9._-]{1,128}$/.test(options.correlationId))
+      headers['X-Correlation-ID'] = options.correlationId;
     if (options?.token) {
       headers['Authorization'] = `Bearer ${options.token}`;
     }
@@ -84,6 +102,7 @@ export async function backendPost<T = unknown>(
       headers,
       body: JSON.stringify(body),
       signal: AbortSignal.timeout(15_000),
+      redirect: options?.callerAuthorization ? 'error' : 'follow',
     });
     const text = await res.text();
     if (!res.ok) {
@@ -104,9 +123,11 @@ export async function backendGet<T = unknown>(
   path: string,
   options?: BackendCallOptions
 ): Promise<BackendResult<T>> {
-  const url = `${resolveBaseUrl()}${path}`;
   try {
+    const url = requestUrl(path, options);
     const headers: Record<string, string> = { 'Accept': 'application/json' };
+    if (options?.correlationId && /^[A-Za-z0-9._-]{1,128}$/.test(options.correlationId))
+      headers['X-Correlation-ID'] = options.correlationId;
     if (options?.token) {
       headers['Authorization'] = `Bearer ${options.token}`;
     }
@@ -114,6 +135,7 @@ export async function backendGet<T = unknown>(
       method: 'GET',
       headers,
       signal: AbortSignal.timeout(15_000),
+      redirect: options?.callerAuthorization ? 'error' : 'follow',
     });
     const text = await res.text();
     if (!res.ok) {

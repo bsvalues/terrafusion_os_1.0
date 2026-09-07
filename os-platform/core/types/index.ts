@@ -139,6 +139,8 @@ export interface SupervisorApproval {
 }
 
 export interface ToolExecutionContext {
+  /** Safe HTTP correlation identity, propagated across the existing execution chain. */
+  correlationId?: string;
   /** County ID for isolation */
   countyId: string;
   /** Executing user ID */

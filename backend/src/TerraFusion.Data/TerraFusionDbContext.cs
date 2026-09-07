@@ -524,6 +524,7 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
   public DbSet<DossierCustodyEvent> DossierCustodyEvents { get; set; }
   public DbSet<DossierPacket> DossierPackets { get; set; }
   public DbSet<DossierPacketItem> DossierPacketItems { get; set; }
+  public DbSet<DossierWorkflowRecord> DossierWorkflowRecords { get; set; }
 
   // TerraFlow Quantum Command Center Entities (Phase 1 Week 3)
   public DbSet<QuantumNotebook> QuantumNotebooks { get; set; }
@@ -765,6 +766,23 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
     });
 
     // Configure DossierPacket entity (R2 Wave 24)
+    modelBuilder.Entity<DossierWorkflowRecord>(entity =>
+    {
+      entity.HasKey(e => e.Id);
+      entity.Property(e => e.Kind).HasMaxLength(30).IsRequired();
+      entity.Property(e => e.RequestId).HasMaxLength(200).IsRequired();
+      entity.Property(e => e.RequestHash).HasMaxLength(64).IsRequired();
+      entity.Property(e => e.Revision).HasMaxLength(64).IsRequired();
+      entity.Property(e => e.ContentHash).HasMaxLength(64).IsRequired();
+      entity.Property(e => e.PayloadJson).IsRequired();
+      entity.Property(e => e.CreatedBy).HasMaxLength(200).IsRequired();
+      entity.HasIndex(e => new { e.CountyId, e.RequestId }).IsUnique();
+      entity.HasIndex(e => new { e.CountyId, e.TaxYear, e.Kind });
+      entity.HasOne<County>().WithMany().HasForeignKey(e => e.CountyId).OnDelete(DeleteBehavior.Restrict);
+      entity.HasOne<CountyStudySession>().WithMany().HasForeignKey(e => e.StudyId).OnDelete(DeleteBehavior.Restrict);
+      entity.HasOne<DossierWorkflowRecord>().WithMany().HasForeignKey(e => e.DraftId).OnDelete(DeleteBehavior.Restrict);
+    });
+
     modelBuilder.Entity<DossierPacket>(entity =>
     {
       entity.HasKey(e => e.Id);
@@ -775,6 +793,9 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
       entity.Property(e => e.CreatedBy).HasMaxLength(200);
       entity.HasOne(e => e.County).WithMany().HasForeignKey(e => e.CountyId);
       entity.HasMany(e => e.Items).WithOne(i => i.Packet).HasForeignKey(i => i.PacketId);
+      entity.HasOne<Appeal>().WithMany().HasForeignKey(e => e.AppealId).OnDelete(DeleteBehavior.Restrict);
+      entity.HasIndex(e => new { e.CountyId, e.AppealId });
+      entity.HasIndex(e => new { e.CountyId, e.TaxYear });
       entity.HasIndex(e => new { e.CountyId, e.ParcelId });
     });
 
@@ -1596,8 +1617,28 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
     }
   }
 
+  private void GuardImmutableDossierWorkflowRecords()
+  {
+    if (ChangeTracker.Entries<DossierWorkflowRecord>().Any(entry =>
+        entry.State is EntityState.Modified or EntityState.Deleted))
+      throw new InvalidOperationException("Dossier assessment snapshots and exports are immutable; create a new request instead.");
+  }
+
+  public override int SaveChanges(bool acceptAllChangesOnSuccess)
+  {
+    GuardImmutableDossierWorkflowRecords();
+    return base.SaveChanges(acceptAllChangesOnSuccess);
+  }
+
+  public override System.Threading.Tasks.Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
+  {
+    GuardImmutableDossierWorkflowRecords();
+    return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
+  }
+
   public override async System.Threading.Tasks.Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
   {
+    GuardImmutableDossierWorkflowRecords();
     // Add audit logging for all changes
     var auditEntries = CreateAuditEntries();
 
