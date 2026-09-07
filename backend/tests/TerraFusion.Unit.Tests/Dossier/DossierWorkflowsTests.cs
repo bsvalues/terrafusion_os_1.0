@@ -84,7 +84,7 @@ public sealed class DossierWorkflowsTests
     }
 
     private static object ExportRequest(JsonElement draft, string request = "export-1", int year = 2024,
-        string? revision = null, bool confirmed = true, string reason = "OWNER_REVIEW") => new
+        string? revision = null, bool confirmed = true, string reason = "annual_certification") => new
         { county = County, draftId = draft.GetProperty("draftId").GetString(), revision = revision ?? draft.GetProperty("revision").GetString(),
           taxYear = year, requestId = request, confirmed, reasonCode = reason };
 
@@ -133,7 +133,7 @@ public sealed class DossierWorkflowsTests
         foreach (var request in new[] { ExportRequest(draft, confirmed: false), ExportRequest(draft, reason: " ") })
             Assert.Equal(HttpStatusCode.BadRequest, (await f.Client.PostAsJsonAsync($"{Root}/exports/equalization", request)).StatusCode);
         var missing = await f.Client.PostAsJsonAsync($"{Root}/exports/equalization", new { county = County, draftId = Guid.NewGuid(),
-            revision = new string('a', 64), taxYear = 2024, requestId = "missing", confirmed = true, reasonCode = "OWNER_REVIEW" });
+            revision = new string('a', 64), taxYear = 2024, requestId = "missing", confirmed = true, reasonCode = "annual_certification" });
         Assert.Equal(HttpStatusCode.NotFound, missing.StatusCode);
         f.Client.DefaultRequestHeaders.Add("Test-County", OtherCounty);
         var foreign = await f.Client.GetAsync($"{Root}/drafts/{draft.GetProperty("draftId").GetString()}?county={OtherCounty}");
@@ -154,7 +154,7 @@ public sealed class DossierWorkflowsTests
             { county = County, studyId = Guid.NewGuid(), requestId = "draft-1" })).StatusCode);
         Assert.Equal(HttpStatusCode.Conflict, (await f.Client.PostAsJsonAsync($"{Root}/exports/equalization", ExportRequest(first, "draft-1"))).StatusCode);
         Assert.Equal(HttpStatusCode.OK, (await f.Client.PostAsJsonAsync($"{Root}/exports/equalization", ExportRequest(first))).StatusCode);
-        Assert.Equal(HttpStatusCode.Conflict, (await f.Client.PostAsJsonAsync($"{Root}/exports/equalization", ExportRequest(first, reason: "OTHER"))).StatusCode);
+        Assert.Equal(HttpStatusCode.Conflict, (await f.Client.PostAsJsonAsync($"{Root}/exports/equalization", ExportRequest(first, reason: "board_directive"))).StatusCode);
     }
 
     [Fact]
@@ -164,7 +164,7 @@ public sealed class DossierWorkflowsTests
         await using (var db = f.Db()) { await db.ValuationRecords.ExecuteDeleteAsync(); }
         Assert.Equal((HttpStatusCode)422, (await f.Client.PostAsJsonAsync($"{Root}/drafts", new { county = County, studyId = Study, requestId = "empty" })).StatusCode);
         var audit = await f.Client.PostAsJsonAsync($"{Root}/exports/audit", new { county = County, taxYear = 2030,
-            bundleScope = "county", requestId = "audit-empty", confirmed = true, reasonCode = "OWNER_REVIEW" });
+            bundleScope = "county", requestId = "audit-empty", confirmed = true, reasonCode = "annual_certification" });
         Assert.Equal((HttpStatusCode)422, audit.StatusCode);
         var brief = await f.Client.GetAsync($"{Root}/morning-brief?county={County}&taxYear=2030&role=appeals_specialist");
         Assert.Equal(HttpStatusCode.OK, brief.StatusCode);
@@ -253,7 +253,7 @@ public sealed class DossierWorkflowsTests
         var draft = await Draft(f);
         Assert.Equal(7, draft.GetProperty("artifactCount").GetInt32());
         var response = await f.Client.PostAsJsonAsync($"{Root}/exports/audit", new { county = County, taxYear = 2024,
-            bundleScope = "county", requestId = "audit", confirmed = true, reasonCode = "OWNER_REVIEW" });
+            bundleScope = "county", requestId = "audit", confirmed = true, reasonCode = "annual_certification" });
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         var summary = await Json(response);
         Assert.Equal(7, summary.GetProperty("artifactCount").GetInt32());
@@ -297,7 +297,7 @@ public sealed class DossierWorkflowsTests
             summary.GetProperty("payloadRef").GetString()!.Replace(County, OtherCounty) })
             Assert.Equal(HttpStatusCode.NotFound, (await f.Client.GetAsync(path)).StatusCode);
         f.Client.DefaultRequestHeaders.Remove("Test-County");
-        f.Client.DefaultRequestHeaders.Add("Test-Permissions", "read:dossier,read:dais");
+        f.Client.DefaultRequestHeaders.Add("Test-Permissions", "read:dossier,read:dais,access:costforge");
         Assert.Equal(HttpStatusCode.Forbidden, (await f.Client.PostAsJsonAsync($"{Root}/exports/equalization", ExportRequest(draft, "denied"))).StatusCode);
         Assert.Equal(HttpStatusCode.OK, (await f.Client.GetAsync(summary.GetProperty("payloadRef").GetString())).StatusCode);
     }
@@ -315,11 +315,203 @@ public sealed class DossierWorkflowsTests
             await db.SaveChangesAsync();
         }
         var draft = await Draft(f);
-        Assert.Equal(3, draft.GetProperty("artifactCount").GetInt32());
+        Assert.Equal(4, draft.GetProperty("artifactCount").GetInt32());
         var body = await Json(await f.Client.GetAsync($"{Root}/drafts/{draft.GetProperty("draftId").GetString()}?county={County}"));
         var scenario = body.GetProperty("artifacts").EnumerateArray().Single(x => x.GetProperty("name").GetString()!.StartsWith("CountyScenarios/", StringComparison.Ordinal));
         Assert.Equal("{\"magnitude\":4.25}", scenario.GetProperty("content").GetProperty("record").GetProperty("parameters").GetString());
         Assert.Equal("{\"stored\":true}", scenario.GetProperty("content").GetProperty("record").GetProperty("impactPreviewJson").GetString());
+    }
+
+    [Theory]
+    [InlineData("draft-create")]
+    [InlineData("draft-read")]
+    [InlineData("equalization-create")]
+    [InlineData("equalization-retry")]
+    [InlineData("export-metadata")]
+    [InlineData("export-content")]
+    public async Task FullValuationSnapshots_RequireExistingCostForgePermissionEvenAfterRestart(string operation)
+    {
+        await using var f = await Fixture.Create();
+        var draft = await Draft(f);
+        JsonElement? export = null;
+        if (operation is "equalization-retry" or "export-metadata" or "export-content")
+            export = await Json(await f.Client.PostAsJsonAsync($"{Root}/exports/equalization", ExportRequest(draft)));
+        await f.Restart();
+        f.Client.DefaultRequestHeaders.Add("Test-Permissions", "read:dossier,write:dossier,read:dais");
+        HttpResponseMessage response = operation switch
+        {
+            "draft-create" => await f.Client.PostAsJsonAsync($"{Root}/drafts", new { county = County, studyId = Study, requestId = "denied-draft" }),
+            "draft-read" => await f.Client.GetAsync($"{Root}/drafts/{draft.GetProperty("draftId").GetString()}?county={County}"),
+            "equalization-create" or "equalization-retry" => await f.Client.PostAsJsonAsync($"{Root}/exports/equalization", ExportRequest(draft)),
+            "export-metadata" => await f.Client.GetAsync($"{Root}/exports/{export!.Value.GetProperty("packageRef").GetString()}?county={County}"),
+            _ => await f.Client.GetAsync(export!.Value.GetProperty("payloadRef").GetString())
+        };
+        Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
+        Assert.DoesNotContain("123456", await response.Content.ReadAsStringAsync());
+        await using var db = f.Db();
+        Assert.Equal(export.HasValue ? 2 : 1, await db.DossierWorkflowRecords.CountAsync());
+    }
+
+    [Fact]
+    public async Task CostForgePermission_PreservesExistingCaseInsensitiveClaimSemantics()
+    {
+        await using var f = await Fixture.Create();
+        f.Client.DefaultRequestHeaders.Add("Test-Permissions", "read:dossier,write:dossier,read:dais,ACCESS:COSTFORGE");
+        var draft = await Draft(f);
+        var export = await Json(await f.Client.PostAsJsonAsync($"{Root}/exports/equalization", ExportRequest(draft)));
+        Assert.Equal(HttpStatusCode.OK, (await f.Client.GetAsync(export.GetProperty("payloadRef").GetString())).StatusCode);
+    }
+
+    [Fact]
+    public async Task Context_DoesNotBypassStoredValuationArtifactPermissionThroughExportSummaries()
+    {
+        await using var f = await Fixture.Create();
+        var draft = await Draft(f);
+        Assert.Equal(HttpStatusCode.OK, (await f.Client.PostAsJsonAsync($"{Root}/exports/equalization", ExportRequest(draft))).StatusCode);
+        var audit = await Json(await f.Client.PostAsJsonAsync($"{Root}/exports/audit", new { county = County, taxYear = 2024,
+            bundleScope = "county", requestId = "visible-audit", confirmed = true, reasonCode = "legal_compliance" }));
+        f.Client.DefaultRequestHeaders.Add("Test-Permissions", "read:dossier,read:dais");
+        var context = await Json(await f.Client.GetAsync($"{Root}/context?county={County}"));
+        Assert.Empty(context.GetProperty("drafts").EnumerateArray());
+        var visible = Assert.Single(context.GetProperty("exports").EnumerateArray());
+        Assert.Equal(audit.GetProperty("packageRef").GetString(), visible.GetProperty("packageRef").GetString());
+        Assert.DoesNotContain("ValuationRecords", context.GetRawText());
+        Assert.Single(context.GetProperty("studies").EnumerateArray());
+    }
+
+    [Fact]
+    public async Task AuditWithoutValuations_DoesNotRequireForgePermission()
+    {
+        await using var f = await Fixture.Create();
+        f.Client.DefaultRequestHeaders.Add("Test-Permissions", "read:dossier,write:dossier,read:dais");
+        var response = await f.Client.PostAsJsonAsync($"{Root}/exports/audit", new { county = County, taxYear = 2024,
+            bundleScope = "county", requestId = "audit-no-forge", confirmed = true, reasonCode = "legal_compliance" });
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        var summary = await Json(response);
+        await f.Restart();
+        f.Client.DefaultRequestHeaders.Add("Test-Permissions", "read:dossier,read:dais");
+        Assert.Equal(HttpStatusCode.OK, (await f.Client.GetAsync($"{Root}/exports/{summary.GetProperty("packageRef").GetString()}?county={County}")).StatusCode);
+        var content = await f.Client.GetStringAsync(summary.GetProperty("payloadRef").GetString());
+        Assert.DoesNotContain("ValuationRecords", content);
+    }
+
+    [Theory]
+    [InlineData("equalization", "OWNER_REVIEW")]
+    [InlineData("equalization", "legal_compliance")]
+    [InlineData("equalization", "ANNUAL_CERTIFICATION")]
+    [InlineData("equalization", "annual_certification ")]
+    [InlineData("audit", "OWNER_REVIEW")]
+    [InlineData("audit", "LEGAL_COMPLIANCE")]
+    [InlineData("audit", " legal_compliance")]
+    [InlineData("audit", "")]
+    public async Task ExportReason_RejectsUnsupportedOperationReasonBeforeAnyExportWrite(string operation, string reason)
+    {
+        await using var f = await Fixture.Create();
+        var draft = await Draft(f);
+        object request = operation == "equalization" ? ExportRequest(draft, reason: reason) : new
+            { county = County, taxYear = 2024, bundleScope = "county", requestId = "invalid-audit", confirmed = true, reasonCode = reason };
+        Assert.Equal(HttpStatusCode.BadRequest, (await f.Client.PostAsJsonAsync($"{Root}/exports/{operation}", request)).StatusCode);
+        await using var db = f.Db();
+        Assert.Empty(await db.DossierWorkflowRecords.Where(x => x.Kind != "assessment-draft").ToListAsync());
+    }
+
+    [Theory]
+    [InlineData("equalization", "annual_certification")]
+    [InlineData("equalization", "board_directive")]
+    [InlineData("audit", "annual_certification")]
+    [InlineData("audit", "board_directive")]
+    [InlineData("audit", "legal_compliance")]
+    public async Task ExportReason_AcceptsExistingManifestReasons(string operation, string reason)
+    {
+        await using var f = await Fixture.Create();
+        var draft = await Draft(f);
+        object request = operation == "equalization" ? ExportRequest(draft, reason: reason) : new
+            { county = County, taxYear = 2024, bundleScope = "county", requestId = "valid-audit", confirmed = true, reasonCode = reason };
+        var response = await f.Client.PostAsJsonAsync($"{Root}/exports/{operation}", request);
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        var summary = await Json(response);
+        var content = await Json(await f.Client.GetAsync(summary.GetProperty("payloadRef").GetString()));
+        Assert.Equal(reason, content.GetProperty("reasonCode").GetString());
+    }
+
+    [Fact]
+    public async Task CohortSnapshot_DraftAndCountyAuditPreserveDefinitionAndProvenanceAfterChangeAndRestart()
+    {
+        await using var f = await Fixture.Create();
+        var cohortId = Guid.NewGuid();
+        const string original = "{\"parcelIds\":[\"SYNTHETIC-WORKFLOW\"],\"ruleExpression\":\"stored cohort rule\"}";
+        await using (var db = f.Db())
+        {
+            db.CountyCohorts.Add(new CountyCohort { CohortId = cohortId, CountyId = Guid.Parse(County), StudyId = Guid.Parse(Study), Name = "Stored cohort", Definition = original, ParcelCount = 1 });
+            for (var i = 0; i < 2; i++)
+                db.CountyScenarios.Add(new CountyScenario { CountyId = Guid.Parse(County), StudyId = Guid.Parse(Study), CohortId = cohortId, Parameters = "{\"magnitude\":4.25}", Rationale = "Stored rationale" });
+            await db.SaveChangesAsync();
+        }
+        var draft = await Draft(f);
+        var draftUrl = $"{Root}/drafts/{draft.GetProperty("draftId").GetString()}?county={County}";
+        Assert.Equal(5, draft.GetProperty("artifactCount").GetInt32()); // study, valuation, two scenarios, one shared cohort
+        var savedDraft = await f.Client.GetStringAsync(draftUrl);
+        var audit = await Json(await f.Client.PostAsJsonAsync($"{Root}/exports/audit", new { county = County, taxYear = 2024,
+            bundleScope = "county", requestId = "cohort-audit", confirmed = true, reasonCode = "legal_compliance" }));
+        Assert.Equal(4, audit.GetProperty("artifactCount").GetInt32());
+        var auditUrl = audit.GetProperty("payloadRef").GetString()!;
+        var savedAudit = await f.Client.GetStringAsync(auditUrl);
+        await using (var db = f.Db())
+        {
+            var cohort = await db.CountyCohorts.SingleAsync();
+            cohort.Definition = "{\"changed\":true}"; cohort.ParcelCount = 99;
+            await db.SaveChangesAsync();
+        }
+        await f.Restart();
+        Assert.Equal(savedDraft, await f.Client.GetStringAsync(draftUrl));
+        Assert.Equal(savedAudit, await f.Client.GetStringAsync(auditUrl));
+        foreach (var json in new[] { savedDraft, savedAudit })
+        {
+            var artifacts = JsonDocument.Parse(json).RootElement.GetProperty("artifacts");
+            var captured = Assert.Single(artifacts.EnumerateArray().Where(x => x.GetProperty("name").GetString()!.StartsWith("CountyCohorts/", StringComparison.Ordinal)));
+            Assert.Equal(cohortId.ToString("D"), captured.GetProperty("sourceId").GetString());
+            var content = captured.GetProperty("content");
+            Assert.Equal(County, content.GetProperty("countyId").GetString());
+            Assert.Equal(Study, content.GetProperty("record").GetProperty("studyId").GetString());
+            Assert.Equal(original, content.GetProperty("record").GetProperty("definition").GetString());
+            Assert.Equal(1, content.GetProperty("record").GetProperty("parcelCount").GetInt32());
+            var computed = Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(content.GetRawText()))).ToLowerInvariant();
+            Assert.True(computed == captured.GetProperty("sha256").GetString(), $"Returned artifact bytes do not match SHA: {content.GetRawText()}");
+        }
+    }
+
+    [Theory]
+    [InlineData("foreign-cohort")]
+    [InlineData("wrong-study")]
+    [InlineData("missing-cohort")]
+    [InlineData("foreign-scenario")]
+    public async Task CohortSnapshot_RejectsBrokenCountyStudyCohortReferencesWithoutWriting(string broken)
+    {
+        await using var f = await Fixture.Create();
+        var cohortId = Guid.NewGuid();
+        await using (var db = f.Db())
+        {
+            var otherStudy = Guid.NewGuid();
+            db.CountyStudySessions.Add(new CountyStudySession { StudyId = otherStudy, CountyId = Guid.Parse(County), CountyName = "Synthetic County", TaxYear = 2023 });
+            db.CountyCohorts.Add(new CountyCohort { CohortId = cohortId, CountyId = Guid.Parse(broken == "foreign-cohort" ? OtherCounty : County),
+                StudyId = broken == "wrong-study" ? otherStudy : Guid.Parse(Study), Name = "Invalid reference fixture", Definition = "{}" });
+            db.CountyScenarios.Add(new CountyScenario { CountyId = Guid.Parse(broken == "foreign-scenario" ? OtherCounty : County),
+                StudyId = Guid.Parse(Study), CohortId = cohortId, Rationale = "Invalid reference fixture" });
+            await db.SaveChangesAsync();
+            if (broken == "missing-cohort")
+            {
+                // Simulate legacy/import corruption, not a production path for bypassing constraints.
+                await db.Database.OpenConnectionAsync();
+                await db.Database.ExecuteSqlRawAsync("PRAGMA foreign_keys=OFF;");
+                await db.Database.ExecuteSqlRawAsync("DELETE FROM CountyCohorts;");
+                await db.Database.CloseConnectionAsync();
+            }
+        }
+        Assert.Equal((HttpStatusCode)422, (await f.Client.PostAsJsonAsync($"{Root}/drafts", new { county = County, studyId = Study, requestId = "bad-cohort-draft" })).StatusCode);
+        Assert.Equal((HttpStatusCode)422, (await f.Client.PostAsJsonAsync($"{Root}/exports/audit", new { county = County, taxYear = 2024,
+            bundleScope = "county", requestId = "bad-cohort-audit", confirmed = true, reasonCode = "legal_compliance" })).StatusCode);
+        await using var verify = f.Db();
+        Assert.Empty(await verify.DossierWorkflowRecords.ToListAsync());
     }
 
     private static async Task<Guid> SeedPacket(Fixture f, bool linked = true, bool fullTemplate = false)
@@ -577,8 +769,9 @@ public sealed class DossierWorkflowsTests
             builder.Services.AddAuthentication("synthetic").AddScheme<AuthenticationSchemeOptions, SyntheticAuthentication>("synthetic", _ => { });
             builder.Services.AddAuthorization(options =>
             {
-                foreach (var permission in new[] { "read:dossier", "write:dossier", "read:dais" })
-                    options.AddPolicy("RequiresPermission_" + permission, p => p.RequireAuthenticatedUser().RequireClaim("perm", permission));
+                foreach (var permission in new[] { "read:dossier", "write:dossier", "read:dais", "access:costforge" })
+                    options.AddPolicy("RequiresPermission_" + permission, p => p.RequireAuthenticatedUser().RequireAssertion(context =>
+                        context.User.Claims.Any(c => c.Type == "perm" && string.Equals(c.Value, permission, StringComparison.OrdinalIgnoreCase))));
             });
             _app = builder.Build();
             _app.UseAuthentication();
@@ -612,7 +805,7 @@ public sealed class DossierWorkflowsTests
             if (Request.Headers.ContainsKey("Test-Anonymous")) return Task.FromResult(AuthenticateResult.NoResult());
             var claims = new List<Claim> { new("countyId", Request.Headers["Test-County"].FirstOrDefault() ?? County) };
             if (!Request.Headers.ContainsKey("Test-No-User")) claims.Add(new(ClaimTypes.NameIdentifier, "synthetic-user"));
-            foreach (var permission in (Request.Headers["Test-Permissions"].FirstOrDefault() ?? "read:dossier,write:dossier,read:dais").Split(','))
+            foreach (var permission in (Request.Headers["Test-Permissions"].FirstOrDefault() ?? "read:dossier,write:dossier,read:dais,access:costforge").Split(','))
                 claims.Add(new("perm", permission));
             return Task.FromResult(AuthenticateResult.Success(new AuthenticationTicket(new ClaimsPrincipal(new ClaimsIdentity(claims, "synthetic")), "synthetic")));
         }

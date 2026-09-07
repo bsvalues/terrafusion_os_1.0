@@ -43,19 +43,69 @@ read-only, no builder reservation. Exact delivered-head assurance remains requir
   from the new workflow tests. The rebuilt frontend succeeds with inherited warnings.
 - Latest generated core, core typecheck and generated-header checks pass. Combined
   active/staged manifest, county handlers and Phase83/85/86 tests pass 123/123;
-  the original diagnostic continuation passes 3/3. Browser spec parses, not yet run.
-- Backend independent review requires remediation before acceptance: preserve
+  the original diagnostic continuation passes 3/3. Root unit gate passes 201/201.
+  Two real browser-harness attempts stopped at API startup: first missing local
+  Atlas staging (resolved through the existing pinned stager), then the inherited
+  Dossier mutation manifest mismatch below. No owner journey has passed yet.
+- Backend independent review required remediation before acceptance: preserve
   `access:costforge` on valuation snapshot creation/retrieval, enforce operation
   reason-code allowlists at the backend, and snapshot scope-validated referenced
-  cohort definitions with scenarios. Original backend builder owns these repairs.
-- Whole-frontend validation was stopped after the existing CommandInput test
-  generated a runaway cmdk/React warning stream. Only the identified owned Vitest
+  cohort definitions with scenarios. These three repairs are integrated and passed
+  independent re-review. The integrated workflow/bridge run, with explicit fresh
+  synthetic bootstrap enabled, passes 60/60 with no skips.
+- Whole-frontend validation was stopped after a very large cmdk/React warning
+  stream labelled CommandInput. Only the identified owned Vitest
   process tree was stopped. This run did not pass; bounded baseline diagnosis is
-  assigned before any gate-prerequisite repair. No tests were skipped or excluded.
+  assigned before any gate-prerequisite repair. The single CommandInput test
+  passes in isolation; its infinite-loop attribution is not established.
+  A second full run completed: 717 files, 8,069 passed assertions, 211 skipped,
+  14 failed assertions in six files. Its JSON describe-suite counters are not
+  assertion totals. The failures exposed route-source contracts and historical
+  reserved-office/auth fixtures, not an established CommandInput infinite loop.
+  The narrow four-file repair is integrated; builder's combined six affected and
+  eight prior suites pass 230/230. Full integrated rerun now passes: 698 passed
+  files plus 19 skipped files; 8,083 passed assertions, 211 skipped, zero failed
+  (717 files / 8,294 assertions, 397.16 seconds). The canonical
+  `frontend/vitest-results.json` retains the report. This source-level test run
+  precedes incorporation of WACO #1568; it is not delivered-revision acceptance.
+  No tests were excluded and no skip was added by this repair.
   Real browser acceptance, final exact-head
   assurance, protected CI/merge and delivered-revision verification remain pending.
 
 Earlier checkpoint observations below remain historical run evidence:
+
+- WACO #1568 subsequently merged at `35e32462d9758473e3a193388cd50786dc63cc17`
+  and its owner explicitly released Program.cs for the agreed Development-only
+  `read:dais` dev-token permission. This assignment reserves only that one-line
+  correction, preserving merged Canon/Benton wiring and endpoint authorization.
+  WACO retains its separately pinned conference candidate and deployment window.
+
+- The 19/24-field runtime verifier prerequisite is integrated and independent
+  source review passed: trusted profile selection, all exact field checks and
+  original byte pins remain enforced. Integrated registration tests now pass
+  112 with two existing host-gated skips. The third actual browser attempt started
+  the real API and reached Dossier, but context was denied because the real dev
+  issuer lacks `read:dais`. No draft/export journey passed. The agreed Program.cs
+  correction remains reserved until WACO #1568 releases that file.
+- Preacceptance harness review found three gaps, now repaired pending re-review:
+  bounded cleanup of the owned bootstrap/API/Pilot process trees, both actual
+  Property Dossier export controls including downloaded bytes, and briefing
+  assertions tied to the persisted synthetic study identity and provenance.
+  Independent bounded re-review passed for those harness repairs and the four
+  full-UI regression repairs. These reviews are not successful browser results.
+
+- Real isolated startup found an inherited Dossier mutation manifest mismatch:
+  the exact pinned 24-field mutation manifest passes byte identity but the shared
+  verifier assumes the 19-field read manifest. Ohm now owns a separate bounded
+  prerequisite in `DossierEvidenceRegistryReadRuntimeRegistration.cs` and
+  `DossierMutationRuntimeRegistrationTests.cs`, preserving strict exact identity
+  for both artifact contracts. No stager, canonical pin, module, or production
+  setting changes are authorized. Ramanujan retains the other backend paths.
+- Local startup dependencies now include the existing exact Atlas, both Dais,
+  both Dossier and GPT modules in this worktree's ignored runtime slots. No suite
+  source or pin was changed. This is staging, not new acceptance of those suites.
+  Playwright's generated `output/` run metadata is excluded from source commits,
+  like the generated wiki pages; synthetic databases remain in `.tmp/county-context`.
 
 - Coordinator Node handler checks: 4/4 pass; original diagnostic regression
   continuation: 3/3 pass. The missing-draft case reaches a controlled HTTP 404,
@@ -259,12 +309,15 @@ merge, package publication, production deployment, or parallel dispatch is claim
     "tools/registry/check-generated-js.mjs",
     "pnpm-lock.yaml",
     "backend/src/TerraFusion.API/Controllers/PilotController.cs",
+    "backend/src/TerraFusion.API/Program.cs",
     "backend/src/TerraFusion.API/Services/PilotRuntimeProxy.cs",
     "backend/tests/TerraFusion.Unit.Tests/PilotRuntimeProxyTests.cs",
     "backend/src/TerraFusion.API/Controllers/DossierController.cs",
     "backend/src/TerraFusion.API/Controllers/DossierWorkflowsController.cs",
     "backend/src/TerraFusion.API/DTOs/DossierWorkflowDtos.cs",
     "backend/src/TerraFusion.API/Services/Dossier/DossierMutationRuntimeRegistration.cs",
+    "backend/src/TerraFusion.API/Services/Dossier/DossierEvidenceRegistryReadRuntimeRegistration.cs",
+    "backend/tests/TerraFusion.Unit.Tests/Dossier/DossierMutationRuntimeRegistrationTests.cs",
     "backend/src/TerraFusion.API/Services/Dossier/DossierWorkflowService.cs",
     "backend/src/TerraFusion.Core/Entities/DossierPacket.cs",
     "backend/src/TerraFusion.Core/Entities/DossierWorkflowRecord.cs",
@@ -281,6 +334,9 @@ merge, package publication, production deployment, or parallel dispatch is claim
     "frontend/apps/os-shell/src/__tests__/dossier/workflowScreens.test.tsx",
     "frontend/apps/os-shell/src/__tests__/workbench/PropertyWorkbenchWindow.tabMapping.test.tsx",
     "frontend/apps/os-shell/src/__tests__/dais/rollReadiness-certification.contract.test.ts",
+    "frontend/apps/os-shell/src/__tests__/dais/daisOperations.contract.test.tsx",
+    "frontend/apps/os-shell/src/__tests__/suites/wave3-placeholder-integrity.test.tsx",
+    "frontend/apps/os-shell/src/__tests__/workbench/PropertyWorkbenchWindow.realSurfaces.acceptance.test.tsx",
     "os-platform/core/tests/phase83-tools.test.mjs",
     "tools/registry/terrapilot.tools.json",
     "tools/registry/terrapilot.tools.forward-staged.json",

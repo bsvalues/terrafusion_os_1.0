@@ -17,7 +17,7 @@ public sealed class DossierWorkflowService(TerraFusionDbContext db)
     private static readonly JsonSerializerOptions Json = new(JsonSerializerDefaults.Web)
     { Converters = { new JsonStringEnumConverter() } };
 
-    public async Task<object> Context(Guid county, int? year, string? parcel, CancellationToken ct)
+    public async Task<object> Context(Guid county, int? year, string? parcel, bool canReadValuations, CancellationToken ct)
     {
         if (year.HasValue) Year(year.Value);
         var studies = await db.CountyStudySessions.AsNoTracking().Where(x => x.CountyId == county).ToListAsync(ct);
@@ -28,11 +28,12 @@ public sealed class DossierWorkflowService(TerraFusionDbContext db)
             .Distinct().OrderByDescending(x => x).ToArray();
         var records = await db.DossierWorkflowRecords.AsNoTracking()
             .Where(x => x.CountyId == county && (!year.HasValue || x.TaxYear == year)).ToListAsync(ct);
+        var visible = records.Where(x => canReadValuations || !NeedsValuationPermission(x)).ToArray();
         return new { countyId = county, taxYears = years,
             studies = studies.Where(x => !year.HasValue || x.TaxYear == year).OrderBy(x => x.StudyId)
                 .Select(x => new { x.StudyId, x.TaxYear, status = x.Status.ToString(), x.BaselineVersion }),
-            drafts = records.Where(x => x.Kind == DraftKind).OrderByDescending(x => x.CreatedAt).Select(DraftSummary),
-            exports = records.Where(x => x.Kind != DraftKind).OrderByDescending(x => x.CreatedAt).Select(ExportSummary) };
+            drafts = visible.Where(x => x.Kind == DraftKind).OrderByDescending(x => x.CreatedAt).Select(DraftSummary),
+            exports = visible.Where(x => x.Kind != DraftKind).OrderByDescending(x => x.CreatedAt).Select(ExportSummary) };
     }
 
     public async Task<object> CreateDraft(Guid county, string actor, AssessmentDraftRequest request, CancellationToken ct)
@@ -47,25 +48,26 @@ public sealed class DossierWorkflowService(TerraFusionDbContext db)
                 throw Incomplete("The study year needs persisted reconciled valuation records.");
             var artifacts = new List<WorkflowArtifact> { Capture(study, study.StudyId, county, study.TaxYear) };
             Add(artifacts, valuations, x => x.Id, county, study.TaxYear);
-            Add(artifacts, await db.CountyScenarios.AsNoTracking().Where(x => x.CountyId == county && x.StudyId == study.StudyId).ToListAsync(ct), x => x.ScenarioId, county, study.TaxYear);
+            await AddScenariosAndCohorts(artifacts, county, study.TaxYear, [study.StudyId], ct);
             await AddPackets(artifacts, county, study.TaxYear, null, null, ct);
             return new WorkflowPayload(county, study.TaxYear, DraftKind, study.StudyId, null, null, null, null, null, actor, DateTime.UtcNow, Ordered(artifacts));
         }, ct);
         return DraftSummary(record);
     }
 
-    public async Task<object> GetDraft(Guid county, Guid id, CancellationToken ct)
+    public async Task<string> GetDraft(Guid county, Guid id, CancellationToken ct)
     {
         var row = await Find(county, id, ct);
         if (row.Kind != DraftKind) throw Missing();
         var payload = Payload(row);
-        return new { draftId = row.Id, row.StudyId, row.CountyId, row.TaxYear, row.Revision,
-            artifactCount = payload.Artifacts.Count, row.CreatedAt, payload.Artifacts };
+        // Use the storage encoder so embedded JSON definitions retain their hashed bytes.
+        return JsonSerializer.Serialize(new { draftId = row.Id, row.StudyId, row.CountyId, row.TaxYear, row.Revision,
+            artifactCount = payload.Artifacts.Count, row.CreatedAt, payload.Artifacts }, Json);
     }
 
     public async Task<object> Equalization(Guid county, string actor, EqualizationExportRequest request, CancellationToken ct)
     {
-        Confirm(request.Confirmed, request.ReasonCode); Year(request.TaxYear);
+        Confirm(request.Confirmed, request.ReasonCode, audit: false); Year(request.TaxYear);
         if (request.DraftId == Guid.Empty || string.IsNullOrWhiteSpace(request.Revision)) throw Invalid("draftId and revision are required.");
         var row = await Persist(county, actor, request.RequestId, "equalization", request, async () =>
         {
@@ -82,7 +84,7 @@ public sealed class DossierWorkflowService(TerraFusionDbContext db)
 
     public async Task<object> Audit(Guid county, string actor, AuditBundleRequest request, CancellationToken ct)
     {
-        Confirm(request.Confirmed, request.ReasonCode); Year(request.TaxYear);
+        Confirm(request.Confirmed, request.ReasonCode, audit: true); Year(request.TaxYear);
         if (request.BundleScope is not ("county" or "parcel" or "appeal")) throw Invalid("Unknown bundleScope.");
         if ((request.BundleScope == "county") != string.IsNullOrWhiteSpace(request.SubjectId)) throw Invalid("subjectId must match bundleScope.");
         var row = await Persist(county, actor, request.RequestId, "audit", request, async () =>
@@ -106,7 +108,7 @@ public sealed class DossierWorkflowService(TerraFusionDbContext db)
                     var studies = await db.CountyStudySessions.AsNoTracking().Where(x => x.CountyId == county && x.TaxYear == request.TaxYear).ToListAsync(ct);
                     Add(artifacts, studies, x => x.StudyId, county, request.TaxYear);
                     var ids = studies.Select(x => x.StudyId).ToArray();
-                    Add(artifacts, await db.CountyScenarios.AsNoTracking().Where(x => x.CountyId == county && ids.Contains(x.StudyId)).ToListAsync(ct), x => x.ScenarioId, county, request.TaxYear);
+                    await AddScenariosAndCohorts(artifacts, county, request.TaxYear, ids, ct);
                     Add(artifacts, await db.CertificationSteps.AsNoTracking().Where(x => x.CountyId == county && x.TaxYear == request.TaxYear).ToListAsync(ct), x => x.Id, county, request.TaxYear);
                 }
             }
@@ -119,17 +121,19 @@ public sealed class DossierWorkflowService(TerraFusionDbContext db)
         return ExportSummary(row);
     }
 
-    public async Task<object> GetExport(Guid county, Guid id, CancellationToken ct)
+    public async Task<object> GetExport(Guid county, Guid id, bool canReadValuations, CancellationToken ct)
     {
         var row = await Find(county, id, ct);
         if (row.Kind == DraftKind) throw Missing();
+        RequireSourcePermission(row, canReadValuations);
         return ExportSummary(row);
     }
 
-    public async Task<string> Content(Guid county, Guid id, CancellationToken ct)
+    public async Task<string> Content(Guid county, Guid id, bool canReadValuations, CancellationToken ct)
     {
         var row = await Find(county, id, ct);
         if (row.Kind == DraftKind) throw Missing();
+        RequireSourcePermission(row, canReadValuations);
         _ = Payload(row);
         return row.PayloadJson;
     }
@@ -180,6 +184,21 @@ public sealed class DossierWorkflowService(TerraFusionDbContext db)
     private async Task<Appeal> Appeal(Guid county, Guid id, int year, string? parcel, CancellationToken ct) =>
         await db.Appeals.AsNoTracking().SingleOrDefaultAsync(x => x.Id == id && x.CountyId == county &&
             x.TaxYear == year && (parcel == null || x.ParcelId == parcel), ct) ?? throw Missing();
+
+    private async System.Threading.Tasks.Task AddScenariosAndCohorts(List<WorkflowArtifact> artifacts, Guid county, int year, Guid[] studyIds, CancellationToken ct)
+    {
+        // Called inside the same serializable transaction as study capture. Query referenced IDs
+        // before county validation so malformed foreign links fail closed instead of disappearing.
+        var scenarios = await db.CountyScenarios.AsNoTracking().Where(x => studyIds.Contains(x.StudyId)).ToListAsync(ct);
+        if (scenarios.Any(x => x.CountyId != county)) throw Incomplete("Invalid scenario county/study reference.");
+        var cohortIds = scenarios.Select(x => x.CohortId).Distinct().ToArray();
+        var cohorts = await db.CountyCohorts.AsNoTracking().Where(x => cohortIds.Contains(x.CohortId)).ToDictionaryAsync(x => x.CohortId, ct);
+        foreach (var scenario in scenarios)
+            if (!cohorts.TryGetValue(scenario.CohortId, out var cohort) || cohort.CountyId != county || cohort.StudyId != scenario.StudyId)
+                throw Incomplete("Invalid scenario cohort county/study reference.");
+        Add(artifacts, scenarios, x => x.ScenarioId, county, year);
+        Add(artifacts, cohorts.Values, x => x.CohortId, county, year);
+    }
 
     private async Task<List<DossierPacket>> AddPackets(List<WorkflowArtifact> artifacts, Guid county, int year,
         string? parcel, Guid? appeal, CancellationToken ct, Guid? packetId = null)
@@ -269,6 +288,16 @@ public sealed class DossierWorkflowService(TerraFusionDbContext db)
             findings, summary = $"{findings.Count} persisted operational record(s) for {year}.", generatedAt = DateTime.UtcNow };
     }
 
+    private static bool NeedsValuationPermission(DossierWorkflowRecord row) => row.Kind is DraftKind or "equalization" ||
+        Payload(row).Artifacts.Any(x => x.Name.StartsWith("ValuationRecords/", StringComparison.Ordinal) ||
+            (x.Content.TryGetProperty("sourceTable", out var table) && table.GetString() == "ValuationRecords"));
+
+    private static void RequireSourcePermission(DossierWorkflowRecord row, bool canReadValuations)
+    {
+        if (!canReadValuations && NeedsValuationPermission(row))
+            throw new DossierWorkflowException(403, "SOURCE_PERMISSION_REQUIRED", "access:costforge is required to read stored valuation artifacts.");
+    }
+
     private static WorkflowPayload Payload(DossierWorkflowRecord row)
     {
         if (Hash(row.PayloadJson) != row.ContentHash) throw Incomplete("Stored content integrity check failed.");
@@ -302,7 +331,13 @@ public sealed class DossierWorkflowService(TerraFusionDbContext db)
     private static IReadOnlyList<WorkflowArtifact> Ordered(IEnumerable<WorkflowArtifact> artifacts) => artifacts.OrderBy(x => x.Name, StringComparer.Ordinal).ToArray();
     private static string Hash(string text) => Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(text))).ToLowerInvariant();
     private static void Year(int year) { if (year < 1900 || year > 9999) throw Invalid("A valid selected taxYear is required."); }
-    private static void Confirm(bool confirmed, string reason) { if (!confirmed || string.IsNullOrWhiteSpace(reason) || reason.Length > 200) throw Invalid("confirmed=true and reasonCode are required."); }
+    private static void Confirm(bool confirmed, string reason, bool audit)
+    {
+        // Existing operation-specific reasonCodes in tools/registry/terrapilot.tools.json.
+        // No normalization or free-text fallback: direct HTTP callers retain the same controls.
+        var allowed = reason is "annual_certification" or "board_directive" || (audit && reason == "legal_compliance");
+        if (!confirmed || !allowed) throw Invalid("confirmed=true and an allowed operation-specific reasonCode are required.");
+    }
     private static DossierWorkflowException Invalid(string message) => new(400, "INVALID_REQUEST", message);
     private static DossierWorkflowException Missing() => new(404, "NOT_FOUND", "Record not found.");
     private static DossierWorkflowException Conflict(string message) => new(409, "CONFLICT", message);

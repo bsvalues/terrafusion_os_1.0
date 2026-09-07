@@ -17,21 +17,25 @@ public sealed class DossierWorkflowsController(DossierWorkflowService service, I
 {
     [HttpGet("context")]
     public Task<IActionResult> Context([FromQuery] string? county, [FromQuery] int? taxYear, [FromQuery] string? parcelId) =>
-        Execute(county, false, (id, _, ct) => service.Context(id, taxYear, parcelId, ct));
+        Execute(county, false, (id, _, ct) => service.Context(id, taxYear, parcelId, CanReadValuations(), ct));
 
     [HttpPost("drafts")]
     [RequiresPermission("write:dossier")]
+    [RequiresPermission("access:costforge")]
     public Task<IActionResult> CreateDraft([FromBody] AssessmentDraftRequest request) =>
-        Execute(request.County, true, (id, actor, ct) => service.CreateDraft(id, actor, request, ct));
+        Execute(request.County, true, (id, actor, ct) => service.CreateDraft(id, actor, request, ct), valuation: true);
 
     [HttpGet("drafts/{id:guid}")]
+    [RequiresPermission("access:costforge")]
     public Task<IActionResult> GetDraft(Guid id, [FromQuery] string? county) =>
-        Execute(county, false, (countyId, _, ct) => service.GetDraft(countyId, id, ct));
+        Execute(county, false, async (countyId, _, ct) => new ContentResult
+            { Content = await service.GetDraft(countyId, id, ct), ContentType = "application/json; charset=utf-8", StatusCode = 200 }, valuation: true);
 
     [HttpPost("exports/equalization")]
     [RequiresPermission("write:dossier")]
+    [RequiresPermission("access:costforge")]
     public Task<IActionResult> Equalization([FromBody] EqualizationExportRequest request) =>
-        Execute(request.County, true, (id, actor, ct) => service.Equalization(id, actor, request, ct));
+        Execute(request.County, true, (id, actor, ct) => service.Equalization(id, actor, request, ct), valuation: true);
 
     [HttpPost("exports/audit")]
     [RequiresPermission("write:dossier")]
@@ -40,12 +44,12 @@ public sealed class DossierWorkflowsController(DossierWorkflowService service, I
 
     [HttpGet("exports/{id:guid}")]
     public Task<IActionResult> GetExport(Guid id, [FromQuery] string? county) =>
-        Execute(county, false, (countyId, _, ct) => service.GetExport(countyId, id, ct));
+        Execute(county, false, (countyId, _, ct) => service.GetExport(countyId, id, CanReadValuations(), ct));
 
     [HttpGet("exports/{id:guid}/content")]
     public Task<IActionResult> GetContent(Guid id, [FromQuery] string? county) =>
         Execute(county, false, async (countyId, _, ct) => new ContentResult
-            { Content = await service.Content(countyId, id, ct), ContentType = "application/json; charset=utf-8", StatusCode = 200 });
+            { Content = await service.Content(countyId, id, CanReadValuations(), ct), ContentType = "application/json; charset=utf-8", StatusCode = 200 });
 
     [HttpGet("morning-brief")]
     public Task<IActionResult> MorningBrief([FromQuery] string? county, [FromQuery] int taxYear, [FromQuery] string role) =>
@@ -55,7 +59,7 @@ public sealed class DossierWorkflowsController(DossierWorkflowService service, I
     public Task<IActionResult> AppealPacket(Guid appealId, [FromQuery] string? county, [FromQuery] int taxYear, [FromQuery] string? parcelId) =>
         Execute(county, false, (id, _, ct) => service.AppealPacket(id, appealId, taxYear, parcelId, ct));
 
-    private async Task<IActionResult> Execute(string? county, bool write, Func<Guid, string, CancellationToken, Task<object>> operation)
+    private async Task<IActionResult> Execute(string? county, bool write, Func<Guid, string, CancellationToken, Task<object>> operation, bool valuation = false)
     {
         if (User.Identity?.IsAuthenticated != true) return Unauthorized();
         var claims = User.FindAll("countyId").ToArray();
@@ -65,6 +69,7 @@ public sealed class DossierWorkflowsController(DossierWorkflowService service, I
         // Explicit claims are required here as the legacy permission handler also supports plugin headers.
         if (!User.HasClaim("perm", "read:dossier") || !User.HasClaim("perm", "read:dais") || (write && !User.HasClaim("perm", "write:dossier")))
             return Forbid();
+        if (valuation && !CanReadValuations()) return Forbid();
         if (!Canonical(county, out var requested)) return BadRequest(new { code = "INVALID_COUNTY", error = "county must be a canonical GUID." });
         if (requested != countyId) return Forbid();
         try
@@ -81,4 +86,8 @@ public sealed class DossierWorkflowsController(DossierWorkflowService service, I
     }
 
     private static bool Canonical(string? value, out Guid id) => Guid.TryParseExact(value, "D", out id) && id != Guid.Empty && value == id.ToString("D");
+
+    // Same claim name/comparison as PluginPermissionHandler; never accept its plugin-header fallback.
+    private bool CanReadValuations() => User.Claims.Any(c => c.Type == "perm" &&
+        string.Equals(c.Value, "access:costforge", StringComparison.OrdinalIgnoreCase));
 }

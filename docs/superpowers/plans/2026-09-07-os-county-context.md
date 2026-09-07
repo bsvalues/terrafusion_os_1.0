@@ -82,7 +82,7 @@ Frontend worker reservation: four existing screens, new small workflow API/conte
 Coordinator/test reservation: existing browser harness extended in new county-context proof files, unique non-production runtime directory/ports/database, no WACO mutable state.
 
 - [ ] Boot isolated real backend, Pilot and OS Shell with explicitly synthetic test records and no live county connections.
-- [ ] Through existing screens save/select a draft, export, retrieve content, reload/restart and reopen; prove Benton plus labelled synthetic second county.
+- [ ] Through existing screens save/select a draft, export, retrieve content, reload/restart and reopen; prove two explicitly synthetic county identities in the isolated application database, without representing that as live Benton acceptance.
 - [ ] Prove missing/foreign/year/revision rejection, different artifact counts, retry and interrupted generation, context switch during execution, all four tool paths.
 - [ ] Independent task reviews for spec and code quality, then whole-branch exact-head assurance; resolve findings with covering tests.
 - [ ] Run Brain scope/proof and all applicable protected checks; commit only exact in-scope files, push branch, open PR, resolve reviews/checks and merge only when eligible.
@@ -98,4 +98,13 @@ Coordinator/test reservation: existing browser harness extended in new county-co
 | 1 / 5 | Persistent test data | Real application DB, explicitly synthetic records, isolated runtime only. |
 | All | Independent mutable files | Separate worktrees; coordinator integrates exact paths; no shared builders. |
 
-Tasks 1–4 in progress; task 5 pending integrated candidate. No task or overall completion claimed.
+Tasks 1–4 are integrated and undergoing review remediation; task 5 is active.
+UI bounded re-review passed and 110 integrated focused tests pass. Backend's three
+permission/reason/cohort findings passed re-review and 60 integrated tests pass
+with no skips. Actual API startup identified a strict Dossier manifest-profile
+prerequisite; its separate two-file repair is integrated and independently reviewed.
+Full frontend found 14 failed assertions in six files; the four-file repair has
+230 focused builder passes and is undergoing integrated full validation/re-review.
+Harness review gaps in owned process cleanup, Workbench exports/downloads and
+fixture-derived briefing assertions are repaired pending re-review and execution.
+Protected delivery and real browser acceptance are not complete.

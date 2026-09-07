@@ -22,6 +22,7 @@ let apiPort: number;
 let pilotPort: number;
 let api: ChildProcess | undefined;
 let pilot: ChildProcess | undefined;
+const fixtureProcesses = new Set<ChildProcess>();
 
 function environment(extra: Record<string, string> = {}): NodeJS.ProcessEnv {
   const result: NodeJS.ProcessEnv = {};
@@ -63,8 +64,10 @@ async function run(executable: string, args: string[], env: NodeJS.ProcessEnv): 
     cwd: root,
     env,
     windowsHide: true,
+    detached: process.platform !== 'win32',
     stdio: ['ignore', 'pipe', 'pipe'],
   });
+  fixtureProcesses.add(child);
   let output = '';
   child.stdout?.on('data', value => {
     output = (output + value).slice(-12_000);
@@ -72,12 +75,27 @@ async function run(executable: string, args: string[], env: NodeJS.ProcessEnv): 
   child.stderr?.on('data', value => {
     output = (output + value).slice(-12_000);
   });
-  await new Promise<void>((resolve, reject) => {
-    child.once('error', reject);
-    child.once('exit', code =>
-      code === 0 ? resolve() : reject(new Error(`Controlled fixture failed (${code}): ${output}`))
-    );
-  });
+  try {
+    await new Promise<void>((resolve, reject) => {
+      const timer = setTimeout(
+        () => reject(new Error('Controlled fixture exceeded 90 seconds.')),
+        90_000
+      );
+      child.once('error', error => {
+        clearTimeout(timer);
+        reject(error);
+      });
+      child.once('exit', code => {
+        clearTimeout(timer);
+        code === 0
+          ? resolve()
+          : reject(new Error(`Controlled fixture failed (${code}): ${output}`));
+      });
+    });
+  } finally {
+    await stop(child);
+    fixtureProcesses.delete(child);
+  }
 }
 
 async function ready(child: ChildProcess, url: string): Promise<void> {
@@ -103,10 +121,47 @@ async function ready(child: ChildProcess, url: string): Promise<void> {
 }
 
 async function stop(child: ChildProcess | undefined): Promise<void> {
-  if (!child || child.exitCode !== null) return;
-  const exited = new Promise<void>(resolve => child.once('exit', () => resolve()));
-  child.kill();
-  await exited;
+  if (!child?.pid || child.exitCode !== null || child.signalCode !== null) return;
+  const waitForExit = (timeout: number) =>
+    new Promise<boolean>(resolve => {
+      if (child.exitCode !== null || child.signalCode !== null) return resolve(true);
+      const done = () => {
+        clearTimeout(timer);
+        resolve(true);
+      };
+      const timer = setTimeout(() => {
+        child.off('exit', done);
+        resolve(false);
+      }, timeout);
+      child.once('exit', done);
+    });
+  if (process.platform === 'win32') {
+    // Exact owned PID and its descendants only, including the testhost spawned by dotnet test.
+    await new Promise<void>((resolve, reject) => {
+      const killer = spawn('taskkill.exe', ['/PID', String(child.pid), '/T', '/F'], {
+        windowsHide: true,
+        stdio: 'ignore',
+        env: environment(),
+      });
+      const timer = setTimeout(() => {
+        killer.kill();
+        reject(new Error('Owned process-tree shutdown timed out.'));
+      }, 10_000);
+      killer.once('error', error => {
+        clearTimeout(timer);
+        reject(error);
+      });
+      killer.once('exit', () => {
+        clearTimeout(timer);
+        resolve();
+      });
+    });
+  } else {
+    process.kill(-child.pid, 'SIGTERM');
+    if (!(await waitForExit(5_000))) process.kill(-child.pid, 'SIGKILL');
+  }
+  if (!(await waitForExit(5_000)))
+    throw new Error('Owned application did not exit after shutdown.');
 }
 
 async function startApi(defaultCounty = county): Promise<void> {
@@ -119,6 +174,7 @@ async function startApi(defaultCounty = county): Promise<void> {
     {
       cwd: resolve(root, 'backend/src/TerraFusion.API'),
       windowsHide: true,
+      detached: process.platform !== 'win32',
       stdio: ['ignore', 'pipe', 'pipe'],
       env: environment({
         ASPNETCORE_ENVIRONMENT: 'Development',
@@ -157,7 +213,11 @@ async function devToken(): Promise<string> {
 
 async function open(page: Page, path: string, token: string): Promise<void> {
   await page.addInitScript(value => localStorage.setItem('authToken', value), token);
+  const contextResponse = page.waitForResponse(
+    response => new URL(response.url()).pathname === '/api/dossier/workflows/context'
+  );
   await page.goto(`${baseURL}${path}`);
+  expect((await contextResponse).status(), 'Actual browser workflow context request').toBe(200);
   await expect(
     page.getByRole('region', { name: 'Persisted workflow context' }).first()
   ).toBeVisible();
@@ -199,7 +259,7 @@ async function request(path: string, token: string, body?: unknown) {
 }
 
 test.beforeAll(async () => {
-  test.setTimeout(180_000);
+  test.setTimeout(360_000);
   if (existsSync(database)) throw new Error('Refusing to replace any existing workflow database.');
   if (!existsSync(resolve(root, 'native-shell/ui/dist/index.html')))
     throw new Error('Build the actual OS frontend before acceptance.');
@@ -229,6 +289,7 @@ test.beforeAll(async () => {
   pilot = spawn(process.execPath, ['os-platform/core/pilot/dev-pilot-runtime.mjs'], {
     cwd: root,
     windowsHide: true,
+    detached: process.platform !== 'win32',
     stdio: ['ignore', 'pipe', 'pipe'],
     env: environment({ TF_PILOT_PORT: String(pilotPort), TF_API_BASE_URL: baseURL }),
   });
@@ -237,8 +298,15 @@ test.beforeAll(async () => {
 });
 
 test.afterAll(async () => {
-  await stop(api);
-  await stop(pilot);
+  const cleanup = await Promise.allSettled([...fixtureProcesses, api, pilot].map(stop));
+  const failures = cleanup.filter(
+    (result): result is PromiseRejectedResult => result.status === 'rejected'
+  );
+  if (failures.length)
+    throw new AggregateError(
+      failures.map(result => result.reason),
+      'Owned acceptance process cleanup failed.'
+    );
   // Preserve the isolated synthetic DB for inspection. Never clean broad paths.
 });
 
@@ -301,11 +369,18 @@ test('owner saves, exports, retrieves, retries and reopens exact persisted work 
   });
   expect(replay.status).toBe(200);
   expect(replay.value.packageRef).toBe(output.packageRef);
+  const beforeRefusals = await request(
+    `/api/dossier/workflows/context?county=${county}&taxYear=2024`,
+    token
+  );
+  expect(beforeRefusals.status).toBe(200);
   for (const invalid of [
     { draftId: randomUUID() },
     { revision: '0'.repeat(64) },
     { taxYear: 2025 },
     { confirmed: false },
+    { reasonCode: 'unsupported_reason' },
+    { county: foreignCounty },
   ]) {
     const rejected = await request('/api/dossier/workflows/exports/equalization', token, {
       county,
@@ -319,6 +394,12 @@ test('owner saves, exports, retrieves, retries and reopens exact persisted work 
     });
     expect([400, 403, 404, 409, 422]).toContain(rejected.status);
   }
+  const afterRefusals = await request(
+    `/api/dossier/workflows/context?county=${county}&taxYear=2024`,
+    token
+  );
+  expect(afterRefusals.status).toBe(200);
+  expect(afterRefusals.value.exports).toEqual(beforeRefusals.value.exports);
   await stop(api);
   await startApi();
   await page.reload();
@@ -411,16 +492,85 @@ test('owner saves, exports, retrieves, retries and reopens exact persisted work 
     'Synthetic recorded evidence'
   );
 
+  for (const exportCase of [
+    {
+      tool: 'export_equalization_package',
+      confirm: 'Confirm equalization export',
+      button: 'Export Equalization Package',
+      marker: 'Actual synthetic persisted valuation',
+    },
+    {
+      tool: 'export_audit_bundle',
+      confirm: 'Confirm audit export',
+      button: 'Export Audit Bundle',
+      marker: 'Synthetic recorded evidence',
+    },
+  ]) {
+    await page.getByRole('checkbox', { name: exportCase.confirm, exact: true }).check();
+    const exported = await invokeFromUI(page, exportCase.tool, () =>
+      page.getByRole('button', { name: exportCase.button, exact: true }).click()
+    );
+    expect(exported.output).toMatchObject({
+      countyId: county,
+      taxYear: 2024,
+      status: 'complete',
+      certification: false,
+    });
+    expect(exported.output.artifactCount).toBe(exported.output.artifacts.length);
+    if (exportCase.tool === 'export_equalization_package')
+      expect(exported.output).toMatchObject({ draftId: draft.draftId, revision: draft.revision });
+    else expect(exported.wire.params.bundleScope).toBe('county');
+    const result = page
+      .getByRole('region', { name: 'Completed export', exact: true })
+      .filter({ has: page.getByText(exported.output.packageRef, { exact: true }) });
+    await result.getByRole('button', { name: 'Inspect output', exact: true }).click();
+    await expect(result.getByLabel('Export JSON', { exact: true })).toContainText(
+      exportCase.marker
+    );
+    const stored = await request(
+      `/api/dossier/workflows/exports/${exported.output.packageRef}/content?county=${county}`,
+      token
+    );
+    expect(stored.status).toBe(200);
+    expect(createHash('sha256').update(stored.text).digest('hex')).toBe(
+      exported.output.contentHash
+    );
+    const downloadingExport = page.waitForEvent('download');
+    await result.getByRole('button', { name: 'Download JSON', exact: true }).click();
+    const exportedPath = await (await downloadingExport).path();
+    expect(exportedPath).not.toBeNull();
+    expect(readFileSync(exportedPath!, 'utf8')).toBe(stored.text);
+  }
+
   await page.goto(`${baseURL}/dais`);
   await page.getByLabel('Assessment year', { exact: true }).first().selectOption('2024');
   const brief = await invokeFromUI(page, 'generate_morning_brief', () =>
     page.getByRole('button', { name: 'Refresh Brief', exact: true }).click()
   );
   expect(brief.output).toMatchObject({ countyId: county, taxYear: 2024 });
+  expect(brief.output.brief).toMatchObject({ role: 'chief_appraiser', readyToAct: true });
+  expect(brief.output.findings).toEqual([
+    expect.objectContaining({
+      findingId: 'CountyStudySessions:aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
+      countyId: county,
+      taxYear: 2024,
+      evidenceLineage: [
+        expect.objectContaining({
+          source: 'CountyStudySessions',
+          recordCount: 1,
+          citation: 'CountyStudySessions/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
+        }),
+      ],
+      recommendedAction: 'Review the existing study in County Studio.',
+    }),
+  ]);
   expect(JSON.stringify(brief.output)).not.toContain('benton-2026-working');
   await expect(page.getByTestId('county-morning-brief-result')).toBeVisible();
   await expect(page.getByTestId('county-morning-brief-result')).toContainText(
     brief.output.brief.queueType.replaceAll('_', ' ')
+  );
+  await expect(page.getByTestId('county-morning-brief-result')).toContainText(
+    'Review the existing study in County Studio.'
   );
   await page.getByLabel('Assessment year', { exact: true }).first().selectOption('2025');
   await expect(page.getByTestId('county-morning-brief-result')).toHaveCount(0);

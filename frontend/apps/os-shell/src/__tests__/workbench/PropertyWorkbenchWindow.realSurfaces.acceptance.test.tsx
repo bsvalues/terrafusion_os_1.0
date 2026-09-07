@@ -1,24 +1,18 @@
 /**
- * PropertyWorkbenchWindow.realSurfaces.acceptance.test.tsx
- *
- * WO-WB-ACCEPT-004 — Operator acceptance: the desktop window host renders the REAL
- * Clerk/Treasury/Audit surfaces end-to-end (not via module stubs). Complements:
- *   - PropertyWorkbenchWindow.tabMapping.test.tsx (proves the window MAP points at
- *     the real modules, using stubs), and
- *   - workbenchRealHosting.gate.test.tsx (proves those components render real
- *     surfaces in ROUTE context).
- * This is the one journey neither covers directly: launching the actual
- * PropertyWorkbenchWindow into clerk/treasury/audit and getting the real
- * property-<tab>-tab surface. Frontend-only, fully mocked — no backend/tool
- * integration is exercised or claimed.
+ * Reserved-office launch acceptance after OS-COUNTY-CONTEXT-001 forward staging.
+ * The actual window must expose its unavailable boundary, never the real
+ * Clerk/Treasury/Audit modules or their API actions. Canonical six-tab hosting
+ * regressions remain in tabMapping and the domain workflow screen suites.
+ * No tab module is mocked here; shell/store dependencies remain isolated.
  */
 
 import '@testing-library/jest-dom';
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { act, render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const { activateModuleMock, selectParcelMock, openWorkbenchWindowMock } = vi.hoisted(() => ({
+const { activateModuleMock, selectParcelMock, openWorkbenchWindowMock, authIdentity } = vi.hoisted(() => ({
+  authIdentity: { countyId: 'benton', userId: 'u-test', roles: ['assessor'] },
   activateModuleMock: vi.fn(),
   selectParcelMock: vi.fn(),
   openWorkbenchWindowMock: vi.fn(),
@@ -79,7 +73,7 @@ vi.mock('../../auth/useSession', () => ({
 }));
 
 vi.mock('../../auth/useAuthContext', () => ({
-  useAuthContext: () => ({ countyId: 'benton', userId: 'u-test', roles: ['assessor'] }),
+  useAuthContext: () => authIdentity,
 }));
 
 vi.mock('../../hooks/useWorkbenchRoles', () => ({
@@ -99,15 +93,7 @@ vi.mock('../../services/activityFeed', () => ({
 vi.mock('../../components/workbench/ContextRibbon', () => ({ ContextRibbon: () => <div data-testid='ctx-ribbon' /> }));
 vi.mock('../../components/workbench/ActivityFeed', () => ({ ActivityFeed: () => <div data-testid='activity-feed' /> }));
 
-// ── Component-layer deps used by the REAL Clerk/Treasury/Audit tabs ────────────
-// (NOT stubbing the tab modules — they render for real.)
-vi.mock('../../api/pilotApi', () => ({
-  // Matches the real invokeTool contract: { success, correlationId, result?: { output } }.
-  invokeTool: vi.fn().mockResolvedValue({ success: true, correlationId: 'acc-corr-1', result: { output: '' } }),
-  listPilotTools: vi.fn().mockResolvedValue({ count: 0, tools: [] }),
-  filterMuseReadOnlyTools: (tools: unknown[]) => tools,
-}));
-
+// Pilot transport stays real; forbidden execution is observed at HTTP below.
 vi.mock('../../runtime/env', () => ({
   // Matches the real getEnv() shape: { DEV, PROD, MODE }.
   getEnv: () => ({ DEV: false, PROD: false, MODE: 'test' }),
@@ -124,12 +110,21 @@ describe('PropertyWorkbenchWindow real-surface acceptance (WO-WB-ACCEPT-004)', (
     ['clerk', 'property-clerk-tab'],
     ['treasury', 'property-treasury-tab'],
     ['audit', 'property-audit-tab'],
-  ])('launching the window into %s renders the REAL surface end-to-end', async (tabId, testId) => {
-    render(<PropertyWorkbenchWindow metadata={{ parcelId: 'ACC-1', tabId }} />);
-
-    // The real (un-stubbed) tab component mounts inside the actual window host.
-    expect(await screen.findByTestId(testId, {}, { timeout: 5000 })).toBeInTheDocument();
-    // Honest state: no placeholder / coming-soon surface under the tab.
-    expect(screen.queryByTestId('placeholder-module')).not.toBeInTheDocument();
+  ])('launching the window into reserved %s is unavailable without module or API execution', async (tabId, testId) => {
+    const http = vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response('[]', { status: 200, headers: { 'Content-Type': 'application/json' } }));
+    let view: ReturnType<typeof render> | undefined;
+    try {
+      await act(async () => { view = render(<PropertyWorkbenchWindow metadata={{ parcelId: 'ACC-1', tabId }} />); });
+      expect(await screen.findByText('Reserved office unavailable')).toBeInTheDocument();
+      expect(screen.queryByTestId(testId)).not.toBeInTheDocument();
+      for (const office of ['clerk', 'treasury', 'audit']) {
+        expect(screen.queryByTestId('property-' + office + '-tab')).not.toBeInTheDocument();
+        expect(screen.queryByRole('tab', { name: new RegExp('^' + office + '$', 'i') })).not.toBeInTheDocument();
+      }
+      // Even a role fixture exposing every historical tab cannot reactivate offices.
+      expect(screen.getAllByRole('tab').map(tab => tab.textContent)).toEqual(['Summary', 'Forge', 'Atlas', 'Dais', 'Dossier', 'Pilot']);
+      expect(screen.queryByTestId('placeholder-module')).not.toBeInTheDocument();
+      expect(http).not.toHaveBeenCalled();
+    } finally { view?.unmount(); http.mockRestore(); }
   });
 });
