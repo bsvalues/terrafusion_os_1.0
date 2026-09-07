@@ -44,8 +44,10 @@ namespace TerraFusion.Unit.Tests.Sync.Comps.Api;
 /// </list>
 /// </para>
 /// </summary>
-public class SyncControllerHeadMethodTests
+public class SyncControllerHeadMethodTests : IDisposable
 {
+    private readonly ReviewedPiiFixture _pii = new();
+    public void Dispose() => _pii.Dispose();
     private const string OperatorId = "c45d-test";
 
     private static TerraFusionDbContext CreateDb(string name)
@@ -63,7 +65,7 @@ public class SyncControllerHeadMethodTests
         return new TerraFusionDbContext(options, configuration);
     }
 
-    private static SyncController BuildHeadController(
+    private SyncController BuildHeadController(
         TerraFusionDbContext db,
         Guid? principalCountyClaim,
         IDictionary<string, string>? extraRequestHeaders = null)
@@ -85,7 +87,11 @@ public class SyncControllerHeadMethodTests
             identity.AddClaim(new Claim("countyId", principalCountyClaim.Value.ToString()));
         }
 
-        var http = new DefaultHttpContext { User = new ClaimsPrincipal(identity) };
+        var http = new DefaultHttpContext
+        {
+            User = new ClaimsPrincipal(identity),
+            RequestServices = _pii.ForCounty(principalCountyClaim ?? Guid.Empty),
+        };
         // Set HEAD method explicitly on the request — the action
         // checks HttpMethods.IsHead(Request.Method) to short-circuit.
         http.Request.Method = HttpMethods.Head;
@@ -289,7 +295,11 @@ public class SyncControllerHeadMethodTests
         seedIdentity.AddClaim(new Claim("countyId", county.Id.ToString()));
         seedController.ControllerContext = new ControllerContext
         {
-            HttpContext = new DefaultHttpContext { User = new ClaimsPrincipal(seedIdentity) },
+            HttpContext = new DefaultHttpContext
+            {
+                User = new ClaimsPrincipal(seedIdentity),
+                RequestServices = _pii.ForCounty(county.Id),
+            },
         };
         await seedController.GetEligibleComps(county.Id, null, null, null);
         var etag = seedController.Response.Headers.ETag.ToString();

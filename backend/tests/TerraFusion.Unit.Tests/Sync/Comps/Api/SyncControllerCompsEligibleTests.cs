@@ -42,8 +42,10 @@ namespace TerraFusion.Unit.Tests.Sync.Comps.Api;
 /// action layer; they're enforced upstream by the [Authorize]
 /// attribute and the [HttpGet] route table respectively.</para>
 /// </summary>
-public class SyncControllerCompsEligibleTests
+public class SyncControllerCompsEligibleTests : IDisposable
 {
+    private readonly ReviewedPiiFixture _pii = new();
+    public void Dispose() => _pii.Dispose();
     private const string OperatorId = "c38b-test";
 
     // ── Test scaffolding ────────────────────────────────────────────────
@@ -63,7 +65,7 @@ public class SyncControllerCompsEligibleTests
         return new TerraFusionDbContext(options, configuration);
     }
 
-    private static SyncController BuildController(
+    private SyncController BuildController(
         TerraFusionDbContext db,
         Guid? principalCountyClaim)
     {
@@ -92,6 +94,7 @@ public class SyncControllerCompsEligibleTests
         {
             HttpContext = new DefaultHttpContext
             {
+                RequestServices = _pii.ForCounty(principalCountyClaim ?? Guid.Empty),
                 User = new ClaimsPrincipal(identity),
             },
         };

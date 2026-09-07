@@ -549,7 +549,8 @@ public class SyncController : ControllerBase
     /// </param>
     /// <param name="ct">Cancellation token.</param>
     /// <returns>
-    /// 200 OK with a (possibly empty) JSON array of
+    /// 503 UNKNOWN_DENY when the county's offline PII coverage is unverified.
+    /// Otherwise 200 OK with a (possibly empty) JSON array of
     /// <see cref="CompEligibleSaleDto"/>. The array is ordered by
     /// <c>ChgOfOwnerId</c> ascending for deterministic consumption.
     /// </returns>
@@ -625,6 +626,19 @@ public class SyncController : ControllerBase
                 principalCountyId, countyId);
             SyncHttpCacheHeaders.ApplyNoStore(Response);
             return Forbid();
+        }
+
+        // WO-106: precede every canonical read, including the ETag seed, HEAD
+        // and conditional responses. An absent registration also fails closed.
+        var piiBoundary = HttpContext.RequestServices?.GetService<CanonicalLandingPiiBoundary>();
+        if (piiBoundary is null || !await piiBoundary.IsVerifiedAsync(countyId, ct))
+        {
+            SyncHttpCacheHeaders.ApplyNoStore(Response);
+            return StatusCode(StatusCodes.Status503ServiceUnavailable, new
+            {
+                code = "PII_CANONICAL_LANDING_UNVERIFIED",
+                disposition = "UNKNOWN_DENY",
+            });
         }
 
         // ── Apply server-side defaults (after validation). ──
