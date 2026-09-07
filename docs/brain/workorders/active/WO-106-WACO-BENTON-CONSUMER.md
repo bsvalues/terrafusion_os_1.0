@@ -109,3 +109,25 @@ dependency outputs (production source unchanged). cache-remediation-reuse.trx re
 zero failed/skipped; dotnet exit 0, 51.067475 seconds. All five reserved test classes were included;
 the 13 formerly failing cache cases now pass with unchanged assertions. Both transcripts remain
 external and distinct. No SDK repair, full suite, runtime mutation, PR or push was performed.
+
+## PR 1568 independent F review — null manifest entries
+
+The owner relayed REQUESTCHANGES P2: correctly pinned tables:[null] and columns:[null]
+escape UNKNOWN_DENY through the shared parser's entry dereferences. The nine-path reservation
+is unchanged. Regressions mutate the synthetic manifest before computing its hash, schema pairing
+and schema hash; both reproduced NullReferenceException at parser lines 90/114 (2 failed, 0 passed)
+before any production remediation. They require 503, the exact public denial code/disposition,
+no-store, no ETag, and zero canonical reader calls.
+
+The owned boundary now preprocesses the held, bounded manifest stream to reject null entries
+before the existing parser runs. It matches the parser's BOM handling, comments, trailing commas
+and case-insensitive property names, inspecting all tables/columns property occurrences. Existing
+classification and strict preflight remain authoritative. No shared-parser edit, NullReferenceException
+catch, bypass or unconditional positive gate was introduced. API and tests are rebuilt against
+unchanged external dependency artifacts with XML docs and certificate generation disabled.
+
+Fresh red/green results are retained as null-entry-* in the external evidence reservation.
+Green API build: exit 0, zero warnings/errors, 41.7071785 seconds. The broader five-class run
+passed 91/91, zero skips, exit 0, 31.5280166 seconds, including both new regressions and the
+reviewed-safe controls. This remediates the reported P2; it does not claim independent approval.
+Independent re-review and parent PR/push/deployment ownership remain unchanged.

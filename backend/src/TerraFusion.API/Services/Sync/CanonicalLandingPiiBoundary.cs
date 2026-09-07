@@ -60,6 +60,7 @@ public sealed class CanonicalLandingPiiBoundary(IConfiguration configuration)
                     || t.DictionaryReferences.Any(d => d is null))
                 || data.Columns.Any(c => c is null) || data.Dictionaries.Any(d => d is null)) return false;
 
+            if (!await HasNonNullManifestEntriesAsync(manifestFile, ct)) return false;
             var manifest = await new JsonFilePacsPiiManifestSource(manifestPath).ReadAsync(ct);
             if (manifest is null || !HashMatches(manifestFile, manifestHash!)) return false;
             var tableNames = data.Tables.Select(t => t.TableName).ToHashSet(StringComparer.Ordinal);
@@ -104,6 +105,29 @@ public sealed class CanonicalLandingPiiBoundary(IConfiguration configuration)
             // configured filesystem path, parser excerpt, or schema metadata.
             return false;
         }
+    }
+
+    private static async Task<bool> HasNonNullManifestEntriesAsync(FileStream file, CancellationToken ct)
+    {
+        // The shared parser validates entry fields but dereferences null array
+        // elements. Validate that input shape here, not via a programming-error
+        // catch. Match its BOM, comments, trailing commas and property casing.
+        file.Position = 0;
+        using var reader = new StreamReader(file, leaveOpen: true);
+        using var document = JsonDocument.Parse(await reader.ReadToEndAsync(ct), new JsonDocumentOptions
+        {
+            CommentHandling = JsonCommentHandling.Skip,
+            AllowTrailingCommas = true,
+        });
+        if (document.RootElement.ValueKind != JsonValueKind.Object) return false;
+        foreach (var property in document.RootElement.EnumerateObject())
+        {
+            if ((string.Equals(property.Name, "tables", StringComparison.OrdinalIgnoreCase)
+                    || string.Equals(property.Name, "columns", StringComparison.OrdinalIgnoreCase))
+                && property.Value.ValueKind == JsonValueKind.Array
+                && property.Value.EnumerateArray().Any(entry => entry.ValueKind == JsonValueKind.Null)) return false;
+        }
+        return true;
     }
 
     private static bool IsLocalPath(string? path) => !string.IsNullOrWhiteSpace(path)

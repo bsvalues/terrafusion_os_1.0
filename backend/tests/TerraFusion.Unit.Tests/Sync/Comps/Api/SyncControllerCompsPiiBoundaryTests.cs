@@ -83,6 +83,29 @@ public sealed class SyncControllerCompsPiiBoundaryTests
         reader.VerifyNoOtherCalls();
     }
 
+    [Theory]
+    [InlineData("null-manifest-tables")]
+    [InlineData("null-manifest-columns")]
+    public async Task PinnedNullManifestEntry_DeniesBeforeParserCanEscapeOrReaderRuns(string condition)
+    {
+        using var fixture = new ReviewedPiiFixture();
+        var services = fixture.ForCounty(CountyId, condition);
+        using var db = CreateDb();
+        var reader = CreateReader();
+        var controller = CreateController(db, reader.Object, services, "GET", true);
+
+        var result = await controller.GetEligibleComps(CountyId, null, null, null);
+
+        var denial = result.Should().BeOfType<ObjectResult>().Subject;
+        denial.StatusCode.Should().Be(StatusCodes.Status503ServiceUnavailable);
+        using var payload = JsonDocument.Parse(JsonSerializer.Serialize(denial.Value));
+        payload.RootElement.GetProperty("code").GetString().Should().Be("PII_CANONICAL_LANDING_UNVERIFIED");
+        payload.RootElement.GetProperty("disposition").GetString().Should().Be("UNKNOWN_DENY");
+        controller.Response.Headers.CacheControl.ToString().Should().Be("no-store");
+        controller.Response.Headers.ETag.Should().BeEmpty();
+        reader.VerifyNoOtherCalls();
+    }
+
     [Fact]
     public async Task ReviewedSafeCoverage_AllowsData_AndRevocationDeniesOnNextRequest()
     {
@@ -176,6 +199,15 @@ internal sealed class ReviewedPiiFixture : IDisposable
             columns = Array.Empty<object>(),
         }));
         if (condition == "malformed-manifest") File.WriteAllText(manifestPath, "{");
+        if (condition is "null-manifest-tables" or "null-manifest-columns")
+        {
+            var manifestJson = System.Text.Json.Nodes.JsonNode.Parse(File.ReadAllText(manifestPath))!;
+            manifestJson[condition == "null-manifest-tables" ? "tables" : "columns"] =
+                System.Text.Json.Nodes.JsonNode.Parse("[null]");
+            File.WriteAllText(manifestPath, manifestJson.ToJsonString());
+        }
+        // Pin the actual negative artifact and pair before building the schema
+        // hash, so malformed entries reach validation rather than a hash denial.
         var manifestHash = Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(manifestPath)));
         var data = new PacsSchemaSourceData(
             new[] { new PacsTable("sale", new[] { "ChgOfOwnerId" }, PacsConversionEra.Both,
