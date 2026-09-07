@@ -19,7 +19,7 @@
  *   launchContext: 'washington-counties-hub' with the public-reference trust
  *                  tier — preserve the handoff's explicit hosted or bundled
  *                  package posture without changing live-suite defaults.
- *   referencePackageSource: 'hosted' | 'repository-reference' — keep package
+ *   referencePackageSource: 'hosted' | 'repository-reference' | 'conference-local' — keep package
  *                           selection separate from the data-content posture.
  * When stratumKey is present we also switch the active tab to "ai-audit"
  * (that panel is where stratum selection becomes visible).
@@ -173,6 +173,7 @@ export default function SalesForge({ metadata }: SalesForgeProps = {}) {
   const invalidCountiesHubHandoff = countiesHubHandoffRequested && countiesHubHandoff === null;
   const referencePackageSource = countiesHubHandoff?.referencePackageSource;
   const repositoryReferenceHandoff = referencePackageSource === 'repository-reference';
+  const conferenceLocalReferenceHandoff = referencePackageSource === 'conference-local';
   const countyUploadHandoff = referencePackageSource === 'county-upload';
   const countyReadOnlySyncHandoff = referencePackageSource === 'county-readonly-sync';
   const hostedReferenceHandoff = countiesHubHandoff !== null && referencePackageSource === 'hosted';
@@ -239,7 +240,7 @@ export default function SalesForge({ metadata }: SalesForgeProps = {}) {
     directHostedVerificationUnavailable;
   const hostedLaunchDataMode = directHostedLaunch || hostedReferenceHandoff;
   // Promoted county uploads are served by the protected live API, not a launch-data package.
-  const launchDataMode = hostedLaunchDataMode || repositoryReferenceHandoff;
+  const launchDataMode = hostedLaunchDataMode || repositoryReferenceHandoff || conferenceLocalReferenceHandoff;
   const handoff = parseRollupHandoff(invalidCountiesHubHandoff ? undefined : metadata);
   const selectedCounty = WASHINGTON_COUNTIES.find(
     (county) => county.code === committedFilters.countyCode
@@ -370,7 +371,9 @@ export default function SalesForge({ metadata }: SalesForgeProps = {}) {
 
   useLayoutEffect(() => {
     setDataSource(
-      repositoryReferenceHandoff
+      conferenceLocalReferenceHandoff
+        ? 'conference-local'
+        : repositoryReferenceHandoff
         ? 'washington-reference'
         : hostedLaunchReady
           ? 'washington-hosted'
@@ -382,6 +385,7 @@ export default function SalesForge({ metadata }: SalesForgeProps = {}) {
     );
   }, [
     countyReadOnlySyncHandoff,
+    conferenceLocalReferenceHandoff,
     countyUploadHandoff,
     hostedLaunchReady,
     repositoryReferenceHandoff,
@@ -521,8 +525,10 @@ export default function SalesForge({ metadata }: SalesForgeProps = {}) {
             >
               {directHostedVerificationPending
                 ? 'County context · verifying sales data'
-                : salesReviewUnavailable
-                  ? 'County context · sales data unavailable'
+                  : salesReviewUnavailable
+                    ? 'County context · sales data unavailable'
+                  : conferenceLocalReferenceHandoff
+                    ? 'Washington conference package'
                   : launchDataMode
                     ? 'Washington launch data package'
                     : countyReadOnlySyncHandoff

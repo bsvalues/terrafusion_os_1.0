@@ -1,0 +1,44 @@
+{
+  "schemaVersion": "terrafusion.washington.launch-manifest.v1",
+  "generatedAt": "2026-09-06T19:54:03.180Z",
+  "sourcePosture": "county_bounded_readonly_extract",
+  "summary": {
+    "counties": 1,
+    "rawLanded": 1,
+    "parserReady": 1,
+    "candidateSales": 4661,
+    "stagedSales": 50,
+    "needsReview": 50,
+    "prometheusNeedsReview": 50,
+    "recordsWithNeighborhoodCode": 50,
+    "futureSaleDateRecords": 0,
+    "criticalContradictions": 0,
+    "garfieldExceptions": 0,
+    "bentonCityAsNeighborhoodRecords": 0
+  },
+  "sourceSelection": {
+    "classification": "COUNTY_DERIVED_CONFERENCE_SAFE_BOUNDED_READ_ONLY_NOT_DOR_CERTIFIED",
+    "sourceFileName": "Feb2025 Sales all NHs.csv",
+    "sourceSha256": "9ef5ac44447e61ce26eebb641441a9f91861a95d6b9c3af31fcdcb49880a5265",
+    "sourceByteLength": 3268194,
+    "selectedRows": 50,
+    "omittedFields": [
+      "situsAddress",
+      "situsCity",
+      "situsZip",
+      "grantor",
+      "grantee",
+      "rawPropId"
+    ]
+  },
+  "salesShardAttestations": [
+    {
+      "countyCode": "005",
+      "county": "Benton",
+      "route": "/launch-data/washington/sales/by-county/005.json",
+      "sourcePosture": "county_bounded_readonly_extract",
+      "canonicalJsonSha256": "6711bc067576be662ff7a6717a7188f7ad36083f7c7835a208e33f70e7c0e3f6",
+      "sourcePayloadSha256": "9ef5ac44447e61ce26eebb641441a9f91861a95d6b9c3af31fcdcb49880a5265"
+    }
+  ]
+}

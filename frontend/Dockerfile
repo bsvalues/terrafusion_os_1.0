@@ -7,6 +7,8 @@ FROM node:20-alpine AS build
 WORKDIR /app
 ARG VITE_BUILD_SHA=dev
 ENV VITE_BUILD_SHA=$VITE_BUILD_SHA
+ARG VITE_WASHINGTON_CONFERENCE_LOCAL_PACKAGE=false
+ENV VITE_WASHINGTON_CONFERENCE_LOCAL_PACKAGE=$VITE_WASHINGTON_CONFERENCE_LOCAL_PACKAGE
 ARG VITE_WASHINGTON_LAUNCH_MANIFEST_SHA256
 ARG WASHINGTON_LAUNCH_DATA_SOURCE_URL
 ENV VITE_WASHINGTON_LAUNCH_MANIFEST_SHA256=$VITE_WASHINGTON_LAUNCH_MANIFEST_SHA256
@@ -74,11 +76,23 @@ COPY packages/ packages/
 # Copy frontend source
 COPY frontend/ frontend/
 
+# The conference-local package is an explicit build input for the offline
+# rehearsal only. It lives under the allowed frontend tree, outside public
+# assets, so normal builds cannot serve or activate it accidentally.
+
 # The tracked package supports local exact-package acceptance, but production
 # images receive Washington launch data only through the deployment-pinned
-# packager above. Remove the tracked copy before Vite copies public assets so a
-# navigation-only image cannot serve or activate county data without its pin.
-RUN rm -rf /app/frontend/apps/os-shell/public/launch-data/washington
+# packager above. A conference build explicitly replaces it with the bounded
+# local package; all other builds remove it before Vite copies public assets.
+RUN rm -rf /app/frontend/apps/os-shell/public/launch-data/washington; \
+    if [ "$VITE_WASHINGTON_CONFERENCE_LOCAL_PACKAGE" = "true" ]; then \
+      test -f /app/frontend/waco-conference-package/launch-data/washington/manifest.json \
+        || (echo 'ERROR: conference-local package manifest is missing' && exit 1); \
+      cp -a /app/frontend/waco-conference-package/launch-data/washington /app/frontend/apps/os-shell/public/launch-data/washington; \
+      rm -rf /app/washington-launch-data; \
+      mkdir -p /app/washington-launch-data; \
+      cp -a /app/frontend/waco-conference-package/launch-data/washington/. /app/washington-launch-data/; \
+    fi
 
 # Build production bundle
 WORKDIR /app/frontend

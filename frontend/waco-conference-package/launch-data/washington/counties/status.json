@@ -1,0 +1,28 @@
+{
+  "schemaVersion": "terrafusion.washington.county-status.v1",
+  "generatedAt": "2026-09-06T19:54:03.180Z",
+  "sourcePosture": "county_bounded_readonly_extract",
+  "counties": [
+    {
+      "county": "Benton",
+      "countyCode": "005",
+      "priority": "conference_bounded",
+      "prometheusStatus": "bounded_readonly_extract",
+      "primarySourceMode": "county_bounded_readonly_extract",
+      "latestSaleDate": "2025-01-08",
+      "candidateSales": 4661,
+      "stagedSales": 50,
+      "needsReview": 50,
+      "confidence": {
+        "averageQualityScore": 0.75,
+        "parserStatus": "bounded_extract_parser",
+        "rawStatus": "county_derived_read_only",
+        "rawDriftDetected": false
+      },
+      "staticRoutes": {
+        "detail": "/launch-data/washington/counties/005.json",
+        "salesShard": "/launch-data/washington/sales/by-county/005.json"
+      }
+    }
+  ]
+}

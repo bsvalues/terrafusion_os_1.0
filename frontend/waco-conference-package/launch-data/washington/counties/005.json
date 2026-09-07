@@ -1,0 +1,15 @@
+{
+  "schemaVersion": "terrafusion.washington.county-detail.v1",
+  "generatedAt": "2026-09-06T19:54:03.180Z",
+  "county": "Benton",
+  "countyCode": "005",
+  "operationalState": {
+    "primarySourceMode": "county_bounded_readonly_extract",
+    "prometheusStatus": "bounded_readonly_extract"
+  },
+  "summary": {
+    "records": 50,
+    "latestSaleDate": "2025-01-08"
+  },
+  "salesRoute": "/launch-data/washington/sales/by-county/005.json"
+}
