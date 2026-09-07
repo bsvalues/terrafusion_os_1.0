@@ -7,6 +7,7 @@
 
 import {
   resolveWashingtonAssessorReferenceRoute,
+  WASHINGTON_CONFERENCE_LOCAL_SOURCE_POSTURE,
   type WashingtonReferencePackageSource,
   WASHINGTON_REFERENCE_ROUTES,
 } from '@/lib/washingtonAssessorReferencePackage';
@@ -17,12 +18,16 @@ import {
   type WashingtonSalesReviewShardVerificationState,
 } from '@/pages/forge/sales/washingtonSalesReviewCapability';
 import { evictWashingtonLaunchCountyShard } from '@/pages/forge/sales/washingtonLaunchApi';
+import { getViteEnv } from '@/env/getViteEnv';
 
 export const WASHINGTON_COUNTY_STATUS_PATH = WASHINGTON_REFERENCE_ROUTES.status;
 export const WASHINGTON_PUBLIC_DATA_REQUEST_TIMEOUT_MS = 10_000;
 const WASHINGTON_COUNTY_STATUS_SCHEMA = 'terrafusion.washington.county-status.v1';
 const WASHINGTON_COUNTY_DETAIL_PATH_PREFIX = '/launch-data/washington/counties';
 const WASHINGTON_SALES_SHARD_PATH_PREFIX = '/launch-data/washington/sales/by-county';
+export const WASHINGTON_CONFERENCE_LOCAL_PACKAGE_ENV =
+  'VITE_WASHINGTON_CONFERENCE_LOCAL_PACKAGE';
+const WASHINGTON_COUNTY_DETAIL_SCHEMA = 'terrafusion.washington.county-detail.v1';
 
 interface WashingtonCountyShardVerificationAttempt {
   active: boolean;
@@ -186,6 +191,7 @@ async function runBoundedWashingtonPublicDataRequest<T>(
 }
 
 export interface WashingtonCountyStatusEntry {
+  packageSource?: WashingtonReferencePackageSource;
   county: string;
   countyCode: string;
   packageIdentity: {
@@ -225,6 +231,22 @@ export interface WashingtonCountyStatusResolution {
   usedRepositoryFallback: boolean;
 }
 
+export interface WashingtonCountyDetail {
+  schemaVersion: string;
+  generatedAt: string;
+  county: string;
+  countyCode: string;
+  operationalState: {
+    primarySourceMode: string;
+    prometheusStatus: string;
+  };
+  summary: {
+    records: number;
+    latestSaleDate: string | null;
+  };
+  salesRoute: string;
+}
+
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null;
 }
@@ -243,6 +265,45 @@ function isCanonicalCountyRoute(
     ? WASHINGTON_COUNTY_DETAIL_PATH_PREFIX
     : WASHINGTON_SALES_SHARD_PATH_PREFIX;
   return route === `${prefix}/${countyCode}.json`;
+}
+
+function isSyntheticWashingtonReferenceMarker(value: unknown): boolean {
+  if (typeof value !== 'string') return false;
+  const normalized = value.trim().toLowerCase();
+  return normalized === 'repository_reference_demo' || normalized === 'synthetic_reference';
+}
+
+function conferenceLocalPayloadIsTruthful(value: WashingtonCountyStatusPayloadEntry): boolean {
+  return value.primarySourceMode === WASHINGTON_CONFERENCE_LOCAL_SOURCE_POSTURE
+    && !isSyntheticWashingtonReferenceMarker(value.primarySourceMode)
+    && !isSyntheticWashingtonReferenceMarker(value.confidence.rawStatus)
+    && !isSyntheticWashingtonReferenceMarker(value.prometheusStatus);
+}
+
+export function isConferenceLocalPackageEnabled(): boolean {
+  return String(getViteEnv().VITE_WASHINGTON_CONFERENCE_LOCAL_PACKAGE ?? '').toLowerCase() === 'true';
+}
+
+function defaultWashingtonCountyPackageSource(): WashingtonReferencePackageSource {
+  return isConferenceLocalPackageEnabled() ? 'conference-local' : 'hosted';
+}
+
+async function fetchWashingtonPackageRoute(
+  route: string,
+  signal: AbortSignal | undefined,
+  packageSource: WashingtonReferencePackageSource,
+): Promise<unknown> {
+  if (packageSource === 'repository-reference') {
+    return resolveWashingtonAssessorReferenceRoute(route);
+  }
+
+  // Both hosted and conference-local are same-origin relative routes. The
+  // source flag changes trust semantics only; it never changes the URL origin.
+  const response = await fetch(route, { cache: 'no-store', signal });
+  if (!response.ok) {
+    throw new Error(`Washington package route is unavailable (HTTP ${response.status}): ${route}`);
+  }
+  return response.json() as Promise<unknown>;
 }
 
 function isWashingtonCountyStatusPayloadEntry(
@@ -278,21 +339,11 @@ export async function fetchWashingtonCountyStatus(
   packageSource: WashingtonReferencePackageSource = 'hosted',
 ): Promise<WashingtonCountyStatusEntry[]> {
   if (signal?.aborted) return [];
-  let payload: unknown;
-  if (packageSource === 'repository-reference') {
-    payload = resolveWashingtonAssessorReferenceRoute(WASHINGTON_COUNTY_STATUS_PATH);
-  } else {
-    const response = await fetch(WASHINGTON_COUNTY_STATUS_PATH, {
-      cache: 'no-store',
-      signal,
-    });
-    if (!response.ok) {
-      throw new Error(
-        `Washington county status is unavailable (HTTP ${response.status}).`,
-      );
-    }
-    payload = await response.json() as unknown;
-  }
+  const payload = await fetchWashingtonPackageRoute(
+    WASHINGTON_COUNTY_STATUS_PATH,
+    signal,
+    packageSource,
+  );
   if (
     !isRecord(payload)
     || payload.schemaVersion !== WASHINGTON_COUNTY_STATUS_SCHEMA
@@ -302,8 +353,16 @@ export async function fetchWashingtonCountyStatus(
     || payload.sourcePosture.trim().length === 0
     || !Array.isArray(payload.counties)
     || !payload.counties.every(isWashingtonCountyStatusPayloadEntry)
+    || (packageSource === 'conference-local'
+      && payload.sourcePosture !== WASHINGTON_CONFERENCE_LOCAL_SOURCE_POSTURE)
+    || (packageSource === 'conference-local'
+      && !payload.counties.every(conferenceLocalPayloadIsTruthful))
   ) {
-    throw new Error('Washington county status returned an invalid county registry.');
+    throw new Error(
+      packageSource === 'conference-local'
+        ? 'Washington conference-local status must be a county-bounded, non-certified read-only package.'
+        : 'Washington county status returned an invalid county registry.',
+    );
   }
 
   const countyCodes = new Set(payload.counties.map((county) => county.countyCode));
@@ -316,6 +375,7 @@ export async function fetchWashingtonCountyStatus(
 
   return payload.counties.map((county) => ({
     ...county,
+    packageSource,
     packageIdentity: {
       statusSchemaVersion: payload.schemaVersion,
       statusCanonicalJsonSha256,
@@ -328,10 +388,46 @@ export async function fetchWashingtonCountyStatus(
   }));
 }
 
+export async function fetchWashingtonCountyDetail(
+  county: WashingtonCountyStatusEntry,
+  signal?: AbortSignal,
+  packageSource: WashingtonReferencePackageSource = 'hosted',
+): Promise<WashingtonCountyDetail> {
+  const payload = await fetchWashingtonPackageRoute(county.staticRoutes.detail, signal, packageSource);
+  if (!isRecord(payload)
+    || payload.schemaVersion !== WASHINGTON_COUNTY_DETAIL_SCHEMA
+    || typeof payload.generatedAt !== 'string'
+    || typeof payload.county !== 'string'
+    || typeof payload.countyCode !== 'string'
+    || !isRecord(payload.operationalState)
+    || typeof payload.operationalState.primarySourceMode !== 'string'
+    || typeof payload.operationalState.prometheusStatus !== 'string'
+    || !isRecord(payload.summary)
+    || !isFiniteNumber(payload.summary.records)
+    || (payload.summary.latestSaleDate !== null && typeof payload.summary.latestSaleDate !== 'string')
+    || typeof payload.salesRoute !== 'string'
+    || payload.countyCode !== county.countyCode
+    || payload.county.trim().toLowerCase() !== county.county.trim().toLowerCase()
+    || !isCanonicalCountyRoute(payload.salesRoute, county.countyCode, 'sales-shard')
+    || (packageSource === 'conference-local'
+      && payload.operationalState.primarySourceMode !== WASHINGTON_CONFERENCE_LOCAL_SOURCE_POSTURE)
+    || (packageSource === 'conference-local'
+      && (isSyntheticWashingtonReferenceMarker(payload.operationalState.primarySourceMode)
+        || isSyntheticWashingtonReferenceMarker(payload.operationalState.prometheusStatus)))
+  ) {
+    throw new Error(`Washington county detail does not match county ${county.countyCode}.`);
+  }
+
+  return payload as unknown as WashingtonCountyDetail;
+}
+
 export async function verifyWashingtonCountySalesShard(
   county: WashingtonCountyStatusEntry,
   signal?: AbortSignal,
 ): Promise<WashingtonCountyStatusEntry> {
+  if (county.packageSource === 'conference-local') {
+    return { ...county, salesShardVerification: 'not-required' };
+  }
   const attempt = createWashingtonCountyShardVerificationAttempt(
     washingtonCountyShardVerificationAttempts.get(county.countyCode) ?? null,
   );
@@ -443,15 +539,42 @@ export async function verifyWashingtonCountySalesShard(
  */
 export async function resolveWashingtonCountyStatus(
   signal?: AbortSignal,
+  requestedPackageSource?: WashingtonReferencePackageSource,
 ): Promise<WashingtonCountyStatusResolution> {
+  const packageSource = requestedPackageSource ?? defaultWashingtonCountyPackageSource();
+  if (packageSource === 'conference-local') {
+    try {
+      const localCounties = await runBoundedWashingtonPublicDataRequest(
+        (boundedSignal) => fetchWashingtonCountyStatus(boundedSignal, 'conference-local'),
+        signal,
+      );
+      return {
+        counties: localCounties,
+        packageSource: 'conference-local',
+        usedRepositoryFallback: false,
+      };
+    } catch (error) {
+      if (signal?.aborted) throw error;
+      const fallbackCounties = await fetchWashingtonCountyStatus(
+        signal,
+        'repository-reference',
+      );
+      return {
+        counties: fallbackCounties,
+        packageSource: 'repository-reference',
+        usedRepositoryFallback: true,
+      };
+    }
+  }
+
   try {
     const hostedCounties = await runBoundedWashingtonPublicDataRequest(
-      (boundedSignal) => fetchWashingtonCountyStatus(boundedSignal, 'hosted'),
+      (boundedSignal) => fetchWashingtonCountyStatus(boundedSignal, packageSource),
       signal,
     );
     return {
       counties: hostedCounties,
-      packageSource: 'hosted',
+      packageSource,
       usedRepositoryFallback: false,
     };
   } catch (error) {

@@ -6,6 +6,7 @@
  */
 
 import {
+  WASHINGTON_CONFERENCE_LOCAL_SOURCE_POSTURE,
   WASHINGTON_REFERENCE_ROUTES,
   type WashingtonReferencePackageSource,
 } from '@/lib/washingtonAssessorReferencePackage';
@@ -27,6 +28,7 @@ export type WashingtonSalesReviewShardVerificationState =
   | 'unavailable';
 
 export interface WashingtonSalesReviewCapabilityInput {
+  packageSource?: WashingtonReferencePackageSource;
   county: string;
   countyCode: string;
   packageIdentity: {
@@ -102,6 +104,7 @@ export interface WashingtonCountiesHubHandoff {
   launchContext: 'washington-counties-hub';
   dataTrustTier:
     | 'public-reference-not-county-certified'
+    | 'conference-local-readonly-not-certified'
     | 'county-provided-validated-upload'
     | 'county-connected-readonly';
   referencePackageSource:
@@ -403,6 +406,7 @@ export function parseWashingtonCountiesHubHandoff(
     !metadata ||
     metadata.launchContext !== 'washington-counties-hub' ||
     (metadata.dataTrustTier !== 'public-reference-not-county-certified' &&
+      metadata.dataTrustTier !== 'conference-local-readonly-not-certified' &&
       metadata.dataTrustTier !== 'county-provided-validated-upload' &&
       metadata.dataTrustTier !== 'county-connected-readonly') ||
     typeof metadata.countyCode !== 'string' ||
@@ -410,6 +414,7 @@ export function parseWashingtonCountiesHubHandoff(
     metadata.resetValuationScope !== true ||
     (metadata.referencePackageSource !== 'hosted' &&
       metadata.referencePackageSource !== 'repository-reference' &&
+      metadata.referencePackageSource !== 'conference-local' &&
       metadata.referencePackageSource !== 'county-upload' &&
       metadata.referencePackageSource !== 'county-readonly-sync') ||
     typeof metadata.referenceDataPosture !== 'string' ||
@@ -459,6 +464,38 @@ export function parseWashingtonCountiesHubHandoff(
     typeof metadata.salesReviewUnavailableMessage === 'string'
       ? metadata.salesReviewUnavailableMessage
       : null;
+
+  // Counties Hub historically emits the public-reference tier for its
+  // package handoff. Normalize the new local source here so the source
+  // contract remains additive without requiring a broader component change.
+  if (
+    metadata.referencePackageSource === 'conference-local' &&
+    (metadata.dataTrustTier === 'public-reference-not-county-certified' ||
+      metadata.dataTrustTier === 'conference-local-readonly-not-certified')
+  ) {
+    if (
+      metadata.referenceDataPosture !== WASHINGTON_CONFERENCE_LOCAL_SOURCE_POSTURE ||
+      salesReviewAvailability !== 'available' ||
+      referenceRecordCount === null ||
+      referenceRecordCount <= 0 ||
+      salesReviewUnavailableMessage !== null
+    ) {
+      return null;
+    }
+    return {
+      countyCode: registeredCounty.code,
+      countyName: registeredCounty.name,
+      resetValuationScope: true,
+      launchContext: 'washington-counties-hub',
+      dataTrustTier: 'conference-local-readonly-not-certified',
+      referencePackageSource: 'conference-local',
+      referenceDataPosture: WASHINGTON_CONFERENCE_LOCAL_SOURCE_POSTURE,
+      referenceRecordCount,
+      latestReferenceSaleDate,
+      salesReviewAvailability: 'available',
+      salesReviewUnavailableMessage: null,
+    };
+  }
 
   if (metadata.dataTrustTier === 'county-provided-validated-upload') {
     if (
@@ -582,12 +619,17 @@ export function getWashingtonSalesReviewCapability(
     (county) => county.code === input.countyCode && county.name.toLowerCase() === observedName
   );
   const normalizedPosture = normalizeReferenceDataPosture(input.primarySourceMode);
+  const isConferenceLocal = input.packageSource === 'conference-local';
+  const isConferenceLocalPostureInvalid =
+    isConferenceLocal && normalizedPosture !== WASHINGTON_CONFERENCE_LOCAL_SOURCE_POSTURE;
   const isSyntheticReference = isRepositoryReferenceDemoPosture(input.primarySourceMode);
   const isSourcePostureUnavailable = isUnavailableReferenceDataPosture(input.primarySourceMode);
   // Only a parsed county shard can support observed public-sales claims.
   // `not-required` is reserved for postures where sales are already
   // inapplicable (for example, the synthetic repository reference package).
-  const salesClaimsHaveShardEvidence = input.salesShardVerification === 'verified';
+  const salesClaimsHaveShardEvidence =
+    input.salesShardVerification === 'verified' ||
+    (isConferenceLocal && input.salesShardVerification === 'not-required');
   const referenceData: WashingtonSalesReviewReferenceData = {
     posture: normalizedPosture || 'unavailable',
     isSyntheticReference,
@@ -644,6 +686,17 @@ export function getWashingtonSalesReviewCapability(
     };
   }
 
+  if (isConferenceLocalPostureInvalid) {
+    return {
+      eligible: false,
+      status: 'source-posture-unavailable',
+      statusLabel: 'Conference package posture mismatch',
+      unavailableMessage:
+        'The conference-local package is not the bounded read-only, non-certified source expected by this build.',
+      referenceData,
+    };
+  }
+
   if (!input.staticRoutes.salesShard.trim() || input.salesShardVerification === 'unavailable') {
     return {
       eligible: false,
@@ -656,7 +709,10 @@ export function getWashingtonSalesReviewCapability(
     };
   }
 
-  if (input.salesShardVerification !== 'verified') {
+  if (
+    input.salesShardVerification !== 'verified' &&
+    !(isConferenceLocal && input.salesShardVerification === 'not-required')
+  ) {
     return {
       eligible: false,
       status: 'sales-shard-verification-required',
@@ -710,6 +766,9 @@ export async function verifyWashingtonSalesReviewHostedShard(
   signal?: AbortSignal,
   isCurrentAttempt: () => boolean = () => true
 ): Promise<WashingtonSalesReviewHostedShardVerification> {
+  if (input.packageSource === 'conference-local') {
+    return { state: 'not-required' };
+  }
   const evictHostedShard = (): void => {
     if (isCurrentAttempt()) {
       evictWashingtonLaunchCountyShard(input.countyCode, 'hosted');

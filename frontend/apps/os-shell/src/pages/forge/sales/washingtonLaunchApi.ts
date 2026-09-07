@@ -1,5 +1,6 @@
 import {
   resolveWashingtonAssessorReferenceRoute,
+  WASHINGTON_CONFERENCE_LOCAL_SOURCE_POSTURE,
   type WashingtonReferencePackageSource,
 } from '@/lib/washingtonAssessorReferencePackage';
 import { getViteEnv } from '@/env/getViteEnv';
@@ -197,7 +198,10 @@ export interface WashingtonLaunchManifest {
 }
 
 const shardCache = new Map<string, Promise<LaunchCountySalesShard>>();
-let manifestCache: Promise<WashingtonLaunchManifest> | null = null;
+const manifestCache = new Map<
+  WashingtonReferencePackageSource,
+  Promise<WashingtonLaunchManifest>
+>();
 const DECISION_STORAGE_KEY = 'tf-wa-launch-decisions';
 const LEGACY_ASSESSMENT_TOKEN = ['pa', 'cs'].join('');
 
@@ -264,6 +268,24 @@ async function fetchJson<T>(
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null;
+}
+
+function containsSyntheticWashingtonMarker(value: unknown): boolean {
+  if (typeof value !== 'string') return false;
+  const normalized = value.trim().toLowerCase();
+  return normalized.includes('synthetic')
+    || normalized.includes('repository_reference_demo')
+    || normalized.includes('repository-reference-demo')
+    || normalized.includes('reference_demo')
+    || normalized.includes('reference-demo');
+}
+
+function assertConferenceLocalManifest(value: WashingtonLaunchManifest): void {
+  if (value.sourcePosture !== WASHINGTON_CONFERENCE_LOCAL_SOURCE_POSTURE) {
+    throw new Error(
+      'Washington conference-local manifest must declare the bounded read-only, non-certified posture.',
+    );
+  }
 }
 
 function normalizeCountyName(value: string): string {
@@ -408,6 +430,36 @@ function assertCountyShard(
   });
 }
 
+function assertConferenceLocalCountyShard(
+  value: LaunchCountySalesShard,
+): void {
+  value.records.forEach((record, index) => {
+    if (
+      record.sourceMode !== WASHINGTON_CONFERENCE_LOCAL_SOURCE_POSTURE
+      || record.provenance.sourceUrl !== null
+      || record.provenance.sourceFinalUrl !== null
+      || typeof record.provenance.sourcePayloadPath !== 'string'
+      || record.provenance.sourcePayloadPath.trim().length === 0
+      || typeof record.provenance.sourcePayloadSha256 !== 'string'
+      || record.provenance.sourcePayloadSha256.trim().length === 0
+      || typeof record.provenance.candidateIndexSource !== 'string'
+      || record.provenance.candidateIndexSource.trim().length === 0
+      || typeof record.provenance.candidateRecordType !== 'string'
+      || record.provenance.candidateRecordType.trim().length === 0
+      || containsSyntheticWashingtonMarker(record.saleId)
+      || containsSyntheticWashingtonMarker(record.saleNote)
+      || containsSyntheticWashingtonMarker(record.sourceMode)
+      || containsSyntheticWashingtonMarker(record.candidateSource)
+      || containsSyntheticWashingtonMarker(record.provenance.candidateRecordType)
+      || containsSyntheticWashingtonMarker(record.provenance.candidateIndexSource)
+    ) {
+      throw new Error(
+        `Washington conference-local shard has an invalid non-certified record at index ${index}.`,
+      );
+    }
+  });
+}
+
 export interface WashingtonLaunchValidatedShardSummary {
   stagedSales: number;
   latestSaleDate: string | null;
@@ -447,6 +499,9 @@ export function validateAttestedWashingtonLaunchCountyShard(
 ): WashingtonLaunchValidatedShardCandidate {
   const normalized = normalizeCountyCode(expectedCountyCode);
   assertCountyShard(value, normalized);
+  if (packageSource === 'conference-local') {
+    assertConferenceLocalCountyShard(value);
+  }
   const verifiedSummary = deriveValidatedShardSummary(value);
   const normalizedShard: LaunchCountySalesShard = {
     ...value,
@@ -517,6 +572,9 @@ async function loadCountyShard(
   ).then(
     (payload) => {
       assertCountyShard(payload, normalized);
+      if (packageSource === 'conference-local') {
+        assertConferenceLocalCountyShard(payload);
+      }
       return payload;
     },
   );
@@ -532,11 +590,22 @@ async function loadCountyShard(
 export async function fetchWashingtonLaunchManifest(
   packageSource: WashingtonReferencePackageSource = 'hosted',
 ): Promise<WashingtonLaunchManifest> {
-  if (packageSource === 'repository-reference') {
-    return fetchJson<WashingtonLaunchManifest>(`${BASE}/manifest.json`, packageSource);
+  const existing = manifestCache.get(packageSource);
+  if (existing) return existing;
+  const promise = fetchJson<WashingtonLaunchManifest>(`${BASE}/manifest.json`, packageSource)
+    .then((manifest) => {
+      if (packageSource === 'conference-local') {
+        assertConferenceLocalManifest(manifest);
+      }
+      return manifest;
+    });
+  manifestCache.set(packageSource, promise);
+  try {
+    return await promise;
+  } catch (error) {
+    manifestCache.delete(packageSource);
+    throw error;
   }
-  manifestCache ??= fetchJson<WashingtonLaunchManifest>(`${BASE}/manifest.json`, packageSource);
-  return manifestCache;
 }
 
 function getDecisionMap(): Record<string, LaunchDecision> {

@@ -8,6 +8,7 @@ import { create } from 'zustand';
 import { getSession } from '@/auth/session';
 import type { WashingtonReferencePackageSource } from '@/lib/washingtonAssessorReferencePackage';
 import { buildCountyScopedSessionHeaders } from '@/services/countyIsolation';
+import { isConferenceLocalPackageEnabled } from '@/services/washingtonCountyLaunch';
 import { apiFetch } from '../../../lib/apiBase';
 import type {
   SaleQueuePage,
@@ -101,6 +102,7 @@ function washingtonReferencePackageSource(
   // A validated county upload is canonical live data. It must not be replaced by
   // the optional hosted public package merely because launch-data mode is enabled.
   if (dataSource === 'county-upload' || dataSource === 'county-readonly-sync') return null;
+  if (isConferenceLocalPackageEnabled()) return 'conference-local';
   if (dataSource === 'washington-hosted' || isWashingtonLaunchDataEnabled()) return 'hosted';
   return null;
 }
