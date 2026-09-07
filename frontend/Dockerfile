@@ -86,12 +86,12 @@ COPY frontend/ frontend/
 # local package; all other builds remove it before Vite copies public assets.
 RUN rm -rf /app/frontend/apps/os-shell/public/launch-data/washington; \
     if [ "$VITE_WASHINGTON_CONFERENCE_LOCAL_PACKAGE" = "true" ]; then \
-      test -f /app/frontend/waco-conference-package/launch-data/washington/manifest.json \
+      test -f /app/frontend/apps/os-shell/waco-conference-package/launch-data/washington/manifest.json \
         || (echo 'ERROR: conference-local package manifest is missing' && exit 1); \
-      cp -a /app/frontend/waco-conference-package/launch-data/washington /app/frontend/apps/os-shell/public/launch-data/washington; \
+      cp -a /app/frontend/apps/os-shell/waco-conference-package/launch-data/washington /app/frontend/apps/os-shell/public/launch-data/washington; \
       rm -rf /app/washington-launch-data; \
       mkdir -p /app/washington-launch-data; \
-      cp -a /app/frontend/waco-conference-package/launch-data/washington/. /app/washington-launch-data/; \
+      cp -a /app/frontend/apps/os-shell/waco-conference-package/launch-data/washington/. /app/washington-launch-data/; \
     fi
 
 # Build production bundle
