@@ -44,7 +44,7 @@ describe('Clock', () => {
     });
 
     it('falls back when the detected locale is invalid', () => {
-      expect(normalizeLocale('not-a-locale')).toBe('en-US');
+      expect(normalizeLocale('en-@posix')).toBe('en-US');
     });
   });
 
