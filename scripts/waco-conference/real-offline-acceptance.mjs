@@ -9,6 +9,9 @@
  */
 
 import process from 'node:process';
+import { createRequire } from 'node:module';
+
+const require = createRequire(import.meta.url);
 
 const SYNTHETIC_MARKERS = [
   'repository_reference_demo',
@@ -20,19 +23,41 @@ const SYNTHETIC_MARKERS = [
 ];
 
 const SAFE_METHODS = new Set(['GET', 'HEAD', 'OPTIONS']);
+// Login and Muse explain are POST routes, but neither mutates production or
+// county data. PilotController documents /api/pilot/explain as read-only.
+const SAFE_POST_PATHS = new Set(['/api/auth/login', '/api/pilot/explain']);
+// Pilot tool invocation is optional to the conference journey. Abort it at
+// the browser boundary so a disconnected run cannot issue a tool mutation or
+// depend on the optional Pilot runtime.
+const BLOCKED_OPTIONAL_PATHS = new Set(['/api/pilot/invoke']);
 const LOOPBACK_HOSTNAMES = new Set(['127.0.0.1', 'localhost', '[::1]']);
+const AUTH_LOGIN_PATH = '/api/auth/login';
+
+export class CliUsageError extends Error {
+  constructor(message, exitCode = 2) {
+    super(message);
+    this.name = 'CliUsageError';
+    this.exitCode = exitCode;
+  }
+}
 
 function usage(message) {
   if (message) console.error(`ERROR: ${message}\n`);
   console.error(`Usage:
   node scripts/waco-conference/real-offline-acceptance.mjs \\
     --base-url http://127.0.0.1:5173 \\
+    --operator-email operator@example.gov \\
+    --password-env WACO_OPERATOR_PASSWORD \\
     --county "Kitsap" \\
     --sales-sentinel "<known real sale identifier>" \\
     --offline-confirmed [--journey-id 1]
 
 Required:
   --base-url              Loopback URL for the real Shell deployment.
+  --operator-email        Provisioned operator email submitted through /login.
+  --password-env          Name of the environment variable containing the
+                          provisioned operator password; the password itself
+                          must never be passed as a command-line argument.
   --county                County to select in the Counties HUB.
   --sales-sentinel        Exact text expected from the governed real sales shard.
   --offline-confirmed     Operator attestation that the target machine is
@@ -45,10 +70,10 @@ Optional:
   --timeout-ms            Per-step timeout; defaults to 45000.
   --help                  Show this help.
 `);
-  process.exit(message ? 2 : 0);
+  throw new CliUsageError(message, message ? 2 : 0);
 }
 
-function parseArgs(argv) {
+export function parseArgs(argv) {
   const args = {};
   for (let index = 0; index < argv.length; index += 1) {
     const token = argv[index];
@@ -70,9 +95,15 @@ function parseArgs(argv) {
   if (!Number.isInteger(journeyId) || journeyId < 1) usage('--journey-id must be a positive integer');
   if (!Number.isInteger(timeoutMs) || timeoutMs < 5_000) usage('--timeout-ms must be an integer >= 5000');
   if (!args['base-url']) usage('--base-url is required');
+  if (!args['operator-email']) usage('--operator-email is required');
+  if (!args['password-env']) usage('--password-env is required');
   if (!args.county) usage('--county is required');
   if (!args['sales-sentinel']) usage('--sales-sentinel is required');
   if (!args.offlineConfirmed) usage('--offline-confirmed is required');
+
+  if (!/^[A-Za-z_][A-Za-z0-9_]*$/.test(args['password-env'])) {
+    usage('--password-env must be a valid environment variable name');
+  }
 
   let baseUrl;
   try {
@@ -87,11 +118,21 @@ function parseArgs(argv) {
 
   return {
     baseUrl,
+    operatorEmail: String(args['operator-email']),
+    passwordEnv: String(args['password-env']),
     county: String(args.county),
     salesSentinel: String(args['sales-sentinel']),
     journeyId,
     timeoutMs,
   };
+}
+
+export function readOperatorPassword(config, environment = process.env) {
+  const password = environment[config.passwordEnv];
+  if (typeof password !== 'string' || password.length === 0) {
+    fail(`required password environment variable ${config.passwordEnv} is absent or empty`);
+  }
+  return password;
 }
 
 function fail(message) {
@@ -132,11 +173,20 @@ async function runJourney({ browser, config }) {
   const page = await context.newPage();
   const observedJson = [];
   const violations = [];
+  const blockedOptionalRequests = [];
   const baseOrigin = config.baseUrl.origin;
+
+  await page.route('**/api/pilot/invoke', async (route) => {
+    blockedOptionalRequests.push(route.request().url());
+    await route.abort();
+  });
 
   page.on('request', (request) => {
     const url = new URL(request.url());
-    if (!SAFE_METHODS.has(request.method().toUpperCase())) {
+    const method = request.method().toUpperCase();
+    const isAllowedReadOnlyPost = method === 'POST' && SAFE_POST_PATHS.has(url.pathname);
+    const isBlockedOptionalRequest = method === 'POST' && BLOCKED_OPTIONAL_PATHS.has(url.pathname);
+    if (!SAFE_METHODS.has(method) && !isAllowedReadOnlyPost && !isBlockedOptionalRequest) {
       violations.push(`mutation request ${request.method()} ${url.pathname}`);
     }
     if (!isAllowedOfflineUrl(url, baseOrigin)) {
@@ -152,10 +202,21 @@ async function runJourney({ browser, config }) {
   });
 
   try {
-    await page.goto(new URL('/', config.baseUrl), { waitUntil: 'domcontentloaded', timeout: config.timeoutMs });
+    await page.goto(new URL('/', config.baseUrl).toString(), { waitUntil: 'domcontentloaded', timeout: config.timeoutMs });
+    await page.locator('[data-testid="login-page"]').waitFor({
+      state: 'visible',
+      timeout: config.timeoutMs,
+    });
+    const password = readOperatorPassword(config);
+    await page.locator('#email').fill(config.operatorEmail);
+    await page.locator('#password').fill(password);
+    await Promise.all([
+      page.waitForURL((url) => url.pathname !== '/login', { timeout: config.timeoutMs }),
+      page.getByRole('button', { name: 'Sign In', exact: true }).click(),
+    ]);
     await waitForText(page, 'TerraFusion', config.timeoutMs);
 
-    await page.goto(new URL('/counties', config.baseUrl), {
+    await page.goto(new URL('/counties', config.baseUrl).toString(), {
       waitUntil: 'domcontentloaded',
       timeout: config.timeoutMs,
     });
@@ -187,12 +248,20 @@ async function runJourney({ browser, config }) {
     await page.locator('.sf-workspace').waitFor({ state: 'visible', timeout: config.timeoutMs });
     assert(await page.getByTestId('salesforge-data-unavailable').count() === 0, 'SalesForge reported data unavailable');
     await waitForText(page, config.county, config.timeoutMs);
-    await waitForText(page, config.salesSentinel, config.timeoutMs);
+    const pageText = await page.locator('body').innerText();
+    const sentinelVisible = pageText.includes(config.salesSentinel);
+    const sentinelObservedInGovernedShard = observedJson.some((item) =>
+      JSON.stringify(item.payload).includes(config.salesSentinel),
+    );
+    assert(
+      sentinelVisible || sentinelObservedInGovernedShard,
+      `sales sentinel ${config.salesSentinel} was not present in the rendered SalesForge view or observed governed county shard`,
+    );
 
     for (const item of observedJson) assertNoSyntheticPayload(item.payload, item.path);
     assert(observedJson.some((item) => item.path.includes('/sales/by-county/')), 'no governed county sales shard was observed');
     assert(violations.length === 0, violations.join('; '));
-    console.log('PASS one fresh browser-context journey: real county data reached Shell -> Counties HUB -> TerraForge -> SalesForge');
+    console.log(`PASS one fresh browser-context journey: real county data reached Shell -> Counties HUB -> TerraForge -> SalesForge; blocked optional Pilot requests=${blockedOptionalRequests.length}`);
   } finally {
     await context.close();
   }
@@ -203,8 +272,14 @@ async function main() {
   let playwright;
   try {
     playwright = await import('playwright');
-  } catch (error) {
-    fail(`Playwright is required on the conference machine: ${error.message}`);
+  } catch (importError) {
+    try {
+      // Node's ESM resolver ignores NODE_PATH, while the offline runner may
+      // provide the preinstalled Playwright package through that local path.
+      playwright = require('playwright');
+    } catch (requireError) {
+      fail(`Playwright is required on the conference machine: ${importError.message}; ${requireError.message}`);
+    }
   }
 
   const browser = await playwright.chromium.launch({ headless: true });
@@ -217,6 +292,10 @@ async function main() {
 }
 
 main().catch((error) => {
+  if (error instanceof CliUsageError) {
+    process.exitCode = error.exitCode;
+    return;
+  }
   console.error(`FAIL WACO Lane B terminal acceptance: ${error.message}`);
   process.exitCode = 1;
 });
