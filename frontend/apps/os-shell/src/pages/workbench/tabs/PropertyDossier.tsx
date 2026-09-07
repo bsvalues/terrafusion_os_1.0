@@ -1,7 +1,8 @@
 import { useDossierWorkflowContext, useWorkflowAction } from '../../../hooks/useDossierWorkflowContext';
 import { WorkflowContextPicker } from '../../../components/dossier/WorkflowContextPicker';
 import { WorkflowExportResult } from '../../../components/dossier/WorkflowExportResult';
-import { requireWorkflowExport, type WorkflowExport } from '../../../services/dossierWorkflowService';
+import { WorkflowAppealPacketResult } from '../../../components/dossier/WorkflowAppealPacketResult';
+import { requireWorkflowAppealPacket, type WorkflowAppealPacket, requireWorkflowExport, type WorkflowExport } from '../../../services/dossierWorkflowService';
 /**
  * PropertyDossier.tsx
  *
@@ -105,13 +106,6 @@ interface DossierNoteResult {
   payloadRef: string;
 }
 
-interface OpenAppealPacketResult {
-  appealId: string;
-  packetRef: string;
-  payloadRef: string;
-  sections: string[];
-  chainOfCustody: string[];
-}
 
 type DossierToolState<T> = { status: 'idle' | 'loading' | 'success' | 'error'; result?: T; correlationId?: string; error?: ErrorInfo };
 
@@ -351,7 +345,7 @@ export const PropertyDossier: React.FC = () => {
   const [noteState, setNoteState] = useState<DossierToolState<DossierNoteResult>>({ status: 'idle' });
   const [appealPacketId, setAppealPacketId] = useState('');
   const workflow = useDossierWorkflowContext(parcelId);
-  const packet = useWorkflowAction<OpenAppealPacketResult>(workflow, appealPacketId);
+  const packet = useWorkflowAction<WorkflowAppealPacket>(workflow, appealPacketId);
   const equalization = useWorkflowAction<WorkflowExport>(workflow);
   const audit = useWorkflowAction<WorkflowExport>(workflow, appealPacketId);
   const appealPacketState = packet.state;
@@ -528,7 +522,7 @@ export const PropertyDossier: React.FC = () => {
     recordWorkflow('open_appeal_packet', await packet.run({
       toolId: 'open_appeal_packet', mode: 'pilot', parcelId,
       params: { county: workflow.countyId, taxYear: workflow.taxYear, appealId: appealPacketId.trim(), parcelId },
-    }));
+    }, value => requireWorkflowAppealPacket(value, workflow.countyId, workflow.taxYear!, appealPacketId.trim(), parcelId)));
   };
   const handleExportEqualizationPackage = async () => {
     if (!workflow.draft) return;
@@ -784,15 +778,7 @@ export const PropertyDossier: React.FC = () => {
           </button>
           {appealPacketState.status === 'success' && appealPacketState.result && (
             <div className='space-y-3'>
-              <div className='tf-panel p-4'>
-                <div className='tf-text font-semibold'>Packet Ref: {appealPacketState.result.packetRef}</div>
-                <div className='tf-text-dim text-xs mt-1'>Sections: {appealPacketState.result.sections.join(', ')}</div>
-              </div>
-              <div className='space-y-1'>
-                {appealPacketState.result.chainOfCustody.map((item, index) => (
-                  <div key={`${item}-${index}`} className='tf-panel rounded px-3 py-2 text-sm tf-text-secondary'>{item}</div>
-                ))}
-              </div>
+              <WorkflowAppealPacketResult result={appealPacketState.result} context={workflow} />
               {appealPacketState.correlationId && <div className='text-xs tf-text-dim flex items-center gap-2'>Ref: <code className='tf-suite-accent-text font-mono'>{appealPacketState.correlationId.slice(0, 16)}...</code> <WorkbenchSourceBadge source='live' /></div>}
             </div>
           )}

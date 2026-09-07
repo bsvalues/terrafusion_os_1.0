@@ -1,7 +1,7 @@
 import { expect, test, type Page } from '@playwright/test';
 import { spawn, type ChildProcess } from 'node:child_process';
 import { createHash, randomBytes, randomUUID } from 'node:crypto';
-import { existsSync, mkdirSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync } from 'node:fs';
 import { createServer } from 'node:net';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -149,7 +149,7 @@ async function startApi(defaultCounty = county): Promise<void> {
 
 async function devToken(): Promise<string> {
   const response = await fetch(`${baseURL}/api/auth/dev-token`);
-  expect(response.status()).toBe(200);
+  expect(response.status).toBe(200);
   const { token } = await response.json();
   expect(typeof token).toBe('string');
   return token;
@@ -173,6 +173,12 @@ async function invokeFromUI(page: Page, toolId: string, action: () => Promise<un
   await action();
   const response = await pending;
   expect(response.status()).toBe(200);
+  const headers = await response.request().allHeaders();
+  const browserToken = await page.evaluate(() => localStorage.getItem('authToken'));
+  // Assert identity without retaining the bearer value in an assertion diff.
+  expect(!!browserToken && headers.authorization === `Bearer ${browserToken}`).toBe(true);
+  expect(headers['x-county-id']).toBe(county);
+  expect(!!headers['x-user-id']).toBe(true);
   const envelope = await response.json();
   expect(envelope.ok, envelope.error ?? 'Actual Pilot invocation failed').toBe(true);
   return { output: envelope.result, wire: response.request().postDataJSON() };
@@ -357,6 +363,22 @@ test('owner saves, exports, retrieves, retries and reopens exact persisted work 
   );
   expect(packet.output).toMatchObject({ countyId: county, taxYear: 2024, parcelId: parcel });
   expect(packet.output.packetRef).toBe('dddddddd-dddd-dddd-dddd-dddddddddddd');
+  const packetRecords = page.getByRole('region', { name: 'Appeal packet records', exact: true });
+  await packetRecords.getByRole('button', { name: 'Inspect packet content', exact: true }).click();
+  await expect(packetRecords.getByLabel('Appeal packet JSON', { exact: true })).toContainText(
+    'Synthetic recorded evidence'
+  );
+  const packetRead = await request(
+    `/api/dossier/workflows/appeals/${appeal}/packet?county=${county}&taxYear=2024&parcelId=${parcel}`,
+    token
+  );
+  expect(packetRead.status).toBe(200);
+  const downloading = page.waitForEvent('download');
+  await packetRecords.getByRole('button', { name: 'Download packet JSON', exact: true }).click();
+  const download = await downloading;
+  const downloadPath = await download.path();
+  expect(downloadPath).not.toBeNull();
+  expect(readFileSync(downloadPath!, 'utf8')).toBe(packetRead.text);
   await page.getByRole('checkbox', { name: 'Confirm audit export', exact: true }).check();
   const audit = await invokeFromUI(page, 'export_audit_bundle', () =>
     page.getByRole('button', { name: 'Audit Bundle', exact: true }).click()
@@ -369,6 +391,26 @@ test('owner saves, exports, retrieves, retries and reopens exact persisted work 
     .click();
   await expect(page.getByLabel('Export JSON').last()).toContainText('Synthetic recorded evidence');
 
+  await page.goto(`${baseURL}/property/${parcel}/dossier`);
+  await page.getByLabel('Assessment year', { exact: true }).selectOption('2024');
+  await page.getByRole('textbox', { name: 'Appeal ID', exact: true }).fill(appeal);
+  const workbenchPacket = await invokeFromUI(page, 'open_appeal_packet', () =>
+    page.getByRole('button', { name: 'Open Appeal Packet', exact: true }).click()
+  );
+  expect(workbenchPacket.output).toMatchObject({
+    countyId: county,
+    taxYear: 2024,
+    parcelId: parcel,
+    packetRef: packet.output.packetRef,
+  });
+  await page
+    .getByRole('region', { name: 'Appeal packet records', exact: true })
+    .getByRole('button', { name: 'Inspect packet content', exact: true })
+    .click();
+  await expect(page.getByLabel('Appeal packet JSON', { exact: true })).toContainText(
+    'Synthetic recorded evidence'
+  );
+
   await page.goto(`${baseURL}/dais`);
   await page.getByLabel('Assessment year', { exact: true }).first().selectOption('2024');
   const brief = await invokeFromUI(page, 'generate_morning_brief', () =>
@@ -376,6 +418,33 @@ test('owner saves, exports, retrieves, retries and reopens exact persisted work 
   );
   expect(brief.output).toMatchObject({ countyId: county, taxYear: 2024 });
   expect(JSON.stringify(brief.output)).not.toContain('benton-2026-working');
+  await expect(page.getByTestId('county-morning-brief-result')).toBeVisible();
+  await expect(page.getByTestId('county-morning-brief-result')).toContainText(
+    brief.output.brief.queueType.replaceAll('_', ' ')
+  );
+  await page.getByLabel('Assessment year', { exact: true }).first().selectOption('2025');
+  await expect(page.getByTestId('county-morning-brief-result')).toHaveCount(0);
+  await page.getByLabel('Assessment year', { exact: true }).first().selectOption('2024');
+  await page.getByRole('button', { name: 'Roll readiness', exact: true }).click();
+  const readiness = page.getByTestId('roll-readiness');
+  await expect(readiness.getByLabel('Assessment year', { exact: true })).toHaveValue('2024');
+  await readiness
+    .getByRole('checkbox', { name: 'Confirm equalization export', exact: true })
+    .check();
+  const certification = await invokeFromUI(page, 'export_equalization_package', () =>
+    readiness.getByRole('button', { name: 'Export Certification Package', exact: true }).click()
+  );
+  expect(certification.output).toMatchObject({
+    countyId: county,
+    taxYear: 2024,
+    draftId: draft.draftId,
+    revision: draft.revision,
+    certification: false,
+  });
+  await readiness.getByRole('button', { name: 'Inspect output', exact: true }).click();
+  await expect(readiness.getByLabel('Export JSON', { exact: true })).toContainText(
+    'Actual synthetic persisted valuation'
+  );
 
   // Delay the actual completed backend response, not a fabricated response body.
   let release!: () => void;
@@ -391,6 +460,8 @@ test('owner saves, exports, retrieves, retries and reopens exact persisted work 
     if (route.request().postDataJSON()?.toolId !== 'generate_morning_brief')
       return route.continue();
     const actual = await route.fetch();
+    expect(actual.status()).toBe(200);
+    expect((await actual.json()).ok).toBe(true);
     received();
     await held;
     await route.fulfill({ response: actual });
@@ -404,9 +475,22 @@ test('owner saves, exports, retrieves, retries and reopens exact persisted work 
       response => response.url() === `${baseURL}/api/pilot/invoke`
     );
     release();
-    await delivered;
+    await (await delivered).finished();
+    await page.evaluate(
+      () =>
+        new Promise<void>(resolve =>
+          requestAnimationFrame(() => requestAnimationFrame(() => resolve()))
+        )
+    );
     await expect(page.getByTestId('county-morning-brief-result')).toHaveCount(0);
     await expect(page.getByLabel('Assessment year', { exact: true }).first()).toHaveValue('2025');
+    await expect(readiness.getByLabel('Assessment year', { exact: true })).toHaveValue('2025');
+    await expect(
+      readiness.getByRole('checkbox', { name: 'Confirm equalization export', exact: true })
+    ).not.toBeChecked();
+    await expect(
+      readiness.getByRole('region', { name: 'Completed export', exact: true })
+    ).toHaveCount(0);
   } finally {
     release();
     await page.unroute(routePattern);

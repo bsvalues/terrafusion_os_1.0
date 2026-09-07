@@ -6,7 +6,7 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { useDossierWorkflowContext, useWorkflowAction } from '../../hooks/useDossierWorkflowContext';
+import { useDossierWorkflowContext, useWorkflowAction, type DossierWorkflowContext } from '../../hooks/useDossierWorkflowContext';
 import { WorkflowContextPicker } from '../../components/dossier/WorkflowContextPicker';
 import { WorkflowExportResult } from '../../components/dossier/WorkflowExportResult';
 import { requireWorkflowExport, type WorkflowExport } from '../../services/dossierWorkflowService';
@@ -149,12 +149,20 @@ function AreaRow({ status }: { status: CertificationStatus }) {
 // Main Page
 // ============================================================================
 
-export default function RollReadiness() {
+export default function RollReadiness({ context }: { context?: DossierWorkflowContext } = {}) {
+  return context ? <RollReadinessContent workflow={context} /> : <StandaloneRollReadiness />;
+}
+
+function StandaloneRollReadiness() {
+  const workflow = useDossierWorkflowContext();
+  return <RollReadinessContent workflow={workflow} />;
+}
+
+function RollReadinessContent({ workflow }: { workflow: DossierWorkflowContext }) {
   const [statuses, setStatuses] = useState<CertificationStatus[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState<'area' | 'progress' | 'deadline'>('progress');
-  const workflow = useDossierWorkflowContext();
   const certification = useWorkflowAction<WorkflowExport>(workflow);
   const certState = certification.state;
   const certConfirmed = certification.confirmed;

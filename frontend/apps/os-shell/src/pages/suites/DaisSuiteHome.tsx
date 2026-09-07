@@ -53,10 +53,11 @@ type AssessorStaffRole =
   | 'assessor_leadership';
 
 interface BriefFindingSummary {
+  findingId?: string;
   findingType: string;
   severity: string;
   recommendedAction: string;
-  correlationId: string;
+  correlationId?: string;
 }
 
 interface MorningBriefResult {
@@ -191,6 +192,16 @@ export default function DaisSuiteHome({ metadata }: DaisSuiteHomeProps = {}) {
   const handleRefreshBrief = () => brief.run({
     toolId: 'generate_morning_brief', mode: 'muse',
     params: { county: workflow.countyId, taxYear: workflow.taxYear, role: selectedRole },
+  }, value => {
+    const response = value as { countyId: string; taxYear: number; brief: MorningBriefResult; findings: BriefFindingSummary[] } | null;
+    const result = response?.brief;
+    if (!response || response.countyId !== workflow.countyId || response.taxYear !== workflow.taxYear || !result || result.role !== selectedRole
+      || ![result.queueType, result.priority, result.dueWindow, result.recommendedTool].every(item => typeof item === 'string')
+      || !Array.isArray(result.blockingDependencies) || !result.blockingDependencies.every(item => typeof item === 'string')
+      || !Array.isArray(response.findings) || response.findings.some(item => !item || ![item.findingType, item.severity, item.recommendedAction].every(field => typeof field === 'string'))) {
+      throw new Error('The returned briefing does not match the selected county, year, role, or persisted record contract.');
+    }
+    return { ...result, findings: response.findings };
   });
 
   return (
@@ -255,7 +266,7 @@ export default function DaisSuiteHome({ metadata }: DaisSuiteHomeProps = {}) {
             Roll readiness
           </button>
         </div>
-        {showReadiness && <RollReadiness />}
+        {showReadiness && <RollReadiness context={workflow} />}
         <section
           data-testid="dais-role-briefs"
           className="px-6 pt-6"
@@ -385,7 +396,7 @@ export default function DaisSuiteHome({ metadata }: DaisSuiteHomeProps = {}) {
                     ) : (
                       briefState.result.findings.slice(0, 4).map((finding) => (
                         <div
-                          key={finding.correlationId}
+                          key={finding.findingId ?? finding.correlationId}
                           className="rounded-lg border p-3"
                           style={{ borderColor: 'hsl(var(--tf-border))', background: 'hsl(var(--tf-card-bg) / 0.35)' }}
                         >

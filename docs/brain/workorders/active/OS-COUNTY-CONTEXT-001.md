@@ -31,6 +31,32 @@ read-only, no builder reservation. Exact delivered-head assurance remains requir
 
 ### Current integration checkpoint (not delivery acceptance)
 
+- Normal commit hooks passed for checkpoint `3b0958c55`, then the unpublished
+  branch rebased successfully onto protected WACO main `02aa83731` as `225df2c17`.
+  The three Pilot startup hunks preserve the merged conference guard, lease and
+  Canon trace identity changes. No push or PR has occurred at this checkpoint.
+- UI review remediation is integrated: shared Dais/Roll Readiness context,
+  authenticated packet inspection/download, canonical hidden-tab order and actual
+  nested briefing normalization. Independent bounded re-review passed. The actual
+  repository Vitest configuration passes 110/110 across eight relevant suites;
+  legacy ApplyHandoffBanner/ParcelEvidencePacket async warnings remain distinct
+  from the new workflow tests. The rebuilt frontend succeeds with inherited warnings.
+- Latest generated core, core typecheck and generated-header checks pass. Combined
+  active/staged manifest, county handlers and Phase83/85/86 tests pass 123/123;
+  the original diagnostic continuation passes 3/3. Browser spec parses, not yet run.
+- Backend independent review requires remediation before acceptance: preserve
+  `access:costforge` on valuation snapshot creation/retrieval, enforce operation
+  reason-code allowlists at the backend, and snapshot scope-validated referenced
+  cohort definitions with scenarios. Original backend builder owns these repairs.
+- Whole-frontend validation was stopped after the existing CommandInput test
+  generated a runaway cmdk/React warning stream. Only the identified owned Vitest
+  process tree was stopped. This run did not pass; bounded baseline diagnosis is
+  assigned before any gate-prerequisite repair. No tests were skipped or excluded.
+  Real browser acceptance, final exact-head
+  assurance, protected CI/merge and delivered-revision verification remain pending.
+
+Earlier checkpoint observations below remain historical run evidence:
+
 - Coordinator Node handler checks: 4/4 pass; original diagnostic regression
   continuation: 3/3 pass. The missing-draft case reaches a controlled HTTP 404,
   not a database; database and browser proof remain pending.

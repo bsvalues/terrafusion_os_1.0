@@ -18,9 +18,10 @@
 
 import { useEffect, useState } from 'react';
 import { useDossierWorkflowContext, useWorkflowAction } from '../../hooks/useDossierWorkflowContext';
-import { requireWorkflowExport, type WorkflowExport } from '../../services/dossierWorkflowService';
+import { requireWorkflowAppealPacket, type WorkflowAppealPacket, requireWorkflowExport, type WorkflowExport } from '../../services/dossierWorkflowService';
 import { WorkflowContextPicker } from '../../components/dossier/WorkflowContextPicker';
 import { WorkflowExportResult } from '../../components/dossier/WorkflowExportResult';
+import { WorkflowAppealPacketResult } from '../../components/dossier/WorkflowAppealPacketResult';
 import { ParcelContextBanner } from '../../components/workbench/ParcelContextBanner';
 import { SuiteModuleGrid, type SuiteModuleDef } from '../../components/suites/SuiteModuleGrid';
 import { OperationalQueue } from '../../components/suites/OperationalQueue';
@@ -60,13 +61,6 @@ const DOSSIER_MODULES: SuiteModuleDef[] = [
 
 const fmtNum = (n: number | undefined | null) => (n != null ? n.toLocaleString() : '—');
 
-interface OpenAppealPacketSummary {
-  appealId: string;
-  packetRef: string;
-  payloadRef: string;
-  sections: string[];
-  chainOfCustody: string[];
-}
 
 function getSourceDisclosure(source: 'snapshot' | 'fixtures' | 'live' | null): string | null {
   if (source === 'snapshot') {
@@ -329,7 +323,7 @@ export default function DossierSuiteHome({ metadata }: DossierSuiteHomeProps = {
   const displayedApplyHandoffId = activeApplyHandoffId ?? activeStoredApplyHandoffId;
   const [appealId, setAppealId] = useState('');
   const workflow = useDossierWorkflowContext();
-  const packet = useWorkflowAction<OpenAppealPacketSummary>(workflow, appealId);
+  const packet = useWorkflowAction<WorkflowAppealPacket>(workflow, appealId);
   const equalization = useWorkflowAction<WorkflowExport>(workflow);
   const audit = useWorkflowAction<WorkflowExport>(workflow);
   const packetState = packet.state;
@@ -339,7 +333,8 @@ export default function DossierSuiteHome({ metadata }: DossierSuiteHomeProps = {
   const handleOpenAppealPacket = () => {
     if (!appealId.trim()) return;
     void packet.run({ toolId: 'open_appeal_packet', mode: 'pilot',
-      params: { county: workflow.countyId, taxYear: workflow.taxYear, appealId: appealId.trim() } });
+      params: { county: workflow.countyId, taxYear: workflow.taxYear, appealId: appealId.trim() } },
+      value => requireWorkflowAppealPacket(value, workflow.countyId, workflow.taxYear!, appealId.trim()));
   };
   const handleExportEqualization = () => {
     if (!workflow.draft) return;
@@ -487,23 +482,7 @@ export default function DossierSuiteHome({ metadata }: DossierSuiteHomeProps = {
                   />
                 </div>
                 {packetState.status === 'success' && packetState.result && (
-                  <div className="mt-4 space-y-3">
-                    <div className="rounded-lg border p-3" style={{ borderColor: 'hsl(var(--tf-border))', background: 'hsl(var(--tf-card-bg) / 0.35)' }}>
-                      <div className="text-xs font-semibold uppercase tracking-[0.08em]" style={{ color: 'hsl(var(--tf-muted))' }}>Packet Ref</div>
-                      <div className="mt-1 text-sm font-semibold" style={{ color: 'hsl(var(--tf-fg))' }}>{packetState.result.packetRef || 'Pending packet reference'}</div>
-                      <div className="mt-2 text-xs" style={{ color: 'hsl(var(--tf-muted))' }}>{packetState.result.payloadRef}</div>
-                    </div>
-                    <div className="flex flex-wrap gap-2">
-                      {packetState.result.sections.map((section) => (
-                        <span key={section} className="rounded-full border px-2 py-1 text-xs" style={{ borderColor: 'hsl(var(--tf-border))', color: 'hsl(var(--tf-fg))' }}>
-                          {section}
-                        </span>
-                      ))}
-                    </div>
-                    <div className="text-xs" style={{ color: 'hsl(var(--tf-muted))' }}>
-                      Chain of custody: {packetState.result.chainOfCustody.join(' → ') || 'No chain entries returned.'}
-                    </div>
-                  </div>
+                  <WorkflowAppealPacketResult result={packetState.result} context={workflow} />
                 )}
                 {packetState.status === 'error' && (
                   <div className="mt-4 rounded-lg border px-4 py-3 text-sm" style={{ borderColor: 'hsl(var(--tf-suite-dossier) / 0.24)', background: 'hsl(var(--tf-suite-dossier) / 0.08)', color: 'hsl(var(--tf-suite-dossier))' }}>
