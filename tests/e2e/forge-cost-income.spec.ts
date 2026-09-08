@@ -910,7 +910,7 @@ test.describe.serial('real Forge protected-artifact Cost/Income acceptance', () 
     expect(rejected.body.code).toBe('CANONICAL_INPUT_REJECTED');
     await expect(page.getByText('Canonical Cost Result', { exact: true })).toHaveCount(0);
     await page.reload();
-    await page.getByRole('button', { name: 'Parcel', exact: true }).click();
+    await open(page, 'cost');
     await expect(page.getByText('Canonical Cost Result', { exact: true })).toHaveCount(0);
     await fillCost(page);
     expect((await invoke(page, 'cost')).body.canonical).toEqual(expected);
@@ -953,7 +953,7 @@ test.describe.serial('real Forge protected-artifact Cost/Income acceptance', () 
     expect((await invoke(page, 'income', 422)).body.code).toBe('CANONICAL_INPUT_REJECTED');
     await expect(displayed).toHaveCount(0);
     await page.reload();
-    await page.getByRole('button', { name: 'Calculate', exact: true }).click();
+    await open(page, 'income');
     await expect(displayed).toHaveCount(0);
     await fillIncome(page);
     expect((await invoke(page, 'income')).body.canonical).toEqual(expected);
