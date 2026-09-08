@@ -341,6 +341,27 @@ async function http(
   return { status: response.status, text: await response.text() };
 }
 async function open(page: Page) {
+  const started = performance.now();
+  const property = await http('/api/properties/parcel/' + encodeURIComponent(parcel));
+  const value = property.status === 200 ? JSON.parse(property.text) : null;
+  // Keep the actual authenticated feed status/identity, never headers, bearer, or a mock response.
+  writeFileSync(
+    resolve(run, 'property-feed-read-' + randomUUID() + '.json'),
+    JSON.stringify({
+      source: 'actual-authenticated-property-feed',
+      httpStatus: property.status,
+      durationMs: performance.now() - started,
+      id: value?.id ?? null,
+      countyId: value?.countyId ?? null,
+      parcelNumber: value?.parcelNumber ?? null,
+      taxYear: value?.taxYear ?? null,
+    }),
+    { flag: 'wx' }
+  );
+  expect(property.status, 'Actual canonical PropertyWorkbench prerequisite feed').toBe(200);
+  expect(value.countyId).toBe(county);
+  expect(value.parcelNumber).toBe(parcel);
+  expect(value.taxYear).toBe(2026);
   await page.addInitScript(value => localStorage.setItem('authToken', value), token);
   await page.goto(baseURL + '/property/' + parcel + '/dossier');
   await expect(page.getByRole('region', { name: 'Durable packet workflow' })).toBeVisible();

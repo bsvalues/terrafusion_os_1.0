@@ -71,7 +71,7 @@ public sealed class DossierPacketWorkflowBrowserFixture
         // PACS tables collide when globally flattened into SQLite; never silently deduplicate.
         var requiredTables = new HashSet<string>(StringComparer.Ordinal)
         {
-            "Counties", "Properties", "Appeals", "CountyStudySessions", "CertificationSteps",
+            "Counties", "Properties", "Valuations", "CamaCharacteristics", "Appeals", "CountyStudySessions", "CertificationSteps",
             "DossierPackets", "DossierPacketItems", "DossierDocuments", "DossierEvidenceItems",
             "DossierCustodyEvents", "DossierWorkflowRecords", "AuditLogs"
         };
@@ -120,6 +120,8 @@ public sealed class DossierPacketWorkflowBrowserFixture
         await AssertCountyResolution(db);
         Assert.Empty(await db.DossierWorkflowRecords.ToListAsync());
         Assert.Empty(await db.Appeals.ToListAsync());
+        Assert.Empty(await db.Valuations.ToListAsync());
+        Assert.Empty(await db.CamaCharacteristics.ToListAsync());
         // Normal SaveChanges emits real prerequisite entity audits. Preserve them and prove
         // that none represents a packet action, appeal, or pre-seeded successful receipt.
         var prerequisiteAudits = await db.AuditLogs.AsNoTracking().ToListAsync();
@@ -144,6 +146,37 @@ public sealed class DossierPacketWorkflowBrowserFixture
         Console.WriteLine("Prerequisite EntityFramework audit baseline: " + System.Text.Json.JsonSerializer.Serialize(
             prerequisiteAudits.OrderBy(x => x.Id).Select(x => new { x.Id, x.Type, x.Source, x.UserId, x.Data, x.CorrelationId, x.Timestamp })));
         Assert.All(await db.DossierPackets.ToListAsync(), packet => Assert.Equal("draft", packet.Status));
+        await AssertPropertyFeed(db);
+    }
+
+    private static async Task AssertPropertyFeed(TerraFusionDbContext db)
+    {
+        // Exercise the actual workbench prerequisite query and controller, not a replacement
+        // property response. Full HTTP permission/issuer checks remain in the browser harness.
+        var mapper = new AutoMapper.MapperConfiguration(_ => { }, NullLoggerFactory.Instance).CreateMapper();
+        var service = new TerraFusion.Core.Services.PropertyService(db, mapper,
+            NullLogger<TerraFusion.Core.Services.PropertyService>.Instance);
+        var property = await service.GetPropertyByParcelAsync(Parcel, CountyId);
+        Assert.NotNull(property);
+        Assert.Equal(CountyId, property.CountyId);
+        Assert.Equal(Parcel, property.ParcelNumber);
+        var controller = new TerraFusion.API.Controllers.PropertiesController(service, db,
+            NullLogger<TerraFusion.API.Controllers.PropertiesController>.Instance)
+        {
+            ControllerContext = new Microsoft.AspNetCore.Mvc.ControllerContext
+            {
+                HttpContext = new Microsoft.AspNetCore.Http.DefaultHttpContext
+                {
+                    User = new System.Security.Claims.ClaimsPrincipal(new System.Security.Claims.ClaimsIdentity(
+                        [new System.Security.Claims.Claim("countyId", CountyId.ToString("D"))], "fixture-prerequisite"))
+                }
+            }
+        };
+        var response = await controller.GetPropertyByParcel(Parcel);
+        var value = Assert.IsType<TerraFusion.Core.DTOs.PropertyDto>(Assert.IsType<Microsoft.AspNetCore.Mvc.OkObjectResult>(response.Result).Value);
+        Assert.Equal(CountyId, value.CountyId);
+        Assert.Equal(Parcel, value.ParcelNumber);
+        Assert.Equal(2026, value.TaxYear);
     }
 
     private static async Task AssertCountyResolution(TerraFusionDbContext db)
