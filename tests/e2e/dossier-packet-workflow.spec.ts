@@ -664,6 +664,25 @@ test('actual packet narrative, seal and handoff survive reload and restart; stal
   await expect(page.getByRole('region', { name: 'Durable packet workflow' })).toContainText(
     failed.command.requestId
   );
+  // The authoritative conflict retires eligibility immediately, BEFORE a manual reload.
+  await expect(page.getByRole('link', { name: 'Continue in Dais' })).toHaveCount(0);
+  await expect(
+    page.getByText('Prepared handoff ' + prepared.value.handoffId, { exact: true })
+  ).toHaveCount(0);
+  await expect(page.getByTestId('finalization-status')).toContainText('stale');
+  for (const name of [
+    'Save narrative',
+    'Finalize this revision',
+    'Prepare appeal handoff',
+    'Reopen for revision',
+  ]) {
+    const control = page.getByRole('button', { name, exact: true });
+    if (await control.count()) await expect(control).toBeDisabled();
+  }
+  const history = page.getByRole('region', { name: 'Historical receipts (not current)' });
+  await expect(history).toContainText(prepared.value.handoffId);
+  await expect(history).toContainText(seal.value.finalizationId);
+  await expect(history).toContainText(failed.command.requestId);
   await page.getByRole('alert').scrollIntoViewIfNeeded();
   await page.screenshot({
     path: test.info().outputPath('synthetic-failed-action-cid.png'),

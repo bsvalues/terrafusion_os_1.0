@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import PacketNarrativeEditor from './PacketNarrativeEditor';
 import PacketAppealHandoffPanel from './PacketAppealHandoffPanel';
-import { finalizeWorkflowPacket, getWorkflowPacket, listWorkflowPackets, prepareWorkflowHandoff, saveWorkflowNarrative, reviseWorkflowPacket,
+import { finalizeWorkflowPacket, getWorkflowPacket, listWorkflowPackets, prepareWorkflowHandoff, saveWorkflowNarrative, reviseWorkflowPacket, PacketWorkflowHttpError,
   type PacketSummary, type PacketWorkflowContext, type PacketWorkflowView, type PreparedPacketHandoff, type PacketFinalizationReceipt,
 } from '../../services/dossierPacketWorkflowService';
 
@@ -47,6 +47,10 @@ function ScopedPacketWorkflow({ context }: { context: PacketWorkflowContext }) {
   const [refresh, setRefresh] = useState(0);
   const [dirty, setDirty] = useState(false);
   const [reason, setReason] = useState('');
+  const [requiresRefresh, setRequiresRefresh] = useState(false);
+  const [history, setHistory] = useState<{
+    finalization: PacketFinalizationReceipt | null; handoff: PreparedPacketHandoff | null; failedRequestId: string;
+  } | null>(null);
   const controller = useRef(new AbortController());
   const requests = useRef(new Map<string, string>());
 
@@ -68,14 +72,14 @@ function ScopedPacketWorkflow({ context }: { context: PacketWorkflowContext }) {
     setLoading(true);
     getWorkflowPacket(context, selected, controller.current.signal).then(result => {
       if (!current || controller.current.signal.aborted) return;
-      setView(result); setHandoff(result.handoff ?? null);
+      setView(result); setHandoff(result.handoff ?? null); setRequiresRefresh(false);
     }).catch(e => { if (current && !controller.current.signal.aborted) setError(e.message); })
       .finally(() => { if (current && !controller.current.signal.aborted) setLoading(false); });
     return () => { current = false; };
   }, [selected, refresh]);
 
   async function act(operation: 'finalize' | 'prepare' | 'narrative' | 'revise', content = '') {
-    if (!view || busy) return;
+    if (!view || busy || requiresRefresh) return;
     const signal = controller.current.signal;
     const key = view.packetId + ':' + view.revision + ':' + operation + ':' + content;
     const requestId = requests.current.get(key) ?? crypto.randomUUID();
@@ -97,19 +101,26 @@ function ScopedPacketWorkflow({ context }: { context: PacketWorkflowContext }) {
         if (!signal.aborted) { setView(refreshed); setHandoff(refreshed.handoff ?? null); setDirty(false); }
       }
     } catch (e) { if (!signal.aborted) {
+      if (e instanceof PacketWorkflowHttpError && e.status === 409) {
+        // A conflict invalidates this read's eligibility, not its durable history.
+        // Only a validated current read may enable another mutation or handoff.
+        setRequiresRefresh(true);
+        setHistory({ finalization: view.finalization, handoff, failedRequestId: requestId });
+        setHandoff(null);
+      }
       setError(e instanceof Error ? e.message : 'Packet action failed. Reload before retrying.');
       setErrorRequestId(requestId);
     } }
     finally { if (!signal.aborted) setBusy(false); }
   }
-  const sealed = view?.decision.decision === 'accepted' && view.status === 'sealed';
-  const complete = view?.decision.decision === 'accepted' && view.status === 'complete';
+  const sealed = !requiresRefresh && view?.decision.decision === 'accepted' && view.status === 'sealed';
+  const complete = !requiresRefresh && view?.decision.decision === 'accepted' && view.status === 'complete';
   return <section data-testid='finalization-panel' aria-label='Durable packet workflow' className='space-y-4 text-sm'>
     <h3 className='text-base font-semibold'>Finalize a packet</h3>
     <p className='text-muted-foreground'>Assessment year {context.taxYear}. Select the packet whose narrative and evidence you want to seal.</p>
     <label className='block'>Packet
       <select aria-label='Packet' className='ml-2 max-w-full rounded-md border border-border bg-background p-2' value={selected} disabled={busy}
-        onChange={e => { setView(null); setHandoff(null); setSelected(e.target.value); }}>
+        onChange={e => { setView(null); setHandoff(null); setHistory(null); setRequiresRefresh(false); setSelected(e.target.value); }}>
         <option value=''>Select a packet</option>
         {packets.map(packet => <option key={packet.packetId} value={packet.packetId}>{packet.name}</option>)}
       </select>
@@ -121,24 +132,31 @@ function ScopedPacketWorkflow({ context }: { context: PacketWorkflowContext }) {
     </p>}
     {!loading && packets.length === 0 && !error && <p>No packets in this county, year and parcel. Assemble a scoped packet first.</p>}
     {view && <>
-      <dl className='space-y-1 break-words'><dt>Revision</dt><dd>{view.revision}</dd><dt>Status</dt><dd data-testid='finalization-status'>{view.status}</dd></dl>
+      <dl className='space-y-1 break-words'><dt>Revision</dt><dd>{view.revision}</dd><dt>Status</dt><dd data-testid='finalization-status'>{requiresRefresh ? 'stale — reload required' : view.status}</dd></dl>
       <div data-testid='narrative-section'><PacketNarrativeEditor key={view.packetId + view.revision} content={view.narrative.content}
-        disabled={busy || view.packetStatus === 'sealed'} onDirty={setDirty} onSave={content => void act('narrative', content)} /></div>
+        disabled={busy || requiresRefresh || view.packetStatus === 'sealed'} onDirty={setDirty} onSave={content => void act('narrative', content)} /></div>
       <p>{view.evidence.length} evidence references in this saved revision.</p>
       {view.decision.violations.length > 0 && <ul className='list-disc pl-5'>{view.decision.violations.map((violation, i) => <li key={violation.code + i}>{violation.message}</li>)}</ul>}
       {complete && <button className={button} disabled={busy || dirty} onClick={() => void act('finalize')}>Finalize this revision</button>}
       {view.packetStatus === 'sealed' && <div className='space-y-2'>
         <label className='block'>Revision reason
           <input aria-label='Revision reason' className='ml-2 max-w-full rounded-md border border-border bg-background p-2'
-            value={reason} maxLength={2000} disabled={busy} onChange={e => setReason(e.target.value)} />
+            value={reason} maxLength={2000} disabled={busy || requiresRefresh} onChange={e => setReason(e.target.value)} />
         </label>
         <p className='text-muted-foreground'>Reopening keeps the old seal for history and removes current handoff eligibility.</p>
-        <button className={button} disabled={busy || !reason.trim()} onClick={() => void act('revise', reason)}>Reopen for revision</button>
+        <button className={button} disabled={busy || requiresRefresh || !reason.trim()} onClick={() => void act('revise', reason)}>Reopen for revision</button>
       </div>}
       <div data-testid='appeal-handoff-section'><PacketAppealHandoffPanel context={context} sealed={sealed} handoff={handoff}
         busy={busy} onPrepare={() => void act('prepare')} /></div>
-      {view.finalization && <PersistedReceipt title='Finalization receipt' receipt={view.finalization} />}
+      {!requiresRefresh && view.finalization && <PersistedReceipt title='Finalization receipt' receipt={view.finalization} />}
       {handoff && <PersistedReceipt title='Handoff receipt' receipt={handoff} />}
     </>}
+    {history && <section aria-label='Historical receipts (not current)' className='space-y-2 rounded-md border border-border p-3'>
+      <h4 className='font-semibold'>Historical receipts (not current)</h4>
+      <p>These receipts describe the previous read, not current packet or handoff eligibility.</p>
+      <p className='break-words'>Failed action CID: {history.failedRequestId}. This identifies the rejected attempt, not a successful receipt.</p>
+      {history.finalization && <PersistedReceipt title='Historical finalization receipt' receipt={history.finalization} />}
+      {history.handoff && <PersistedReceipt title='Historical handoff receipt' receipt={history.handoff} />}
+    </section>}
   </section>;
 }

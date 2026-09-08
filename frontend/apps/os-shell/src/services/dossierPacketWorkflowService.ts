@@ -21,6 +21,38 @@ export interface PacketWorkflowView extends PacketSummary {
 const base = '/api/dossier/packet-workflow';
 const uuid = (value: unknown): value is string => typeof value === 'string' && /^[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}$/.test(value);
 const hash = (value: unknown): value is string => typeof value === 'string' && /^[0-9a-f]{64}$/.test(value);
+export class PacketWorkflowHttpError extends Error {
+  constructor(readonly status: number, message: string) {
+    super(message);
+    this.name = 'PacketWorkflowHttpError';
+  }
+}
+async function responseError(response: Response): Promise<PacketWorkflowHttpError> {
+  const fallback = `Packet request failed (${response.status}).`;
+  const reader = response.body?.getReader();
+  if (!reader) return new PacketWorkflowHttpError(response.status, fallback);
+  // Error details are optional: never lose the authoritative HTTP status to an
+  // invalid, interrupted or oversized response body. Retain at most 4 KiB.
+  const bytes = new Uint8Array(4096);
+  let length = 0;
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      if (length + value.byteLength > bytes.length) {
+        void reader.cancel().catch(() => {});
+        return new PacketWorkflowHttpError(response.status, fallback);
+      }
+      bytes.set(value, length); length += value.byteLength;
+    }
+    const value: unknown = JSON.parse(new TextDecoder().decode(bytes.subarray(0, length)));
+    const message = value && typeof value === 'object' && 'error' in value && typeof value.error === 'string'
+      ? value.error : fallback;
+    return new PacketWorkflowHttpError(response.status, message);
+  } catch {
+    return new PacketWorkflowHttpError(response.status, fallback);
+  } finally { reader.releaseLock(); }
+}
 function scoped(context: PacketWorkflowContext, value: { countyId: string; taxYear: number; parcelId: string }) {
   if (!value || value.countyId !== context.countyId || value.taxYear !== context.taxYear || value.parcelId !== context.parcelId) {
     throw new Error('Packet response scope changed; reload the selected county and year.');
@@ -39,9 +71,14 @@ async function request<T>(context: PacketWorkflowContext, path: string, signal: 
     headers: { Authorization: `Bearer ${context.token}`, ...(body ? { 'Content-Type': 'application/json' } : {}),
       ...(cid ? { 'X-Correlation-ID': cid } : {}) },
     ...(body ? { body: JSON.stringify({ ...body, county: context.countyId, taxYear: context.taxYear, parcelId: context.parcelId }) } : {}) });
-  const value = await response.json();
-  if (!response.ok) throw new Error(typeof value?.error === 'string' ? value.error : `Packet request failed (${response.status}).`);
-  return value as T;
+  if (response.status === 409) {
+    // Conflict headers already invalidate eligibility. Optional details and even
+    // cancellation completion must never delay that authoritative signal.
+    void response.body?.cancel().catch(() => {});
+    throw new PacketWorkflowHttpError(409, 'Packet conflict (409). Reload before retrying.');
+  }
+  if (!response.ok) throw await responseError(response);
+  return await response.json() as T;
 }
 export async function listWorkflowPackets(context: PacketWorkflowContext, signal: AbortSignal): Promise<PacketSummary[]> {
   const result = await request<PacketWorkflowContext & { packets: PacketSummary[] }>(context, '/packets', signal);

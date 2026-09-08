@@ -52,7 +52,7 @@ describe('durable Dossier packet workflow', () => {
     render(<MemoryRouter><PacketFinalizationPanel {...context} /></MemoryRouter>);
     fireEvent.click(await screen.findByRole('button', { name: 'Finalize this revision' }));
     const failure = await screen.findByRole('alert');
-    expect(failure).toHaveTextContent('Source revision changed');
+    expect(failure).toHaveTextContent('Packet conflict (409). Reload before retrying.');
     expect(cid).not.toBe(''); expect(failure).toHaveTextContent(cid);
     expect(screen.queryByRole('textbox', { name: 'Finalization receipt payload' })).not.toBeInTheDocument();
   });
@@ -154,7 +154,7 @@ describe('durable Dossier packet workflow', () => {
       : json({ countyId: county, taxYear: 2026, parcelId: context.parcelId, packets: [{ packetId, name: 'Stored synthetic packet', status: 'complete' }] })));
     render(<MemoryRouter><PacketFinalizationPanel {...context} /></MemoryRouter>);
     fireEvent.click(await screen.findByRole('button', { name: 'Finalize this revision' }));
-    expect(await screen.findByRole('alert')).toHaveTextContent('Source revision changed');
+    expect(await screen.findByRole('alert')).toHaveTextContent('Packet conflict (409). Reload before retrying.');
     expect(screen.queryByRole('button', { name: 'Prepare appeal handoff' })).not.toBeInTheDocument();
   });
 
@@ -166,6 +166,104 @@ describe('durable Dossier packet workflow', () => {
     await screen.findByRole('button', { name: 'Finalize this revision' });
     rendered.rerender(<MemoryRouter><PacketFinalizationPanel {...context} parcelId='OTHER' /></MemoryRouter>);
     await waitFor(() => expect(screen.queryByRole('button', { name: 'Finalize this revision' })).not.toBeInTheDocument());
+  });
+
+  it.each(['REVISION_CONFLICT', 'REQUEST_CONFLICT', 'non-json'])('retires current handoff and all mutation eligibility immediately on authoritative409 (%s), preserving history until a valid read', async code => {
+    const provenance = { traceId: '55555555-5555-4555-8555-555555555555', suiteCommit: 'b'.repeat(40), artifactSha256: 'c'.repeat(64), contractVersion: '1.0.0' };
+    const seal = { finalizationId: packetId, finalizedAt: '2026-09-07T10:00:00Z', finalizedBy: 'synthetic-actor', provenance };
+    const handoff = { countyId: county, taxYear: 2026, parcelId: context.parcelId, packetId, packetRevision: revision,
+      handoffId, preparedAt: '2026-09-07T10:01:00Z', preparedBy: 'synthetic-actor', provenance: { ...provenance, traceId: '66666666-6666-4666-8666-666666666666' } };
+    let failedCid = '';
+    let reads = 0;
+    let resolveRead!: (response: Response) => void;
+    vi.stubGlobal('fetch', vi.fn(async (url: string, options?: RequestInit) => {
+      if (url.includes('/revise')) {
+        failedCid = JSON.parse(String(options?.body)).requestId;
+        return code === 'non-json' ? new Response('Conflict', { status: 409 }) : json({ code, error: 'Authoritative conflict; reload.' }, 409);
+      }
+      if (url.includes(`/packets/${packetId}`)) {
+        reads++;
+        if (reads === 1) return json({ ...view('sealed'), finalization: seal, handoff });
+        if (reads === 2) return new Promise<Response>(resolve => { resolveRead = resolve; });
+        return json({ ...view(), revision: 'b'.repeat(64), packetStatus: 'draft' });
+      }
+      return json({ countyId: county, taxYear: 2026, parcelId: context.parcelId, packets: [{ packetId, name: 'Stored synthetic packet', status: 'sealed' }] });
+    }));
+    render(<MemoryRouter><PacketFinalizationPanel {...context} /></MemoryRouter>);
+    await screen.findByRole('link', { name: 'Continue in Dais' });
+    fireEvent.change(screen.getByRole('textbox', { name: 'Revision reason' }), { target: { value: 'Reopen current source' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Reopen for revision' }));
+    expect(await screen.findByRole('alert')).toHaveTextContent(failedCid);
+    const assertNoCurrentEligibility = () => {
+      expect(screen.queryByRole('link', { name: 'Continue in Dais' })).not.toBeInTheDocument();
+      expect(screen.queryByText('Prepared handoff ' + handoffId, { exact: true })).not.toBeInTheDocument();
+      for (const name of ['Save narrative', 'Finalize this revision', 'Prepare appeal handoff', 'Reopen for revision']) {
+        const control = screen.queryByRole('button', { name, exact: true });
+        if (control) expect(control).toBeDisabled();
+      }
+      const history = within(screen.getByRole('region', { name: 'Historical receipts (not current)' }));
+      expect(history.getByText(packetId, { exact: true })).toBeVisible();
+      expect(history.getByText(handoffId, { exact: true })).toBeVisible();
+      expect(history.getByText(new RegExp(failedCid))).toBeVisible();
+    };
+    assertNoCurrentEligibility(); // Before any manual reload, unlike the old browser gap.
+    expect(screen.getByTestId('finalization-status')).toHaveTextContent('stale');
+    fireEvent.click(screen.getByRole('button', { name: 'Reload packet' }));
+    await waitFor(() => expect(resolveRead).toBeTypeOf('function'));
+    assertNoCurrentEligibility(); // Pending current read must not revive old eligibility/history.
+    resolveRead(json({ error: 'Current read unavailable' }, 503));
+    expect(await screen.findByRole('alert')).toHaveTextContent('Current read unavailable');
+    assertNoCurrentEligibility();
+    fireEvent.click(screen.getByRole('button', { name: 'Reload packet' }));
+    expect(await screen.findByRole('button', { name: 'Finalize this revision' })).toBeEnabled();
+    expect(screen.getByTestId('finalization-status')).toHaveTextContent('complete');
+    expect(screen.queryByRole('link', { name: 'Continue in Dais' })).not.toBeInTheDocument();
+    expect(screen.getByRole('region', { name: 'Historical receipts (not current)' })).toHaveTextContent(failedCid);
+  });
+
+  it.each([false, true])('retires handoff on known409 without waiting for body EOF (JSON chunk=%s)', async hasJsonChunk => {
+    const provenance = { traceId: '55555555-5555-4555-8555-555555555555', suiteCommit: 'b'.repeat(40), artifactSha256: 'c'.repeat(64), contractVersion: '1.0.0' };
+    const seal = { finalizationId: packetId, finalizedAt: '2026-09-07T10:00:00Z', finalizedBy: 'synthetic-actor', provenance };
+    const handoff = { countyId: county, taxYear: 2026, parcelId: context.parcelId, packetId, packetRevision: revision,
+      handoffId, preparedAt: '2026-09-07T10:01:00Z', preparedBy: 'synthetic-actor', provenance };
+    let bodyController!: ReadableStreamDefaultController<Uint8Array>;
+    let failedCid = '';
+    let cancelled = false;
+    const body = new ReadableStream<Uint8Array>({
+      start(controller) {
+        bodyController = controller;
+        if (hasJsonChunk) controller.enqueue(new TextEncoder().encode(JSON.stringify({ error: 'Conflict; reload.' })));
+        // Deliberately no EOF, even when the complete JSON object was received.
+      },
+      cancel() {
+        cancelled = true;
+        return new Promise<void>(() => {}); // Cancellation completion must not gate invalidation either.
+      },
+    });
+    vi.stubGlobal('fetch', vi.fn(async (url: string, options?: RequestInit) => {
+      if (url.includes('/revise')) {
+        failedCid = JSON.parse(String(options?.body)).requestId;
+        return new Response(body, { status: 409 });
+      }
+      return url.includes(`/packets/${packetId}`) ? json({ ...view('sealed'), finalization: seal, handoff })
+        : json({ countyId: county, taxYear: 2026, parcelId: context.parcelId, packets: [{ packetId, name: 'Stored synthetic packet', status: 'sealed' }] });
+    }));
+    try {
+      render(<MemoryRouter><PacketFinalizationPanel {...context} /></MemoryRouter>);
+      await screen.findByRole('link', { name: 'Continue in Dais' });
+      fireEvent.change(screen.getByRole('textbox', { name: 'Revision reason' }), { target: { value: 'Reopen current source' } });
+      fireEvent.click(screen.getByRole('button', { name: 'Reopen for revision' }));
+      await waitFor(() => expect(screen.queryByRole('link', { name: 'Continue in Dais' })).not.toBeInTheDocument());
+      expect(screen.getByRole('alert')).toHaveTextContent(failedCid);
+      expect(screen.getByTestId('finalization-status')).toHaveTextContent('stale');
+      expect(screen.getByRole('button', { name: 'Reopen for revision' })).toBeDisabled();
+      const history = screen.getByRole('region', { name: 'Historical receipts (not current)' });
+      expect(history).toHaveTextContent(packetId);
+      expect(history).toHaveTextContent(handoffId);
+      expect(history).toHaveTextContent(failedCid);
+    } finally {
+      if (!cancelled) bodyController.close(); // Release the deliberately pending old implementation on RED.
+    }
   });
 
   it('fails closed without explicit county/year and performs no guessed request', async () => {
