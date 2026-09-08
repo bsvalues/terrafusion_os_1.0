@@ -58,9 +58,7 @@ import type {
 } from '../../../contracts/dossierDetails';
 import { createStableId } from '../../../utils/stableId';
 import ParcelEvidencePacket from '../../../components/dossier/ParcelEvidencePacket';
-import PacketNarrativeEditor from '../../../components/dossier/PacketNarrativeEditor';
 import PacketFinalizationPanel from '../../../components/dossier/PacketFinalizationPanel';
-import PacketAppealHandoffPanel from '../../../components/dossier/PacketAppealHandoffPanel';
 
 
 // InvocationRecord type imported from shared components
@@ -1425,19 +1423,10 @@ export const PropertyDossier: React.FC = () => {
         <ParcelEvidencePacket parcelId={parcelId} />
       </div>
 
-      {/* Phase 19 Tranche 3: Narrative Spine */}
-      <div data-testid="narrative-section">
-        <PacketNarrativeEditor parcelId={parcelId} />
-      </div>
-
-      {/* Phase 19 Tranche 4: Finalization Spine */}
+      {/* One authenticated packet context owns narrative, finalization and handoff. */}
       <div data-testid="finalization-section">
-        <PacketFinalizationPanel parcelId={parcelId} />
-      </div>
-
-      {/* Phase 19 Tranche 5: Appeal Handoff Spine */}
-      <div data-testid="appeal-handoff-section">
-        <PacketAppealHandoffPanel parcelId={parcelId} />
+        <PacketFinalizationPanel parcelId={parcelId} countyId={workflow.countyId}
+          taxYear={workflow.taxYear} token={workflow.ready ? workflow.token : undefined} />
       </div>
 
       {/* Governed Tool Invocation History */}

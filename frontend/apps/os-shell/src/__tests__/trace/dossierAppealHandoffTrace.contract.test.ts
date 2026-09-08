@@ -1,99 +1,41 @@
-/**
- * Phase 19 — TerraDossier Defense Spine, Tranche 5
- * Dossier Appeal Handoff Trace Contract
- *
- * Verifies trace emission for handoff prepare, accept, and failure paths.
- */
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import { finalizePacketModel, revisePacket, checkFinalizedMutability, checkSectionDrift, buildCoverSheet } from '../../services/suites/dossierPacketFinalization';
+import { prepareAppealHandoff } from '../../services/suites/dossierAppealHandoff';
+import { finalizeWorkflowPacket, reviseWorkflowPacket, prepareWorkflowHandoff } from '../../services/dossierPacketWorkflowService';
 
-import { vi, describe, it, expect, beforeEach } from 'vitest';
+const context = { countyId: '11111111-1111-4111-8111-111111111111', taxYear: 2026, parcelId: 'SYNTHETIC', token: 'synthetic-token' };
+const packetId = '22222222-2222-4222-8222-222222222222';
+const revision = 'a'.repeat(64);
+const signal = () => new AbortController().signal;
+const snapshot = { parcelId: context.parcelId, packetId, title: 'Synthetic packet', packetType: 'boe_appeal',
+  status: 'finalized' as const, finalizedBy: 'synthetic', finalizedAt: '2026-03-15T10:00:00Z',
+  sectionCount: 2, totalItems: 3, frozen: true, narrativeSummary: 'Synthetic evidence narrative.' };
+const input = { ...snapshot, sections: [{ sectionType: 'documents', itemIds: ['synthetic-document'] }] };
+const envelope = { schemaVersion: '1.0.0', contractId: 'dossier.appeal-handoff',
+  handoffId: '33333333-3333-4333-8333-333333333333', countyId: context.countyId, taxYear: 2026, parcelId: context.parcelId,
+  packetId, packetType: 'boe_appeal', packetRevision: revision, finalizationId: '44444444-4444-4444-8444-444444444444',
+  finalizedAt: '2026-03-15T10:00:00Z', finalizedBy: 'synthetic', narrative: { content: 'Synthetic evidence narrative.', revision, contentHash: revision },
+  evidence: [{ evidenceId: '55555555-5555-4555-8555-555555555555', revision, contentHash: revision, countyId: context.countyId, taxYear: 2026, parcelId: context.parcelId }],
+  preparedAt: '2026-03-15T11:00:00Z', preparedBy: 'synthetic',
+  provenance: { suiteCommit: '8f58a6b989641a6fde063afa3dda68bd18062c63', artifactSha256: 'd4f29a599c96499f567c065274127b5c6943955b6366bd5959166ac5abf55c01', contractVersion: '1.0.0', traceId: 'prepare' } };
+const response = (value: unknown, status = 200) => new Response(JSON.stringify(value), { status });
+afterEach(() => { vi.unstubAllGlobals(); vi.restoreAllMocks(); });
 
-const mockEmitTraceEvent = vi.fn();
-const mockAssertWriteLane = vi.fn();
-
-vi.mock('../../services/terraTrace', () => ({
-  emitTraceEvent: (...args: unknown[]) => mockEmitTraceEvent(...args),
-}));
-
-vi.mock('../../services/writeLane', () => ({
-  assertWriteLane: (...args: unknown[]) => mockAssertWriteLane(...args),
-  checkWriteLane: vi.fn(() => true),
-  WRITE_LANE_MATRIX: { document: 'dossier', appeal: 'dais' },
-}));
-
-import {
-  prepareAppealHandoff,
-  type FinalizedSnapshot,
-} from '../../services/suites/dossierAppealHandoff';
-
-import { acceptAppealHandoff } from '../../services/suites/daisAppealIntake';
-
-describe('Dossier Appeal Handoff Trace Contract', () => {
-  const finalizedSnapshot: FinalizedSnapshot = {
-    parcelId: 'P-100',
-    packetId: 'PKT-001',
-    title: 'Defense Packet',
-    packetType: 'defense',
-    status: 'finalized',
-    finalizedBy: 'jsmith',
-    finalizedAt: '2026-03-15T10:00:00Z',
-    sectionCount: 2,
-    totalItems: 3,
-    frozen: true,
-    narrativeSummary: 'Summary.',
-  };
-
-  beforeEach(() => {
-    vi.clearAllMocks();
+vi.mock('../../services/terraTrace', () => ({ emitTraceEvent: vi.fn() }));
+import { emitTraceEvent } from '../../services/terraTrace';
+describe('Dossier handoff trace authority', () => {
+  it('does not invent prepared or appeal-accepted traces from local metadata', () => {
+    expect(prepareAppealHandoff(snapshot).success).toBe(false); expect(emitTraceEvent).not.toHaveBeenCalled();
   });
-
-  it('emits append-only action_started and action_completed for handoff prepare/request', () => {
-    const result = prepareAppealHandoff(finalizedSnapshot);
-
-    expect(mockEmitTraceEvent).toHaveBeenCalledWith(
-      'appeal_handoff_prepared',
-      'packet',
-      'PKT-001',
-      expect.objectContaining({ status: 'finalized' }),
-      expect.objectContaining({ handoffReady: true }),
-    );
-
-    // Accept the handoff on the Dais side
-    mockEmitTraceEvent.mockClear();
-    acceptAppealHandoff(result.handoff!);
-
-    expect(mockEmitTraceEvent).toHaveBeenCalledWith(
-      'appeal_handoff_accepted',
-      'appeal',
-      expect.any(String),
-      undefined,
-      expect.objectContaining({ packetId: 'PKT-001', status: 'pending' }),
-    );
+  it('does not claim a completed handoff on server refusal', async () => {
+    vi.stubGlobal('fetch', vi.fn(async () => response({ error: 'Nonfinalized' }, 409)));
+    await expect(prepareWorkflowHandoff(context, packetId, revision, 'prepare', signal())).rejects.toThrow('Nonfinalized');
+    expect(emitTraceEvent).not.toHaveBeenCalled();
   });
-
-  it('emits action_failed when handoff readiness is blocked', () => {
-    const draftSnapshot: FinalizedSnapshot = {
-      ...finalizedSnapshot,
-      status: 'draft',
-      frozen: false,
-    };
-
-    prepareAppealHandoff(draftSnapshot);
-
-    expect(mockEmitTraceEvent).toHaveBeenCalledWith(
-      'appeal_handoff_blocked',
-      'packet',
-      'PKT-001',
-      undefined,
-      expect.objectContaining({ blockers: expect.any(Array) }),
-    );
-  });
-
-  it('does not emit success trace for forbidden direct writes', () => {
-    mockAssertWriteLane.mockImplementation(() => {
-      throw new Error('[WriteLane Violation]');
-    });
-
-    expect(() => prepareAppealHandoff(finalizedSnapshot)).toThrow('[WriteLane Violation]');
-    expect(mockEmitTraceEvent).not.toHaveBeenCalled();
+  it('returns a server handoff without minting a second browser audit or appeal ID', async () => {
+    vi.stubGlobal('fetch', vi.fn(async () => response(envelope)));
+    const result = await prepareWorkflowHandoff(context, packetId, revision, 'prepare', signal());
+    expect(result).not.toHaveProperty('appealId');
+    expect(emitTraceEvent).not.toHaveBeenCalled();
   });
 });
