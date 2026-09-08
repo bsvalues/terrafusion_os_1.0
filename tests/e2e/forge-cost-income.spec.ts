@@ -399,6 +399,114 @@ async function invoke(page: Page, action: 'cost' | 'income', expectedStatus = 20
   return { body, wire: response.request().postDataJSON() };
 }
 
+type FailurePage = {
+  osCommit: string;
+  apiDllSha256: string;
+  uiIndexSha256: string;
+  path: string;
+  visibleText: string;
+  controls: { role: string; name: string; id: string }[];
+};
+
+function serializeFailurePage(page: FailurePage): string {
+  const redact = (value: string) =>
+    value
+      .replace(/\beyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\b/g, '[REDACTED]')
+      .replace(/\bBearer\s+\S+/gi, 'Bearer [REDACTED]');
+  // Redact complete raw fields before bounds, then serialize exactly once.
+  // Rewriting JSON syntax or clipping a token before detection is unsafe.
+  return JSON.stringify({
+    osCommit: redact(page.osCommit),
+    apiDllSha256: redact(page.apiDllSha256),
+    uiIndexSha256: redact(page.uiIndexSha256),
+    path: redact(page.path),
+    visibleText: redact(page.visibleText).slice(0, 16000),
+    controls: page.controls.slice(0, 80).map(control => ({
+      role: redact(control.role),
+      name: redact(control.name).slice(0, 240),
+      id: redact(control.id),
+    })),
+  });
+}
+
+test.describe('Forge failure diagnostics', () => {
+  const fixture: FailurePage = {
+    osCommit: 'synthetic-commit',
+    apiDllSha256: 'synthetic-api',
+    uiIndexSha256: 'synthetic-ui',
+    path: '/m/costforge',
+    visibleText: '',
+    controls: [],
+  };
+  const syntheticJwt = 'eyJzeW50aGV0aWM.eyJub3RSZWFs.c3ludGhldGlj';
+
+  test('Bearer text remains redacted inside parseable JSON', () => {
+    const captured = JSON.parse(
+      serializeFailurePage({
+        ...fixture,
+        visibleText: 'Synthetic Bearer not-a-real-credential',
+      })
+    );
+    expect(captured.visibleText).toBe('Synthetic Bearer [REDACTED]');
+    expect(captured.controls).toEqual([]);
+    expect(captured.path).toBe('/m/costforge');
+  });
+
+  test('a JWT crossing the body limit leaves no token prefix', () => {
+    const captured = JSON.parse(
+      serializeFailurePage({
+        ...fixture,
+        visibleText: 'x'.repeat(15980) + ' ' + syntheticJwt,
+      })
+    );
+    expect(captured.visibleText.slice(15980)).toBe(' [REDACTED]');
+    expect(captured.visibleText).toHaveLength(15991);
+  });
+
+  test('a JWT crossing the control-name limit leaves no token prefix', () => {
+    const captured = JSON.parse(
+      serializeFailurePage({
+        ...fixture,
+        controls: [{ role: 'tab', name: 'x'.repeat(220) + ' ' + syntheticJwt, id: 'synthetic' }],
+      })
+    );
+    expect(captured.controls[0].name.slice(220)).toBe(' [REDACTED]');
+    expect(captured.controls[0].name).toHaveLength(231);
+  });
+
+  test('Bearer control labels preserve parseable JSON and sibling fields', () => {
+    const captured = JSON.parse(
+      serializeFailurePage({
+        ...fixture,
+        controls: [
+          { role: 'tab', name: 'Synthetic Bearer not-a-real-credential', id: 'synthetic' },
+        ],
+      })
+    );
+    expect(captured.controls).toEqual([
+      { role: 'tab', name: 'Synthetic Bearer [REDACTED]', id: 'synthetic' },
+    ]);
+  });
+
+  test('ordinary rendered text retains bounded controls and escaped punctuation', () => {
+    const captured = JSON.parse(
+      serializeFailurePage({
+        ...fixture,
+        visibleText: 'x'.repeat(16001),
+        controls: Array.from({ length: 81 }, () => ({
+          role: 'tab',
+          name: '"Synthetic"\n'.repeat(30),
+          id: 'synthetic',
+        })),
+      })
+    );
+    expect(captured.visibleText).toHaveLength(16000);
+    expect(captured.controls).toHaveLength(80);
+    expect(captured.controls[0].name).toHaveLength(240);
+    expect(captured.controls[0].name.startsWith('"Synthetic"\n')).toBe(true);
+  });
+});
+
 function canonical(action: string, payload: unknown) {
   expect(hash(executable)).toBe(executableHash);
   const result = spawnSync(executable, [], {
@@ -481,10 +589,6 @@ test.describe.serial('real Forge protected-artifact Cost/Income acceptance', () 
     // Capture only this owned synthetic page. Never inspect headers, storage or tokens.
     const url = new URL(page.url());
     if (url.origin !== baseURL) return;
-    const redact = (value: string) =>
-      value
-        .replace(/\beyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\b/g, '[REDACTED]')
-        .replace(/\bBearer\s+\S+/gi, 'Bearer [REDACTED]');
     try {
       const visibleText = await page.locator('body').innerText({ timeout: 3000 });
       const controls = await page
@@ -500,27 +604,21 @@ test.describe.serial('real Forge protected-artifact Cost/Income acceptance', () 
             .slice(0, 80)
             .map(element => ({
               role: element.getAttribute('role') ?? element.tagName.toLowerCase(),
-              name: (
-                element.getAttribute('aria-label') ??
-                (element as HTMLElement).innerText ??
-                ''
-              ).slice(0, 240),
+              name: element.getAttribute('aria-label') ?? (element as HTMLElement).innerText ?? '',
               id: element.id,
             }))
         );
       const failurePath = resolve(evidenceRoot, `failure-${testInfo.testId}.json`);
       writeFileSync(
         failurePath,
-        redact(
-          JSON.stringify({
-            osCommit,
-            apiDllSha256,
-            uiIndexSha256,
-            path: url.pathname,
-            visibleText: visibleText.slice(0, 16000),
-            controls,
-          })
-        ),
+        serializeFailurePage({
+          osCommit,
+          apiDllSha256,
+          uiIndexSha256,
+          path: url.pathname,
+          visibleText,
+          controls,
+        }),
         { flag: 'wx' }
       );
       await testInfo.attach('failure-rendered-page', {
