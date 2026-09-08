@@ -50,9 +50,11 @@ import {
 } from '../pages/forge/sales/washingtonSalesReviewCapability';
 import { WASHINGTON_COUNTIES } from '../pages/forge/sales/washingtonLaunchApi';
 import {
+  fetchWashingtonParcelBaseline,
   resolveWashingtonCountyStatus,
   verifyWashingtonCountySalesShard,
   type WashingtonCountyStatusEntry,
+  type WashingtonParcelBaseline,
 } from '../services/washingtonCountyLaunch';
 
 const EXPECTED_WASHINGTON_COUNTIES = 39;
@@ -88,6 +90,77 @@ function formatSnapshotDate(value: string | null): string {
   return Number.isNaN(date.getTime())
     ? value
     : new Intl.DateTimeFormat('en-US', { dateStyle: 'medium' }).format(date);
+}
+
+function ParcelBaselinePanel({ countyCode }: { countyCode: string }) {
+  const [result, setResult] = useState<WashingtonParcelBaseline | null>(null);
+  const [failed, setFailed] = useState(false);
+  const [attempt, setAttempt] = useState(0);
+  useEffect(() => {
+    const controller = new AbortController();
+    setResult(null);
+    setFailed(false);
+    const load = async () => {
+      try {
+        const baseline = await fetchWashingtonParcelBaseline(
+          countyCode,
+          apiFetch,
+          controller.signal
+        );
+        if (!controller.signal.aborted) setResult(baseline);
+      } catch {
+        if (!controller.signal.aborted) setFailed(true);
+      }
+    };
+    void load();
+    return () => controller.abort();
+  }, [countyCode, attempt]);
+
+  return (
+    <Box component='section' role='region' aria-label='Parcel baseline' aria-live='polite'>
+      <Typography variant='h6'>Parcel baseline</Typography>
+      {failed ? (
+        <Alert
+          severity='warning'
+          action={
+            <Button
+              color='inherit'
+              size='small'
+              onClick={() => {
+                setResult(null);
+                setFailed(false);
+                setAttempt((current) => current + 1);
+              }}
+            >
+              Retry parcel baseline
+            </Button>
+          }
+        >
+          Parcel baseline unavailable. An authenticated assessor authorized for this county is
+          required; the API response could not be verified. Parcel counts are unknown.
+        </Alert>
+      ) : !result ? (
+        <Typography color='text.secondary'>Checking county parcel baseline…</Typography>
+      ) : (
+        <Stack spacing={1}>
+          <Typography>
+            {result.status === 'no-parcels'
+              ? 'No runtime parcels observed.'
+              : `${result.observedParcelCount.toLocaleString()} observed runtime parcels`}
+          </Typography>
+          <Typography variant='body2' color='text.secondary'>
+            {result.linkedParcelCount.toLocaleString()} parcels with source references. Latest
+            runtime parcel update: {formatSnapshotDate(result.latestParcelUpdatedAtUtc)}. This
+            timestamp does not establish source freshness.
+          </Typography>
+          <Alert severity='info'>
+            Public origin unverified. Source use unverified. Runtime counts and source references do
+            not establish a usable public baseline. Sales availability is separate.
+          </Alert>
+        </Stack>
+      )}
+    </Box>
+  );
 }
 
 const CountiesHub = () => {
@@ -644,6 +717,11 @@ const CountiesHub = () => {
                     </Stack>
 
                     <Divider />
+
+                    <ParcelBaselinePanel
+                      key={selectedCounty.countyCode}
+                      countyCode={selectedCounty.countyCode}
+                    />
 
                     <Grid container spacing={2}>
                       <Grid item xs={12} sm={6} md={3}>
