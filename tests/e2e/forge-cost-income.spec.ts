@@ -278,8 +278,13 @@ async function open(page: Page, approach: 'cost' | 'income') {
     { token, session }
   );
   await page.goto(`${baseURL}/m/${approach === 'cost' ? 'costforge' : 'income-forge'}`);
-  await page
-    .getByRole('button', { name: approach === 'cost' ? 'Parcel' : 'Calculate', exact: true })
+  const controls =
+    approach === 'cost' ? page.getByRole('tablist', { name: 'CostForge tabs', exact: true }) : page;
+  await controls
+    .getByRole(approach === 'cost' ? 'tab' : 'button', {
+      name: approach === 'cost' ? 'Single-parcel RCNLD with certified BIV display' : 'Calculate',
+      exact: true,
+    })
     .click();
   await expect(page.locator(`#canonical-${approach}-parcelId`)).toBeVisible();
 }
@@ -469,6 +474,64 @@ test.describe.serial('real Forge protected-artifact Cost/Income acceptance', () 
       permissions: claims.perm,
       parcelId: parcel,
     };
+  });
+
+  test.afterEach(async ({ page }, testInfo) => {
+    if (testInfo.status === testInfo.expectedStatus || page.isClosed()) return;
+    // Capture only this owned synthetic page. Never inspect headers, storage or tokens.
+    const url = new URL(page.url());
+    if (url.origin !== baseURL) return;
+    const redact = (value: string) =>
+      value
+        .replace(/\beyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\b/g, '[REDACTED]')
+        .replace(/\bBearer\s+\S+/gi, 'Bearer [REDACTED]');
+    try {
+      const visibleText = await page.locator('body').innerText({ timeout: 3000 });
+      const controls = await page
+        .locator('button, [role="tab"], [role="alert"], input, select')
+        .evaluateAll(elements =>
+          elements
+            .filter(
+              element =>
+                element instanceof HTMLElement &&
+                element.getClientRects().length > 0 &&
+                getComputedStyle(element).visibility !== 'hidden'
+            )
+            .slice(0, 80)
+            .map(element => ({
+              role: element.getAttribute('role') ?? element.tagName.toLowerCase(),
+              name: (
+                element.getAttribute('aria-label') ??
+                (element as HTMLElement).innerText ??
+                ''
+              ).slice(0, 240),
+              id: element.id,
+            }))
+        );
+      await testInfo.attach('failure-rendered-page', {
+        contentType: 'application/json',
+        body: redact(
+          JSON.stringify({
+            osCommit,
+            apiDllSha256,
+            uiIndexSha256,
+            path: url.pathname,
+            visibleText: visibleText.slice(0, 16000),
+            controls,
+          })
+        ),
+      });
+      await page.screenshot({
+        path: resolve(evidenceRoot, `failure-${testInfo.testId}.png`),
+        timeout: 5000,
+        mask: [page.locator('input[type="password"], input[name*="token" i], [data-sensitive]')],
+      });
+    } catch {
+      await testInfo.attach('failure-capture-unavailable', {
+        contentType: 'text/plain',
+        body: 'Bounded visible-page capture was unavailable; original failure retained.',
+      });
+    }
   });
 
   test.afterAll(async () => {
