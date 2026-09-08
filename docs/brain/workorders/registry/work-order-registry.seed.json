@@ -14421,7 +14421,7 @@
           "required": true,
           "result": "pending",
           "evidence": [
-            "Clean H checkpoint91bd72b8ca0500255f4a09d9f1d06f9a50f78614 integrated protected F d686d8cb4ec3767c242b7c794f51bb48e1eb4873 by normal merge ee46138f069e53b4a4312aee7d695885e2b890d6. This is source integration, not a new test result."
+            "Clean H checkpoint91bd72b8ca0500255f4a09d9f1d06f9a50f78614 integrated protected F d686d8cb4ec3767c242b7c794f51bb48e1eb4873 by normal merge ee46138f069e53b4a4312aee7d695885e2b890d6. Subsequent exact clean source candidate7963bbfae2e4a71a7362570b3485ed8e8dec23b7 passed normal integrated48-case run4828 at2026-09-08T12:23:40.3216925Z, all28pins unchanged; TRXa90d50f78436405791743d474f98a41c66a062385c16e22b0719fce8af108b38. Final receipt edits are metadata only; protected delivery remains pending, so this combined gate is not yet marked pass."
           ]
         }
       ],

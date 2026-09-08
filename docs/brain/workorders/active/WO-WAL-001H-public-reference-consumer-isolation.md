@@ -4,7 +4,7 @@ Parent: WO-WAL-001 / Washington Assessor Launch V1 / issue #1485.
 Authority: OWNER-WAL-V1-MISSION-AUTHORITY-20260827, OWNER-TF-STANDING-OPERATOR-AUTHORITY and the current direct owner continuation instruction. This records bounded execution, not new authority.
 Status: DELIVERING — actual behavioral RED, SQLite consumer proof and full48 regression independently cleared; normal protected delivery remains pending.
 Base: protected0733406fe9067f5d5e61c4a361951c1c3700a9c8.
-Current integrated protected base: d686d8cb4ec3767c242b7c794f51bb48e1eb4873, normally merged into clean H checkpoint91bd72b8ca0500255f4a09d9f1d06f9a50f78614 as ee46138f069e53b4a4312aee7d695885e2b890d6. Earlier validation identities remain unchanged; final integrated-head regression is separately required.
+Current integrated protected base: d686d8cb4ec3767c242b7c794f51bb48e1eb4873, normally merged into clean H checkpoint91bd72b8ca0500255f4a09d9f1d06f9a50f78614 as ee46138f069e53b4a4312aee7d695885e2b890d6. Earlier validation identities remain unchanged. Final source candidate7963bbfae2e4a71a7362570b3485ed8e8dec23b7 passed its separate integrated-head48-case regression; subsequent edits record evidence only.
 Worktree: C:/Users/bsval/tf-wal001h-public-reference-consumer-isolation.
 Branch: codex/wal001h-public-reference-consumer-isolation.
 Risk: R5; county/source-derived identity and persistence selection. No risk downgrade.
@@ -51,6 +51,8 @@ Main normal thirteen-project run63868 exited0 at2026-09-08T11:41:27.7972264Z: al
 Main run29091 separately executed all three complete consumer classes with `--no-build --no-restore` against those same binaries, exiting0 at2026-09-08T11:48:58.3365990Z:48 passed/0 failed/0 skipped. All26 source/WO/dependency pins, both selected DLL pins and seven-path scope were unchanged. Independent assurance verified the actual TRX and linkage and returned CLEAR for normal protected delivery. Canonical receipt hashes, limitations and rollback are recorded in `docs/brain/evidence/WO-WAL-001H-proof.md`. These subsequent metadata edits do not retag the earlier WO hash or claim a new compiled release identity.
 
 No G persistence is released: protected integration and G's own actual admission/transaction/replay proof remain required. H does not establish atomicity, production, source rights, actual parcel landing or parent completion.
+
+Main actual run4828 rebuilt the normal application/Unit.Tests project at clean integrated head7963bbfae2e4a71a7362570b3485ed8e8dec23b7 and exited0 at2026-09-08T12:23:40.3216925Z:48 passed/0 failed/0 skipped. All28 input hashes and exact nine-path scope remained unchanged. The new receipt is distinct from the earlier073-based proof; its hashes and binary identities are recorded in the proof document. Fresh census at12:23:52.8381805Z found no build/test processes. These following metadata-only evidence edits do not retag the accepted source/binaries. Normal protected push/review/checks/merge remain required.
 
 ## Required behavioral proof
 
