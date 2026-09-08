@@ -1,5 +1,8 @@
 import assert from 'node:assert/strict';
-import { createHash } from 'node:crypto';
+import { createHash, randomUUID } from 'node:crypto';
+import { readFileSync } from 'node:fs';
+import { runInNewContext } from 'node:vm';
+import { fileURLToPath } from 'node:url';
 import { createRequire } from 'node:module';
 import test from 'node:test';
 const require = createRequire(import.meta.url);
@@ -125,4 +128,35 @@ test('real registration replaces the retired spatial stub and denies missing cal
   assert.equal(typeof handlers.get('explain_spatial_anomaly'), 'function');
   await assert.rejects(handlers.get('explain_spatial_anomaly')({}, { countyId: county }), /authorization/i);
   await assert.rejects(explainSpatialAnomalyHandler({ county, taxYear: 2026, metric: 'cod' }, { countyId: county }), /unavailable|canonical/i);
+});
+
+test('actual bearer ingress and registry enforce muse before reaching the spatial source handler', async () => {
+  // Load only existing ingress functions: importing the runtime itself would start a server.
+  const source = readFileSync(new URL('../pilot/dev-pilot-runtime.mjs', import.meta.url), 'utf8');
+  const functions = ['firstHeaderValue', 'optionalHeaderValue', 'normalizeToolParams', 'buildPilotExecutionContext']
+    .map(name => { const match = source.match(new RegExp(`function ${name}\\([^]*?\\n\\}`));
+      assert.ok(match, `Existing ingress function ${name} must be available`); return match[0]; }).join('\n');
+  const ingress = runInNewContext(`${functions}\nbuildPilotExecutionContext`, {
+    randomUUID, bindAtlasSpatialAnomalyAuthorization: implementation.bindAtlasSpatialAnomalyAuthorization,
+    bindCountyWorkflowAuthorization: require('../pilot/countyWorkflowHandlers.js').bindCountyWorkflowAuthorization,
+  });
+  const { ToolRunner } = require('../pilot/ToolRunner.js');
+  const { ToolRegistry } = require('../pilot/ToolRegistry.js');
+  const registry = new ToolRegistry();
+  await registry.initialize(fileURLToPath(new URL('../../../tools/registry/terrapilot.tools.json', import.meta.url)));
+  const runner = new ToolRunner({ registry }); // Actual registry, mode/auth/scope gate and handler dispatch.
+  const h = harness();
+  runner.registerHandler('explain_spatial_anomaly', h.handler);
+  const req = { headers: { authorization: 'Bearer synthetic-unit-caller', 'x-county-id': county,
+    'x-user-id': 'synthetic-user', 'x-role': 'appraiser' } };
+  const body = { toolId: 'explain_spatial_anomaly', params: h.params };
+  const denied = await runner.execute({ ...body, context: ingress(req, body) });
+  assert.equal(denied.errorCode, 'MODE_MISMATCH');
+  assert.equal(h.reads.length, 0);
+  const explicit = { ...body, mode: 'muse' };
+  const allowed = await runner.execute({ ...explicit, context: ingress(req, explicit) });
+  assert.equal(allowed.ok, true, JSON.stringify(allowed));
+  assert.equal(h.reads.length, 1);
+  assert.equal(h.reads[0].options.token, 'synthetic-unit-caller');
+  assert.equal(h.exchanges[0].request.countyId, county);
 });

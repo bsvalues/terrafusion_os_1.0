@@ -1,5 +1,5 @@
 import React from 'react';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { act, fireEvent, render, screen } from '@testing-library/react';
 import { SpatialAnomalyPanel } from '../../components/atlas/SpatialAnomalyPanel';
 import { MemoryRouter } from 'react-router-dom';
@@ -7,7 +7,10 @@ import AtlasSuiteHome from '../../pages/suites/AtlasSuiteHome';
 import PropertyAtlas from '../../pages/workbench/tabs/PropertyAtlas';
 
 const state = vi.hoisted(() => ({ countyId: '11111111-1111-1111-1111-111111111111', authenticated: true, invoke: vi.fn() }));
-vi.mock('../../auth/useAuthContext', () => ({ useAuthContextOptional: () => ({ isAuthenticated: state.authenticated, countyId: state.countyId }) }));
+vi.mock('../../auth/useAuthContext', async () => ({
+  ...await vi.importActual<typeof import('../../auth/useAuthContext')>('../../auth/useAuthContext'),
+  useAuthContextOptional: () => ({ isAuthenticated: state.authenticated, countyId: state.countyId }),
+}));
 vi.mock('../../api/pilotApi', () => ({ invokeTool: (...args: unknown[]) => state.invoke(...args) }));
 vi.mock('../../hooks/useCountyStats', () => ({ useCountyStats: () => ({ stats: null, loading: false, error: null, source: null }) }));
 vi.mock('../../hooks/useAtlasGis', () => ({
@@ -41,6 +44,7 @@ function run() {
 }
 
 describe('canonical spatial anomaly panel', () => {
+  afterEach(() => { vi.unstubAllGlobals(); localStorage.clear(); });
   beforeEach(() => { sessionStorage.clear(); state.authenticated = true; state.countyId = '11111111-1111-1111-1111-111111111111'; state.invoke.mockReset(); });
 
   it('is reachable on the existing suite surface with explicit scope controls', () => {
@@ -95,6 +99,26 @@ describe('canonical spatial anomaly panel', () => {
     expect(screen.getByText('atlas-visible-cid')).toBeTruthy();
     fireEvent.click(screen.getByText('Inspect source observations'));
     expect(screen.getByText('{"syntheticSource":true}')).toBeTruthy();
+  });
+
+  it('sends explicit muse mode through the actual bearer API wire without a session mode default', async () => {
+    const api = await vi.importActual<typeof import('../../api/pilotApi')>('../../api/pilotApi');
+    localStorage.setItem('authToken', 'synthetic-unit-bearer');
+    const requests: RequestInit[] = [];
+    vi.stubGlobal('fetch', async (_url: string, init: RequestInit) => {
+      requests.push(init);
+      return new Response(JSON.stringify({ ok: true, correlationId: 'atlas-visible-cid', result: result().result.output }),
+        { status: 200, headers: { 'Content-Type': 'application/json' } });
+    });
+    state.invoke.mockImplementation(api.invokeTool);
+    render(<SpatialAnomalyPanel />); run();
+    await screen.findByText('CLUSTERS_FOUND');
+    expect(requests).toHaveLength(1);
+    expect(requests[0].headers).toEqual(expect.objectContaining({ Authorization: 'Bearer synthetic-unit-bearer' }));
+    expect(requests[0].headers).not.toHaveProperty('x-mode');
+    expect(JSON.parse(String(requests[0].body))).toEqual(expect.objectContaining({
+      toolId: 'explain_spatial_anomaly', mode: 'muse', params: expect.objectContaining({ county: state.countyId }),
+    }));
   });
 
   it('does not turn insufficient data or malformed output into a successful finding', async () => {

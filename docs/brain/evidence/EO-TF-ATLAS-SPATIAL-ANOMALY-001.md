@@ -2,6 +2,18 @@
 
 Status: CANDIDATE_PREPARATION; not protected adoption or browser acceptance.
 
+Independent review P1 remediation: the shared panel now sends explicit mode:muse at its one
+invokeTool call. The actual bearer API wire regression failed because the serialized request
+omitted mode (10 other UI tests passed), then passed after this single-field change (11/11).
+An added core regression executes the actual existing ingress functions and ToolRunner with the
+real registry: absent mode => MODE_MISMATCH and zero source reads; explicit muse => scoped source
+handler reached with the same bearer token. Node handler/process21/21 passed. No registry/global
+mode/authentication gate changes. Commands: bundled Node ../node_modules/vitest/vitest.mjs run
+apps/os-shell/src/__tests__/atlas/spatialAnomalyPanel.test.tsx --maxWorkers=1 --minWorkers=1 --retry=0
+from frontend; bundled Node --test os-platform/core/tests/atlas-spatial-anomaly-handler.test.mjs
+os-platform/core/tests/atlas-spatial-anomaly-process.test.mjs from root. Existing Browserslist age,
+React act deprecation and Router future-flag warnings remain; no package upgrades were made.
+
 Verification qualification: frontend/tsconfig.json has existing noCheck:true and incremental:true.
 Previously reported frontend tsc/build passes prove only successful configured commands/builds,
 not semantic type correctness. Configuration is preserved. Before final OS merge, an explicitly

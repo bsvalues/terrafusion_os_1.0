@@ -79,7 +79,7 @@ function ScopedPanel({ countyId, parcelId }: { countyId: string; parcelId?: stri
     setView({ busy: true });
     let cid: string | undefined;
     try {
-      const response = await invokeTool({ toolId: 'explain_spatial_anomaly', ...(parcelId ? { parcelId } : {}),
+      const response = await invokeTool({ toolId: 'explain_spatial_anomaly', mode: 'muse', ...(parcelId ? { parcelId } : {}),
         params: { county: countyId, taxYear: scope.taxYear, geographyType: kind, geographyId: scope.geography.id, metric: scope.metric } });
       if (sequence !== revision.current) return;
       cid = response.correlationId;
