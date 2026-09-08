@@ -1,7 +1,7 @@
 import { expect, test, type Page } from '@playwright/test';
 import { spawn, spawnSync, type ChildProcess } from 'node:child_process';
 import { createHash, randomBytes, randomUUID } from 'node:crypto';
-import { existsSync, lstatSync, mkdirSync, readFileSync } from 'node:fs';
+import { existsSync, lstatSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { createServer } from 'node:net';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -508,9 +508,10 @@ test.describe.serial('real Forge protected-artifact Cost/Income acceptance', () 
               id: element.id,
             }))
         );
-      await testInfo.attach('failure-rendered-page', {
-        contentType: 'application/json',
-        body: redact(
+      const failurePath = resolve(evidenceRoot, `failure-${testInfo.testId}.json`);
+      writeFileSync(
+        failurePath,
+        redact(
           JSON.stringify({
             osCommit,
             apiDllSha256,
@@ -520,6 +521,11 @@ test.describe.serial('real Forge protected-artifact Cost/Income acceptance', () 
             controls,
           })
         ),
+        { flag: 'wx' }
+      );
+      await testInfo.attach('failure-rendered-page', {
+        contentType: 'application/json',
+        path: failurePath,
       });
       await page.screenshot({
         path: resolve(evidenceRoot, `failure-${testInfo.testId}.png`),
