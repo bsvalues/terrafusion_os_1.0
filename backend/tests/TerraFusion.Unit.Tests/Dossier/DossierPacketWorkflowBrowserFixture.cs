@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.DependencyInjection;
 using CountyResolver = TerraFusion.API.Services.CountyResolver;
 using TerraFusion.Core.Counties;
 using TerraFusion.Core.Entities;
@@ -33,7 +34,8 @@ public sealed class DossierPacketWorkflowBrowserFixture
         var path = GuardPath();
         if (mode == "seed") await Seed(path);
         else if (mode == "verify") await Verify(path);
-        else throw new InvalidOperationException("Explicit seed or verify fixture mode required.");
+        else if (mode == "characterize-registry") await CharacterizeRegistry(path);
+        else throw new InvalidOperationException("Explicit seed, verify, or characterize-registry fixture mode required.");
     }
 
     private static string GuardPath()
@@ -73,7 +75,8 @@ public sealed class DossierPacketWorkflowBrowserFixture
         {
             "Counties", "Properties", "Valuations", "CamaCharacteristics", "Appeals", "CountyStudySessions", "CertificationSteps",
             "DossierPackets", "DossierPacketItems", "DossierDocuments", "DossierEvidenceItems",
-            "DossierCustodyEvents", "DossierWorkflowRecords", "AuditLogs"
+            "DossierCustodyEvents", "DossierWorkflowRecords", "AuditLogs",
+            "ValuationRecords", "TaxLevies", "DossierNotes"
         };
         var tableStatements = Regex.Matches(script, "CREATE TABLE \"([^\"]+)\"[\\s\\S]*?;")
             .Cast<Match>().Where(statement => requiredTables.Contains(statement.Groups[1].Value)).ToArray();
@@ -147,6 +150,20 @@ public sealed class DossierPacketWorkflowBrowserFixture
             prerequisiteAudits.OrderBy(x => x.Id).Select(x => new { x.Id, x.Type, x.Source, x.UserId, x.Data, x.CorrelationId, x.Timestamp })));
         Assert.All(await db.DossierPackets.ToListAsync(), packet => Assert.Equal("draft", packet.Status));
         await AssertPropertyFeed(db);
+        var workflowContext = await new TerraFusion.API.Services.Dossier.DossierWorkflowService(db)
+            .Context(CountyId, null, Parcel, canReadValuations: true, CancellationToken.None);
+        var context = System.Text.Json.JsonSerializer.SerializeToNode(workflowContext)!.AsObject();
+        Assert.Equal(CountyId, context["countyId"]!.GetValue<Guid>());
+        Assert.Equal(new[] { 2026, 2025 }, context["taxYears"]!.AsArray().Select(x => x!.GetValue<int>()));
+        Assert.Equal(2, context["studies"]!.AsArray().Count);
+        Assert.Empty(context["drafts"]!.AsArray());
+        Assert.Empty(context["exports"]!.AsArray());
+        // Source-backed batch: Context reads ValuationRecords; the mounted details,
+        // legacy evidence snapshot and document/search/statistics reads also need
+        // TaxLevies and DossierNotes. All remain empty, never seeded workflow outcomes.
+        Assert.Empty(await db.ValuationRecords.AsNoTracking().ToListAsync());
+        Assert.Empty(await db.TaxLevies.AsNoTracking().ToListAsync());
+        Assert.Empty(await db.DossierNotes.AsNoTracking().ToListAsync());
     }
 
     private static async Task AssertPropertyFeed(TerraFusionDbContext db)
@@ -190,6 +207,93 @@ public sealed class DossierPacketWorkflowBrowserFixture
         Assert.Equal(OtherCountyId, await resolver.ResolveAsync("Franklin"));
         Assert.Equal(OtherCountyId, await resolver.ResolveAsync("53021"));
         Assert.Null(await resolver.TryResolveAsync("99001"));
+    }
+
+    private static async Task CharacterizeRegistry(string path)
+    {
+        // Diagnostic mode opens retained, real EF-created prerequisites read-only. It never
+        // seeds/normalizes timestamps or creates workflow outcomes, even if the probe fails.
+        if (!File.Exists(path)) throw new InvalidOperationException("Existing owned prerequisite database required.");
+        await using var db = Db(path, readOnly: true);
+        var sourcePage = await db.DossierEvidenceItems.AsNoTracking()
+            .Where(x => x.CountyId == CountyId && x.ParcelId == Parcel)
+            .OrderByDescending(x => x.CreatedAt).ThenBy(x => x.Id).ToListAsync();
+        var evidence = Assert.Single(sourcePage);
+        var materializedKind = evidence.CreatedAt.Kind.ToString();
+        var materializedTicks = evidence.CreatedAt.Ticks;
+        var request = new TerraFusion.Abstractions.DTOs.DossierEvidenceRegistryReadRequest
+        {
+            SchemaVersion = "1.0.0", CountyId = CountyId.ToString("D"), ParcelId = Parcel,
+            Limit = 25, Offset = 0
+        };
+        string? adapterFailureType = null;
+        var adapterRequiresUtc = false;
+        try
+        {
+            TerraFusion.API.Adapters.DossierEvidenceRegistryReadAdapter.Map(request, sourcePage.Count, sourcePage);
+        }
+        catch (InvalidOperationException exception)
+        {
+            adapterFailureType = exception.GetType().Name;
+            adapterRequiresUtc = exception.Message == "CreatedAt must be UTC.";
+        }
+
+        var root = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(path)!, "..", "..", ".."));
+        var host = new Microsoft.Extensions.Hosting.Internal.HostingEnvironment
+        {
+            EnvironmentName = "Development", ContentRootPath = Path.Combine(root, "backend", "src", "TerraFusion.API")
+        };
+        var configuration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>
+        {
+            ["DossierEvidenceRegistryRead:Mode"] = "LocalExact"
+        }).Build();
+        var services = new ServiceCollection();
+        TerraFusion.API.Services.Dossier.DossierEvidenceRegistryReadRuntimeRegistration
+            .AddDossierEvidenceRegistryReadRuntime(services, configuration, host);
+        using var provider = services.BuildServiceProvider();
+        using var scope = provider.CreateScope();
+        var consumer = scope.ServiceProvider.GetRequiredService<TerraFusion.API.Services.Dossier.IDossierEvidenceRegistryReadConsumer>();
+        Assert.True(consumer.IsAvailable); // The actual pinned stager/verifier/host must be available.
+        var consumption = await consumer.ConsumeAsync(request, sourcePage.Count, sourcePage);
+        // This registry action never accesses CostForge. No replacement controller/adapter/
+        // consumer/process response is supplied; null keeps the unrelated collaborator inert.
+        var controller = new TerraFusion.API.Controllers.DossierController(db, null!,
+            NullLogger<TerraFusion.API.Controllers.DossierController>.Instance, host, consumer)
+        {
+            ControllerContext = new Microsoft.AspNetCore.Mvc.ControllerContext
+            {
+                HttpContext = new Microsoft.AspNetCore.Http.DefaultHttpContext
+                {
+                    User = new System.Security.Claims.ClaimsPrincipal(new System.Security.Claims.ClaimsIdentity(
+                        [new System.Security.Claims.Claim("countyId", CountyId.ToString("D"))], "fixture-characterization"))
+                }
+            }
+        };
+        var response = await controller.GetEvidenceRegistryRead(Parcel);
+        var status = response.Result switch
+        {
+            Microsoft.AspNetCore.Mvc.ContentResult content => content.StatusCode ?? 200,
+            Microsoft.AspNetCore.Mvc.ObjectResult result => result.StatusCode ?? 200,
+            Microsoft.AspNetCore.Mvc.StatusCodeResult result => result.StatusCode,
+            _ => throw new InvalidOperationException("Unexpected registry controller result type.")
+        };
+        var persisted = await db.DossierEvidenceItems.AsNoTracking().SingleAsync(x => x.Id == evidence.Id);
+        Assert.Equal(materializedTicks, persisted.CreatedAt.Ticks);
+        Assert.Equal(materializedKind, persisted.CreatedAt.Kind.ToString());
+        var observation = new
+        {
+            source = "actual-readonly-EF-adapter-consumer-controller-characterization",
+            evidenceId = evidence.Id, materializedKind, materializedTicks,
+            adapterFailureType, adapterRequiresUtc,
+            consumerSuccess = consumption.Success, consumerFailure = consumption.Failure.ToString(),
+            controllerStatus = status
+        };
+        await using var output = new FileStream(Path.Combine(Path.GetDirectoryName(path)!,
+            "registry-characterization-" + Guid.NewGuid().ToString("N") + ".json"), FileMode.CreateNew, FileAccess.Write, FileShare.None);
+        await System.Text.Json.JsonSerializer.SerializeAsync(output, observation);
+        Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(observation));
+        // A 500 is a real failing read, never a successful fixture acceptance condition.
+        Assert.Equal(200, status);
     }
 
     private static async Task Verify(string path)

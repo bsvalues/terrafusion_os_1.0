@@ -362,6 +362,72 @@ async function open(page: Page) {
   expect(value.countyId).toBe(county);
   expect(value.parcelNumber).toBe(parcel);
   expect(value.taxYear).toBe(2026);
+  const contextStarted = performance.now();
+  const contextResponse = await http(
+    '/api/dossier/workflows/context?' + new URLSearchParams({ county, parcelId: parcel })
+  );
+  const workflow = contextResponse.status === 200 ? JSON.parse(contextResponse.text) : null;
+  writeFileSync(
+    resolve(run, 'workflow-context-read-' + randomUUID() + '.json'),
+    JSON.stringify({
+      source: 'actual-authenticated-workflow-context',
+      httpStatus: contextResponse.status,
+      durationMs: performance.now() - contextStarted,
+      countyId: workflow?.countyId ?? null,
+      taxYears: workflow?.taxYears ?? null,
+      studyCount: Array.isArray(workflow?.studies) ? workflow.studies.length : null,
+    }),
+    { flag: 'wx' }
+  );
+  // Capture every source-backed mounted-screen read before asserting any one result.
+  // These POSTs are existing search reads, never workflow mutations. Do not retain
+  // response bodies, request headers, narrative/evidence content, or bearer tokens.
+  const parcelRead = '/api/dossier/parcels/' + encodeURIComponent(parcel);
+  const screenReads: Array<{ path: string; body?: unknown }> = [
+    { path: parcelRead + '/details' },
+    { path: '/api/dossier/documents/search', body: { parcelId: parcel, limit: 5 } },
+    { path: '/api/dossier/evidence/search', body: { parcelId: parcel, limit: 5 } },
+    { path: '/api/dossier/stats' },
+    { path: parcelRead + '/evidence/registry?limit=25&offset=0' },
+    { path: parcelRead + '/documents' },
+    { path: parcelRead + '/evidence' },
+    { path: parcelRead + '/packets' },
+  ];
+  const readResults: Array<{
+    path: string;
+    httpStatus: number | null;
+    durationMs: number;
+    transportFailed: boolean;
+  }> = [];
+  for (const read of screenReads) {
+    const readStarted = performance.now();
+    let status: number | null = null;
+    try {
+      status = (await http(read.path, read.body)).status;
+    } catch {
+      // Record the transport failure without retaining potentially sensitive error text.
+    }
+    readResults.push({
+      path: read.path,
+      httpStatus: status,
+      durationMs: performance.now() - readStarted,
+      transportFailed: status === null,
+    });
+    writeFileSync(
+      resolve(run, 'screen-read-' + randomUUID() + '.json'),
+      JSON.stringify({
+        source: 'actual-authenticated-screen-prerequisite-read',
+        ...readResults.at(-1),
+      }),
+      { flag: 'wx' }
+    );
+  }
+  expect(contextResponse.status, 'Actual persisted workflow context prerequisite').toBe(200);
+  for (const result of readResults)
+    expect(result.httpStatus, 'Actual mounted-screen prerequisite ' + result.path).toBe(200);
+  expect(workflow.countyId).toBe(county);
+  expect(workflow.taxYears).toContain(2026);
+  expect(workflow.studies.some((study: { taxYear: number }) => study.taxYear === 2026)).toBe(true);
   await page.addInitScript(value => localStorage.setItem('authToken', value), token);
   await page.goto(baseURL + '/property/' + parcel + '/dossier');
   await expect(page.getByRole('region', { name: 'Durable packet workflow' })).toBeVisible();
