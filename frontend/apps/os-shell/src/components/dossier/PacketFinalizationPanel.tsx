@@ -2,11 +2,32 @@ import React, { useEffect, useRef, useState } from 'react';
 import PacketNarrativeEditor from './PacketNarrativeEditor';
 import PacketAppealHandoffPanel from './PacketAppealHandoffPanel';
 import { finalizeWorkflowPacket, getWorkflowPacket, listWorkflowPackets, prepareWorkflowHandoff, saveWorkflowNarrative, reviseWorkflowPacket,
-  type PacketSummary, type PacketWorkflowContext, type PacketWorkflowView, type PreparedPacketHandoff,
+  type PacketSummary, type PacketWorkflowContext, type PacketWorkflowView, type PreparedPacketHandoff, type PacketFinalizationReceipt,
 } from '../../services/dossierPacketWorkflowService';
 
 interface Props { parcelId: string; countyId?: string | null; taxYear?: number | null; token?: string | null }
 const button = 'rounded-md border border-border px-3 py-2 text-sm font-medium focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary disabled:opacity-50';
+
+function PersistedReceipt({ title, receipt }: { title: string; receipt: PacketFinalizationReceipt | PreparedPacketHandoff }) {
+  const provenance = receipt.provenance;
+  if (!provenance?.traceId || !provenance.suiteCommit || !provenance.artifactSha256 || !provenance.contractVersion)
+    return <p className='text-muted-foreground'>Persisted receipt provenance is unavailable. Reload before relying on this receipt.</p>;
+  const handoff = 'handoffId' in receipt;
+  return <section aria-label={title} className='space-y-2 rounded-md border border-border p-3'>
+    <h4 className='font-semibold'>{title}</h4>
+    <dl className='space-y-1 break-words'>
+      <dt>Action CID</dt><dd>{provenance.traceId}</dd>
+      <dt>Receipt ID</dt><dd>{handoff ? receipt.handoffId : receipt.finalizationId}</dd>
+      <dt>Recorded by</dt><dd>{handoff ? receipt.preparedBy : receipt.finalizedBy}</dd>
+      <dt>Recorded at</dt><dd>{handoff ? receipt.preparedAt : receipt.finalizedAt}</dd>
+      <dt>Protected suite commit</dt><dd>{provenance.suiteCommit}</dd>
+    </dl>
+    <label className='block'>{title} payload
+      <textarea aria-label={title + ' payload'} readOnly value={JSON.stringify(receipt, null, 2)} rows={5}
+        className='mt-1 w-full rounded-md border border-border bg-background p-2 font-mono text-xs' />
+    </label>
+  </section>;
+}
 
 export default function PacketFinalizationPanel({ parcelId, countyId, taxYear, token }: Props) {
   if (!countyId || !taxYear || !token) return <p className='text-sm text-muted-foreground'>Select an authenticated county and assessment year to work with a packet.</p>;
@@ -22,6 +43,7 @@ function ScopedPacketWorkflow({ context }: { context: PacketWorkflowContext }) {
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
+  const [errorRequestId, setErrorRequestId] = useState('');
   const [refresh, setRefresh] = useState(0);
   const [dirty, setDirty] = useState(false);
   const [reason, setReason] = useState('');
@@ -41,7 +63,7 @@ function ScopedPacketWorkflow({ context }: { context: PacketWorkflowContext }) {
 
   useEffect(() => {
     let current = true;
-    setView(null); setHandoff(null); setError(''); setDirty(false); setReason('');
+    setView(null); setHandoff(null); setError(''); setErrorRequestId(''); setDirty(false); setReason('');
     if (!selected) return;
     setLoading(true);
     getWorkflowPacket(context, selected, controller.current.signal).then(result => {
@@ -58,19 +80,26 @@ function ScopedPacketWorkflow({ context }: { context: PacketWorkflowContext }) {
     const key = view.packetId + ':' + view.revision + ':' + operation + ':' + content;
     const requestId = requests.current.get(key) ?? crypto.randomUUID();
     requests.current.set(key, requestId);
-    setBusy(true); setError('');
+    setBusy(true); setError(''); setErrorRequestId('');
     try {
       if (operation === 'prepare') {
         const result = await prepareWorkflowHandoff(context, view.packetId, view.revision, requestId, signal);
+        requests.current.delete(key);
         if (!signal.aborted) setHandoff(result);
       } else {
         if (operation === 'narrative') await saveWorkflowNarrative(context, view.packetId, view.revision, requestId, content, signal);
         else if (operation === 'revise') await reviseWorkflowPacket(context, view.packetId, view.revision, requestId, content, signal);
         else await finalizeWorkflowPacket(context, view.packetId, view.revision, requestId, signal);
+        // A confirmed write completes this intent even if its subsequent readback fails.
+        // Only an uncertain mutation response keeps its original key for retry.
+        requests.current.delete(key);
         const refreshed = await getWorkflowPacket(context, view.packetId, signal);
         if (!signal.aborted) { setView(refreshed); setHandoff(refreshed.handoff ?? null); setDirty(false); }
       }
-    } catch (e) { if (!signal.aborted) setError(e instanceof Error ? e.message : 'Packet action failed. Reload before retrying.'); }
+    } catch (e) { if (!signal.aborted) {
+      setError(e instanceof Error ? e.message : 'Packet action failed. Reload before retrying.');
+      setErrorRequestId(requestId);
+    } }
     finally { if (!signal.aborted) setBusy(false); }
   }
   const sealed = view?.decision.decision === 'accepted' && view.status === 'sealed';
@@ -87,7 +116,9 @@ function ScopedPacketWorkflow({ context }: { context: PacketWorkflowContext }) {
     </label>
     <button className={button} disabled={busy || !selected} onClick={() => { setView(null); setHandoff(null); setRefresh(x => x + 1); }}>Reload packet</button>
     {loading && <p role='status'>Loading persisted packet…</p>}
-    {error && <p role='alert' className='text-destructive'>{error}</p>}
+    {error && <p role='alert' className='break-words text-destructive'>{error}
+      {errorRequestId && <span className='block'>Action CID: {errorRequestId}. This identifies the attempt, not a successful receipt.</span>}
+    </p>}
     {!loading && packets.length === 0 && !error && <p>No packets in this county, year and parcel. Assemble a scoped packet first.</p>}
     {view && <>
       <dl className='space-y-1 break-words'><dt>Revision</dt><dd>{view.revision}</dd><dt>Status</dt><dd data-testid='finalization-status'>{view.status}</dd></dl>
@@ -106,6 +137,8 @@ function ScopedPacketWorkflow({ context }: { context: PacketWorkflowContext }) {
       </div>}
       <div data-testid='appeal-handoff-section'><PacketAppealHandoffPanel context={context} sealed={sealed} handoff={handoff}
         busy={busy} onPrepare={() => void act('prepare')} /></div>
+      {view.finalization && <PersistedReceipt title='Finalization receipt' receipt={view.finalization} />}
+      {handoff && <PersistedReceipt title='Handoff receipt' receipt={handoff} />}
     </>}
   </section>;
 }

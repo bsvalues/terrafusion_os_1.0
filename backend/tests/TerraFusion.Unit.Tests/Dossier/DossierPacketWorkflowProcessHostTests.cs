@@ -1,4 +1,5 @@
 using System.Text.Json.Nodes;
+using System.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
@@ -13,6 +14,31 @@ namespace TerraFusion.Unit.Tests.Dossier;
 
 public sealed class DossierPacketWorkflowProcessHostTests
 {
+    [Fact]
+    public async Task Telemetry_ProtectedProcessRecordsCorrelatedOutcomeEventsWithoutSnapshotPayload()
+    {
+        using var fixture = new Artifacts(); var host = fixture.Host(); var request = Request();
+        using var activity = new Activity("actual-process-parent").Start();
+        var accepted = await host.DecideAsync(request, default);
+        Assert.Equal("accepted", accepted["decision"]!.GetValue<string>());
+        request["narrative"]!["content"] = "";
+        var refused = await host.DecideAsync(request, default);
+        Assert.Equal("rejected", refused["decision"]!.GetValue<string>());
+        var events = activity.Events.Where(x => x.Name == "dossier.packet.canonical").ToArray();
+        Assert.Equal(2, events.Length);
+        Assert.Equal("accepted", events[0].Tags.Single(x => x.Key == "outcome").Value);
+        Assert.Equal("rejected", events[1].Tags.Single(x => x.Key == "outcome").Value);
+        foreach (var item in events)
+        {
+            var tags = item.Tags.ToDictionary(x => x.Key, x => x.Value);
+            Assert.Equal("synthetic-seal", tags["correlation.id"]);
+            Assert.Equal("finalize", tags["operation"]);
+            Assert.True(Convert.ToDouble(tags["duration_ms"]) >= 0);
+            Assert.DoesNotContain(tags.Values, x => x?.ToString()?.Contains("Synthetic evidence supports") == true);
+            Assert.DoesNotContain(tags.Keys, x => x is "narrative" or "evidence" or "token" or "request" or "response");
+        }
+    }
+
     [Fact]
     public async Task DefaultRegistration_IsUnavailableAndNeverSilentlyEnablesCanonicalExecution()
     {

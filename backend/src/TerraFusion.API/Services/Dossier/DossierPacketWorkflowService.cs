@@ -35,13 +35,21 @@ public sealed class DossierPacketWorkflowService(TerraFusionDbContext db, IDossi
     {
         var source = await Load(scope, actor, "read-" + Guid.NewGuid().ToString("N"), ct);
         var result = await decisions.DecideAsync(source.Request, ct);
+        RequireSelectedBasis(source.Packet, source.Request, result);
         JsonObject? handoff = null;
         if (source.Packet.Status == "sealed" && result["decision"]?.GetValue<string>() == "accepted")
         {
             var rows = await db.DossierWorkflowRecords.AsNoTracking().Where(x => x.CountyId == scope.CountyId && x.TaxYear == scope.TaxYear && x.Kind == "packet-handoff").ToListAsync(ct);
-            var latest = rows.Where(x => Payload(x)["packetId"]?.GetValue<string>() == scope.PacketId.ToString("D"))
+            var currentSealId = source.Request["finalization"]?["finalizationId"]?.GetValue<string>();
+            var latest = rows.Where(x =>
+                {
+                    var payload = Payload(x);
+                    return currentSealId != null && payload["packetId"]?.GetValue<string>() == scope.PacketId.ToString("D") &&
+                        payload["packetRevision"]?.GetValue<string>() == source.Revision &&
+                        payload["finalizationId"]?.GetValue<string>() == currentSealId;
+                })
                 .OrderByDescending(x => x.CreatedAt).ThenByDescending(x => x.Id).FirstOrDefault();
-            if (latest != null && Payload(latest)["packetRevision"]?.GetValue<string>() == source.Revision)
+            if (latest != null)
             {
                 var prepared = await GetPreparedHandoffAsync(scope.CountyId, scope.TaxYear, scope.ParcelId, latest.Id, source.Revision, ct);
                 handoff = JsonNode.Parse(prepared.EnvelopeJson)!.AsObject();
@@ -118,6 +126,7 @@ public sealed class DossierPacketWorkflowService(TerraFusionDbContext db, IDossi
         RequireAccepted(result);
         var payload = result[operation == "prepare" ? "handoff" : "snapshot"]?.DeepClone().AsObject()
             ?? throw new DossierWorkflowException(503, "INVALID_CANONICAL_RESULT", "Canonical decision omitted its artifact.");
+        RequireSelectedBasis(source.Packet, source.Request, result);
         if (payload["packetId"]?.GetValue<string>() != scope.PacketId.ToString("D") || payload["countyId"]?.GetValue<string>() != scope.CountyId.ToString("D") ||
             payload["taxYear"]?.GetValue<int>() != scope.TaxYear || payload["parcelId"]?.GetValue<string>() != scope.ParcelId ||
             payload["packetRevision"]?.GetValue<string>() != source.Revision || payload[operation == "prepare" ? "handoffId" : "finalizationId"]?.GetValue<string>() != id.ToString("D"))
@@ -141,6 +150,7 @@ public sealed class DossierPacketWorkflowService(TerraFusionDbContext db, IDossi
         source.Request["actorId"] = envelope["preparedBy"]!.DeepClone();
         var checkedResult = await decisions.DecideAsync(source.Request, ct);
         RequireAccepted(checkedResult);
+        RequireSelectedBasis(source.Packet, source.Request, checkedResult);
         if (!JsonNode.DeepEquals(envelope, checkedResult["handoff"])) throw Conflict("Persisted handoff no longer matches the canonical source decision.");
         return new DossierPreparedHandoff(row.PayloadJson, row.ContentHash, new(countyId, taxYear, parcelId, scope.PacketId,
             source.Revision, Guid.Parse(envelope["finalizationId"]!.GetValue<string>()), source.Packet.Status));
@@ -174,6 +184,28 @@ public sealed class DossierPacketWorkflowService(TerraFusionDbContext db, IDossi
         throw new DossierWorkflowException(409, violation?["code"]?.GetValue<string>() ?? "CANONICAL_REFUSAL", violation?["message"]?.GetValue<string>() ?? "Canonical packet decision refused the operation.");
     }
 
+    private static void RequireSelectedBasis(DossierPacket packet, JsonObject request, JsonObject result)
+    {
+        if (result["decision"]?.GetValue<string>() != "accepted") return;
+        // Compare the suite's selection with persisted selection; never choose documents in the host.
+        var items = result["snapshot"]?["items"] as JsonArray ?? result["readiness"]?["items"] as JsonArray ??
+            (request["operation"]?.GetValue<string>() == "prepare" ? request["finalization"]?["items"] as JsonArray : null)
+            ?? throw new DossierWorkflowException(503, "INVALID_CANONICAL_RESULT", "Canonical decision omitted its selected basis.");
+        var persisted = packet.Items.Select(x => JsonSerializer.Serialize(new { documentType = x.DocumentType,
+            required = x.Required, satisfied = x.Satisfied, documentId = x.DocumentId?.ToString("D") }, Json))
+            .OrderBy(x => x, StringComparer.Ordinal);
+        var selected = items.Select(x => JsonSerializer.Serialize(new { documentType = x!["documentType"]!.GetValue<string>(),
+            required = x["required"]!.GetValue<bool>(), satisfied = x["satisfied"]!.GetValue<bool>(),
+            documentId = x["documentId"]?.GetValue<string>() }, Json)).OrderBy(x => x, StringComparer.Ordinal);
+        // SatisfiedAt is host workflow metadata, not the suite's document upload time; both are bound
+        // independently by the source revision and canonical snapshot rather than treated as equal.
+        if (!persisted.SequenceEqual(selected, StringComparer.Ordinal))
+            throw new DossierWorkflowException(409, "PACKET_SELECTION_MISMATCH", "Persisted packet selection does not match the canonical selected basis.");
+    }
+
+    // These database columns store UTC. SQLite materializes them as Unspecified, not local time.
+    private static DateTime StoredUtc(DateTime value) => DateTime.SpecifyKind(value, DateTimeKind.Utc);
+
     private async Task<(DossierPacket Packet, JsonObject Request, string Revision)> Load(DossierPacketScope scope, string actor, string commandId, CancellationToken ct)
     {
         if (scope.CountyId == Guid.Empty || scope.PacketId == Guid.Empty || scope.TaxYear is < 1900 or > 2200 || string.IsNullOrWhiteSpace(scope.ParcelId) || scope.ParcelId.Length > 50) throw Invalid("Explicit packet county/year/parcel identity required.");
@@ -192,14 +224,16 @@ public sealed class DossierPacketWorkflowService(TerraFusionDbContext db, IDossi
         var content = narrativeRow == null ? "" : Payload(narrativeRow)["content"]!.GetValue<string>();
         var narrative = new { content, revision = narrativeRow?.ContentHash ?? Hash(""), contentHash = Hash(content) };
         var docs = documents.Select(x => new { documentId = x.Id, x.CountyId, taxYear = scope.TaxYear, x.ParcelId, x.DocumentType, x.Status,
-            uploadedAt = x.UploadedAt.ToUniversalTime().ToString("O"), revision = Hash(JsonSerializer.Serialize(new { x.Id, x.Version, x.ContentHash, x.Status, x.UpdatedAt }, Json)), contentHash = x.ContentHash }).ToArray();
+            uploadedAt = StoredUtc(x.UploadedAt).ToString("O"), revision = Hash(JsonSerializer.Serialize(new { x.Id, x.Version, x.ContentHash, x.Status, x.UpdatedAt }, Json)), contentHash = x.ContentHash }).ToArray();
         var items = new JsonArray(evidence.Select(x => (JsonNode)Node(new { evidenceId = x.Id,
             revision = Hash(JsonSerializer.Serialize(new { x.Id, x.Version, x.Integrity, x.Title, x.DocumentId }, Json)),
             contentHash = x.DocumentId.HasValue ? documents.Single(d => d.Id == x.DocumentId).ContentHash : Hash(JsonSerializer.Serialize(new { x.Id, x.Title, x.EvidenceType, x.Integrity }, Json)),
             x.CountyId, taxYear = scope.TaxYear, x.ParcelId })).ToArray());
         for (var index = 0; index < evidence.Count; index++) if (evidence[index].DocumentId.HasValue) items[index]!["documentId"] = evidence[index].DocumentId!.Value.ToString("D");
         var template = new { packet.PacketType, name = packet.Name, requiredDocumentTypes = packet.Items.Where(x => x.Required).OrderBy(x => x.DocumentType, StringComparer.Ordinal).Select(x => x.DocumentType).ToArray() };
-        var sourceJson = JsonSerializer.Serialize(new { scope, packet.PacketType, packet.Name, template, documents = docs, narrative, evidence = items }, Json);
+        var packetItems = packet.Items.OrderBy(x => x.Id).Select(x => new { x.Id, x.PacketId, x.DocumentType,
+            x.DocumentId, x.Required, x.Satisfied, satisfiedAt = x.SatisfiedAt.HasValue ? StoredUtc(x.SatisfiedAt.Value).ToString("O") : null }).ToArray();
+        var sourceJson = JsonSerializer.Serialize(new { scope, packet.PacketType, packet.Name, template, packetItems, documents = docs, narrative, evidence = items }, Json);
         var revision = Hash(sourceJson);
         var request = Node(new { schemaVersion = "1.0.0", contractId = "dossier.packet-finalization", operation = "evaluate", commandId,
             scope.CountyId, scope.TaxYear, scope.ParcelId, actorId = actor, effectiveAt = DateTime.UtcNow.ToString("O"), expectedRevision = revision, traceId = commandId,

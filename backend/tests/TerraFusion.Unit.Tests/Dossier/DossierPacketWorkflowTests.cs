@@ -2,10 +2,16 @@ using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
 using System.Security.Claims;
 using System.Text.Json;
+using System.Collections.Concurrent;
+using System.Diagnostics;
+using System.Diagnostics.Metrics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using TerraFusion.API.DTOs;
 using TerraFusion.API.Controllers;
 using TerraFusion.API.Services.Dossier;
@@ -19,10 +25,164 @@ namespace TerraFusion.Unit.Tests.Dossier;
 public sealed class DossierPacketWorkflowTests
 {
     [Fact]
+    public async Task Telemetry_ActualControllerCommitAndRefusalCarryCidOutcomeLatencyWithoutPayloadSecrets()
+    {
+        var measurements = new ConcurrentQueue<(string Name, double Value, Dictionary<string, object?> Tags)>();
+        using var listener = new MeterListener();
+        listener.InstrumentPublished = (instrument, target) =>
+        {
+            if (instrument.Meter.Name == "TerraFusion.Government" && instrument.Name.StartsWith("dossier.packet."))
+                target.EnableMeasurementEvents(instrument);
+        };
+        listener.SetMeasurementEventCallback<double>((instrument, value, tags, _) => measurements.Enqueue((instrument.Name, value, tags.ToArray().ToDictionary(x => x.Key, x => x.Value))));
+        listener.SetMeasurementEventCallback<long>((instrument, value, tags, _) => measurements.Enqueue((instrument.Name, value, tags.ToArray().ToDictionary(x => x.Key, x => x.Value))));
+        listener.Start();
+        await using var f = await Fixture.Create(); await using var db = f.Db();
+        var service = Service(db, f.RealPort());
+        var initial = (await service.GetPacketAsync(f.Scope, "synthetic", default))["revision"]!.GetValue<string>();
+        await service.SaveNarrativeAsync(f.Scope, "synthetic", new("private-narrative", initial, "DO-NOT-LOG-NARRATIVE"), default);
+        var revision = (await service.GetPacketAsync(f.Scope, "synthetic", default))["revision"]!.GetValue<string>();
+        var logs = new PacketLog();
+        var host = Moq.Mock.Of<IHostEnvironment>(x => x.EnvironmentName == "Testing");
+        await using var provider = new ServiceCollection().AddSingleton<ILogger<DossierPacketWorkflowController>>(logs)
+            .AddSingleton(host).BuildServiceProvider();
+        var controller = ActivatorUtilities.CreateInstance<DossierPacketWorkflowController>(provider, service);
+        controller.ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext() };
+        controller.HttpContext.User = new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim("sub", "synthetic"),
+            new Claim("countyId", f.Scope.CountyId.ToString("D")), new Claim("perm", "read:dossier"), new Claim("perm", "read:dais"), new Claim("perm", "write:dossier") }, "Synthetic"));
+        controller.HttpContext.Request.Headers.Authorization = "Bearer DO-NOT-LOG-TOKEN";
+        using var activity = new Activity("actual-controller-test").Start();
+        controller.HttpContext.Items["CorrelationId"] = "actual-seal-cid";
+        var success = Assert.IsType<OkObjectResult>(await controller.Finalize(f.Scope.PacketId,
+            new(f.Scope.CountyId.ToString("D"), 2026, f.Scope.ParcelId, "actual-seal-cid", revision)));
+        Assert.Equal("actual-seal-cid", Assert.IsType<JsonObject>(success.Value)["provenance"]!["traceId"]!.GetValue<string>());
+        controller.HttpContext.Items["CorrelationId"] = "actual-failed-cid";
+        var failure = Assert.IsType<ObjectResult>(await controller.Revise(f.Scope.PacketId,
+            new(f.Scope.CountyId.ToString("D"), 2026, f.Scope.ParcelId, "actual-failed-cid", new string('0', 64), "DO-NOT-LOG-REASON")));
+        Assert.Equal(409, failure.StatusCode);
+        Assert.Contains(logs.Messages, x => x.Contains("actual-seal-cid") && x.Contains("finalize") && x.Contains("success"));
+        Assert.Contains(logs.Messages, x => x.Contains("actual-failed-cid") && x.Contains("revise") && x.Contains("failure"));
+        Assert.DoesNotContain(logs.Messages, x => x.Contains("DO-NOT-LOG") || x.Contains("Authorization") || x.Contains("valuation-record"));
+        Assert.Contains(measurements, x => x.Name == "dossier.packet.duration" && x.Value >= 0 &&
+            Equals(x.Tags["operation"], "finalize") && Equals(x.Tags["outcome"], "success") && Equals(x.Tags["environment"], "Testing"));
+        Assert.Contains(measurements, x => x.Name == "dossier.packet.errors" && x.Value == 1 &&
+            Equals(x.Tags["operation"], "revise") && Equals(x.Tags["outcome"], "failure") && Equals(x.Tags["error.category"], "http.409"));
+        Assert.All(measurements, x => Assert.DoesNotContain(x.Tags.Keys, key => key is "cid" or "actor" or "parcelId"));
+        Assert.Equal("actual-failed-cid", activity.GetTagItem("correlation.id"));
+        Assert.Equal(2, await db.DossierWorkflowRecords.CountAsync());
+    }
+
+    [Fact]
+    public async Task ActualProtectedDecision_ResealSameSourcesHidesHistoricalHandoffButAllowsNewPreparation()
+    {
+        await using var f = await Fixture.Create(); await using var db = f.Db();
+        var service = Service(db, f.RealPort());
+        var initial = (await service.GetPacketAsync(f.Scope, "synthetic", default))["revision"]!.GetValue<string>();
+        await service.SaveNarrativeAsync(f.Scope, "synthetic", new("narrative", initial, "Synthetic lifecycle source narrative"), default);
+        var revision = (await service.GetPacketAsync(f.Scope, "synthetic", default))["revision"]!.GetValue<string>();
+        var firstSeal = await service.FinalizeAsync(f.Scope, "synthetic", new("seal-first", revision), default);
+        var historical = await service.PrepareAsync(f.Scope, "synthetic", new("prepare-first", revision), default);
+        await service.ReviseAsync(f.Scope, "synthetic", new("revise", revision, "Review unchanged sources"), default);
+        var secondSeal = await service.FinalizeAsync(f.Scope, "synthetic", new("seal-second", revision), default);
+        Assert.NotEqual(firstSeal["finalizationId"]!.GetValue<string>(), secondSeal["finalizationId"]!.GetValue<string>());
+        var current = await service.GetPacketAsync(f.Scope, "synthetic", default);
+        Assert.Equal("sealed", current["status"]!.GetValue<string>());
+        Assert.Equal(revision, current["revision"]!.GetValue<string>());
+        Assert.Null(current["handoff"]);
+        await Assert.ThrowsAsync<DossierWorkflowException>(() => service.GetPreparedHandoffAsync(f.Scope.CountyId, 2026, f.Scope.ParcelId,
+            Guid.Parse(historical["handoffId"]!.GetValue<string>()), revision, default));
+        var newHandoff = await service.PrepareAsync(f.Scope, "synthetic", new("prepare-second", revision), default);
+        Assert.Equal(secondSeal["finalizationId"]!.GetValue<string>(), newHandoff["finalizationId"]!.GetValue<string>());
+        Assert.NotEqual(historical["handoffId"]!.GetValue<string>(), newHandoff["handoffId"]!.GetValue<string>());
+        Assert.Equal(newHandoff["handoffId"]!.GetValue<string>(), (await service.GetPacketAsync(f.Scope, "synthetic", default))["handoff"]!["handoffId"]!.GetValue<string>());
+        var retained = await db.DossierWorkflowRecords.AsNoTracking().SingleAsync(x => x.Id == Guid.Parse(historical["handoffId"]!.GetValue<string>()));
+        Assert.True(JsonNode.DeepEquals(historical, JsonNode.Parse(retained.PayloadJson)));
+        Assert.Equal(6, await db.DossierWorkflowRecords.CountAsync());
+    }
+
+    [Theory]
+    [InlineData("documentId")]
+    [InlineData("satisfied")]
+    [InlineData("satisfiedAt")]
+    public async Task ActualProtectedDecision_AnyPersistedSelectionStateChangeInvalidatesOldSeal(string change)
+    {
+        await using var f = await Fixture.Create(); await using var db = f.Db();
+        var selected = await db.DossierDocuments.SingleAsync();
+        selected.UploadedAt = new DateTime(2026, 9, 7, 10, 0, 0, DateTimeKind.Utc);
+        var other = new DossierDocument { CountyId = f.Scope.CountyId, ParcelId = f.Scope.ParcelId, Name = "Older synthetic appraisal",
+            DocumentType = "appraisal", ContentHash = new string('8', 64), UploadedAt = selected.UploadedAt.AddHours(-1) };
+        db.DossierDocuments.Add(other); await db.SaveChangesAsync(); db.ChangeTracker.Clear();
+        var service = Service(db, f.RealPort());
+        var initial = (await service.GetPacketAsync(f.Scope, "synthetic", default))["revision"]!.GetValue<string>();
+        await service.SaveNarrativeAsync(f.Scope, "synthetic", new("narrative", initial, "Synthetic selected-source narrative"), default);
+        var before = (await service.GetPacketAsync(f.Scope, "synthetic", default))["revision"]!.GetValue<string>();
+        var seal = await service.FinalizeAsync(f.Scope, "synthetic", new("seal", before), default);
+        Assert.Equal(selected.Id.ToString("D"), seal["items"]![0]!["documentId"]!.GetValue<string>());
+        var prepared = await service.PrepareAsync(f.Scope, "synthetic", new("prepare", before), default);
+        var item = await db.DossierPacketItems.SingleAsync();
+        if (change == "documentId") item.DocumentId = other.Id;
+        else if (change == "satisfied") item.Satisfied = false;
+        else item.SatisfiedAt = new DateTime(2026, 9, 7, 10, 0, 1, DateTimeKind.Utc);
+        await db.SaveChangesAsync();
+        var changed = await service.GetPacketAsync(f.Scope, "synthetic", default);
+        Assert.NotEqual(before, changed["revision"]!.GetValue<string>());
+        Assert.Equal("stale", changed["status"]!.GetValue<string>());
+        Assert.Null(changed["handoff"]);
+        await Assert.ThrowsAsync<DossierWorkflowException>(() => service.PrepareAsync(f.Scope, "synthetic", new("stale-prepare", before), default));
+        await Assert.ThrowsAsync<DossierWorkflowException>(() => service.GetPreparedHandoffAsync(f.Scope.CountyId, 2026, f.Scope.ParcelId,
+            Guid.Parse(prepared["handoffId"]!.GetValue<string>()), before, default));
+        Assert.Equal(3, await db.DossierWorkflowRecords.CountAsync());
+    }
+
+    [Fact]
+    public async Task ActualProtectedDecision_DoesNotSilentlySealANewerUnselectedDocument()
+    {
+        await using var f = await Fixture.Create(); await using var db = f.Db();
+        var selected = await db.DossierDocuments.SingleAsync();
+        selected.UploadedAt = new DateTime(2026, 9, 7, 9, 0, 0, DateTimeKind.Utc);
+        db.DossierDocuments.Add(new DossierDocument { CountyId = f.Scope.CountyId, ParcelId = f.Scope.ParcelId, Name = "Newer but unselected",
+            DocumentType = "appraisal", ContentHash = new string('8', 64), UploadedAt = selected.UploadedAt.AddHours(1) });
+        await db.SaveChangesAsync(); db.ChangeTracker.Clear();
+        // A refusing port is used only to observe the host's source revision, not authorize a seal.
+        var observer = Service(db, new RecordingPort { Refuse = true });
+        var initial = (await observer.GetPacketAsync(f.Scope, "synthetic", default))["revision"]!.GetValue<string>();
+        await observer.SaveNarrativeAsync(f.Scope, "synthetic", new("narrative", initial, "Synthetic selected-source narrative"), default);
+        var revision = (await observer.GetPacketAsync(f.Scope, "synthetic", default))["revision"]!.GetValue<string>();
+        var service = Service(db, f.RealPort());
+        var refusal = await Assert.ThrowsAsync<DossierWorkflowException>(() => service.FinalizeAsync(f.Scope, "synthetic", new("seal", revision), default));
+        Assert.Equal("PACKET_SELECTION_MISMATCH", refusal.Code);
+        Assert.Equal(selected.Id, (await db.DossierPacketItems.SingleAsync()).DocumentId);
+        Assert.DoesNotContain(await db.DossierWorkflowRecords.ToListAsync(), row => row.Kind is "packet-finalization" or "packet-handoff");
+        Assert.NotEqual("sealed", (await db.DossierPackets.SingleAsync()).Status);
+    }
+
+    [Fact]
+    public async Task ActualProtectedDecision_PreservesSqliteUnspecifiedUtcUploadTimeWithoutLocalTimezoneConversion()
+    {
+        await using var f = await Fixture.Create();
+        await using (var writer = f.Db())
+        {
+            (await writer.DossierDocuments.SingleAsync()).UploadedAt = new DateTime(2026, 9, 7, 10, 0, 0, DateTimeKind.Utc);
+            await writer.SaveChangesAsync();
+        }
+        await using var db = f.Db();
+        Assert.Equal(DateTimeKind.Unspecified, (await db.DossierDocuments.AsNoTracking().SingleAsync()).UploadedAt.Kind);
+        var service = Service(db, f.RealPort());
+        var initial = (await service.GetPacketAsync(f.Scope, "synthetic", default))["revision"]!.GetValue<string>();
+        await service.SaveNarrativeAsync(f.Scope, "synthetic", new("narrative", initial, "Synthetic UTC source narrative"), default);
+        var revision = (await service.GetPacketAsync(f.Scope, "synthetic", default))["revision"]!.GetValue<string>();
+        var seal = await service.FinalizeAsync(f.Scope, "synthetic", new("seal", revision), default);
+        Assert.Equal("2026-09-07T10:00:00.0000000Z", seal["currentDocuments"]![0]!["uploadedAt"]!.GetValue<string>());
+        Assert.Equal("2026-09-07T10:00:00.0000000Z", seal["items"]![0]!["satisfiedAt"]!.GetValue<string>());
+    }
+
+    [Fact]
     public async Task ApiRequiresExplicitAuthenticatedScopeAndPermissionsBeforeServiceAccess()
     {
         await using var f = await Fixture.Create(); await using var db = f.Db();
-        var controller = new DossierPacketWorkflowController(Service(db, new RecordingPort())) {
+        var controller = new DossierPacketWorkflowController(Service(db, new RecordingPort()),
+            Microsoft.Extensions.Logging.Abstractions.NullLogger<DossierPacketWorkflowController>.Instance,
+            Moq.Mock.Of<IHostEnvironment>(x => x.EnvironmentName == "Testing")) {
             ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext() }
         };
         var county = f.Scope.CountyId.ToString("D");
@@ -257,11 +417,16 @@ public sealed class DossierPacketWorkflowTests
         public JsonObject Provenance(string traceId) => new() { ["suiteCommit"] = new string('a', 40), ["artifactSha256"] = new string('b', 64), ["contractVersion"] = "1.0.0", ["traceId"] = traceId };
         public Task<JsonObject> DecideAsync(JsonObject request, CancellationToken ct)
         {
+            // Canned transport fixture for the sole selected appraisal, not a selection algorithm.
+            var selectedItems = new JsonArray(new JsonObject { ["documentType"] = "appraisal", ["required"] = true,
+                ["satisfied"] = true, ["documentId"] = request["currentDocuments"]![0]!["documentId"]!.DeepClone(),
+                ["satisfiedAt"] = request["currentDocuments"]![0]!["uploadedAt"]!.DeepClone() });
             var result = new JsonObject {
             ["schemaVersion"] = "1.0.0", ["contractId"] = request["contractId"]!.DeepClone(), ["commandId"] = request["commandId"]!.DeepClone(),
             ["countyId"] = request["countyId"]!.DeepClone(), ["taxYear"] = request["taxYear"]!.DeepClone(), ["parcelId"] = request["parcelId"]!.DeepClone(),
             ["packetId"] = request["packet"]!["packetId"]!.DeepClone(), ["traceId"] = request["traceId"]!.DeepClone(),
             ["decision"] = "accepted", ["status"] = "complete", ["violations"] = new JsonArray(),
+            ["readiness"] = new JsonObject { ["items"] = selectedItems.DeepClone() },
             };
             if (Refuse) { result["decision"] = "rejected"; result["status"] = "draft"; result["violations"] = new JsonArray(new JsonObject { ["code"] = "INCOMPLETE_PACKET", ["message"] = "Synthetic port refusal" }); }
             else if (request["operation"]!.GetValue<string>() == "revise") result["status"] = "draft";
@@ -273,7 +438,7 @@ public sealed class DossierPacketWorkflowTests
                 snapshot["finalizationId"] = request["finalizationId"]!.DeepClone(); snapshot["status"] = "sealed";
                 snapshot["finalizedAt"] = request["effectiveAt"]!.DeepClone(); snapshot["finalizedBy"] = request["actorId"]!.DeepClone();
                 foreach (var key in new[] { "narrative", "evidence", "provenance", "template", "currentDocuments" }) snapshot[key] = request[key]!.DeepClone();
-                snapshot["items"] = new JsonArray(); result["snapshot"] = snapshot; result["status"] = "sealed";
+                snapshot["items"] = selectedItems.DeepClone(); result["snapshot"] = snapshot; result["status"] = "sealed";
             }
             else if (request["operation"]!.GetValue<string>() == "prepare")
             {
@@ -287,7 +452,15 @@ public sealed class DossierPacketWorkflowTests
         }
     }
 
-    private static DossierPacketWorkflowService Service(TerraFusionDbContext db, RecordingPort port) => new(db, port,
+    private sealed class PacketLog : ILogger<DossierPacketWorkflowController>
+    {
+        public List<string> Messages { get; } = [];
+        public IDisposable? BeginScope<TState>(TState state) where TState : notnull => null;
+        public bool IsEnabled(LogLevel level) => true;
+        public void Log<TState>(LogLevel level, EventId id, TState state, Exception? exception, Func<TState, Exception?, string> formatter) => Messages.Add(formatter(state, exception));
+    }
+
+    private static DossierPacketWorkflowService Service(TerraFusionDbContext db, IDossierPacketWorkflowDecisionPort port) => new(db, port,
         new TerraFusion.Core.Services.AppealService(db, Microsoft.Extensions.Logging.Abstractions.NullLogger<TerraFusion.Core.Services.AppealService>.Instance,
             Moq.Mock.Of<TerraFusion.Core.Services.IDaisAppealMutationDecisionPort>()));
 
@@ -301,6 +474,9 @@ public sealed class DossierPacketWorkflowTests
             return current?.FullName ?? throw new InvalidOperationException("Owned Dossier workspace not found.");
         }
         public DossierPacketScope Scope { get; } = new(Guid.NewGuid(), 2026, "SYNTHETIC-PACKET", Guid.NewGuid());
+        public IDossierPacketWorkflowDecisionPort RealPort() => new DossierPacketWorkflowDecisionPort(new DossierPacketWorkflowProcessHost(
+            DossierEvidenceRegistryReadRuntimeRegistration.ResolveNodeExecutablePath(),
+            Path.Combine(Workspace(), ".terrafusion", "runtime", "dossier", "packet-workflow"), Path.Combine(directory, "invocations")));
         public TerraFusionDbContext Db(bool sharedCache = false) => new(new DbContextOptionsBuilder<TerraFusionDbContext>().UseSqlite($"Data Source={Path.Combine(directory, "packet.db")};Pooling=False;Cache={(sharedCache ? "Shared" : "Default")}").Options, new ConfigurationBuilder().Build());
         public static async Task<Fixture> Create()
         {

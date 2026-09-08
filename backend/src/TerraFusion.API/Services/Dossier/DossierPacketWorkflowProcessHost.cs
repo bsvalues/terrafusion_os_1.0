@@ -32,6 +32,32 @@ public sealed class DossierPacketWorkflowProcessHost
 
     public async Task<JsonObject> DecideAsync(JsonObject request, CancellationToken ct)
     {
+        var started = Stopwatch.GetTimestamp();
+        var outcome = "unavailable";
+        var rawCid = request["traceId"]?.GetValue<string>();
+        var cid = !string.IsNullOrEmpty(rawCid) && System.Text.RegularExpressions.Regex.IsMatch(rawCid, "^[A-Za-z0-9._-]{1,128}$")
+            ? rawCid : "sha256-" + Hash(Utf8.GetBytes(rawCid ?? ""));
+        var rawOperation = request["operation"]?.GetValue<string>();
+        var operation = rawOperation is "evaluate" or "finalize" or "prepare" or "revise" ? rawOperation : "invalid";
+        try
+        {
+            var result = await DecideCoreAsync(request, ct);
+            outcome = result["decision"]!.GetValue<string>();
+            return result;
+        }
+        finally
+        {
+            var elapsed = Stopwatch.GetElapsedTime(started).TotalMilliseconds;
+            var activity = Activity.Current;
+            activity?.AddEvent(new ActivityEvent("dossier.packet.canonical", tags: new ActivityTagsCollection {
+                { "correlation.id", cid }, { "operation", operation }, { "outcome", outcome }, { "duration_ms", elapsed } }));
+            activity?.SetTag("dossier.canonical.outcome", outcome);
+            activity?.SetTag("dossier.canonical.duration_ms", elapsed);
+        }
+    }
+
+    private async Task<JsonObject> DecideCoreAsync(JsonObject request, CancellationToken ct)
+    {
         var input = Utf8.GetBytes(request.ToJsonString());
         if (input.Length > MaximumBytes) throw new DossierWorkflowException(400, "INVALID_INPUT", "Packet snapshot exceeds the bounded transport size.");
         var verified = Verify(artifacts);

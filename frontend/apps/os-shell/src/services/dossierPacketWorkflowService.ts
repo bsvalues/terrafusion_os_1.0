@@ -1,16 +1,21 @@
 /** Transport only. Canonical judgments and authoritative IDs live on the server. */
 export interface PacketWorkflowContext { countyId: string; taxYear: number; parcelId: string; token: string }
 export interface PacketSummary { packetId: string; name: string; status: string }
+export interface PacketReceiptProvenance { traceId: string; suiteCommit: string; artifactSha256: string; contractVersion: string }
+export interface PacketFinalizationReceipt {
+  finalizationId: string; finalizedAt?: string; finalizedBy?: string; provenance?: PacketReceiptProvenance;
+}
 export interface PreparedPacketHandoff {
   countyId: string; taxYear: number; parcelId: string; packetId: string;
   handoffId: string; packetRevision: string;
+  preparedAt?: string; preparedBy?: string; provenance?: PacketReceiptProvenance;
 }
 export interface PacketWorkflowView extends PacketSummary {
   countyId: string; taxYear: number; parcelId: string; revision: string; packetStatus: string;
   narrative: { content: string; revision: string; contentHash: string };
   evidence: Array<{ evidenceId: string; documentId?: string; revision: string; contentHash: string }>;
   decision: { decision: string; status: string; violations: Array<{ code: string; message: string }> };
-  finalization: { finalizationId: string; finalizedAt?: string; finalizedBy?: string } | null;
+  finalization: PacketFinalizationReceipt | null;
   handoff?: PreparedPacketHandoff | null;
 }
 const base = '/api/dossier/packet-workflow';
@@ -28,8 +33,11 @@ function handoffIdentity(context: PacketWorkflowContext, result: PreparedPacketH
 async function request<T>(context: PacketWorkflowContext, path: string, signal: AbortSignal, body?: object): Promise<T> {
   if (!uuid(context.countyId) || !context.token || !context.parcelId || !Number.isInteger(context.taxYear)) throw new Error('Explicit authenticated packet scope is required.');
   const query = new URLSearchParams({ county: context.countyId, taxYear: String(context.taxYear), parcelId: context.parcelId });
+  const cid = body && 'requestId' in body && typeof body.requestId === 'string' && /^[A-Za-z0-9._-]{1,128}$/.test(body.requestId)
+    ? body.requestId : undefined;
   const response = await fetch(`${base}${path}?${query}`, { signal, method: body ? 'POST' : 'GET',
-    headers: { Authorization: `Bearer ${context.token}`, ...(body ? { 'Content-Type': 'application/json' } : {}) },
+    headers: { Authorization: `Bearer ${context.token}`, ...(body ? { 'Content-Type': 'application/json' } : {}),
+      ...(cid ? { 'X-Correlation-ID': cid } : {}) },
     ...(body ? { body: JSON.stringify({ ...body, county: context.countyId, taxYear: context.taxYear, parcelId: context.parcelId }) } : {}) });
   const value = await response.json();
   if (!response.ok) throw new Error(typeof value?.error === 'string' ? value.error : `Packet request failed (${response.status}).`);
