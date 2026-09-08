@@ -96,7 +96,7 @@ export async function fetchWashingtonParcelBaseline(
       value.contractId !== 'wal.county-parcel-baseline.v1' ||
       value.countyCode !== county.code ||
       value.countyName !== county.name ||
-      value.countyKey !== `wa-${county.name.toLowerCase().replaceAll(' ', '-')}` ||
+      value.countyKey !== `wa-${county.name.toLowerCase().replace(/ /g, '-')}` ||
       value.fipsCode !== `53${county.code}` ||
       typeof value.countyId !== 'string' ||
       !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value.countyId) ||

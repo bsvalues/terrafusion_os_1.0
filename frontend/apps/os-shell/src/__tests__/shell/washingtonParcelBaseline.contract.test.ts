@@ -3,13 +3,31 @@ import assert from 'node:assert/strict';
 // The same behavioral cases run in Vitest and in the dependency-free sparse lane.
 // Node loads whole, real TS/JSON modules; no production function is extracted or mocked.
 const nodeOnly = process.env.WAL_NODE_TESTS === '1';
-const { test } = nodeOnly ? await import('node:test') : await import('vitest');
+let test: (name: string, body: () => void | Promise<void>) => void;
+if (nodeOnly) {
+  const { test: nodeTest } = await import('node:test');
+  test = (name, body) => {
+    void nodeTest(name, body);
+  };
+} else {
+  const { test: vitestTest } = await import('vitest');
+  test = (name, body) => {
+    vitestTest(name, body);
+  };
+}
 async function loadClient() {
   if (!nodeOnly) return import('../../services/washingtonCountyLaunch');
   const { readFileSync, existsSync } = await import('node:fs');
   const { dirname, resolve } = await import('node:path');
   const { fileURLToPath } = await import('node:url');
-  const { stripTypeScriptTypes } = await import('node:module');
+  const nodeModule = await import('node:module');
+  const { stripTypeScriptTypes } = nodeModule as typeof nodeModule & {
+    stripTypeScriptTypes?: (source: string) => string;
+  };
+  if (typeof stripTypeScriptTypes !== 'function') {
+    throw new Error('WAL_NODE_TESTS requires Node with stripTypeScriptTypes support');
+  }
+  const stripTypes = stripTypeScriptTypes;
   const { SourceTextModule, SyntheticModule } = await import('node:vm');
   const root = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
   const modules = new Map();
@@ -20,7 +38,7 @@ async function loadClient() {
       ? new SyntheticModule(['default'], function () {
           this.setExport('default', JSON.parse(source));
         })
-      : new SourceTextModule(stripTypeScriptTypes(source), { identifier: path });
+      : new SourceTextModule(stripTypes(source), { identifier: path });
     modules.set(path, module);
     return module;
   }
@@ -107,7 +125,7 @@ for (const entry of counties.split('|')) {
           countyCode: code,
           countyName: name,
           fipsCode: `53${code}`,
-          countyKey: `wa-${name.toLowerCase().replaceAll(' ', '-')}`,
+          countyKey: `wa-${name.toLowerCase().replace(/ /g, '-')}`,
         })
       )
     );
