@@ -1,4 +1,4 @@
-import { spawn, type ChildProcess } from 'node:child_process';
+import { execFileSync, spawn, type ChildProcess } from 'node:child_process';
 import { createHash, randomBytes, randomUUID } from 'node:crypto';
 import { appendFileSync, existsSync, lstatSync, readFileSync } from 'node:fs';
 import { createServer } from 'node:net';
@@ -23,6 +23,82 @@ let tokenA = '';
 let tokenB = '';
 const children = new Set<ChildProcess>();
 const dotnet = process.env.ATLAS_TEST_DOTNET || 'dotnet';
+let actionSequence = 0;
+
+async function captureAction(page: Page, envelope: any, clickStarted: number, httpStatus: number) {
+  const cid = envelope.correlationId;
+  expect(cid).toMatch(/^[A-Za-z0-9._-]{1,128}$/);
+  await expect(page.getByText(cid, { exact: true })).toBeVisible();
+  const visibleResultMs = Math.round((performance.now() - clickStarted) * 100) / 100;
+  const actionId = `action-${++actionSequence}-${envelope.ok ? 'success' : 'failure'}`;
+  await page.screenshot({ path: resolve(runDirectory, `${actionId}.png`), fullPage: true });
+  const token = await page.evaluate(() => localStorage.getItem('authToken'));
+  const trace = await page.request.get(`${baseURL}/api/pilot/trace/${encodeURIComponent(cid)}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  const traceBody = await trace.json().catch(() => ({}));
+  // Whitelist returned service metadata; never persist request headers, JWTs, payloads or HAR.
+  const events = (Array.isArray(traceBody.events) ? traceBody.events : []).map((event: any) => ({
+    eventId: event.eventId,
+    timestamp: event.timestamp,
+    type: event.type,
+    toolId: event.toolId,
+    correlationId: event.correlationId,
+    countyId: event.context?.countyId,
+    actor: event.context?.userId,
+  }));
+  const metrics = await page.request.get(`${baseURL}/metrics`);
+  const metricLines = (await metrics.text())
+    .split(/\r?\n/)
+    .filter(line => line.startsWith('pilot_workflow_') && line.includes('explain_spatial_anomaly'));
+  const logLines = ['api-a.log', 'api-b.log'].flatMap(name => {
+    const path = resolve(runDirectory, name);
+    return existsSync(path)
+      ? readFileSync(path, 'utf8')
+          .split(/\r?\n/)
+          .filter(
+            line => line.includes(cid) && line.includes('Pilot workflow explain_spatial_anomaly')
+          )
+      : [];
+  });
+  appendFileSync(
+    resolve(runDirectory, 'actions.jsonl'),
+    JSON.stringify({
+      actionId,
+      operation: 'explain_spatial_anomaly',
+      correlationId: cid,
+      ok: envelope.ok,
+      httpStatus,
+      visibleResultMs,
+      latencyMeaning: 'click to result CID visible',
+      errorCode: envelope.errorCode ?? null,
+      judgmentStatus: envelope.result?.status ?? null,
+      sourceSha256: envelope.result?.sourceEvidence?.responseSha256 ?? null,
+      screenshot: `${actionId}.png`,
+      traceHttpStatus: trace.status(),
+      events,
+      apiOutcomeLines: logLines,
+      metricsHttpStatus: metrics.status(),
+      metricLines,
+      optionalCountyWorkflowTraceFileExists: existsSync(resolve(runDirectory, 'pilot-trace.jsonl')),
+    }) + '\n'
+  );
+  expect(metricLines.length).toBeGreaterThan(0);
+  expect(logLines.length).toBeGreaterThan(0);
+  if (httpStatus === 200) {
+    expect(trace.status()).toBe(200);
+    expect(
+      events.some((event: any) => event.correlationId === cid && event.type === 'tool_invoked')
+    ).toBe(true);
+    expect(
+      events.some(
+        (event: any) =>
+          event.correlationId === cid &&
+          event.type === (envelope.ok ? 'tool_completed' : 'tool_failed')
+      )
+    ).toBe(true);
+  }
+}
 
 function childEnvironment(extra: Record<string, string>): NodeJS.ProcessEnv {
   const env: NodeJS.ProcessEnv = {};
@@ -177,7 +253,8 @@ async function startPilot(source = baseURL) {
       NODE_ENV: 'development',
       TF_PILOT_PORT: '8783',
       TF_API_BASE_URL: source,
-      TF_COUNTY_WORKFLOW_TRACE_PATH: resolve(runDirectory, 'pilot-trace.jsonl'),
+      // Atlas uses the existing ordinary trace service, read only through the authenticated,
+      // principal/county/CID-filtered .NET proxy. The optional four-workflow file store is unrelated.
     }),
     source === baseURL ? 'pilot' : 'pilot-source-unavailable'
   );
@@ -261,7 +338,21 @@ async function assertDirectCanonical(page: Page, judgment: any, wire: any) {
   expect(canonicalProvenance.specificationSha256).toBe(
     '06b68ac64f159215f2ea620740e3eae9fda58a38604b3ea833a18691adbcfa9f'
   );
-  expect(actualJudgment).toEqual(canonical.judgeSpatialAnomaly(input));
+  const directJudgment = canonical.judgeSpatialAnomaly(input);
+  appendFileSync(
+    resolve(runDirectory, 'canonical-checks.jsonl'),
+    JSON.stringify({
+      correlationId,
+      protectedCommit,
+      moduleSha256,
+      request: input.request,
+      sourceSha256: responseSha256,
+      sourceResponseBody: body,
+      actualJudgment,
+      directJudgment,
+    }) + '\n'
+  );
+  expect(actualJudgment).toEqual(directJudgment);
 }
 
 function required(name: string): string {
@@ -289,10 +380,12 @@ async function runReview(page: Page, year: string) {
       r.request().method() === 'POST' &&
       r.request().postDataJSON()?.toolId === 'explain_spatial_anomaly'
   );
+  const clickStarted = performance.now();
   await page.getByRole('button', { name: 'Run spatial review' }).click();
   const received = await response;
   const envelope = await received.json();
   const output = envelope.result;
+  await captureAction(page, envelope, clickStarted, received.status());
   return {
     envelope,
     wire: received.request().postDataJSON(),
@@ -345,6 +438,24 @@ test.beforeAll(async () => {
     await stop(seed);
   }
   expect(existsSync(resolve(runDirectory, 'seed-receipt.json'))).toBe(true);
+  appendFileSync(
+    resolve(runDirectory, 'candidate.json'),
+    JSON.stringify({
+      candidate: execFileSync('git', ['rev-parse', 'HEAD'], { cwd: root, encoding: 'utf8' }).trim(),
+      protectedSuiteCommit: protectedCommit,
+      moduleSha256,
+      specificationSha256: manifest.specification.sha256,
+      apiDllSha256: sha256(
+        readFileSync(
+          resolve(root, 'backend/src/TerraFusion.API/bin/Release/net8.0/TerraFusion.API.dll')
+        )
+      ),
+      uiIndexSha256: sha256(readFileSync(resolve(root, 'native-shell/ui/dist/index.html'))),
+      playwrightTrace: 'off',
+      receipt: 'N/A: read-only spatial review',
+    }) + '\n',
+    { flag: 'wx' }
+  );
   await startPilot();
   await startApi(countyA);
   tokenA = await issuedToken(countyA);

@@ -2,6 +2,35 @@
 
 Status: CANDIDATE_PREPARATION; not protected adoption or browser acceptance.
 
+Final candidate build checkpoint at reviewed9effc4c9a3f9426314d2824d5c46ab2f519742d0:
+Release API `dotnet build backend/src/TerraFusion.API/TerraFusion.API.csproj --configuration Release
+--no-restore -m:1 -p:UseSharedCompilation=false -nodeReuse:false --verbosity minimal` passed with
+zero warnings/errors. Normal frontend `pnpm run build` (tsc --noEmit && vite build) passed using
+existing Git Bash as the child script shell; two earlier Windows cmd launcher-resolution failures
+stopped before compilation and are retained. No dependency or package/script change. Build warnings
+include existing Browserslist age, Rollup dependency PURE annotations and large chunks.
+
+Explicit semantic command `node node_modules/typescript/bin/tsc --noEmit -p frontend/tsconfig.json
+--noCheck false --incremental false --pretty false` exited2:1586diagnostics in490files. No errors
+name the new panel, its tests or AtlasSuiteHome. Eight diagnostics intersect owned PropertyAtlas:
+111/193 (old layer union),481/511/970 (old ErrorInfo.code),544 three diagnostics (old getEnv/isDev).
+Exact source lines exist unchanged at protected base128/210/505/535/1083/657 respectively; no
+related type/provider/map definitions changed by this EO. This is diagnostic triage, NOT a semantic
+PASS or a separately executed baseline diagnostic. No estate fixes or config changes inferred.
+Logs are retained at artifacts/atlas-browser/run-verification-20260907-1914/ (api-build.log,
+frontend-build.log, frontend-build-2.log, frontend-build-3.log, frontend-semantic.log).
+
+Tier-1 acceptance capture preparation: Playwright trace is off (no bearer-bearing trace/HAR).
+Owned harness exports actual per-action CID, click-to-visible latency, explicit success/failure
+screenshots, allowlisted service trace metadata, existing API outcome lines and metric series;
+direct-canonical checks retain actual synthetic raw-source bytes/digests and both judgments.
+Candidate/API-DLL/UI-index identities are recorded at run time, never predicted. Read-only action
+receipt is N/A. The optional four-workflow file trace store is not configured for Atlas: actual
+Atlas events use the existing ordinary trace service. Reads still pass through the unchanged
+authenticated .NET proxy (single principal county/actor, permissions and CID/county/actor filtering).
+No anonymous API access or relaxed registry/global guard is introduced. Actual returned events and
+file existence are measured, not assumed. Browser execution remains next, not yet claimed PASS.
+
 Independent review P1 remediation: the shared panel now sends explicit mode:muse at its one
 invokeTool call. The actual bearer API wire regression failed because the serialized request
 omitted mode (10 other UI tests passed), then passed after this single-field change (11/11).

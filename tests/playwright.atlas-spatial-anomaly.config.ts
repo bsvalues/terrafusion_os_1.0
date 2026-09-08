@@ -13,7 +13,8 @@ export default defineConfig({
   reporter: [['list']],
   use: {
     baseURL: 'http://127.0.0.1:5013',
-    trace: 'retain-on-failure',
+    // Bearer tokens must never enter Playwright trace/HAR recordings.
+    trace: 'off',
     screenshot: 'only-on-failure',
   },
   // Opt-in harness starts only the coordinator-reserved actual API/Pilot. No mock webServer.
