@@ -67,12 +67,33 @@ public sealed class DossierPacketWorkflowBrowserFixture
         using (File.Open(path, FileMode.CreateNew, FileAccess.Write, FileShare.None)) { }
         await using var db = Db(path);
         var script = db.Database.GenerateCreateScript();
-        var tables = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-        foreach (Match statement in Regex.Matches(script, "CREATE TABLE \"([^\"]+)\"[\\s\\S]*?;"))
-            if (tables.Add(statement.Groups[1].Value)) await db.Database.ExecuteSqlRawAsync(statement.Value);
-        // Actual EF-generated constraints, including the county/request-id uniqueness contract.
-        foreach (Match statement in Regex.Matches(script, "CREATE (?:UNIQUE )?INDEX [^;]+;"))
+        // Provision only this journey's actual EF prerequisites. Unrelated schema-qualified
+        // PACS tables collide when globally flattened into SQLite; never silently deduplicate.
+        var requiredTables = new HashSet<string>(StringComparer.Ordinal)
+        {
+            "Counties", "Properties", "Appeals", "CountyStudySessions", "CertificationSteps",
+            "DossierPackets", "DossierPacketItems", "DossierDocuments", "DossierEvidenceItems",
+            "DossierCustodyEvents", "DossierWorkflowRecords", "AuditLogs"
+        };
+        var tableStatements = Regex.Matches(script, "CREATE TABLE \"([^\"]+)\"[\\s\\S]*?;")
+            .Cast<Match>().Where(statement => requiredTables.Contains(statement.Groups[1].Value)).ToArray();
+        var foundTables = new HashSet<string>(StringComparer.Ordinal);
+        foreach (var statement in tableStatements)
+            if (!foundTables.Add(statement.Groups[1].Value))
+                throw new InvalidOperationException("Duplicate required EF prerequisite table: " + statement.Groups[1].Value);
+        if (!foundTables.SetEquals(requiredTables))
+            throw new InvalidOperationException("Missing required EF prerequisite tables: " + string.Join(", ", requiredTables.Except(foundTables).Order()));
+        foreach (var statement in tableStatements)
             await db.Database.ExecuteSqlRawAsync(statement.Value);
+        // Retain ALL actual EF-generated indexes on these tables, including county/request-id
+        // uniqueness. An unrecognized generated index statement is a fixture failure, not a skip.
+        foreach (Match statement in Regex.Matches(script, "CREATE (?:UNIQUE )?INDEX [^;]+;"))
+        {
+            var target = Regex.Match(statement.Value, "\\bON \"([^\"]+)\"");
+            if (!target.Success) throw new InvalidOperationException("Unrecognized EF prerequisite index target.");
+            if (requiredTables.Contains(target.Groups[1].Value))
+                await db.Database.ExecuteSqlRawAsync(statement.Value);
+        }
 
         Assert.True(WashingtonCountyRegistry.TryResolve("Benton", out var primaryCounty));
         Assert.True(WashingtonCountyRegistry.TryResolve("Franklin", out var otherCounty));
@@ -99,7 +120,29 @@ public sealed class DossierPacketWorkflowBrowserFixture
         await AssertCountyResolution(db);
         Assert.Empty(await db.DossierWorkflowRecords.ToListAsync());
         Assert.Empty(await db.Appeals.ToListAsync());
-        Assert.Empty(await db.AuditLogs.ToListAsync());
+        // Normal SaveChanges emits real prerequisite entity audits. Preserve them and prove
+        // that none represents a packet action, appeal, or pre-seeded successful receipt.
+        var prerequisiteAudits = await db.AuditLogs.AsNoTracking().ToListAsync();
+        var expectedAuditTypes = new[]
+        {
+            "County_Added", "County_Added", "CountyStudySession_Added", "CountyStudySession_Added",
+            "Property_Added", "DossierDocument_Added", "DossierEvidence_Added",
+            "DossierPacket_Added", "DossierPacket_Added", "DossierPacketItem_Added", "DossierPacketItem_Added"
+        };
+        Assert.Equal(expectedAuditTypes.Order(StringComparer.Ordinal), prerequisiteAudits.Select(x => x.Type).Order(StringComparer.Ordinal));
+        Assert.Equal(11, prerequisiteAudits.Select(x => x.Id).Distinct().Count());
+        Assert.All(prerequisiteAudits, audit =>
+        {
+            Assert.NotEqual(Guid.Empty, audit.Id);
+            Assert.Equal("EntityFramework", audit.Source);
+            Assert.Equal("System", audit.UserId);
+            Assert.Equal("{}", audit.Data); // Existing EF Added entries have no modified-property delta.
+            Assert.Null(audit.CorrelationId);
+        });
+        Assert.Empty(prerequisiteAudits.Where(x => x.Type.StartsWith("DOSSIER_PACKET:", StringComparison.Ordinal)));
+        // Retain actual baseline row identities in the fixture TRX stdout, not a success receipt.
+        Console.WriteLine("Prerequisite EntityFramework audit baseline: " + System.Text.Json.JsonSerializer.Serialize(
+            prerequisiteAudits.OrderBy(x => x.Id).Select(x => new { x.Id, x.Type, x.Source, x.UserId, x.Data, x.CorrelationId, x.Timestamp })));
         Assert.All(await db.DossierPackets.ToListAsync(), packet => Assert.Equal("draft", packet.Status));
     }
 
