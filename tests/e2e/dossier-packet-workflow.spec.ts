@@ -38,6 +38,7 @@ const actionEvidence: Array<{
   httpStatus: number;
   durationMs: number;
   errorCode: string | null;
+  responseBody: 'parsed' | 'not-read-status-first-conflict';
 }> = [];
 const serviceEvidence: Array<Record<string, string | number>> = [];
 function collectServiceEvidence(line: string) {
@@ -447,38 +448,47 @@ async function clickResponse(
   const started = performance.now();
   await click();
   const result = await pending;
-  const value = await result.json();
-  const durationMs = Math.round((performance.now() - started) * 100) / 100;
+  const status = result.status();
+  expect(status, 'Actual ' + operation + ' API response').toBe(expectedStatus);
   const command = result.request().postDataJSON();
   expect(typeof command.requestId).toBe('string');
   expect(
     await result.headerValue('X-Correlation-ID'),
     'Existing middleware CID follows the actual action'
   ).toBe(command.requestId);
+  // The client deliberately cancels 409 bodies to retire eligibility from headers.
+  // Do not invent error JSON or make browser evidence depend on a cancelled body.
+  // Successful durable receipts must still be parsed and compared below.
+  const responseBody = status === 409 ? 'not-read-status-first-conflict' : 'parsed';
+  const value = status === 409 ? null : await result.json();
+  const durationMs = Math.round((performance.now() - started) * 100) / 100;
   // Allowlist only synthetic operation evidence. Never retain request headers, token or browser traces.
   actionEvidence.push({
     cid: command.requestId,
     operation,
     environment: 'Development',
     outcome: result.ok() ? 'success' : 'failure',
-    httpStatus: result.status(),
+    httpStatus: status,
     durationMs,
-    errorCode: typeof value.code === 'string' ? value.code : null,
+    errorCode: typeof value?.code === 'string' ? value.code : null,
+    responseBody,
   });
   writeFileSync(
     resolve(run, 'action-' + actionEvidence.length + '.json'),
     JSON.stringify({
-      source: 'actual-browser-click-to-API-response-body',
+      source:
+        status === 409
+          ? 'actual-browser-click-to-API-response-headers'
+          : 'actual-browser-click-to-API-response-body',
       ...actionEvidence.at(-1),
     }),
     { flag: 'wx' }
   );
-  expect(result.status(), 'Actual ' + operation + ' API response').toBe(expectedStatus);
   expect(command).not.toHaveProperty('provenance');
   expect(command).not.toHaveProperty('effectiveAt');
   expect(command).not.toHaveProperty('finalizationId');
   expect(command).not.toHaveProperty('handoffId');
-  return { value, command };
+  return { value, command, responseBody };
 }
 
 test.beforeAll(async () => {
@@ -659,7 +669,8 @@ test('actual packet narrative, seal and handoff survive reload and restart; stal
     () => page.getByRole('button', { name: 'Reopen for revision' }).click(),
     409
   );
-  expect(failed.value.code).toBe('REVISION_CONFLICT');
+  expect(failed.value).toBeNull();
+  expect(failed.responseBody).toBe('not-read-status-first-conflict');
   await expect(page.getByRole('alert')).toBeVisible();
   await expect(page.getByRole('region', { name: 'Durable packet workflow' })).toContainText(
     failed.command.requestId
@@ -693,6 +704,7 @@ test('actual packet narrative, seal and handoff survive reload and restart; stal
     requestId: 'stale-' + randomUUID(),
   });
   expect(stale.status).toBe(409);
+  expect(JSON.parse(stale.text).code).toBe('REVISION_CONFLICT');
   await page.getByRole('button', { name: 'Reload packet' }).click();
   await expect(page.getByTestId('finalization-status')).toHaveText('stale');
   await expect(page.getByRole('link', { name: 'Continue in Dais' })).toHaveCount(0);
