@@ -399,6 +399,70 @@ async function invoke(page: Page, action: 'cost' | 'income', expectedStatus = 20
   return { body, wire: response.request().postDataJSON() };
 }
 
+type BootDiagnostics = {
+  pageErrors: { name: string; message: string }[];
+  resources: {
+    path: string;
+    resourceType: string;
+    status: number | null;
+    failure: string | null;
+  }[];
+};
+const bootDiagnostics = new WeakMap<Page, BootDiagnostics>();
+
+function redact(value: string): string {
+  return value
+    .replace(/\beyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\b/g, '[REDACTED]')
+    .replace(/\bBearer\s+\S+/gi, 'Bearer [REDACTED]');
+}
+
+function diagnosticText(value: string, limit: number): string {
+  return redact(value)
+    .replace(/(?:[A-Za-z][A-Za-z0-9+.-]*:)?\/\/[^\s"'<>]+/g, '[URL]')
+    .replace(/\b(?:data|blob):[^\s"'<>]+/gi, '[URL]')
+    .replace(/[?#][^\s"'<>]*/g, '')
+    .slice(0, limit);
+}
+
+function capturePageError(capture: BootDiagnostics, error: { name: string; message: string }) {
+  if (capture.pageErrors.length >= 10) return;
+  capture.pageErrors.push({
+    name: diagnosticText(error.name, 80),
+    message: diagnosticText(error.message, 1024),
+  });
+}
+
+function captureBootResource(
+  capture: BootDiagnostics,
+  rawUrl: string,
+  resourceType: string,
+  status: number | null
+) {
+  if (
+    capture.resources.length >= 40 ||
+    !['document', 'script', 'stylesheet'].includes(resourceType)
+  )
+    return;
+  try {
+    const url = new URL(rawUrl);
+    if (
+      url.origin !== baseURL ||
+      url.username ||
+      url.password ||
+      /^\/(api|hubs)(\/|$)/i.test(url.pathname)
+    )
+      return;
+    capture.resources.push({
+      path: diagnosticText(url.pathname, 2048),
+      resourceType,
+      status,
+      failure: status === null ? 'request-failed' : null,
+    });
+  } catch {
+    // Malformed/non-URL locations are outside this same-origin diagnostic scope.
+  }
+}
+
 type FailurePage = {
   osCommit: string;
   apiDllSha256: string;
@@ -406,13 +470,10 @@ type FailurePage = {
   path: string;
   visibleText: string;
   controls: { role: string; name: string; id: string }[];
+  boot?: BootDiagnostics;
 };
 
 function serializeFailurePage(page: FailurePage): string {
-  const redact = (value: string) =>
-    value
-      .replace(/\beyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\b/g, '[REDACTED]')
-      .replace(/\bBearer\s+\S+/gi, 'Bearer [REDACTED]');
   // Redact complete raw fields before bounds, then serialize exactly once.
   // Rewriting JSON syntax or clipping a token before detection is unsafe.
   return JSON.stringify({
@@ -426,6 +487,7 @@ function serializeFailurePage(page: FailurePage): string {
       name: redact(control.name).slice(0, 240),
       id: redact(control.id),
     })),
+    boot: page.boot ?? { pageErrors: [], resources: [] },
   });
 }
 
@@ -504,6 +566,59 @@ test.describe('Forge failure diagnostics', () => {
     expect(captured.controls).toHaveLength(80);
     expect(captured.controls[0].name).toHaveLength(240);
     expect(captured.controls[0].name.startsWith('"Synthetic"\n')).toBe(true);
+  });
+
+  test('boot errors redact complete raw messages before caps and exclude URL details', () => {
+    const capture: BootDiagnostics = { pageErrors: [], resources: [] };
+    capturePageError(capture, {
+      name: 'TypeError',
+      message:
+        'x'.repeat(1000) +
+        ' ' +
+        syntheticJwt +
+        ' https://external.invalid/asset.js?synthetic=private#fragment',
+    });
+    const saved = JSON.parse(serializeFailurePage({ ...fixture, boot: capture }));
+    expect(saved.boot.pageErrors).toHaveLength(1);
+    expect(saved.boot.pageErrors[0].name).toBe('TypeError');
+    expect(saved.boot.pageErrors[0].message.slice(1000)).toBe(' [REDACTED] [URL]');
+    expect(saved.boot.pageErrors[0].message.length).toBeLessThanOrEqual(1024);
+  });
+
+  test('boot resources retain only same-origin static delivery metadata without queries', () => {
+    const capture: BootDiagnostics = { pageErrors: [], resources: [] };
+    captureBootResource(
+      capture,
+      `${baseURL}/assets/app.js?synthetic=private#fragment`,
+      'script',
+      200
+    );
+    captureBootResource(capture, `${baseURL}/assets/app.css`, 'stylesheet', null);
+    captureBootResource(capture, 'https://external.invalid/app.js', 'script', 500);
+    captureBootResource(capture, `${baseURL}/api/auth/dev-token`, 'document', 200);
+    captureBootResource(capture, `${baseURL}/hubs/test`, 'document', 200);
+    captureBootResource(capture, `${baseURL}/assets/app.js`, 'fetch', 200);
+    expect(capture.resources).toEqual([
+      { path: '/assets/app.js', resourceType: 'script', status: 200, failure: null },
+      {
+        path: '/assets/app.css',
+        resourceType: 'stylesheet',
+        status: null,
+        failure: 'request-failed',
+      },
+    ]);
+  });
+
+  test('boot event capture bounds both arrays and each raw error field', () => {
+    const capture: BootDiagnostics = { pageErrors: [], resources: [] };
+    for (let index = 0; index < 50; index++) {
+      capturePageError(capture, { name: 'n'.repeat(100), message: 'm'.repeat(1100) });
+      captureBootResource(capture, `${baseURL}/assets/${index}.js`, 'script', 200);
+    }
+    expect(capture.pageErrors).toHaveLength(10);
+    expect(capture.resources).toHaveLength(40);
+    expect(capture.pageErrors[0].name).toHaveLength(80);
+    expect(capture.pageErrors[0].message).toHaveLength(1024);
   });
 });
 
@@ -584,6 +699,23 @@ test.describe.serial('real Forge protected-artifact Cost/Income acceptance', () 
     };
   });
 
+  test.beforeEach(async ({ page }) => {
+    const capture: BootDiagnostics = { pageErrors: [], resources: [] };
+    bootDiagnostics.set(page, capture);
+    page.on('pageerror', error => capturePageError(capture, error));
+    page.on('response', response =>
+      captureBootResource(
+        capture,
+        response.url(),
+        response.request().resourceType(),
+        response.status()
+      )
+    );
+    page.on('requestfailed', request =>
+      captureBootResource(capture, request.url(), request.resourceType(), null)
+    );
+  });
+
   test.afterEach(async ({ page }, testInfo) => {
     if (testInfo.status === testInfo.expectedStatus || page.isClosed()) return;
     // Capture only this owned synthetic page. Never inspect headers, storage or tokens.
@@ -618,6 +750,7 @@ test.describe.serial('real Forge protected-artifact Cost/Income acceptance', () 
           path: url.pathname,
           visibleText,
           controls,
+          boot: bootDiagnostics.get(page),
         }),
         { flag: 'wx' }
       );
