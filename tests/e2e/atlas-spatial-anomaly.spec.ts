@@ -31,7 +31,9 @@ async function captureAction(page: Page, envelope: any, clickStarted: number, ht
   await expect(page.getByText(cid, { exact: true })).toBeVisible();
   const visibleResultMs = Math.round((performance.now() - clickStarted) * 100) / 100;
   const actionId = `action-${++actionSequence}-${envelope.ok ? 'success' : 'failure'}`;
-  await page.screenshot({ path: resolve(runDirectory, `${actionId}.png`), fullPage: true });
+  await page
+    .getByTestId('atlas-spatial-anomaly-panel')
+    .screenshot({ path: resolve(runDirectory, `${actionId}.png`) });
   const token = await page.evaluate(() => localStorage.getItem('authToken'));
   const trace = await page.request.get(`${baseURL}/api/pilot/trace/${encodeURIComponent(cid)}`, {
     headers: { Authorization: `Bearer ${token}` },
@@ -481,7 +483,11 @@ test('actual source produces protected canonical judgment, inspectable provenanc
   page,
 }) => {
   await openReview(page);
-  await expect(page.getByRole('option', { name: 'PRD — unavailable' })).toBeDisabled();
+  // Native option disablement: this Playwright build's control actionability matcher ignores option.
+  await expect(page.getByRole('option', { name: 'PRD — unavailable' })).toHaveAttribute(
+    'disabled',
+    ''
+  );
   const first = await runReview(page, required('ATLAS_VALID_YEAR'));
   expect(first.envelope.ok).toBe(true);
   expect(first.judgment.status).toBe('OK');
