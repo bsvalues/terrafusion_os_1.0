@@ -323,9 +323,40 @@ public sealed class CountyReadOnlySalesSyncService : ICountyReadOnlySalesSyncSer
             Apply(sale, connection.Id, candidate.Row, completedAt.UtcDateTime);
         }
 
-        var profile = await db.SyncSourceConnections.SingleAsync(
-            candidate => candidate.Id == connection.Id && candidate.CountyId == countyId,
-            cancellationToken).ConfigureAwait(false);
+        // Recheck registration in this transaction's snapshot before saving any candidates.
+        // Earlier sales reads may establish the snapshot; this is not a latest-read/revoke-wins fence.
+        var currentConnections = await db.SyncSourceConnections
+            .Where(candidate => candidate.CountyId == countyId && candidate.IsActive)
+            .OrderBy(candidate => candidate.Id)
+            .Take(2)
+            .ToListAsync(cancellationToken).ConfigureAwait(false);
+        if (currentConnections.Count == 0)
+        {
+            return Denied(CountyReadOnlySalesSyncDenialCode.ConnectionNotConfigured, countyId, connection.Id);
+        }
+        if (currentConnections.Count != 1)
+        {
+            return Denied(CountyReadOnlySalesSyncDenialCode.ConnectionAmbiguous, countyId, connection.Id);
+        }
+        var profile = currentConnections[0];
+        if (profile.Id != connection.Id)
+        {
+            return Denied(CountyReadOnlySalesSyncDenialCode.SourceIdentityMismatch, countyId, connection.Id);
+        }
+        if (!IsReadOnlyPacsConnection(profile))
+        {
+            return Denied(CountyReadOnlySalesSyncDenialCode.ConnectionNotReadOnly, countyId, connection.Id);
+        }
+        if (!string.Equals(profile.SourceSystem, connection.SourceSystem, StringComparison.OrdinalIgnoreCase)
+            || !string.Equals(profile.ConnectionType, connection.ConnectionType, StringComparison.OrdinalIgnoreCase)
+            || !string.Equals(profile.Server, connection.Server, StringComparison.OrdinalIgnoreCase)
+            || !string.Equals(profile.Database, connection.Database, StringComparison.OrdinalIgnoreCase)
+            || !string.Equals(profile.AuthMode, connection.AuthMode, StringComparison.OrdinalIgnoreCase)
+            || !string.Equals(profile.Username, connection.Username, StringComparison.Ordinal)
+            || !string.Equals(profile.AdditionalOptions, connection.AdditionalOptions, StringComparison.Ordinal))
+        {
+            return Denied(CountyReadOnlySalesSyncDenialCode.SourceIdentityMismatch, countyId, connection.Id);
+        }
         profile.LastSuccessfulConnectionAtUtc = completedAt;
         profile.LastConnectionErrorAtUtc = null;
         profile.LastConnectionErrorMessage = null;
