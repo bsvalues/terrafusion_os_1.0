@@ -49,7 +49,9 @@ async function captureAction(page: Page, envelope: any, clickStarted: number, ht
     countyId: event.context?.countyId,
     actor: event.context?.userId,
   }));
-  const metrics = await page.request.get(`${baseURL}/metrics`);
+  const metrics = await page.request.get(`${baseURL}/metrics`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
   const metricLines = (await metrics.text())
     .split(/\r?\n/)
     .filter(line => line.startsWith('pilot_workflow_') && line.includes('explain_spatial_anomaly'));

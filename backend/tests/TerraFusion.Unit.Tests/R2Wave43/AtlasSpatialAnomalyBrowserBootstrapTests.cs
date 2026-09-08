@@ -1,7 +1,9 @@
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging.Abstractions;
 using TerraFusion.API.Services;
 using TerraFusion.Core.Entities;
 using Xunit;
@@ -104,8 +106,9 @@ public sealed class AtlasSpatialAnomalyBrowserBootstrapTests
         }
 
         db.Counties.AddRange(
-            new County { Id = CountyA, Name = "Synthetic Atlas A", State = "WA", FipsCode = "99001" },
-            new County { Id = CountyB, Name = "Synthetic Atlas B", State = "WA", FipsCode = "99002" });
+            // Canonical metadata admits these isolated synthetic IDs through the unchanged resolver.
+            new County { Id = CountyA, Name = "Benton", State = "WA", FipsCode = "53005" },
+            new County { Id = CountyB, Name = "Yakima", State = "WA", FipsCode = "53077" });
         foreach (var county in new[] { CountyA, CountyB })
         {
             foreach (var sale in Sales(county))
@@ -118,6 +121,18 @@ public sealed class AtlasSpatialAnomalyBrowserBootstrapTests
             }
         }
         await db.SaveChangesAsync();
+        // The real runtime rejects unknown county rows even when their GUID exists.
+        // Keep this fixture admission check ahead of any browser/token launch.
+        using var countyCache = new MemoryCache(new MemoryCacheOptions { SizeLimit = 1 });
+        var countyResolver = new CountyResolver(db, countyCache, NullLogger<CountyResolver>.Instance);
+        Assert.Equal(CountyA, await countyResolver.TryResolveAsync(CountyA.ToString()));
+        Assert.Equal(CountyA, await countyResolver.TryResolveAsync("Benton"));
+        Assert.Equal(CountyA, await countyResolver.TryResolveAsync("wa-benton"));
+        Assert.Equal(CountyA, await countyResolver.TryResolveAsync("53005"));
+        Assert.Equal(CountyB, await countyResolver.TryResolveAsync(CountyB.ToString()));
+        Assert.Equal(CountyB, await countyResolver.TryResolveAsync("Yakima"));
+        Assert.Equal(CountyB, await countyResolver.TryResolveAsync("wa-yakima"));
+        Assert.Equal(CountyB, await countyResolver.TryResolveAsync("53077"));
         Assert.Equal(26, await db.ComparableSales.CountAsync());
         Assert.Equal(13, await db.ComparableSales.CountAsync(s => s.CountyId == CountyA));
         Assert.Equal(0, await db.ComparableSales.CountAsync(s => s.SalesYear == 2027));

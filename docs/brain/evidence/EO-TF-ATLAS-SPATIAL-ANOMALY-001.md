@@ -2,6 +2,31 @@
 
 Status: CANDIDATE_PREPARATION; not protected adoption or browser acceptance.
 
+Actual run3 at3c7527c7c8667f3f57a1323395f4db634d38df72 failed1/5notrun. Native metric
+option assertions passed; actual regression403 produced EXECUTION_FAILED. Preserved run-f4c303fa-cb83-4278-ba31-a23a48c54ee0
+contains visible CID aaddf4d9-a9f9-4c00-800b-39c07edc3f52,314.91ms latency, panel failure screenshot,
+matching API outcome and authenticated ordinary tool_invoked/tool_failed trace events. Metrics401
+was the harness's missing bearer, now corrected using the same actual issuer token; no auth exemption.
+The fixture's invented county names/FIPS were correctly rejected by the unchanged canonical resolver.
+Earlier browser runs1 (missing frozen startup slots) and2 (native-option matcher) remain preserved.
+Six unchanged approved frozen startup stagers subsequently completed from canonical protected sources;
+receipts remain in run-verification-20260907-1914/stage-*.log. No pin/gate/source overrides.
+
+Fixture-only RED: actual CountyResolver GUID admission expected11111111-1111-1111-1111-111111111111,
+returned null,1failed, fresh run-b060fc2b-d2fe-43ae-bd2d-c4bd284a6b46. GREEN changes only county
+Name/FIPS to Benton/53005 and Yakima/53077; synthetic UUIDs/sales unchanged. Actual resolver GUID,
+name, canonical key and FIPS assertions plus real OLS design passed2/2, fresh run-79361633-fc6d-47d6-9297-89578fb487e2.
+Used table/all8index exact EF DDL checks remain. Commands: dotnet test canonical Unit.Tests project
+--configuration Release --no-restore -m:1 -p:UseSharedCompilation=false -nodeReuse:false, filters
+BootstrapAtlasSpatialAnomaly_CreatesOnlyFreshOwnedPersistedSource (RED) and AtlasSpatialAnomalyBrowserBootstrapTests
+(GREEN). GREEN adds -p:BuildProjectReferences=false. Logs fixture-canonical-red.log/fixture-canonical-green.log
+are retained in the verification directory. No production resolver/auth changes.
+
+Binary qualification: RED's normal test build traversed project references including API; no separate
+application build was launched, but actual API DLL SHA changed from run3's745b648c6759e4148155461d5ce0b9bf31851ec9de196bde936ff849aac6d469
+to761eeeeceab1e962c7e8c89c12cdeed4d3704a7324ff0cdfcc4ae82d10474b04. Application source is unchanged;
+subsequent runtime receipts must use the actual new digest, not claim old binary identity.
+
 Final candidate build checkpoint at reviewed9effc4c9a3f9426314d2824d5c46ab2f519742d0:
 Release API `dotnet build backend/src/TerraFusion.API/TerraFusion.API.csproj --configuration Release
 --no-restore -m:1 -p:UseSharedCompilation=false -nodeReuse:false --verbosity minimal` passed with
