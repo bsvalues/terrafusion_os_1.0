@@ -62,7 +62,16 @@ async function containedFile(root, relative) {
   return readFile(resolved);
 }
 
+// The child is process.execPath: inspect that same runtime's supported capabilities,
+// preferring the stable spelling but retaining Node 20's strict experimental model.
+export function nodePermissionFlag(capabilities = process.allowedNodeEnvironmentFlags) {
+  if (capabilities.has('--permission')) return '--permission';
+  if (capabilities.has('--experimental-permission')) return '--experimental-permission';
+  throw new Error('Atlas Node permission model is unavailable.');
+}
+
 async function execute(modulePath, serialized, temporaryRoot, timeoutMs) {
+  const permissionFlag = nodePermissionFlag();
   const directory = await mkdtemp(path.join(temporaryRoot, 'atlas-anomaly-'));
   try {
     const copy = path.join(directory, 'judgment.mjs');
@@ -70,7 +79,7 @@ async function execute(modulePath, serialized, temporaryRoot, timeoutMs) {
     const env = {};
     for (const key of ['SystemRoot', 'WINDIR', 'TEMP', 'TMP']) if (process.env[key]) env[key] = process.env[key];
     return await new Promise((resolve, reject) => {
-      const child = spawn(process.execPath, ['--permission', `--allow-fs-read=${copy}`,
+      const child = spawn(process.execPath, [permissionFlag, `--allow-fs-read=${copy}`,
         '--input-type=module', '--eval', runner, copy], {
         cwd: directory, env, windowsHide: true, stdio: ['pipe', 'pipe', 'pipe'],
       });

@@ -1,6 +1,37 @@
 # Atlas spatial anomaly candidate integration evidence
 
-Status: CANDIDATE_RUNTIME_PASS; protected OS delivery and post-merge critical browser repeat remain outstanding.
+Status: CANDIDATE_PERMISSION_FIX_VERIFIED; successor actual browser repeat, protected OS delivery and post-merge critical browser repeat remain outstanding.
+
+## PR1571 Node20 permission compatibility remediation
+
+Verified P1 review `PRRT_kwDOPgG4O86gFVo9`: the previous process host hardcoded `--permission`.
+Actual installed Node20.20.2 rejects that flag (`bad option: --permission`); Node24.19.0 supports it.
+Actual `process.allowedNodeEnvironmentFlags` reports experimental-only on20 and stable-only on24.
+The process host now inspects its own runtime capability set (the child is the same `process.execPath`),
+prefers stable `--permission`, otherwise uses supported `--experimental-permission`, and throws before
+spawn if neither exists. This follows the existing repository capability-probe pattern used by the GPT
+process host. No unrestricted fallback, runtime replacement, workflow/CI change or permission grant.
+Exact single-file read allowlist, stripped environment, hash/spec/protected identity verification,
+input/output/diagnostic/time bounds and invocation-directory cleanup remain unchanged.
+
+Actual Node20 RED:13tests,8passed/5failed,exit1. Existing verified execution/output/credential tests
+failed at process exit, the new capability selector was absent, and the new actual permission test
+could not execute. After the narrow host fix, actual Node20.20.2 GREEN13/13 and actual Node24.19.0
+GREEN13/13,zero skipped/cancelled,exit0. Tests include stable/experimental selection and unknown
+capability refusal; real child denies outside file reads, writes and child-process spawning with
+ERR_ACCESS_DENIED while permitted module execution succeeds. Existing tamper, bounds, credential,
+staging and rollback cases pass on both versions. These synthetic process/stager fixtures are
+dependency-free host validation, not protected browser acceptance or a Node permission security-audit claim.
+
+Exact test command for each actual executable: `node.exe --test
+os-platform/core/tests/atlas-spatial-anomaly-process.test.mjs`. Node20 executable:
+`C:/Users/bsval/AppData/Local/Volta/tools/image/node/20.20.2/node.exe`; Node24 executable:
+`C:/Users/bsval/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node.exe`.
+Child PATH includes the selected Node directory, existing bundled PowerShell, Git and Windows only.
+Retained logs under `artifacts/atlas-browser/run-verification-20260907-1914/`:
+`node20-permission-red.log`, `node20-permission-green.log`, `node24-permission-green.log`.
+The earlier e92b/d714 actual browser evidence below was Node24-only; it does not prove Node20 browser
+execution or this successor's actual runtime repeat. Those delivery boundaries remain open.
 
 ## Actual six-case candidate acceptance
 

@@ -8,6 +8,13 @@ import test from 'node:test';
 
 const implementation = await import('../pilot/atlas-spatial-anomaly-process.mjs').catch(() => ({}));
 const hash = value => createHash('sha256').update(value).digest('hex');
+test('permission capability selection prefers stable, supports Node20 experimental, and refuses unknown', () => {
+  assert.equal(typeof implementation.nodePermissionFlag, 'function');
+  assert.equal(implementation.nodePermissionFlag(new Set(['--permission', '--experimental-permission'])), '--permission');
+  assert.equal(implementation.nodePermissionFlag(new Set(['--experimental-permission'])), '--experimental-permission');
+  assert.throws(() => implementation.nodePermissionFlag(new Set()), /permission.*unavailable/i);
+});
+
 async function invoke(input, options) {
   assert.equal(typeof implementation.invokeAtlasSpatialAnomaly, 'function', 'exact artifact consumer must exist');
   return implementation.invokeAtlasSpatialAnomaly(input, options);
@@ -42,6 +49,26 @@ test('verified module executes with pinned specification and protected source id
   assert.deepEqual(result.judgment, { contract: 'atlas.spatial-anomaly', version: '1.0.0', echo: { scope: 'synthetic' } });
   assert.equal(result.provenance.sourceCommit, 'a'.repeat(40));
   assert.equal(result.provenance.manifestSha256, options.expectedManifestSha256);
+});
+
+test('actual child permission model denies outside reads, writes and process spawning', async t => {
+  const source = `
+import { readFileSync, writeFileSync } from 'node:fs';
+import { spawnSync } from 'node:child_process';
+export function judgeSpatialAnomaly(input) {
+  const blocked = operation => { try { operation(); return 'ALLOWED'; } catch (error) { return error.code; } };
+  return { contract: 'atlas.spatial-anomaly', version: '1.0.0',
+    permissionEnabled: typeof process.permission?.has === 'function',
+    read: blocked(() => readFileSync(input.outside)),
+    write: blocked(() => writeFileSync(input.outside, 'forbidden')),
+    spawn: blocked(() => spawnSync(process.execPath, ['--version'])) };
+}`;
+  const { root, options } = await setup(t, source);
+  const outside = path.join(root, 'spec.md');
+  const result = await invoke({ outside }, options);
+  assert.deepEqual(result.judgment, { contract: 'atlas.spatial-anomaly', version: '1.0.0',
+    permissionEnabled: true, read: 'ERR_ACCESS_DENIED', write: 'ERR_ACCESS_DENIED', spawn: 'ERR_ACCESS_DENIED' });
+  assert.equal(await readFile(outside, 'utf8'), 'Synthetic process test specification\n');
 });
 
 for (const [name, target] of [['module', 'src/judgment.mjs'], ['specification', 'spec.md'], ['manifest', 'manifest.json']]) {
