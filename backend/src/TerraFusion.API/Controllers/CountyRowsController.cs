@@ -1,8 +1,11 @@
 using System.Text.Json;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using TerraFusion.Data;
+using TerraFusion.API.Auth;
+using TerraFusion.Core.Counties;
 
 namespace TerraFusion.API.Controllers;
 
@@ -27,6 +30,52 @@ public sealed class CountyRowsController : ControllerBase
         _db = db;
         _logger = logger;
         _configuration = configuration;
+    }
+
+    /// <summary>Authenticated counts only; neither source links nor seed labels prove public use.</summary>
+    [HttpGet("parcel-baseline")]
+    [Authorize(Policy = "RequireAssessor")]
+    [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
+    public async Task<IActionResult> GetParcelBaseline(
+        string countyToken,
+        [FromServices] AuthenticatedCanonicalCountyContextProvider countyContextProvider,
+        CancellationToken ct = default)
+    {
+        ct.ThrowIfCancellationRequested();
+        var context = await countyContextProvider.GetCurrentAsync(ct);
+        if (context.Decision != AuthenticatedCanonicalCountyContextDecision.Established
+            || context.County is null || context.CountyId is null
+            || !WashingtonCountyRegistry.TryResolve(countyToken, out var county)
+            || county != context.County)
+            return Forbid();
+
+        // One county-filtered aggregate statement. Never load parcel bodies or source keys,
+        // and never use sales, source totals, conversion eras or names as public evidence.
+        var parcels = _db.TfParcels.AsNoTracking().Where(p =>
+            p.CountyId == context.CountyId.Value && p.ParcelStatus == "ACTIVE"
+            && p.ParcelNumber != null && p.ParcelNumber.Trim() != string.Empty);
+        var summary = await parcels.GroupBy(p => p.CountyId).Select(group => new
+        {
+            Count = group.Select(p => p.ParcelNumber).Distinct().Count(),
+            LinkedCount = group.Where(p => _db.SyncBridgeSourceXrefs.Any(x =>
+                    x.TfEntityType == "parcel" && x.TfEntityId == p.TfParcelId && x.IsActive))
+                .Select(p => p.ParcelNumber).Distinct().Count(),
+            Latest = group.Max(p => (DateTime?)p.UpdatedAt),
+        }).SingleOrDefaultAsync(ct);
+        var count = summary?.Count ?? 0;
+        // TfParcel stores UTC audit stamps; SQLite drops DateTime.Kind on materialization.
+        var latestUtc = summary?.Latest is DateTime latest
+            ? DateTime.SpecifyKind(latest, DateTimeKind.Utc)
+            : (DateTime?)null;
+        _logger.LogInformation("Parcel baseline metadata read for authorized county {CountyId}", context.CountyId);
+        return Ok(new CountyParcelBaselineReceipt(
+            "wal.county-parcel-baseline.v1", context.CountyId.Value,
+            county.Key, county.Name, county.CountyCode, county.FipsCode,
+            count, summary?.LinkedCount ?? 0, latestUtc,
+            "unverified", "unverified", false, count == 0 ? "no-parcels" : "unverified",
+            count == 0
+                ? ["no-runtime-parcels", "public-provenance-unverified", "source-use-unverified"]
+                : ["public-provenance-unverified", "source-use-unverified"]));
     }
 
     [HttpGet("parcels")]
@@ -391,3 +440,9 @@ public sealed class CountyRowsController : ControllerBase
 
     private sealed record CountyProjection(Guid Id, string Name, string? FipsCode);
 }
+
+public sealed record CountyParcelBaselineReceipt(
+    string ContractId, Guid CountyId, string CountyKey, string CountyName,
+    string CountyCode, string FipsCode, int ObservedParcelCount, int LinkedParcelCount,
+    DateTime? LatestParcelUpdatedAtUtc, string PublicProvenance, string SourceUse,
+    bool PublicReady, string Status, IReadOnlyList<string> GapReasons);

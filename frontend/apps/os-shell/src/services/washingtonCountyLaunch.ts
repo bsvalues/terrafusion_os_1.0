@@ -17,16 +17,120 @@ import {
   type WashingtonSalesReviewHostedShardVerification,
   type WashingtonSalesReviewShardVerificationState,
 } from '@/pages/forge/sales/washingtonSalesReviewCapability';
-import { evictWashingtonLaunchCountyShard } from '@/pages/forge/sales/washingtonLaunchApi';
+import {
+  evictWashingtonLaunchCountyShard,
+  WASHINGTON_COUNTIES,
+} from '@/pages/forge/sales/washingtonLaunchApi';
 import { getViteEnv } from '@/env/getViteEnv';
 
 export const WASHINGTON_COUNTY_STATUS_PATH = WASHINGTON_REFERENCE_ROUTES.status;
+
+/** Runtime metadata only. Source links and seed labels cannot establish public use. */
+export interface WashingtonParcelBaseline {
+  contractId: 'wal.county-parcel-baseline.v1';
+  countyId: string;
+  countyKey: string;
+  countyName: string;
+  countyCode: string;
+  fipsCode: string;
+  observedParcelCount: number;
+  linkedParcelCount: number;
+  latestParcelUpdatedAtUtc: string | null;
+  publicProvenance: 'unverified';
+  sourceUse: 'unverified';
+  publicReady: false;
+  status: 'no-parcels' | 'unverified';
+  gapReasons: string[];
+}
+
+export async function fetchWashingtonParcelBaseline(
+  countyCode: string,
+  request: (path: string, init?: RequestInit) => Promise<Response>,
+  signal?: AbortSignal
+): Promise<WashingtonParcelBaseline> {
+  const county = WASHINGTON_COUNTIES.find((entry) => entry.code === countyCode);
+  if (!county) throw new Error('Unsupported Washington county.');
+  return runBoundedWashingtonPublicDataRequest(async (boundedSignal) => {
+    const response = await request(`/counties/${county.code}/parcel-baseline`, {
+      method: 'GET',
+      cache: 'no-store',
+      signal: boundedSignal,
+    });
+    if (!response.ok) throw new Error(`Parcel baseline unavailable (HTTP ${response.status}).`);
+    const value: unknown = await response.json();
+    if (boundedSignal.aborted) throw abortErrorForSignal(boundedSignal);
+    const fields = [
+      'contractId',
+      'countyId',
+      'countyKey',
+      'countyName',
+      'countyCode',
+      'fipsCode',
+      'observedParcelCount',
+      'linkedParcelCount',
+      'latestParcelUpdatedAtUtc',
+      'publicProvenance',
+      'sourceUse',
+      'publicReady',
+      'status',
+      'gapReasons',
+    ];
+    const invalid = () =>
+      new Error('Parcel baseline response could not be verified for this county.');
+    if (
+      !isRecord(value) ||
+      Array.isArray(value) ||
+      Object.keys(value).length !== fields.length ||
+      !fields.every((field) => Object.prototype.hasOwnProperty.call(value, field))
+    )
+      throw invalid();
+    const count = value.observedParcelCount;
+    const linked = value.linkedParcelCount;
+    const timestamp = value.latestParcelUpdatedAtUtc;
+    const gaps = value.gapReasons;
+    const expectedGaps =
+      count === 0
+        ? ['no-runtime-parcels', 'public-provenance-unverified', 'source-use-unverified']
+        : ['public-provenance-unverified', 'source-use-unverified'];
+    if (
+      value.contractId !== 'wal.county-parcel-baseline.v1' ||
+      value.countyCode !== county.code ||
+      value.countyName !== county.name ||
+      value.countyKey !== `wa-${county.name.toLowerCase().replace(/ /g, '-')}` ||
+      value.fipsCode !== `53${county.code}` ||
+      typeof value.countyId !== 'string' ||
+      !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value.countyId) ||
+      value.countyId === '00000000-0000-0000-0000-000000000000' ||
+      typeof count !== 'number' ||
+      !Number.isSafeInteger(count) ||
+      count < 0 ||
+      typeof linked !== 'number' ||
+      !Number.isSafeInteger(linked) ||
+      linked < 0 ||
+      linked > count ||
+      (timestamp !== null &&
+        (typeof timestamp !== 'string' ||
+          !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,7})?Z$/.test(timestamp) ||
+          !Number.isFinite(Date.parse(timestamp)) ||
+          new Date(timestamp).toISOString().slice(0, 19) !== timestamp.slice(0, 19))) ||
+      (count === 0 && timestamp !== null) ||
+      value.publicProvenance !== 'unverified' ||
+      value.sourceUse !== 'unverified' ||
+      value.publicReady !== false ||
+      value.status !== (count === 0 ? 'no-parcels' : 'unverified') ||
+      !Array.isArray(gaps) ||
+      gaps.length !== expectedGaps.length ||
+      !expectedGaps.every((gap) => gaps.includes(gap))
+    )
+      throw invalid();
+    return value as unknown as WashingtonParcelBaseline;
+  }, signal);
+}
 export const WASHINGTON_PUBLIC_DATA_REQUEST_TIMEOUT_MS = 10_000;
 const WASHINGTON_COUNTY_STATUS_SCHEMA = 'terrafusion.washington.county-status.v1';
 const WASHINGTON_COUNTY_DETAIL_PATH_PREFIX = '/launch-data/washington/counties';
 const WASHINGTON_SALES_SHARD_PATH_PREFIX = '/launch-data/washington/sales/by-county';
-export const WASHINGTON_CONFERENCE_LOCAL_PACKAGE_ENV =
-  'VITE_WASHINGTON_CONFERENCE_LOCAL_PACKAGE';
+export const WASHINGTON_CONFERENCE_LOCAL_PACKAGE_ENV = 'VITE_WASHINGTON_CONFERENCE_LOCAL_PACKAGE';
 const WASHINGTON_COUNTY_DETAIL_SCHEMA = 'terrafusion.washington.county-detail.v1';
 
 interface WashingtonCountyShardVerificationAttempt {
@@ -37,11 +141,13 @@ interface WashingtonCountyShardVerificationAttempt {
   previous: WashingtonCountyShardVerificationAttempt | null;
 }
 
-const washingtonCountyShardVerificationAttempts =
-  new Map<string, WashingtonCountyShardVerificationAttempt>();
+const washingtonCountyShardVerificationAttempts = new Map<
+  string,
+  WashingtonCountyShardVerificationAttempt
+>();
 
 function nearestActiveWashingtonCountyShardVerificationAttempt(
-  attempt: WashingtonCountyShardVerificationAttempt | null,
+  attempt: WashingtonCountyShardVerificationAttempt | null
 ): WashingtonCountyShardVerificationAttempt | null {
   let candidate = attempt;
   while (candidate && !candidate.active) {
@@ -51,7 +157,7 @@ function nearestActiveWashingtonCountyShardVerificationAttempt(
 }
 
 function signalAllActiveWashingtonCountyShardVerificationPredecessors(
-  attempt: WashingtonCountyShardVerificationAttempt | null,
+  attempt: WashingtonCountyShardVerificationAttempt | null
 ): void {
   let candidate = attempt;
   while (candidate) {
@@ -64,7 +170,7 @@ function signalAllActiveWashingtonCountyShardVerificationPredecessors(
 
 function signalWashingtonCountyShardVerificationOwnershipChanged(
   attempt: WashingtonCountyShardVerificationAttempt,
-  permanentlySuperseded = false,
+  permanentlySuperseded = false
 ): void {
   if (permanentlySuperseded) {
     attempt.permanentlySuperseded = true;
@@ -78,7 +184,7 @@ function signalWashingtonCountyShardVerificationOwnershipChanged(
 }
 
 function createWashingtonCountyShardVerificationAttempt(
-  previous: WashingtonCountyShardVerificationAttempt | null,
+  previous: WashingtonCountyShardVerificationAttempt | null
 ): WashingtonCountyShardVerificationAttempt {
   return {
     active: true,
@@ -92,13 +198,10 @@ function createWashingtonCountyShardVerificationAttempt(
 async function waitForWashingtonCountyShardVerificationOwnershipChange(
   attempt: WashingtonCountyShardVerificationAttempt,
   observedRevision: number,
-  callerSignal?: AbortSignal,
+  callerSignal?: AbortSignal
 ): Promise<void> {
   if (callerSignal?.aborted) throw abortErrorForSignal(callerSignal);
-  if (
-    attempt.permanentlySuperseded
-    || attempt.ownershipRevision !== observedRevision
-  ) {
+  if (attempt.permanentlySuperseded || attempt.ownershipRevision !== observedRevision) {
     return;
   }
 
@@ -124,10 +227,7 @@ async function waitForWashingtonCountyShardVerificationOwnershipChange(
     attempt.ownershipWaiters.add(ownershipChanged);
     callerSignal?.addEventListener('abort', aborted, { once: true });
 
-    if (
-      attempt.permanentlySuperseded
-      || attempt.ownershipRevision !== observedRevision
-    ) {
+    if (attempt.permanentlySuperseded || attempt.ownershipRevision !== observedRevision) {
       ownershipChanged();
     } else if (callerSignal?.aborted) {
       aborted();
@@ -142,9 +242,7 @@ function createWashingtonRequestAbortError(): Error {
 }
 
 function abortErrorForSignal(signal: AbortSignal): Error {
-  return signal.reason instanceof Error
-    ? signal.reason
-    : createWashingtonRequestAbortError();
+  return signal.reason instanceof Error ? signal.reason : createWashingtonRequestAbortError();
 }
 
 /**
@@ -154,7 +252,7 @@ function abortErrorForSignal(signal: AbortSignal): Error {
  */
 async function runBoundedWashingtonPublicDataRequest<T>(
   request: (signal: AbortSignal) => Promise<T>,
-  callerSignal?: AbortSignal,
+  callerSignal?: AbortSignal
 ): Promise<T> {
   if (callerSignal?.aborted) {
     throw abortErrorForSignal(callerSignal);
@@ -173,7 +271,7 @@ async function runBoundedWashingtonPublicDataRequest<T>(
   });
   const timeout = globalThis.setTimeout(() => {
     const error = new Error(
-      `Washington public-data request timed out after ${WASHINGTON_PUBLIC_DATA_REQUEST_TIMEOUT_MS} ms.`,
+      `Washington public-data request timed out after ${WASHINGTON_PUBLIC_DATA_REQUEST_TIMEOUT_MS} ms.`
     );
     error.name = 'TimeoutError';
     controller.abort(error);
@@ -258,12 +356,11 @@ function isFiniteNumber(value: unknown): value is number {
 function isCanonicalCountyRoute(
   route: string,
   countyCode: string,
-  kind: 'detail' | 'sales-shard',
+  kind: 'detail' | 'sales-shard'
 ): boolean {
   if (!route) return true;
-  const prefix = kind === 'detail'
-    ? WASHINGTON_COUNTY_DETAIL_PATH_PREFIX
-    : WASHINGTON_SALES_SHARD_PATH_PREFIX;
+  const prefix =
+    kind === 'detail' ? WASHINGTON_COUNTY_DETAIL_PATH_PREFIX : WASHINGTON_SALES_SHARD_PATH_PREFIX;
   return route === `${prefix}/${countyCode}.json`;
 }
 
@@ -274,14 +371,18 @@ function isSyntheticWashingtonReferenceMarker(value: unknown): boolean {
 }
 
 function conferenceLocalPayloadIsTruthful(value: WashingtonCountyStatusPayloadEntry): boolean {
-  return value.primarySourceMode === WASHINGTON_CONFERENCE_LOCAL_SOURCE_POSTURE
-    && !isSyntheticWashingtonReferenceMarker(value.primarySourceMode)
-    && !isSyntheticWashingtonReferenceMarker(value.confidence.rawStatus)
-    && !isSyntheticWashingtonReferenceMarker(value.prometheusStatus);
+  return (
+    value.primarySourceMode === WASHINGTON_CONFERENCE_LOCAL_SOURCE_POSTURE &&
+    !isSyntheticWashingtonReferenceMarker(value.primarySourceMode) &&
+    !isSyntheticWashingtonReferenceMarker(value.confidence.rawStatus) &&
+    !isSyntheticWashingtonReferenceMarker(value.prometheusStatus)
+  );
 }
 
 export function isConferenceLocalPackageEnabled(): boolean {
-  return String(getViteEnv().VITE_WASHINGTON_CONFERENCE_LOCAL_PACKAGE ?? '').toLowerCase() === 'true';
+  return (
+    String(getViteEnv().VITE_WASHINGTON_CONFERENCE_LOCAL_PACKAGE ?? '').toLowerCase() === 'true'
+  );
 }
 
 function defaultWashingtonCountyPackageSource(): WashingtonReferencePackageSource {
@@ -291,7 +392,7 @@ function defaultWashingtonCountyPackageSource(): WashingtonReferencePackageSourc
 async function fetchWashingtonPackageRoute(
   route: string,
   signal: AbortSignal | undefined,
-  packageSource: WashingtonReferencePackageSource,
+  packageSource: WashingtonReferencePackageSource
 ): Promise<unknown> {
   if (packageSource === 'repository-reference') {
     return resolveWashingtonAssessorReferenceRoute(route);
@@ -307,61 +408,63 @@ async function fetchWashingtonPackageRoute(
 }
 
 function isWashingtonCountyStatusPayloadEntry(
-  value: unknown,
+  value: unknown
 ): value is WashingtonCountyStatusPayloadEntry {
   if (!isRecord(value) || !isRecord(value.confidence) || !isRecord(value.staticRoutes)) {
     return false;
   }
 
-  return typeof value.county === 'string'
-    && value.county.trim().length > 0
-    && typeof value.countyCode === 'string'
-    && /^\d{3}$/.test(value.countyCode)
-    && typeof value.priority === 'string'
-    && typeof value.prometheusStatus === 'string'
-    && typeof value.primarySourceMode === 'string'
-    && (value.latestSaleDate === null || typeof value.latestSaleDate === 'string')
-    && isFiniteNumber(value.candidateSales)
-    && isFiniteNumber(value.stagedSales)
-    && isFiniteNumber(value.needsReview)
-    && isFiniteNumber(value.confidence.averageQualityScore)
-    && typeof value.confidence.parserStatus === 'string'
-    && typeof value.confidence.rawStatus === 'string'
-    && typeof value.confidence.rawDriftDetected === 'boolean'
-    && typeof value.staticRoutes.detail === 'string'
-    && typeof value.staticRoutes.salesShard === 'string'
-    && isCanonicalCountyRoute(value.staticRoutes.detail, value.countyCode, 'detail')
-    && isCanonicalCountyRoute(value.staticRoutes.salesShard, value.countyCode, 'sales-shard');
+  return (
+    typeof value.county === 'string' &&
+    value.county.trim().length > 0 &&
+    typeof value.countyCode === 'string' &&
+    /^\d{3}$/.test(value.countyCode) &&
+    typeof value.priority === 'string' &&
+    typeof value.prometheusStatus === 'string' &&
+    typeof value.primarySourceMode === 'string' &&
+    (value.latestSaleDate === null || typeof value.latestSaleDate === 'string') &&
+    isFiniteNumber(value.candidateSales) &&
+    isFiniteNumber(value.stagedSales) &&
+    isFiniteNumber(value.needsReview) &&
+    isFiniteNumber(value.confidence.averageQualityScore) &&
+    typeof value.confidence.parserStatus === 'string' &&
+    typeof value.confidence.rawStatus === 'string' &&
+    typeof value.confidence.rawDriftDetected === 'boolean' &&
+    typeof value.staticRoutes.detail === 'string' &&
+    typeof value.staticRoutes.salesShard === 'string' &&
+    isCanonicalCountyRoute(value.staticRoutes.detail, value.countyCode, 'detail') &&
+    isCanonicalCountyRoute(value.staticRoutes.salesShard, value.countyCode, 'sales-shard')
+  );
 }
 
 export async function fetchWashingtonCountyStatus(
   signal?: AbortSignal,
-  packageSource: WashingtonReferencePackageSource = 'hosted',
+  packageSource: WashingtonReferencePackageSource = 'hosted'
 ): Promise<WashingtonCountyStatusEntry[]> {
   if (signal?.aborted) return [];
   const payload = await fetchWashingtonPackageRoute(
     WASHINGTON_COUNTY_STATUS_PATH,
     signal,
-    packageSource,
+    packageSource
   );
   if (
-    !isRecord(payload)
-    || payload.schemaVersion !== WASHINGTON_COUNTY_STATUS_SCHEMA
-    || typeof payload.generatedAt !== 'string'
-    || payload.generatedAt.trim().length === 0
-    || typeof payload.sourcePosture !== 'string'
-    || payload.sourcePosture.trim().length === 0
-    || !Array.isArray(payload.counties)
-    || !payload.counties.every(isWashingtonCountyStatusPayloadEntry)
-    || (packageSource === 'conference-local'
-      && payload.sourcePosture !== WASHINGTON_CONFERENCE_LOCAL_SOURCE_POSTURE)
-    || (packageSource === 'conference-local'
-      && !payload.counties.every(conferenceLocalPayloadIsTruthful))
+    !isRecord(payload) ||
+    payload.schemaVersion !== WASHINGTON_COUNTY_STATUS_SCHEMA ||
+    typeof payload.generatedAt !== 'string' ||
+    payload.generatedAt.trim().length === 0 ||
+    typeof payload.sourcePosture !== 'string' ||
+    payload.sourcePosture.trim().length === 0 ||
+    !Array.isArray(payload.counties) ||
+    !payload.counties.every(isWashingtonCountyStatusPayloadEntry) ||
+    (packageSource === 'conference-local' &&
+      payload.sourcePosture !== WASHINGTON_CONFERENCE_LOCAL_SOURCE_POSTURE) ||
+    (packageSource === 'conference-local' &&
+      !payload.counties.every(conferenceLocalPayloadIsTruthful))
   ) {
     throw new Error(
       packageSource === 'conference-local'
         ? 'Washington conference-local status must be a county-bounded, non-certified read-only package.'
-        : 'Washington county status returned an invalid county registry.',
+        : 'Washington county status returned an invalid county registry.'
     );
   }
 
@@ -370,8 +473,7 @@ export async function fetchWashingtonCountyStatus(
     throw new Error('Washington county status returned duplicate county contexts.');
   }
 
-  const statusCanonicalJsonSha256 =
-    await computeWashingtonLaunchCanonicalJsonSha256(payload);
+  const statusCanonicalJsonSha256 = await computeWashingtonLaunchCanonicalJsonSha256(payload);
 
   return payload.counties.map((county) => ({
     ...county,
@@ -391,29 +493,35 @@ export async function fetchWashingtonCountyStatus(
 export async function fetchWashingtonCountyDetail(
   county: WashingtonCountyStatusEntry,
   signal?: AbortSignal,
-  packageSource: WashingtonReferencePackageSource = 'hosted',
+  packageSource: WashingtonReferencePackageSource = 'hosted'
 ): Promise<WashingtonCountyDetail> {
-  const payload = await fetchWashingtonPackageRoute(county.staticRoutes.detail, signal, packageSource);
-  if (!isRecord(payload)
-    || payload.schemaVersion !== WASHINGTON_COUNTY_DETAIL_SCHEMA
-    || typeof payload.generatedAt !== 'string'
-    || typeof payload.county !== 'string'
-    || typeof payload.countyCode !== 'string'
-    || !isRecord(payload.operationalState)
-    || typeof payload.operationalState.primarySourceMode !== 'string'
-    || typeof payload.operationalState.prometheusStatus !== 'string'
-    || !isRecord(payload.summary)
-    || !isFiniteNumber(payload.summary.records)
-    || (payload.summary.latestSaleDate !== null && typeof payload.summary.latestSaleDate !== 'string')
-    || typeof payload.salesRoute !== 'string'
-    || payload.countyCode !== county.countyCode
-    || payload.county.trim().toLowerCase() !== county.county.trim().toLowerCase()
-    || !isCanonicalCountyRoute(payload.salesRoute, county.countyCode, 'sales-shard')
-    || (packageSource === 'conference-local'
-      && payload.operationalState.primarySourceMode !== WASHINGTON_CONFERENCE_LOCAL_SOURCE_POSTURE)
-    || (packageSource === 'conference-local'
-      && (isSyntheticWashingtonReferenceMarker(payload.operationalState.primarySourceMode)
-        || isSyntheticWashingtonReferenceMarker(payload.operationalState.prometheusStatus)))
+  const payload = await fetchWashingtonPackageRoute(
+    county.staticRoutes.detail,
+    signal,
+    packageSource
+  );
+  if (
+    !isRecord(payload) ||
+    payload.schemaVersion !== WASHINGTON_COUNTY_DETAIL_SCHEMA ||
+    typeof payload.generatedAt !== 'string' ||
+    typeof payload.county !== 'string' ||
+    typeof payload.countyCode !== 'string' ||
+    !isRecord(payload.operationalState) ||
+    typeof payload.operationalState.primarySourceMode !== 'string' ||
+    typeof payload.operationalState.prometheusStatus !== 'string' ||
+    !isRecord(payload.summary) ||
+    !isFiniteNumber(payload.summary.records) ||
+    (payload.summary.latestSaleDate !== null &&
+      typeof payload.summary.latestSaleDate !== 'string') ||
+    typeof payload.salesRoute !== 'string' ||
+    payload.countyCode !== county.countyCode ||
+    payload.county.trim().toLowerCase() !== county.county.trim().toLowerCase() ||
+    !isCanonicalCountyRoute(payload.salesRoute, county.countyCode, 'sales-shard') ||
+    (packageSource === 'conference-local' &&
+      payload.operationalState.primarySourceMode !== WASHINGTON_CONFERENCE_LOCAL_SOURCE_POSTURE) ||
+    (packageSource === 'conference-local' &&
+      (isSyntheticWashingtonReferenceMarker(payload.operationalState.primarySourceMode) ||
+        isSyntheticWashingtonReferenceMarker(payload.operationalState.prometheusStatus)))
   ) {
     throw new Error(`Washington county detail does not match county ${county.countyCode}.`);
   }
@@ -423,22 +531,20 @@ export async function fetchWashingtonCountyDetail(
 
 export async function verifyWashingtonCountySalesShard(
   county: WashingtonCountyStatusEntry,
-  signal?: AbortSignal,
+  signal?: AbortSignal
 ): Promise<WashingtonCountyStatusEntry> {
   if (county.packageSource === 'conference-local') {
     return { ...county, salesShardVerification: 'not-required' };
   }
   const attempt = createWashingtonCountyShardVerificationAttempt(
-    washingtonCountyShardVerificationAttempts.get(county.countyCode) ?? null,
+    washingtonCountyShardVerificationAttempts.get(county.countyCode) ?? null
   );
   washingtonCountyShardVerificationAttempts.set(county.countyCode, attempt);
   const isCurrentAttempt = (): boolean =>
     washingtonCountyShardVerificationAttempts.get(county.countyCode) === attempt;
   const restoreNearestActivePreviousAttempt = (): void => {
     if (!isCurrentAttempt()) return;
-    const previousAttempt = nearestActiveWashingtonCountyShardVerificationAttempt(
-      attempt.previous,
-    );
+    const previousAttempt = nearestActiveWashingtonCountyShardVerificationAttempt(attempt.previous);
     if (previousAttempt) {
       washingtonCountyShardVerificationAttempts.set(county.countyCode, previousAttempt);
       signalWashingtonCountyShardVerificationOwnershipChanged(previousAttempt);
@@ -450,12 +556,9 @@ export async function verifyWashingtonCountySalesShard(
     let verification: WashingtonSalesReviewHostedShardVerification;
     try {
       verification = await runBoundedWashingtonPublicDataRequest(
-        (boundedSignal) => verifyWashingtonSalesReviewHostedShard(
-          county,
-          boundedSignal,
-          isCurrentAttempt,
-        ),
-        signal,
+        (boundedSignal) =>
+          verifyWashingtonSalesReviewHostedShard(county, boundedSignal, isCurrentAttempt),
+        signal
       );
     } catch (error) {
       if (signal?.aborted) {
@@ -477,7 +580,7 @@ export async function verifyWashingtonCountySalesShard(
         await waitForWashingtonCountyShardVerificationOwnershipChange(
           attempt,
           observedRevision,
-          signal,
+          signal
         );
         observedRevision = attempt.ownershipRevision;
       }
@@ -513,9 +616,7 @@ export async function verifyWashingtonCountySalesShard(
     attempt.active = false;
     if (isCurrentAttempt()) {
       washingtonCountyShardVerificationAttempts.delete(county.countyCode);
-      signalAllActiveWashingtonCountyShardVerificationPredecessors(
-        attempt.previous,
-      );
+      signalAllActiveWashingtonCountyShardVerificationPredecessors(attempt.previous);
     }
   }
 }
@@ -539,14 +640,14 @@ export async function verifyWashingtonCountySalesShard(
  */
 export async function resolveWashingtonCountyStatus(
   signal?: AbortSignal,
-  requestedPackageSource?: WashingtonReferencePackageSource,
+  requestedPackageSource?: WashingtonReferencePackageSource
 ): Promise<WashingtonCountyStatusResolution> {
   const packageSource = requestedPackageSource ?? defaultWashingtonCountyPackageSource();
   if (packageSource === 'conference-local') {
     try {
       const localCounties = await runBoundedWashingtonPublicDataRequest(
         (boundedSignal) => fetchWashingtonCountyStatus(boundedSignal, 'conference-local'),
-        signal,
+        signal
       );
       return {
         counties: localCounties,
@@ -555,10 +656,7 @@ export async function resolveWashingtonCountyStatus(
       };
     } catch (error) {
       if (signal?.aborted) throw error;
-      const fallbackCounties = await fetchWashingtonCountyStatus(
-        signal,
-        'repository-reference',
-      );
+      const fallbackCounties = await fetchWashingtonCountyStatus(signal, 'repository-reference');
       return {
         counties: fallbackCounties,
         packageSource: 'repository-reference',
@@ -570,7 +668,7 @@ export async function resolveWashingtonCountyStatus(
   try {
     const hostedCounties = await runBoundedWashingtonPublicDataRequest(
       (boundedSignal) => fetchWashingtonCountyStatus(boundedSignal, packageSource),
-      signal,
+      signal
     );
     return {
       counties: hostedCounties,
@@ -579,10 +677,7 @@ export async function resolveWashingtonCountyStatus(
     };
   } catch (error) {
     if (signal?.aborted) throw error;
-    const fallbackCounties = await fetchWashingtonCountyStatus(
-      signal,
-      'repository-reference',
-    );
+    const fallbackCounties = await fetchWashingtonCountyStatus(signal, 'repository-reference');
     if (signal?.aborted) throw abortErrorForSignal(signal);
     return {
       counties: fallbackCounties,
