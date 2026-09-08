@@ -2,7 +2,7 @@
 
 Parent: WO-WAL-003, Washington Assessor Launch V1, issue #1485.
 Authority: OWNER-WAL-V1-MISSION-AUTHORITY-20260827 and OWNER-TF-STANDING-OPERATOR-AUTHORITY; current direct owner continuation.
-Status: EXECUTING, bounded child; parent remains ACTIVE.
+Status: DELIVERING, bounded child; parent remains ACTIVE.
 Risk: R5 inherited county-data persistence boundary; this child has no external-source or production access.
 Source base: 0733406fe9067f5d5e61c4a361951c1c3700a9c8.
 Worktree: C:/Users/bsval/tf-wal003e-sync-registration-recheck.
@@ -64,9 +64,11 @@ WO-WAL-003 and issue #1485 remain ACTIVE until their own terminal predicates pas
 
 Actual focused GREEN40534 completed EXIT0 at2026-09-08T12:08:58.3218313Z: the original unchanged regression passed after only the service guard repair. Main then released the planned matrix inside the reserved test file. Actual full-class98736 completed EXIT0 at2026-09-08T12:26:52.0007611Z:34 passed,0 failed,0 skipped, comprising21 persistence-recheck cases and13 existing cases. Independent assurance inspected the actual results and source and returned CLEAR. Exact receipt hashes, source identities, fixture limitations and rollback are in `docs/brain/evidence/WO-WAL-003E-proof.md`. These tests ran against base073 plus explicitly pinned uncommitted source, not a future delivery SHA.
 
-Main is recording only this WO and the canonical proof. The H registry reservation remains exclusive; no003E registry change is currently released. Normal dependency materialization, hooks, exact committed-candidate validation, independent review and protected delivery remain outstanding. No live-source or production activation is released by local test success.
+Normal own frozen install56121 and19-project solution restore passed; normal checkpoint93526 completed EXIT0 at2026-09-08T13:02:02.000989Z, clean3e34deae85895872fad2559c87df151e734083b0. Its entire tree equals reviewed pre-hook8cae5f6e760734eaf050d1f9e8ed6c5ff43b12ee. Independent assurance verified all four source/metadata hashes unchanged. H PR1577 merged at2026-09-08T13:08:44Z, releasing the H registry reservation. Main normally integrated exact protected63bea324baa9d8d9c5300892cae1f781b70465ef into the clean checkpoint, producing57e92dcef3a6d25d65a1046020b4eae5be7f880e. Relative to that base, only the four003E paths differ.
 
-<!-- brain-machine-policy: exact present four-file scope, excluding the held registry -->
+Main now reserves only the new003E record in the registry as the fifth delivery path, preserving every prior record and root metadata. G/K acquire no parallel registry writer. Normal exact integrated-candidate validation, independent final review and protected delivery remain outstanding. No old34-case receipt is retagged to this new head, and no live-source or production activation is released by local test success.
+
+<!-- brain-machine-policy: exact five-file delivery scope; Main edits only the003E registry record -->
 ```json
 {
   "id": "WO-WAL-003E",
@@ -77,11 +79,12 @@ Main is recording only this WO and the canonical proof. The H registry reservati
     "backend/src/TerraFusion.Data/Services/Sync/CountyReadOnlySalesSyncService.cs",
     "backend/tests/TerraFusion.Unit.Tests/Sync/CountyReadOnlySalesSyncServiceTests.cs",
     "docs/brain/workorders/active/WO-WAL-003E-sync-registration-persistence-recheck.md",
-    "docs/brain/evidence/WO-WAL-003E-proof.md"
+    "docs/brain/evidence/WO-WAL-003E-proof.md",
+    "docs/brain/workorders/registry/work-order-registry.seed.json"
   ],
   "forbidden_patterns": [
     "frontend/**", ".github/**", "backend/**/Migrations/**",
-    "backend/src/TerraFusion.API/**", "docs/brain/workorders/registry/**",
+    "backend/src/TerraFusion.API/**",
     "package.json", "pnpm-lock.yaml"
   ],
   "required_proof": [

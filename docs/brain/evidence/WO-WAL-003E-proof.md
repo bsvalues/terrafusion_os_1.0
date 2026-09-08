@@ -54,6 +54,10 @@ Detailed external draft `wal003e-proof-draft.md`, SHA256 `dc03348bbd70065f63ac17
 
 ## Delivery and rollback
 
-Normal clean checkpoint, current-base integration, exact committed-candidate validation, independent final review, required GitHub checks and protected merge remain outstanding. The shared registry remains H-owned until released. Source remains frozen while these steps proceed.
+Normal checkpoint93526 completed EXIT0 at2026-09-08T13:02:02.000989Z, clean3e34deae85895872fad2559c87df151e734083b0. Full committed tree equals pre-hook8cae5f6e760734eaf050d1f9e8ed6c5ff43b12ee; source and then-reviewed metadata hashes remained unchanged. Own frozen install56121 and normal19-project solution restore completed0; Integration tests were not run by that restore. Logs `wal003e-normal-frozen-install-20260908T1257.txt`, `wal003e-normal-solution-restore-20260908T1300.txt` and `wal003e-normal-checkpoint-commit-20260908T1301.txt` retain actual outcomes. Known sparse-config ENOENT hook discovery diagnostics remain qualified; successful normal formatting is not clean-configuration certification.
+
+H PR1577 protected merge63bea324baa9d8d9c5300892cae1f781b70465ef at13:08:44Z released its registry reservation. Main normally integrated it into clean003E, producing57e92dcef3a6d25d65a1046020b4eae5be7f880e with parents3e34 and63bea. Main adds only the003E registry record as the fifth delivery path, preserving prior records/root metadata and releasing no parallel registry writer.
+
+Exact integrated committed-candidate validation, independent final review, required GitHub checks and protected merge remain outstanding. Earlier34-case source receipts remain historical and are not relabeled as a run at57e92 or a subsequent metadata commit. The two production/test files stay frozen.
 
 Code rollback is a normal reviewed revert of this service guard and associated tests/governance through protected delivery. No data deletion/reseed, compensating imports, audit removal or external-source mutation is part of rollback. Prior completed WAL003 children stay closed; this child does not supply actual source credentials, observed least privilege, production deployment or external-assessor acceptance. Parent mission completion remains exclusively subject to its unsatisfied terminal predicates.
