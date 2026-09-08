@@ -4,6 +4,21 @@ Status: CANDIDATE_PERMISSION_FIX_VERIFIED; successor actual browser repeat, prot
 
 ## PR1571 Node20 permission compatibility remediation
 
+CI cause distinction: coordinator inspection of actual frontend shard1 job101926234714 found
+2750passed/64skipped/1failed, the existing PropertyAtlas loading-state test. Its unqualified
+`getByRole('status')` matched multiple legitimate statuses after the Atlas panel was mounted.
+This was the observed shard/Seal failure; do not attribute Seal directly to the separately verified
+Node20 flag defect. Locally on actual Node20.20.2, the unchanged legacy file reproduced14passed/1failed
+with the same multiple-elements error. The one-line correction scopes the same loading assertion
+to existing accessible name `Querying parcel layers`. No status role or application behavior changed.
+Actual Node20 GREEN26/26: all15 existing PropertyAtlas tests plus11 anomaly-panel tests, no skips/retries.
+Command from frontend: `node.exe ../node_modules/vitest/vitest.mjs run
+apps/os-shell/src/__tests__/workbench/PropertyAtlas.test.tsx
+apps/os-shell/src/__tests__/atlas/spatialAnomalyPanel.test.tsx --maxWorkers=1 --minWorkers=1 --retry=0`.
+RED ran the legacy file alone. Logs in the verification directory:
+`node20-legacy-loading-red.log`, `node20-legacy-loading-green.log`. Existing Browserslist age,
+React act deprecation and Router future-flag warnings remain; no semantic/security clean claim.
+
 Verified P1 review `PRRT_kwDOPgG4O86gFVo9`: the previous process host hardcoded `--permission`.
 Actual installed Node20.20.2 rejects that flag (`bad option: --permission`); Node24.19.0 supports it.
 Actual `process.allowedNodeEnvironmentFlags` reports experimental-only on20 and stable-only on24.
