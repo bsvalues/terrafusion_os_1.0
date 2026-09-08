@@ -248,6 +248,11 @@ async function fixture(mode: 'seed' | 'verify') {
       throw new Error('Mandatory fixture was not exactly one executed passing test: ' + field);
 }
 async function startApi(defaultCounty = county) {
+  const defaultCountyCode = new Map([
+    [county, 'wa-benton'],
+    ['99999999-9999-4999-8999-999999999999', 'wa-franklin'],
+  ]).get(defaultCounty);
+  if (!defaultCountyCode) throw new Error('No canonical code for this isolated fixture county.');
   const running = launch(
     dotnet,
     [apiDll, '--skip-dev-seeders'],
@@ -270,7 +275,7 @@ async function startApi(defaultCounty = county) {
       DossierEvidenceRegistryRead__Mode: 'LocalExact',
       DossierPacketWorkflow__Mode: 'LocalExact',
       DefaultCounty__Id: defaultCounty,
-      DefaultCounty__Code: 'synthetic-dossier',
+      DefaultCounty__Code: defaultCountyCode,
       JwtSettings__SecretKey: signingKey,
       PilotRuntime__BaseUrl: 'http://127.0.0.1:1',
       Logging__Console__FormatterName: 'json',
@@ -297,6 +302,10 @@ async function startApi(defaultCounty = county) {
         expect(
           claims.countyId === defaultCounty,
           'Real issuer uses the reserved synthetic county'
+        ).toBe(true);
+        expect(
+          claims.countyCode === defaultCountyCode,
+          'Real issuer county code matches the registry-consistent fixture identity'
         ).toBe(true);
         return;
       }
@@ -637,22 +646,16 @@ test('actual packet narrative, seal and handoff survive reload and restart; stal
   writeFileSync(resolve(run, 'sanitized-service-trace.json'), JSON.stringify(serviceEvidence), {
     flag: 'wx',
   });
-  await test
-    .info()
-    .attach('sanitized-actual-service-trace', {
-      body: JSON.stringify(serviceEvidence),
-      contentType: 'application/json',
-    });
-  await test
-    .info()
-    .attach('actual-action-latency-and-outcomes', {
-      body: JSON.stringify(actionEvidence),
-      contentType: 'application/json',
-    });
-  await test
-    .info()
-    .attach('persisted-dossier-evidence', {
-      body: JSON.stringify({ ...persisted, osCommit }),
-      contentType: 'application/json',
-    });
+  await test.info().attach('sanitized-actual-service-trace', {
+    body: JSON.stringify(serviceEvidence),
+    contentType: 'application/json',
+  });
+  await test.info().attach('actual-action-latency-and-outcomes', {
+    body: JSON.stringify(actionEvidence),
+    contentType: 'application/json',
+  });
+  await test.info().attach('persisted-dossier-evidence', {
+    body: JSON.stringify({ ...persisted, osCommit }),
+    contentType: 'application/json',
+  });
 });
