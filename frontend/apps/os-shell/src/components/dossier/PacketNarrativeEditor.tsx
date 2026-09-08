@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 interface Props { content: string; disabled: boolean; onDirty: (dirty: boolean) => void; onSave: (content: string) => void }
 export default function PacketNarrativeEditor({ content, disabled, onDirty, onSave }: Props) {

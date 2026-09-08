@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import PacketNarrativeEditor from './PacketNarrativeEditor';
 import PacketAppealHandoffPanel from './PacketAppealHandoffPanel';
 import { finalizeWorkflowPacket, getWorkflowPacket, listWorkflowPackets, prepareWorkflowHandoff, saveWorkflowNarrative, reviseWorkflowPacket,
