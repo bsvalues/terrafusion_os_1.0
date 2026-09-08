@@ -5,6 +5,88 @@
   "description": "The completed Five-Suite mission remains terminal. Washington Assessor Launch V1 is the active owner mission; protected 002F is complete and this reconciliation releases exactly upload-specific durable admission-ledger child 002G on protected merge while broad parents 001-004 remain open, WAL-005/006 remain blocked and live-source 003 continuation remains authority-blocked.",
   "records": [
     {
+      "id": "WO-WAL-003E",
+      "title": "Sync Registration Persistence Recheck",
+      "program": "Washington Assessor Launch V1",
+      "goalId": "GOAL-WASHINGTON-ASSESSOR-LAUNCH-V1",
+      "loopId": "LOOP-WASHINGTON-ASSESSOR-LAUNCH-V1",
+      "goal": "Reject disqualifying county connection-registration edits visible at the existing persistence snapshot, preserving prior imports and legitimate audit activity.",
+      "riskClass": "R5",
+      "status": "in_progress",
+      "dependencies": [],
+      "allowedSystems": [
+        {
+          "name": "Existing CountyReadOnlySalesSyncService persistence boundary and isolated synthetic local application tests"
+        }
+      ],
+      "blockedSystems": [
+        {
+          "name": "Live source connections, protected data, external writes, production, schema/auth/adapter/dependency changes and historical import compensation"
+        }
+      ],
+      "allowedFiles": [
+        "backend/src/TerraFusion.Data/Services/Sync/CountyReadOnlySalesSyncService.cs",
+        "backend/tests/TerraFusion.Unit.Tests/Sync/CountyReadOnlySalesSyncServiceTests.cs",
+        "docs/brain/workorders/active/WO-WAL-003E-sync-registration-persistence-recheck.md",
+        "docs/brain/evidence/WO-WAL-003E-proof.md",
+        "docs/brain/workorders/registry/work-order-registry.seed.json"
+      ],
+      "contractReservations": [
+        "Existing wal.county-connected.readonly-sales-sync.v1 snapshot-bound final persistence admission; no new wire shape"
+      ],
+      "environmentReservations": [
+        "wal003e-isolated-synthetic-registration-tests; runtime and heavy slots separately coordinated"
+      ],
+      "evidenceRequired": [
+        {
+          "kind": "file",
+          "description": "Actual unchanged-test RED/GREEN, full34 service regression, exact candidate review and normal protected delivery with SQLite/mock/snapshot limitations."
+        }
+      ],
+      "validationGates": [
+        {
+          "name": "Behavioral registration recheck and preservation regression",
+          "command": "Normal Unit.Tests project and CountyReadOnlySalesSyncServiceTests class",
+          "required": true,
+          "result": "pass",
+          "evidence": [
+            "Actual34130 RED: ExpectedDenied ActualCompleted;40534 original unchanged test GREEN;98736 full34PASS/0FAIL/0SKIP, including21 recheck cases and13 existing. TRX143cd68195ff0e7d463986798a6c7d68274177a0a154754b8aa53de8c875c29a. These are historical073 plus pinned uncommitted source, not later commit/runtime identity. Main and independent assurance CLEAR; proof retains precise provider/mock/snapshot limits."
+          ]
+        },
+        {
+          "name": "Exact integrated candidate validation and protected delivery",
+          "command": "Normal current-candidate service regression, Brain scope/commit-plan, independent review and protected PR lifecycle",
+          "required": true,
+          "result": "pending",
+          "evidence": [
+            "Normal clean checkpoint3e34deae85895872fad2559c87df151e734083b0 retains exact pre-hook tree8cae5f6e760734eaf050d1f9e8ed6c5ff43b12ee. Protected H63bea324baa9d8d9c5300892cae1f781b70465ef integrated by normal merge57e92dcef3a6d25d65a1046020b4eae5be7f880e. Exact subsequent clean candidate8c14ef39c53cab0d269b162a39b1bfabebe3f304 passed actual normal integrated34 run37501 at2026-09-08T13:23:03.699858Z; all24pins/five-pathscope unchanged; TRX683367ed65e73efbdb1ad9b6b8f51dc709e641cd037fe0b62cc8d17df5261971. Final receipt edits are metadata only. Protected delivery remains pending, so this combined gate is not yet pass. Historical tests are not retagged."
+          ]
+        }
+      ],
+      "stopConditions": [
+        {
+          "type": "scope_boundary",
+          "description": "Preserve exact child scope and recorded authority; unknown live-source permission stays denied. No parent completion from child evidence."
+        }
+      ],
+      "nextCandidates": [],
+      "authority": {
+        "mayWrite": true,
+        "mayCommit": true,
+        "mayPush": true,
+        "mayOpenPr": true,
+        "mayMarkReady": true,
+        "mayMerge": true,
+        "mayCleanup": true,
+        "notes": "Main coordinator normal delivery authority under OWNER-TF-STANDING-OPERATOR-AUTHORITY and OWNER-WAL-V1-MISSION-AUTHORITY-20260827, limited to this child. H registry reservation ended on PR1577 protected merge. This edit adds003E only and preserves all prior records/root metadata; no parallel registry writer. Cleanup means owned task resources only, not prior imports/audits. No new source, production or protected-resource grant. Parent WO-WAL-003/#1485 remains ACTIVE until its actual terminal conditions pass."
+      },
+      "provenance": {
+        "createdAt": "2026-09-08T13:11:59.4796560Z",
+        "source": "Existing WO-WAL-003E, recorded standing mission/operator authority and direct continuation; Main's exact reservation and independently reviewed actual execution evidence.",
+        "schemaVersion": "0.1.0"
+      }
+    },
+    {
       "id": "WO-WOE-000",
       "title": "Promote Work Order Operator Pattern",
       "program": "Work Order Engine",
