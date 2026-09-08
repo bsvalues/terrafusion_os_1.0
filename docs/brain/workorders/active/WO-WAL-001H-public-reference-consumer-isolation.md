@@ -4,6 +4,7 @@ Parent: WO-WAL-001 / Washington Assessor Launch V1 / issue #1485.
 Authority: OWNER-WAL-V1-MISSION-AUTHORITY-20260827, OWNER-TF-STANDING-OPERATOR-AUTHORITY and the current direct owner continuation instruction. This records bounded execution, not new authority.
 Status: DELIVERING — actual behavioral RED, SQLite consumer proof and full48 regression independently cleared; normal protected delivery remains pending.
 Base: protected0733406fe9067f5d5e61c4a361951c1c3700a9c8.
+Current integrated protected base: d686d8cb4ec3767c242b7c794f51bb48e1eb4873, normally merged into clean H checkpoint91bd72b8ca0500255f4a09d9f1d06f9a50f78614 as ee46138f069e53b4a4312aee7d695885e2b890d6. Earlier validation identities remain unchanged; final integrated-head regression is separately required.
 Worktree: C:/Users/bsval/tf-wal001h-public-reference-consumer-isolation.
 Branch: codex/wal001h-public-reference-consumer-isolation.
 Risk: R5; county/source-derived identity and persistence selection. No risk downgrade.
@@ -23,7 +24,7 @@ Read-only source evidence at the base identifies three affected queries: PacsBas
 5. backend/src/TerraFusion.Data/Services/GisTf/ArcGisCanonicalProjector.cs
 6. backend/tests/TerraFusion.Unit.Tests/GisTf/ArcGisCanonicalProjectorTests.cs
 
-This Work Order is a coordinator-owned seventh metadata path. Main additionally reserves `docs/brain/evidence/WO-WAL-001H-proof.md` for canonical recording of the now-executed proof. The shared registry remains held behind the existing F delivery reservation; no parallel registry writer is released. No contract, model, Program, migration, configuration, dependency, UI or other suite file is released. No helper outside the six builder paths may be added silently.
+This Work Order is a coordinator-owned seventh metadata path. Main additionally reserves `docs/brain/evidence/WO-WAL-001H-proof.md` for canonical recording of the now-executed proof. F PR1576 merged at2026-09-08T11:58:49Z and its registry writer reservation is released. Main now reserves only H's new record within `docs/brain/workorders/registry/work-order-registry.seed.json` as the ninth path, preserving all existing records and root metadata; no parallel registry writer is released. No contract, model, Program, migration, configuration, dependency, UI or other suite file is released. No helper outside the six builder paths may be added silently.
 
 Five-suite coordinator01a07cd1-5e6f-7a72-9294-9ba4cb975fe9 checked all six paths against the five companions' committed deltas fromed442 and staged/unstaged/untracked changes: no intersection or companion claim. F/G/K/003E reservations are separately disjoint. This is collision clearance, not a data or production grant.
 
@@ -64,7 +65,7 @@ Read root AGENTS/CANON_INDEX, applicable Atlas/Forge packs and existing governin
 
 ## Machine-enforced current delivery scope
 
-This policy records the exact current eight-path reservation above; it does not release the held shared registry or create resource/production authority.
+This policy records the exact current nine-path reservation above, including Main's H-only registry integration. It creates no resource/production authority and does not release any other registry record.
 
 <!-- brain-machine-policy: brain review-diff reads the json block below -->
 ```json
@@ -81,7 +82,8 @@ This policy records the exact current eight-path reservation above; it does not 
     "backend/src/TerraFusion.Data/Services/GisTf/ArcGisCanonicalProjector.cs",
     "backend/tests/TerraFusion.Unit.Tests/GisTf/ArcGisCanonicalProjectorTests.cs",
     "docs/brain/workorders/active/WO-WAL-001H-public-reference-consumer-isolation.md",
-    "docs/brain/evidence/WO-WAL-001H-proof.md"
+    "docs/brain/evidence/WO-WAL-001H-proof.md",
+    "docs/brain/workorders/registry/work-order-registry.seed.json"
   ],
   "forbidden_patterns": [
     "**/ARCHIVE/**",
@@ -92,7 +94,6 @@ This policy records the exact current eight-path reservation above; it does not 
     ".governance/**",
     "backend/**/Migrations/**",
     "backend/src/TerraFusion.API/**",
-    "docs/brain/workorders/registry/**",
     "docs/architecture/TERRAFUSION_SUITE_CONSTITUTION_v1.md"
   ],
   "required_proof": [

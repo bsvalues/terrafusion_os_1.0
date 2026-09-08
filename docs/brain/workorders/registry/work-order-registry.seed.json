@@ -14365,6 +14365,90 @@
       }
     },
     {
+      "id": "WO-WAL-001H",
+      "title": "Public-reference Consumer Isolation",
+      "program": "Washington Assessor Launch V1",
+      "goalId": "GOAL-WASHINGTON-ASSESSOR-LAUNCH-V1",
+      "loopId": "LOOP-WASHINGTON-ASSESSOR-LAUNCH-V1",
+      "goal": "Exclude the separately governed public-reference profile from three existing baseline/geometry consumer ownership queries while preserving legitimate and county-isolated behavior.",
+      "riskClass": "R5",
+      "status": "in_progress",
+      "dependencies": [],
+      "allowedSystems": [
+        {
+          "name": "Existing reconciler, crosswalk and canonical projector ownership queries; synthetic local tests only"
+        }
+      ],
+      "blockedSystems": [
+        {
+          "name": "Public acquisition/import, external sources, production, auth/schema/dependency/configuration changes and historical link repair"
+        }
+      ],
+      "allowedFiles": [
+        "backend/src/TerraFusion.Data/Services/Workbench/Corpus/PacsBaselineReconciler.cs",
+        "backend/tests/TerraFusion.Unit.Tests/Sync/Corpus/PacsBaselineReconcilerTests.cs",
+        "backend/src/TerraFusion.Data/Services/GisTf/ArcGisCrosswalkService.cs",
+        "backend/tests/TerraFusion.Unit.Tests/GisTf/ArcGisRest/ArcGisCrosswalkServiceTests.cs",
+        "backend/src/TerraFusion.Data/Services/GisTf/ArcGisCanonicalProjector.cs",
+        "backend/tests/TerraFusion.Unit.Tests/GisTf/ArcGisCanonicalProjectorTests.cs",
+        "docs/brain/workorders/active/WO-WAL-001H-public-reference-consumer-isolation.md",
+        "docs/brain/evidence/WO-WAL-001H-proof.md",
+        "docs/brain/workorders/registry/work-order-registry.seed.json"
+      ],
+      "contractReservations": [
+        "Consumer ownership exclusion for SOCRATA_PUBLIC_EXPORT / wal.public-parcel-reference.socrata.v1"
+      ],
+      "environmentReservations": ["wal001h-isolated-synthetic-consumer-tests"],
+      "evidenceRequired": [
+        {
+          "kind": "file",
+          "description": "Causal RED, full consumer regression, actual SQLite mapped-schema/audit preservation, exact-head independent review and normal protected delivery."
+        }
+      ],
+      "validationGates": [
+        {
+          "name": "Causal consumer RED and SQLite regression",
+          "command": "Existing normal Unit.Tests project, exact three consumer classes",
+          "required": true,
+          "result": "pass",
+          "evidence": [
+            "Main81446:12 assertion failures/4 controls passed;3772:45 passed;63868:3 actual SQLite facts passed;29091:48 passed/0 failures/skips together. Independent CLEAR. Original073-based candidate pins/identities are preserved in WO-WAL-001H-proof.md; not PostgreSQL, atomicity, G admission or statewide completion."
+          ]
+        },
+        {
+          "name": "Final integrated-head regression and protected delivery",
+          "command": "Exact-head normal consumer regression, Brain review-diff/commit-plan, independent review and protected PR lifecycle",
+          "required": true,
+          "result": "pending",
+          "evidence": [
+            "Clean H checkpoint91bd72b8ca0500255f4a09d9f1d06f9a50f78614 integrated protected F d686d8cb4ec3767c242b7c794f51bb48e1eb4873 by normal merge ee46138f069e53b4a4312aee7d695885e2b890d6. This is source integration, not a new test result."
+          ]
+        }
+      ],
+      "stopConditions": [
+        {
+          "type": "scope_boundary",
+          "description": "Any extra path, source rights, resource slot or production boundary requires its exact existing authority check; no parent completion from this child."
+        }
+      ],
+      "nextCandidates": [],
+      "authority": {
+        "mayWrite": true,
+        "mayCommit": true,
+        "mayPush": true,
+        "mayOpenPr": true,
+        "mayMarkReady": true,
+        "mayMerge": true,
+        "mayCleanup": true,
+        "notes": "Main coordinator delivery authority under OWNER-TF-STANDING-OPERATOR-AUTHORITY within this exact child; not a builder scope expansion. Cleanup means owned task resources only. F's registry reservation ended on protected PR1576 merge; this edit adds H only. G persistence remains held for H protected integration and its own governed admission proof. Parent WO-WAL-001/#1485 remains ACTIVE until its actual terminal conditions pass. No new source, production or protected-resource grant."
+      },
+      "provenance": {
+        "createdAt": "2026-09-08T12:15:00Z",
+        "source": "Existing WO-WAL-001H, OWNER-WAL-V1-MISSION-AUTHORITY-20260827, standing operator authority and direct continuation; Main's exact reservation and actual independently reviewed execution evidence.",
+        "schemaVersion": "0.1.0"
+      }
+    },
+    {
       "id": "WO-WAL-002",
       "title": "Governed County Upload Intake",
       "program": "Washington Assessor Launch V1",

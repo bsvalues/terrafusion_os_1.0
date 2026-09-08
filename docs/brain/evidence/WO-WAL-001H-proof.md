@@ -45,6 +45,10 @@ The full regression receipt contains all26 input pins, including the historical 
 
 ## Limits and rollback
 
+Normal checkpoint commit `91bd72b8ca0500255f4a09d9f1d06f9a50f78614` completed at2026-09-08T12:12:19.8472552Z with eight exact paths and a clean tree. Normal Prettier and `dotnet format` ran; the entire committed tree equals pre-hook staged tree `db70db46e69a9431352e8873b88fd89829b109fa`. The known sparse-config ENOENT output is preserved in `wal001h-normal-checkpoint-commit-20260908T1211.txt`, not suppressed or mistaken for a new clean-config certification. No hook/dependency bypass occurred.
+
+Protected F base `d686d8cb4ec3767c242b7c794f51bb48e1eb4873` was normally merged into that clean checkpoint as `ee46138f069e53b4a4312aee7d695885e2b890d6`; F's nine paths do not overlap H's eight paths. Main is adding only H's registry record and delivery metadata. Final integrated-head regression and protected delivery remain pending, not inferred from the earlier48 receipt.
+
 - SQLite consumer execution is not PostgreSQL, full-model migration, concurrent isolation or multi-save atomicity proof.
 - No G import/persistence, source permission, parcel-baseline landing, publicReady, production deployment or external assessor acceptance is established.
 - No runtime, schema, dependency, auth, shared configuration or historical county data was changed by this repair. Generated local test outputs are not a deployed release.
