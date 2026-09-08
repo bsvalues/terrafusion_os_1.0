@@ -603,9 +603,28 @@ for (const outage of ['transport', 'regression-source'] as const) {
       if (outage === 'regression-source') await startPilot('http://127.0.0.1:0');
       const { envelope } = await runReview(page, required('ATLAS_VALID_YEAR'));
       expect(envelope.ok).toBe(false);
-      if (outage === 'regression-source')
-        expect(envelope.error).toContain('Spatial observation source unavailable');
-      else expect(envelope.errorCode).toBe('PILOT_RUNTIME_UNAVAILABLE');
+      if (outage === 'regression-source') {
+        // ToolRunner intentionally redacts handler diagnostics at the public wire boundary.
+        expect(envelope.errorCode).toBe('EXECUTION_FAILED');
+        const liveSource = await page.request.get(
+          `${baseURL}/api/terraforge/regression?${before.judgment.sourceEvidence.requestQuery}`,
+          { headers: { Authorization: `Bearer ${tokenA}` } }
+        );
+        const liveSourceSha256 = sha256(await liveSource.body());
+        appendFileSync(
+          resolve(runDirectory, 'outages.jsonl'),
+          JSON.stringify({
+            correlationId: envelope.correlationId,
+            outage,
+            pilotSourceBase: 'http://127.0.0.1:0',
+            pilotRunning: Boolean(pilot?.pid && pilot.exitCode === null),
+            actualApiSourceStatus: liveSource.status(),
+            actualApiSourceSha256: liveSourceSha256,
+          }) + '\n'
+        );
+        expect(liveSource.status()).toBe(200);
+        expect(liveSourceSha256).toBe(before.judgment.sourceEvidence.responseSha256);
+      } else expect(envelope.errorCode).toBe('PILOT_RUNTIME_UNAVAILABLE');
       await expect(page.getByRole('alert')).toBeVisible();
       await expect(page.getByText(envelope.correlationId, { exact: true })).toBeVisible();
       await expect(page.getByTestId('atlas-spatial-anomaly-result')).toHaveCount(0);
