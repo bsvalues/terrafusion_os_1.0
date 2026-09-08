@@ -1,4 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { renderToStaticMarkup } from 'react-dom/server';
+import IncomeForge from '../IncomeForge';
 import { useIncomeForgeStore } from '../incomeForgeStore';
 
 const runtime = vi.hoisted(() => ({ fetch: vi.fn(), raw: vi.fn(), session: { userId: 'staff', countyId: '19190019-1919-1919-1919-191919191919', parcelId: 'SYNTHETIC-001' } }));
@@ -26,6 +28,15 @@ describe('canonical Income production state', () => {
       json: async () => await runtime.fetch(...args) }));
     runtime.session.countyId = '19190019-1919-1919-1919-191919191919';
     useIncomeForgeStore.getState().resetValuation(); });
+  it('paints an opaque token-backed root independently of missing semantic utilities', () => {
+    // Render the real component without starting reference-fetch effects. This
+    // guards its explicit paint boundary, not actual browser CSS computation.
+    const container = document.createElement('div');
+    container.innerHTML = renderToStaticMarkup(<IncomeForge />);
+    const root = container.querySelector<HTMLElement>('[data-testid="income-forge"]');
+    expect(root).not.toBeNull();
+    expect(root!.style.backgroundColor).toBe('hsl(var(--tf-bg))');
+  });
   it.each(['SYNTHETIC-001', 'NUMBER-001'])('accepts unique resolved reference %s with distinct ID/number', async reference => {
     runtime.fetch.mockResolvedValue({ ...result, parcelResolution: { ...parcelResolution, requestedReference: reference } });
     await useIncomeForgeStore.getState().calculateValuation({ ...request, parcelId: reference });

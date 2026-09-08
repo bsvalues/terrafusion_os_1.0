@@ -735,7 +735,7 @@ export default function IncomeForge(_props: IncomeForgeProps = {}) {
   }, [fetchReferenceData]);
 
   return (
-    <div data-testid="income-forge" className="h-full overflow-auto overflow-x-hidden bg-background p-5 text-foreground">
+    <div data-testid="income-forge" className="h-full overflow-auto overflow-x-hidden bg-background p-5 text-foreground" style={{ backgroundColor: 'hsl(var(--tf-bg))' }}>
       <header className="mb-4 flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0">
           <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">TerraForge · Income Approach</p>

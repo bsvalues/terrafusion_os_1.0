@@ -413,6 +413,39 @@ async function invoke(page: Page, action: 'cost' | 'income', expectedStatus = 20
     }),
   });
   await page.screenshot({ path: resolve(evidenceRoot, `${action}-${expectedStatus}-${cid}.png`) });
+  if (action === 'income') {
+    const paint = await page.getByTestId('income-forge').evaluate(element => {
+      const style = getComputedStyle(element);
+      return {
+        backgroundColor: style.backgroundColor,
+        opacity: style.opacity,
+        tfBackground: style.getPropertyValue('--tf-bg'),
+        semanticBackground: style.getPropertyValue('--background'),
+      };
+    });
+    const paintPath = resolve(evidenceRoot, `income-${expectedStatus}-${cid}-paint.json`);
+    writeFileSync(
+      paintPath,
+      JSON.stringify({
+        correlationId: cid,
+        status: expectedStatus,
+        ...Object.fromEntries(
+          Object.entries(paint).map(([key, value]) => [key, redact(value).slice(0, 128)])
+        ),
+      }),
+      { flag: 'wx' }
+    );
+    await test.info().attach(`income-${cid}-paint`, {
+      contentType: 'application/json',
+      path: paintPath,
+    });
+    // Chromium serializes the computed sRGB token color as rgb/rgba. Missing
+    // utility paint is rgba(0, 0, 0, 0), which must fail rather than expose glass.
+    expect(paint.backgroundColor).toMatch(
+      /^rgb\(\d+,\s*\d+,\s*\d+\)$|^rgba\(\d+,\s*\d+,\s*\d+,\s*1\)$/
+    );
+    expect(paint.opacity).toBe('1');
+  }
   return { body, wire: response.request().postDataJSON() };
 }
 
