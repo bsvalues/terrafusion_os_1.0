@@ -488,6 +488,18 @@ test('actual source produces protected canonical judgment, inspectable provenanc
     'disabled',
     ''
   );
+  await expect(page.getByRole('option', { name: 'PRD — unavailable' })).toHaveJSProperty(
+    'disabled',
+    true
+  );
+  const enabledMetrics = await page
+    .getByRole('option', { name: 'PRD — unavailable' })
+    .evaluate((option: HTMLOptionElement) =>
+      Array.from((option.parentElement as HTMLSelectElement).options)
+        .filter(item => !item.disabled)
+        .map(item => item.value)
+    );
+  expect(enabledMetrics).toEqual(['residual_cluster']);
   const first = await runReview(page, required('ATLAS_VALID_YEAR'));
   expect(first.envelope.ok).toBe(true);
   expect(first.judgment.status).toBe('OK');
