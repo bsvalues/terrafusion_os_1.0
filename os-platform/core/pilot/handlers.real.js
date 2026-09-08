@@ -55,6 +55,7 @@ exports.registerR1Handlers = registerR1Handlers;
 const backendClient_js_1 = require("./backendClient.js");
 const pilotAuth_js_1 = require("./pilotAuth.js");
 const countyWorkflowHandlers_js_1 = require("./countyWorkflowHandlers.js");
+const atlasSpatialAnomalyHandler_js_1 = require("./atlasSpatialAnomalyHandler.js");
 // ============================================================================
 // Utility: County Match Enforcement
 // ============================================================================
@@ -1545,6 +1546,7 @@ exports.generateComplianceReportRealHandler = generateComplianceReportRealHandle
  */
 function registerR1Handlers(runner, traceService) {
     (0, countyWorkflowHandlers_js_1.registerCountyWorkflowHandlers)(runner);
+    (0, atlasSpatialAnomalyHandler_js_1.registerAtlasSpatialAnomalyHandler)(runner);
     // Week 1 MVP handlers (5)
     runner.registerHandler('run_valuation_model', exports.runValuationModelHandler);
     runner.registerHandler('explain_value_change', exports.explainValueChangeHandler);

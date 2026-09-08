@@ -859,10 +859,23 @@
           },
           "geographyId": {
             "type": "string",
-            "description": "Optional neighborhood or residual cluster identifier"
+            "minLength": 1,
+            "maxLength": 256,
+            "description": "Explicit selected county UUID or existing neighborhood identifier"
+          },
+          "geographyType": {
+            "type": "string",
+            "enum": ["county", "neighborhood"]
           }
         },
-        "required": ["county", "taxYear", "metric"]
+        "required": [
+          "county",
+          "taxYear",
+          "metric",
+          "geographyType",
+          "geographyId"
+        ],
+        "additionalProperties": false
       },
       "officeScope": "assessor"
     },

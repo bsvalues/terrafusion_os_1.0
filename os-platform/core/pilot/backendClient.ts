@@ -81,6 +81,41 @@ function requestUrl(path: string, options?: BackendCallOptions): string {
 // Client
 // ============================================================================
 
+/** Bounded authenticated regression read preserving exact UTF-8 JSON bytes for Atlas provenance. */
+export async function backendGetAtlasRegression(
+  query: URLSearchParams,
+  options: BackendCallOptions
+): Promise<BackendResult<{ body: string }>> {
+  try {
+    const url = requestUrl(`/api/terraforge/regression?${query}`, { ...options, callerAuthorization: true });
+    const headers: Record<string, string> = { Accept: 'application/json', Authorization: `Bearer ${options.token}` };
+    if (options.correlationId && /^[A-Za-z0-9._-]{1,128}$/.test(options.correlationId))
+      headers['X-Correlation-ID'] = options.correlationId;
+    const response = await fetch(url, { headers, redirect: 'error', signal: AbortSignal.timeout(15000) });
+    if (!response.ok || !response.body) {
+      await response.body?.cancel();
+      return { ok: false, status: response.status, error: 'Spatial observation source unavailable.' };
+    }
+    const reader = response.body.getReader();
+    const chunks: Uint8Array[] = [];
+    let size = 0;
+    try {
+      for (;;) {
+        const next = await reader.read();
+        if (next.done) break;
+        size += next.value.byteLength;
+        if (size > 1024 * 1024) throw new Error('Spatial source response exceeds limit.');
+        chunks.push(next.value);
+      }
+    } finally { await reader.cancel(); reader.releaseLock(); }
+    const bytes = Buffer.concat(chunks);
+    const body = new TextDecoder('utf-8', { fatal: true, ignoreBOM: true }).decode(bytes);
+    return { ok: true, status: response.status, data: { body } };
+  } catch {
+    return { ok: false, status: 0, error: 'Spatial observation source unavailable or invalid.' };
+  }
+}
+
 /**
  * POST JSON to a backend endpoint. Returns typed result.
  */
