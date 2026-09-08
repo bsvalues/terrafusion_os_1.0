@@ -1,5 +1,7 @@
 /** @vitest-environment jsdom */
 import '@testing-library/jest-dom';
+import { Typography } from '@mui/material';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { act, cleanup, fireEvent, render, screen, within } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -75,6 +77,46 @@ describe('selected county parcel baseline', () => {
     expect(screen.getByTestId('selected-county-context')).toHaveTextContent(
       /sales review remains unavailable/i
     );
+  });
+
+  it('uses the active theme foreground for the parcel heading despite a pale global h6 color', async () => {
+    // Literal RGB avoids relying on JSDOM CSS-variable resolution for the cascade regression.
+    const theme = createTheme({
+      palette: {
+        mode: 'light',
+        text: { primary: 'rgb(24, 48, 72)' },
+        background: { paper: 'rgb(255, 255, 255)' },
+      },
+    });
+    const globalHeadingStyle = document.createElement('style');
+    globalHeadingStyle.textContent = 'h6 { color: rgb(245, 245, 245); }';
+    document.head.appendChild(globalHeadingStyle);
+    try {
+      render(
+        <ThemeProvider theme={theme}>
+          <div style={{ backgroundColor: theme.palette.background.paper }}>
+            <h6>Global heading control</h6>
+            <Typography component='span' color='text.primary'>
+              Theme foreground control
+            </Typography>
+            <CountiesHub />
+          </div>
+        </ThemeProvider>
+      );
+      await select('Spokane');
+      await within(panel()).findByText(/17 observed runtime parcels/i);
+      // These controls must pass before a heading mismatch counts as the intended behavioral RED.
+      expect(
+        getComputedStyle(screen.getByRole('heading', { name: 'Global heading control' })).color
+      ).toBe('rgb(245, 245, 245)');
+      expect(getComputedStyle(screen.getByText('Theme foreground control')).color).toBe(
+        theme.palette.text.primary
+      );
+      const heading = within(panel()).getByRole('heading', { name: 'Parcel baseline', level: 6 });
+      expect(getComputedStyle(heading).color).toBe(theme.palette.text.primary);
+    } finally {
+      globalHeadingStyle.remove();
+    }
   });
 
   it('renders no parcels without inferring a licensing restriction', async () => {

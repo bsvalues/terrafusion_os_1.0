@@ -118,7 +118,9 @@ function ParcelBaselinePanel({ countyCode }: { countyCode: string }) {
 
   return (
     <Box component='section' role='region' aria-label='Parcel baseline' aria-live='polite'>
-      <Typography variant='h6'>Parcel baseline</Typography>
+      <Typography variant='h6' color='text.primary'>
+        Parcel baseline
+      </Typography>
       {failed ? (
         <Alert
           severity='warning'
