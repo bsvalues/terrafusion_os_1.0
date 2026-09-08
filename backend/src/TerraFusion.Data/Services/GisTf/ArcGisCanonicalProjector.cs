@@ -170,6 +170,14 @@ public sealed class ArcGisCanonicalProjector : IArcGisCanonicalProjector
             var apnIndex = await _db.TfParcels
                 .Where(p => p.CountyId == countyId
                             && p.ParcelNumber != null)
+                // Match the v1.14 ownership exclusion without filtering non-G UNDER_REVIEW parcels.
+                .Where(p => !_db.SyncBridgeSourceXrefs.Any(x =>
+                    x.TfEntityType == "parcel" && x.TfEntityId == p.TfParcelId
+                    && x.SourceSystem == "SOCRATA_PUBLIC_EXPORT"
+                    && _db.SyncBridgeLoadBatches.Any(b => b.LoadBatchId == x.LoadBatchId
+                        && b.SourceFamily == "SOCRATA_PUBLIC_EXPORT"
+                        && b.SourceSystem == "SOCRATA_PUBLIC_EXPORT"
+                        && b.SourceQueryName == "wal.public-parcel-reference.socrata.v1")))
                 .Select(p => new { p.ParcelNumber, p.TfParcelId })
                 .ToListAsync(cancellationToken).ConfigureAwait(false);
 
