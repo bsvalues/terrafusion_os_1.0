@@ -10,6 +10,7 @@ using TerraFusion.Abstractions.Interfaces;
 using TerraFusion.Abstractions.DTOs.Responses;
 using TerraFusion.Core.Entities;
 using TerraFusion.API.Services.Valuation;
+using TerraFusion.API.Services.Valuation.KernelContracts;
 using TerraFusion.Core.DTOs.Kernel;
 using TerraFusion.Core.Services.Batch;
 using DataDbContext = TerraFusion.Data.TerraFusionDbContext;
@@ -32,19 +33,24 @@ public class CostForgeController : ControllerBase
   private readonly DataDbContext _db;
   private readonly TerraFusion.Abstractions.Interfaces.IAuditLogger _auditLogger;
   private readonly ILogger<CostForgeController> _logger;
+  private readonly IForgeApproachKernelClient? _forgeApproaches;
+  private System.Diagnostics.Stopwatch? _canonicalTimer;
+  private string _canonicalOperation = "unknown";
 
   public CostForgeController(
       ICostForgeService costForgeService,
       ICostForgeAIService costForgeAIService,
       DataDbContext db,
       TerraFusion.Abstractions.Interfaces.IAuditLogger auditLogger,
-      ILogger<CostForgeController> logger)
+      ILogger<CostForgeController> logger,
+      IForgeApproachKernelClient? forgeApproaches = null)
   {
     _costForgeService = costForgeService;
     _costForgeAIService = costForgeAIService;
     _db = db;
     _auditLogger = auditLogger;
     _logger = logger;
+    _forgeApproaches = forgeApproaches;
   }
 
 
@@ -337,6 +343,7 @@ public class CostForgeController : ControllerBase
   [RequiresPermission("calculate:property-cost")]
   public async Task<ActionResult<CostAnalysisDto>> CalculatePropertyCost([FromBody] PropertyCostCalculationRequest request)
   {
+    BeginCanonicalApproach("cost");
     var startTime = DateTime.UtcNow;
 
     try
@@ -373,12 +380,12 @@ public class CostForgeController : ControllerBase
           ? await _db.Properties
               .AsNoTracking()
               .Where(p => p.Id == request.PropertyId && p.CountyId == countyContext.CountyId)
-              .Select(p => new { p.Id, p.LandValue })
+              .Select(p => new { p.Id, p.LandValue, p.ParcelId })
               .FirstOrDefaultAsync()
           : await _db.Properties
               .AsNoTracking()
               .Where(p => p.ParcelNumber == request.ParcelNumber && p.CountyId == countyContext.CountyId)
-              .Select(p => new { p.Id, p.LandValue })
+              .Select(p => new { p.Id, p.LandValue, p.ParcelId })
               .FirstOrDefaultAsync();
 
       if (property == null)
@@ -388,24 +395,20 @@ public class CostForgeController : ControllerBase
             : NotFound($"Property not found for parcel: {request.ParcelNumber}");
       }
 
-      CostAnalysisDto result;
-      if (IsRequestDrivenCostAnalysisRequest(request))
+      var unsupportedReferenceLane = CertifiedReferenceUnavailableIfNeeded(countyContext, "CostForge cost approach");
+      if (unsupportedReferenceLane is not null) return unsupportedReferenceLane;
+      if (!TryGetRequestedDecimal(request, out var squareFeet, "squareFeet", "sqft", "buildingSqFt", "buildingSquareFeet", "area_sqft"))
+        return BadRequest(new { code = "MISSING_FIELD", field = "squareFeet", message = "Explicit square feet are required." });
+      var canonical = await RunCanonicalCostAsync(countyContext, property.ParcelId, request.BuildingType, request.Region,
+        squareFeet, request.YearBuilt ?? DateTime.UtcNow.Year - 25,
+        NormalizeRequestedQualityGrade(request.Quality), NormalizeRequestedConditionGrade(request.Condition),
+        NormalizeRequestedComplexityGrade(request.Complexity), property.LandValue);
+      var result = new
       {
-        var unsupportedReferenceLane = CertifiedReferenceUnavailableIfNeeded(
-          countyContext,
-          "Request-driven CostForge cost approach");
-        if (unsupportedReferenceLane is not null)
-          return unsupportedReferenceLane;
-
-        if (!TryBuildRequestDrivenCostAnalysis(request, property.Id, property.LandValue, out var requestDrivenResult))
-          throw new InvalidOperationException("Request-driven CostForge calculation requires square feet, building type, and explicit Reval Area/Cycle.");
-
-        result = requestDrivenResult;
-      }
-      else
-      {
-        result = await _costForgeService.AnalyzeCostAsync(property.Id);
-      }
+        PropertyId = property.Id, TotalCost = canonical.Data.TotalValue, LandValue = canonical.Data.LandValue,
+        ImprovementValue = canonical.Data.Rcnld, AnalysisDate = DateTime.UtcNow,
+        AnalysisMethod = "Canonical Forge cost approach", Canonical = canonical.Data, canonical.Provenance,
+      };
 
       // Calculate performance metrics - target <150ms
       var duration = (DateTime.UtcNow - startTime).TotalMilliseconds;
@@ -421,6 +424,10 @@ public class CostForgeController : ControllerBase
       }
 
       return Ok(result);
+    }
+    catch (ForgeApproachException ex)
+    {
+      return await CanonicalFailure(ex);
     }
     catch (InvalidOperationException ex)
     {
@@ -457,6 +464,76 @@ public class CostForgeController : ControllerBase
     }
   }
 
+  private void BeginCanonicalApproach(string operation)
+  {
+    _canonicalOperation = operation;
+    _canonicalTimer = System.Diagnostics.Stopwatch.StartNew();
+    // Middleware has already validated/generated the CID. Keep its ID identical in
+    // invocation context, response, and the existing AuditLogger's header lookup.
+    var cid = HttpContext.Items["CorrelationId"] as string ?? HttpContext.TraceIdentifier;
+    HttpContext.TraceIdentifier = cid;
+    Request.Headers["X-Correlation-ID"] = cid;
+    Response.Headers["X-Correlation-ID"] = cid;
+  }
+
+  private async Task<ObjectResult> CanonicalFailure(ForgeApproachException exception)
+  {
+    var status = exception.Code is "CANONICAL_INPUT_REJECTED" or "CANONICAL_CONTEXT_REQUIRED" ? 422 : 503;
+    await RecordCanonicalMetricAsync(false, status, exception.Code);
+    return StatusCode(status, new { code = exception.Code, message = exception.Message, correlationId = HttpContext.TraceIdentifier });
+  }
+
+  private async System.Threading.Tasks.Task RecordCanonicalMetricAsync(bool success, int status, string? errorCategory)
+  {
+    var duration = _canonicalTimer?.Elapsed.TotalMilliseconds ?? 0;
+    var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Unknown";
+    var actor = User.FindFirst("sub")?.Value ?? User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "anonymous";
+    var metric = new { operation = _canonicalOperation, correlationId = HttpContext.TraceIdentifier,
+      actor, outcome = success ? "success" : "failure", errorCategory, errorCount = success ? 0 : 1,
+      environment, measurement = "api-action-to-canonical-result", durationMs = duration };
+    await _auditLogger.LogAsync($"CostForge:Canonical:{_canonicalOperation}:Metric",
+      System.Text.Json.JsonSerializer.Serialize(metric), success);
+    await _auditLogger.LogApiCallAsync(Request.Method, Request.Path, status, duration, actor);
+    _logger.LogInformation("Canonical Forge metric {Operation} CID={CorrelationId} Outcome={Outcome} ErrorCategory={ErrorCategory} DurationMs={DurationMs} Environment={Environment}",
+      _canonicalOperation, HttpContext.TraceIdentifier, metric.outcome, errorCategory, duration, environment);
+  }
+
+  private async Task<ForgeApproachInvocation<ForgeCostResult>> RunCanonicalCostAsync(
+    CountyContext county, string parcelId, string buildingType, string region, decimal squareFeet,
+    int yearBuilt, string quality, string condition, string complexity, decimal landValue)
+  {
+    if (_forgeApproaches is null)
+      throw new ForgeApproachException("CANONICAL_RUNTIME_UNAVAILABLE", "Canonical Cost/Income runtime is not registered.");
+    var normalizedType = NormalizeRequestedBuildingType(buildingType);
+    var revalArea = NormalizeExplicitRevalArea(region)
+      ?? throw new ForgeApproachException("CANONICAL_INPUT_REJECTED", "Explicit Reval Area/Cycle is required.");
+    var entry = BentonCostData.CostMatrix.FirstOrDefault(e =>
+      e.BuildingType.Equals(normalizedType, StringComparison.OrdinalIgnoreCase) && e.Region.Equals(revalArea, StringComparison.OrdinalIgnoreCase))
+      ?? throw new ForgeApproachException("CANONICAL_INPUT_REJECTED", "No cost reference matches the building type and Reval Area.");
+    var residential = normalizedType.StartsWith("R", StringComparison.OrdinalIgnoreCase)
+      || normalizedType.StartsWith("A", StringComparison.OrdinalIgnoreCase);
+    var age = Math.Max(0, DateTime.UtcNow.Year - yearBuilt);
+    // Resolve existing references only. All value arithmetic executes in the canonical suite.
+    var payload = new ForgeCostPayload("1.0.0", parcelId, squareFeet, entry.BaseCostPerSqft,
+      BentonCostData.RegionFactors.GetValueOrDefault(revalArea, 1m),
+      BentonCostData.QualityFactors.GetValueOrDefault(quality.ToUpperInvariant(), 1m),
+      BentonCostData.ComplexityFactors.GetValueOrDefault(complexity.ToUpperInvariant(), 1m),
+      GetDepreciationFactor(age, residential), BentonCostData.ConditionFactors.GetValueOrDefault(condition.ToUpperInvariant(), 1m), landValue);
+    var result = await _forgeApproaches.CostAsync(payload, new(county.CountyId, parcelId, HttpContext.TraceIdentifier), HttpContext.RequestAborted);
+    await TraceCanonicalApproachAsync("cost", result.Provenance);
+    return result;
+  }
+
+  private async System.Threading.Tasks.Task TraceCanonicalApproachAsync(string action, ForgeApproachProvenance provenance)
+  {
+    Response.Headers["X-CostForge-Source"] = $"git:{provenance.SourceCommit}";
+    Response.Headers["X-Correlation-Id"] = provenance.RequestId;
+    await _auditLogger.LogUserActionAsync($"CostForge:Canonical:{action}", User.FindFirst("sub")?.Value ?? "anonymous",
+      $"CountyId={provenance.CountyId};ParcelId={provenance.ParcelId};CorrelationId={provenance.RequestId};Source={provenance.SourceCommit};Binary={provenance.ExecutableSha256};Input={provenance.InputHash};Event={provenance.AuditEventId}");
+    await RecordCanonicalMetricAsync(true, 200, null);
+  }
+
+  // Legacy preview helpers are isolated from production Cost/Income actions.
   private static bool IsRequestDrivenCostAnalysisRequest(PropertyCostCalculationRequest request)
   {
     return TryGetRequestedDecimal(request, out var squareFeet, "squareFeet", "sqft", "buildingSqFt", "buildingSquareFeet", "area_sqft")
@@ -1482,6 +1559,7 @@ public class CostForgeController : ControllerBase
   [HttpPost("cost-estimate")]
   public async System.Threading.Tasks.Task<ActionResult> CalculateCostEstimate([FromBody] CostEstimateRequest request)
   {
+    BeginCanonicalApproach("cost");
     var countyContext = await ResolveCountyContextAsync();
     if (countyContext is null)
       return Forbid();
@@ -1507,29 +1585,34 @@ public class CostForgeController : ControllerBase
         Status = 400,
       });
 
-    var result = ComputeCostEstimate(
-      request.BuildingType,
-      revalArea,
-      request.SquareFeet,
-      request.YearBuilt ?? DateTime.UtcNow.Year,
-      request.QualityGrade ?? "STANDARD",
-      request.ConditionGrade ?? "GOOD",
-      request.ComplexityGrade ?? "STANDARD");
-
-    if (result is null)
-      return BadRequest(new ProblemDetails
+    try
+    {
+      var parcelId = await ResolveApproachParcelAsync(countyContext, request.ParcelId);
+      var year = request.YearBuilt ?? DateTime.UtcNow.Year;
+      var quality = request.QualityGrade ?? "STANDARD";
+      var condition = request.ConditionGrade ?? "GOOD";
+      var complexity = request.ComplexityGrade ?? "STANDARD";
+      var invocation = await RunCanonicalCostAsync(countyContext, parcelId, request.BuildingType,
+        revalArea, request.SquareFeet, year, quality, condition, complexity, 0m);
+      var normalizedType = NormalizeRequestedBuildingType(request.BuildingType);
+      var entry = BentonCostData.CostMatrix.First(e => e.BuildingType.Equals(normalizedType, StringComparison.OrdinalIgnoreCase)
+        && e.Region.Equals(revalArea, StringComparison.OrdinalIgnoreCase));
+      var age = Math.Max(0, DateTime.UtcNow.Year - year);
+      return Ok(new
       {
-        Title = "Unknown building type or region",
-        Detail = $"BuildingType '{request.BuildingType}' or Region '{request.Region}' not found in Benton County 2025 cost matrix.",
-        Status = 400,
+        entry.BuildingType, entry.BuildingTypeLabel, RevalArea = revalArea, request.SquareFeet, YearBuilt = year, Age = age,
+        entry.BaseCostPerSqft, RevalAreaFactor = BentonCostData.RegionFactors.GetValueOrDefault(revalArea, 1m),
+        QualityGrade = quality, QualityFactor = BentonCostData.QualityFactors.GetValueOrDefault(quality.ToUpperInvariant(), 1m),
+        ConditionGrade = condition, ConditionFactor = BentonCostData.ConditionFactors.GetValueOrDefault(condition.ToUpperInvariant(), 1m),
+        ComplexityGrade = complexity, ComplexityFactor = BentonCostData.ComplexityFactors.GetValueOrDefault(complexity.ToUpperInvariant(), 1m),
+        DepreciationFactor = GetDepreciationFactor(age, normalizedType.StartsWith("R", StringComparison.OrdinalIgnoreCase)
+          || normalizedType.StartsWith("A", StringComparison.OrdinalIgnoreCase)),
+        invocation.Data.RcnPerSqft, invocation.Data.RcndPerSqft, invocation.Data.AdjustedCostPerSqft,
+        TotalCost = invocation.Data.Rcnld, AssessedValue = invocation.Data.Rcnld, AssessmentRatio = 1m, MatrixYear = 2025,
+        Source = $"git:{invocation.Provenance.SourceCommit}", Canonical = invocation.Data, invocation.Provenance,
       });
-
-    await _auditLogger.LogUserActionAsync("CostForge:RealEstimate",
-      User.FindFirst("sub")?.Value ?? "anonymous",
-      $"BuildingType={request.BuildingType}, Region={revalArea}, SqFt={request.SquareFeet}");
-
-    Response.Headers["X-CostForge-Source"] = "benton-real-calculator-fy2025";
-    return Ok(result);
+    }
+    catch (ForgeApproachException exception) { return await CanonicalFailure(exception); }
   }
 
   /// <summary>
@@ -1777,47 +1860,32 @@ public class CostForgeController : ControllerBase
   [HttpPost("income-approach/calculate-noi")]
   public async System.Threading.Tasks.Task<ActionResult> CalculateNoi([FromBody] NoiCalculationRequest request)
   {
+    BeginCanonicalApproach("income");
     var countyContext = await ResolveCountyContextAsync();
-    if (countyContext is null)
-      return Unauthorized(new { error = "County context required." });
-
-    var unsupportedReferenceLane = CertifiedReferenceUnavailableIfNeeded(
-      countyContext,
-      "Income approach NOI calculation");
-    if (unsupportedReferenceLane is not null)
-      return unsupportedReferenceLane;
-
-    if (request.AnnualRentalIncome <= 0)
-      return BadRequest(new { error = "AnnualRentalIncome must be positive." });
-    if (request.VacancyRate < 0 || request.VacancyRate > 100)
-      return BadRequest(new { error = "VacancyRate must be between 0 and 100." });
-
-    var effectiveGrossIncome = BankersRound(
-      request.AnnualRentalIncome * (1m - request.VacancyRate / 100m) + request.OtherIncome);
-
-    var totalExpenses = BankersRound(
-      request.PropertyTaxes + request.Insurance + request.Utilities
-      + request.Maintenance + request.ManagementFees
-      + request.ReplacementReserves + request.OtherExpenses);
-
-    var noi = BankersRound(effectiveGrossIncome - totalExpenses);
-
-    var expenseRatio = effectiveGrossIncome > 0
-      ? BankersRound(totalExpenses / effectiveGrossIncome * 100m)
-      : 0m;
-
-    Response.Headers["X-CostForge-Source"] = "benton-real-income-approach-fy2025";
-    return Ok(new NoiResult
+    if (countyContext is null) return Unauthorized(new { error = "County context required." });
+    var unsupportedReferenceLane = CertifiedReferenceUnavailableIfNeeded(countyContext, "Income approach NOI calculation");
+    if (unsupportedReferenceLane is not null) return unsupportedReferenceLane;
+    try
     {
-      AnnualRentalIncome = request.AnnualRentalIncome,
-      VacancyRate = request.VacancyRate,
-      OtherIncome = request.OtherIncome,
-      EffectiveGrossIncome = effectiveGrossIncome,
-      TotalExpenses = totalExpenses,
-      ExpenseRatio = expenseRatio,
-      NetOperatingIncome = noi,
-      Source = "Benton County Assessor – Income Approach Calculator FY 2025",
-    });
+      if (_forgeApproaches is null)
+        throw new ForgeApproachException("CANONICAL_RUNTIME_UNAVAILABLE", "Canonical Cost/Income runtime is not registered.");
+      var parcelId = await ResolveApproachParcelAsync(countyContext, request.ParcelId);
+      // NOI-only projection supplies neutral required capitalization fields and never exposes a capitalized value.
+      var payload = new ForgeIncomePayload("1.0.0", parcelId, request.AnnualRentalIncome, request.VacancyRate, request.OtherIncome,
+        new(request.PropertyTaxes, request.Insurance, request.Utilities, request.Maintenance,
+          request.ManagementFees, request.ReplacementReserves, request.OtherExpenses), 1m, 1m);
+      var invocation = await _forgeApproaches.IncomeAsync(payload,
+        new(countyContext.CountyId, parcelId, HttpContext.TraceIdentifier), HttpContext.RequestAborted);
+      await TraceCanonicalApproachAsync("income", invocation.Provenance);
+      var data = invocation.Data;
+      return Ok(new
+      {
+        data.AnnualRentalIncome, request.VacancyRate, data.OtherIncome, data.EffectiveGrossIncome,
+        data.TotalExpenses, data.ExpenseRatio, data.NetOperatingIncome,
+        Source = $"git:{invocation.Provenance.SourceCommit}", invocation.Provenance,
+      });
+    }
+    catch (ForgeApproachException exception) { return await CanonicalFailure(exception); }
   }
 
   /// <summary>
@@ -1826,69 +1894,48 @@ public class CostForgeController : ControllerBase
   [HttpPost("income-approach/calculate-valuation")]
   public async System.Threading.Tasks.Task<ActionResult> CalculateIncomeValuation([FromBody] IncomeValuationRequest request)
   {
+    BeginCanonicalApproach("income");
     var countyContext = await ResolveCountyContextAsync();
-    if (countyContext is null)
-      return Unauthorized(new { error = "County context required." });
-
-    var unsupportedReferenceLane = CertifiedReferenceUnavailableIfNeeded(
-      countyContext,
-      "Income approach valuation");
-    if (unsupportedReferenceLane is not null)
-      return unsupportedReferenceLane;
-
-    if (request.AnnualRentalIncome <= 0)
-      return BadRequest(new { error = "AnnualRentalIncome must be positive." });
-    if (request.VacancyRate < 0 || request.VacancyRate > 100)
-      return BadRequest(new { error = "VacancyRate must be between 0 and 100." });
-    if (request.CapRate <= 0 || request.CapRate > 25)
-      return BadRequest(new { error = "CapRate must be between 0 and 25." });
-
-    // NOI calculation
-    var effectiveGrossIncome = BankersRound(
-      request.AnnualRentalIncome * (1m - request.VacancyRate / 100m) + request.OtherIncome);
-
-    var totalExpenses = BankersRound(
-      request.PropertyTaxes + request.Insurance + request.Utilities
-      + request.Maintenance + request.ManagementFees
-      + request.ReplacementReserves + request.OtherExpenses);
-
-    var noi = BankersRound(effectiveGrossIncome - totalExpenses);
-
-    // Location premium
-    var locationMultiplier = BentonIncomeData.LocationPremiums
-      .FirstOrDefault(lp => lp.Location.Equals(request.Location ?? "", StringComparison.OrdinalIgnoreCase))
-      ?.Multiplier ?? 1.00m;
-
-    // Income approach valuation = NOI / cap rate
-    var capRateDecimal = request.CapRate / 100m;
-    var rawValuation = noi > 0 ? BankersRound(noi / capRateDecimal) : 0m;
-    var adjustedValuation = BankersRound(rawValuation * locationMultiplier);
-
-    // Gross Income Multiplier
-    var gim = effectiveGrossIncome > 0
-      ? BankersRound(adjustedValuation / effectiveGrossIncome)
-      : 0m;
-
-    // Risk classification (from quarantine: cap>7 && coc>8=low, cap<4||coc<3=high, else medium)
-    var cashOnCashReturn = rawValuation > 0 ? (double)(noi / rawValuation * 100m) : 0.0;
-    var riskLevel = ClassifyRisk((double)request.CapRate, cashOnCashReturn);
-
-    Response.Headers["X-CostForge-Source"] = "benton-real-income-approach-fy2025";
-    return Ok(new IncomeValuationResult
+    if (countyContext is null) return Unauthorized(new { error = "County context required." });
+    var unsupportedReferenceLane = CertifiedReferenceUnavailableIfNeeded(countyContext, "Income approach valuation");
+    if (unsupportedReferenceLane is not null) return unsupportedReferenceLane;
+    try
     {
-      NetOperatingIncome = noi,
-      CapRate = request.CapRate,
-      Location = request.Location ?? "unspecified",
-      LocationMultiplier = locationMultiplier,
-      PropertyType = request.PropertyType ?? "residential",
-      RawValuation = rawValuation,
-      AdjustedValuation = adjustedValuation,
-      GrossIncomeMultiplier = gim,
-      CashOnCashReturn = BankersRound((decimal)cashOnCashReturn),
-      RiskClassification = riskLevel,
-      EffectiveDate = "2025-01-01",
-      Source = "Benton County Assessor – Income Approach Valuation FY 2025",
-    });
+      if (_forgeApproaches is null)
+        throw new ForgeApproachException("CANONICAL_RUNTIME_UNAVAILABLE", "Canonical Cost/Income runtime is not registered.");
+      var parcelId = await ResolveApproachParcelAsync(countyContext, request.ParcelId);
+      var locationMultiplier = BentonIncomeData.LocationPremiums
+        .FirstOrDefault(lp => lp.Location.Equals(request.Location ?? "", StringComparison.OrdinalIgnoreCase))?.Multiplier ?? 1m;
+      var payload = new ForgeIncomePayload("1.0.0", parcelId, request.AnnualRentalIncome, request.VacancyRate, request.OtherIncome,
+        new(request.PropertyTaxes, request.Insurance, request.Utilities, request.Maintenance,
+          request.ManagementFees, request.ReplacementReserves, request.OtherExpenses), request.CapRate, locationMultiplier);
+      var invocation = await _forgeApproaches.IncomeAsync(payload,
+        new(countyContext.CountyId, parcelId, HttpContext.TraceIdentifier), HttpContext.RequestAborted);
+      await TraceCanonicalApproachAsync("income", invocation.Provenance);
+      var data = invocation.Data;
+      return Ok(new
+      {
+        data.NetOperatingIncome, data.CapRate, Location = request.Location ?? "unspecified",
+        data.LocationMultiplier, PropertyType = request.PropertyType ?? "residential",
+        data.RawValuation, data.AdjustedValuation, data.GrossIncomeMultiplier, data.CashOnCashReturn, data.RiskClassification,
+        EffectiveDate = "2025-01-01", Source = $"git:{invocation.Provenance.SourceCommit}",
+        ReferenceSource = "Benton County Assessor – Income Approach Market Study FY 2025",
+        Canonical = data, invocation.Provenance,
+      });
+    }
+    catch (ForgeApproachException exception) { return await CanonicalFailure(exception); }
+  }
+
+  private async Task<string> ResolveApproachParcelAsync(CountyContext county, string? requestedParcel)
+  {
+    if (string.IsNullOrWhiteSpace(requestedParcel))
+      throw new ForgeApproachException("CANONICAL_CONTEXT_REQUIRED", "An explicit parcel is required.");
+    var parcel = await _db.Properties.AsNoTracking()
+      .Where(p => p.CountyId == county.CountyId && (p.ParcelId == requestedParcel || p.ParcelNumber == requestedParcel))
+      .Select(p => p.ParcelId).Take(2).ToListAsync(HttpContext.RequestAborted);
+    if (parcel.Count != 1)
+      throw new ForgeApproachException("CANONICAL_CONTEXT_REQUIRED", "Exactly one parcel must resolve in the authenticated county.");
+    return parcel[0];
   }
 
   internal static string ClassifyRisk(double capRate, double cashOnCash)
@@ -1902,6 +1949,7 @@ public class CostForgeController : ControllerBase
 
   public sealed record NoiCalculationRequest
   {
+    public string? ParcelId { get; init; }
     public decimal AnnualRentalIncome { get; init; }
     public decimal VacancyRate { get; init; } = 5m;
     public decimal OtherIncome { get; init; }
@@ -1916,6 +1964,7 @@ public class CostForgeController : ControllerBase
 
   public sealed record IncomeValuationRequest
   {
+    public string? ParcelId { get; init; }
     public decimal AnnualRentalIncome { get; init; }
     public decimal VacancyRate { get; init; } = 5m;
     public decimal OtherIncome { get; init; }
@@ -8532,6 +8581,7 @@ public class CostForgeController : ControllerBase
 
 public class CostEstimateRequest
 {
+  public string? ParcelId { get; set; }
   [Required]
   public string BuildingType { get; set; } = "";
   public string? Region { get; set; }

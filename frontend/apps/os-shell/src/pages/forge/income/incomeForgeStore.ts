@@ -9,7 +9,7 @@ import { create } from 'zustand';
 import { getToken } from '@/auth/authStorage';
 import { getSession } from '@/auth/session';
 import { buildCountyScopedSessionHeaders } from '@/services/countyIsolation';
-import { apiFetchJson } from '../../../lib/apiBase';
+import { apiFetch, apiFetchJson } from '../../../lib/apiBase';
 
 export interface CapRateEntry {
   propertyType: string;
@@ -84,6 +84,7 @@ export interface IncomeExpenses {
 }
 
 export interface IncomeValuationRequest {
+  parcelId: string;
   annualRentalIncome: number;
   vacancyRate: number;
   otherIncome: number;
@@ -94,6 +95,12 @@ export interface IncomeValuationRequest {
 }
 
 export interface IncomeValuationResult {
+  canonical?: { schemaVersion: string; parcelId: string; annualRentalIncome: number; vacancyLoss: number;
+    otherIncome: number; effectiveGrossIncome: number; totalExpenses: number; expenseRatio: number;
+    netOperatingIncome: number; capRate: number; locationMultiplier: number; rawValuation: number;
+    adjustedValuation: number; grossIncomeMultiplier: number; cashOnCashReturn: number; riskClassification: string };
+  provenance?: { countyId: string; parcelId: string; sourceCommit: string; executableSha256: string;
+    inputHash: string; requestId: string; stdoutSha256: string; auditEventId: string };
   netOperatingIncome: number;
   capRate: number;
   location: string;
@@ -141,6 +148,7 @@ interface IncomeForgeState {
   expensesError: string | null;
   locationsError: string | null;
   valuationError: string | null;
+  valuationErrorCorrelationId: string | null;
 
   stats: IncomeForgeStats;
   referenceSource: string | null;
@@ -152,7 +160,11 @@ interface IncomeForgeState {
   fetchExpenseRatios: () => Promise<void>;
   fetchLocationPremiums: () => Promise<void>;
   calculateValuation: (request: IncomeValuationRequest) => Promise<void>;
+  resetValuation: () => void;
 }
+
+let valuationGeneration = 0;
+let valuationRequest: AbortController | null = null;
 
 const emptyStats: IncomeForgeStats = {
   propertyTypes: 0,
@@ -197,6 +209,7 @@ function markUnsupportedCounty(set: (partial: Partial<IncomeForgeState>) => void
     expensesError: null,
     locationsError: null,
     valuationError: null,
+    valuationErrorCorrelationId: null,
     capRates: [],
     marketData: null,
     expenseRatios: [],
@@ -237,6 +250,7 @@ export const useIncomeForgeStore = create<IncomeForgeState>((set, get) => ({
   expensesError: null,
   locationsError: null,
   valuationError: null,
+  valuationErrorCorrelationId: null,
 
   stats: emptyStats,
   referenceSource: null,
@@ -358,19 +372,27 @@ export const useIncomeForgeStore = create<IncomeForgeState>((set, get) => ({
   },
 
   calculateValuation: async (request: IncomeValuationRequest) => {
+    const generation = ++valuationGeneration;
+    valuationRequest?.abort();
+    const controller = new AbortController(); valuationRequest = controller;
+    const sessionIdentity = JSON.stringify(getSession());
+    const isCurrent = () => generation === valuationGeneration && sessionIdentity === JSON.stringify(getSession());
     const { headers, countyScope } = incomeForgeHeaders();
     if (!countyScope.supported) {
       markUnsupportedCounty(set);
       return;
     }
-    set({ valuationLoading: true, valuationError: null });
+    set({ valuationLoading: true, valuationError: null, valuationErrorCorrelationId: null, valuationResult: null });
     try {
-      const data = await apiFetchJson<IncomeValuationResult>(
+      if (!request.parcelId?.trim()) throw new Error('An explicit parcel is required for canonical Income.');
+      const response = await apiFetch(
         '/costforge/income-approach/calculate-valuation',
         {
           method: 'POST',
           headers,
+          signal: controller.signal,
           body: JSON.stringify({
+            parcelId: request.parcelId,
             annualRentalIncome: request.annualRentalIncome,
             vacancyRate: request.vacancyRate,
             otherIncome: request.otherIncome,
@@ -387,9 +409,43 @@ export const useIncomeForgeStore = create<IncomeForgeState>((set, get) => ({
           }),
         }
       );
+      if (!response.ok) {
+        const failure = await response.json().catch(() => ({})) as { code?: string; message?: string; correlationId?: string };
+        const cid = response.headers.get('X-Correlation-ID') ?? failure.correlationId;
+        if (isCurrent() && typeof cid === 'string' && /^[A-Za-z0-9._-]{1,128}$/.test(cid)) set({ valuationErrorCorrelationId: cid });
+        throw new Error([failure.code ?? `Canonical Income request failed: ${response.status}`, failure.message].filter(Boolean).join(' — '));
+      }
+      const data = await response.json() as IncomeValuationResult;
+      if (!isCurrent()) return;
+      const canonical = data.canonical;
+      if (canonical?.schemaVersion !== '1.0.0' || canonical.parcelId !== request.parcelId
+        || data.provenance?.parcelId !== request.parcelId || !/^[a-f0-9]{40}$/.test(data.provenance.sourceCommit)
+        || typeof data.provenance.countyId !== 'string'
+        || !bentonCountyIds.has(data.provenance.countyId.trim().toLowerCase())
+        || !/^[a-f0-9]{64}$/.test(data.provenance.executableSha256) || !/^[a-f0-9]{64}$/.test(data.provenance.inputHash)
+        || !/^[a-f0-9]{64}$/.test(data.provenance.stdoutSha256)
+        || typeof data.provenance.requestId !== 'string' || !data.provenance.requestId.trim()
+        || typeof data.provenance.auditEventId !== 'string' || !data.provenance.auditEventId.trim()
+        || ![canonical.annualRentalIncome, canonical.vacancyLoss, canonical.otherIncome, canonical.effectiveGrossIncome,
+          canonical.totalExpenses, canonical.expenseRatio, canonical.netOperatingIncome, canonical.capRate,
+          canonical.locationMultiplier, canonical.rawValuation, canonical.adjustedValuation,
+          canonical.grossIncomeMultiplier, canonical.cashOnCashReturn].every(Number.isFinite)
+        || typeof canonical.riskClassification !== 'string' || !canonical.riskClassification.trim()
+        || data.netOperatingIncome !== canonical.netOperatingIncome || data.capRate !== canonical.capRate
+        || data.locationMultiplier !== canonical.locationMultiplier || data.rawValuation !== canonical.rawValuation
+        || data.adjustedValuation !== canonical.adjustedValuation || data.grossIncomeMultiplier !== canonical.grossIncomeMultiplier
+        || data.cashOnCashReturn !== canonical.cashOnCashReturn || data.riskClassification !== canonical.riskClassification)
+        throw new Error('Canonical Income response provenance is missing or mismatched.');
       set({ countyScope, valuationResult: data, valuationLoading: false });
     } catch (error: unknown) {
-      set({ valuationError: errorMessage(error), valuationLoading: false });
+      if (isCurrent()) set({ valuationError: errorMessage(error), valuationLoading: false, valuationResult: null });
+    } finally {
+      if (generation === valuationGeneration) set({ valuationLoading: false });
     }
+  },
+  resetValuation: () => {
+    valuationGeneration++;
+    valuationRequest?.abort();
+    set({ valuationResult: null, valuationError: null, valuationErrorCorrelationId: null, valuationLoading: false });
   },
 }));

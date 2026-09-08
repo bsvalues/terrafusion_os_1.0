@@ -5,12 +5,14 @@
  * It uses the existing live IncomeForge reference feeds to help staff decide
  * whether a parcel has enough income evidence to support the income approach.
  */
-import { useEffect, useMemo, useState } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useIncomeForgeStore } from './incomeForgeStore';
+import { getSession } from '@/auth/session';
+import { AuthContext } from '@/auth/authContextDef';
 
-type IncomeTab = 'desk' | 'cap-rates' | 'market' | 'expenses' | 'locations';
+type IncomeTab = 'desk' | 'calculate' | 'cap-rates' | 'market' | 'expenses' | 'locations';
 type ReviewerDecision = 'Needs Data' | 'Ready for Review' | 'Chief Review Hold';
 
 interface IncomeCase {
@@ -30,6 +32,7 @@ interface IncomeWorkflowState {
 
 const TABS: { id: IncomeTab; label: string }[] = [
   { id: 'desk', label: 'Review Desk' },
+  { id: 'calculate', label: 'Calculate' },
   { id: 'cap-rates', label: 'Cap Rates' },
   { id: 'market', label: 'Market Data' },
   { id: 'expenses', label: 'Expenses' },
@@ -649,6 +652,78 @@ export interface IncomeForgeProps {
   metadata?: Record<string, unknown>;
 }
 
+const CALCULATION_EXPENSES = [
+  ['propertyTaxes', 'Property Taxes'], ['insurance', 'Insurance'], ['utilities', 'Utilities'],
+  ['maintenance', 'Maintenance'], ['managementFees', 'Management Fees'],
+  ['replacementReserves', 'Replacement Reserves'], ['otherExpenses', 'Other Expenses'],
+] as const;
+
+function IncomeCalculator() {
+  const auth = useContext(AuthContext);
+  const session = getSession();
+  const contextKey = JSON.stringify([session?.countyId, session?.userId, session?.parcelId, auth?.token]);
+  const calculate = useIncomeForgeStore(s => s.calculateValuation);
+  const reset = useIncomeForgeStore(s => s.resetValuation);
+  const result = useIncomeForgeStore(s => s.valuationResult);
+  const loading = useIncomeForgeStore(s => s.valuationLoading);
+  const error = useIncomeForgeStore(s => s.valuationError);
+  const errorCorrelationId = useIncomeForgeStore(s => s.valuationErrorCorrelationId);
+  const scope = useIncomeForgeStore(s => s.countyScope);
+  const [form, setForm] = useState({ parcelId: session?.parcelId ?? '', annualRentalIncome: '', vacancyRate: '', otherIncome: '0', capRate: '', location: '', propertyType: 'commercial',
+    propertyTaxes: '0', insurance: '0', utilities: '0', maintenance: '0', managementFees: '0', replacementReserves: '0', otherExpenses: '0' });
+  useEffect(() => { reset(); setForm(current => ({ ...current, parcelId: getSession()?.parcelId ?? '' })); return reset; }, [contextKey, reset]);
+  const update = (field: keyof typeof form, value: string) => { reset(); setForm(current => ({ ...current, [field]: value })); };
+  const numeric = (value: string) => value.trim() ? Number(value) : Number.NaN;
+  const run = async () => {
+    await calculate({ parcelId: form.parcelId, annualRentalIncome: numeric(form.annualRentalIncome),
+      vacancyRate: numeric(form.vacancyRate), otherIncome: numeric(form.otherIncome), capRate: numeric(form.capRate),
+      location: form.location, propertyType: form.propertyType,
+      expenses: { propertyTaxes: numeric(form.propertyTaxes), insurance: numeric(form.insurance), utilities: numeric(form.utilities),
+        maintenance: numeric(form.maintenance), managementFees: numeric(form.managementFees),
+        replacementReserves: numeric(form.replacementReserves), otherExpenses: numeric(form.otherExpenses) } });
+  };
+  return (
+    <Card>
+      <CardHeader><CardTitle>Canonical Income Calculation</CardTitle></CardHeader>
+      <CardContent className="space-y-4">
+        <p className="text-sm text-muted-foreground">Use explicit annual income, expenses and percentage rates. Results are calculations only; no value or county record is saved.</p>
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {([['parcelId', 'Parcel ID'], ['annualRentalIncome', 'Annual Rental Income'], ['vacancyRate', 'Vacancy Rate (%)'],
+            ['otherIncome', 'Other Income'], ['capRate', 'Cap Rate (%)'], ['location', 'Location'], ['propertyType', 'Property Type'],
+            ...CALCULATION_EXPENSES] as const).map(([field, label]) => (
+              <label key={field} className="space-y-1 text-sm" htmlFor={`canonical-income-${field}`}>
+                <span>{label}</span>
+                <input id={`canonical-income-${field}`} className="block w-full rounded border bg-background p-2"
+                  type={['parcelId', 'location', 'propertyType'].includes(field) ? 'text' : 'number'} step="any"
+                  value={form[field]} onChange={e => update(field, e.target.value)} />
+              </label>
+          ))}
+        </div>
+        <div className="flex gap-2">
+          <button className="rounded bg-primary px-3 py-2 text-primary-foreground disabled:opacity-50" type="button"
+            disabled={loading || !scope.supported} onClick={() => void run()}>{loading ? 'Calculating...' : 'Calculate Income'}</button>
+          <button className="rounded border px-3 py-2" type="button" onClick={reset}>Clear result</button>
+        </div>
+        {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
+        {errorCorrelationId && <p className="text-xs break-all">Trace: {errorCorrelationId}</p>}
+        {result?.provenance && (
+          <section aria-label="Canonical Income Result" className="space-y-3 rounded border p-4">
+            <div className="grid gap-3 sm:grid-cols-2">
+              <ResultMetric label="Net Operating Income" value={fmtCurrency(result.netOperatingIncome)} />
+              <ResultMetric label="Capitalized Value" value={fmtCurrency(result.rawValuation)} />
+              <ResultMetric label="Location-adjusted Value" value={fmtCurrency(result.adjustedValuation)} strong />
+              <ResultMetric label="Cap Rate" value={fmtPct(result.capRate)} />
+            </div>
+            <p className="text-xs break-all">Canonical source: {result.provenance.sourceCommit}</p>
+            <p className="text-xs break-all">Artifact SHA-256: {result.provenance.executableSha256}</p>
+            <p className="text-xs">Parcel: {result.provenance.parcelId} · Trace: {result.provenance.requestId}</p>
+          </section>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
 export default function IncomeForge(_props: IncomeForgeProps = {}) {
   const [activeTab, setActiveTab] = useState<IncomeTab>('desk');
   const fetchReferenceData = useIncomeForgeStore((s) => s.fetchReferenceData);
@@ -672,7 +747,7 @@ export default function IncomeForge(_props: IncomeForgeProps = {}) {
         <div className="flex max-w-full flex-wrap gap-2">
           <Badge>Live API</Badge>
           <Badge variant="outline">CostForge income endpoints</Badge>
-          <Badge variant="outline">No final value in this slice</Badge>
+          <Badge variant="outline">Calculations do not save values</Badge>
         </div>
       </header>
 
@@ -708,6 +783,7 @@ export default function IncomeForge(_props: IncomeForgeProps = {}) {
       </div>
 
       {activeTab === 'desk' && <ReviewDeskTab />}
+      {activeTab === 'calculate' && <IncomeCalculator />}
       {activeTab === 'cap-rates' && <CapRatesTab />}
       {activeTab === 'market' && <MarketDataTab />}
       {activeTab === 'expenses' && <ExpensesTab />}

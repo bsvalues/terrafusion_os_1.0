@@ -1613,6 +1613,7 @@ builder.Services.AddScoped<TerraFusion.API.Services.Valuation.ICostKernelClient,
                            TerraFusion.API.Services.Valuation.CostKernelClient>();
 builder.Services.AddScoped<TerraFusion.API.Services.Valuation.IValuationKernelClient,
                            TerraFusion.API.Services.Valuation.ValuationKernelClient>();
+builder.Services.AddScoped<TerraFusion.API.Services.Valuation.IForgeApproachKernelClient, TerraFusion.API.Services.Valuation.ForgeApproachKernelClient>();
 builder.Services.AddScoped<TerraFusion.API.Services.Valuation.IForgeCanonicalCostConsumer,
                            TerraFusion.API.Services.Valuation.ForgeCanonicalCostConsumer>();
 builder.Services.AddScoped<TerraFusion.API.Services.Valuation.IKernelValuationService,

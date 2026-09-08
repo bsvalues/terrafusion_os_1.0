@@ -101,6 +101,9 @@ LEGACY_CODE_ARCHIVE/
 # Runtime data
 pids/
 /.terrafusion/runtime/forge/valuation/
+/.terrafusion/runtime/forge/cost-income/
+/.terrafusion/runtime/forge/cost-income-invocations/
+/.terrafusion/runtime/forge/cost-income-staging/
 /.terrafusion/runtime/atlas/spatial-read/
 /.terrafusion/runtime/atlas/adoption-receipts/
 *.pid

@@ -22,4 +22,5 @@ public record KernelInvocationResult<TData>(
     string? StdoutSha256 = null,
     int StderrByteCount = 0,
     string? StderrSha256 = null,
-    string? RequestId = null);
+    string? RequestId = null,
+    KernelValidationFailure? Validation = null);

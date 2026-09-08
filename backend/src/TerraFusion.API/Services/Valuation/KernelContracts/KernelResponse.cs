@@ -7,4 +7,8 @@ public record KernelResponse<TData>(
     bool Success,
     string? Error,
     TData? Data,
-    KernelAuditEvent? AuditEvent);
+    KernelAuditEvent? AuditEvent,
+    KernelValidationFailure? Validation = null);
+
+/// <summary>Optional typed failure from an additive kernel exchange; forwarding is host-governed.</summary>
+public sealed record KernelValidationFailure(string Code, string Field, string Message);
