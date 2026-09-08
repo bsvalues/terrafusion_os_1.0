@@ -1,6 +1,62 @@
 # Atlas spatial anomaly candidate integration evidence
 
-Status: CANDIDATE_PREPARATION; not protected adoption or browser acceptance.
+Status: CANDIDATE_RUNTIME_PASS; protected OS delivery and post-merge critical browser repeat remain outstanding.
+
+## Actual six-case candidate acceptance
+
+Run6 passed6/6, zero skipped/retries, exit0, at candidate
+`d71486527c624e09bce6ceae545ea76a536a70b2`. Actual fresh fixture, processes, raw source and
+evidence are retained in `artifacts/atlas-browser/run-92b5f076-7a91-4b50-bc5b-1c5e5fe49254/`.
+Command: bundled Node `node_modules/@playwright/test/cli.js test --config
+tests/playwright.atlas-spatial-anomaly.config.ts --max-failures=1`, child-only `ATLAS_RUN_BROWSER=1`
+and actual dotnet path. Log: `artifacts/atlas-browser/run-verification-20260907-1914/browser-run-6.log`.
+No handler interception, synthetic JWT, saved bearer state, Playwright trace or HAR.
+
+Passed cases: actual protected canonical judgment/raw source/full direct equality/reload;
+county-to-neighborhood switch and county restoration; empty year with no finding;
+second actual authorized county isolation; Pilot transport outage/restoration; and live Pilot
+with unreachable regression backing source/restoration while actual API remains available.
+Eight whole-judgment direct canonical comparisons are in `canonical-checks.jsonl` (including
+exact independently fetched raw-response equality). Fourteen actions each have a panel screenshot,
+visible CID, actual API outcome line, authenticated metrics200 and measured click-to-visible latency.
+Thirteen actions have authenticated ordinary service invoked+terminal traces; the stopped-Pilot
+transport action correctly has trace503/no service events, not a fabricated trace.
+
+| Actual state | CID | Visible latency ms | Screenshot |
+| --- | --- | ---: | --- |
+| First successful source judgment | c81322d0-e0ab-4aef-866c-6b65284351eb | 4465.27 | action-1-success.png |
+| Pilot transport unavailable | 896290b3-19a6-440e-be93-e8ae62e4ae03 | 2113.71 | action-10-failure.png |
+| Regression backing source unavailable | b6993980-60c6-49fa-9aff-903fc0e1601e | 117.88 | action-13-failure.png |
+| Restored judgment | b73e1c39-d272-43b6-a2f7-2d6e2ab174eb | 255.19 | action-14-success.png |
+
+Warm successful actions measured232.59–321.39ms; cold first action4465.27ms is retained, not
+presented as a warm result or an unstated latency-budget PASS. Representative success and both
+failure PNGs were visually inspected: actual state and CID readable. `outages.jsonl` records live
+Pilot configured to `http://127.0.0.1:0`, while a real authenticated direct API regression request
+returned200 with unchanged body SHA256 `dc8459383bb7c293b2a3b5315f3a118ab8569ab37bd91b2aca1dbd89995b3d21`.
+The public source-failure result is deliberately redacted EXECUTION_FAILED, distinct from
+transport PILOT_RUNTIME_UNAVAILABLE; no product error-redaction change.
+
+`candidate.json` binds suite65f47b97bba93639ffc730662178bee6ec389097,
+module7083977211bab354053181402112fa4b304eca1e9596be0d98cd0b571c288fe6,
+specification06b68ac64f159215f2ea620740e3eae9fda58a38604b3ea833a18691adbcfa9f,
+actual API DLL761eeeeceab1e962c7e8c89c12cdeed4d3704a7324ff0cdfcc4ae82d10474b04,
+and UI index1585b14c98f3054fd88f9084fd4669b9461413c0debd4ad3a60c50db4b79991d.
+Receipt is N/A for read-only review. No optional county-workflow trace file is claimed.
+Retained evidence SHA256: actions.jsonl `b533e34684812b56b11ca45622b3c7584afc6e85a4e5eba0905d454eda797f2b`;
+canonical-checks.jsonl `4b1c5a84a69eaa6c4467bbc1bd9eb186196fb687d14deac76599ff8ac3d710dc`;
+outages.jsonl `39f60c7eeaf3f9b57248ca8b3746dd6cc3eea080669c276dc11c76f412da0929`.
+JWT-shaped content scan of this run's JSON/JSONL/log files returned zero matches (bounded scan,
+not a general secret-audit claim). All owned runtime children exited; no5013/8783 listener remained.
+
+Historical failures remain: run4 still403 after persisted county correction because harness
+DefaultCounty.Code was an unknown alias. Harness-only successor04d68e66b uses matching canonical
+wa-benton/wa-yakima and checks both actual issuer claims. Run5 passed5/6 then failed an assertion
+expecting an internal diagnostic redacted by the existing ToolRunner. Harness-only successord71486527
+asserts the real public error code and adds direct live-API/source evidence. No production gate,
+resolver, issuer, error sanitization, frozen contract, suite module or application source changed.
+
+## Earlier preparation and retained failures
 
 Actual run3 at3c7527c7c8667f3f57a1323395f4db634d38df72 failed1/5notrun. Native metric
 option assertions passed; actual regression403 produced EXECUTION_FAILED. Preserved run-f4c303fa-cb83-4278-ba31-a23a48c54ee0
