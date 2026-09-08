@@ -8,8 +8,12 @@ const digest = bytes => createHash('sha256').update(bytes).digest('hex');
 const sha = value => typeof value === 'string' && /^[a-f0-9]{64}$/.test(value);
 const commit = value => typeof value === 'string' && /^[a-f0-9]{40}$/.test(value);
 
-// Assigned only after coordinator-proven protected suite delivery; never a candidate guess.
-export const ATLAS_SPATIAL_ANOMALY_PIN = null;
+// Protected Atlas PR #5; merge tree matches independently reviewed 0aa4461.
+export const ATLAS_SPATIAL_ANOMALY_PIN = Object.freeze({
+  commit: '65f47b97bba93639ffc730662178bee6ec389097',
+  moduleSha256: '7083977211bab354053181402112fa4b304eca1e9596be0d98cd0b571c288fe6',
+  specificationSha256: '06b68ac64f159215f2ea620740e3eae9fda58a38604b3ea833a18691adbcfa9f',
+});
 
 export function atlasSpatialAnomalyManifest() {
   const pin = ATLAS_SPATIAL_ANOMALY_PIN;

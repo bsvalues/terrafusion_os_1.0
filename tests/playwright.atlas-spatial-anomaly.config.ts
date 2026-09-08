@@ -1,4 +1,5 @@
 import { defineConfig } from '@playwright/test';
+import { randomUUID } from 'node:crypto';
 
 export default defineConfig({
   testDir: './e2e',
@@ -7,13 +8,13 @@ export default defineConfig({
   workers: 1,
   retries: 0,
   timeout: 60000,
-  outputDir: '../artifacts/atlas-browser',
+  // Playwright clears its outputDir: assign a fresh leaf, never the retained DB/log parent.
+  outputDir: `../artifacts/atlas-browser/run-results-${randomUUID()}/playwright`,
   reporter: [['list']],
   use: {
-    baseURL: process.env.ATLAS_BASE_URL,
-    storageState: process.env.ATLAS_AUTH_STATE,
+    baseURL: 'http://127.0.0.1:5013',
     trace: 'retain-on-failure',
     screenshot: 'only-on-failure',
   },
-  // Coordinator starts the separately reserved real nonproduction candidate. No mock webServer.
+  // Opt-in harness starts only the coordinator-reserved actual API/Pilot. No mock webServer.
 });

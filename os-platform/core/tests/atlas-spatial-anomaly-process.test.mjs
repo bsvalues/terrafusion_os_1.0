@@ -89,9 +89,17 @@ test('child does not inherit provider credentials', async t => {
   finally { if (previous === undefined) delete process.env.ATLAS_SYNTHETIC_SECRET; else process.env.ATLAS_SYNTHETIC_SECRET = previous; }
 });
 
-test('unassigned protected source pin cannot select a candidate runtime artifact', () => {
-  assert.equal(typeof implementation.atlasSpatialAnomalyRuntimeOptions, 'function');
-  assert.equal(implementation.atlasSpatialAnomalyRuntimeOptions('C:/synthetic-unassigned-root'), undefined);
+test('trusted runtime configuration binds the protected inventory in its isolated slot', () => {
+  const root = path.resolve('artifacts/atlas-unit/configuration-only');
+  const options = implementation.atlasSpatialAnomalyRuntimeOptions(root);
+  assert.ok(options, 'protected suite adoption must configure the runtime');
+  assert.equal(options.artifactRoot, path.join(root, '.terrafusion/runtime/atlas/spatial-anomaly'));
+  assert.equal(options.temporaryRoot, path.join(root, '.terrafusion/runtime/atlas/spatial-anomaly-invocations'));
+  const manifest = implementation.atlasSpatialAnomalyManifest();
+  assert.equal(manifest.source.commit, '65f47b97bba93639ffc730662178bee6ec389097');
+  assert.equal(options.protectedCommit, manifest.source.commit);
+  assert.equal(options.expectedManifestSha256, hash(JSON.stringify(manifest)));
+  assert.equal(manifest.specification.sha256, '06b68ac64f159215f2ea620740e3eae9fda58a38604b3ea833a18691adbcfa9f');
 });
 
 test('stager binds source bytes and restores an existing slot after publication failure', async t => {

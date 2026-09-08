@@ -18,6 +18,73 @@ namespace TerraFusion.Unit.Tests;
 public sealed class PilotRuntimeProxyTests
 {
     [Theory]
+    [InlineData("invoke")]
+    [InlineData("validate")]
+    public async System.Threading.Tasks.Task AtlasDispatchForwardsActualScopeNotForgedIdentityHeaders(string operation)
+    {
+        var transport = new RecordingTransport();
+        using var client = new HttpClient(transport);
+        var factory = new Mock<IHttpClientFactory>();
+        factory.Setup(f => f.CreateClient("county-workflow-pilot-runtime")).Returns(client);
+        using var services = Services("http://localhost:19417", factory.Object);
+        var controller = CreateController(services);
+        controller.Request.Method = "POST";
+        controller.Request.Headers.Authorization = "Bearer synthetic-atlas-caller";
+        controller.Request.Headers["x-county-id"] = "22222222-2222-2222-2222-222222222222";
+        controller.Request.Headers["x-user-id"] = "forged-actor";
+        controller.HttpContext.Items["CorrelationId"] = "atlas-proxy-cid";
+        var body = new { toolId = "explain_spatial_anomaly", @params = new {
+            county = "11111111-1111-1111-1111-111111111111", taxYear = 2026,
+            geographyType = "neighborhood", geographyId = "north", metric = "residual_cluster" } };
+        var forwarded = await PilotRuntimeProxy.ForwardAsync(controller.Request, operation, body);
+        forwarded.Should().BeOfType<ContentResult>().Which.StatusCode.Should().Be(200);
+        transport.Path.Should().Be("/pilot/" + operation);
+        transport.CountyId.Should().Be("11111111-1111-1111-1111-111111111111");
+        transport.Actor.Should().Be("operator");
+        transport.Authorization.Should().Be("Bearer synthetic-atlas-caller");
+        transport.CorrelationId.Should().Be("atlas-proxy-cid");
+        transport.Body.Should().Be(System.Text.Json.JsonSerializer.Serialize(body));
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async System.Threading.Tasks.Task AtlasDispatchDeniesAnonymousOrAmbiguousCountyBeforeForwarding(bool ambiguousCounty)
+    {
+        var factory = new Mock<IHttpClientFactory>(MockBehavior.Strict);
+        using var services = Services("http://localhost:19417", factory.Object);
+        var request = CreateController(services).Request;
+        if (ambiguousCounty)
+            ((System.Security.Claims.ClaimsIdentity)request.HttpContext.User.Identity!).AddClaim(
+                new System.Security.Claims.Claim("countyId", "22222222-2222-2222-2222-222222222222"));
+        else request.HttpContext.User = new();
+        request.Headers["x-county-id"] = "11111111-1111-1111-1111-111111111111";
+        request.Headers["x-user-id"] = "forged-actor";
+        var response = await PilotRuntimeProxy.ForwardAsync(request, "invoke", new { toolId = "explain_spatial_anomaly" });
+        if (ambiguousCounty) response.Should().BeOfType<ForbidResult>();
+        else response.Should().BeOfType<UnauthorizedResult>();
+        factory.Verify(f => f.CreateClient(It.IsAny<string>()), Times.Never);
+    }
+
+    [Fact]
+    public async System.Threading.Tasks.Task AtlasTransportFailurePreservesCidWithoutFabricatedFinding()
+    {
+        using var client = new HttpClient(new UnavailableTransport());
+        var factory = new Mock<IHttpClientFactory>();
+        factory.Setup(f => f.CreateClient("county-workflow-pilot-runtime")).Returns(client);
+        using var services = Services("http://localhost:19417", factory.Object);
+        var request = CreateController(services).Request;
+        request.Method = "POST";
+        request.HttpContext.Items["CorrelationId"] = "atlas-transport-failure";
+        var result = await PilotRuntimeProxy.ForwardAsync(request, "invoke", new { toolId = "explain_spatial_anomaly" });
+        var failure = result.Should().BeOfType<ObjectResult>().Subject;
+        failure.StatusCode.Should().Be(503);
+        System.Text.Json.JsonSerializer.Serialize(failure.Value).Should().Contain("PILOT_RUNTIME_UNAVAILABLE")
+            .And.Contain("atlas-transport-failure").And.Contain("\"ok\":false")
+            .And.NotContain("private-transport-detail").And.NotContain("finding");
+    }
+
+    [Theory]
     [InlineData(false)]
     [InlineData(true)]
     public async System.Threading.Tasks.Task LogicalPilotFailureIncrementsExistingPrometheusCounterExactlyOnce(bool ok)
