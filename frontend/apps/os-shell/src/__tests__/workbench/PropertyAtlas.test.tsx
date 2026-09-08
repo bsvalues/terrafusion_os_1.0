@@ -327,7 +327,7 @@ describe('PropertyAtlas', () => {
       fireEvent.click(screen.getByRole('button', { name: /query layers/i }));
 
       // Should show loading state
-      expect(screen.getByRole('status')).toBeInTheDocument();
+      expect(screen.getByRole('status', { name: 'Querying parcel layers' })).toBeInTheDocument();
     });
   });
 

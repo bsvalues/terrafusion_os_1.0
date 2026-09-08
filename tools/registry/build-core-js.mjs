@@ -21,6 +21,10 @@ function collectTsTargets(dir) {
 
 const targets = [
   {
+    source: 'os-platform/core/pilot/atlasSpatialAnomalyHandler.ts',
+    out: 'os-platform/core/pilot/atlasSpatialAnomalyHandler.js',
+  },
+  {
     source: 'os-platform/core/pilot/countyWorkflowHandlers.ts',
     out: 'os-platform/core/pilot/countyWorkflowHandlers.js',
   },

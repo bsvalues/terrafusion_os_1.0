@@ -13,6 +13,7 @@ public static class PilotRuntimeProxy
     {
         "generate_morning_brief", "open_appeal_packet",
         "export_equalization_package", "export_audit_bundle",
+        "explain_spatial_anomaly",
     };
 
     // Existing Prometheus registry and /metrics endpoint; no CID/user/county metric labels.

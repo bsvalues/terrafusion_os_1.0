@@ -1662,26 +1662,8 @@ exports.flagParcelDataIssueHandler = flagParcelDataIssueHandler;
  * Explain Spatial Anomaly - converts GIS clustering into an explainable finding.
  */
 const explainSpatialAnomalyHandler = async (params, context, _tool) => {
-    const { county, taxYear, metric, geographyId = 'county-cluster-01' } = params;
-    assertCountyMatch(county, context.countyId);
-    const finding = buildFinding({
-        countyId: context.countyId,
-        taxYear,
-        findingType: 'SPATIAL_PROBLEM',
-        scope: 'neighborhood',
-        severity: metric === 'residual_cluster' ? 'high' : 'medium',
-        assignedRole: 'gis_analyst',
-        recommendedAction: `Audit ${geographyId} in Atlas before changing the county draft.`,
-        affectedParcelIds: ['BENTON-GIS-2201', 'BENTON-GIS-2208'],
-        topic: `spatial-${metric}`,
-        confidence: 0.91,
-    });
-    return {
-        finding,
-        hotspotCount: 3,
-        narrative: `${metric} indicates a spatially coherent anomaly around ${geographyId}; audit the overlay and hand off any valuation driver to Forge.`,
-        recommendedTool: 'query_parcel_layers',
-    };
+    assertCountyMatch(params.county, context.countyId);
+    throw new Error('Spatial anomaly unavailable: configure the canonical Atlas source-backed handler.');
 };
 exports.explainSpatialAnomalyHandler = explainSpatialAnomalyHandler;
 /**
