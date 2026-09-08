@@ -136,7 +136,16 @@ public sealed class PacsBaselineReconciler : IPacsBaselineReconciler
         return lane switch
         {
             CorpusReconciliationPolicy.LaneParcel =>
-                await _db.TfParcels.CountAsync(cancellationToken).ConfigureAwait(false),
+                // v1.14 reference ownership is not a parcel lifecycle or a PACS-family allowlist.
+                await _db.TfParcels
+                    .Where(p => !_db.SyncBridgeSourceXrefs.Any(x =>
+                        x.TfEntityType == "parcel" && x.TfEntityId == p.TfParcelId
+                        && x.SourceSystem == "SOCRATA_PUBLIC_EXPORT"
+                        && _db.SyncBridgeLoadBatches.Any(b => b.LoadBatchId == x.LoadBatchId
+                            && b.SourceFamily == "SOCRATA_PUBLIC_EXPORT"
+                            && b.SourceSystem == "SOCRATA_PUBLIC_EXPORT"
+                            && b.SourceQueryName == "wal.public-parcel-reference.socrata.v1")))
+                    .CountAsync(cancellationToken).ConfigureAwait(false),
 
             // owner+wsdor aggregation: tf_owner deduped count + tf_assessment_wsdor for year.
             CorpusReconciliationPolicy.LaneOwnerWsdor =>

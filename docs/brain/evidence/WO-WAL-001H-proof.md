@@ -1,0 +1,60 @@
+# WO-WAL-001H — Public-reference consumer isolation proof
+
+Status: DELIVERING, protected delivery pending. Parent WO-WAL-001 / issue #1485 remains ACTIVE. Authority and exact scope are recorded in the corresponding active Work Order; risk remains R5. No production or source-access grant is created here.
+
+## Change and preservation boundary
+
+Three existing consumers now exclude a parcel only when its SourceXref-to-LoadBatch ownership identifies source family/system `SOCRATA_PUBLIC_EXPORT` and profile `wal.public-parcel-reference.socrata.v1`:
+
+- `PacsBaselineReconciler.CountTfCanonicalAsync`.
+- `ArcGisCrosswalkService.CloseCrosswalkAsync`.
+- `ArcGisCanonicalProjector.ProjectCountyAsync`.
+
+There is no blanket UNDER_REVIEW exclusion, guessed PACS-family whitelist, public-to-PACS reinterpretation or repair of historical closed links. Existing county/APN selection, legitimate duplicates, lineage-free/PACS/PROVAL participation and normal gate/audit behavior remain protected. The selected G profile is a separately delivering contract, not an already-admitted public batch.
+
+## Actual tests
+
+All runs used the existing `backend/tests/TerraFusion.Unit.Tests/TerraFusion.Unit.Tests.csproj`, normal thirteen-project closure, existing dependencies and synthetic fixtures. Times are wrapper completion UTC on2026-09-08.
+
+| Run | Result | Meaning |
+| --- | --- | --- |
+| RED81446,10:46:54.9782884Z |12 failed/4 passed/0 skipped,EXIT1 | Actual count inflation, false closure/ambiguity and wrong-target assertions against unchanged production after successful compilation. Four legitimate controls already passed. |
+| GREEN3772,11:10:07.2268860Z |45 passed/0 failed/0 skipped,EXIT0 | All16 new InMemory cases plus29 existing cases after the three query repairs. |
+| SQLite63868,11:41:27.7972264Z |3 passed/0 failed/0 skipped,EXIT0 | Actual application-context SQLite execution of all three consumers with selected generated schema, foreign keys, persisted gates/audits and preservation checks. |
+| Full regression29091,11:48:58.3365990Z |48 passed/0 failed/0 skipped,EXIT0 | Separate complete three-class run on those same SQLite-built binaries using `--no-build --no-restore`, not an extrapolated sum. |
+
+SQLite facts use private in-memory connections, unmodified table/index statements from `GenerateCreateScript()`, exact installed-schema comparison and foreign-key checks. The reconciler counts three eligible of four stored parcels without writes. Crosswalk considers six active geometries, preserves one closed link, closes three legitimate targets, leaves one no-match and one genuine ambiguity, and records its normal maintenance gate/audit delta. Projector produces six geometry rows with four resolved/two unresolved targets and five normal canonical gates, preserving foreign and prior state. No source-query call, external source or real county record is used.
+
+The combined run includes19 projector,16 crosswalk and13 reconciler tests. Main verified all26 source/WO/dependency hashes, both DLL hashes and seven-path working scope unchanged. Independent assurance separately inspected the source, actual TRX, pins and scope and returned CLEAR for normal protected delivery.
+
+## Exact evidence identity
+
+Validation source base: `0733406fe9067f5d5e61c4a361951c1c3700a9c8`, branch `codex/wal001h-public-reference-consumer-isolation`. This is the base plus reviewed uncommitted six-file candidate, not a claim that protected073 already contained the repair. Later governance metadata does not change or retroactively retag the validated binaries.
+
+External evidence root: `C:/Users/bsval/.codex/visualizations/2026/09/06/01a07732-71da-73f0-8651-896ec72d5be4`.
+
+| Receipt relative to evidence root | SHA256 |
+| --- | --- |
+| `wal001h-consumer-red-28b228a4560843cf969495e1beea0dc0/consumer-red.trx` | `210486e34d61d43d8ead7a6b79dd080002fe500dc607f9d3d0b95a8e5a1537e9` |
+| `wal001h-consumer-green-1226a28922704e538f5afc48b7ccc4fa/consumer-green.trx` | `61a1cbb70ef1b9a22628abe3b3f87193249a0965652bd0e89b4015d31f75816a` |
+| `wal001h-sqlite-consumers-9265c7c96d7f49a89b1c9644e83c43be/sqlite-consumers.trx` | `f895add9fbb9c248c05d9968c8b9e890c9647f9f2099fcb06507c1ea09628aa5` |
+| `wal001h-full48-regression-b6b1dd68916e40d48c0ad42ce9a58d3a/full-consumer-regression.trx` | `e0ec587bc5d25e9b9559faab65ee24a984b346ac03d683a0e3612f4db311582f` |
+| `wal001h-full48-regression-b6b1dd68916e40d48c0ad42ce9a58d3a/validation.txt` | `79397b60e2e873c40bea4c5392411c5dc86f5a150d2bbefb36ac4945752f5444` |
+
+The full regression receipt contains all26 input pins, including the historical WO hash `07b2d22a2eb1e03d5424df6aeaafb6e750e44b82c6e725be323ceb780eec4a7a`, plus DLL SHA256s: Data `59f1f24c8172698b59e450c6c62ab4ffaf17be2089e396cafe9cf31f3314bd43`, Unit.Tests `1cb49604ab3c0abe5480728798f8bcfdc8515ac4a9f77dfb1da0a8df30df487a`.
+
+## Limits and rollback
+
+Normal checkpoint commit `91bd72b8ca0500255f4a09d9f1d06f9a50f78614` completed at2026-09-08T12:12:19.8472552Z with eight exact paths and a clean tree. Normal Prettier and `dotnet format` ran; the entire committed tree equals pre-hook staged tree `db70db46e69a9431352e8873b88fd89829b109fa`. The known sparse-config ENOENT output is preserved in `wal001h-normal-checkpoint-commit-20260908T1211.txt`, not suppressed or mistaken for a new clean-config certification. No hook/dependency bypass occurred.
+
+Protected F base `d686d8cb4ec3767c242b7c794f51bb48e1eb4873` was normally merged into that clean checkpoint as `ee46138f069e53b4a4312aee7d695885e2b890d6`; F's nine paths do not overlap H's eight paths. Main added only H's registry record and delivery metadata, preserving all167 prior records/root metadata, then normally committed clean candidate `7963bbfae2e4a71a7362570b3485ed8e8dec23b7`.
+
+That exact integrated candidate was subsequently rebuilt and tested by Main4828, exiting0 at2026-09-08T12:23:40.3216925Z with48 passed/0 failed/0 skipped. All28 source/dependency/metadata hashes and exact nine-path scope stayed unchanged. Receipt directory: `wal001h-integrated-candidate-020c8327ceb942ce84ce82ed48a47101`; `integrated-consumers.trx` SHA256 `a90d50f78436405791743d474f98a41c66a062385c16e22b0719fce8af108b38`; captured `validation.txt` SHA256 `115890fae1e1b430ba2606c50c195d40874c10bd273860a636c191515ec00b55`.
+
+The actual Data DLL SHA256 is `6c0b818b27721393fb7f3b4384c2a70d39615a628e6311e97f47dd512028bde5`, ProductVersion `1.0.0+7963bbfae2e4a71a7362570b3485ed8e8dec23b7`. The Unit.Tests DLL SHA256 is `ed347fe736b1628eeafff20f2bb70d97a2259eee1bfe536c4c11cfd43d0c65ef`; its ProductVersion is `0.0.0.0`, so no embedded-commit claim is made for it. Its exact-head normal-build/test invocation and hash are retained. Fresh Main census12:23:52.8381805Z found no build/test processes and10.488GiB free memory. These following metadata-only receipt edits leave the six source/test files unchanged; protected push/checks/review/merge remain pending.
+
+- SQLite consumer execution is not PostgreSQL, full-model migration, concurrent isolation or multi-save atomicity proof.
+- No G import/persistence, source permission, parcel-baseline landing, publicReady, production deployment or external assessor acceptance is established.
+- No runtime, schema, dependency, auth, shared configuration or historical county data was changed by this repair. Generated local test outputs are not a deployed release.
+- Protected merge/checks and coordinated G integration remain required. A normal reviewed revert of these three query repairs and their tests is code rollback, not repair of historical data; G activation must remain held if the exclusion is absent.
+- Child completion, an empty queue and WACO acceptance cannot close #1485. Its all-county, production and external-assessor terminal predicates remain unsatisfied.

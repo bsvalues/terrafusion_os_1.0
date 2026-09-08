@@ -78,6 +78,14 @@ public sealed class ArcGisCrosswalkService : IArcGisCrosswalkService
         // so we can detect 2+ matches without a second query per row.
         var parcels = await _db.TfParcels
             .Where(p => p.CountyId == countyId && p.ParcelNumber != null)
+            // Exclude only v1.14 public-reference ownership; existing closed links stay untouched.
+            .Where(p => !_db.SyncBridgeSourceXrefs.Any(x =>
+                x.TfEntityType == "parcel" && x.TfEntityId == p.TfParcelId
+                && x.SourceSystem == "SOCRATA_PUBLIC_EXPORT"
+                && _db.SyncBridgeLoadBatches.Any(b => b.LoadBatchId == x.LoadBatchId
+                    && b.SourceFamily == "SOCRATA_PUBLIC_EXPORT"
+                    && b.SourceSystem == "SOCRATA_PUBLIC_EXPORT"
+                    && b.SourceQueryName == "wal.public-parcel-reference.socrata.v1")))
             .ToListAsync(cancellationToken).ConfigureAwait(false);
 
         var byApn = parcels
