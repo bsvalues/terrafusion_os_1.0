@@ -230,7 +230,7 @@ async function startApi(county: string) {
       TERRAFUSION_UI_DIST_PATH: resolve(root, 'native-shell/ui/dist'),
       PilotRuntime__BaseUrl: pilotURL,
       DefaultCounty__Id: county,
-      DefaultCounty__Code: 'synthetic-atlas',
+      DefaultCounty__Code: county === countyA ? 'wa-benton' : 'wa-yakima',
       JwtSettings__SecretKey: signingKey,
     }),
     `api-${county === countyA ? 'a' : 'b'}`,
@@ -245,6 +245,7 @@ async function issuedToken(county: string) {
   const value = await response.json();
   const claims = JSON.parse(Buffer.from(value.token.split('.')[1], 'base64url').toString('utf8'));
   expect(claims.countyId).toBe(county);
+  expect(claims.countyCode).toBe(county === countyA ? 'wa-benton' : 'wa-yakima');
   expect(claims.roles ?? claims.role).toContain('Assessor');
   return value.token as string; // Real development issuer, never synthesize a JWT.
 }
