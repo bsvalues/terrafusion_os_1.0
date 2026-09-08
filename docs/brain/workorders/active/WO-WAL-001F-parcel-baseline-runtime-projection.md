@@ -2,7 +2,7 @@
 
 Parent: WO-WAL-001, Washington Assessor Launch V1, GitHub issue #1485.
 Authority: OWNER-WAL-V1-MISSION-AUTHORITY-20260827 and OWNER-TF-STANDING-OPERATOR-AUTHORITY; current direct owner continuation instruction.
-Status: EXECUTING — bounded child, not parent completion.
+Status: DELIVERING — actual bounded API/browser acceptance passed; protected delivery pending, not parent completion.
 Initial assignment base: ed442c84b916cb7a667cc162236dc9dae0b1b39b.
 Integrated source base: 0733406fe9067f5d5e61c4a361951c1c3700a9c8 (main-coordinated fast-forward; observed HEAD for the metadata/proof continuation).
 Worktree: C:/Users/bsval/tf-wal001f-public-baseline-sparse; branch codex/wal001f-public-baseline.
@@ -128,3 +128,9 @@ Register this exact child in the existing seed schema; its authority derives fro
 ## Continuation
 
 This product projection does not establish39-county public landing, complete WAL001 or finish launch. Continue with authorized source-use resolution and actual parcel import/lineage where needed, alongside existing upload/Sync acceptance. Parent remains ACTIVE until issue1485 terminal evidence passes.
+
+### Coordinator delivery continuation — 2026-09-08
+
+The earlier temporary preparation-only restrictions described completed builder phases. Main now records actual runtime acceptance at `e195bc9c1d5baab1e5487a6b6b43308f278a1357` and continues the standing-authorized normal delivery lifecycle within these same nine paths. Helper95740 exited0; receipt SHA256 `134bf385fac7b3250a91279dc4fd40bde689b32098430c1a03024cdb1909e254`. Independent assurance is CLEAR for this bounded evidence. See the proof bundle for backend build carryforward, test counts, cleanup, archived failures and explicit limitations.
+
+Main may update only this WO, its existing registry row and proof for final evidence, then perform canonical Brain review-diff/commit-plan, normal commit/push/PR/check/review/eligible merge and post-merge verification under OWNER-TF-STANDING-OPERATOR-AUTHORITY. No new source behavior, data rights, production deployment or parent completion is authorized. Product/test files remain frozen; a concrete review defect requires a bounded assigned correction. Any new compiler/runtime group still requires the shared resource slot. Documentation changes do not relabel the executed e195 candidate as a different runtime SHA.

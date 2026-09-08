@@ -14326,13 +14326,19 @@
           "name": "Backend and HUB tests",
           "command": "Focused CountyParcelBaselineTests and countiesHubParcelBaseline.test.tsx in existing harnesses",
           "required": true,
-          "result": "not_run"
+          "result": "pass",
+          "evidence": [
+            "Backend at unchanged 4c93141: focused12 PASS/1 opt-in skip plus fresh bootstrap26835 PASS. Frontend41700:81 PASS (73 client/8 DOM), zero skipped; heading behavioral RED/GREEN and actual browser screenshot verified. See WO-WAL-001F proof for exact identity qualifications."
+          ]
         },
         {
           "name": "Integrated-head runtime acceptance",
           "command": "Coordinator-assigned actual API/browser acceptance with fresh owned database and supported canonical stagers",
           "required": true,
-          "result": "not_run"
+          "result": "pass",
+          "evidence": [
+            "Actual95740 EXIT0 at source/UI e195bc9c1d5baab1e5487a6b6b43308f278a1357, unchanged backend4c93141. Receipt134bf385fac7b3250a91279dc4fd40bde689b32098430c1a03024cdb1909e254; two synthetic counties, actual restart/denial/recovery, independent assurance CLEAR and fresh owned cleanup zero. Not39county landing, production, WACO or parent completion."
+          ]
         }
       ],
       "stopConditions": [
@@ -14350,7 +14356,7 @@
         "mayMarkReady": false,
         "mayMerge": false,
         "mayCleanup": false,
-        "notes": "Active WAL mission and direct reserved Task1 assignment authorize this metadata child. Main coordinates integration, review and delivery; parents remain open. The limited metadata/artifact continuation authorizes only WO/this row/proof/report updates, plus the WO's exact 15 absent-directory publisher outputs as temporary non-PR scratch and their verified no-overwrite relocation to the named external wal001f-generated-wiki directory. It does not authorize controller/client/UI/test edits, compiler/server/install/commit, canon regeneration, or general cleanup."
+        "notes": "Builder authority flags remain the limited Task1 envelope; they do not negate Main's separately recorded standing operator delivery authority. Main now owns final WO/this row/proof integration, normal commit/push/PR/check/review/eligible merge and post-merge verification within the same nine paths under OWNER-TF-STANDING-OPERATOR-AUTHORITY. Actual bounded runtime acceptance at e195bc9c passed with independent assurance; protected delivery remains pending. Product/test files stay frozen. No new data rights, production, broad cleanup or parent completion; new heavy validation requires the resource slot."
       },
       "provenance": {
         "createdAt": "2026-09-08T04:29:11Z",
