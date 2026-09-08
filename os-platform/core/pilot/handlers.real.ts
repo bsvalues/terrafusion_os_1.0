@@ -50,6 +50,7 @@ import type { TraceService } from '../trace/TraceService.js';
 import { backendPost, backendGet, backendPut, unwrapBackend } from './backendClient.js';
 import { acquirePilotToken } from './pilotAuth.js';
 import { registerCountyWorkflowHandlers } from './countyWorkflowHandlers.js';
+import { registerAtlasSpatialAnomalyHandler } from './atlasSpatialAnomalyHandler.js';
 
 // ============================================================================
 // Type Definitions (R1 MVP)
@@ -2520,6 +2521,7 @@ export function registerR1Handlers(
   traceService: TraceService
 ): void {
   registerCountyWorkflowHandlers(runner);
+  registerAtlasSpatialAnomalyHandler(runner);
   // Week 1 MVP handlers (5)
   runner.registerHandler('run_valuation_model', runValuationModelHandler);
   runner.registerHandler('explain_value_change', explainValueChangeHandler);

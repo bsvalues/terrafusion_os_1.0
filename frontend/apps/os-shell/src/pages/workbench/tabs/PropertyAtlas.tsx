@@ -15,6 +15,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useWorkbenchTab } from '../../../context/workbenchTabContext';
 import { invokeTool } from '../../../api/pilotApi';
+import { SpatialAnomalyPanel } from '../../../components/atlas/SpatialAnomalyPanel';
 import { ErrorDisplay } from '../../../components/errors/ErrorDisplay';
 import {
   InvocationHistory,
@@ -86,24 +87,6 @@ interface QueryState {
   error?: ErrorInfo;
 }
 
-interface SpatialAnomalyResult {
-  finding: {
-    findingType: string;
-    severity: string;
-    recommendedAction: string;
-    confidence: number;
-  };
-  hotspotCount: number;
-  narrative: string;
-  recommendedTool: string;
-}
-
-interface SpatialAnomalyState {
-  status: 'idle' | 'loading' | 'success' | 'error';
-  result?: SpatialAnomalyResult;
-  correlationId?: string;
-  error?: ErrorInfo;
-}
 
 function isLayerAvailabilityList(layers: QueryResult['layers']): layers is AvailableLayer[] {
   return Array.isArray(layers);
@@ -333,13 +316,6 @@ export const PropertyAtlas: React.FC = () => {
   const [selectedLayers, setSelectedLayers] = useState<Set<LayerId>>(new Set<LayerId>());
   const [queryState, setQueryState] = useState<QueryState>({ status: 'idle' });
   const [queryHistory, setQueryHistory] = useState<InvocationRecord[]>([]);
-  const [anomalyMetric, setAnomalyMetric] = useState<'residual_cluster' | 'prd' | 'prb' | 'cod'>(
-    'residual_cluster'
-  );
-  const [geographyId, setGeographyId] = useState<string>('');
-  const [spatialAnomalyState, setSpatialAnomalyState] = useState<SpatialAnomalyState>({
-    status: 'idle',
-  });
 
   // ── Phase 0B: Mapbox GL JS satellite map ──────────────────────────────────
   const mapContainerRef = useRef<HTMLDivElement>(null);
@@ -560,95 +536,6 @@ export const PropertyAtlas: React.FC = () => {
     }
   }, [selectedLayers, parcelId]);
 
-  const handleExplainSpatialAnomaly = useCallback(async () => {
-    setSpatialAnomalyState({ status: 'loading' });
-
-    try {
-      const response = await invokeTool({
-        toolId: 'explain_spatial_anomaly',
-        params: {
-          county: 'benton',
-          taxYear: new Date().getFullYear(),
-          metric: anomalyMetric,
-          geographyId: geographyId.trim() || undefined,
-        },
-        parcelId,
-      });
-
-      if (response.success && response.result) {
-        const parsed =
-          typeof response.result.output === 'string'
-            ? JSON.parse(response.result.output)
-            : response.result.output;
-
-        setSpatialAnomalyState({
-          status: 'success',
-          result: parsed,
-          correlationId: response.correlationId,
-        });
-        setQueryHistory((prev) => [
-          {
-            id: crypto.randomUUID(),
-            toolId: 'explain_spatial_anomaly',
-            status: 'success',
-            correlationId: response.correlationId || 'unknown',
-            timestamp: new Date(),
-            meta: { metric: anomalyMetric },
-          },
-          ...prev.slice(0, 9),
-        ]);
-      } else {
-        const errorInfo: ErrorInfo = {
-          code: response.error?.code || 'SPATIAL_ANOMALY_FAILED',
-          message: response.error?.message || 'Failed to explain spatial anomaly',
-          severity: 'error',
-          correlationId: response.correlationId,
-        };
-
-        setSpatialAnomalyState({
-          status: 'error',
-          correlationId: response.correlationId,
-          error: errorInfo,
-        });
-        setQueryHistory((prev) => [
-          {
-            id: crypto.randomUUID(),
-            toolId: 'explain_spatial_anomaly',
-            status: 'error',
-            correlationId: response.correlationId || 'unknown',
-            timestamp: new Date(),
-            errorCode: response.error?.code || 'SPATIAL_ANOMALY_FAILED',
-            meta: { metric: anomalyMetric },
-          },
-          ...prev.slice(0, 9),
-        ]);
-      }
-    } catch (err) {
-      const clientCorrelationId = `net-${crypto.randomUUID().slice(0, 8)}`;
-      setSpatialAnomalyState({
-        status: 'error',
-        correlationId: clientCorrelationId,
-        error: {
-          code: 'NETWORK_ERROR',
-          message: err instanceof Error ? err.message : 'Network error occurred',
-          severity: 'error',
-          correlationId: clientCorrelationId,
-        },
-      });
-      setQueryHistory((prev) => [
-        {
-          id: crypto.randomUUID(),
-          toolId: 'explain_spatial_anomaly',
-          status: 'error',
-          correlationId: clientCorrelationId,
-          timestamp: new Date(),
-          errorCode: 'NETWORK_ERROR',
-          meta: { metric: anomalyMetric },
-        },
-        ...prev.slice(0, 9),
-      ]);
-    }
-  }, [anomalyMetric, geographyId, parcelId]);
 
   const copyToClipboard = useCallback((text: string) => {
     navigator.clipboard.writeText(text).catch(console.error);
@@ -1088,84 +975,7 @@ export const PropertyAtlas: React.FC = () => {
         </BentoCard>
 
         <BentoCard title='Spatial Audit' actions={<span>🧭</span>}>
-          <p className='tf-text-tertiary text-sm mb-3'>
-            Convert a residual or ratio anomaly into a governed handoff recommendation.
-          </p>
-          <div className='space-y-3 mb-3'>
-            <select
-              value={anomalyMetric}
-              onChange={(event) =>
-                setAnomalyMetric(event.target.value as 'residual_cluster' | 'prd' | 'prb' | 'cod')
-              }
-              className='w-full p-3 rounded-lg tf-input'
-            >
-              <option value='residual_cluster'>Residual Cluster</option>
-              <option value='prd'>PRD</option>
-              <option value='prb'>PRB</option>
-              <option value='cod'>COD</option>
-            </select>
-            <input
-              value={geographyId}
-              onChange={(event) => setGeographyId(event.target.value)}
-              placeholder='Optional geography or cluster ID'
-              className='w-full p-3 rounded-lg tf-input'
-            />
-          </div>
-          <button
-            onClick={handleExplainSpatialAnomaly}
-            disabled={spatialAnomalyState.status === 'loading'}
-            className='w-full py-2 px-4 rounded-lg font-semibold transition-all tf-suite-atlas-cta mb-3'
-          >
-            {spatialAnomalyState.status === 'loading' ? 'Auditing...' : 'Explain Spatial Anomaly'}
-          </button>
-
-          {spatialAnomalyState.status === 'success' && spatialAnomalyState.result && (
-            <div className='space-y-3'>
-              <div className='tf-panel p-4 rounded-xl'>
-                <div className='flex items-center justify-between gap-3'>
-                  <span className='tf-text font-semibold'>
-                    {spatialAnomalyState.result.finding.findingType}
-                  </span>
-                  <span className='text-xs tf-text-dim'>
-                    {spatialAnomalyState.result.hotspotCount} hotspot
-                    {spatialAnomalyState.result.hotspotCount !== 1 ? 's' : ''}
-                  </span>
-                </div>
-                <p className='tf-text-secondary text-sm mt-2'>
-                  {spatialAnomalyState.result.narrative}
-                </p>
-                <p className='tf-text-dim text-xs mt-2'>
-                  Recommendation: {spatialAnomalyState.result.finding.recommendedAction}
-                </p>
-              </div>
-              {spatialAnomalyState.correlationId && (
-                <div className='text-xs tf-text-dim flex items-center gap-2'>
-                  Ref:{' '}
-                  <code className='tf-suite-accent-text font-mono'>
-                    {spatialAnomalyState.correlationId.slice(0, 16)}...
-                  </code>
-                  <button
-                    onClick={() => copyToClipboard(spatialAnomalyState.correlationId!)}
-                    className='tf-text-tertiary'
-                    aria-label='Copy'
-                  >
-                    📋
-                  </button>
-                  <WorkbenchSourceBadge source='live' />
-                </div>
-              )}
-            </div>
-          )}
-
-          {spatialAnomalyState.status === 'error' && spatialAnomalyState.error && (
-            <ErrorDisplay
-              error={{
-                message: spatialAnomalyState.error.message,
-                errorCode: spatialAnomalyState.error.code,
-                correlationId: spatialAnomalyState.correlationId,
-              }}
-            />
-          )}
+          <SpatialAnomalyPanel parcelId={parcelId} />
         </BentoCard>
       </BentoGrid>
 

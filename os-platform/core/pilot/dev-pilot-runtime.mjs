@@ -9,6 +9,8 @@ import { fileURLToPath } from "node:url";
 import Ajv from "ajv";
 import { ToolRegistry, ToolRunner, registerPhase84Handlers, registerR1Handlers } from "./index.js";
 import { bindCountyWorkflowAuthorization, registerCountyWorkflowHandlers } from "./countyWorkflowHandlers.js";
+import { bindAtlasSpatialAnomalyAuthorization, registerAtlasSpatialAnomalyHandler } from "./atlasSpatialAnomalyHandler.js";
+import { atlasSpatialAnomalyRuntimeOptions } from "./atlas-spatial-anomaly-process.mjs";
 import { createCountyWorkflowTrace } from "./countyWorkflowTrace.mjs";
 import { traceService } from "../trace/index.js";
 import { preInvokeCheck, buildExecutionContextFromRequest } from "./src/router/index.mjs";
@@ -252,6 +254,7 @@ function buildPilotExecutionContext(req, body) {
     supervisorApproval: body.supervisorApproval || undefined,
   };
   bindCountyWorkflowAuthorization(context, req.headers.authorization);
+  bindAtlasSpatialAnomalyAuthorization(context, req.headers.authorization);
   return context;
 }
 
@@ -653,6 +656,7 @@ async function getCompareRunner() {
       } else {
         console.log("[pilot] R1 real handlers inactive (no TF_API_BASE_URL/TF_API_PORT) → canned stubs");
       }
+      registerAtlasSpatialAnomalyHandler(runner, { artifactOptions: atlasSpatialAnomalyRuntimeOptions(REPO_ROOT) });
       return runner;
     })();
   }
