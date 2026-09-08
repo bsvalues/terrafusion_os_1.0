@@ -53,7 +53,7 @@ public sealed class ForgeCostIncomeBrowserFixtureTests
             new County { Id = foreign, Name = "Franklin", State = "WA", FipsCode = "53021" });
         foreach (var (parcel, county) in new[] { ("SYNTHETIC-FORGE-P1", benton), ("SYNTHETIC-FORGE-P2", benton),
             ("SYNTHETIC-FORGE-FOREIGN", foreign) })
-            db.Properties.Add(new Property { PropertyId = parcel, ParcelId = parcel, ParcelNumber = parcel,
+            db.Properties.Add(new Property { PropertyId = parcel, ParcelId = parcel, ParcelNumber = parcel + "-NUMBER",
                 CountyId = county, Address = "100 Synthetic Test Way", PropertyType = "Residential", YearBuilt = 2000,
                 LandValue = 25000, ImprovementValue = 0, AssessedValue = 25000, MarketValue = 25000, TaxYear = 2026,
                 AssessmentDate = DateTime.SpecifyKind(new DateTime(2026, 1, 1), DateTimeKind.Utc), LastUpdated = DateTime.UtcNow });

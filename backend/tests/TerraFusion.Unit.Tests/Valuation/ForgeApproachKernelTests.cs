@@ -11,6 +11,9 @@ using Xunit;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using TerraFusion.API.Controllers;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using System.Security.Claims;
 
 namespace TerraFusion.Unit.Tests.Valuation;
 
@@ -342,6 +345,187 @@ public sealed class ForgeApproachKernelTests
         Assert.NotNull(method);
         return Assert.IsType<bool>(method.Invoke(null, new object[] { document.RootElement, Source,
             "123", "2", "456", new string('c', 64), new string('d', 64), Binary }));
+    }
+
+    private static TerraFusion.Data.TerraFusionDbContext ParcelDb(bool ambiguous = false)
+    {
+        var db = new TerraFusion.Data.TerraFusionDbContext(
+            new DbContextOptionsBuilder<TerraFusion.Data.TerraFusionDbContext>()
+                .UseInMemoryDatabase("forge-parcel-" + Guid.NewGuid()).Options,
+            new ConfigurationBuilder().Build());
+        db.Counties.Add(new TerraFusion.Core.Entities.County { Id = County, Name = "Benton", State = "WA", FipsCode = "53005" });
+        db.Properties.Add(new TerraFusion.Core.Entities.Property { Id = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
+            PropertyId = "CANONICAL-ID", ParcelId = "CANONICAL-ID", ParcelNumber = "PUBLIC-NUMBER", CountyId = County,
+            Address = "Synthetic", PropertyType = "Residential", LandValue = 25000 });
+        db.Properties.Add(new TerraFusion.Core.Entities.Property { PropertyId = "FOREIGN-ID", ParcelId = "FOREIGN-ID",
+            ParcelNumber = "FOREIGN-NUMBER", CountyId = Guid.Parse("22222222-2222-2222-2222-222222222222"),
+            Address = "Synthetic", PropertyType = "Residential" });
+        if (ambiguous) db.Properties.Add(new TerraFusion.Core.Entities.Property { PropertyId = "PUBLIC-NUMBER",
+            ParcelId = "PUBLIC-NUMBER", ParcelNumber = "COLLIDING-NUMBER", CountyId = County,
+            Address = "Synthetic collision", PropertyType = "Residential" });
+        db.SaveChanges();
+        return db;
+    }
+
+    private static CostForgeController ParcelController(TerraFusion.Data.TerraFusionDbContext db,
+        IForgeApproachKernelClient client, string claimCountyCode = "benton")
+    {
+        var context = new DefaultHttpContext { User = new ClaimsPrincipal(new ClaimsIdentity(new[] {
+            new Claim("countyId", County.ToString()), new Claim("countyCode", claimCountyCode), new Claim("sub", "parcel-test") }, "test")) };
+        context.Items["CorrelationId"] = "tf-parcel-reference-test";
+        return new CostForgeController(null!, null!, db,
+            new Mock<TerraFusion.Abstractions.Interfaces.IAuditLogger>().Object,
+            NullLogger<CostForgeController>.Instance, client)
+            { ControllerContext = new ControllerContext { HttpContext = context } };
+    }
+
+    private static ForgeApproachProvenance ParcelProvenance(ForgeApproachContext context) =>
+        new(context.CountyId, context.ParcelId, context.RequestId, Source, Binary,
+            new string('c', 64), new string('d', 64), "resolved-event");
+
+    private static JsonDocument ParcelResponse(object? response) => JsonDocument.Parse(JsonSerializer.Serialize(response,
+        new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase }));
+
+    [Theory]
+    [InlineData("19190019-1919-1919-1919-191919191919")]
+    [InlineData("wa-benton")]
+    [InlineData("Benton")]
+    [InlineData("53005")]
+    public async Task Cost_county_reference_accepts_authenticated_exact_guid_or_existing_code_name_fips(string requestedCounty)
+    {
+        await using var db = ParcelDb();
+        var client = new Mock<IForgeApproachKernelClient>(MockBehavior.Strict);
+        client.Setup(c => c.CostAsync(It.IsAny<ForgeCostPayload>(), It.IsAny<ForgeApproachContext>(), It.IsAny<CancellationToken>()))
+            .Returns((ForgeCostPayload payload, ForgeApproachContext context, CancellationToken _) => {
+                Assert.Equal(County, context.CountyId);
+                Assert.Equal("CANONICAL-ID", context.ParcelId);
+                return Task.FromResult(new ForgeApproachInvocation<ForgeCostResult>(CostData with { ParcelId = payload.ParcelId }, ParcelProvenance(context)));
+            });
+        var response = await ParcelController(db, client.Object, "wa-benton").CalculatePropertyCost(new PropertyCostCalculationRequest {
+            ParcelNumber = "PUBLIC-NUMBER", CountyCode = requestedCounty, Region = "Reval 1",
+            BuildingType = "residential", SquareFeet = 1000, YearBuilt = 2000 });
+        var ok = Assert.IsType<OkObjectResult>(response.Result);
+        using var body = ParcelResponse(ok.Value);
+        Assert.Equal(County, body.RootElement.GetProperty("provenance").GetProperty("countyId").GetGuid());
+        Assert.Equal("CANONICAL-ID", body.RootElement.GetProperty("canonical").GetProperty("parcelId").GetString());
+    }
+
+    [Theory]
+    [InlineData("22222222-2222-2222-2222-222222222222")]
+    [InlineData("19190019-1919-1919-1919-191919191919-invalid")]
+    public async Task Cost_county_reference_rejects_foreign_or_malformed_guid_before_invocation(string requestedCounty)
+    {
+        await using var db = ParcelDb();
+        var client = new Mock<IForgeApproachKernelClient>(MockBehavior.Strict);
+        var response = await ParcelController(db, client.Object, "wa-benton").CalculatePropertyCost(new PropertyCostCalculationRequest {
+            ParcelNumber = "PUBLIC-NUMBER", CountyCode = requestedCounty, Region = "Reval 1",
+            BuildingType = "residential", SquareFeet = 1000 });
+        Assert.IsType<ForbidResult>(response.Result);
+        client.VerifyNoOtherCalls();
+    }
+
+    [Fact]
+    public async Task Cost_county_reference_body_guid_cannot_supply_missing_authenticated_county_context()
+    {
+        await using var db = ParcelDb();
+        var client = new Mock<IForgeApproachKernelClient>(MockBehavior.Strict);
+        var controller = ParcelController(db, client.Object, "wa-benton");
+        controller.HttpContext.User = new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim("sub", "parcel-test") }, "test"));
+        var response = await controller.CalculatePropertyCost(new PropertyCostCalculationRequest {
+            ParcelNumber = "PUBLIC-NUMBER", CountyCode = County.ToString(), Region = "Reval 1",
+            BuildingType = "residential", SquareFeet = 1000 });
+        Assert.IsType<ForbidResult>(response.Result);
+        client.VerifyNoOtherCalls();
+    }
+
+    [Theory]
+    [InlineData("CANONICAL-ID")]
+    [InlineData("PUBLIC-NUMBER")]
+    public async Task Cost_controller_binds_requested_reference_to_unique_canonical_parcel(string reference)
+    {
+        await using var db = ParcelDb();
+        var client = new Mock<IForgeApproachKernelClient>(MockBehavior.Strict);
+        client.Setup(c => c.CostAsync(It.IsAny<ForgeCostPayload>(), It.IsAny<ForgeApproachContext>(), It.IsAny<CancellationToken>()))
+            .Returns((ForgeCostPayload payload, ForgeApproachContext context, CancellationToken _) => {
+                Assert.Equal("CANONICAL-ID", payload.ParcelId);
+                Assert.Equal(payload.ParcelId, context.ParcelId);
+                Assert.Equal(County, context.CountyId);
+                return Task.FromResult(new ForgeApproachInvocation<ForgeCostResult>(CostData with { ParcelId = payload.ParcelId }, ParcelProvenance(context)));
+            });
+        var response = await ParcelController(db, client.Object).CalculatePropertyCost(new PropertyCostCalculationRequest {
+            ParcelNumber = reference, CountyCode = "benton", Region = "Reval 1", BuildingType = "residential",
+            SquareFeet = 1000, YearBuilt = 2000 });
+        var ok = Assert.IsType<OkObjectResult>(response.Result);
+        using var body = ParcelResponse(ok.Value);
+        var resolution = body.RootElement.GetProperty("parcelResolution");
+        Assert.Equal(reference, resolution.GetProperty("requestedReference").GetString());
+        Assert.Equal("CANONICAL-ID", resolution.GetProperty("parcelId").GetString());
+        Assert.Equal("PUBLIC-NUMBER", resolution.GetProperty("parcelNumber").GetString());
+        Assert.Equal(County, resolution.GetProperty("countyId").GetGuid());
+        Assert.Equal("CANONICAL-ID", body.RootElement.GetProperty("provenance").GetProperty("parcelId").GetString());
+    }
+
+    [Theory]
+    [InlineData("CANONICAL-ID")]
+    [InlineData("PUBLIC-NUMBER")]
+    public async Task Income_controller_binds_requested_reference_to_unique_canonical_parcel(string reference)
+    {
+        await using var db = ParcelDb();
+        var client = new Mock<IForgeApproachKernelClient>(MockBehavior.Strict);
+        client.Setup(c => c.IncomeAsync(It.IsAny<ForgeIncomePayload>(), It.IsAny<ForgeApproachContext>(), It.IsAny<CancellationToken>()))
+            .Returns((ForgeIncomePayload payload, ForgeApproachContext context, CancellationToken _) => {
+                Assert.Equal("CANONICAL-ID", payload.ParcelId);
+                Assert.Equal(payload.ParcelId, context.ParcelId);
+                Assert.Equal(County, context.CountyId);
+                var data = new ForgeIncomeResult("1.0.0", payload.ParcelId, 120000, 6000, 6000, 120000,
+                    30000, 25, 90000, 6, 1.1m, 1500000, 1650000, 13.75m, 6, "medium");
+                return Task.FromResult(new ForgeApproachInvocation<ForgeIncomeResult>(data, ParcelProvenance(context)));
+            });
+        var response = await ParcelController(db, client.Object).CalculateIncomeValuation(new CostForgeController.IncomeValuationRequest {
+            ParcelId = reference, AnnualRentalIncome = 120000, VacancyRate = 5, CapRate = 6 });
+        var ok = Assert.IsType<OkObjectResult>(response);
+        using var body = ParcelResponse(ok.Value);
+        var resolution = body.RootElement.GetProperty("parcelResolution");
+        Assert.Equal(reference, resolution.GetProperty("requestedReference").GetString());
+        Assert.Equal("CANONICAL-ID", resolution.GetProperty("parcelId").GetString());
+        Assert.Equal("PUBLIC-NUMBER", resolution.GetProperty("parcelNumber").GetString());
+        Assert.Equal(County, resolution.GetProperty("countyId").GetGuid());
+        Assert.Equal("CANONICAL-ID", body.RootElement.GetProperty("provenance").GetProperty("parcelId").GetString());
+    }
+
+    [Theory]
+    [InlineData("cost", "PUBLIC-NUMBER", true)]
+    [InlineData("income", "PUBLIC-NUMBER", true)]
+    [InlineData("cost", "FOREIGN-NUMBER", false)]
+    [InlineData("income", "FOREIGN-NUMBER", false)]
+    [InlineData("cost", "MISSING", false)]
+    [InlineData("income", "MISSING", false)]
+    public async Task Ambiguous_foreign_or_missing_reference_never_invokes_canonical_client(string action, string reference, bool ambiguous)
+    {
+        await using var db = ParcelDb(ambiguous);
+        var client = new Mock<IForgeApproachKernelClient>(MockBehavior.Strict);
+        var controller = ParcelController(db, client.Object);
+        var response = action == "cost"
+            ? (await controller.CalculatePropertyCost(new PropertyCostCalculationRequest { ParcelNumber = reference,
+                CountyCode = "benton", Region = "Reval 1", BuildingType = "residential", SquareFeet = 1000 })).Result
+            : await controller.CalculateIncomeValuation(new CostForgeController.IncomeValuationRequest { ParcelId = reference, CapRate = 6 });
+        var refused = Assert.IsAssignableFrom<ObjectResult>(response);
+        Assert.Equal(422, refused.StatusCode);
+        using var body = ParcelResponse(refused.Value);
+        Assert.Equal("CANONICAL_CONTEXT_REQUIRED", body.RootElement.GetProperty("code").GetString());
+        client.VerifyNoOtherCalls();
+    }
+
+    [Fact]
+    public async Task Conflicting_property_guid_and_reference_never_invokes_canonical_client()
+    {
+        await using var db = ParcelDb();
+        var client = new Mock<IForgeApproachKernelClient>(MockBehavior.Strict);
+        var response = await ParcelController(db, client.Object).CalculatePropertyCost(new PropertyCostCalculationRequest {
+            PropertyId = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"), ParcelNumber = "FOREIGN-NUMBER",
+            CountyCode = "benton", Region = "Reval 1", BuildingType = "residential", SquareFeet = 1000 });
+        Assert.Equal(422, Assert.IsAssignableFrom<ObjectResult>(response.Result).StatusCode);
+        client.VerifyNoOtherCalls();
     }
 
     [Fact]

@@ -46,7 +46,7 @@ export function CostApproachRunner() {
         <CardContent className="space-y-4">
           <p className="text-sm text-muted-foreground">Calculate with the canonical Forge runtime using the selected county cost references. No value is saved.</p>
           <div className="grid gap-3 sm:grid-cols-2">
-            {([['parcelId', 'Parcel ID'], ['yearBuilt', 'Year Built'], ['squareFeet', 'Area (Sq Ft)'], ['revalArea', 'Reval Area / Cycle']] as const).map(([field, label]) => (
+            {([['parcelId', 'Parcel ID or Number'], ['yearBuilt', 'Year Built'], ['squareFeet', 'Area (Sq Ft)'], ['revalArea', 'Reval Area / Cycle']] as const).map(([field, label]) => (
               <div key={field} className="space-y-1">
                 <Label htmlFor={`canonical-cost-${field}`}>{label}</Label>
                 <Input id={`canonical-cost-${field}`} value={form[field]} onChange={e => change(field, e.target.value)}
@@ -95,6 +95,7 @@ export function CostApproachRunner() {
             <p className="text-xs break-all">Canonical source: {result.provenance.sourceCommit}</p>
             <p className="text-xs break-all">Artifact SHA-256: {result.provenance.executableSha256}</p>
             <p className="text-xs">Parcel: {result.provenance.parcelId} · Trace: {result.provenance.requestId}</p>
+            <p className="text-xs">Requested reference: {result.parcelResolution?.requestedReference} · Resolved parcel number: {result.parcelResolution?.parcelNumber ?? 'Not recorded'}</p>
           </CardContent>
         </Card>
       )}

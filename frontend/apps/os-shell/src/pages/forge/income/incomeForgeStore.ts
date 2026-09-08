@@ -95,6 +95,7 @@ export interface IncomeValuationRequest {
 }
 
 export interface IncomeValuationResult {
+  parcelResolution?: { requestedReference: string; parcelId: string; parcelNumber: string | null; countyId: string };
   canonical?: { schemaVersion: string; parcelId: string; annualRentalIncome: number; vacancyLoss: number;
     otherIncome: number; effectiveGrossIncome: number; totalExpenses: number; expenseRatio: number;
     netOperatingIncome: number; capRate: number; locationMultiplier: number; rawValuation: number;
@@ -418,8 +419,13 @@ export const useIncomeForgeStore = create<IncomeForgeState>((set, get) => ({
       const data = await response.json() as IncomeValuationResult;
       if (!isCurrent()) return;
       const canonical = data.canonical;
-      if (canonical?.schemaVersion !== '1.0.0' || canonical.parcelId !== request.parcelId
-        || data.provenance?.parcelId !== request.parcelId || !/^[a-f0-9]{40}$/.test(data.provenance.sourceCommit)
+      const resolution = data.parcelResolution;
+      if (!resolution || resolution.requestedReference !== request.parcelId
+        || typeof resolution.parcelId !== 'string' || !resolution.parcelId.trim()
+        || (request.parcelId !== resolution.parcelId && request.parcelId !== resolution.parcelNumber)
+        || canonical?.schemaVersion !== '1.0.0' || canonical.parcelId !== resolution.parcelId
+        || data.provenance?.parcelId !== resolution.parcelId || resolution.countyId !== data.provenance.countyId
+        || !/^[a-f0-9]{40}$/.test(data.provenance.sourceCommit)
         || typeof data.provenance.countyId !== 'string'
         || !bentonCountyIds.has(data.provenance.countyId.trim().toLowerCase())
         || !/^[a-f0-9]{64}$/.test(data.provenance.executableSha256) || !/^[a-f0-9]{64}$/.test(data.provenance.inputHash)

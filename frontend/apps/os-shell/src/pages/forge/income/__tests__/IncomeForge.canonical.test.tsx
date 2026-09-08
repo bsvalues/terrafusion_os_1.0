@@ -13,7 +13,8 @@ const canonical = { schemaVersion: '1.0.0', parcelId: 'SYNTHETIC-001', annualRen
   expenseRatio: 25, netOperatingIncome: 90000, capRate: 6, locationMultiplier: 1.1,
   rawValuation: 1500000, adjustedValuation: 1650000, grossIncomeMultiplier: 13.75,
   cashOnCashReturn: 6, riskClassification: 'Moderate' };
-const result = { ...canonical, location: 'Richland', propertyType: 'commercial',
+const parcelResolution = { requestedReference: 'SYNTHETIC-001', parcelId: 'SYNTHETIC-001', parcelNumber: 'NUMBER-001', countyId: '19190019-1919-1919-1919-191919191919' };
+const result = { ...canonical, parcelResolution, location: 'Richland', propertyType: 'commercial',
   effectiveDate: '2026-01-01', source: 'canonical-forge', canonical,
   provenance: { countyId: '19190019-1919-1919-1919-191919191919', parcelId: 'SYNTHETIC-001', sourceCommit: 'a'.repeat(40),
     executableSha256: 'b'.repeat(64), inputHash: 'c'.repeat(64), requestId: 'request',
@@ -25,6 +26,29 @@ describe('canonical Income production state', () => {
       json: async () => await runtime.fetch(...args) }));
     runtime.session.countyId = '19190019-1919-1919-1919-191919191919';
     useIncomeForgeStore.getState().resetValuation(); });
+  it.each(['SYNTHETIC-001', 'NUMBER-001'])('accepts unique resolved reference %s with distinct ID/number', async reference => {
+    runtime.fetch.mockResolvedValue({ ...result, parcelResolution: { ...parcelResolution, requestedReference: reference } });
+    await useIncomeForgeStore.getState().calculateValuation({ ...request, parcelId: reference });
+    expect(useIncomeForgeStore.getState().valuationError).toBeNull();
+    expect(useIncomeForgeStore.getState().valuationResult?.provenance?.parcelId).toBe('SYNTHETIC-001');
+    expect(useIncomeForgeStore.getState().valuationResult?.adjustedValuation).toBe(1650000);
+  });
+  it.each([undefined, { ...parcelResolution, requestedReference: 'OTHER' },
+    { ...parcelResolution, parcelId: 'OTHER' }, { ...parcelResolution, countyId: 'OTHER' },
+    { ...parcelResolution, requestedReference: 'NUMBER-001', parcelNumber: 'OTHER' }])
+  ('rejects absent or inconsistent requested-to-resolved proof %j', async resolution => {
+    runtime.fetch.mockResolvedValue({ ...result, parcelResolution: resolution });
+    await useIncomeForgeStore.getState().calculateValuation({ ...request,
+      parcelId: resolution?.requestedReference === 'NUMBER-001' ? 'NUMBER-001' : request.parcelId });
+    expect(useIncomeForgeStore.getState().valuationResult).toBeNull();
+    expect(useIncomeForgeStore.getState().valuationError).toContain('provenance');
+  });
+  it('rejects canonical/provenance disagreement despite a valid number resolution', async () => {
+    runtime.fetch.mockResolvedValue({ ...result, parcelResolution: { ...parcelResolution, requestedReference: 'NUMBER-001' },
+      provenance: { ...result.provenance, parcelId: 'OTHER' } });
+    await useIncomeForgeStore.getState().calculateValuation({ ...request, parcelId: 'NUMBER-001' });
+    expect(useIncomeForgeStore.getState().valuationResult).toBeNull();
+  });
   it('sends percentage units, explicit parcel and expenses without local calculation', async () => {
     runtime.fetch.mockResolvedValue(result);
     await useIncomeForgeStore.getState().calculateValuation(request);

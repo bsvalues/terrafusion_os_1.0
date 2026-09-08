@@ -36,6 +36,7 @@ export interface CostForgeSecondaryFeature {
 }
 
 export interface CostForgeResult {
+  parcelResolution?: { requestedReference: string; parcelId: string; parcelNumber: string | null; countyId: string };
   canonical?: { schemaVersion: string; parcelId: string; rcnPerSqft: number; rcndPerSqft: number;
     adjustedCostPerSqft: number; replacementCost: number; physicalDepreciation: number;
     conditionAdjustment: number; rcnld: number; landValue: number; totalValue: number };
@@ -160,8 +161,13 @@ export function useCalcRCNLD(): UseCalcRCNLDState {
       }
       const data = await res.json() as CostForgeResult;
       if (!stillCurrent()) return;
-      if (!data.canonical || data.canonical.schemaVersion !== '1.0.0' || data.canonical.parcelId !== input.pin
-        || !data.provenance || data.provenance.parcelId !== input.pin
+      const resolution = data.parcelResolution;
+      if (!resolution || resolution.requestedReference !== input.pin
+        || typeof resolution.parcelId !== 'string' || !resolution.parcelId.trim()
+        || (input.pin !== resolution.parcelId && input.pin !== resolution.parcelNumber)
+        || !data.canonical || data.canonical.schemaVersion !== '1.0.0' || data.canonical.parcelId !== resolution.parcelId
+        || !data.provenance || data.provenance.parcelId !== resolution.parcelId
+        || resolution.countyId !== data.provenance.countyId
         || typeof data.provenance.countyId !== 'string'
         || !(normalizeCountyToken(data.provenance.countyId) === normalizeCountyToken(input.county_id)
           || (supportsCertifiedCostScheduleLane(input.county_id) && supportsCertifiedCostScheduleLane(data.provenance.countyId)))

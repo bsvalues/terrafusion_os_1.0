@@ -371,29 +371,14 @@ public class CostForgeController : ControllerBase
         return BadRequest("CountyCode or Region is required");
       }
 
-      if (!CountyCodeMatchesContext(requestedCounty, countyContext))
+      var matchesAuthenticatedCountyId = Guid.TryParse(requestedCounty, out var requestedCountyId)
+          && requestedCountyId == countyContext.CountyId;
+      if (!matchesAuthenticatedCountyId && !CountyCodeMatchesContext(requestedCounty, countyContext))
       {
         return Forbid();
       }
 
-      var property = request.PropertyId != Guid.Empty
-          ? await _db.Properties
-              .AsNoTracking()
-              .Where(p => p.Id == request.PropertyId && p.CountyId == countyContext.CountyId)
-              .Select(p => new { p.Id, p.LandValue, p.ParcelId })
-              .FirstOrDefaultAsync()
-          : await _db.Properties
-              .AsNoTracking()
-              .Where(p => p.ParcelNumber == request.ParcelNumber && p.CountyId == countyContext.CountyId)
-              .Select(p => new { p.Id, p.LandValue, p.ParcelId })
-              .FirstOrDefaultAsync();
-
-      if (property == null)
-      {
-        return request.PropertyId != Guid.Empty
-            ? NotFound($"Property not found for id: {request.PropertyId}")
-            : NotFound($"Property not found for parcel: {request.ParcelNumber}");
-      }
+      var property = await ResolveApproachParcelAsync(countyContext, request.ParcelNumber, request.PropertyId);
 
       var unsupportedReferenceLane = CertifiedReferenceUnavailableIfNeeded(countyContext, "CostForge cost approach");
       if (unsupportedReferenceLane is not null) return unsupportedReferenceLane;
@@ -408,6 +393,7 @@ public class CostForgeController : ControllerBase
         PropertyId = property.Id, TotalCost = canonical.Data.TotalValue, LandValue = canonical.Data.LandValue,
         ImprovementValue = canonical.Data.Rcnld, AnalysisDate = DateTime.UtcNow,
         AnalysisMethod = "Canonical Forge cost approach", Canonical = canonical.Data, canonical.Provenance,
+        ParcelResolution = property.Resolution,
       };
 
       // Calculate performance metrics - target <150ms
@@ -1587,12 +1573,12 @@ public class CostForgeController : ControllerBase
 
     try
     {
-      var parcelId = await ResolveApproachParcelAsync(countyContext, request.ParcelId);
+      var parcel = await ResolveApproachParcelAsync(countyContext, request.ParcelId);
       var year = request.YearBuilt ?? DateTime.UtcNow.Year;
       var quality = request.QualityGrade ?? "STANDARD";
       var condition = request.ConditionGrade ?? "GOOD";
       var complexity = request.ComplexityGrade ?? "STANDARD";
-      var invocation = await RunCanonicalCostAsync(countyContext, parcelId, request.BuildingType,
+      var invocation = await RunCanonicalCostAsync(countyContext, parcel.ParcelId, request.BuildingType,
         revalArea, request.SquareFeet, year, quality, condition, complexity, 0m);
       var normalizedType = NormalizeRequestedBuildingType(request.BuildingType);
       var entry = BentonCostData.CostMatrix.First(e => e.BuildingType.Equals(normalizedType, StringComparison.OrdinalIgnoreCase)
@@ -1610,6 +1596,7 @@ public class CostForgeController : ControllerBase
         invocation.Data.RcnPerSqft, invocation.Data.RcndPerSqft, invocation.Data.AdjustedCostPerSqft,
         TotalCost = invocation.Data.Rcnld, AssessedValue = invocation.Data.Rcnld, AssessmentRatio = 1m, MatrixYear = 2025,
         Source = $"git:{invocation.Provenance.SourceCommit}", Canonical = invocation.Data, invocation.Provenance,
+        ParcelResolution = parcel.Resolution,
       });
     }
     catch (ForgeApproachException exception) { return await CanonicalFailure(exception); }
@@ -1869,20 +1856,20 @@ public class CostForgeController : ControllerBase
     {
       if (_forgeApproaches is null)
         throw new ForgeApproachException("CANONICAL_RUNTIME_UNAVAILABLE", "Canonical Cost/Income runtime is not registered.");
-      var parcelId = await ResolveApproachParcelAsync(countyContext, request.ParcelId);
+      var parcel = await ResolveApproachParcelAsync(countyContext, request.ParcelId);
       // NOI-only projection supplies neutral required capitalization fields and never exposes a capitalized value.
-      var payload = new ForgeIncomePayload("1.0.0", parcelId, request.AnnualRentalIncome, request.VacancyRate, request.OtherIncome,
+      var payload = new ForgeIncomePayload("1.0.0", parcel.ParcelId, request.AnnualRentalIncome, request.VacancyRate, request.OtherIncome,
         new(request.PropertyTaxes, request.Insurance, request.Utilities, request.Maintenance,
           request.ManagementFees, request.ReplacementReserves, request.OtherExpenses), 1m, 1m);
       var invocation = await _forgeApproaches.IncomeAsync(payload,
-        new(countyContext.CountyId, parcelId, HttpContext.TraceIdentifier), HttpContext.RequestAborted);
+        new(countyContext.CountyId, parcel.ParcelId, HttpContext.TraceIdentifier), HttpContext.RequestAborted);
       await TraceCanonicalApproachAsync("income", invocation.Provenance);
       var data = invocation.Data;
       return Ok(new
       {
         data.AnnualRentalIncome, request.VacancyRate, data.OtherIncome, data.EffectiveGrossIncome,
         data.TotalExpenses, data.ExpenseRatio, data.NetOperatingIncome,
-        Source = $"git:{invocation.Provenance.SourceCommit}", invocation.Provenance,
+        Source = $"git:{invocation.Provenance.SourceCommit}", invocation.Provenance, ParcelResolution = parcel.Resolution,
       });
     }
     catch (ForgeApproachException exception) { return await CanonicalFailure(exception); }
@@ -1903,14 +1890,14 @@ public class CostForgeController : ControllerBase
     {
       if (_forgeApproaches is null)
         throw new ForgeApproachException("CANONICAL_RUNTIME_UNAVAILABLE", "Canonical Cost/Income runtime is not registered.");
-      var parcelId = await ResolveApproachParcelAsync(countyContext, request.ParcelId);
+      var parcel = await ResolveApproachParcelAsync(countyContext, request.ParcelId);
       var locationMultiplier = BentonIncomeData.LocationPremiums
         .FirstOrDefault(lp => lp.Location.Equals(request.Location ?? "", StringComparison.OrdinalIgnoreCase))?.Multiplier ?? 1m;
-      var payload = new ForgeIncomePayload("1.0.0", parcelId, request.AnnualRentalIncome, request.VacancyRate, request.OtherIncome,
+      var payload = new ForgeIncomePayload("1.0.0", parcel.ParcelId, request.AnnualRentalIncome, request.VacancyRate, request.OtherIncome,
         new(request.PropertyTaxes, request.Insurance, request.Utilities, request.Maintenance,
           request.ManagementFees, request.ReplacementReserves, request.OtherExpenses), request.CapRate, locationMultiplier);
       var invocation = await _forgeApproaches.IncomeAsync(payload,
-        new(countyContext.CountyId, parcelId, HttpContext.TraceIdentifier), HttpContext.RequestAborted);
+        new(countyContext.CountyId, parcel.ParcelId, HttpContext.TraceIdentifier), HttpContext.RequestAborted);
       await TraceCanonicalApproachAsync("income", invocation.Provenance);
       var data = invocation.Data;
       return Ok(new
@@ -1920,22 +1907,34 @@ public class CostForgeController : ControllerBase
         data.RawValuation, data.AdjustedValuation, data.GrossIncomeMultiplier, data.CashOnCashReturn, data.RiskClassification,
         EffectiveDate = "2025-01-01", Source = $"git:{invocation.Provenance.SourceCommit}",
         ReferenceSource = "Benton County Assessor – Income Approach Market Study FY 2025",
-        Canonical = data, invocation.Provenance,
+        Canonical = data, invocation.Provenance, ParcelResolution = parcel.Resolution,
       });
     }
     catch (ForgeApproachException exception) { return await CanonicalFailure(exception); }
   }
 
-  private async Task<string> ResolveApproachParcelAsync(CountyContext county, string? requestedParcel)
+  // OS lookup evidence only; canonical schemas continue to carry the resolved ParcelId.
+  private sealed record ForgeParcelResolution(string RequestedReference, string ParcelId, string? ParcelNumber, Guid CountyId);
+  private sealed record ResolvedApproachParcel(Guid Id, string ParcelId, decimal LandValue, ForgeParcelResolution Resolution);
+
+  private async Task<ResolvedApproachParcel> ResolveApproachParcelAsync(CountyContext county, string? requestedParcel, Guid propertyId = default)
   {
-    if (string.IsNullOrWhiteSpace(requestedParcel))
+    var hasReference = !string.IsNullOrWhiteSpace(requestedParcel);
+    if (!hasReference && propertyId == Guid.Empty)
       throw new ForgeApproachException("CANONICAL_CONTEXT_REQUIRED", "An explicit parcel is required.");
-    var parcel = await _db.Properties.AsNoTracking()
-      .Where(p => p.CountyId == county.CountyId && (p.ParcelId == requestedParcel || p.ParcelNumber == requestedParcel))
-      .Select(p => p.ParcelId).Take(2).ToListAsync(HttpContext.RequestAborted);
-    if (parcel.Count != 1)
+    var matches = await _db.Properties.AsNoTracking()
+      .Where(p => p.CountyId == county.CountyId && ((propertyId != Guid.Empty && p.Id == propertyId)
+        || (hasReference && (p.ParcelId == requestedParcel || p.ParcelNumber == requestedParcel))))
+      .Select(p => new { p.Id, p.ParcelId, p.ParcelNumber, p.LandValue }).Take(2).ToListAsync(HttpContext.RequestAborted);
+    if (matches.Count != 1)
       throw new ForgeApproachException("CANONICAL_CONTEXT_REQUIRED", "Exactly one parcel must resolve in the authenticated county.");
-    return parcel[0];
+    var parcel = matches[0];
+    if (string.IsNullOrWhiteSpace(parcel.ParcelId)
+      || (propertyId != Guid.Empty && parcel.Id != propertyId)
+      || (hasReference && requestedParcel != parcel.ParcelId && requestedParcel != parcel.ParcelNumber))
+      throw new ForgeApproachException("CANONICAL_CONTEXT_REQUIRED", "The supplied parcel identities do not identify the same county record.");
+    return new(parcel.Id, parcel.ParcelId, parcel.LandValue,
+      new(hasReference ? requestedParcel! : propertyId.ToString("D"), parcel.ParcelId, parcel.ParcelNumber, county.CountyId));
   }
 
   internal static string ClassifyRisk(double capRate, double cashOnCash)
