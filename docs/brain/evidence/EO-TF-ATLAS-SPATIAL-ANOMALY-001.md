@@ -40,6 +40,15 @@ Bundled Node 24.19.0, own os-atlas dependencies. No foreign dependency tree or r
 - `node --test os-platform/core/tests/atlas-spatial-anomaly-process.test.mjs os-platform/core/tests/atlas-spatial-anomaly-handler.test.mjs`: 20 passed, zero failed/skipped.
 - From frontend: `node ../node_modules/vitest/vitest.mjs run apps/os-shell/src/__tests__/atlas/spatialAnomalyPanel.test.tsx --maxWorkers=1 --minWorkers=1 --retry=0`: 10 passed. Initial missing panel import was RED; separate mount tests then failed on missing year/neighborhood controls (2 failed, 8 passed), followed by 10 GREEN. Existing React Testing Library act/Router future warnings and stale Browserslist database warnings remain visible, not suppressed.
 - `node node_modules/typescript/bin/tsc -p tsconfig.core.json --pretty false`: exit 0.
+- `node node_modules/typescript/bin/tsc --noEmit -p frontend/tsconfig.json --pretty false`: exit 0.
+- `node --test os-platform/core/tests/phase83-tools.test.mjs`: 73 passed.
+- The panel test plus existing `atlasNeighborhood.contract.test.tsx`, with the same single-worker,
+  retry0 command: 24 passed. First combined run had 23 pass and one cold dynamic module import exceed
+  the existing five-second timeout. Moving imports to collection (not increasing timeout or dropping
+  assertions) yielded 24 pass; implementation unchanged.
+- Post-hook raw Git blobs at OS candidate b5ee273741bb241cde19f7e0a21d61e057353f71 and suite
+  0aa44618879f57e5d367379e27653ebbd3e84a36 were compared as Buffers: identical 9,109-byte
+  specifications with SHA256 06b68ac64f159215f2ea620740e3eae9fda58a38604b3ea833a18691adbcfa9f.
 - Own pinned pnpm9 filtered frozen-lockfile install completed exit 0 with normal lifecycle scripts;
   child-only canonical Path corrected initial Windows husky resolution failure. No package/lock edits.
 

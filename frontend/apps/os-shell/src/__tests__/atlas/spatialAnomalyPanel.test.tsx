@@ -3,6 +3,8 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { act, fireEvent, render, screen } from '@testing-library/react';
 import { SpatialAnomalyPanel } from '../../components/atlas/SpatialAnomalyPanel';
 import { MemoryRouter } from 'react-router-dom';
+import AtlasSuiteHome from '../../pages/suites/AtlasSuiteHome';
+import PropertyAtlas from '../../pages/workbench/tabs/PropertyAtlas';
 
 const state = vi.hoisted(() => ({ countyId: '11111111-1111-1111-1111-111111111111', authenticated: true, invoke: vi.fn() }));
 vi.mock('../../auth/useAuthContext', () => ({ useAuthContextOptional: () => ({ isAuthenticated: state.authenticated, countyId: state.countyId }) }));
@@ -41,15 +43,13 @@ function run() {
 describe('canonical spatial anomaly panel', () => {
   beforeEach(() => { sessionStorage.clear(); state.authenticated = true; state.countyId = '11111111-1111-1111-1111-111111111111'; state.invoke.mockReset(); });
 
-  it('is reachable on the existing suite surface with explicit scope controls', async () => {
-    const { default: AtlasSuiteHome } = await import('../../pages/suites/AtlasSuiteHome');
+  it('is reachable on the existing suite surface with explicit scope controls', () => {
     render(<MemoryRouter><AtlasSuiteHome /></MemoryRouter>);
     expect(screen.getByLabelText('Assessment year')).toBeTruthy();
     expect(screen.getByTestId('atlas-spatial-anomaly-panel')).toBeTruthy();
   });
 
-  it('is reachable in the existing parcel workbench with required neighborhood context', async () => {
-    const { default: PropertyAtlas } = await import('../../pages/workbench/tabs/PropertyAtlas');
+  it('is reachable in the existing parcel workbench with required neighborhood context', () => {
     render(<MemoryRouter><PropertyAtlas /></MemoryRouter>);
     expect(screen.getByLabelText('Neighborhood ID')).toBeTruthy();
     expect(screen.getByTestId('atlas-spatial-anomaly-panel')).toBeTruthy();
