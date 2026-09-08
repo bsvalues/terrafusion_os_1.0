@@ -9,7 +9,7 @@ import { fileURLToPath } from 'node:url';
 // Acceptance, not a demo: a missing registration, stale build, missing admitted
 // artifact, missing real audit, or unavailable startup prerequisite MUST fail.
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
-const baseURL = 'http://127.0.0.1:5199';
+const baseURL = 'http://127.0.0.1:5198';
 const county = '19190019-1919-1919-1919-191919191919';
 const countyCode = 'wa-benton';
 const parcel = 'SYNTHETIC-FORGE-P1';
@@ -206,7 +206,7 @@ async function startApi(unavailable = false) {
   const socket = createServer();
   await new Promise<void>((resolveListen, reject) => {
     socket.once('error', reject);
-    socket.listen(5199, '127.0.0.1', resolveListen);
+    socket.listen(5198, '127.0.0.1', resolveListen);
   });
   await new Promise<void>((resolveClose, reject) =>
     socket.close(error => (error ? reject(error) : resolveClose()))

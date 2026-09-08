@@ -20,7 +20,7 @@ export default defineConfig({
   use: {
     ...devices['Desktop Chrome'],
     viewport: { width: 1440, height: 1000 },
-    baseURL: 'http://127.0.0.1:5199',
+    baseURL: 'http://127.0.0.1:5198',
     actionTimeout: 20_000,
     navigationTimeout: 45_000,
     trace: 'off',
