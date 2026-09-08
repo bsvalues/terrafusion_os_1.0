@@ -60,4 +60,14 @@ H PR1577 protected merge63bea324baa9d8d9c5300892cae1f781b70465ef at13:08:44Z rel
 
 Exact integrated committed-candidate validation, independent final review, required GitHub checks and protected merge remain outstanding. Earlier34-case source receipts remain historical and are not relabeled as a run at57e92 or a subsequent metadata commit. The two production/test files stay frozen.
 
+### Actual integrated-candidate validation
+
+The preceding pending validation was subsequently executed as Main37501 at clean `8c14ef39c53cab0d269b162a39b1bfabebe3f304`, protected base63bea. Normal thirteen-project Release build/test ran2026-09-08T13:19:16.3102651Z–13:23:03.699858Z, EXIT0. Actual TRX:34 executed/34 passed/0 failed/0 notExecuted, with no error/timeout/aborted result. All24 source/metadata/dependency hashes, exact head and five-path scope remained unchanged. This is a new actual integrated run, not a sum or retagging of old results.
+
+Evidence directory `wal003e-integrated-candidate-a0161650ccf742d6aa6ef82827810aaf` under the root above. `integrated-sync.trx` SHA256 `683367ed65e73efbdb1ad9b6b8f51dc709e641cd037fe0b62cc8d17df5261971`; `validation.txt` SHA256 `62a0dbada22494db55be57c9aacebf09b5d6260f5bff5923a7983759dd9c3fc8`.
+
+Tested output identities in Unit.Tests/bin/Release/net8.0: Data DLL SHA256 `839f952788610497422434e18c6c71f27036a7f79a0c1180e386ef03d36ee43e`, product version `1.0.0+8c14ef39c53cab0d269b162a39b1bfabebe3f304`; Unit.Tests DLL SHA256 `1f7f56de05abff485c04b89440058addafb25bdadf582cbd99610995a9d4ec7c`, observed product version `0.0.0.0`. The Unit DLL does not embed the candidate SHA; the exact build/test receipt and hash bind its identity. No PostgreSQL/source/runtime authority proof is implied.
+
+Following receipt updates touch governance metadata only and do not retag these binaries. Independent final review, normal strict push, required checks and protected merge remain pending; parent1485 stays ACTIVE.
+
 Code rollback is a normal reviewed revert of this service guard and associated tests/governance through protected delivery. No data deletion/reseed, compensating imports, audit removal or external-source mutation is part of rollback. Prior completed WAL003 children stay closed; this child does not supply actual source credentials, observed least privilege, production deployment or external-assessor acceptance. Parent mission completion remains exclusively subject to its unsatisfied terminal predicates.

@@ -59,7 +59,7 @@
           "required": true,
           "result": "pending",
           "evidence": [
-            "Normal clean checkpoint3e34deae85895872fad2559c87df151e734083b0 retains exact pre-hook tree8cae5f6e760734eaf050d1f9e8ed6c5ff43b12ee. Protected H63bea324baa9d8d9c5300892cae1f781b70465ef integrated by normal merge57e92dcef3a6d25d65a1046020b4eae5be7f880e. Current-candidate34 validation and protected delivery remain pending; no retagging of historical tests."
+            "Normal clean checkpoint3e34deae85895872fad2559c87df151e734083b0 retains exact pre-hook tree8cae5f6e760734eaf050d1f9e8ed6c5ff43b12ee. Protected H63bea324baa9d8d9c5300892cae1f781b70465ef integrated by normal merge57e92dcef3a6d25d65a1046020b4eae5be7f880e. Exact subsequent clean candidate8c14ef39c53cab0d269b162a39b1bfabebe3f304 passed actual normal integrated34 run37501 at2026-09-08T13:23:03.699858Z; all24pins/five-pathscope unchanged; TRX683367ed65e73efbdb1ad9b6b8f51dc709e641cd037fe0b62cc8d17df5261971. Final receipt edits are metadata only. Protected delivery remains pending, so this combined gate is not yet pass. Historical tests are not retagged."
           ]
         }
       ],

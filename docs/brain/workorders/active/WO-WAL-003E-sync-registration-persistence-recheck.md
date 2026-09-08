@@ -68,6 +68,8 @@ Normal own frozen install56121 and19-project solution restore passed; normal che
 
 Main now reserves only the new003E record in the registry as the fifth delivery path, preserving every prior record and root metadata. G/K acquire no parallel registry writer. Normal exact integrated-candidate validation, independent final review and protected delivery remain outstanding. No old34-case receipt is retagged to this new head, and no live-source or production activation is released by local test success.
 
+The integrated-candidate validation above is now executed: normal run37501 at clean8c14ef39c53cab0d269b162a39b1bfabebe3f304 ran2026-09-08T13:19:16.3102651Z–13:23:03.699858Z and exited0 with34 passed/0 failed/0 skipped. All24 source/metadata/dependency pins and exact five-path scope remained unchanged. This new result is separate from every earlier073-based test receipt. Evidence `wal003e-integrated-candidate-a0161650ccf742d6aa6ef82827810aaf/integrated-sync.trx`, SHA256 `683367ed65e73efbdb1ad9b6b8f51dc709e641cd037fe0b62cc8d17df5261971`, and raw validation SHA256 `62a0dbada22494db55be57c9aacebf09b5d6260f5bff5923a7983759dd9c3fc8` are recorded in the proof. Subsequent receipt edits are metadata only; independent final review and protected delivery remain required.
+
 <!-- brain-machine-policy: exact five-file delivery scope; Main edits only the003E registry record -->
 ```json
 {
