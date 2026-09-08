@@ -3,6 +3,7 @@ import { spawn, spawnSync, type ChildProcess } from 'node:child_process';
 import { createHash, randomBytes, randomUUID } from 'node:crypto';
 import { existsSync, lstatSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { createServer } from 'node:net';
+import { createRequire } from 'node:module';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -269,6 +270,14 @@ async function startApi(unavailable = false) {
   throw new Error('Own API startup not ready; no fallback runtime permitted.');
 }
 
+function forgeLaunch(approach: 'cost' | 'income') {
+  return {
+    path: '/forge',
+    moduleId: approach === 'cost' ? 'costforge' : 'income-forge',
+    title: approach === 'cost' ? 'CostForge' : 'IncomeForge',
+  };
+}
+
 async function open(page: Page, approach: 'cost' | 'income') {
   await page.addInitScript(
     value => {
@@ -277,7 +286,15 @@ async function open(page: Page, approach: 'cost' | 'income') {
     },
     { token, session }
   );
-  await page.goto(`${baseURL}/m/${approach === 'cost' ? 'costforge' : 'income-forge'}`);
+  const launch = forgeLaunch(approach);
+  await page.goto(`${baseURL}${launch.path}`);
+  const application = page
+    .getByTestId('forge-primary-applications')
+    .getByRole('button')
+    .filter({ has: page.getByText(launch.title, { exact: true }) });
+  await expect(application).toHaveCount(1);
+  await expect(application).toBeEnabled();
+  await application.click();
   const controls =
     approach === 'cost' ? page.getByRole('tablist', { name: 'CostForge tabs', exact: true }) : page;
   await controls
@@ -620,6 +637,67 @@ test.describe('Forge failure diagnostics', () => {
     expect(capture.pageErrors[0].name).toHaveLength(80);
     expect(capture.pageErrors[0].message).toHaveLength(1024);
   });
+});
+
+test.describe('Forge navigation', () => {
+  for (const approach of ['cost', 'income'] as const) {
+    test(`${approach} launch matches the actual shell route and canonical application`, async () => {
+      const ts = await import('typescript');
+      const { matchRoutes } = createRequire(resolve(root, 'frontend/package.json'))(
+        'react-router-dom'
+      );
+      const { TERRAFORGE_CANONICAL_INVENTORY } =
+        await import('../../frontend/apps/os-shell/src/pages/suites/terraforgeCanonicalInventory');
+      const source = ts.createSourceFile(
+        'Router.tsx',
+        readFileSync(resolve(root, 'frontend/apps/os-shell/src/Router.tsx'), 'utf8'),
+        ts.ScriptTarget.Latest,
+        true,
+        ts.ScriptKind.TSX
+      );
+      type Route = { path?: string; index?: boolean; children?: Route[] };
+      let routes: Route[] | undefined;
+      const readRoute = (node: import('typescript').Node): Route | null => {
+        const opening = ts.isJsxElement(node)
+          ? node.openingElement
+          : ts.isJsxSelfClosingElement(node)
+            ? node
+            : undefined;
+        if (!opening || opening.tagName.getText(source) !== 'Route') return null;
+        const route: Route = {};
+        for (const attribute of opening.attributes.properties) {
+          if (!ts.isJsxAttribute(attribute)) continue;
+          if (attribute.name.getText(source) === 'path') {
+            if (!attribute.initializer || !ts.isStringLiteral(attribute.initializer))
+              throw new Error('Dynamic route needs explicit test admission.');
+            route.path = attribute.initializer.text;
+          }
+          if (attribute.name.getText(source) === 'index') route.index = true;
+        }
+        if (ts.isJsxElement(node)) {
+          const children = node.children
+            .map(readRoute)
+            .filter((route): route is Route => route !== null);
+          if (children.length) route.children = children;
+        }
+        return route;
+      };
+      const visit = (node: import('typescript').Node) => {
+        if (ts.isJsxElement(node) && node.openingElement.tagName.getText(source) === 'Routes')
+          routes = node.children.map(readRoute).filter((route): route is Route => route !== null);
+        ts.forEachChild(node, visit);
+      };
+      visit(source);
+      expect(routes).toBeDefined();
+      const launch = forgeLaunch(approach);
+      expect(matchRoutes(routes, launch.path)).not.toBeNull();
+      const application = TERRAFORGE_CANONICAL_INVENTORY.find(item => item.label === launch.title);
+      expect(application?.moduleId).toBe(launch.moduleId);
+      expect(application?.route).toBe(launch.path);
+      expect(application?.tier).toBe('primary');
+      expect(application?.status).toBe('active');
+    });
+  }
 });
 
 function canonical(action: string, payload: unknown) {
