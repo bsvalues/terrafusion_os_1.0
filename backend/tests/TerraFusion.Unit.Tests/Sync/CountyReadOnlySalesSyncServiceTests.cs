@@ -1257,11 +1257,13 @@ public sealed class CountyReadOnlySalesSyncServiceTests
 
     private static async Task<PausedRecheckOutcome> RunPausedRecheckAsync(
         SqliteFactory factory, Guid connectionId, string edit, IReadOnlyList<PacsComparableSale> rows,
-        bool cancelWhilePaused = false)
+        bool cancelWhilePaused = false, RecheckDiagnosticControl? diagnosticControl = null)
     {
         var readEntered = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
         var releaseRead = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+        var diagnostics = new RecheckPhaseCapture();
         using var deadline = new CancellationTokenSource(TimeSpan.FromSeconds(15));
+        diagnostics.Mark(RecheckDiagnosticPhase.DeadlineStarted);
         using var runCancellation = CancellationTokenSource.CreateLinkedTokenSource(deadline.Token);
         var adapter = new Mock<IPacsAdapter>(MockBehavior.Strict);
         var external = adapter.As<IExternalReadOnlyPacsAdapter>();
@@ -1274,57 +1276,141 @@ public sealed class CountyReadOnlySalesSyncServiceTests
         adapter.Setup(x => x.GetComparableSalesAsync(1, 500, It.IsAny<CancellationToken>()))
             .Returns(async (int page, int pageSize, CancellationToken ct) =>
             {
+                diagnostics.Mark(RecheckDiagnosticPhase.MockEntered);
                 readEntered.TrySetResult(true);
+                diagnostics.Mark(RecheckDiagnosticPhase.EntrySignaled);
                 await releaseRead.Task.WaitAsync(ct);
+                diagnostics.Mark(RecheckDiagnosticPhase.ReleaseObserved);
                 ct.ThrowIfCancellationRequested();
-                return new PacsPagedResult<PacsComparableSale>
+                diagnostics.Mark(RecheckDiagnosticPhase.CancellationCheckPassed);
+                var pageResult = new PacsPagedResult<PacsComparableSale>
                 {
                     Page = page, PageSize = pageSize, TotalCount = rows.Count, Items = rows,
                 };
+                diagnostics.Mark(RecheckDiagnosticPhase.RowsReturned);
+                return pageResult;
             });
         var service = new CountyReadOnlySalesSyncService(
             factory, adapter.Object, NullLogger<CountyReadOnlySalesSyncService>.Instance);
-        var context = await CreateCountyContextAsync(Benton, BentonId, "synthetic-assessor");
-        var run = service.SyncAsync(new CountyReadOnlySalesSyncRequest(context), runCancellation.Token);
+        Task<CountyReadOnlySalesSyncResult>? run = null;
         RecheckSnapshot? afterEdit = null;
         CountyReadOnlySalesSyncResult? result = null;
         OperationCanceledException? cancellation = null;
+        Exception? firstFailure = null;
+        var phase = RecheckDiagnosticPhase.ContextStarted;
+        var firstPhase = phase;
+        long? firstElapsed = null;
+        bool firstDeadlineCancelled = false;
+        RecheckTaskSnapshot? requestedBefore = null;
+        RecheckTaskSnapshot? requestedAfter = null;
+
+        RecheckTaskSnapshot Observe() => new(readEntered.Task.Status, releaseRead.Task.Status,
+            run?.Status, deadline.IsCancellationRequested, runCancellation.IsCancellationRequested);
+
+        RecheckFailureEvidence Evidence(RecheckDiagnosticPhase failedPhase, Exception caught,
+            RecheckTaskSnapshot beforeRequest, RecheckTaskSnapshot afterRequest) => new(
+                failedPhase, diagnostics.ElapsedMilliseconds, firstFailure,
+                firstFailure is null ? null : firstPhase, caught,
+                beforeRequest.EntryStatus, beforeRequest.ReleaseStatus, beforeRequest.SyncStatus,
+                beforeRequest.DeadlineCancelled, beforeRequest.RunCancelled, afterRequest.RunCancelled)
+            {
+                FirstElapsedMilliseconds = firstElapsed,
+                FirstDeadlineCancelled = firstFailure is null ? null : firstDeadlineCancelled,
+                AfterRequest = afterRequest,
+                Phases = diagnostics.Snapshot(),
+            };
+
         try
         {
+            diagnostics.Mark(phase);
+            var context = await CreateCountyContextAsync(Benton, BentonId, "synthetic-assessor");
+            diagnostics.Mark(RecheckDiagnosticPhase.ContextCompleted);
+            phase = RecheckDiagnosticPhase.SyncStarting;
+            diagnostics.Mark(phase);
+            run = service.SyncAsync(new CountyReadOnlySalesSyncRequest(context), runCancellation.Token);
+            diagnostics.Mark(RecheckDiagnosticPhase.SyncTaskObtained);
+            phase = RecheckDiagnosticPhase.EntryWaiting;
+            diagnostics.Mark(phase);
             await readEntered.Task.WaitAsync(deadline.Token);
+            diagnostics.Mark(RecheckDiagnosticPhase.EntryObserved);
+            phase = RecheckDiagnosticPhase.EditStarted;
+            diagnostics.Mark(phase);
             await ApplyRecheckEditAsync(factory, connectionId, edit, deadline.Token);
+            diagnostics.Mark(RecheckDiagnosticPhase.EditCompleted);
             // Commit and snapshot while extraction is paused, BEFORE the persistence transaction.
+            phase = RecheckDiagnosticPhase.SnapshotStarted;
+            diagnostics.Mark(phase);
             afterEdit = await SnapshotRecheckAsync(factory, deadline.Token);
+            phase = RecheckDiagnosticPhase.SnapshotCompleted;
+            diagnostics.Mark(phase);
             Assert.NotEmpty(afterEdit.AuditLogs);
-            if (cancelWhilePaused) _ = runCancellation.CancelAsync();
+            diagnosticControl?.ThrowAfterSnapshot(afterEdit);
+            if (cancelWhilePaused)
+            {
+                requestedBefore = Observe();
+                _ = runCancellation.CancelAsync();
+                requestedAfter = Observe();
+                diagnostics.Mark(RecheckDiagnosticPhase.RunCancellationRequested);
+            }
         }
-        catch (OperationCanceledException) when (deadline.IsCancellationRequested)
+        catch (Exception exception)
         {
-            throw new Xunit.Sdk.XunitException(
-                "WAL003E_FIXTURE_TIMEOUT: extraction/edit deadline expired; not behavioral RED. " +
-                "No acceptance; drain remains unproven until owned test-host exit.");
+            // Retain the first safe identity across finally, including non-timeout edit/assertion failures.
+            firstFailure = exception;
+            firstPhase = phase;
+            firstElapsed = diagnostics.ElapsedMilliseconds;
+            firstDeadlineCancelled = deadline.IsCancellationRequested;
         }
         finally
         {
             releaseRead.TrySetResult(true);
-            try
+            diagnostics.Mark(RecheckDiagnosticPhase.ReleaseSignaled);
+            if (run is not null)
             {
-                // WaitAsync bounds the wait, not the underlying task. Success means actual completion.
-                result = await run.WaitAsync(TimeSpan.FromSeconds(15));
+                try
+                {
+                    diagnostics.Mark(RecheckDiagnosticPhase.DrainStarted);
+                    // WaitAsync bounds the wait, not the underlying task. Success means actual completion.
+                    result = await run.WaitAsync(TimeSpan.FromSeconds(15));
+                    diagnostics.Mark(RecheckDiagnosticPhase.DrainFinished);
+                    diagnosticControl?.ThrowAfterRealDrain(result);
+                }
+                catch (OperationCanceledException exception) when (
+                    cancelWhilePaused && runCancellation.IsCancellationRequested && !deadline.IsCancellationRequested)
+                {
+                    cancellation = exception; // The actual Sync task completed with requested cancellation.
+                    diagnostics.Mark(RecheckDiagnosticPhase.DrainFinished);
+                }
+                catch (Exception exception) when (exception is TimeoutException
+                    || (exception is OperationCanceledException && deadline.IsCancellationRequested))
+                {
+                    var beforeRequest = Observe();
+                    _ = runCancellation.CancelAsync();
+                    var afterRequest = Observe();
+                    diagnostics.Mark(RecheckDiagnosticPhase.RunCancellationRequested);
+                    throw RecheckTimeoutFailure(draining: true,
+                        evidence: Evidence(RecheckDiagnosticPhase.DrainStarted, exception, beforeRequest, afterRequest));
+                }
+                catch (Exception exception)
+                {
+                    // An unexpected drain fault must not mask an earlier failure or leak provider text.
+                    var observed = Observe();
+                    var failure = RecheckTimeoutFailure(draining: true,
+                        evidence: Evidence(RecheckDiagnosticPhase.DrainStarted, exception, observed, observed));
+                    if (exception is OperationCanceledException canceled)
+                        throw new OperationCanceledException(failure.Message, canceled.CancellationToken);
+                    throw failure;
+                }
             }
-            catch (OperationCanceledException exception) when (
-                cancelWhilePaused && runCancellation.IsCancellationRequested && !deadline.IsCancellationRequested)
-            {
-                cancellation = exception; // The actual Sync task completed with requested cancellation.
-            }
-            catch (Exception exception) when (exception is TimeoutException
-                || (exception is OperationCanceledException && deadline.IsCancellationRequested))
-            {
-                _ = runCancellation.CancelAsync();
-                throw new Xunit.Sdk.XunitException(
-                    "WAL003E_FIXTURE_TIMEOUT: bounded Sync completion/drain failed; not behavioral RED. " +
-                    "Cancellation requested; no acceptance; drain unproven until owned test-host exit.");
-            }
+        }
+        if (firstFailure is not null)
+        {
+            var observed = Observe();
+            var failure = RecheckTimeoutFailure(draining: false,
+                evidence: Evidence(firstPhase, firstFailure, requestedBefore ?? observed, requestedAfter ?? observed));
+            if (firstFailure is OperationCanceledException canceled && !firstDeadlineCancelled)
+                throw new OperationCanceledException(failure.Message, canceled.CancellationToken);
+            throw failure;
         }
         Assert.NotNull(afterEdit);
         var afterRun = await SnapshotRecheckAsync(factory);
@@ -1336,6 +1422,275 @@ public sealed class CountyReadOnlySalesSyncServiceTests
             Times.Exactly(result?.Disposition == CountyReadOnlySalesSyncDisposition.Completed ? 2 : 1));
         adapter.VerifyNoOtherCalls();
         return new(result, cancellation, afterEdit, afterRun);
+    }
+
+    [Theory]
+    [InlineData(false, "System.TimeoutException", "WaitingForActivation", false)]
+    [InlineData(true, "System.OperationCanceledException", "Canceled", true)]
+    public void FixtureDiagnosticDistinguishesDrainWaitFromCompletedDeadlineCancellation(
+        bool deadlineExpired, string expectedType, string expectedSyncStatus, bool expectedCancelledBefore)
+    {
+        // The old single marker loses whether Sync was still pending or already canceled.
+        var pending = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+        Task sync = deadlineExpired ? Task.FromCanceled(new CancellationToken(true)) : pending.Task;
+        Exception caught = deadlineExpired
+            ? new OperationCanceledException("SYNTHETIC_PRIVATE_PROVIDER_MESSAGE")
+            : new TimeoutException("SYNTHETIC_PRIVATE_PROVIDER_MESSAGE");
+        var evidence = new RecheckFailureEvidence(
+            RecheckDiagnosticPhase.DrainStarted, 23, null, null, caught,
+            Task.CompletedTask.Status, Task.CompletedTask.Status, sync.Status,
+            deadlineExpired, expectedCancelledBefore, true);
+
+        var failure = RecheckTimeoutFailure(draining: true, evidence: evidence);
+
+        Assert.Contains($"caughtType={expectedType}", failure.Message);
+        Assert.Contains($"syncStatus={expectedSyncStatus}", failure.Message);
+        Assert.Contains($"deadlineCancelled={deadlineExpired}", failure.Message);
+        Assert.Contains($"runCancelledBeforeRequest={expectedCancelledBefore}", failure.Message);
+        Assert.Contains("runCancelledAfterRequest=True", failure.Message);
+        Assert.Contains("entryStatus=RanToCompletion", failure.Message);
+        Assert.Contains("releaseStatus=RanToCompletion", failure.Message);
+        Assert.Contains("phase=DrainStarted", failure.Message);
+        Assert.Contains("elapsedMs=23", failure.Message);
+        Assert.Contains("WAL003E_FIXTURE_TIMEOUT:", failure.Message);
+        Assert.Contains("no acceptance", failure.Message);
+        Assert.DoesNotContain("SYNTHETIC_PRIVATE_PROVIDER_MESSAGE", failure.ToString());
+    }
+
+    [Fact]
+    public void FixtureDiagnosticRetainsFirstFailureSeparatelyFromDrainFailure()
+    {
+        // A finally/drain failure must not erase the earlier edit failure's safe identity.
+        var evidence = new RecheckFailureEvidence(
+            RecheckDiagnosticPhase.DrainStarted, 31,
+            new InvalidOperationException("SYNTHETIC_PRIVATE_EDIT_PAYLOAD"),
+            RecheckDiagnosticPhase.EditStarted,
+            new TimeoutException("SYNTHETIC_PRIVATE_DRAIN_PAYLOAD"),
+            TaskStatus.RanToCompletion, TaskStatus.RanToCompletion, TaskStatus.WaitingForActivation,
+            false, false, true);
+
+        var failure = RecheckTimeoutFailure(draining: true, evidence: evidence);
+
+        Assert.Contains("firstType=System.InvalidOperationException", failure.Message);
+        Assert.Contains("firstPhase=EditStarted", failure.Message);
+        Assert.Contains("caughtType=System.TimeoutException", failure.Message);
+        Assert.Contains("phase=DrainStarted", failure.Message);
+        Assert.Contains("elapsedMs=31", failure.Message);
+        Assert.DoesNotContain("SYNTHETIC_PRIVATE_EDIT_PAYLOAD", failure.ToString());
+        Assert.DoesNotContain("SYNTHETIC_PRIVATE_DRAIN_PAYLOAD", failure.ToString());
+        Assert.Contains("drain unproven", failure.Message);
+    }
+
+    [Fact]
+    public void FixtureDiagnosticKeepsInvocationEvidenceSeparateAndDoesNotLeakExceptionPayloads()
+    {
+        // Formatting another invocation must neither reuse first-error state nor expose messages.
+        var first = new RecheckFailureEvidence(
+            RecheckDiagnosticPhase.EditStarted, 7,
+            new InvalidOperationException("SYNTHETIC_PRIVATE_FIRST_ERROR"), RecheckDiagnosticPhase.EditStarted,
+            new OperationCanceledException("SYNTHETIC_PRIVATE_CONNECTION_STRING"),
+            TaskStatus.RanToCompletion, TaskStatus.WaitingForActivation, TaskStatus.Canceled,
+            true, true, true);
+        var second = new RecheckFailureEvidence(
+            RecheckDiagnosticPhase.DrainStarted, 19, null, null,
+            new TimeoutException("SYNTHETIC_PRIVATE_ROW_VALUE"),
+            TaskStatus.WaitingForActivation, TaskStatus.RanToCompletion, TaskStatus.Faulted,
+            false, false, true);
+
+        var firstFailure = RecheckTimeoutFailure(draining: false, evidence: first);
+        var secondFailure = RecheckTimeoutFailure(draining: true, evidence: second);
+
+        Assert.Contains("elapsedMs=7", firstFailure.Message);
+        Assert.Contains("firstType=System.InvalidOperationException", firstFailure.Message);
+        Assert.Contains("phase=EditStarted", firstFailure.Message);
+        Assert.Contains("elapsedMs=19", secondFailure.Message);
+        Assert.Contains("phase=DrainStarted", secondFailure.Message);
+        Assert.Contains("entryStatus=WaitingForActivation", secondFailure.Message);
+        Assert.Contains("syncStatus=Faulted", secondFailure.Message);
+        Assert.Contains("firstType=none", secondFailure.Message);
+        Assert.DoesNotContain("System.OperationCanceledException", secondFailure.Message);
+        Assert.DoesNotContain("SYNTHETIC_PRIVATE_CONNECTION_STRING", firstFailure.ToString());
+        Assert.DoesNotContain("SYNTHETIC_PRIVATE_FIRST_ERROR", firstFailure.ToString());
+        Assert.DoesNotContain("SYNTHETIC_PRIVATE_ROW_VALUE", secondFailure.ToString());
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task FixtureDiagnosticCapturesRealPausedFixtureAndPreservesFirstFailure(bool failDrain)
+    {
+        using var factory = new SqliteFactory();
+        var connectionId = await SeedRecheckMatrixAsync(factory);
+        var control = new RecheckDiagnosticControl(failDrain);
+
+        var failure = await Assert.ThrowsAsync<Xunit.Sdk.XunitException>(() =>
+            RunPausedRecheckAsync(factory, connectionId, "deactivate",
+                new[] { RecheckSale(5001, 1001, 425_000m) }, diagnosticControl: control));
+
+        Assert.True(control.FirstTriggered);
+        Assert.Equal(failDrain, control.DrainTriggered);
+        Assert.NotNull(control.AfterEdit);
+        AssertRecheckSnapshotUnchanged(control.AfterEdit, await SnapshotRecheckAsync(factory));
+        Assert.False(control.AfterEdit.Connections.Single(c => c.Id == connectionId).IsActive);
+        Assert.Empty(control.AfterEdit.Sales.Where(s => s.CountyId == BentonId));
+        Assert.Contains("firstType=System.InvalidOperationException", failure.Message);
+        Assert.Contains("firstPhase=SnapshotCompleted", failure.Message);
+        Assert.Contains(failDrain ? "caughtType=System.TimeoutException"
+            : "caughtType=System.InvalidOperationException", failure.Message);
+        Assert.Contains("syncStatus=RanToCompletion", failure.Message);
+        Assert.Contains("entryStatus=RanToCompletion", failure.Message);
+        Assert.Contains("releaseStatus=RanToCompletion", failure.Message);
+        Assert.Contains("deadlineCancelled=False", failure.Message);
+        Assert.Contains("runCancelledBeforeRequest=False", failure.Message);
+        Assert.Contains($"runCancelledAfterRequest={failDrain}", failure.Message);
+        if (failDrain) Assert.Contains("syncStatusAfterRequest=RanToCompletion", failure.Message);
+        Assert.DoesNotContain("SYNTHETIC_PRIVATE", failure.ToString());
+        Assert.Null(failure.InnerException);
+
+        var stamps = System.Text.RegularExpressions.Regex.Matches(
+            failure.Message, @"(?m)^phaseStamp=(\w+):(\d+)$");
+        var phases = stamps.Select(match => match.Groups[1].Value).ToArray();
+        foreach (var expected in new[] { "DeadlineStarted", "ContextCompleted", "SyncTaskObtained",
+            "MockEntered", "EntryObserved", "EditStarted", "EditCompleted", "SnapshotCompleted",
+            "ReleaseSignaled", "ReleaseObserved", "CancellationCheckPassed", "RowsReturned",
+            "DrainStarted", "DrainFinished" })
+            Assert.Contains(expected, phases);
+        Assert.Equal(phases.Length, phases.Distinct(StringComparer.Ordinal).Count());
+        var elapsed = stamps.Select(match => long.Parse(match.Groups[2].Value,
+            System.Globalization.CultureInfo.InvariantCulture)).ToArray();
+        Assert.NotEmpty(elapsed);
+        Assert.All(elapsed, value => Assert.True(value >= 0));
+        Assert.Equal(elapsed.OrderBy(value => value), elapsed);
+    }
+
+    private enum RecheckDiagnosticPhase
+    {
+        DeadlineStarted, ContextStarted, ContextCompleted, SyncStarting, SyncTaskObtained,
+        MockEntered, EntrySignaled, EntryWaiting, EntryObserved, EditStarted, EditCompleted,
+        SnapshotStarted, SnapshotCompleted, ReleaseSignaled, ReleaseObserved,
+        CancellationCheckPassed, RowsReturned, DrainStarted, DrainFinished, RunCancellationRequested,
+    }
+
+    private sealed record RecheckPhaseStamp(RecheckDiagnosticPhase Phase, long ElapsedMilliseconds);
+
+    private sealed record RecheckTaskSnapshot(
+        TaskStatus EntryStatus, TaskStatus ReleaseStatus, TaskStatus? SyncStatus,
+        bool DeadlineCancelled, bool RunCancelled);
+
+    private sealed class RecheckPhaseCapture
+    {
+        private readonly long _started = System.Diagnostics.Stopwatch.GetTimestamp();
+        private readonly long[] _ticks = new long[Enum.GetValues<RecheckDiagnosticPhase>().Length];
+
+        public long ElapsedMilliseconds => (long)System.Diagnostics.Stopwatch.GetElapsedTime(_started).TotalMilliseconds;
+
+        public void Mark(RecheckDiagnosticPhase phase)
+        {
+            // One bounded atomic slot per fixed phase; no locks, callbacks, queues or shared state.
+            var tick = System.Diagnostics.Stopwatch.GetTimestamp() - _started + 1;
+            Interlocked.CompareExchange(ref _ticks[(int)phase], tick, 0);
+        }
+
+        public RecheckPhaseStamp[] Snapshot()
+        {
+            var stamps = new List<RecheckPhaseStamp>(_ticks.Length);
+            foreach (var phase in Enum.GetValues<RecheckDiagnosticPhase>())
+            {
+                var tick = Interlocked.Read(ref _ticks[(int)phase]);
+                if (tick != 0)
+                    stamps.Add(new(phase,
+                        (long)System.Diagnostics.Stopwatch.GetElapsedTime(0, tick - 1).TotalMilliseconds));
+            }
+            return stamps.OrderBy(stamp => stamp.ElapsedMilliseconds).ThenBy(stamp => stamp.Phase).ToArray();
+        }
+    }
+
+    private sealed record RecheckFailureEvidence(
+        RecheckDiagnosticPhase Phase, long ElapsedMilliseconds,
+        Exception? FirstFailure, RecheckDiagnosticPhase? FirstFailurePhase, Exception CaughtFailure,
+        TaskStatus EntryStatus, TaskStatus ReleaseStatus, TaskStatus? SyncStatus,
+        bool DeadlineCancelled, bool RunCancelledBeforeRequest, bool RunCancelledAfterRequest)
+    {
+        public long? FirstElapsedMilliseconds { get; init; }
+        public bool? FirstDeadlineCancelled { get; init; }
+        public RecheckTaskSnapshot? AfterRequest { get; init; }
+        public RecheckPhaseStamp[] Phases { get; init; } = [];
+    }
+
+    private static Xunit.Sdk.XunitException RecheckTimeoutFailure(
+        bool draining, RecheckFailureEvidence? evidence = null)
+    {
+        var message = draining
+            ? "WAL003E_FIXTURE_TIMEOUT: bounded Sync completion/drain failed; not behavioral RED. " +
+                "Cancellation requested; no acceptance; drain unproven until owned test-host exit."
+            : "WAL003E_FIXTURE_TIMEOUT: extraction/edit deadline expired; not behavioral RED. " +
+                "No acceptance; drain remains unproven until owned test-host exit.";
+        if (evidence is null) return new(message);
+        if (evidence.CaughtFailure is not (TimeoutException or OperationCanceledException))
+            message = "WAL003E_FIXTURE_FAILURE: observed fixture failure; no acceptance. " +
+                "See captured task state; no timing cause asserted.";
+        else if (evidence.CaughtFailure is OperationCanceledException && !evidence.DeadlineCancelled)
+            message = "WAL003E_FIXTURE_CANCELED: observed cancellation; no acceptance. " +
+                "See captured task state; no timing cause asserted.";
+
+        // Only fixed codes, exception TYPE identity and scalar observations leave this helper.
+        // Never attach original exceptions as InnerException/Data, or format their messages/stacks.
+        var fields = new List<string>
+        {
+            message,
+            $"phase={evidence.Phase}",
+            FormattableString.Invariant($"elapsedMs={evidence.ElapsedMilliseconds}"),
+            $"firstType={evidence.FirstFailure?.GetType().FullName ?? "none"}",
+            $"firstPhase={evidence.FirstFailurePhase?.ToString() ?? "none"}",
+            $"firstElapsedMs={evidence.FirstElapsedMilliseconds?.ToString(System.Globalization.CultureInfo.InvariantCulture) ?? "unknown"}",
+            $"firstDeadlineCancelled={evidence.FirstDeadlineCancelled?.ToString() ?? "unknown"}",
+            $"caughtType={evidence.CaughtFailure.GetType().FullName}",
+            $"entryStatus={evidence.EntryStatus}",
+            $"releaseStatus={evidence.ReleaseStatus}",
+            $"syncStatus={evidence.SyncStatus?.ToString() ?? "NotStarted"}",
+            $"syncIsCompleted={evidence.SyncStatus is TaskStatus.RanToCompletion or TaskStatus.Canceled or TaskStatus.Faulted}",
+            $"syncIsCanceled={evidence.SyncStatus == TaskStatus.Canceled}",
+            $"syncIsFaulted={evidence.SyncStatus == TaskStatus.Faulted}",
+            $"deadlineCancelled={evidence.DeadlineCancelled}",
+            $"runCancelledBeforeRequest={evidence.RunCancelledBeforeRequest}",
+            $"runCancelledAfterRequest={evidence.RunCancelledAfterRequest}",
+        };
+        if (evidence.AfterRequest is { } after)
+        {
+            fields.Add($"entryStatusAfterRequest={after.EntryStatus}");
+            fields.Add($"releaseStatusAfterRequest={after.ReleaseStatus}");
+            fields.Add($"syncStatusAfterRequest={after.SyncStatus?.ToString() ?? "NotStarted"}");
+            fields.Add($"deadlineCancelledAfterRequest={after.DeadlineCancelled}");
+        }
+        foreach (var stamp in evidence.Phases)
+            fields.Add(FormattableString.Invariant($"phaseStamp={stamp.Phase}:{stamp.ElapsedMilliseconds}"));
+        return new(string.Join("\n", fields));
+    }
+
+    private sealed class RecheckDiagnosticControl(bool failDrain)
+    {
+        public bool FirstTriggered { get; private set; }
+        public bool DrainTriggered { get; private set; }
+        public RecheckSnapshot? AfterEdit { get; private set; }
+
+        public void ThrowAfterSnapshot(RecheckSnapshot snapshot)
+        {
+            AfterEdit = snapshot;
+            FirstTriggered = true;
+            throw new InvalidOperationException("SYNTHETIC_PRIVATE_FIRST_FAILURE");
+        }
+
+        public void ThrowAfterRealDrain(CountyReadOnlySalesSyncResult result)
+        {
+            // This control never supplies a Sync result: the real service must finish its denial.
+            Assert.Equal(CountyReadOnlySalesSyncDisposition.Denied, result.Disposition);
+            Assert.Equal(CountyReadOnlySalesSyncDenialCode.ConnectionNotConfigured, result.DenialCode);
+            Assert.Null(result.Receipt);
+            if (!failDrain) return;
+            DrainTriggered = true;
+            // Inject only AFTER actual completion; this is not a simulated 15-second wait.
+            throw new TimeoutException("SYNTHETIC_PRIVATE_DRAIN_FAILURE");
+        }
     }
 
     private static SyncSourceConnection ReadOnlyPacsConnection(Guid connectionId) => new()
