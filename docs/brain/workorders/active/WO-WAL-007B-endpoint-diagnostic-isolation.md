@@ -176,3 +176,38 @@ Main's normal Brain proof at2026-09-09T15:13:29.552Z failed the existing hardcod
 Within the same reserved service/test paths, Main now admits the smallest genuine configuration correction: replace only the primary obsolete candidate with a loopback HTTP address derived from effective IConfiguration TF_API_PORT, default5046, accepting integer ports1–65535 and rejecting invalid explicitly supplied values with fixed ENDPOINT_VALIDATION_INVALID_PORT. Add a small internal pure resolver in the existing service, reachable through the API project's already-existing Unit.Tests friend assembly; do not change project/constructor/Program. Leave the other candidate URLs, dynamic discovery/netstat, intervals, HTTP behavior and diagnostic result classification untouched. The new explicit-disable early return still precedes all discovery and port resolution. This narrowly supersedes the earlier no-candidate-change requirement; it is not an enabled-mode network redesign or production runtime change.
 
 First prepare the resolver as a byte/value-equivalent extraction of the old primary URL and add pure configuration tests, retaining all original eight lifecycle cases unchanged. Main must observe normal compiled behavioral RED against that extracted legacy behavior before releasing actual configurable-port implementation. Cover missing config/key, valid custom/min/max and malformed/empty/out-of-range ports without starting a host or probes. Earlier eight-case GREEN remains historical exact-source proof, not acceptance of this addition. Re-run the complete expanded focused suite and Brain gate, then obtain independent source/receipt review. Main pauses metadata writes during this new two-file builder interval; registry scope is unchanged. Required registry prose must be reconciled afterward without expanding paths or parent status.
+
+## Actual configured-port and protected-main integration evidence
+
+On 2026-09-09 the compiled configured-port RED finished at
+15:28:10.5414061Z: native exit 1, 19 total, 8 PASS, 11 expected behavioral
+FAIL, 0 SKIP. The same expanded tests then finished GREEN at
+15:31:41.0266700Z: native exit 0, 19 PASS, 0 FAIL/SKIP, all nine input pins
+continuous. Earlier eight-case evidence remains historical exact-source evidence.
+
+The independently reviewed normal merge of protected main
+`b2c50730dc0605ba0abaef07694ab4a2048fd77e` was tested before commit:
+57 query/wave Node tests passed and the normal WITH-build Unit selection passed
+61 tests (B19 + protected C42), no skips, both native exits 0. The final run
+receipt is timestamped 18:31:34.5037302Z; all 14 input pins and the merge index
+were continuous. No API, browser, DB or network-probe acceptance occurred.
+
+Normal merge commit `c8f3a5b5bb483e12179b690cc1d5bca36a2299e8`
+finished at 18:57:43.4681943Z with native exit 0 and ordinary hooks. Its tree
+`82ce9eee4ffe49919696cbfc63a44bb30505ad30` equals the tested index.
+Inherited C changes are protected-main ancestry, not a new B implementation
+reservation. The registry preserves the prior records/root/order and contains
+each B/C row once. No foreign source, policy, test assertion or gate was weakened.
+
+Normal Brain proof first failed the stale generated wiki check; the failed proof
+is preserved. The unchanged normal generator and subsequent proof both exited 0,
+finishing 18:58:51.6015615Z. That proof predates this documentation append.
+Exact artifact identities and limitations are appended to the B proof document.
+Normal documentation review/hooks, strict push and required protected delivery
+remain pending at this update. No child, WACO or statewide completion is claimed.
+
+Protected delivery of the existing explicit diagnostic disable is a shared
+product dependency for consumers including G, GPT and Dais. Each must consume
+the actual protected revision, rebind its effective configuration/source/build,
+and prove its own runtime behavior. This component evidence alone does not
+establish a whole-host network sandbox, live county admission or production readiness.
