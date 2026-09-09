@@ -2,7 +2,7 @@
 
 | Field | Value |
 | --- | --- |
-| Status | `READY_ON_PROTECTED_000J_MERGE` |
+| Status | `COMPLETE` — PR #1549 protected delivery; reservation released |
 | Parent | `WO-WAL-002` |
 | Program | Washington Assessor Launch V1 |
 | Risk | R5 authenticated county-scoped API adoption of durable persistence |
@@ -65,3 +65,18 @@ system, credential, protected county file, live database, deployment, production
 Completion establishes only authenticated durable CSV admission through the real API. Staging,
 row validation/quarantine, canonical promotion, lineage through runtime, rollback, UI and parent
 completion remain later exact children.
+
+### Protected-delivery reconciliation (002L, 2026-09-09)
+
+PR #1549 merged at `f868693429d875afd2bbc137f68612db8c942d08` on
+2026-09-03T02:58:31Z. Its five changed implementation/test paths are within this
+six-path reservation; the unchanged WO retained a stale READY label. All ten
+required checks are recorded passing on GitHub. The delivery report records
+21 focused controller tests, 20 admission regression tests and API/Data Release
+builds; it explicitly qualifies the unrelated DaisPersistenceTests compilation
+failure and the separate focused controller compilation. This reconciliation
+does not relabel that local limitation as a full local API.Tests pass.
+
+The historical reservation is now released, not erased. Subsequent upload-row
+staging and promotion deliveries are separate children. This does not complete
+WO-WAL-002, establish K browser/restart acceptance, or complete statewide #1485.

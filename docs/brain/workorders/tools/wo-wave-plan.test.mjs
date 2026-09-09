@@ -775,7 +775,9 @@ describe('wo-wave-plan', () => {
     const syncParent = actualRegistry.records.find(item => item.id === 'WO-WAL-003');
     assert.equal(syncParent.status, 'ready');
     assert.ok(syncParent.nextCandidates.every(item => item.id !== 'WO-WAL-003E'));
-    assert.equal(actualRegistry.records.some(item => item.id === 'WO-WAL-003E'), false);
+    // Later 003E exists on protected main, but is not part of this historical E-wave.
+    assert.equal(protectedRegistry.records.some(item => item.id === 'WO-WAL-003E'), true);
+    assert.equal(actualRecords.some(item => item.id === 'WO-WAL-003E'), false);
     assert.deepEqual(
       actualRecords.find(item => item.id === 'WO-WAL-003D').nextCandidates,
       []
@@ -969,7 +971,7 @@ describe('wo-wave-plan', () => {
     }
   });
 
-  it('reconciles protected WAL durable admission and releases only the durable API child', () => {
+  it('preserves historical WAL durable API release and excludes its protected completion', () => {
     const actualRegistry = JSON.parse(
       fs.readFileSync(
         path.join(root, 'docs/brain/workorders/registry/work-order-registry.seed.json'),
@@ -986,7 +988,28 @@ describe('wo-wave-plan', () => {
     const identityChild = actualRegistry.records.find(item => item.id === 'WO-WAL-004F');
     const uploadChild = actualRegistry.records.find(item => item.id === 'WO-WAL-002F');
     const durableChild = actualRegistry.records.find(item => item.id === 'WO-WAL-002G');
-    const durableApiChild = actualRegistry.records.find(item => item.id === 'WO-WAL-002H');
+    const currentDurableApiChild = actualRegistry.records.find(item => item.id === 'WO-WAL-002H');
+    assert.equal(currentDurableApiChild.status, 'complete');
+    assert.equal(currentDurableApiChild.validationGates[0].result, 'pass');
+    const completedOptions = optionsFor([currentDurableApiChild], {
+      authority: 'R5',
+      now: '2026-09-09T05:51:56Z',
+      ownerDecisions: actualOwnerDecisions,
+      verifiedDispatchRefs: ['refs/remotes/origin/main'],
+    });
+    const completedPlan = planWaves(registry([currentDurableApiChild]), rules, completedOptions);
+    assert.deepEqual(completedPlan.initialExecutableSet, []);
+    assert.ok(completedPlan.excludedWorkOrders
+      .find(item => item.workOrderId === currentDurableApiChild.id)
+      .reasons.includes('terminal-status'));
+
+    // The rest of this regression models 000J's historical H-ready release, not
+    // today's protected completion. Never mutate the current registry to replay it.
+    const durableApiChild = structuredClone(currentDurableApiChild);
+    durableApiChild.status = 'ready';
+    durableApiChild.validationGates = [{
+      ...durableApiChild.validationGates[1], required: true, result: 'not_run', evidence: [],
+    }];
     const forbiddenIds = ['WO-WAL-001F', 'WO-WAL-003E', 'WO-WAL-003F'];
     const selectedIds = new Set([
       'WO-WAL-000',
@@ -1017,7 +1040,9 @@ describe('wo-wave-plan', () => {
         dependencyQueue.push(dependency.id);
       }
     }
-    const selectedRecords = actualRegistry.records.filter(item => selectedIds.has(item.id));
+    const selectedRecords = actualRegistry.records
+      .filter(item => selectedIds.has(item.id))
+      .map(item => item.id === durableApiChild.id ? durableApiChild : item);
     const preDurableRecords = selectedRecords.filter(
       item =>
         ![
@@ -1211,7 +1236,9 @@ describe('wo-wave-plan', () => {
       assert.equal(actualRegistry.records.find(item => item.id === id).status, 'blocked');
     }
     for (const id of forbiddenIds) {
-      assert.equal(actualRegistry.records.some(item => item.id === id), false);
+      // Later independently admitted siblings may exist today, but this
+      // historical durable-API release must not select or release them.
+      assert.equal(selectedRecords.some(item => item.id === id), false);
     }
     assert.deepEqual(actualRegistry.records.find(item => item.id === 'WO-WAL-000').nextCandidates, []);
 

@@ -15338,6 +15338,114 @@
       }
     },
     {
+      "id": "WO-WAL-002L",
+      "title": "County Upload Unsupported-Media-Type Routing",
+      "program": "Washington Assessor Launch V1",
+      "goalId": "GOAL-WASHINGTON-ASSESSOR-LAUNCH-V1",
+      "loopId": "LOOP-WASHINGTON-ASSESSOR-LAUNCH-V1",
+      "goal": "Repair the observed real HTTP JSON upload 404 into an authenticated canonical-county 415 rejection without changing multipart ingestion.",
+      "riskClass": "R5",
+      "status": "in_progress",
+      "dependencies": [
+        {
+          "id": "WO-WAL-002H",
+          "status": "satisfied",
+          "notes": "Protected PR #1549 f868693429d875afd2bbc137f68612db8c942d08 delivered durable authenticated admission; stale ready metadata reconciled in this bounded child."
+        }
+      ],
+      "allowedSystems": [
+        {
+          "name": "Existing DataImportController upload rejection, production endpoint routing metadata tests and synthetic direct-action tests"
+        },
+        {
+          "name": "Coordinator-only 002H protected-delivery reconciliation and exact 002L registration"
+        }
+      ],
+      "blockedSystems": [
+        {
+          "name": "Program/global routing, DI, auth policy, schema, dependencies, K source, UI, Docker, networks, protected county data, live database, production and parent completion"
+        }
+      ],
+      "allowedFiles": [
+        "backend/src/TerraFusion.API/Controllers/DataImportController.cs",
+        "backend/tests/TerraFusion.Unit.Tests/Import/CountyCsvUploadMediaTypeRoutingTests.cs",
+        "docs/brain/workorders/active/WO-WAL-002L-upload-media-type-routing.md",
+        "docs/brain/workorders/active/WO-WAL-002H-authenticated-durable-county-csv-api-admission.md",
+        "docs/brain/workorders/registry/work-order-registry.seed.json",
+        "docs/brain/workorders/tools/wo-wave-plan.test.mjs",
+        "docs/brain/evidence/WO-WAL-002L-proof.md"
+      ],
+      "contractReservations": [
+        "wal.county-upload.unsupported-media-type-routing.v1"
+      ],
+      "environmentReservations": ["local-synthetic-upload-routing-tests-only"],
+      "dispatchGuard": {
+        "type": "protected_ref_head",
+        "ref": "refs/remotes/origin/main"
+      },
+      "evidenceRequired": [
+        {
+          "kind": "command",
+          "description": "Preserved K b9c37531 real HTTP 415-vs404 failure, focused routing/direct-action RED then GREEN, normal build, bounded historical/current wave regression, canonical Brain proof output, independent review and exact seven-path audit. Full K JWT/upload/restart proof remains separate."
+        }
+      ],
+      "validationGates": [
+        {
+          "name": "WAL upload unsupported-media-type routing",
+          "command": "dotnet test backend/tests/TerraFusion.Unit.Tests/TerraFusion.Unit.Tests.csproj --no-restore -c Release -m:1 -p:UseSharedCompilation=false -nodeReuse:false --filter FullyQualifiedName~CountyCsvUploadMediaTypeRoutingTests",
+          "required": true,
+          "result": "pass",
+          "evidence": [
+            "Actual routing RED31cases7product failures plus15fixture assertions; MVC-binding RED40cases38PASS2body-readFAIL; corrected current source run69291 normal40PASS/0FAIL/0SKIP, broader admission/context run97084 normal86PASS/0FAIL/0SKIP, five input pins continuous. Pinned uncommitted source at protected base7c723b, not a later committed candidate. Exact hashes, limits and raw evidence identities in docs/brain/evidence/WO-WAL-002L-proof.md."
+          ]
+        },
+        {
+          "name": "WAL historical and current wave regression",
+          "command": "node --test docs/brain/workorders/tools/wo-wave-plan.test.mjs",
+          "required": true,
+          "result": "pass",
+          "evidence": [
+            "Full40PASS/0FAIL/0SKIP after bounded historical H/current H reconciliation and pre-existing E-fixture current-versus-historical correction; no other registry rows changed."
+          ]
+        },
+        {
+          "name": "Exact reviewed delivery through protected main",
+          "command": "Brain review-diff/proof/commit-plan, exact seven-path audit, normal hooks, exact-head independent assurance and protected required checks/merge",
+          "required": true,
+          "result": "not_run",
+          "evidence": [
+            "Independent product and bounded metadata review CLEAR; canonical Brain proof PASS after normal generated wiki preparation. Required exact-head delivery remains pending; component tests do not complete K or parent1485."
+          ]
+        }
+      ],
+      "stopConditions": [
+        {
+          "type": "scope_boundary",
+          "description": "No changes outside exact seven paths; no weakening K415 assertion or primary multipart/auth/county boundary."
+        },
+        {
+          "type": "protected_data",
+          "description": "Synthetic fixtures only; no held county material, credentials, live database or deployment."
+        }
+      ],
+      "nextCandidates": [],
+      "authority": {
+        "mayWrite": true,
+        "mayCommit": true,
+        "mayPush": true,
+        "mayOpenPr": true,
+        "mayMarkReady": true,
+        "mayMerge": true,
+        "mayCleanup": true,
+        "notes": "Bounded defect remediation under OWNER-WAL-V1-MISSION-AUTHORITY-20260827 and standing operator lifecycle; no new parent or production authority."
+      },
+      "provenance": {
+        "createdAt": "2026-09-09T05:51:56Z",
+        "source": "Actual K candidate b9c3753166c8e526f6cb862bd1ec68ec1a94ab9a failed leaf run-d834db52-b975-4f6f-9e74-d6e8e1359121; unchanged controller/Program on protected base 7c723b33123d9695a1009ce59a90674d05377610; issue #1485 automatic bounded child decomposition.",
+        "schemaVersion": "0.1.0"
+      }
+    },
+    {
       "id": "WO-WAL-002H",
       "title": "Authenticated Durable County CSV API Admission",
       "program": "Washington Assessor Launch V1",
@@ -15345,7 +15453,7 @@
       "loopId": "LOOP-WASHINGTON-ASSESSOR-LAUNCH-V1",
       "goal": "Replace process-local upload duplicate state with the protected durable ledger and return one authenticated county-scoped persisted batch receipt.",
       "riskClass": "R5",
-      "status": "ready",
+      "status": "complete",
       "dependencies": [
         {
           "id": "WO-WAL-002G",
@@ -15400,10 +15508,24 @@
       ],
       "validationGates": [
         {
-          "name": "WAL authenticated durable county CSV API admission",
-          "command": "dotnet test backend/TerraFusion.API.Tests/TerraFusion.API.Tests.csproj --filter FullyQualifiedName~DataImportControllerTests && dotnet test backend/tests/TerraFusion.Unit.Tests/TerraFusion.Unit.Tests.csproj --filter FullyQualifiedName~CountyCsvUploadAdmissionServiceRegistrationTests && dotnet build backend/src/TerraFusion.API/TerraFusion.API.csproj -c Release && git diff --check && exact changed-path audit",
+          "name": "WAL authenticated durable county CSV API protected delivery",
+          "command": "gh pr view 1549 --repo bsvalues/terrafusion_os_1.0 --json state,mergeCommit,mergedAt,files && gh pr checks 1549 --repo bsvalues/terrafusion_os_1.0 --required",
           "required": true,
-          "result": "not_run"
+          "result": "pass",
+          "evidence": [
+            "PR #1549 merged at f868693429d875afd2bbc137f68612db8c942d08 on 2026-09-03T02:58:31Z; all five changed paths fall within the existing six-path reservation.",
+            "All ten required GitHub checks are passing, freshly inspected 2026-09-09. Protected delivery releases the stale ready reservation; historical allowedFiles remain provenance.",
+            "Delivery reports 21 focused controller tests, 20 admission regressions and API/Data Release builds. The unrelated DaisPersistenceTests full local API.Tests compile limitation and separate focused compilation remain qualified in PR #1549, not relabeled as a full local suite pass."
+          ]
+        },
+        {
+          "name": "Historical local durable API compound command — qualified and non-blocking after protected delivery",
+          "command": "dotnet test backend/TerraFusion.API.Tests/TerraFusion.API.Tests.csproj --filter FullyQualifiedName~DataImportControllerTests && dotnet test backend/tests/TerraFusion.Unit.Tests/TerraFusion.Unit.Tests.csproj --filter FullyQualifiedName~CountyCsvUploadAdmissionServiceRegistrationTests && dotnet build backend/src/TerraFusion.API/TerraFusion.API.csproj -c Release && git diff --check && exact changed-path audit",
+          "required": false,
+          "result": "blocked",
+          "evidence": [
+            "PR #1549 records an unrelated DaisPersistenceTests compile mismatch preventing the complete local API.Tests project invocation. Separate focused compilation/test and passing protected delivery are not this compound command passing. Retained as historical evidence only; no rerun fabricated."
+          ]
         }
       ],
       "stopConditions": [
@@ -15429,7 +15551,8 @@
       },
       "provenance": {
         "createdAt": "2026-09-02T04:28:52Z",
-        "source": "WO-WAL-002, PR #1539 protected 002G, protected API/DI seam audit and the exact 000J reconciliation under OWNER-WAL-V1-MISSION-AUTHORITY-20260827; ready becomes canonical only on protected 000J merge.",
+        "updatedAt": "2026-09-09T05:51:56Z",
+        "source": "WO-WAL-002, protected 000J/002G, PR #1549 protected merge f868693429d875afd2bbc137f68612db8c942d08; bounded 002L stale-reservation reconciliation under OWNER-WAL-V1-MISSION-AUTHORITY-20260827. Parent mission remains ACTIVE.",
         "schemaVersion": "0.1.0"
       }
     },
