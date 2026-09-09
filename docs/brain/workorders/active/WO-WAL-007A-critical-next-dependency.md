@@ -194,6 +194,87 @@ performed here. Parent #1485 remains ACTIVE and continues to its own 39-county,
 production and external-assessor terminal predicates.
 
 <!-- brain-machine-policy: existing Brain CLI exact scope -->
+### Required-check diagnostic amendment and sole-writer release
+
+Current exact head2fb318e5b396c34162f15969b775da00c11a4922 passed full
+Vitest, but canonical .NET job102452928342 repeated the earlier WAL003E fixture
+timeout in PersistenceRecheckPreservesAllowedChangesAndForeignCounty(descriptive,
+false). Actual4724PASS/1FAIL/26SKIP; tested merge52221267ab42e8f94c35a75ce380dcdcc8d65920.
+The unchanged fixture discards deadline-versus-wait exception identity and its
+finally can mask an earlier failure. The timing cause remains unknown. Raw log
+SHA2567e6ae66039a28089d186047a94b74d793f28ba1a61e369319627ba9281fdd136
+is retained externally. No further blind rerun or check waiver is released.
+
+Under the existing mission and standing operator authority, Main adds exactly
+`backend/tests/TerraFusion.Unit.Tests/Sync/CountyReadOnlySalesSyncServiceTests.cs`
+as the seventh path for diagnostic-only remediation of this observed required
+check. This supersedes only the earlier six-path/backend exclusion for this exact
+test file; all backend production files and every unlisted path remain excluded.
+A separate base-only child would still inherit the independently proven critical
+Next gate; keeping this causal check repair on the already patched candidate avoids
+an unprotected dependency integration. This is not a claim that Next caused it.
+
+Nash receives sole source write access to that existing test file after Main's
+metadata handoff; Main pauses all other writes in this worktree until frozen return.
+Limit production-fixture changes to RunPausedRecheckAsync and an invocation-local
+diagnostic helper plus deterministic diagnostic regression cases in this file.
+Use fixed phase codes and monotonic elapsed times; retain original and drain failure
+types separately, latch/Sync task status and cancellation state before/after request.
+Do not emit row values, connection strings, raw provider messages or secrets.
+Keep both15-second bounds, signal ordering, cancellation and every existing
+behavioral assertion. No sleeps, timeout increases, retries, global serialization,
+CI edits, production changes, fake persistence, or acceptance from diagnostics.
+Prepare focused RED-before-GREEN diagnostics; no compiler/heavy test is released
+to the builder until Main grants the resource slot. Independent source review,
+normal Brain, exact new-head tests and protected checks remain required. Historical
+six-path/2fb evidence is not evidence for this seven-path candidate. Parent1485 ACTIVE.
+
+### Actual diagnostic output RED and guarded capture implementation
+
+Main's first helper refused absent Unit.Tests/CiHints restored assets without
+launching tests; that precondition failure is retained. Ordinary existing-project
+restore with backend/NuGet.config then completed native0, no source/dependency
+change or waiver. Fresh normal WITH-build run3191 executed exactly four diagnostic
+cases:0PASS/4FAIL/0SKIP, native1/runner1. Actual assertions at1356/1384/1413
+respectively lacked caughtType, firstType and elapsedMs in the legacy formatter.
+Evidence leaf wal007a-fixture-diagnostic-restored-red-fdc8fbb49bcf4749b65fd0478f6b2e8b.
+These are genuine output-contract REDs, not reproduction of the intermittent CI delay.
+
+Main releases Nash only the same Sync test file for sanitized evidence formatting
+and the already-bounded invocation-local monotonic phase/status capture in the real
+paused fixture. Preserve original and drain failure types/phases independently,
+including non-timeout first exceptions; no private payload or raw inner exception
+leakage. Keep all existing timeout/cancellation/assertion semantics and prevent
+diagnostic instrumentation from introducing races, blocking work or global state.
+The four observed regression tests stay unchanged except additive assertions if
+needed. Include a bounded deterministic integrated diagnostic test using the real
+synthetic fixture and fixture-owned fault/control seam if necessary; no elapsed
+sleep, new package, synthetic successful persistence, deadline increase or production
+change. Distinguish formatter GREEN from actual capture-path proof and full-class
+regression results. Main pauses all other worktree writes during builder ownership;
+normal validation and independent review follow frozen handoff. No compiler/Git/
+CI retry or runtime action is released to the builder. Parent1485 remains ACTIVE.
+
+### Actual full-class diagnostic GREEN and delivery handback
+
+Nash returned the sole source writer after frozen capture implementation SHA256
+23b0c159943a58c4764f6d6c95e0008f272a2b51f11ef1fca4489fad0e6028f6.
+Independent source review is CLEAR. Normal WITH-build session83519 on2026-09-09
+12:46:29.7001281Z–12:46:56.7350454Z executed40PASS/0FAIL/0SKIP, native0/runner0:
+all34 original cases, four formatter regressions and two deterministic integrated
+fixture cases. Independent disk/TRX/hash assurance is CLEAR. Full receipt resides
+in wal007a-fixture-diagnostic-class-9de7dd998c22435ea4703fabc14e2860;
+TRX SHA25634e36b1e3e4d0a7f08e5f4fd34c963ce0341218c6876e0c2c76722bce477c35b.
+
+Actual invocation-local phase/task/token/first-error diagnostics preserve both
+15-second bounds and all original assertions. Integrated fault injection tests
+information preservation after a real edit and real Sync completion, not a natural
+15-second delay or the unknown CI timing cause. No production behavior changed.
+All8 source/19 dependency/13 asset hashes and index state matched before/after.
+Main resumes coordinator-only metadata and normal seven-path protected delivery.
+No blind rerun, bypass, parent completion or protected-check success follows from
+the local40-case result; current new-head required CI must independently pass.
+
 ```json
 {
   "id": "WO-WAL-007A",
@@ -206,9 +287,10 @@ production and external-assessor terminal predicates.
     "docs/brain/workorders/active/WO-WAL-007A-critical-next-dependency.md",
     "docs/brain/evidence/WO-WAL-007A-proof.md",
     "docs/brain/workorders/registry/work-order-registry.seed.json",
-    "docs/brain/workorders/tools/wo-wave-plan.test.mjs"
+    "docs/brain/workorders/tools/wo-wave-plan.test.mjs",
+    "backend/tests/TerraFusion.Unit.Tests/Sync/CountyReadOnlySalesSyncServiceTests.cs"
   ],
-  "forbidden_patterns": ["backend/**", "frontend/**", "packages/**", ".github/**", ".governance/**", "pnpm-workspace.yaml"],
+  "forbidden_patterns": ["backend/src/**", "frontend/**", "packages/**", ".github/**", ".governance/**", "pnpm-workspace.yaml"],
   "required_proof": [
     "node --test docs/brain/workorders/tools/wo-query.test.mjs docs/brain/workorders/tools/wo-wave-plan.test.mjs",
     "pnpm audit --prod --audit-level critical",

@@ -146,6 +146,7 @@ describe('wo-wave-plan', () => {
       'docs/brain/evidence/WO-WAL-007A-proof.md',
       'docs/brain/workorders/registry/work-order-registry.seed.json',
       'docs/brain/workorders/tools/wo-wave-plan.test.mjs',
+      'backend/tests/TerraFusion.Unit.Tests/Sync/CountyReadOnlySalesSyncServiceTests.cs',
     ];
     assert.equal(policy.id, child.id);
     assert.deepEqual(child.allowedFiles, expectedFiles);

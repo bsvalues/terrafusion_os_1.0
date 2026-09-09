@@ -16851,7 +16851,7 @@
       "allowedSystems": [
         {
           "name": "Isolated root dependency security remediation, normal validation and serialized exact child governance reconciliation",
-          "notes": "Root package and lock are frozen after reviewed resolution; this reconciliation writes only the registry and bounded wave test while Main's WO/proof writes are paused. Main retains protected delivery and L integration."
+          "notes": "Root package and lock remain frozen. Main's required-check amendment admits only the exact WAL003E test file for phase/failure diagnostics, with all 15-second bounds and behavioral assertions unchanged. The current builder has sole write access only to that test; Main metadata writes pause during handoff. Main retains protected delivery and L integration."
         }
       ],
       "blockedSystems": [
@@ -16866,10 +16866,11 @@
         "docs/brain/workorders/active/WO-WAL-007A-critical-next-dependency.md",
         "docs/brain/evidence/WO-WAL-007A-proof.md",
         "docs/brain/workorders/registry/work-order-registry.seed.json",
-        "docs/brain/workorders/tools/wo-wave-plan.test.mjs"
+        "docs/brain/workorders/tools/wo-wave-plan.test.mjs",
+        "backend/tests/TerraFusion.Unit.Tests/Sync/CountyReadOnlySalesSyncServiceTests.cs"
       ],
       "blockedFiles": [
-        "backend/**",
+        "backend/src/**",
         "frontend/**",
         "packages/**",
         ".github/**",
@@ -16891,7 +16892,7 @@
         },
         {
           "kind": "command",
-          "description": "Observed missing-row regression RED followed by schema/reservation/query/wave GREEN, preservation of every prior registry row and historical test, WO six-path agreement, Brain and exact new-head protected validation. Historical d6c CI is not new-head evidence."
+          "description": "Observed missing-row regression RED followed by schema/reservation/query/wave GREEN, preservation of every prior registry row and historical test, current WO seven-path agreement, Brain and exact new-head protected validation. Historical d6c CI is not new-head evidence."
         },
         {
           "kind": "review",
@@ -16928,7 +16929,7 @@
       "stopConditions": [
         {
           "type": "scope_boundary",
-          "description": "Only the six recorded paths and current writer handoff are authorized; no unrelated row, source, schema, planner, CI or owner-policy change."
+          "description": "Only the seven recorded paths and current writer handoff are authorized. The exact backend test path permits bounded diagnostic-only required-check remediation; no backend production, unrelated test, row, schema, planner, CI or owner-policy change."
         },
         {
           "type": "state_mismatch",
@@ -16956,7 +16957,7 @@
         "mayMarkReady": true,
         "mayMerge": true,
         "mayCleanup": true,
-        "notes": "OWNER-WAL-V1-MISSION-AUTHORITY-20260827 and OWNER-TF-STANDING-OPERATOR-AUTHORITY cover only bounded in-scope lifecycle subject to exact reservations and normal protected checks. Main owns GitHub/delivery/cleanup; the current builder has only two-path source and controlled Node validation authority. Registry data does not create resource authority."
+        "notes": "OWNER-WAL-V1-MISSION-AUTHORITY-20260827 and OWNER-TF-STANDING-OPERATOR-AUTHORITY cover only bounded in-scope lifecycle subject to exact reservations and normal protected checks. Main owns GitHub/delivery/cleanup; the current builder has only the exact Sync test source reservation for diagnostic preparation, no compiler or runtime release. Registry data does not create resource authority."
       },
       "provenance": {
         "source": "Existing WO-WAL-007A and docs/brain/evidence/WO-WAL-007A-proof.md; causal WAL-002L critical audit evidence; PR #1581 head d6c03cc9db51fe8d9d39c3396f214633273afabb and review3967287496. Main's 2026-09-09 six-path reservation reconciles the previously absent row now, canonical on protected delivery; it does not rewrite historical absence or declare the blocked WO-WAL-007 parent complete.",

@@ -166,3 +166,89 @@ external evidence, not part of the six-path PR.
 
 ## Result
 ✅ PASS
+
+## Required-check diagnostic amendment — exact seven-path candidate
+
+Canonical .NET job102452928342 on2fb318e5 tested merge
+52221267ab42e8f94c35a75ce380dcdcc8d65920 and failed one existing descriptive/
+emptyPage=false paused Sync fixture:4724PASS/1FAIL/26SKIP. The source was
+unchanged by Next remediation. Its generic catches discarded exception type and
+finally could mask the first error. The scheduling/deadline cause remains UNKNOWN.
+Raw log SHA2567e6ae66039a28089d186047a94b74d793f28ba1a61e369319627ba9281fdd136.
+No blind rerun, increased bound, excluded test or protected-check waiver is used.
+
+Standing mission authority and the amended WO/registry now reserve exactly the
+existing Sync test file as path7; backend production and CI remain forbidden.
+All169 prior registry rows and blocked007/008 are preserved. Package/lock hashes
+above are unchanged. Source review is CLEAR for sanitized invocation-local
+monotonic phases, task/latch/token snapshots and separate first/drain failures.
+Both15-second bounds and all34 original case assertions are retained.
+
+Actual normal validation (WITH-build, existing project, no skipped selected case):
+
+| Evidence | Result | Qualification |
+| --- | --- | --- |
+| Initial diagnostic helper before ordinary restore | Preflight refusal; no test/TRX | Missing two project.assets, not RED or established source drift |
+| Fresh restored formatter run3191 | 0PASS/4FAIL/0SKIP | Real missing caughtType/firstType/elapsedMs assertions against legacy formatter |
+| Current full-class run83519 | 40PASS/0FAIL/0SKIP | 34 original +4 formatter +2 real-fixture integrated diagnostics |
+| Final current query/wave tests | 55PASS/0FAIL/0SKIP | Exact reservation and existing historical-planner regression contract |
+| Independent source and actual40-case disk assurance | CLEAR | Separate reviewer; all artifact and before/after pins agree |
+
+Current Sync test SHA256
+23b0c159943a58c4764f6d6c95e0008f272a2b51f11ef1fca4489fad0e6028f6.
+Production Sync SHA256
+e72b536598a87d609b18dce39fbf2ba0dbc2abbf636a1bba616f2cf9a75c3c9b.
+The actual full-class run was2026-09-09T12:46:29.7001281Z–
+12:46:56.7350454Z, native0/runner0. All8 source/19 dependency/13
+asset pins and four-modified/empty-index state matched at both endpoints.
+
+The two integrated cases execute real synthetic SQLite/Sync/latches/edit/snapshot
+and check unchanged persisted state after injected failure. A synthetic drain
+timeout is injected only after real Sync completion; it proves first-error
+preservation, not a naturally elapsed15s CI failure. Generic drain fault,
+pre-Sync failure and unexpected-cancellation branches were source-reviewed,
+not each separately exercised. Diagnostic output includes fixed scalar/type
+identities, not original exception messages/inner exceptions or private payloads.
+
+Evidence under the existing Main artifact root:
+
+- wal007a-fixture-diagnostic-restored-red-fdc8fbb49bcf4749b65fd0478f6b2e8b:
+  TRX202611894c490a2a2a93fc046ecb2ca3716418cc703e996eb2bd6efabf889383.
+- wal007a-fixture-diagnostic-class-9de7dd998c22435ea4703fabc14e2860:
+  result e4c3296da835e42fe11685bb445c97b964968661fd80b99941b73affcc47a29c;
+  TRX34e36b1e3e4d0a7f08e5f4fd34c963ce0341218c6876e0c2c76722bce477c35b;
+  raw1f5f0458a33f9dd2233b0db79716ee5b640b36c5fb67ad8b4bc2ff62903219da.
+- wal007a-fixture-diagnostic-review-20260909.md:
+  independent amendment, RED, implementation and actual40-case review.
+- wal007a-diagnostic-final-query-wave-20260909.log: actual55-case final log.
+- wal007a-proof-before-diagnostics-20260909.md:
+  byte-exact prior proof SHA256eb4f811180a0b18166daa62292c13c893643c3b6c134c61c4a1d91c729ef77ff.
+
+Fresh publisher generated15 pages and Brain proof passed normally. Generated pages
+are external evidence, not source delivery. The following output establishes only
+its two Brain checks; no full new-head CI, merge, runtime, dependency-child terminal,
+WO007 or statewide completion is claimed. Those gates remain live independently.
+
+### Fresh seven-path Brain proof output
+
+#### Generated Proof Bundle — WO-WAL-007A
+
+- Generated: 2026-09-09T12:56:37.252Z
+- Work order: WO-WAL-007A
+
+## Commands run
+- `brain check` → PASS (✅ all checks passed)
+- `wiki --check` → PASS (✅ wiki current (15 pages match canon))
+
+## Negative tests
+(record per slice — e.g. drift→fail→restore. See the slice ADR for evidence; `proof` runs positive checks.)
+
+## Working tree
+- changed (tracked) files: 4
+- staged files at proof time: 0 (commit-race hazard if > 0 — WO-0011)
+
+## Known risks (open drift)
+- P0=0 P1=0 P2=2 P3=0
+
+## Result
+✅ PASS
