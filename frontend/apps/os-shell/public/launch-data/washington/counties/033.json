@@ -1,0 +1,1 @@
+{"schemaVersion":"terrafusion.washington.county-detail.v1","generatedAt":"2026-09-10T00:05:00.000Z","county":"King","countyCode":"033","operationalState":{"primarySourceMode":"public_assessor_arcgis_recent_sales_layer","prometheusStatus":"public_data_ready"},"summary":{"records":13268,"latestSaleDate":"2026-08-18"},"salesRoute":"/launch-data/washington/sales/by-county/033.json"}
