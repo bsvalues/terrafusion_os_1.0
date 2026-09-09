@@ -89,3 +89,60 @@ External raw logs, review and TRX leaves are preserved in the coordinator's
 county payload movement, external service dependency, WACO retest or statewide
 completion is part of this slice. Rollback is a normal reviewed code revert; no
 data deletion or compensating import is required.
+
+## Protected integration evidence — 2026-09-09
+
+PR #1581 passed all ten required checks and merged at
+`d6b4b0aab2d264cde97e67109e0b347369d191da`. Normal two-parent integration
+`4dcd40fce9ff53d1daa3a1f90d172d0155954b5f` has reviewed tree
+`a487862845f2b2a27a78314b80549931e3a7ed48`. Against protected d6b, L changes
+only its seven reserved paths. Incoming protected dependencies are not new L scope.
+
+- Normal routing run83987, 14:04:38.1083349Z–14:04:55.6299470Z: 40 PASS,
+  zero failures/skips, native exit0. Leaf `wal002l-protected-routing-20260909-1407`;
+  TRX SHA256 `da29c8dd96eba4f67e0c3509cb725e3f4261a8ea33c156d047f8099c865f5c79`.
+- Normal broader run62198, 14:05:36.8451168Z–14:06:06.3243106Z: 86 PASS,
+  zero failures/skips, native exit0. Leaf `wal002l-protected-regression-20260909-1406`;
+  TRX SHA256 `3323197c88ab7702bc7177b72da51cbb3863d2f0aaca35f2abc1100de1c39f43`.
+  Its 86 include the 40 routing cases. Both normal builds ran; neither is live JWT proof.
+- Both runs recorded nine unchanged source pins, including controller, routing
+  test, Program, Unit.Tests project, central dependencies, registry, wave and
+  inherited package/lock. Independent TRX/continuity review is CLEAR in
+  `wal002l-protected-integration-independent-review-20260909.md`.
+- Fresh Node20 query/wave run: 55 PASS, zero failures/skips after the normal
+  frozen install (native0, package/lock unchanged). Existing Ajv date-time-format
+  warnings remain; no date-format enforcement claim is made.
+- Initial normal merge commit stopped on a missing tracked token-audit module in
+  the sparse checkout. Materialized existing audit prerequisites and the complete
+  configured scan scopes; no source/hook change. Second normal commit45122 exited0:
+  UI ratchet 1538 <= 1580 and normal lint-staged/Prettier/.NET formatting passed.
+  Sparse config-discovery ENOENT diagnostics were emitted but did not prevent the
+  configured tasks; this is not warning-free output. Reviewed tree unchanged.
+
+All earlier failed/passed receipts remain historical. This section proves bounded
+integration and regression, not protected L delivery, actual K upload/promotion/
+restart, G runtime acceptance or completion of parent #1485.
+
+## Fresh canonical Brain proof after protected integration
+
+# Proof Bundle — WO-WAL-002L
+
+- Generated: 2026-09-09T14:11:46.837Z
+- Work order: WO-WAL-002L
+
+## Commands run
+- `brain check` → PASS (✅ all checks passed)
+- `wiki --check` → PASS (✅ wiki current (15 pages match canon))
+
+## Negative tests
+(record per slice — e.g. drift→fail→restore. See the slice ADR for evidence; `proof` runs positive checks.)
+
+## Working tree
+- changed (tracked) files: 2
+- staged files at proof time: 0 (commit-race hazard if > 0 — WO-0011)
+
+## Known risks (open drift)
+- P0=0 P1=0 P2=2 P3=0
+
+## Result
+✅ PASS

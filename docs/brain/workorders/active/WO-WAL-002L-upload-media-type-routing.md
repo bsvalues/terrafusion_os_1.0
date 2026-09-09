@@ -117,6 +117,25 @@ already contains 003E. Main verified both that assertion and the existing 003E
 record with git show HEAD, then releases only that historical-fixture correction
 in the already-reserved wave test. No 003E record or status is changed.
 
+## Protected prerequisite integration — 2026-09-09
+
+PR #1581 merged to protected main at
+`d6b4b0aab2d264cde97e67109e0b347369d191da` with all ten required checks passing.
+Normal integration commit `4dcd40fce9ff53d1daa3a1f90d172d0155954b5f` retains
+both parents and the independently reviewed tree
+`a487862845f2b2a27a78314b80549931e3a7ed48`. The original protected base above
+remains historical evidence; the current L delivery comparison is protected d6b.
+Inherited package/lock and Sync diagnostics are protected prerequisites, not new
+L permissions. The L delta remains exactly its seven reserved paths.
+
+Fresh normal Release validation passed 40 routing cases and the broader 86-case
+admission/context selection, with zero failures/skips and nine source pins
+unchanged. The 40 are included in the 86, not 126 distinct cases. Normal Node20
+query/wave validation passed 55 cases after frozen dependency materialization.
+The 171-record registry union preserves both contributions; only the previously
+authorized H completion changes an existing row. Independent integration/receipt
+review is CLEAR. Required new-head CI and K's actual HTTP acceptance remain open.
+
 ## Canonical proof-output reservation
 
 The seventh path is the exact normal `brain proof --workorder WO-WAL-002L`
