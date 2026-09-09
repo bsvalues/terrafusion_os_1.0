@@ -16833,6 +16833,137 @@
       }
     },
     {
+      "id": "WO-WAL-007A",
+      "title": "Required launch dependency security repair",
+      "program": "Washington Assessor Launch V1",
+      "goalId": "GOAL-WASHINGTON-ASSESSOR-LAUNCH-V1",
+      "loopId": "LOOP-WASHINGTON-ASSESSOR-LAUNCH-V1",
+      "goal": "Repair the observed required Next critical-dependency gate as a bounded prerequisite to WO-WAL-007, without unrelated graph or policy changes, integrated acceptance or runtime claims.",
+      "riskClass": "R5",
+      "status": "review",
+      "dependencies": [
+        {
+          "id": "WO-WAL-000",
+          "status": "satisfied",
+          "notes": "Existing protected mission activation under Issue #1485 and PR #1486 authorizes bounded child decomposition. WO-WAL-007 integrated acceptance remains blocked and is not a satisfied dependency."
+        }
+      ],
+      "allowedSystems": [
+        {
+          "name": "Isolated root dependency security remediation, normal validation and serialized exact child governance reconciliation",
+          "notes": "Root package and lock are frozen after reviewed resolution; this reconciliation writes only the registry and bounded wave test while Main's WO/proof writes are paused. Main retains protected delivery and L integration."
+        }
+      ],
+      "blockedSystems": [
+        {
+          "name": "Unrelated dependency or application repair, CI or audit-policy changes, county data or credentials, running services, deployment, production, parent completion and fabricated acceptance",
+          "notes": "No audit waiver, blanket graph rewrite, concurrent L registry write, protected-check bypass or automatically released successor."
+        }
+      ],
+      "allowedFiles": [
+        "package.json",
+        "pnpm-lock.yaml",
+        "docs/brain/workorders/active/WO-WAL-007A-critical-next-dependency.md",
+        "docs/brain/evidence/WO-WAL-007A-proof.md",
+        "docs/brain/workorders/registry/work-order-registry.seed.json",
+        "docs/brain/workorders/tools/wo-wave-plan.test.mjs"
+      ],
+      "blockedFiles": [
+        "backend/**",
+        "frontend/**",
+        "packages/**",
+        ".github/**",
+        ".governance/**",
+        "pnpm-workspace.yaml"
+      ],
+      "contractReservations": [
+        "wal.launch.production-dependency-critical-audit.v1"
+      ],
+      "environmentReservations": ["wal007a-local-dependency-resolution-and-ci"],
+      "dispatchGuard": {
+        "type": "protected_ref_head",
+        "ref": "refs/remotes/origin/main"
+      },
+      "evidenceRequired": [
+        {
+          "kind": "file",
+          "description": "Exact base/generated lock provenance, both patched importer resolutions, unchanged unrelated graph and frozen source pins; normal frozen installation, no-waiver critical audit, unchanged non-skipped security test and qualified compatibility evidence including inherited build/type failures."
+        },
+        {
+          "kind": "command",
+          "description": "Observed missing-row regression RED followed by schema/reservation/query/wave GREEN, preservation of every prior registry row and historical test, WO six-path agreement, Brain and exact new-head protected validation. Historical d6c CI is not new-head evidence."
+        },
+        {
+          "kind": "review",
+          "description": "Independent exact-head review, resolution of comment3967287496, serialized preservation of L's independent registry delta and eligible protected delivery; no parent acceptance or production claim."
+        }
+      ],
+      "validationGates": [
+        {
+          "name": "Post-reconciliation query and wave reservation validation",
+          "command": "node --test docs/brain/workorders/tools/wo-query.test.mjs docs/brain/workorders/tools/wo-wave-plan.test.mjs",
+          "required": true
+        },
+        {
+          "name": "Normal production critical dependency audit",
+          "command": "pnpm audit --prod --audit-level critical",
+          "required": true
+        },
+        {
+          "name": "Brain exact reservation review",
+          "command": "node scripts/brain/brain.mjs review-diff --workorder WO-WAL-007A",
+          "required": true
+        },
+        {
+          "name": "Brain evidence proof",
+          "command": "node scripts/brain/brain.mjs proof --workorder WO-WAL-007A",
+          "required": true
+        },
+        {
+          "name": "Brain protected delivery plan",
+          "command": "node scripts/brain/brain.mjs commit-plan --workorder WO-WAL-007A",
+          "required": true
+        }
+      ],
+      "stopConditions": [
+        {
+          "type": "scope_boundary",
+          "description": "Only the six recorded paths and current writer handoff are authorized; no unrelated row, source, schema, planner, CI or owner-policy change."
+        },
+        {
+          "type": "state_mismatch",
+          "description": "Stop on reservation collision, source-pin drift, missing exact-head evidence or any attempt to replace L's independently owned registry changes."
+        },
+        {
+          "type": "validation_failure",
+          "description": "Preserve failures and unresolved substantive review; no required-check, audit, integrity, test or protected-ref bypass."
+        },
+        {
+          "type": "protected_data",
+          "description": "No county/PACS data, credential, secret, external write-back or protected-resource authority is granted."
+        },
+        {
+          "type": "production_risk",
+          "description": "No service deployment, production, integrated WO-WAL-007 acceptance, WO-WAL-008 release or parent completion follows from this dependency child."
+        }
+      ],
+      "nextCandidates": [],
+      "authority": {
+        "mayWrite": true,
+        "mayCommit": true,
+        "mayPush": true,
+        "mayOpenPr": true,
+        "mayMarkReady": true,
+        "mayMerge": true,
+        "mayCleanup": true,
+        "notes": "OWNER-WAL-V1-MISSION-AUTHORITY-20260827 and OWNER-TF-STANDING-OPERATOR-AUTHORITY cover only bounded in-scope lifecycle subject to exact reservations and normal protected checks. Main owns GitHub/delivery/cleanup; the current builder has only two-path source and controlled Node validation authority. Registry data does not create resource authority."
+      },
+      "provenance": {
+        "source": "Existing WO-WAL-007A and docs/brain/evidence/WO-WAL-007A-proof.md; causal WAL-002L critical audit evidence; PR #1581 head d6c03cc9db51fe8d9d39c3396f214633273afabb and review3967287496. Main's 2026-09-09 six-path reservation reconciles the previously absent row now, canonical on protected delivery; it does not rewrite historical absence or declare the blocked WO-WAL-007 parent complete.",
+        "schemaVersion": "0.1.0"
+      }
+    },
+    {
       "id": "WO-WAL-008",
       "title": "Production Release and External Assessor Acceptance",
       "program": "Washington Assessor Launch V1",

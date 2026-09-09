@@ -8,7 +8,7 @@
 | Base | `7c723b33123d9695a1009ce59a90674d05377610` |
 | Risk | R5 bounded launch dependency security remediation; no deployment |
 | Contract | `wal.launch.production-dependency-critical-audit.v1` |
-| Environment | Isolated local dependency resolution and CI; no county data or running product |
+| Environment | `wal007a-local-dependency-resolution-and-ci`; no county data or running product |
 | Terminal | `WAL_REQUIRED_NEXT_CRITICAL_DEPENDENCIES_REMEDIATED` |
 
 ## Causal scope and authority
@@ -37,9 +37,11 @@ Coordinator-only, never concurrent with builder writes in this worktree:
 
 - `docs/brain/workorders/active/WO-WAL-007A-critical-next-dependency.md`
 - `docs/brain/evidence/WO-WAL-007A-proof.md`
+- `docs/brain/workorders/registry/work-order-registry.seed.json`: add only this exact child, preserving all prior rows.
+- `docs/brain/workorders/tools/wo-wave-plan.test.mjs`: bounded registration/reservation regression only.
 
 The existing terra-gama ^16.0.1 declaration permits the patched version and is
-read-only. No other manifest, registry, CI, audit-test or policy write is released.
+read-only. No other manifest, registry row, CI, audit-test or policy write is released.
 Normal worktree materialization, isolated install outputs, generated evidence and
 external evidence reports are permitted, not additional source changes. Main
 owns dependency/heavy-job scheduling and GitHub lifecycle. No production runtime,
@@ -49,6 +51,44 @@ All existing local worktrees had zero dirty root package/lock paths at dispatch;
 the independent five-suite coordinator separately confirmed no shared manifest
 reservation. The open PR inventory contains L and two suite PRs, no competing
 dependency repair. Keep shared dependency writes serialized to this child.
+
+### Canonical reservation correction after review
+
+PR1581 head d6c03cc9db51fe8d9d39c3396f214633273afabb passed required checks
+but review3967287496 identified the missing007A registry entry. Main verified the
+substantive gap against canonical docs/brain/workorders/CANON_INDEX.md and WAL
+program149–152; the review's program/CANON_INDEX.md spelling does not exist.
+Existing active owner mission authority permits this child and routine correction;
+no fresh owner decision is required and the old absence is not rewritten as fact.
+
+Main serializes the two added governance paths here while L1580 is frozen. Preserve
+L's independent registry/fixture delta on later protected integration. Register
+007A as review, not complete or newly dispatchable, with exactly these six paths,
+the contract/environment above and protected-ref guard. Keep every existing row,
+especially blocked007/008 and their production prerequisites, unchanged. Add a
+focused test first: actual missing-row failure before registration, schema/exact
+reservation and parent-boundary success afterward. No schema/planner/policy or
+owner-decision edits. Package and lock remain byte-exact reviewed d423bf/77b11.
+
+Main transfers the sole worktree writer to Pauli for only registry and existing
+wave-test source preparation and controlled Node validation. Main's WO/proof
+writes are paused during that builder interval. No compiler, install, commit,
+push, merge or other source action is included in the builder release. Independent
+review and normal Brain/new-head protected delivery follow the frozen handoff.
+Original four-path validation and d6c CI remain historical exact-head evidence,
+not automatically new-head tests. No parent completion or runtime claim.
+
+The builder's missing-row RED and focused GREEN passed as intended; full query/
+wave executed53PASS/2FAIL of55. A controlled unchanged HEAD execution independently
+reproduced both failures (52PASS/2FAIL of54): historical E-wave and durable-admission
+assertions deny later001F/003E records already present on that baseline. Main takes
+the sole writer back after frozen handoff and releases only the two assertions in
+the existing reserved test: check absence in actualRecords/selectedRecords passed
+to the respective historical planners, not the whole current registry. Preserve
+all current rows/statuses, historical selection/dependencies, dispatch and denial
+assertions. No L source is copied or cherry-picked; reconcile shared historical
+lines during later normal protected integration. Re-run the full unfiltered query/
+wave tests; preserve both failed logs and do not claim this is a production defect.
 
 ## Implementation and validation
 
@@ -164,10 +204,13 @@ production and external-assessor terminal predicates.
     "package.json",
     "pnpm-lock.yaml",
     "docs/brain/workorders/active/WO-WAL-007A-critical-next-dependency.md",
-    "docs/brain/evidence/WO-WAL-007A-proof.md"
+    "docs/brain/evidence/WO-WAL-007A-proof.md",
+    "docs/brain/workorders/registry/work-order-registry.seed.json",
+    "docs/brain/workorders/tools/wo-wave-plan.test.mjs"
   ],
   "forbidden_patterns": ["backend/**", "frontend/**", "packages/**", ".github/**", ".governance/**", "pnpm-workspace.yaml"],
   "required_proof": [
+    "node --test docs/brain/workorders/tools/wo-query.test.mjs docs/brain/workorders/tools/wo-wave-plan.test.mjs",
     "pnpm audit --prod --audit-level critical",
     "node scripts/brain/brain.mjs review-diff --workorder WO-WAL-007A",
     "node scripts/brain/brain.mjs proof --workorder WO-WAL-007A",

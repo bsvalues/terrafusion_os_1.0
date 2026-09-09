@@ -110,3 +110,59 @@ none is part of this four-file source delivery. No canon was altered to obtain P
 
 Protected CI/merge and dependent L/K integration remain pending at this evidence
 cut. No WO-WAL-007, WACO, deployment, county or statewide completion is asserted.
+
+## Post-review canonical registration correction — 2026-09-09
+
+The preceding evidence describes the original four-path d6c candidate. This
+amendment has six total paths; package and lock hashes above remain unchanged.
+Review3967287496 correctly identified missing canonical child membership; its
+program/CANON_INDEX.md spelling is corrected to docs/brain/workorders/CANON_INDEX.md.
+One new review-state007A row records exact scope/contract/environment under existing
+ratified mission authority. All169 prior records and blocked007/008 remain unchanged.
+
+Observed missing-row RED:0PASS/1FAIL, then focused1PASS/0FAIL. Full query/wave
+first executed53PASS/2FAIL of55. A controlled exactHEAD baseline reproduced both
+historical-fixture failures at52PASS/2FAIL of54. Main changed only the two absence
+assertions to their historical planner input collections, retaining all current
+records, selected dependencies and dispatch/denial checks. No L source transfer.
+Full corrected query/wave ran11:24:26.1978693Z–11:24:28.8381677Z, native0,
+55PASS/0FAIL/0SKIP. Log wal007a-registry-historical-correction-green-20260909.log
+SHA a3035f149faaf3a75a02e27789a247139d2dd396b585622ea09c4a253f444d8e.
+Failed/baseline logs and original review/source handoff remain in the same evidence root.
+
+All required d6c CI checks passed. Original canonical .NET failure is retained;
+one unchanged diagnostic rerun passed4725Unit.Tests/0FAIL/26SKIP. Log
+wal007a-ci-dotnet-102434480476-attempt2-20260909.log
+SHA180b93a6ab0b9407cbd9e1425fe043eff403e1f6a03107034ccb901da62d5058.
+This does not establish the timeout's root cause or substitute for new-head CI.
+Independent final amendment review, normal commit/push and protected checks remain
+required. No parent/runtime completion follows from these metadata tests.
+
+### Fresh canonical proof output for this amendment
+
+The unchanged publisher generated15 pages; normal Brain proof39624 completed
+native0. Exact generated output follows; it covers these two Brain checks only,
+not all Work Order validation or product acceptance. Generated pages will remain
+external evidence, not part of the six-path PR.
+
+#### Generated proof bundle — WO-WAL-007A
+
+- Generated: 2026-09-09T11:25:29.196Z
+- Work order: WO-WAL-007A
+
+## Commands run
+- `brain check` → PASS (✅ all checks passed)
+- `wiki --check` → PASS (✅ wiki current (15 pages match canon))
+
+## Negative tests
+(record per slice — e.g. drift→fail→restore. See the slice ADR for evidence; `proof` runs positive checks.)
+
+## Working tree
+- changed (tracked) files: 3
+- staged files at proof time: 0 (commit-race hazard if > 0 — WO-0011)
+
+## Known risks (open drift)
+- P0=0 P1=0 P2=2 P3=0
+
+## Result
+✅ PASS
