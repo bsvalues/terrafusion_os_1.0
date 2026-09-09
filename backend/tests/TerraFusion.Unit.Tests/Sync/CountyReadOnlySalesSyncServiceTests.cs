@@ -18,6 +18,7 @@ using TerraFusion.Core.Sync;
 using TerraFusion.Data;
 using TerraFusion.Data.Services.Sync;
 using Xunit;
+using Xunit.Abstractions;
 using Task = System.Threading.Tasks.Task;
 using ICountyResolver = TerraFusion.Core.Services.ICountyResolver;
 using CountyNotFoundException = TerraFusion.Core.Services.CountyNotFoundException;
@@ -28,6 +29,10 @@ namespace TerraFusion.Unit.Tests.Sync;
 
 public sealed class CountyReadOnlySalesSyncServiceTests
 {
+    private readonly ITestOutputHelper _output;
+
+    public CountyReadOnlySalesSyncServiceTests(ITestOutputHelper output) => _output = output;
+
     private static readonly Guid BentonId = Guid.Parse("19190019-1919-1919-1919-191919191919");
     private static readonly Guid FranklinId = Guid.Parse("26260026-2626-2626-2626-262626262626");
     private static readonly WashingtonCountyIdentity Benton = WashingtonCountyRegistry.Counties
@@ -998,7 +1003,7 @@ public sealed class CountyReadOnlySalesSyncServiceTests
         using var factory = new SqliteFactory();
         var connectionId = await SeedRecheckMatrixAsync(factory);
         var outcome = await RunPausedRecheckAsync(factory, connectionId, edit,
-            new[] { RecheckSale(5001, 1001, 425_000m) });
+            new[] { RecheckSale(5001, 1001, 425_000m) }, _output);
 
         Assert.NotNull(outcome.Result);
         Assert.Equal(CountyReadOnlySalesSyncDisposition.Denied, outcome.Result.Disposition);
@@ -1023,7 +1028,7 @@ public sealed class CountyReadOnlySalesSyncServiceTests
         var connectionId = await SeedRecheckMatrixAsync(factory);
         var rows = emptyPage ? Array.Empty<PacsComparableSale>()
             : new[] { RecheckSale(5001, 1001, 425_000m) };
-        var outcome = await RunPausedRecheckAsync(factory, connectionId, edit, rows);
+        var outcome = await RunPausedRecheckAsync(factory, connectionId, edit, rows, _output);
 
         Assert.NotNull(outcome.Result);
         Assert.Equal(CountyReadOnlySalesSyncDisposition.Completed, outcome.Result.Disposition);
@@ -1086,7 +1091,7 @@ public sealed class CountyReadOnlySalesSyncServiceTests
         using var factory = new SqliteFactory();
         var connectionId = await SeedRecheckMatrixAsync(factory);
         var first = await RunPausedRecheckAsync(factory, connectionId, "no-edit",
-            new[] { RecheckSale(5001, 1001, 425_000m) });
+            new[] { RecheckSale(5001, 1001, 425_000m) }, _output);
         Assert.NotNull(first.Result);
         Assert.Equal(CountyReadOnlySalesSyncDisposition.Completed, first.Result.Disposition);
         Assert.NotNull(first.Result.Receipt);
@@ -1099,7 +1104,7 @@ public sealed class CountyReadOnlySalesSyncServiceTests
         Assert.Single(first.AfterRun.Receipts);
 
         var second = await RunPausedRecheckAsync(factory, connectionId, "deactivate",
-            new[] { RecheckSale(5001, 1001, 555_000m), RecheckSale(5002, 1002, 600_000m) });
+            new[] { RecheckSale(5001, 1001, 555_000m), RecheckSale(5002, 1002, 600_000m) }, _output);
 
         Assert.NotNull(second.Result);
         Assert.Equal(CountyReadOnlySalesSyncDisposition.Denied, second.Result.Disposition);
@@ -1121,7 +1126,7 @@ public sealed class CountyReadOnlySalesSyncServiceTests
         using var factory = new SqliteFactory();
         var connectionId = await SeedRecheckMatrixAsync(factory);
         var outcome = await RunPausedRecheckAsync(factory, connectionId, "no-edit",
-            new[] { RecheckSale(5001, 1001, 425_000m) }, cancelWhilePaused: true);
+            new[] { RecheckSale(5001, 1001, 425_000m) }, _output, cancelWhilePaused: true);
 
         Assert.Null(outcome.Result);
         Assert.NotNull(outcome.Cancellation);
@@ -1257,8 +1262,9 @@ public sealed class CountyReadOnlySalesSyncServiceTests
 
     private static async Task<PausedRecheckOutcome> RunPausedRecheckAsync(
         SqliteFactory factory, Guid connectionId, string edit, IReadOnlyList<PacsComparableSale> rows,
-        bool cancelWhilePaused = false, RecheckDiagnosticControl? diagnosticControl = null)
+        ITestOutputHelper output, bool cancelWhilePaused = false, RecheckDiagnosticControl? diagnosticControl = null)
     {
+        using var scheduling = new RecheckSchedulingObservation(output);
         var readEntered = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
         var releaseRead = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
         var diagnostics = new RecheckPhaseCapture();
@@ -1277,10 +1283,12 @@ public sealed class CountyReadOnlySalesSyncServiceTests
             .Returns(async (int page, int pageSize, CancellationToken ct) =>
             {
                 diagnostics.Mark(RecheckDiagnosticPhase.MockEntered);
+                scheduling.Capture(RecheckSchedulingPhase.MockEntered);
                 readEntered.TrySetResult(true);
                 diagnostics.Mark(RecheckDiagnosticPhase.EntrySignaled);
-                await releaseRead.Task.WaitAsync(ct);
+                await RecheckReleaseWait(releaseRead.Task, ct);
                 diagnostics.Mark(RecheckDiagnosticPhase.ReleaseObserved);
+                scheduling.Capture(RecheckSchedulingPhase.ReleaseObserved);
                 ct.ThrowIfCancellationRequested();
                 diagnostics.Mark(RecheckDiagnosticPhase.CancellationCheckPassed);
                 var pageResult = new PacsPagedResult<PacsComparableSale>
@@ -1370,9 +1378,11 @@ public sealed class CountyReadOnlySalesSyncServiceTests
                 try
                 {
                     diagnostics.Mark(RecheckDiagnosticPhase.DrainStarted);
+                    scheduling.Capture(RecheckSchedulingPhase.DrainStarted);
                     // WaitAsync bounds the wait, not the underlying task. Success means actual completion.
-                    result = await run.WaitAsync(TimeSpan.FromSeconds(15));
+                    result = await RecheckDrainWait(run);
                     diagnostics.Mark(RecheckDiagnosticPhase.DrainFinished);
+                    scheduling.Capture(RecheckSchedulingPhase.DrainFinished);
                     diagnosticControl?.ThrowAfterRealDrain(result);
                 }
                 catch (OperationCanceledException exception) when (
@@ -1380,6 +1390,7 @@ public sealed class CountyReadOnlySalesSyncServiceTests
                 {
                     cancellation = exception; // The actual Sync task completed with requested cancellation.
                     diagnostics.Mark(RecheckDiagnosticPhase.DrainFinished);
+                    scheduling.Capture(RecheckSchedulingPhase.DrainFinished);
                 }
                 catch (Exception exception) when (exception is TimeoutException
                     || (exception is OperationCanceledException && deadline.IsCancellationRequested))
@@ -1525,7 +1536,7 @@ public sealed class CountyReadOnlySalesSyncServiceTests
 
         var failure = await Assert.ThrowsAsync<Xunit.Sdk.XunitException>(() =>
             RunPausedRecheckAsync(factory, connectionId, "deactivate",
-                new[] { RecheckSale(5001, 1001, 425_000m) }, diagnosticControl: control));
+                new[] { RecheckSale(5001, 1001, 425_000m) }, _output, diagnosticControl: control));
 
         Assert.True(control.FirstTriggered);
         Assert.Equal(failDrain, control.DrainTriggered);
@@ -1561,6 +1572,206 @@ public sealed class CountyReadOnlySalesSyncServiceTests
         Assert.NotEmpty(elapsed);
         Assert.All(elapsed, value => Assert.True(value >= 0));
         Assert.Equal(elapsed.OrderBy(value => value), elapsed);
+    }
+
+    // These fixture waits do not require the caller's synchronization context.
+    private static System.Runtime.CompilerServices.ConfiguredTaskAwaitable RecheckReleaseWait(
+        Task release, CancellationToken cancellationToken) =>
+        release.WaitAsync(cancellationToken).ConfigureAwait(false);
+
+    private static System.Runtime.CompilerServices.ConfiguredTaskAwaitable<CountyReadOnlySalesSyncResult>
+        RecheckDrainWait(Task<CountyReadOnlySalesSyncResult> run) =>
+        run.WaitAsync(TimeSpan.FromSeconds(15)).ConfigureAwait(false);
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task FixtureWaitPolicyCompletesWithoutPumpingCapturedContext(bool drain)
+    {
+        // Capturing either real fixture wait strands its continuation behind this owned queue.
+        using var deadline = new CancellationTokenSource(TimeSpan.FromSeconds(15));
+        using var cancellation = CancellationTokenSource.CreateLinkedTokenSource(deadline.Token);
+        var antecedent = new TaskCompletionSource<CountyReadOnlySalesSyncResult>(
+            TaskCreationOptions.RunContinuationsAsynchronously);
+        var gated = new RecheckPolicyContext();
+        // Task-result identity only: this is NOT an actual Sync result or acceptance receipt.
+        var sentinel = new CountyReadOnlySalesSyncResult(CountyReadOnlySalesSyncDisposition.Denied,
+            CountyReadOnlySalesSyncDenialCode.ConnectionNotConfigured, null);
+        CountyReadOnlySalesSyncResult? forwarded = null;
+        Task? probe = null;
+        bool registered = false, continued = false;
+        Exception? firstFailure = null, cleanupFailure = null;
+
+        async Task ProbeAsync()
+        {
+            Assert.Same(gated, SynchronizationContext.Current);
+            Assert.False(antecedent.Task.IsCompleted);
+            if (drain)
+                forwarded = await RecheckDrainWait(antecedent.Task);
+            else
+                await RecheckReleaseWait(antecedent.Task, cancellation.Token);
+            continued = true;
+        }
+
+        try
+        {
+            var previous = SynchronizationContext.Current;
+            try
+            {
+                SynchronizationContext.SetSynchronizationContext(gated);
+                probe = ProbeAsync();
+            }
+            finally { SynchronizationContext.SetSynchronizationContext(previous); }
+
+            // Invocation returned from its incomplete await before the antecedent can complete.
+            Assert.False(antecedent.Task.IsCompleted);
+            Assert.False(probe.IsCompleted);
+            Assert.False(continued);
+            registered = true;
+            antecedent.TrySetResult(sentinel);
+            var winner = await Task.WhenAny(probe, gated.Posted)
+                .WaitAsync(deadline.Token).ConfigureAwait(true);
+            if (winner == gated.Posted)
+            {
+                Assert.Equal(1, gated.PostCount);
+                Assert.Equal(1, gated.Queued);
+                Assert.False(probe.IsCompleted);
+                Assert.False(continued);
+            }
+            Assert.True(winner == probe, drain
+                ? "WAL007C_DRAIN_CAPTURE_DEPENDENCE: Post acknowledged while probe remained pending"
+                : "WAL007C_RELEASE_CAPTURE_DEPENDENCE: Post acknowledged while probe remained pending");
+            await probe.WaitAsync(TimeSpan.FromSeconds(15)).ConfigureAwait(true);
+            Assert.True(continued);
+            Assert.Equal(0, gated.PostCount);
+            Assert.Equal(0, gated.Queued);
+            if (drain) Assert.Same(sentinel, forwarded);
+            Assert.False(deadline.IsCancellationRequested);
+        }
+        catch (Exception exception) { firstFailure = exception; }
+        finally
+        {
+            try
+            {
+                cancellation.Cancel();
+                antecedent.TrySetResult(sentinel);
+                if (probe is not null)
+                {
+                    var settled = ObserveRecheckPolicyProbeAsync(probe);
+                    await Task.WhenAny(settled, gated.Posted)
+                        .WaitAsync(TimeSpan.FromSeconds(15)).ConfigureAwait(true);
+                    for (var count = 0; count < 8 && gated.PumpOne(); count++) { }
+                    await settled.WaitAsync(TimeSpan.FromSeconds(15)).ConfigureAwait(true);
+                    Assert.True(probe.IsCompleted);
+                    Assert.Equal(0, gated.Queued);
+                    Assert.InRange(gated.PostCount, 0, 1);
+                }
+            }
+            catch (Exception exception) { cleanupFailure = exception; }
+        }
+
+        try
+        {
+            _output.WriteLine($"WAL007C_POLICY kind={(drain ? "DRAIN" : "RELEASE")} registered={registered} "
+                + $"posts={gated.PostCount} queued={gated.Queued} terminal={probe?.IsCompleted == true} "
+                + $"firstFailure={firstFailure is not null} cleanupFailure={cleanupFailure is not null}");
+        }
+        catch (Exception) { /* Output cannot replace the primary failure or cleanup failure. */ }
+        if (firstFailure is not null)
+            System.Runtime.ExceptionServices.ExceptionDispatchInfo.Capture(firstFailure).Throw();
+        if (cleanupFailure is not null)
+            System.Runtime.ExceptionServices.ExceptionDispatchInfo.Capture(cleanupFailure).Throw();
+    }
+
+    private static async Task ObserveRecheckPolicyProbeAsync(Task probe)
+    {
+        try { await probe.ConfigureAwait(false); }
+        catch (Exception) { /* Observe terminal faults during cleanup; the primary assertion is retained. */ }
+    }
+
+    // Finite queue owned by one theory invocation; not a replacement xUnit scheduler.
+    private sealed class RecheckPolicyContext : SynchronizationContext
+    {
+        private readonly object _gate = new();
+        private readonly Queue<(SendOrPostCallback Callback, object? State)> _queue = new();
+        private readonly TaskCompletionSource<bool> _posted =
+            new(TaskCreationOptions.RunContinuationsAsynchronously);
+        private int _posts;
+        public Task Posted => _posted.Task;
+        public int PostCount { get { lock (_gate) return _posts; } }
+        public int Queued { get { lock (_gate) return _queue.Count; } }
+
+        public override void Post(SendOrPostCallback callback, object? state)
+        {
+            lock (_gate)
+            {
+                _queue.Enqueue((callback, state));
+                _posts++;
+            }
+            _posted.TrySetResult(true); // Positive acknowledgement only after retaining the callback.
+        }
+
+        public bool PumpOne()
+        {
+            (SendOrPostCallback Callback, object? State) item;
+            lock (_gate)
+            {
+                Assert.InRange(_posts, 0, 8);
+                if (!_queue.TryDequeue(out item)) return false;
+            }
+            var previous = Current;
+            SetSynchronizationContext(this);
+            try { item.Callback(item.State); }
+            finally { SetSynchronizationContext(previous); }
+            return true;
+        }
+    }
+
+    private enum RecheckSchedulingPhase
+    {
+        MockEntered, ReleaseObserved, DrainStarted, DrainFinished,
+    }
+
+    private sealed class RecheckSchedulingObservation : IDisposable
+    {
+        private readonly ITestOutputHelper _output;
+        private readonly string?[] _observations = new string?[4];
+
+        public RecheckSchedulingObservation(ITestOutputHelper output) => _output = output;
+
+        public void Capture(RecheckSchedulingPhase phase)
+        {
+            // Inspect only the current context; never unwrap it or emit arbitrary type names.
+            var context = SynchronizationContext.Current;
+            var category = context is null ? "NONE" : context.GetType().FullName switch
+            {
+                "Xunit.Sdk.AsyncTestSyncContext" => "XUNIT_ASYNC",
+                "Xunit.Sdk.MaxConcurrencySyncContext" => "XUNIT_MAX_CONCURRENCY",
+                _ => "OTHER",
+            };
+            var isDefault = TaskScheduler.Current == TaskScheduler.Default;
+            var observation = $"WAL007C_CONTEXT phase={phase} observed=True context={category} defaultScheduler={isDefault}";
+            Interlocked.CompareExchange(ref _observations[(int)phase], observation, null);
+        }
+
+        public void Dispose()
+        {
+            // One invocation-local block on success or unwind. Missing output is not evidence.
+            // Never let a diagnostic sink failure replace the fixture's existing exception.
+            try
+            {
+                var lines = new List<string> { "WAL007C_CONTEXT_BEGIN" };
+                foreach (var phase in Enum.GetValues<RecheckSchedulingPhase>())
+                    lines.Add(Volatile.Read(ref _observations[(int)phase])
+                        ?? $"WAL007C_CONTEXT phase={phase} observed=False");
+                lines.Add("WAL007C_CONTEXT_END");
+                _output.WriteLine(string.Join(Environment.NewLine, lines));
+            }
+            catch (Exception)
+            {
+                // Best-effort observations only; existing assertions and failures stay authoritative.
+            }
+        }
     }
 
     private enum RecheckDiagnosticPhase

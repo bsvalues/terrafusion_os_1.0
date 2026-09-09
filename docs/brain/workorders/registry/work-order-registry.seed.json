@@ -17103,6 +17103,140 @@
       }
     },
     {
+      "id": "WO-WAL-007C",
+      "title": "Sync fixture scheduling boundary correction",
+      "program": "Washington Assessor Launch V1",
+      "goalId": "GOAL-WASHINGTON-ASSESSOR-LAUNCH-V1",
+      "loopId": "LOOP-WASHINGTON-ASSESSOR-LAUNCH-V1",
+      "goal": "Correct the two actual Sync fixture capture boundaries with bounded behavioral proof; no unique CI-starvation, production or parent-acceptance claim.",
+      "riskClass": "R3",
+      "status": "review",
+      "dependencies": [
+        {
+          "id": "WO-WAL-000",
+          "status": "satisfied",
+          "notes": "Mission activation permits bounded child decomposition; WO-WAL-007 acceptance and WO-WAL-008 production remain blocked."
+        }
+      ],
+      "allowedSystems": [
+        {
+          "name": "Isolated Sync fixture source, synthetic Unit.Tests and serialized canonical admission",
+          "notes": "Exactly the five recorded paths. Main owns normal execution and Git lifecycle; the environment identifier grants no shared heavy-job slot."
+        }
+      ],
+      "blockedSystems": [
+        {
+          "name": "Production/API runtime, live county/PACS databases, network probes, CI policy, other lane source and protected data",
+          "notes": "No production mutation, secret access, parent unlock or unsupported historical CI-cause claim."
+        }
+      ],
+      "allowedFiles": [
+        "backend/tests/TerraFusion.Unit.Tests/Sync/CountyReadOnlySalesSyncServiceTests.cs",
+        "docs/brain/workorders/active/WO-WAL-007C-sync-fixture-scheduling.md",
+        "docs/brain/evidence/WO-WAL-007C-proof.md",
+        "docs/brain/workorders/registry/work-order-registry.seed.json",
+        "docs/brain/workorders/tools/wo-wave-plan.test.mjs"
+      ],
+      "blockedFiles": [
+        "backend/src/**",
+        "frontend/**",
+        ".github/**",
+        "package.json",
+        "pnpm-lock.yaml",
+        "backend/**/*.csproj",
+        "backend/**/appsettings*.json"
+      ],
+      "contractReservations": ["wal.sync-fixture.scheduling-evidence.v1"],
+      "environmentReservations": ["wal007c-local-unit-sync-fixture"],
+      "dispatchGuard": {
+        "type": "protected_ref_head",
+        "ref": "refs/remotes/origin/main"
+      },
+      "evidenceRequired": [
+        {
+          "kind": "file",
+          "description": "Preserved actual required-check failure, actual40 context observations, compiled42 capture-policy RED and corrected42 GREEN receipts with source continuity, bounded cleanup and preservation of the original40 assertions, tokens and15second limits."
+        },
+        {
+          "kind": "command",
+          "description": "Observed canonical missing-row RED followed by normal query/wave GREEN, unchanged prior registry records/order/envelope and historical tests, exact five-path WO agreement and normal Brain/protected validation."
+        },
+        {
+          "kind": "review",
+          "description": "Independent exact-source and actual-receipt assurance plus serialized canonical admission review; local mechanism and policy proof do not establish a unique historical CI cause, production readiness or parent acceptance."
+        }
+      ],
+      "validationGates": [
+        {
+          "name": "Normal full Sync fixture validation",
+          "command": "dotnet test backend/tests/TerraFusion.Unit.Tests/TerraFusion.Unit.Tests.csproj -c Release --filter FullyQualifiedName~CountyReadOnlySalesSyncServiceTests",
+          "required": true
+        },
+        {
+          "name": "Diff hygiene",
+          "command": "git diff --check",
+          "required": true
+        },
+        {
+          "name": "Canonical query and wave validation",
+          "command": "node --test docs/brain/workorders/tools/wo-query.test.mjs docs/brain/workorders/tools/wo-wave-plan.test.mjs",
+          "required": true
+        },
+        {
+          "name": "Brain evidence proof",
+          "command": "node scripts/brain/brain.mjs proof --workorder WO-WAL-007C",
+          "required": true
+        },
+        {
+          "name": "Brain exact reservation review",
+          "command": "node scripts/brain/brain.mjs review-diff --workorder WO-WAL-007C",
+          "required": true
+        },
+        {
+          "name": "Brain protected delivery plan",
+          "command": "node scripts/brain/brain.mjs commit-plan --workorder WO-WAL-007C",
+          "required": true
+        }
+      ],
+      "stopConditions": [
+        {
+          "type": "scope_boundary",
+          "description": "Only the five recorded paths and current serialized writer handoff are authorized. No production source, unrelated tests, schema, planner, CI, policy or other-lane changes."
+        },
+        {
+          "type": "state_mismatch",
+          "description": "Stop on pin drift, reservation collision or missing exact-head evidence. Preserve all prior records and protected integration unions; never overwrite B/L/I/EO changes with an older seed."
+        },
+        {
+          "type": "validation_failure",
+          "description": "Preserve actual failures and unresolved review. No timeout inflation, assertion weakening, skips, blind CI retries, hook bypass or protected-check waiver."
+        },
+        {
+          "type": "protected_data",
+          "description": "No live county/PACS data, credentials, secrets, external write-back or protected-resource authority is granted."
+        },
+        {
+          "type": "production_risk",
+          "description": "No runtime deployment, integrated WO-WAL-007 acceptance, WO-WAL-008 release or issue1485 completion follows from this test-lifecycle child."
+        }
+      ],
+      "nextCandidates": [],
+      "authority": {
+        "mayWrite": true,
+        "mayCommit": true,
+        "mayPush": true,
+        "mayOpenPr": true,
+        "mayMarkReady": true,
+        "mayMerge": true,
+        "mayCleanup": true,
+        "notes": "Existing OWNER-WAL-V1-MISSION-AUTHORITY-20260827 and standing lifecycle apply only within the current WO reservations and normal protected gates. Main owns execution, Git and delivery; builder permissions require the specific current handoff. Registry data creates no new source, runtime or shared-resource authority."
+      },
+      "provenance": {
+        "source": "docs/brain/workorders/active/WO-WAL-007C-sync-fixture-scheduling.md; actual CI failure and bounded context/capture-policy receipts recorded there; canonical missing-row RED on2026-09-09. Admission remains review pending normal canonical validation and protected delivery; no invented derived state or parent completion.",
+        "schemaVersion": "0.1.0"
+      }
+    },
+    {
       "id": "WO-WAL-008",
       "title": "Production Release and External Assessor Acceptance",
       "program": "Washington Assessor Launch V1",
