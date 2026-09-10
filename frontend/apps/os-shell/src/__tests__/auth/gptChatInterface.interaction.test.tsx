@@ -10,6 +10,7 @@ const {
   mockSendMessage,
   mockArchiveConversation,
   mockDeleteConversation,
+  mockReadGroundedAnswer,
 } = vi.hoisted(() => ({
   mockCreateConversation: vi.fn(),
   mockGetConversation: vi.fn(),
@@ -18,9 +19,11 @@ const {
   mockSendMessage: vi.fn(),
   mockArchiveConversation: vi.fn(),
   mockDeleteConversation: vi.fn(),
+  mockReadGroundedAnswer: vi.fn(() => null),
 }));
 
 vi.mock('@/services/gptAPI', () => ({
+  readGroundedAnswer: mockReadGroundedAnswer,
   gptAPI: {
     createConversation: mockCreateConversation,
     getConversation: mockGetConversation,
@@ -258,7 +261,7 @@ describe('GPTChatInterface interactions', () => {
     const existingConversation = makeConversation({ id: 77, totalMessages: 2, totalTokensUsed: 88, totalCost: 0.015 });
     const existingHistory = [
       makeMessage({ id: 201, conversationId: 77, role: 'user', content: 'What changed this week?', totalTokens: 11, cost: 0, ragDocumentsUsed: undefined, responseTime: undefined }),
-      makeMessage({ id: 202, conversationId: 77, content: 'County valuation deltas stayed within expected thresholds.', conversationId: 77 }),
+      makeMessage({ id: 202, conversationId: 77, content: 'County valuation deltas stayed within expected thresholds.', totalTokens: 88, cost: 0.015 }),
     ];
 
     mockGetConversation.mockResolvedValue(existingConversation);
@@ -270,7 +273,7 @@ describe('GPTChatInterface interactions', () => {
     expect(await screen.findByText('County valuation deltas stayed within expected thresholds.')).toBeInTheDocument();
     expect(mockGetConversation).toHaveBeenCalledWith(77);
     expect(mockGetConversationHistory).toHaveBeenCalledWith(77);
-    expect(screen.getByText('Tokens: 88')).toBeInTheDocument();
+    expect(screen.getByText('88 tokens')).toBeInTheDocument();
   });
 
   it('labels empty trace states honestly when a response has no source details', async () => {
