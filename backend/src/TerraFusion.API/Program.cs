@@ -979,6 +979,7 @@ if (args.Contains("--seed-pacs"))
             else
                 svc.AddDbContext<TerraFusion.Data.TerraFusionDbContext>(o => o.UseNpgsql(cs));
             svc.AddScoped<TerraFusion.API.Seeds.PacsDataSeeder>();
+            svc.AddScoped<TerraFusion.API.Services.ISaleQualificationService, TerraFusion.API.Services.SaleQualificationService>();
         })
         .Build();
 
