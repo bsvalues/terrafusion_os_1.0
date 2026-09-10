@@ -33,12 +33,32 @@ public sealed class GptTraceAuditEndpointsTests
         return new ControllerContext { HttpContext = httpContext };
     }
 
+    private static CoreEntities.GPTConfiguration ActiveConfig(int id) => new()
+    {
+        Id = id,
+        Name = $"PropertyGPT-{id}",
+        CountyId = 1,
+        Status = "Active",
+        EnableRAG = true,
+        RAGDatasetId = 7
+    };
+
     private static GPTController BuildController(
         IGPTConfigurationService? configService = null,
         IGPTOrchestrationService? orchestrationService = null,
         IRAGService? ragService = null)
     {
-        configService ??= new Mock<IGPTConfigurationService>().Object;
+        if (configService is null)
+        {
+            var mockConfig = new Mock<IGPTConfigurationService>();
+            mockConfig
+                .Setup(s => s.GetAvailableGPTsAsync("assessor-42", 1, "Assessor"))
+                .ReturnsAsync(new List<CoreEntities.GPTConfiguration> { ActiveConfig(1), ActiveConfig(2), ActiveConfig(3) });
+            mockConfig
+                .Setup(s => s.GetGPTByIdAsync(It.IsAny<int>()))
+                .ReturnsAsync((int id) => ActiveConfig(id));
+            configService = mockConfig.Object;
+        }
         orchestrationService ??= new Mock<IGPTOrchestrationService>().Object;
         ragService ??= new Mock<IRAGService>().Object;
         var logger = new Mock<ILogger<GPTController>>().Object;
@@ -46,7 +66,6 @@ public sealed class GptTraceAuditEndpointsTests
         controller.ControllerContext = BuildControllerContext();
         return controller;
     }
-
     // ── GET /api/gpt/conversations/{conversationId}/trace ─────────────────────
 
     [Fact]
@@ -57,7 +76,7 @@ public sealed class GptTraceAuditEndpointsTests
             Id = 10,
             GPTConfigurationId = 1,
             Title = "Property Assessment Query",
-            UserId = "user-42",
+            UserId = "assessor-42",
             CountyId = 1
         };
 
@@ -87,7 +106,9 @@ public sealed class GptTraceAuditEndpointsTests
         mockOrch.Setup(s => s.GetAuditByMessageIdAsync(It.IsAny<int>())).ReturnsAsync((GPTAudit?)null);
 
         var mockConfig = new Mock<IGPTConfigurationService>();
-        mockConfig.Setup(s => s.GetGPTByIdAsync(1)).ReturnsAsync(new CoreEntities.GPTConfiguration { Id = 1, Name = "PropertyGPT" });
+        mockConfig.Setup(s => s.GetGPTByIdAsync(1)).ReturnsAsync(ActiveConfig(1));
+        mockConfig.Setup(s => s.GetAvailableGPTsAsync("assessor-42", 1, "Assessor"))
+            .ReturnsAsync(new List<CoreEntities.GPTConfiguration> { ActiveConfig(1), ActiveConfig(2), ActiveConfig(3) });
 
         var controller = BuildController(
             configService: mockConfig.Object,
@@ -119,7 +140,7 @@ public sealed class GptTraceAuditEndpointsTests
             Id = 20,
             GPTConfigurationId = 2,
             Title = "Levy Calculation Trace",
-            UserId = "assessor-1",
+            UserId = "assessor-42",
             CountyId = 1
         };
 
@@ -134,7 +155,9 @@ public sealed class GptTraceAuditEndpointsTests
         mockOrch.Setup(s => s.GetAuditByMessageIdAsync(It.IsAny<int>())).ReturnsAsync((GPTAudit?)null);
 
         var mockConfig = new Mock<IGPTConfigurationService>();
-        mockConfig.Setup(s => s.GetGPTByIdAsync(2)).ReturnsAsync((CoreEntities.GPTConfiguration?)null);
+        mockConfig.Setup(s => s.GetGPTByIdAsync(2)).ReturnsAsync(ActiveConfig(2));
+        mockConfig.Setup(s => s.GetAvailableGPTsAsync("assessor-42", 1, "Assessor"))
+            .ReturnsAsync(new List<CoreEntities.GPTConfiguration> { ActiveConfig(1), ActiveConfig(2), ActiveConfig(3) });
 
         var controller = BuildController(
             configService: mockConfig.Object,
@@ -158,7 +181,7 @@ public sealed class GptTraceAuditEndpointsTests
         {
             Id = 30,
             GPTConfigurationId = 3,
-            UserId = "u1",
+            UserId = "assessor-42",
             CountyId = 1
         };
 
@@ -182,7 +205,9 @@ public sealed class GptTraceAuditEndpointsTests
         mockOrch.Setup(s => s.GetAuditByMessageIdAsync(It.IsAny<int>())).ReturnsAsync((GPTAudit?)null);
 
         var mockConfig = new Mock<IGPTConfigurationService>();
-        mockConfig.Setup(s => s.GetGPTByIdAsync(It.IsAny<int>())).ReturnsAsync((CoreEntities.GPTConfiguration?)null);
+        mockConfig.Setup(s => s.GetGPTByIdAsync(It.IsAny<int>())).ReturnsAsync((int id) => ActiveConfig(id));
+        mockConfig.Setup(s => s.GetAvailableGPTsAsync("assessor-42", 1, "Assessor"))
+            .ReturnsAsync(new List<CoreEntities.GPTConfiguration> { ActiveConfig(1), ActiveConfig(2), ActiveConfig(3) });
 
         var controller = BuildController(
             configService: mockConfig.Object,
