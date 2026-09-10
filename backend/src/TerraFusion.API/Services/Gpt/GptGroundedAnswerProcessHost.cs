@@ -57,10 +57,10 @@ public sealed class GptGroundedAnswerProcessHost(string sovereignRoot, string no
                 UseShellExecute = false, CreateNoWindow = true,
                 RedirectStandardInput = true, RedirectStandardOutput = true, RedirectStandardError = true,
                 StandardInputEncoding = new UTF8Encoding(false), StandardOutputEncoding = new UTF8Encoding(false),
+                StandardErrorEncoding = new UTF8Encoding(false),
             };
             // Do not inherit NODE_OPTIONS/preloads, provider credentials, proxy, or global runtime configuration.
-            start.Environment.Clear();
-            if (OperatingSystem.IsWindows()) start.Environment["SystemRoot"] = Environment.GetFolderPath(Environment.SpecialFolder.Windows);
+            ReplaceWithMinimalEnvironment(start.Environment);
             start.ArgumentList.Add("--max-old-space-size=64");
             start.ArgumentList.Add("--input-type=module");
             start.ArgumentList.Add("--eval");
@@ -137,6 +137,15 @@ public sealed class GptGroundedAnswerProcessHost(string sovereignRoot, string no
             cursor = Path.GetDirectoryName(cursor);
         }
     }
+    private static void ReplaceWithMinimalEnvironment(IDictionary<string, string?> environment)
+    {
+        var systemRoot = Environment.GetEnvironmentVariable("SystemRoot");
+        environment.Clear();
+        environment["NO_COLOR"] = "1";
+        environment["NODE_NO_WARNINGS"] = "1";
+        if (OperatingSystem.IsWindows() && !string.IsNullOrWhiteSpace(systemRoot)) environment["SystemRoot"] = systemRoot;
+    }
+
     private static async Task<string> ReadBoundedAsync(StreamReader reader, CancellationToken cancellation)
     {
         var result = new StringBuilder();
