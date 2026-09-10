@@ -52,7 +52,7 @@ describe('durable Dossier packet workflow', () => {
     render(<MemoryRouter><PacketFinalizationPanel {...context} /></MemoryRouter>);
     fireEvent.click(await screen.findByRole('button', { name: 'Finalize this revision' }));
     const failure = await screen.findByRole('alert');
-    expect(failure).toHaveTextContent('Packet conflict (409). Reload before retrying.');
+    expect(failure).toHaveTextContent('Source revision changed; reload.');
     expect(cid).not.toBe(''); expect(failure).toHaveTextContent(cid);
     expect(screen.queryByRole('textbox', { name: 'Finalization receipt payload' })).not.toBeInTheDocument();
   });
@@ -154,7 +154,7 @@ describe('durable Dossier packet workflow', () => {
       : json({ countyId: county, taxYear: 2026, parcelId: context.parcelId, packets: [{ packetId, name: 'Stored synthetic packet', status: 'complete' }] })));
     render(<MemoryRouter><PacketFinalizationPanel {...context} /></MemoryRouter>);
     fireEvent.click(await screen.findByRole('button', { name: 'Finalize this revision' }));
-    expect(await screen.findByRole('alert')).toHaveTextContent('Packet conflict (409). Reload before retrying.');
+    expect(await screen.findByRole('alert')).toHaveTextContent('Source revision changed; reload.');
     expect(screen.queryByRole('button', { name: 'Prepare appeal handoff' })).not.toBeInTheDocument();
   });
 

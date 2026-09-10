@@ -53,6 +53,25 @@ async function responseError(response: Response): Promise<PacketWorkflowHttpErro
     return new PacketWorkflowHttpError(response.status, fallback);
   } finally { reader.releaseLock(); }
 }
+async function conflictError(response: Response): Promise<PacketWorkflowHttpError> {
+  const fallback = 'Packet conflict (409). Reload before retrying.';
+  const reader = response.body?.getReader();
+  if (!reader) return new PacketWorkflowHttpError(409, fallback);
+  const timeout = new Promise<null>(resolve => setTimeout(() => resolve(null), 25));
+  try {
+    const first = await Promise.race([reader.read(), timeout]);
+    if (!first || first.done || !first.value || first.value.byteLength > 4096) return new PacketWorkflowHttpError(409, fallback);
+    const parsed: unknown = JSON.parse(new TextDecoder().decode(first.value));
+    const message = parsed && typeof parsed === 'object' && 'error' in parsed && typeof parsed.error === 'string'
+      ? parsed.error : fallback;
+    return new PacketWorkflowHttpError(409, message);
+  } catch {
+    return new PacketWorkflowHttpError(409, fallback);
+  } finally {
+    void reader.cancel().catch(() => {});
+    reader.releaseLock();
+  }
+}
 function scoped(context: PacketWorkflowContext, value: { countyId: string; taxYear: number; parcelId: string }) {
   if (!value || value.countyId !== context.countyId || value.taxYear !== context.taxYear || value.parcelId !== context.parcelId) {
     throw new Error('Packet response scope changed; reload the selected county and year.');
@@ -72,10 +91,9 @@ async function request<T>(context: PacketWorkflowContext, path: string, signal: 
       ...(cid ? { 'X-Correlation-ID': cid } : {}) },
     ...(body ? { body: JSON.stringify({ ...body, county: context.countyId, taxYear: context.taxYear, parcelId: context.parcelId }) } : {}) });
   if (response.status === 409) {
-    // Conflict headers already invalidate eligibility. Optional details and even
-    // cancellation completion must never delay that authoritative signal.
-    void response.body?.cancel().catch(() => {});
-    throw new PacketWorkflowHttpError(409, 'Packet conflict (409). Reload before retrying.');
+    // Preserve the authoritative conflict status while surfacing the server's
+    // canonical refusal reason when it is present and bounded.
+    throw await conflictError(response);
   }
   if (!response.ok) throw await responseError(response);
   return await response.json() as T;

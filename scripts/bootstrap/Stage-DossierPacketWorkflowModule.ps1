@@ -17,9 +17,14 @@ $files = @(
   [ordered]@{ path='src/packet-finalization/decide-dossier-packet-finalization.mjs'; sizeBytes=13668; sha256='f55be3fa60a9cd519a425c20d72b8603a3d12283c7bc004085c79be375a097de' }
 )
 $utf8 = [Text.UTF8Encoding]::new($false)
+function Get-Sha256HexFromBytes([byte[]]$Bytes) {
+  $sha256 = [Security.Cryptography.SHA256]::Create()
+  try { return ([BitConverter]::ToString($sha256.ComputeHash($Bytes)).Replace('-', '').ToLowerInvariant()) }
+  finally { $sha256.Dispose() }
+}
 $manifest = ([ordered]@{ schemaVersion='1.0.0'; artifactType='dossier.packet-workflow.module-set@1'; repository='bsvalues/terrafusion-dossier';
   sourceCommit=$expectedCommit; artifactSha256=$expectedArtifact; files=$files } | ConvertTo-Json -Depth 6 -Compress) + "`n"
-$manifestHash = [Convert]::ToHexString([Security.Cryptography.SHA256]::HashData($utf8.GetBytes($manifest))).ToLowerInvariant()
+$manifestHash = Get-Sha256HexFromBytes -Bytes ($utf8.GetBytes($manifest))
 $osRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '../..'))
 $slot = Join-Path $osRoot '.terrafusion/runtime/dossier/packet-workflow'
 $temporaryRoot = Join-Path $osRoot '.tmp'
@@ -33,6 +38,12 @@ function Assert-NoLinks([string]$Path) {
     if ($null -eq $parent) { break }; $cursor = $parent.FullName
   }
 }
+function Get-RelativePathCompat([string]$Root, [string]$Target) {
+  $rootFull = [IO.Path]::GetFullPath($Root).TrimEnd([char[]]@([IO.Path]::DirectorySeparatorChar, [IO.Path]::AltDirectorySeparatorChar)) + [IO.Path]::DirectorySeparatorChar
+  $targetFull = [IO.Path]::GetFullPath($Target)
+  if (-not $targetFull.StartsWith($rootFull, [StringComparison]::OrdinalIgnoreCase)) { throw 'DOSSIER_PACKET_RELATIVE_PATH_SCOPE_REFUSED' }
+  return $targetFull.Substring($rootFull.Length)
+}
 function Assert-Stage([string]$Directory) {
   Assert-NoLinks $Directory
   $entries = @(Get-ChildItem -LiteralPath $Directory -Force -Recurse)
@@ -41,7 +52,7 @@ function Assert-Stage([string]$Directory) {
   $expected = @($files.path) + 'manifest.json'
   if ($actual.Count -ne $expected.Count) { throw 'DOSSIER_PACKET_EXACT_INVENTORY_REQUIRED' }
   foreach ($entry in $actual) {
-    if ([IO.Path]::GetRelativePath($Directory, $entry.FullName).Replace('\','/') -cnotin $expected) { throw 'DOSSIER_PACKET_UNEXPECTED_FILE' }
+    if ((Get-RelativePathCompat -Root $Directory -Target $entry.FullName).Replace('\','/') -cnotin $expected) { throw 'DOSSIER_PACKET_UNEXPECTED_FILE' }
   }
   foreach ($file in $files) {
     $path = Join-Path $Directory $file.path
@@ -60,7 +71,7 @@ function Export-Blob([string]$Repository, [string]$Relative, [string]$Destinatio
   $start = [Diagnostics.ProcessStartInfo]::new('git')
   $start.UseShellExecute = $false; $start.CreateNoWindow = $true
   $start.RedirectStandardOutput = $true; $start.RedirectStandardError = $true
-  foreach ($argument in @('--no-replace-objects','-C',$Repository,'show',"${expectedCommit}:$Relative")) { $start.ArgumentList.Add($argument) }
+  $start.Arguments = "--no-replace-objects -C `"$Repository`" show `"${expectedCommit}:$Relative`""
   $process = [Diagnostics.Process]::new(); $process.StartInfo = $start
   try {
     if (-not $process.Start()) { throw 'DOSSIER_PACKET_GIT_START_FAILED' }
