@@ -1121,19 +1121,7 @@ static bool IsFeatureEnabled(IConfiguration configuration, string configKey, str
 }
 
 // 🔍 TELEMETRY: Phase 9.1 Nervous System
-var serviceName = "terrafusion-iron";
-var otlpEndpoint = builder.Configuration["OTEL_EXPORTER_OTLP_ENDPOINT"] ?? "http://otel-collector:4317";
-
-builder.Services.AddOpenTelemetry()
-    .ConfigureResource(r => r.AddService(serviceName))
-    .WithTracing(t => t
-        .AddAspNetCoreInstrumentation()
-        .AddHttpClientInstrumentation()
-        .AddOtlpExporter(o => o.Endpoint = new Uri(otlpEndpoint)))
-    .WithMetrics(m => m
-        .AddAspNetCoreInstrumentation()
-        .AddHttpClientInstrumentation()
-        .AddOtlpExporter(o => o.Endpoint = new Uri(otlpEndpoint)));
+ConfigureStartupOpenTelemetry(builder.Services, builder.Configuration);
 
 // Relax DI validation for local/dev to allow graceful fallbacks
 builder.Host.UseDefaultServiceProvider(options =>
@@ -3650,4 +3638,25 @@ catch (Exception ex)
   throw;
 }
 
-public partial class Program { }
+public partial class Program
+{
+  private static void ConfigureStartupOpenTelemetry(IServiceCollection services, IConfiguration configuration)
+  {
+    // Startup-only opt-out. Missing remains enabled; malformed configuration must fail.
+    if (!configuration.GetValue<bool>("OpenTelemetry:Enabled", true)) return;
+
+    var serviceName = "terrafusion-iron";
+    var otlpEndpoint = configuration["OTEL_EXPORTER_OTLP_ENDPOINT"] ?? "http://otel-collector:4317";
+
+    services.AddOpenTelemetry()
+        .ConfigureResource(r => r.AddService(serviceName))
+        .WithTracing(t => t
+            .AddAspNetCoreInstrumentation()
+            .AddHttpClientInstrumentation()
+            .AddOtlpExporter(o => o.Endpoint = new Uri(otlpEndpoint)))
+        .WithMetrics(m => m
+            .AddAspNetCoreInstrumentation()
+            .AddHttpClientInstrumentation()
+            .AddOtlpExporter(o => o.Endpoint = new Uri(otlpEndpoint)));
+  }
+}

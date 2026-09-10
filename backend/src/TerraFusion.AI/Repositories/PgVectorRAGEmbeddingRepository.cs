@@ -161,6 +161,14 @@ namespace TerraFusion.AI.Repositories
             catch (DbException ex)
             {
                 _logger.LogError(ex, "Vector similarity search failed for dataset {DatasetId}", datasetId);
+                if (IsVectorCapabilityFailure(ex))
+                {
+                    _logger.LogWarning(
+                        ex,
+                        "pgvector capability unavailable for dataset {DatasetId}; ranking stored float-array embeddings instead",
+                        datasetId);
+                    return await SearchSimilarArrayFallbackAsync(datasetId, queryEmbedding, topK, minScore);
+                }
                 if (swallowDbFailure) return new List<RAGEmbeddingSearchResult>();
                 throw;
             }
@@ -234,6 +242,14 @@ namespace TerraFusion.AI.Repositories
             catch (DbException ex)
             {
                 _logger.LogError(ex, "Vector multi-dataset similarity search failed across {Count} datasets", datasetIdList.Count);
+                if (IsVectorCapabilityFailure(ex))
+                {
+                    _logger.LogWarning(
+                        ex,
+                        "pgvector capability unavailable across {Count} datasets; ranking stored float-array embeddings instead",
+                        datasetIdList.Count);
+                    return await SearchMultipleDatasetsArrayFallbackAsync(datasetIdList, queryEmbedding, topK, minScore);
+                }
                 return new List<RAGEmbeddingSearchResult>();
             }
             finally
@@ -291,6 +307,156 @@ namespace TerraFusion.AI.Repositories
         // Helpers
         // ---------------------------------------------------------------
 
+        private async Task<List<RAGEmbeddingSearchResult>> SearchSimilarArrayFallbackAsync(
+            int datasetId,
+            float[] queryEmbedding,
+            int topK,
+            float minScore)
+        {
+            topK = Math.Max(1, topK);
+
+            return RankArrayEmbeddings(await LoadArrayEmbeddingsAsync(new[] { datasetId }), queryEmbedding, topK, minScore);
+        }
+
+        private async Task<List<RAGEmbeddingSearchResult>> SearchMultipleDatasetsArrayFallbackAsync(
+            IReadOnlyCollection<int> datasetIds,
+            float[] queryEmbedding,
+            int topK,
+            float minScore)
+        {
+            topK = Math.Max(1, topK);
+
+            if (datasetIds.Count == 0)
+            {
+                return new List<RAGEmbeddingSearchResult>();
+            }
+
+            return RankArrayEmbeddings(await LoadArrayEmbeddingsAsync(datasetIds), queryEmbedding, topK, minScore);
+        }
+
+        private async Task<List<ArrayEmbeddingRow>> LoadArrayEmbeddingsAsync(IReadOnlyCollection<int> datasetIds)
+        {
+            if (datasetIds.Count == 0)
+            {
+                return new List<ArrayEmbeddingRow>();
+            }
+
+            var connection = _context.Database.GetDbConnection();
+            var openedHere = false;
+            if (connection.State != ConnectionState.Open)
+            {
+                await connection.OpenAsync();
+                openedHere = true;
+            }
+
+            try
+            {
+                using var cmd = connection.CreateCommand();
+                var datasetIdLiterals = string.Join(", ", datasetIds.Select(value => value.ToString(CultureInfo.InvariantCulture)));
+                cmd.CommandText = $@"
+                SELECT re.""Id"", re.""DocumentId"", re.""DatasetId"", re.""ChunkIndex"",
+                       re.""ChunkText"", re.""Metadata"", re.""Embedding""
+                FROM ""RAGEmbeddings"" re
+                WHERE re.""DatasetId"" IN ({datasetIdLiterals})";
+
+                var rows = new List<ArrayEmbeddingRow>();
+                using var reader = await cmd.ExecuteReaderAsync();
+                while (await reader.ReadAsync())
+                {
+                    if (reader.IsDBNull(6))
+                    {
+                        continue;
+                    }
+
+                    rows.Add(new ArrayEmbeddingRow(
+                        Id: reader.GetInt32(0),
+                        DocumentId: reader.GetInt32(1),
+                        DatasetId: reader.GetInt32(2),
+                        ChunkIndex: reader.GetInt32(3),
+                        ChunkText: reader.GetString(4),
+                        Metadata: reader.IsDBNull(5) ? null : reader.GetString(5),
+                        Embedding: reader.GetFieldValue<float[]>(6)));
+                }
+
+                return rows;
+            }
+            finally
+            {
+                if (openedHere)
+                {
+                    await connection.CloseAsync();
+                }
+            }
+        }
+
+        private static List<RAGEmbeddingSearchResult> RankArrayEmbeddings(
+            IEnumerable<ArrayEmbeddingRow> embeddings,
+            float[] queryEmbedding,
+            int topK,
+            float minScore)
+        {
+            if (queryEmbedding.Length == 0)
+            {
+                return new List<RAGEmbeddingSearchResult>();
+            }
+
+            return embeddings
+                .Where(e => e.Embedding.Length == queryEmbedding.Length)
+                .Select(e => new
+                {
+                    Embedding = e,
+                    Score = CalculateCosineSimilarity(queryEmbedding, e.Embedding)
+                })
+                .Where(result => result.Score >= minScore)
+                .OrderByDescending(result => result.Score)
+                .Take(topK)
+                .Select(result => new RAGEmbeddingSearchResult
+                {
+                    EmbeddingId = result.Embedding.Id,
+                    DocumentId = result.Embedding.DocumentId,
+                    DatasetId = result.Embedding.DatasetId,
+                    ChunkIndex = result.Embedding.ChunkIndex,
+                    ChunkText = result.Embedding.ChunkText,
+                    Metadata = result.Embedding.Metadata,
+                    SimilarityScore = result.Score
+                })
+                .ToList();
+        }
+
+        private static bool IsVectorCapabilityFailure(DbException ex)
+        {
+            var message = ex.Message;
+            return message.Contains("vector", StringComparison.OrdinalIgnoreCase)
+                || message.Contains("<=>", StringComparison.OrdinalIgnoreCase)
+                || message.Contains("operator does not exist", StringComparison.OrdinalIgnoreCase);
+        }
+
+        private static float CalculateCosineSimilarity(float[] vectorA, float[] vectorB)
+        {
+            if (vectorA.Length != vectorB.Length || vectorA.Length == 0)
+            {
+                return 0f;
+            }
+
+            float dotProduct = 0f;
+            float magnitudeA = 0f;
+            float magnitudeB = 0f;
+
+            for (int i = 0; i < vectorA.Length; i++)
+            {
+                dotProduct += vectorA[i] * vectorB[i];
+                magnitudeA += vectorA[i] * vectorA[i];
+                magnitudeB += vectorB[i] * vectorB[i];
+            }
+
+            magnitudeA = (float)Math.Sqrt(magnitudeA);
+            magnitudeB = (float)Math.Sqrt(magnitudeB);
+
+            return magnitudeA == 0f || magnitudeB == 0f
+                ? 0f
+                : dotProduct / (magnitudeA * magnitudeB);
+        }
+
         private static void AddParam(DbCommand cmd, string name, DbType dbType, object value)
         {
             var p = cmd.CreateParameter();
@@ -299,6 +465,16 @@ namespace TerraFusion.AI.Repositories
             p.Value = value;
             cmd.Parameters.Add(p);
         }
+
+
+        private sealed record ArrayEmbeddingRow(
+            int Id,
+            int DocumentId,
+            int DatasetId,
+            int ChunkIndex,
+            string ChunkText,
+            string? Metadata,
+            float[] Embedding);
 
         private static RAGEmbeddingSearchResult MapSearchResult(DbDataReader reader)
         {
