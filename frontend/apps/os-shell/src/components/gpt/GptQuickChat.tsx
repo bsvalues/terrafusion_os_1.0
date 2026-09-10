@@ -35,7 +35,7 @@ export function GptQuickChat() {
     setLoadState('loading');
 
     gptAPI
-      .getAvailableGPTs()
+      .getSystemGPTs()
       .then((list) => {
         if (cancelled) return;
         if (list.length === 0) {
@@ -68,7 +68,7 @@ export function GptQuickChat() {
   if (loadState === 'loading') {
     return (
       <div
-        data-testid='gpt-quick-chat-loading'
+        data-testid="gpt-quick-chat-loading"
         className='flex items-center justify-center py-16 gap-3'
       >
         <div className='tf-spinner h-8 w-8' />
@@ -79,7 +79,7 @@ export function GptQuickChat() {
 
   if (loadState === 'error') {
     return (
-      <div data-testid='gpt-quick-chat-error' className='py-8 text-center'>
+      <div data-testid="gpt-quick-chat-error" className='py-8 text-center'>
         <p className='tf-text-secondary text-sm'>{error}</p>
         <p className='tf-text-dim text-xs mt-1'>
           Ensure the backend is reachable and a system GPT is configured.
@@ -90,7 +90,7 @@ export function GptQuickChat() {
 
   if (loadState === 'empty') {
     return (
-      <div data-testid='gpt-quick-chat-empty' className='py-8 text-center space-y-2'>
+      <div data-testid="gpt-quick-chat-empty" className='py-8 text-center space-y-2'>
         <div
           className='inline-flex items-center justify-center rounded-full p-4'
           style={{ background: 'hsl(var(--tf-suite-gpt) / 0.12)' }}
@@ -106,7 +106,7 @@ export function GptQuickChat() {
   }
 
   return (
-    <div className='flex flex-col h-full gap-4' data-testid='gpt-quick-chat'>
+    <div className='flex flex-col h-full gap-4' data-testid="gpt-quick-chat">
       {/* GPT selector — shown only when multiple system GPTs exist */}
       {gpts.length > 1 && (
         <div className='shrink-0 flex items-center gap-3'>
@@ -126,7 +126,7 @@ export function GptQuickChat() {
                 window.history.replaceState(window.history.state, '', url);
               }}
               className='w-full tf-input px-3 py-1.5 text-sm appearance-none pr-8'
-              data-testid='gpt-picker'
+              data-testid="gpt-picker"
             >
               {gpts.map((g) => (
                 <option key={g.id} value={g.id}>
@@ -156,7 +156,7 @@ export function GptQuickChat() {
 
       {/* Embed the canonical GPT chat — fills remaining height */}
       {selectedGpt && (
-        <div className='flex-1 min-h-0 overflow-hidden rounded-xl' data-testid='gpt-chat-embed'>
+        <div className='flex-1 min-h-0 overflow-hidden rounded-xl' data-testid="gpt-chat-embed">
           <GPTChatInterface
             gpt={selectedGpt}
             conversationId={reopenConversationId}

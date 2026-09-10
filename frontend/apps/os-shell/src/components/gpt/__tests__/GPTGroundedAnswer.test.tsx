@@ -202,7 +202,7 @@ describe('canonical grounded answer presentation', () => {
     window.history.replaceState(null, '', '/gpt?view=studio&gptId=1&conversationId=10');
     render(<GptQuickChat />);
     expect(await screen.findByText('Synthetic supported answer')).toBeInTheDocument();
-    expect(gptAPI.getAvailableGPTs).toHaveBeenCalled();
+    expect(gptAPI.getSystemGPTs).toHaveBeenCalled();
     expect(gptAPI.getConversation).toHaveBeenCalledWith(10);
     expect(gptAPI.createConversation).not.toHaveBeenCalled();
   });
