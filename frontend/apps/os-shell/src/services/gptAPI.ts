@@ -86,10 +86,10 @@ export interface GPTMessage {
   conversationId: number;
   role: 'user' | 'assistant' | 'system' | 'function';
   content: string;
-  promptTokens: number;
-  completionTokens: number;
-  totalTokens: number;
-  cost: number;
+  promptTokens: number | null;
+  completionTokens: number | null;
+  totalTokens: number | null;
+  cost: number | null;
   modelUsed?: string;
   provider?: string;
   functionName?: string;
@@ -100,6 +100,96 @@ export interface GPTMessage {
   responseTime?: number;
   finishReason?: string;
   createdAt: string;
+}
+
+/** Transport shape only; the protected suite, not the browser, judges this exchange. */
+export interface GPTGroundedAnswerEnvelope {
+  context: {
+    request: { countyId: string; datasetKey: string; traceId: string };
+    result: {
+      citations: Array<{
+        sourceId: string;
+        chunkId: string;
+        excerpt: string;
+        sourceTitle?: string;
+      }>;
+    };
+  };
+  result: {
+    schemaVersion: string;
+    countyId: string;
+    datasetKey: string;
+    traceId: string;
+    status:
+      | 'ANSWERED'
+      | 'NO_RELEVANT_CONTEXT'
+      | 'DENIED'
+      | 'PROVIDER_UNAVAILABLE'
+      | 'PROVIDER_ERROR';
+    citations: Array<{ sourceId: string; chunkId: string }>;
+    answer?: string;
+    provider?: string;
+    model?: string;
+    usage?: { promptTokens?: number; completionTokens?: number; totalTokens?: number };
+    failureCode?: string;
+  };
+}
+
+/** Fail closed on stale/malformed presentation data. This is not canonical validation or attestation. */
+export function readGroundedAnswer(
+  message: GPTMessage,
+  gpt: GPTConfiguration
+): GPTGroundedAnswerEnvelope | null {
+  if (message.functionName !== 'gpt.grounded-answer@1.0.0' || !message.functionResult) return null;
+  try {
+    const envelope = JSON.parse(message.functionResult) as GPTGroundedAnswerEnvelope;
+    const result = envelope.result;
+    if (
+      result.schemaVersion !== '1.0.0' ||
+      result.countyId !== String(gpt.countyId) ||
+      result.datasetKey !== `rag-dataset:${gpt.ragDatasetId}` ||
+      typeof result.traceId !== 'string' ||
+      envelope.context.request.countyId !== result.countyId ||
+      envelope.context.request.datasetKey !== result.datasetKey ||
+      envelope.context.request.traceId !== result.traceId ||
+      !Array.isArray(result.citations) ||
+      !Array.isArray(envelope.context.result.citations)
+    )
+      return null;
+    if (
+      ![
+        'ANSWERED',
+        'NO_RELEVANT_CONTEXT',
+        'DENIED',
+        'PROVIDER_UNAVAILABLE',
+        'PROVIDER_ERROR',
+      ].includes(result.status)
+    )
+      return null;
+    if (
+      result.status === 'ANSWERED' &&
+      (typeof result.answer !== 'string' ||
+        typeof result.provider !== 'string' ||
+        typeof result.model !== 'string' ||
+        result.citations.length === 0)
+    )
+      return null;
+    if (
+      result.citations.some(
+        (citation) =>
+          !envelope.context.result.citations.some(
+            (source) =>
+              source.sourceId === citation.sourceId &&
+              source.chunkId === citation.chunkId &&
+              typeof source.excerpt === 'string'
+          )
+      )
+    )
+      return null;
+    return envelope;
+  } catch {
+    return null;
+  }
 }
 
 export interface GPTTraceChunkDetail {
@@ -338,7 +428,9 @@ class GPTAPIService {
    * Get conversation trace and source details
    */
   async getConversationTrace(conversationId: number): Promise<GPTConversationTrace> {
-    const response = await this.api.get<GPTConversationTrace>(`/conversations/${conversationId}/trace`);
+    const response = await this.api.get<GPTConversationTrace>(
+      `/conversations/${conversationId}/trace`
+    );
     return response.data;
   }
 

@@ -1,5 +1,8 @@
 using Microsoft.Extensions.Options;
 using TerraFusion.API.Configuration;
+using TerraFusion.AI.Interfaces;
+using TerraFusion.AI.Services;
+using TerraFusion.Data;
 
 namespace TerraFusion.API.Services.Gpt;
 
@@ -13,6 +16,8 @@ public static class GptGroundedContextRuntimeRegistration
         ArgumentNullException.ThrowIfNull(services);
         ArgumentNullException.ThrowIfNull(configuration);
         ArgumentNullException.ThrowIfNull(environment);
+
+        AddGroundedAnswer(services, configuration, environment);
 
         var options = configuration
             .GetSection(GptGroundedContextRuntimeOptions.SectionName)
@@ -72,6 +77,66 @@ public static class GptGroundedContextRuntimeRegistration
         services.AddSingleton<IGptGroundedContextProcessHost>(provider =>
             provider.GetRequiredService<GptGroundedContextProcessHost>());
         services.AddScoped<IGptGroundedContextConsumer, GptGroundedContextConsumer>();
+    }
+
+    private static void AddGroundedAnswer(IServiceCollection services, IConfiguration configuration, IHostEnvironment environment)
+    {
+        var local = configuration.GetSection(GptLocalInferenceOptions.SectionName).Get<GptLocalInferenceOptions>() ?? new();
+        var runtime = configuration.GetSection(GptGroundedAnswerRuntimeOptions.SectionName).Get<GptGroundedAnswerRuntimeOptions>() ?? new();
+        if (!Enum.IsDefined(runtime.Mode) || runtime.TimeoutSeconds is < 1 or > 30)
+            throw new InvalidOperationException("Invalid GPT grounded-answer runtime selection.");
+        if (runtime.Mode == GptGroundedContextRuntimeMode.LocalExact && !environment.IsDevelopment())
+            throw new InvalidOperationException("GPT grounded-answer LocalExact is Development-only.");
+        var hasRoot = TryResolveSovereignRoot(environment.ContentRootPath, out var root);
+        var enabled = runtime.Mode == GptGroundedContextRuntimeMode.LocalExact && hasRoot;
+        services.AddSingleton<IOptions<GptLocalInferenceOptions>>(Options.Create(local));
+        services.AddSingleton<IOptions<GptGroundedAnswerRuntimeOptions>>(Options.Create(runtime));
+        services.AddHttpClient<GptLocalInferenceProvider>(client => client.Timeout = Timeout.InfiniteTimeSpan)
+            .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
+            { AllowAutoRedirect = false, UseProxy = false, UseCookies = false, UseDefaultCredentials = false });
+        services.AddScoped<IGptLocalInferenceProvider>(provider => provider.GetRequiredService<GptLocalInferenceProvider>());
+        services.AddSingleton(new GptGroundedAnswerProcessHost(root,
+            enabled ? ResolveNodeExecutablePath() : string.Empty, TimeSpan.FromSeconds(runtime.TimeoutSeconds), enabled));
+        services.AddSingleton<IGptGroundedAnswerProcessHost>(provider => provider.GetRequiredService<GptGroundedAnswerProcessHost>());
+        // Construct the dedicated retrieval chain with the admitted local adapter. Never resolve
+        // the global IEmbeddingService/IRAGService registrations, which may select a remote factory.
+        RAGService LocalRag(IServiceProvider provider) => new(
+            provider.GetRequiredService<TerraFusionDbContext>(), provider.GetRequiredService<IRAGEmbeddingRepository>(),
+            provider.GetRequiredService<GptLocalInferenceProvider>(), provider.GetRequiredService<ILogger<RAGService>>());
+        services.AddKeyedScoped<IRAGService>("gpt-local-retrieval", (provider, _) => LocalRag(provider));
+        // Controller diagnostics also eagerly depend on RAG. Keep their existing implementations
+        // but scope their dependency graph to local retrieval, not the ambient remote factory.
+        services.AddKeyedScoped<IBentonRagReadinessService>("gpt-local-retrieval", (provider, _) =>
+            new BentonRagReadinessService(LocalRag(provider), provider.GetRequiredService<ILogger<BentonRagReadinessService>>()));
+        services.AddKeyedScoped<ISystemGptRagFleetService>("gpt-local-retrieval", (provider, _) =>
+            new SystemGptRagFleetService(provider.GetRequiredService<ILogger<SystemGptRagFleetService>>(),
+                provider.GetRequiredKeyedService<IBentonRagReadinessService>("gpt-local-retrieval")));
+        services.AddKeyedScoped<ISystemGptFederatedOverviewService>("gpt-local-retrieval", (provider, _) =>
+            new SystemGptFederatedOverviewService(provider.GetRequiredService<ILogger<SystemGptFederatedOverviewService>>(),
+                provider.GetService<ISystemGptMetricsService>(), provider.GetService<ISystemGptModeService>(),
+                provider.GetRequiredKeyedService<IBentonRagReadinessService>("gpt-local-retrieval")));
+        services.AddKeyedScoped<ISystemGptAtlasService>("gpt-local-retrieval", (provider, _) =>
+            new SystemGptAtlasService(provider.GetRequiredService<ILogger<SystemGptAtlasService>>(),
+                provider.GetRequiredKeyedService<ISystemGptFederatedOverviewService>("gpt-local-retrieval"),
+                provider.GetRequiredKeyedService<ISystemGptRagFleetService>("gpt-local-retrieval"),
+                provider.GetService<ISystemGptGuardrailService>()));
+        services.AddKeyedScoped<ISystemGptAtlasLiveService>("gpt-local-retrieval", (provider, _) =>
+            new SystemGptAtlasLiveService(
+                new SystemGptAtlasTelemetrySource(provider.GetRequiredKeyedService<ISystemGptAtlasService>("gpt-local-retrieval"),
+                    provider.GetRequiredService<ILogger<SystemGptAtlasTelemetrySource>>()),
+                ActivatorUtilities.GetServiceOrCreateInstance<SystemGptAtlasClassifier>(provider),
+                provider.GetRequiredService<IOptions<TerraFusion.AI.Models.SystemGptAtlasLiveOptions>>(),
+                provider.GetRequiredService<ILogger<SystemGptAtlasLiveService>>()));
+        services.AddScoped<IGptGroundedAnswerService>(provider => new GptGroundedAnswerService(
+            provider.GetRequiredService<TerraFusionDbContext>(),
+            new GptGroundedContextConsumer(provider.GetRequiredService<GptGroundedAnswerProcessHost>(), LocalRag(provider),
+                provider.GetRequiredService<ILogger<GptGroundedContextConsumer>>()),
+            provider.GetRequiredService<IGptLocalInferenceProvider>(), provider.GetRequiredService<IGptGroundedAnswerProcessHost>(),
+            provider.GetRequiredService<IOptions<GptLocalInferenceOptions>>()));
+        services.AddScoped<IGPTOrchestrationService>(provider => new GPTOrchestrationService(
+            provider.GetRequiredService<TerraFusionDbContext>(), provider.GetRequiredService<ILogger<GPTOrchestrationService>>(),
+            LocalRag(provider), provider.GetRequiredService<GptLocalInferenceProvider>(),
+            provider.GetService<ISystemGptMetricsService>(), provider.GetRequiredService<IGptGroundedAnswerService>()));
     }
 
     internal static bool TryResolveSovereignRoot(string contentRoot, out string sovereignRoot)

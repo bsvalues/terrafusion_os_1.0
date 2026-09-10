@@ -113,7 +113,7 @@ public sealed class GptWriteLaneGuardTests
 
     // ── Total parameter count guard ───────────────────────────────────────────
     // Detects if someone added a service to the constructor without review.
-    // Current count: 18 (3 required + ILogger + 14 optional).
+    // Current count: 19 (3 required + ILogger + 15 optional).
     // If this fails, update the count and verify no cross-lane service was added.
 
     [Fact]
@@ -123,11 +123,11 @@ public sealed class GptWriteLaneGuardTests
         var paramCount = controllerType.GetConstructors()
             .Max(c => c.GetParameters().Length);
 
-        // 18 parameters: configService, orchestrationService, ragService, logger,
-        // + 14 optional phase services (healthEvaluator, modeService, bentonRagService,
+        // 19 parameters: configService, orchestrationService, ragService, logger,
+        // + 15 optional phase services (healthEvaluator, modeService, bentonRagService,
         //   eventService, metricsService, federatedOverviewService, policyService,
         //   policyEvaluator, guardrailService, ragFleetService, atlasService,
-        //   atlasLiveService, sseWriter, groundedContextConsumer)
-        Assert.Equal(18, paramCount);
+        //   atlasLiveService, sseWriter, groundedContextConsumer, groundedAnswerService)
+        Assert.Equal(19, paramCount);
     }
 }

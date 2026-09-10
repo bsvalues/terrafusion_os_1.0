@@ -3,6 +3,7 @@
 // Also documents the TWO MISSING routes: GET /conversations and POST /explain.
 
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -33,12 +34,40 @@ public sealed class GptConversationEndpointsTests
         return new ControllerContext { HttpContext = httpContext };
     }
 
+    private static CoreEntities.GPTConfiguration ActiveConfig(int id) => new()
+    {
+        Id = id,
+        CountyId = 1,
+        Status = "Active",
+        EnableRAG = true,
+        RAGDatasetId = 7
+    };
+
+    private static CoreEntities.GPTConversation OwnedConversation(int id, int gptConfigId = 1) => new()
+    {
+        Id = id,
+        GPTConfigurationId = gptConfigId,
+        UserId = "test-user-42",
+        CountyId = 1,
+        Status = "Active"
+    };
+
     private static GPTController BuildController(
         IGPTConfigurationService? configService = null,
         IGPTOrchestrationService? orchestrationService = null,
         IRAGService? ragService = null)
     {
-        configService ??= new Mock<IGPTConfigurationService>().Object;
+        if (configService is null)
+        {
+            var mockConfig = new Mock<IGPTConfigurationService>();
+            mockConfig
+                .Setup(s => s.GetAvailableGPTsAsync("test-user-42", 1, "Assessor"))
+                .ReturnsAsync(new List<CoreEntities.GPTConfiguration> { ActiveConfig(1), ActiveConfig(3) });
+            mockConfig
+                .Setup(s => s.GetGPTByIdAsync(It.IsAny<int>()))
+                .ReturnsAsync((int id) => ActiveConfig(id));
+            configService = mockConfig.Object;
+        }
         orchestrationService ??= new Mock<IGPTOrchestrationService>().Object;
         ragService ??= new Mock<IRAGService>().Object;
         var logger = new Mock<ILogger<GPTController>>().Object;
@@ -46,7 +75,6 @@ public sealed class GptConversationEndpointsTests
         controller.ControllerContext = BuildControllerContext();
         return controller;
     }
-
     // ── POST /api/gpt/conversations ───────────────────────────────────────────
 
     [Fact]
@@ -78,7 +106,7 @@ public sealed class GptConversationEndpointsTests
     [Fact]
     public async Task GetConversation_Found_Returns_Ok()
     {
-        var conv = new CoreEntities.GPTConversation { Id = 10, GPTConfigurationId = 1 };
+        var conv = OwnedConversation(10);
 
         var mockOrch = new Mock<IGPTOrchestrationService>();
         mockOrch
@@ -114,8 +142,8 @@ public sealed class GptConversationEndpointsTests
     {
         var convs = new List<CoreEntities.GPTConversation>
         {
-            new CoreEntities.GPTConversation { Id = 1, GPTConfigurationId = 3 },
-            new CoreEntities.GPTConversation { Id = 2, GPTConfigurationId = 3 }
+            OwnedConversation(1, 3),
+            OwnedConversation(2, 3)
         };
 
         var mockOrch = new Mock<IGPTOrchestrationService>();
@@ -128,8 +156,8 @@ public sealed class GptConversationEndpointsTests
         var result = await controller.GetUserConversations(3, 20);
 
         var ok = Assert.IsType<OkObjectResult>(result.Result);
-        var list = Assert.IsType<List<CoreEntities.GPTConversation>>(ok.Value);
-        Assert.Equal(2, list.Count);
+        var list = Assert.IsAssignableFrom<System.Collections.IEnumerable>(ok.Value);
+        Assert.Equal(2, list.Cast<object>().Count());
     }
 
     // ── GET /api/gpt/conversations/{id}/history ───────────────────────────────
@@ -145,6 +173,9 @@ public sealed class GptConversationEndpointsTests
 
         var mockOrch = new Mock<IGPTOrchestrationService>();
         mockOrch
+            .Setup(s => s.GetConversationAsync(5))
+            .ReturnsAsync(OwnedConversation(5));
+        mockOrch
             .Setup(s => s.GetConversationHistoryAsync(5, It.IsAny<int>()))
             .ReturnsAsync(messages);
 
@@ -153,8 +184,8 @@ public sealed class GptConversationEndpointsTests
         var result = await controller.GetConversationHistory(5, 50);
 
         var ok = Assert.IsType<OkObjectResult>(result.Result);
-        var list = Assert.IsType<List<GPTMessage>>(ok.Value);
-        Assert.Equal(2, list.Count);
+        var list = Assert.IsAssignableFrom<System.Collections.IEnumerable>(ok.Value);
+        Assert.Equal(2, list.Cast<object>().Count());
     }
 
     // ── POST /api/gpt/conversations/{id}/archive ──────────────────────────────
@@ -163,6 +194,9 @@ public sealed class GptConversationEndpointsTests
     public async Task ArchiveConversation_Returns_NoContent()
     {
         var mockOrch = new Mock<IGPTOrchestrationService>();
+        mockOrch
+            .Setup(s => s.GetConversationAsync(3))
+            .ReturnsAsync(OwnedConversation(3));
         mockOrch
             .Setup(s => s.ArchiveConversationAsync(3))
             .Returns(Task.CompletedTask);
@@ -181,6 +215,9 @@ public sealed class GptConversationEndpointsTests
     {
         var mockOrch = new Mock<IGPTOrchestrationService>();
         mockOrch
+            .Setup(s => s.GetConversationAsync(4))
+            .ReturnsAsync(OwnedConversation(4));
+        mockOrch
             .Setup(s => s.RateConversationAsync(4, It.IsAny<int>(), It.IsAny<string?>()))
             .Returns(Task.CompletedTask);
 
@@ -198,6 +235,9 @@ public sealed class GptConversationEndpointsTests
     public async Task DeleteConversation_Returns_NoContent()
     {
         var mockOrch = new Mock<IGPTOrchestrationService>();
+        mockOrch
+            .Setup(s => s.GetConversationAsync(6))
+            .ReturnsAsync(OwnedConversation(6));
         mockOrch
             .Setup(s => s.DeleteConversationAsync(6))
             .Returns(Task.CompletedTask);

@@ -45,27 +45,29 @@ namespace TerraFusion.API.Controllers
         private readonly ISystemGptAtlasLiveService? _atlasLiveService; // Phase 29
         private readonly TerraFusion.AI.Infrastructure.IServerSentEventsWriter? _sseWriter; // Phase 29
         private readonly IGptGroundedContextConsumer? _groundedContextConsumer;
+        private readonly IGptGroundedAnswerService? _groundedAnswerService;
         private readonly ILogger<GPTController> _logger;
 
         public GPTController(
             IGPTConfigurationService configService,
             IGPTOrchestrationService orchestrationService,
-            IRAGService ragService,
+            [Microsoft.Extensions.DependencyInjection.FromKeyedServices("gpt-local-retrieval")] IRAGService ragService,
             ILogger<GPTController> logger,
             ISystemGptHealthEvaluator? healthEvaluator = null,
             ISystemGptModeService? modeService = null,
-            IBentonRagReadinessService? bentonRagService = null,
+            [Microsoft.Extensions.DependencyInjection.FromKeyedServices("gpt-local-retrieval")] IBentonRagReadinessService? bentonRagService = null,
             ISystemGptEventService? eventService = null,
             ISystemGptMetricsService? metricsService = null,
-            ISystemGptFederatedOverviewService? federatedOverviewService = null,
+            [Microsoft.Extensions.DependencyInjection.FromKeyedServices("gpt-local-retrieval")] ISystemGptFederatedOverviewService? federatedOverviewService = null,
             ICountyPolicyService? policyService = null, // Phase 24
             ISystemGptPolicyEvaluator? policyEvaluator = null, // Phase 24
             ISystemGptGuardrailService? guardrailService = null, // Phase 26
-            ISystemGptRagFleetService? ragFleetService = null, // Phase 27
-            ISystemGptAtlasService? atlasService = null, // Phase 28
-            ISystemGptAtlasLiveService? atlasLiveService = null, // Phase 29
+            [Microsoft.Extensions.DependencyInjection.FromKeyedServices("gpt-local-retrieval")] ISystemGptRagFleetService? ragFleetService = null, // Phase 27
+            [Microsoft.Extensions.DependencyInjection.FromKeyedServices("gpt-local-retrieval")] ISystemGptAtlasService? atlasService = null, // Phase 28
+            [Microsoft.Extensions.DependencyInjection.FromKeyedServices("gpt-local-retrieval")] ISystemGptAtlasLiveService? atlasLiveService = null, // Phase 29
             TerraFusion.AI.Infrastructure.IServerSentEventsWriter? sseWriter = null, // Phase 29
-            IGptGroundedContextConsumer? groundedContextConsumer = null)
+            IGptGroundedContextConsumer? groundedContextConsumer = null,
+            IGptGroundedAnswerService? groundedAnswerService = null)
         {
             _configService = configService ?? throw new ArgumentNullException(nameof(configService));
             _orchestrationService = orchestrationService ?? throw new ArgumentNullException(nameof(orchestrationService));
@@ -85,6 +87,7 @@ namespace TerraFusion.API.Controllers
             _atlasLiveService = atlasLiveService; // Optional - Phase 29 Live Telemetry
             _sseWriter = sseWriter; // Optional - Phase 29 SSE Writer
             _groundedContextConsumer = groundedContextConsumer;
+            _groundedAnswerService = groundedAnswerService;
         }
 
         // Phase 26: In-memory storage for last guardrail decision per county (for diagnostics)
@@ -312,6 +315,7 @@ namespace TerraFusion.API.Controllers
                 var userId = GetUserId();
                 var countyId = GetCountyId();
 
+                if (!await CanUseConfigurationAsync(request.GPTConfigId)) return NotFound();
                 var conversation = await _orchestrationService.CreateConversationAsync(
                     request.GPTConfigId,
                     userId,
@@ -361,7 +365,7 @@ namespace TerraFusion.API.Controllers
             try
             {
                 var conversation = await _orchestrationService.GetConversationAsync(id);
-                if (conversation == null)
+                if (conversation == null || !await OwnsConversationAsync(conversation))
                 {
                     return NotFound(new { error = $"Conversation {id} not found" });
                 }
@@ -385,8 +389,9 @@ namespace TerraFusion.API.Controllers
             try
             {
                 var userId = GetUserId();
+                if (!await CanUseConfigurationAsync(gptId)) return NotFound();
                 var conversations = await _orchestrationService.GetUserConversationsAsync(userId, gptId, limit);
-                return Ok(conversations);
+                return Ok(conversations.Where(value => value.CountyId == TryGetCountyId() && value.UserId == userId));
             }
             catch (Exception ex)
             {
@@ -404,8 +409,11 @@ namespace TerraFusion.API.Controllers
         {
             try
             {
+                var conversation = await _orchestrationService.GetConversationAsync(id);
+                if (conversation is null || !await OwnsConversationAsync(conversation)) return NotFound();
                 var messages = await _orchestrationService.GetConversationHistoryAsync(id, limit);
-                return Ok(messages);
+                if (!await MessagesMatchCurrentScopeAsync(conversation, messages)) return Conflict(new { error = "Grounding scope changed; start a new conversation." });
+                return Ok(messages.Select(PresentMessage));
             }
             catch (Exception ex)
             {
@@ -425,6 +433,33 @@ namespace TerraFusion.API.Controllers
             try
             {
                 // Phase 17: Safe Mode check - block new messages when in Safe Mode
+                var admittedConversation = await _orchestrationService.GetConversationAsync(conversationId);
+                if (admittedConversation is null)
+                {
+                    return NotFound(new { error = $"Conversation {conversationId} not found" });
+                }
+                if (admittedConversation.GPTConfigurationId != request.GPTConfigId)
+                {
+                    return NotFound(new
+                    {
+                        error = "Conversation GPT configuration mismatch",
+                        conversationId,
+                        expectedGPTConfigId = admittedConversation.GPTConfigurationId,
+                        requestGPTConfigId = request.GPTConfigId
+                    });
+                }
+                if (!await OwnsConversationAsync(admittedConversation))
+                {
+                    return NotFound(new
+                    {
+                        error = "Conversation is not available in the current user/county scope",
+                        conversationId,
+                        conversationCountyId = admittedConversation.CountyId,
+                        requestCountyId = TryGetCountyId(),
+                        conversationUserId = admittedConversation.UserId,
+                        requestUserId = GetUserId()
+                    });
+                }
                 if (_modeService?.IsSafeMode == true)
                 {
                     _logger.LogWarning("SendMessage blocked: SystemGPT is in Safe Mode. Reason: {Reason}",
@@ -458,8 +493,8 @@ namespace TerraFusion.API.Controllers
                         Prompt = request.Message,
                         GptConfigKey = request.GPTConfigId.ToString(),
                         ContextId = conversationId.ToString(),
-                        RequiresRag = false, // Basic message doesn't require RAG
-                        RequiresEmbedding = false,
+                        RequiresRag = true, // Grounded send requires retrieval and query embedding.
+                        RequiresEmbedding = true,
                         UserId = userId
                     };
 
@@ -534,8 +569,8 @@ namespace TerraFusion.API.Controllers
                         Prompt = request.Message,
                         GptConfigKey = request.GPTConfigId.ToString(),
                         ContextId = conversationId.ToString(),
-                        RequiresRag = false, // Basic message doesn't require RAG
-                        RequiresEmbedding = false,
+                        RequiresRag = true, // Grounded send requires retrieval and query embedding.
+                        RequiresEmbedding = true,
                         UserId = userId
                     };
 
@@ -569,19 +604,30 @@ namespace TerraFusion.API.Controllers
                     }
                 }
 
-                var response = await _orchestrationService.SendMessageAsync(
+                if (_groundedAnswerService is null)
+                    return StatusCode(503, new { error = "Grounded answer runtime unavailable.", traceId = HttpContext.TraceIdentifier });
+                var response = await _groundedAnswerService.SendAsync(
                     request.GPTConfigId,
                     conversationId,
                     request.Message,
                     userId,
-                    countyId);
+                    countyId,
+                    HttpContext.TraceIdentifier,
+                    HttpContext.RequestAborted);
 
-                return Ok(response);
+                return Ok(PresentMessage(response));
+            }
+            catch (UnauthorizedAccessException) { return NotFound(); }
+            catch (OperationCanceledException) { return StatusCode(408, new { error = "Grounded request cancelled." }); }
+            catch (InvalidOperationException ex)
+            {
+                _logger.LogWarning(ex, "Grounded answer unavailable or rejected for conversation {ConversationId}", conversationId);
+                return StatusCode(503, new { error = ex.Message, traceId = HttpContext.TraceIdentifier });
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error sending message to conversation {ConversationId}", conversationId);
-                return StatusCode(500, new { error = ex.Message });
+                return StatusCode(500, new { error = "Grounded request failed.", traceId = HttpContext.TraceIdentifier });
             }
         }
 
@@ -593,6 +639,8 @@ namespace TerraFusion.API.Controllers
         {
             try
             {
+                var conversation = await _orchestrationService.GetConversationAsync(id);
+                if (conversation is null || !await OwnsConversationAsync(conversation)) return NotFound();
                 await _orchestrationService.ArchiveConversationAsync(id);
                 return NoContent();
             }
@@ -611,6 +659,8 @@ namespace TerraFusion.API.Controllers
         {
             try
             {
+                var conversation = await _orchestrationService.GetConversationAsync(id);
+                if (conversation is null || !await OwnsConversationAsync(conversation)) return NotFound();
                 await _orchestrationService.DeleteConversationAsync(id);
                 return NoContent();
             }
@@ -630,6 +680,8 @@ namespace TerraFusion.API.Controllers
         {
             try
             {
+                var conversation = await _orchestrationService.GetConversationAsync(id);
+                if (conversation is null || !await OwnsConversationAsync(conversation)) return NotFound();
                 await _orchestrationService.RateConversationAsync(id, request.Rating, request.Feedback);
                 return NoContent();
             }
@@ -978,13 +1030,14 @@ namespace TerraFusion.API.Controllers
 
                 // Get conversation with messages
                 var conversation = await _orchestrationService.GetConversationAsync(conversationId);
-                if (conversation == null)
+                if (conversation == null || !await OwnsConversationAsync(conversation))
                 {
                     return NotFound(new { error = $"Conversation {conversationId} not found" });
                 }
 
                 // Get messages
                 var messages = await _orchestrationService.GetConversationHistoryAsync(conversationId);
+                if (!await MessagesMatchCurrentScopeAsync(conversation, messages)) return Conflict(new { error = "Grounding scope changed; start a new conversation." });
 
                 // Get GPT config for context
                 var gptConfig = await _configService.GetGPTByIdAsync(conversation.GPTConfigurationId);
@@ -993,15 +1046,25 @@ namespace TerraFusion.API.Controllers
                 var traceMessages = new List<TraceMessageDto>();
                 foreach (var msg in messages.OrderBy(m => m.CreatedAt))
                 {
+                    var grounded = msg.FunctionName == "gpt.grounded-answer@1.0.0" && msg.FunctionResult is not null
+                        ? System.Text.Json.Nodes.JsonNode.Parse(msg.FunctionResult) : null;
                     var traceMsg = new TraceMessageDto
                     {
                         Id = msg.Id,
                         Role = msg.Role,
                         Content = msg.Content,
                         CreatedAt = msg.CreatedAt,
-                        TokensUsed = msg.TotalTokens,
-                        Cost = msg.Cost
+                        TokensUsed = grounded?["result"]?["usage"]?["totalTokens"]?.GetValue<long>(),
+                        Cost = null,
+                        GroundedExchange = grounded
                     };
+
+                    if (grounded is not null)
+                    {
+                        traceMsg.RAGUsed = grounded["context"]?["result"]?["status"]?.GetValue<string>() == "GROUNDED";
+                        traceMessages.Add(traceMsg);
+                        continue;
+                    }
 
                     // Add RAG trace info if available (from GPTMessage fields)
                     if (msg.Role == "assistant" && !string.IsNullOrEmpty(msg.RAGDocumentsUsed))
@@ -1048,8 +1111,8 @@ namespace TerraFusion.API.Controllers
                     GPTDisplayName = gptConfig?.DisplayName ?? "Unknown",
                     Title = conversation.Title,
                     MessageCount = traceMessages.Count,
-                    TotalTokensUsed = conversation.TotalTokensUsed,
-                    TotalCost = conversation.TotalCost,
+                    TotalTokensUsed = null,
+                    TotalCost = null,
                     Messages = traceMessages,
                     CreatedAt = conversation.CreatedAt,
                     LastMessageAt = conversation.LastMessageAt
@@ -2323,6 +2386,52 @@ namespace TerraFusion.API.Controllers
 
         #region Helper Methods
 
+        private async System.Threading.Tasks.Task<bool> CanUseConfigurationAsync(int configId)
+        {
+            var county = TryGetCountyId();
+            if (User.Identity?.IsAuthenticated != true || county is null) return false;
+            var configurations = await _configService.GetAvailableGPTsAsync(GetUserId(), county.Value, GetUserRole());
+            return configurations.Any(value => value.Id == configId && value.CountyId == county && value.Status == "Active");
+        }
+
+        private async System.Threading.Tasks.Task<bool> OwnsConversationAsync(GPTConversation conversation) =>
+            User.Identity?.IsAuthenticated == true && TryGetCountyId() is int county
+            && conversation.CountyId == county && conversation.UserId == GetUserId()
+            && conversation.Status != "Deleted" && await CanUseConfigurationAsync(conversation.GPTConfigurationId);
+
+        private async System.Threading.Tasks.Task<bool> MessagesMatchCurrentScopeAsync(GPTConversation conversation, IEnumerable<GPTMessage> messages)
+        {
+            var config = await _configService.GetGPTByIdAsync(conversation.GPTConfigurationId);
+            if (config is null) return false;
+            foreach (var message in messages.Where(value => value.FunctionName == "gpt.grounded-answer@1.0.0"))
+            {
+                try
+                {
+                    var envelope = System.Text.Json.Nodes.JsonNode.Parse(message.FunctionResult!)!;
+                    if (envelope["result"]!["countyId"]!.GetValue<string>() != conversation.CountyId.ToString(System.Globalization.CultureInfo.InvariantCulture)
+                        || envelope["result"]!["datasetKey"]!.GetValue<string>() != $"rag-dataset:{config.RAGDatasetId}") return false;
+                }
+                catch (Exception exception) when (exception is System.Text.Json.JsonException or InvalidOperationException or NullReferenceException or ArgumentException)
+                { return false; }
+            }
+            return true;
+        }
+
+        private static object PresentMessage(GPTMessage message)
+        {
+            var result = message.FunctionName == "gpt.grounded-answer@1.0.0" && message.FunctionResult is not null
+                ? System.Text.Json.Nodes.JsonNode.Parse(message.FunctionResult)?["result"] : null;
+            return new
+            {
+                message.Id, message.ConversationId, message.Role, message.Content,
+                promptTokens = result?["usage"]?["promptTokens"]?.GetValue<long>(),
+                completionTokens = result?["usage"]?["completionTokens"]?.GetValue<long>(),
+                totalTokens = result?["usage"]?["totalTokens"]?.GetValue<long>(), cost = (decimal?)null,
+                message.ModelUsed, message.Provider, message.FunctionName, message.FunctionArgs, message.FunctionResult,
+                message.RAGDocumentsUsed, message.RAGScore, message.ResponseTime, message.FinishReason, message.CreatedAt,
+            };
+        }
+
         private string GetUserId()
         {
             return User.FindFirst(ClaimTypes.NameIdentifier)?.Value
@@ -2342,7 +2451,7 @@ namespace TerraFusion.API.Controllers
         private int? TryGetCountyId()
         {
             var countyIdClaim = User.FindFirst("CountyId")?.Value;
-            return int.TryParse(countyIdClaim, out var countyId) && countyId > 0
+            return int.TryParse(countyIdClaim, out var countyId) && countyId >= 0
                 ? countyId
                 : null;
         }
@@ -2416,8 +2525,8 @@ namespace TerraFusion.API.Controllers
             public string GPTDisplayName { get; set; } = string.Empty;
             public string? Title { get; set; }
             public int MessageCount { get; set; }
-            public long TotalTokensUsed { get; set; }
-            public decimal TotalCost { get; set; }
+            public long? TotalTokensUsed { get; set; }
+            public decimal? TotalCost { get; set; }
             public List<TraceMessageDto> Messages { get; set; } = new();
             public DateTime CreatedAt { get; set; }
             public DateTime? LastMessageAt { get; set; }
@@ -2429,8 +2538,9 @@ namespace TerraFusion.API.Controllers
             public string Role { get; set; } = string.Empty;
             public string Content { get; set; } = string.Empty;
             public DateTime CreatedAt { get; set; }
-            public int TokensUsed { get; set; }
-            public decimal Cost { get; set; }
+            public long? TokensUsed { get; set; }
+            public decimal? Cost { get; set; }
+            public System.Text.Json.Nodes.JsonNode? GroundedExchange { get; set; }
 
             // RAG Trace Info
             public bool RAGUsed { get; set; }
