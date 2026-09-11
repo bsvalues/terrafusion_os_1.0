@@ -30,6 +30,17 @@ Retire or repair the launcher (and sweep sibling `scripts/deployment/LAUNCH_*.ps
 defects): consume `platform.json`/env contract for ports and paths; correct API project path; no
 hardcoded home paths; scoped process handling. Record which choice (retire vs repair) and why.
 
+## Companion configuration drift (owner finding 2026-09-11, source-verified)
+
+`backend/src/TerraFusion.Security/SecurityConfig.cs` `CorsSettings.AllowedOrigins` defaults to
+`http(s)://localhost:3000` and `http(s)://localhost:5000` — both ports are in `platform.json
+deprecated.ports` (canonical API default 5046 via `TF_API_PORT`). Same class of drift as the
+launcher: configuration contradicting the declared single source of truth. **Do not fix by
+guessing:** determine the active deployment origins from real deployment evidence (what actually
+serves the product in lab and in the WAL production path), then reconcile defaults and/or document
+the environment-specific overrides. If the reconciliation requires a security-policy change beyond
+configuration defaults (SW-10), surface it instead of widening scope.
+
 ## Walls
 
 If a live production consumer of the current launcher semantics is discovered, coordinate before

@@ -172,6 +172,53 @@ active-consumer evidence, never from platform-contract mentions alone (worked ex
 "Optional - graceful degradation" in Program.cs with NoOp fallback and only TerraFusion.AI consumers
 → OPTIONAL/UNKNOWN pending necessity evidence, despite platform.json declaring its port).
 
+## The release boundary = seven closure domains (owner definition, rev 4 2026-09-11)
+
+The Runtime Dependency Closure Matrix (WO-TUOP-004) is structured as seven domains, each decomposed
+into individual rows — **no aggregate PASS** (a "five suites" rollup is how the estate once claimed
+"TerraForge = PASS because /forge opened" while CostForge/CompsForge/SalesForge did nothing):
+
+```text
+1. RELEASE ASSEMBLY      host · API · UI bundle · release identity · package/install
+2. RUNTIME FOUNDATION    config · ServiceRegistry · ModuleRegistry · DB · migrations ·
+                         hosted services (each of the 11 individually) · realtime/hubs (each consumed hub)
+3. SECURITY + IDENTITY   auth/session · JWT signing+issuer/audience · passkeys/WebAuthn · secrets/keys ·
+                         TLS/certs · CORS · rate-limit · session policy · RBAC · county identity ·
+                         county-isolation policy · SignalR token path ·
+                         ENTITLEMENT/CAPABILITY ACTIVATION: role claims · county policy ·
+                         license/entitlement · feature/profile flags · tool allowlists ·
+                         module availability state
+4. DATA FOUNDATION       TerraFusion DB · county catalog · provenance/trust · Sync ·
+                         quarantine/reconciliation · Edge posture · durable artifact/document stores
+5. TERRAFUSION PRODUCT   L1 OS Shell · L2 Home Scene · Counties HUB · L3 five suite homes (each) ·
+                         L4 Workbench (Summary + each suite contribution + Pilot) ·
+                         L5 each application actually claimed in V1 (CostForge · CompsForge ·
+                         SalesForge · IncomeForge · ParcelLens · LayerWorks · TerraLevy · …)
+6. CROSS-CUTTING OS      TerraPilot · TerraTrace · TerraCanon · enabled AI/GPT/RAG runtime
+7. OPERABILITY           health · logs · monitoring · restart · persistence · backup/restore ·
+                         upgrade · rollback
+```
+
+**Launch-boundary pass bar:** *No aggregate PASS. No UNKNOWN. No superseded component running.
+Every REQUIRED_CORE component live-proven inside the exact assembled revision.* At that point the
+**TerraFusion launch boundary is complete** — the definition of what TerraFusion is when you launch
+it is coherent. That is NOT product-complete: product completion follows when the five layers and
+applications are actually operated (the journeys after 004/002).
+
+**Entitlement discipline:** the closure must distinguish not-implemented vs disabled-by-policy vs
+license-unavailable vs wrong-role vs broken vs intentionally-unavailable (Pilot's contract carries
+`enabledBy: { license, policyFlag }`). Without it, the loop could discover a policy-disabled module
+and rebuild it — the exact failure mode this mission exists to end.
+
+**Mention ≠ dependency (inviolate):** platform.json port mentions, estate-wide code searches, and
+historical documents never establish runtime necessity (worked examples: BlobServiceClient =
+QUARANTINE BS_PACS material; AddQuartz = old Harris PACS document; Redis = optional/graceful-degradation
+with AI-only consumers). Classify from active-consumer evidence.
+
+**Known configuration drift for the 005 lane (source-verified):** `SecurityConfig.cs`
+`CorsSettings.AllowedOrigins` defaults to deprecated ports 3000/5000 (canonical API default 5046).
+Reconcile from real deployment evidence — never by guessing.
+
 ## Work ordering (owner directive, 2026-09-11)
 
 **003 + 005** (remove known launch-lineage drift: stale `package.json#main`; launcher contradicting
