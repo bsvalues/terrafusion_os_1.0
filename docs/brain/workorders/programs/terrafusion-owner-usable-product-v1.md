@@ -100,7 +100,7 @@ Only after this PASS should WAL V1 carry the accepted candidate through its real
 | `WO-TUOP-001` | Launch the current exact candidate in the lab and produce the first live Product Reality Matrix from the screen; classify every non-PASS verdict; derive the exact bounded repair children for defects inside this authority | 000 protected merge |
 | `WO-TUOP-002` | Desktop auth-state honesty + working in-app sign-in — executed INSIDE the assembled product | 001 evidence merge + **004** (owner sequencing directive) |
 | `WO-TUOP-003` | Shell-lineage canon drift fix: stale root `package.json#main` → electron; record supersession | ready now |
-| `WO-TUOP-004` | Canonical release assembly + native-host release-proof + **Runtime Dependency Closure Matrix** (zero-UNKNOWN gate) | 003 |
+| `WO-TUOP-004` | Canonical release assembly + native-host release-proof + **Runtime Dependency Closure Matrix** (zero-UNKNOWN gate) | 003 + 005 (both protected-main complete) |
 | `WO-TUOP-005` | Launcher reconciliation: `LAUNCH_TERRAFUSION_OS.ps1` must consume `platform.json`/env contract (no deprecated :5000, correct API path, no foreign home paths, no blanket dotnet kill) | ready now |
 | further derived children | One exact bounded product-usability repair child per classified defect, created under `OWNER-TUOP-V1-MISSION-AUTHORITY-20260911` child policy — never floating, always registered | matrix verdicts |
 | `WO-TUOP-099` | Terminal acceptance: full-journey product-surface proof through the assembled product on the exact deployed release; record `TERRAFUSION_OWNER_USABLE_PRODUCT_V1: PASS`; hand the accepted candidate identity to WAL V1 | all repair children |
@@ -171,6 +171,53 @@ QUARANTINED-HISTORICAL / UNKNOWN`); the assembly cannot pass while any UNKNOWN r
 active-consumer evidence, never from platform-contract mentions alone (worked example: Redis is
 "Optional - graceful degradation" in Program.cs with NoOp fallback and only TerraFusion.AI consumers
 → OPTIONAL/UNKNOWN pending necessity evidence, despite platform.json declaring its port).
+
+## The release boundary = seven closure domains (owner definition, rev 4 2026-09-11)
+
+The Runtime Dependency Closure Matrix (WO-TUOP-004) is structured as seven domains, each decomposed
+into individual rows — **no aggregate PASS** (a "five suites" rollup is how the estate once claimed
+"TerraForge = PASS because /forge opened" while CostForge/CompsForge/SalesForge did nothing):
+
+```text
+1. RELEASE ASSEMBLY      host · API · UI bundle · release identity · package/install
+2. RUNTIME FOUNDATION    config · ServiceRegistry · ModuleRegistry · DB · migrations ·
+                         hosted services (each of the 11 individually) · realtime/hubs (each consumed hub)
+3. SECURITY + IDENTITY   auth/session · JWT signing+issuer/audience · passkeys/WebAuthn · secrets/keys ·
+                         TLS/certs · CORS · rate-limit · session policy · RBAC · county identity ·
+                         county-isolation policy · SignalR token path ·
+                         ENTITLEMENT/CAPABILITY ACTIVATION: role claims · county policy ·
+                         license/entitlement · feature/profile flags · tool allowlists ·
+                         module availability state
+4. DATA FOUNDATION       TerraFusion DB · county catalog · provenance/trust · Sync ·
+                         quarantine/reconciliation · Edge posture · durable artifact/document stores
+5. TERRAFUSION PRODUCT   L1 OS Shell · L2 Home Scene · Counties HUB · L3 five suite homes (each) ·
+                         L4 Workbench (Summary + each suite contribution + Pilot) ·
+                         L5 each application actually claimed in V1 (CostForge · CompsForge ·
+                         SalesForge · IncomeForge · ParcelLens · LayerWorks · TerraLevy · …)
+6. CROSS-CUTTING OS      TerraPilot · TerraTrace · TerraCanon · enabled AI/GPT/RAG runtime
+7. OPERABILITY           health · logs · monitoring · restart · persistence · backup/restore ·
+                         upgrade · rollback
+```
+
+**Launch-boundary pass bar:** *No aggregate PASS. No UNKNOWN. No superseded component running.
+Every REQUIRED_CORE component live-proven inside the exact assembled revision.* At that point the
+**TerraFusion launch boundary is complete** — the definition of what TerraFusion is when you launch
+it is coherent. That is NOT product-complete: product completion follows when the five layers and
+applications are actually operated (the journeys after 004/002).
+
+**Entitlement discipline:** the closure must distinguish not-implemented vs disabled-by-policy vs
+license-unavailable vs wrong-role vs broken vs intentionally-unavailable (Pilot's contract carries
+`enabledBy: { license, policyFlag }`). Without it, the loop could discover a policy-disabled module
+and rebuild it — the exact failure mode this mission exists to end.
+
+**Mention ≠ dependency (inviolate):** platform.json port mentions, estate-wide code searches, and
+historical documents never establish runtime necessity (worked examples: BlobServiceClient =
+QUARANTINE BS_PACS material; AddQuartz = old Harris PACS document; Redis = optional/graceful-degradation
+with AI-only consumers). Classify from active-consumer evidence.
+
+**Known configuration drift for the 005 lane (source-verified):** `SecurityConfig.cs`
+`CorsSettings.AllowedOrigins` defaults to deprecated ports 3000/5000 (canonical API default 5046).
+Reconcile from real deployment evidence — never by guessing.
 
 ## Work ordering (owner directive, 2026-09-11)
 

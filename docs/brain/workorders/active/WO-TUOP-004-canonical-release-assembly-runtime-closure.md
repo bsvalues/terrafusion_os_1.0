@@ -2,14 +2,14 @@
 
 | Field | Value |
 | --- | --- |
-| Status | `BLOCKED_ON_WO-TUOP-003` |
+| Status | `BLOCKED_ON_WO-TUOP-003_AND_WO-TUOP-005` (owner rev-5: dispatches only when BOTH are protected-main complete — the assembled product must launch via the contract-consumed launcher 005 repairs) |
 | Program | TerraFusion Owner-Usable Product V1 |
 | Goal | `GOAL-TERRAFUSION-OWNER-USABLE-PRODUCT-V1` |
 | Loop | `LOOP-TERRAFUSION-OWNER-USABLE-PRODUCT-V1` |
 | Owner authority source | Issue #1589 + owner review 2026-09-11 (sequencing + closure directives) |
 | Repository | `bsvalues/terrafusion_os_1.0` |
 | Risk | R4 — lab build/assembly/launch; no production, no protected data |
-| Terminal condition | `CANONICAL_RELEASE_ASSEMBLY_ESTABLISHED_WITH_ZERO_UNKNOWN_CLOSURE_AND_NATIVE_HOST_RELEASE_PROOF` |
+| Terminal condition | `TERRAFUSION_LAUNCH_BOUNDARY_COMPLETE: canonical release assembly established, closure matrix across all seven domains with no aggregate PASS / no UNKNOWN / no superseded component running / every REQUIRED_CORE live-proven in the exact assembled revision, native host release-proven. This completes the DEFINITION of what TerraFusion is when launched — product completion follows when the five layers and applications are actually operated. |
 
 ## Objective
 
@@ -55,25 +55,104 @@ consumers are TerraFusion.AI swarm/monitoring/caching services → classify Redi
 `OPTIONAL/UNKNOWN until active-consumer evidence establishes necessity` — NOT core because
 platform.json declares a port.
 
-**Seeded first-pass rows (minimum; discovery expands, never shrinks):**
+**The closure matrix is structured as SEVEN DOMAINS, each decomposed into individual rows
+(owner refinement, 2026-09-11). Discovery expands the rows; it never shrinks them.**
 
-- **Release/host:** canonical native host · OS UI bundle (`native-shell/ui/dist`) · exact release SHA/manifest
-- **Core runtime:** TerraFusion API · configuration/environment contract (`platform.json`/env) · ServiceRegistry + ModuleSeedService · migrations/schema state · DB provider/binding (SQLite/Npgsql, connection-string driven)
-- **Hosted services (11 registered in Program.cs — classify each):** `StartupOrchestrationService` · `ModuleLoaderService` · `DatabaseInitializationHostedService` · `ArcGisSyncService` · `AICoordinationSupervisorService` · `UnifiedOrchestrationService` · `GovernmentComplianceService` · `PluginHotReloadService` · `QuantumMetricsBackgroundService` · `EliteEndpointValidationService` · `EliteSignalHandlingService`
-- **Identity:** authentication · session · RBAC · county identity · tenant/stamp resolution · trust mode (`PUBLIC`/`COUNTY_PROVIDED`/`CONNECTED`)
-- **Application plumbing:** SignalR + hubs where actually consumed (8 mapped: OSCore, Enhancement, QuantumMetrics, GPT, Notebook, Analytics, Workflow, Collaboration) · module loading · write-lane enforcement
-- **Persistent state:** TerraFusion DB · document/evidence storage · durable storage GPT/Dossier/Pilot require · cache only where actually required
-- **Data plane:** TerraFusion Sync · quarantine/reconciliation · provenance/freshness · Edge status (HERMES: simulated/lawful lab sources; CONNECTED production: Edge stays county-local)
-- **OS services:** TerraPilot execution path (policy/tool gated) · TerraTrace (append-only spine)
-- **AI:** GPT/RAG runtime + whichever inference provider is actually enabled (profile-dependent; statewide canon: Core requires no GPU and no single mandatory provider)
-- **Product/support:** five UI layers · five suites · Workbench · Counties HUB / Home Scene · TerraCanon
-- **Operations:** logging · health · monitoring · backup/restore · restart/recovery · upgrade/rollback
+**HARD RULE — NO AGGREGATE ROWS.** There is no row called "five suites" or "Layer 5". An aggregate
+PASS is how the estate historically claimed "TerraForge = PASS because `/forge` opened" while
+CostForge/CompsForge/SalesForge did nothing. Every claimed component gets its own row, its own
+classification, its own evidence.
+
+```text
+1. RELEASE ASSEMBLY        host · API · UI bundle · release identity · package/install
+2. RUNTIME FOUNDATION      config · ServiceRegistry · ModuleRegistry · DB · migrations ·
+                           hosted services · realtime/hubs
+3. SECURITY + IDENTITY     auth/session · JWT/passkeys · secrets/keys · TLS/certs · RBAC ·
+                           county identity · entitlement/policy/profile state
+4. DATA FOUNDATION         TerraFusion DB · county catalog · provenance/trust · Sync ·
+                           quarantine/reconciliation · Edge posture · durable artifact/document stores
+5. TERRAFUSION PRODUCT     L1 OS Shell · L2 Home Scene · Counties HUB · L3 five suite homes ·
+                           L4 Workbench · L5 real applications
+6. CROSS-CUTTING OS        TerraPilot · TerraTrace · TerraCanon · enabled AI/GPT/RAG runtime
+7. OPERABILITY             health · logs · monitoring · restart · persistence · backup/restore ·
+                           upgrade · rollback
+```
+
+**Domain 5 decomposes to individual rows (minimum):**
+
+```text
+OS Shell · Home Scene · Counties HUB
+TerraForge suite home · TerraAtlas suite home · TerraDais suite home · TerraDossier suite home · TerraGPT suite home
+Property Workbench: Summary · Forge contribution · Atlas contribution · Dais contribution ·
+                    Dossier contribution · Pilot contribution
+TerraPilot · TerraTrace · TerraCanon
+Layer 5 (one row per application actually claimed in V1): CostForge · CompsForge · SalesForge ·
+IncomeForge · ParcelLens · LayerWorks · TerraLevy · … (claim list comes from the product's own
+registry/manifest, not from this WO's imagination — an application not claimed in V1 is out of scope,
+and claiming one that doesn't work is the defect)
+```
+
+**Domain 2 hosted-service rows (11 registered in Program.cs — classify each individually):**
+`StartupOrchestrationService` · `ModuleLoaderService` · `DatabaseInitializationHostedService` ·
+`ArcGisSyncService` · `AICoordinationSupervisorService` · `UnifiedOrchestrationService` ·
+`GovernmentComplianceService` · `PluginHotReloadService` · `QuantumMetricsBackgroundService` ·
+`EliteEndpointValidationService` · `EliteSignalHandlingService`.
+**Realtime rows:** SignalR registration + each consumed hub individually (8 mapped: OSCore,
+Enhancement, QuantumMetrics, GPT, Notebook, Analytics, Workflow, Collaboration) — a mapped hub with
+no consumer is classified, not silently counted core.
+
+**Domain 3 SECURITY / TRUST MATERIAL (explicit group — owner refinement; identity alone is not
+enough). Source-verified rows from `backend/src/TerraFusion.Security/SecurityConfig.cs`:**
+
+```text
+JWT signing/key material (SecretKey: "Resolved from configuration or key vault. Do NOT store the
+actual secret here in production.")
+token issuer/audience (Issuer=TerraFusion, Audience=TerraFusionServices)
+passkey/WebAuthn configuration
+CORS policy (AllowedOrigins)
+HTTPS/TLS posture (RequireHttps default true)
+certificate/key material
+rate-limit policy (RateLimitSettings)
+session duration/timeout (MaxSessionDurationMinutes=480, IdleTimeoutMinutes=30)
+county-isolation security policy
+secret/configuration source
+SignalR authenticated-token path
+```
+
+Each row gets REQUIRED_CORE / REQUIRED_WHEN_ENABLED / environment-specific classification.
+**Known drift to reconcile (do NOT fix by guessing):** `SecurityConfig.cs` `CorsSettings.AllowedOrigins`
+defaults to `http(s)://localhost:3000` and `http(s)://localhost:5000` while `platform.json` lists
+3000/5000 as deprecated ports and the canonical API default is 5046 (`TF_API_PORT`). 004/005 must
+determine the active deployment origins from real deployment evidence and reconcile — in the same
+lane as the launcher/configuration drift (WO-TUOP-005 scope).
+
+**Domain 3/6 ENTITLEMENT / CAPABILITY ACTIVATION (explicit group — owner refinement):**
+
+```text
+role claims · county policy · license/entitlement · feature/profile flags · tool allowlists ·
+module availability state
+```
+
+Source anchor: the Pilot contract `frontend/apps/os-shell/src/contracts/pilot.ts` carries
+`enabledBy?: { license?: string; policyFlag?: string }` alongside required claims. The product must
+be able to answer **"why is this tool present or absent?"** and distinguish: not implemented ·
+implemented but disabled by policy · implemented but license unavailable · implemented but wrong
+role · broken · intentionally unavailable. **Without this group the closure could discover a
+policy-disabled module and mistakenly rebuild it — the exact failure mode this mission exists to
+end.**
+
+**Mention ≠ dependency (inviolate).** Platform-contract mentions, estate-wide code searches, and
+historical documents do not establish runtime necessity. Verified worked examples: `BlobServiceClient`
+hits are QUARANTINE BS_PACS material, not proof Azure Blob is a current runtime dependency;
+`AddQuartz` surfaced only in an old Harris PACS completion document, not the active API runtime;
+Redis is "Optional - graceful degradation" in Program.cs with only TerraFusion.AI consumers →
+OPTIONAL/UNKNOWN pending necessity evidence despite platform.json declaring its port.
 
 ## Validation
 
 - [ ] Native host release-proven (or its failure recorded with evidence and surfaced)
 - [ ] Assembly reproducible: same revision → same `ui/dist` + publish manifest hashes
-- [ ] Closure matrix complete: zero UNKNOWN; every REQUIRED_CORE has live-launch evidence; no SUPERSEDED component launches
+- [ ] Closure matrix complete: **no aggregate PASS, no UNKNOWN, no superseded component running; every REQUIRED_CORE component live-proven inside the exact assembled revision**
 - [ ] Exact release identity surfaced in-product and verified against the recorded revision
 - [ ] Required checks green; independent review; exact-head merge
 
