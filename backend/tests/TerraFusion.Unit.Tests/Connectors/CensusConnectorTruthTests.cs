@@ -91,11 +91,11 @@ public sealed class CensusConnectorTruthTests
     }
 
     [Fact]
-    public void GetSchemaAsync_KeepsAdvertisedIdentity()
+    public async Task GetSchemaAsync_KeepsAdvertisedIdentity()
     {
         var connector = BuildConnector(apiKey: null, baseUrl: "https://api.census.gov/data");
 
-        var schema = connector.GetSchemaAsync().GetAwaiter().GetResult();
+        var schema = await connector.GetSchemaAsync();
 
         Assert.Equal("census-acs", schema.ConnectorName);
         Assert.NotEmpty(schema.Entities);
