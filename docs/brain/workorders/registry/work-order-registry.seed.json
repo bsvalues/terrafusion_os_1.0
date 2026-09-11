@@ -17528,11 +17528,11 @@
     },
     {
       "id": "WO-TUOP-004",
-      "title": "Canonical release assembly: native host + API publish + native-shell/ui/dist as one exact release",
+      "title": "Canonical release assembly + native-host authority release-proof",
       "program": "TerraFusion Owner-Usable Product V1",
       "goalId": "GOAL-TERRAFUSION-OWNER-USABLE-PRODUCT-V1",
       "loopId": "LOOP-TERRAFUSION-OWNER-USABLE-PRODUCT-V1",
-      "goal": "Produce the TERRAFUSION RELEASE ASSEMBLY for the lab: build the canonical host (Terrafusion.Shell WPF/WebView2), dotnet publish the API, build the frontend into native-shell/ui/dist, assemble as one reproducible release with exact revision identity surfaced in-product (TerraCanon + shell), launch it on HERMES via the sanctioned launcher path, and observe planes 0-2 of the launch model. This discharges Matrix v1 release-identity FAIL and is the prerequisite for proving product layers THROUGH the shell instead of around it.",
+      "goal": "Produce the TERRAFUSION RELEASE ASSEMBLY for the lab and SETTLE native-host authority through actual build/package/release evidence (WPF Terrafusion.Shell is the surviving candidate - prove or replace it; do not assume it): dotnet publish the API, build the frontend into native-shell/ui/dist, build/package the native host, assemble as one reproducible release with exact revision identity surfaced in-product (TerraCanon + shell), launch it on HERMES via a contract-consumed launcher, and observe planes 0-2 of the launch model. The repository does not currently prove API + UI bundle + native host are produced together as one installable product; this WO closes that gap. Discharges Matrix v1 release-identity FAIL and is the prerequisite for proving product layers THROUGH the assembled product instead of around it.",
       "riskClass": "R4",
       "status": "blocked",
       "dependencies": [
@@ -17597,6 +17597,72 @@
       "provenance": {
         "createdAt": "2026-09-11T19:30:00Z",
         "source": "Derived from WO-TUOP Step Zero: the corrected launch model plane 0 (native product host) and Matrix v1 release-identity FAIL.",
+        "schemaVersion": "0.1.0"
+      }
+    },
+    {
+      "id": "WO-TUOP-005",
+      "title": "Launcher reconciliation: retire or repair LAUNCH_TERRAFUSION_OS.ps1 to consume the platform contract",
+      "program": "TerraFusion Owner-Usable Product V1",
+      "goalId": "GOAL-TERRAFUSION-OWNER-USABLE-PRODUCT-V1",
+      "loopId": "LOOP-TERRAFUSION-OWNER-USABLE-PRODUCT-V1",
+      "goal": "The sanctioned-looking launcher contradicts platform.json (the declared single source of truth): it hardcodes deprecated localhost:5000 (canonical API default is TF_API_PORT 5046), targets backend/TerraFusion.API instead of the contract's backend/src/TerraFusion.API, hardcodes a foreign user home path (C:\\Users\\bsval\\...), and indiscriminately kills every dotnet process. Retire or repair it (and any sibling launchers) so launch consumes platform.json / the environment contract, never hardcodes deprecated ports or home paths, and kills only processes it started or that provably belong to TerraFusion.",
+      "riskClass": "R3",
+      "status": "ready",
+      "dependencies": [],
+      "allowedSystems": [
+        {
+          "name": "scripts/deployment launch scripts and their documentation; no runtime/backend/frontend product code"
+        }
+      ],
+      "blockedSystems": [
+        {
+          "name": "Product runtime behavior; CI release workflows (separate child if needed); Benton production; killing unrelated dotnet processes during repair"
+        }
+      ],
+      "allowedFiles": [
+        "scripts/deployment/*",
+        "docs/brain/evidence/*",
+        "docs/brain/workorders/active/*",
+        "docs/brain/workorders/registry/work-order-registry.seed.json",
+        "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
+        "docs/brain/workorders/goal-loop/COMMAND_TO_PROGRAM_MAP.md",
+        "docs/brain/workorders/programs/terrafusion-owner-usable-product-v1.md"
+      ],
+      "evidenceRequired": [
+        {
+          "kind": "file",
+          "description": "Launcher diff or retirement record; proof the repaired launcher resolves API project, port and paths from platform.json/env contract; a scoped process-handling policy replacing the blanket dotnet kill; dry-run transcript."
+        }
+      ],
+      "validationGates": [
+        {
+          "name": "Contract consumption",
+          "command": "Launcher contains no hardcoded 5000/home paths/API-path drift; parses platform.json for ports and paths; PSScriptAnalyzer or equivalent clean; required checks green",
+          "required": true,
+          "result": "not_run"
+        }
+      ],
+      "stopConditions": [
+        {
+          "type": "authority_wall",
+          "description": "A live production consumer of the current launcher semantics is discovered (coordinate before change), or repair requires CI workflow-file edits blocked by token scope."
+        }
+      ],
+      "nextCandidates": [],
+      "authority": {
+        "mayWrite": true,
+        "mayCommit": true,
+        "mayPush": true,
+        "mayOpenPr": true,
+        "mayMarkReady": true,
+        "mayMerge": true,
+        "mayCleanup": true,
+        "notes": "Issue #1589 mission authority; bounded launcher reconciliation inside recorded TUOP-V1 scope."
+      },
+      "provenance": {
+        "createdAt": "2026-09-11T20:30:00Z",
+        "source": "Derived from owner review of Step Zero: LAUNCH_TERRAFUSION_OS.ps1 contradicts platform.json (deprecated port 5000, wrong API path, foreign home path, blanket dotnet kill).",
         "schemaVersion": "0.1.0"
       }
     }

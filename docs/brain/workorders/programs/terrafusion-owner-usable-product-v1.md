@@ -74,7 +74,7 @@ An empty-looking shell never counts as working capability. The matrix is continu
 
 ## Terminal acceptance (single receipt)
 
-**`TERRAFUSION_OWNER_USABLE_PRODUCT_V1: PASS`** — required from an actual launched candidate, **product-surface proven through the canonical TerraFusion shell** (`Terrafusion.Shell` / WPF WebView2 host wrapping the API-served `native-shell/ui/dist` bundle), at an exact deployed revision, using browser/WebView inspection as evidence. The browser/WebView is the verifier; it is not itself the product entry point. A green `localhost` docker SPA in a bare browser window is verifier evidence, not “TerraFusion launched.”:
+**`TERRAFUSION_OWNER_USABLE_PRODUCT_V1: PASS`** — required from an actual launched candidate, **product-surface proven through the assembled TerraFusion product** (the canonical release assembly: API + `native-shell/ui/dist` UI bundle + the native host once release-proven in WO-TUOP-004; WPF `Terrafusion.Shell` is the surviving candidate), at an exact deployed revision, using browser/WebView inspection as evidence. The browser/WebView is the verifier; it is not itself the product entry point. A green `localhost` docker SPA in a bare browser window is verifier evidence, not “TerraFusion launched.”:
 
 - **OS:** desktop/windowing/navigation/context is coherent and usable.
 - **Counties HUB:** Benton and statewide county context behaves truthfully.
@@ -103,17 +103,25 @@ Only after this PASS should WAL V1 carry the accepted candidate through its real
 
 Child WOs are derived from observed defects (the matrix), not invented from source archaeology. The morning deep-dive feeds the same loop: for each finding, dispatch an existing bounded recovery child or derive the exact child inside this authority; stop only at a genuine owner authority wall.
 
-## Step Zero verdict — canonical native host (settled 2026-09-11)
+## Step Zero verdict — shell lineage (evidence-bounded, corrected after owner review 2026-09-11)
 
-Before any rebuild: **`native-shell/` (WPF `Terrafusion.Shell`, net8.0-windows, WebView2) is the canonical TerraFusion
-native product host. `frontend/electron/` is SUPERSEDED / retained-historical, not the release path.** The lone
-contradicting artifact (root `package.json#main` = `frontend/electron/main.js`) is stale drift, contradicted by
-`platform.json` (frontend buildOutput = `native-shell/ui/dist`), `frontend/vite.config.ts` (outDir → native-shell/ui/dist),
-`backend/src/TerraFusion.API/Program.cs` (API serves the SPA from `native-shell/ui/dist`), the release CI
-(`ci.yml`/`ci-cd-main.yml`/`frontend-build-guarded.yml` package `native-shell/ui/dist`, none build electron), the
-deployment-truth-gate E1, and the sanctioned launcher `scripts/deployment/LAUNCH_TERRAFUSION_OS.ps1`. Electron's
-`loadFile('../dist/index.html')` targets `frontend/dist`, which `platform.json` lists as a deprecated output dir.
-Full evidence chain: `docs/brain/evidence/WO-TUOP-000-STEP-ZERO-SHELL-LINEAGE-RECONCILIATION.md`.
+**Proven (~99%):** the canonical UI/runtime assembly target is `frontend/apps/os-shell` → build output
+`native-shell/ui/dist` → served by the TerraFusion API (`platform.json`, `frontend/vite.config.ts`,
+`backend/src/TerraFusion.API/Program.cs`, release CI packaging, deployment-truth-gate E1).
+`frontend/electron/` is **superseded/non-canonical** (loads deprecated `frontend/dist`).
+
+**Not yet proven:** that the WPF `Terrafusion.Shell` executable is the canonical *packaged release host*.
+No CI workflow builds or packages it; the release artifact contains only `./publish` +
+`native-shell/ui/dist`; and the once-cited launcher `LAUNCH_TERRAFUSION_OS.ps1` is stale (hardcodes
+deprecated :5000, wrong API path, foreign home path, blanket `dotnet` kill) — evidence of past intent,
+not current authority. WPF is the surviving canonical-host **candidate**; `WO-TUOP-004` must settle it
+through actual build/package/release evidence rather than assume it, and `WO-TUOP-005` reconciles the
+launcher to the platform contract. Do not promote an inference to canon merely because it is probably
+correct. Full chain: `docs/brain/evidence/WO-TUOP-000-STEP-ZERO-SHELL-LINEAGE-RECONCILIATION.md`.
+
+**Foundational finding:** the repository does not currently prove that API + UI bundle + native host are
+produced together as one authoritative installable product. TerraFusion may have **no complete release
+assembly at all** — the first foundational productization defect, ahead of login.
 
 ## The four-plane launch model (release assembly — observation must START here)
 
