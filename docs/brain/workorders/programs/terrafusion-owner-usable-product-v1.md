@@ -74,7 +74,7 @@ An empty-looking shell never counts as working capability. The matrix is continu
 
 ## Terminal acceptance (single receipt)
 
-**`TERRAFUSION_OWNER_USABLE_PRODUCT_V1: PASS`** — required from an actual launched candidate, browser-proven at an exact deployed revision:
+**`TERRAFUSION_OWNER_USABLE_PRODUCT_V1: PASS`** — required from an actual launched candidate, **product-surface proven through the canonical TerraFusion shell** (`Terrafusion.Shell` / WPF WebView2 host wrapping the API-served `native-shell/ui/dist` bundle), at an exact deployed revision, using browser/WebView inspection as evidence. The browser/WebView is the verifier; it is not itself the product entry point. A green `localhost` docker SPA in a bare browser window is verifier evidence, not “TerraFusion launched.”:
 
 - **OS:** desktop/windowing/navigation/context is coherent and usable.
 - **Counties HUB:** Benton and statewide county context behaves truthfully.
@@ -88,7 +88,7 @@ An empty-looking shell never counts as working capability. The matrix is continu
 - **Persistence:** reload/restart/re-entry works.
 - **Cross-suite:** context and workflow handoffs work.
 - **UX:** no normal-looking button leads to a nonexistent product; queued capability is disabled/hidden, never broken-looking.
-- **Release identity:** the browser proves the exact deployed candidate.
+- **Release identity:** the canonical shell proves the exact deployed release assembly (host + API publish + `native-shell/ui/dist`) — not a bare browser tab. Step Zero (shell lineage) is settled in `docs/brain/evidence/WO-TUOP-000-STEP-ZERO-SHELL-LINEAGE-RECONCILIATION.md`: `native-shell/` (WPF/WebView2) is canonical; `frontend/electron/` is superseded.
 
 Only after this PASS should WAL V1 carry the accepted candidate through its real production gates (WO-WAL-007 exact-candidate acceptance → WO-WAL-008 production/external assessor acceptance).
 
@@ -102,6 +102,42 @@ Only after this PASS should WAL V1 carry the accepted candidate through its real
 | `WO-TUOP-099` | Terminal acceptance: full-journey browser proof on the exact deployed candidate; record `TERRAFUSION_OWNER_USABLE_PRODUCT_V1: PASS`; hand the accepted candidate identity to WAL V1 | all repair children |
 
 Child WOs are derived from observed defects (the matrix), not invented from source archaeology. The morning deep-dive feeds the same loop: for each finding, dispatch an existing bounded recovery child or derive the exact child inside this authority; stop only at a genuine owner authority wall.
+
+## Step Zero verdict — canonical native host (settled 2026-09-11)
+
+Before any rebuild: **`native-shell/` (WPF `Terrafusion.Shell`, net8.0-windows, WebView2) is the canonical TerraFusion
+native product host. `frontend/electron/` is SUPERSEDED / retained-historical, not the release path.** The lone
+contradicting artifact (root `package.json#main` = `frontend/electron/main.js`) is stale drift, contradicted by
+`platform.json` (frontend buildOutput = `native-shell/ui/dist`), `frontend/vite.config.ts` (outDir → native-shell/ui/dist),
+`backend/src/TerraFusion.API/Program.cs` (API serves the SPA from `native-shell/ui/dist`), the release CI
+(`ci.yml`/`ci-cd-main.yml`/`frontend-build-guarded.yml` package `native-shell/ui/dist`, none build electron), the
+deployment-truth-gate E1, and the sanctioned launcher `scripts/deployment/LAUNCH_TERRAFUSION_OS.ps1`. Electron's
+`loadFile('../dist/index.html')` targets `frontend/dist`, which `platform.json` lists as a deprecated output dir.
+Full evidence chain: `docs/brain/evidence/WO-TUOP-000-STEP-ZERO-SHELL-LINEAGE-RECONCILIATION.md`.
+
+## The four-plane launch model (release assembly — observation must START here)
+
+The Product Reality Matrix must begin at the release assembly, not at “OS desktop.” Seeing desktop tiles proves only
+Layer 1. The complete launch is:
+
+```text
+TERRAFUSION RELEASE ASSEMBLY
+ 0 Native Product Host   canonical exe (Terrafusion.Shell/WPF+WebView2), installer/package, exact release identity
+ 1 Runtime Foundation    TerraFusion API · ServiceRegistry/ModuleRegistry · auth+session · RBAC/policy/tool allowlists · canonical CountyId · county/stamp routing
+ 2 Data Foundation       TerraFusion DB (product runtime truth) · county-scoped persistence · provenance/trust state · Sync ingestion · quarantine/reconciliation · Edge/source state
+ 3 Product L1 OS Shell   desktop / dock / topbar / windows
+ 4 Product L2            Home Scene (GIS/county orientation) + Counties HUB / county control surface
+ 5 Product L3            TerraForge · TerraAtlas · TerraDais · TerraDossier · TerraGPT (suite ≠ workbench tab)
+ 6 Product L4            Property Workbench: Summary · Forge · Atlas · Dais · Dossier · Pilot
+ 7 Product L5            actual applications/modules/tools (Cost/Comps/Sales/IncomeForge, ParcelLens, LayerWorks, TerraLevy, TerraPILT, TerraPermit, appeals/cert/notices, Dossier evidence, GPT/RAG)
+ 8 Action/Evidence Spine TerraPilot (governed action pipeline) · TerraTrace (append-only activity/evidence spine)
+ 9 Support/Operations    TerraCanon (release/runtime/suite/data/Sync/Edge/evidence/diagnostics)
+10 Recovery/Release      reload · restart · upgrade · rollback · exact-revision verification
+```
+
+Outside the product runtime, required for a CONNECTED production county: `County network → TerraFusion Edge/Sync →
+TerraFusion-controlled county DB → TerraFusion API/stamp → product`. HERMES does not connect protected Benton
+production; the launch carries the same contracts and exercises them with lawful lab data or truthfully shows `unavailable`.
 
 ## Hard walls (mandatory, unchanged)
 

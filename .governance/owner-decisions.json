@@ -153,7 +153,14 @@
       "first_execution": "WO-TUOP-001: launch the current exact candidate and produce the first live Product Reality Matrix from the screen, not from source. Not a rebuild.",
       "morning_process_directive": "The daily deep-dive must not merely report defects: for each finding, check for an existing bounded recovery child and dispatch it, or derive the exact child inside this authority and dispatch it; stop only at a genuine owner authority wall. Morning output becomes product health plus repairs already started plus the single owner decision, if any.",
       "canon_reconciliation_directive": "docs/brain/canon/current-release.json must be reconciled to the active owner decision set (WAL V1 plus TUOP-V1); owner decisions outrank Brain canon. Authority resolution, contradiction scan, and canon reconciliation precede execution.",
-      "decision_basis": "Owner directive of 2026-09-11: the system was built so the owner does not manage the development process; HERMES owns the plan/dispatch/recovery loop and William makes actual owner decisions. Micro-WO completions without a parent product loop were the defect; this mission is that loop."
+      "decision_basis": "Owner directive of 2026-09-11: the system was built so the owner does not manage the development process; HERMES owns the plan/dispatch/recovery loop and William makes actual owner decisions. Micro-WO completions without a parent product loop were the defect; this mission is that loop.",
+      "amendment_2026_09_11_step_zero": {
+        "basis": "Owner correction 2026-09-11: the TUOP launch/terminal model was too narrow (browser-proven can pass around the native host) and current source carried two unresolved desktop-host lineages.",
+        "shell_lineage_verdict": "native-shell/ (WPF Terrafusion.Shell, net8.0-windows, WebView2) is the canonical native product host; frontend/electron/ is SUPERSEDED/retained-historical. Root package.json#main pointing at frontend/electron/main.js is stale drift to be corrected by a bounded governance child.",
+        "evidence": "docs/brain/evidence/WO-TUOP-000-STEP-ZERO-SHELL-LINEAGE-RECONCILIATION.md",
+        "terminal_contract_correction": "Product acceptance is product-surface proven THROUGH the canonical TerraFusion shell (WebView2 host wrapping the API-served native-shell/ui/dist bundle) at an exact deployed release assembly, using browser/WebView inspection as evidence. A bare browser tab on a localhost docker SPA is verifier evidence, not TerraFusion launched.",
+        "observation_scope_correction": "The Product Reality Matrix must start at the release assembly (native host, runtime foundation, data foundation, five product layers, Pilot/Trace, TerraCanon, recovery/release), not at OS desktop."
+      }
     },
     {
       "id": "OWNER-FIVE-SUITE-FEDERATED-COMPLETION-20260826",

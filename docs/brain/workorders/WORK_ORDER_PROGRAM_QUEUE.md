@@ -82,6 +82,16 @@ first real defect, derive exact bounded child, implement/review/merge, deploy ex
 browser acceptance, continue. No owner relay between children; stop only at a genuine authority
 wall.
 
+**Step Zero update (2026-09-11, owner correction):** the launch model was widened from
+"browser-proven" to product-surface proven **through the canonical TerraFusion shell**, and the
+observation scope now starts at the release assembly (native host → runtime foundation → data
+foundation → five product layers → Pilot/Trace → TerraCanon → recovery/release). Shell lineage is
+SETTLED: `native-shell/` (WPF `Terrafusion.Shell`, WebView2) is canonical;
+`frontend/electron/` is superseded/retained-historical. Evidence:
+`docs/brain/evidence/WO-TUOP-000-STEP-ZERO-SHELL-LINEAGE-RECONCILIATION.md`. Registered children:
+`WO-TUOP-002` (auth honesty + working sign-in), `WO-TUOP-003` (lineage drift fix — ready),
+`WO-TUOP-004` (canonical release assembly — blocked on 003).
+
 ## Completed Five-Suite Goal
 
 The Five-Suite Federated Repository Buildout is terminal under
