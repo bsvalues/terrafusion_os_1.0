@@ -17397,6 +17397,11 @@
           "id": "WO-TUOP-001",
           "status": "required",
           "notes": "Matrix v1 derived this child; effective when the WO-TUOP-001 evidence PR reaches protected main."
+        },
+        {
+          "id": "WO-TUOP-004",
+          "status": "required",
+          "notes": "Owner directive 2026-09-11: auth must be tested and repaired INSIDE the canonical assembled product with a settled runtime dependency closure, not raced ahead of it in a runtime configuration that is not the shippable product."
         }
       ],
       "allowedSystems": [
@@ -17457,6 +17462,222 @@
       "provenance": {
         "createdAt": "2026-09-11T17:30:00Z",
         "source": "Derived from WO-TUOP-001 Product Reality Matrix v1 (UX honesty FAIL, Sentinel FAIL root-caused to unauthenticated session).",
+        "schemaVersion": "0.1.0"
+      }
+    },
+    {
+      "id": "WO-TUOP-003",
+      "title": "Shell-lineage canon drift fix: retire stale package.json desktop main pointer",
+      "program": "TerraFusion Owner-Usable Product V1",
+      "goalId": "GOAL-TERRAFUSION-OWNER-USABLE-PRODUCT-V1",
+      "loopId": "LOOP-TERRAFUSION-OWNER-USABLE-PRODUCT-V1",
+      "goal": "Correct the single artifact contradicting the Step Zero verdict: root package.json main points at frontend/electron/main.js while platform.json, vite outDir, backend static serving, release CI, deployment-truth-gate E1 and the sanctioned launcher all name native-shell (WPF Terrafusion.Shell) as canonical. Align package.json and record electron as superseded/retained-historical so no future agent rebuilds the dead lineage.",
+      "riskClass": "R3",
+      "status": "ready",
+      "dependencies": [],
+      "allowedSystems": [
+        {
+          "name": "Root package.json desktop main field; governance/evidence documentation of the electron supersession classification"
+        }
+      ],
+      "blockedSystems": [
+        {
+          "name": "Rebuilding or deleting either host implementation; frontend/backend runtime behavior; release CI changes beyond documentation truth"
+        }
+      ],
+      "allowedFiles": [
+        "package.json",
+        "docs/brain/evidence/*",
+        "docs/brain/workorders/active/*",
+        "docs/brain/workorders/registry/work-order-registry.seed.json",
+        "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
+        "docs/brain/workorders/goal-loop/COMMAND_TO_PROGRAM_MAP.md",
+        "docs/brain/workorders/programs/terrafusion-owner-usable-product-v1.md"
+      ],
+      "evidenceRequired": [
+        {
+          "kind": "file",
+          "description": "Step Zero reconciliation evidence (committed), corrected package.json main field or its documented removal, and the electron supersession classification recorded where future agents read it."
+        }
+      ],
+      "validationGates": [
+        {
+          "name": "Drift-fix governance",
+          "command": "JSON parse, no consumer of package.json#main broken (grep electron main.js consumers), required checks green",
+          "required": true,
+          "result": "not_run"
+        }
+      ],
+      "stopConditions": [
+        {
+          "type": "authority_wall",
+          "description": "Any live consumer of package.json#main that would break, or a conflicting higher-canon claim that electron is authoritative."
+        }
+      ],
+      "nextCandidates": [],
+      "authority": {
+        "mayWrite": true,
+        "mayCommit": true,
+        "mayPush": true,
+        "mayOpenPr": true,
+        "mayMarkReady": true,
+        "mayMerge": true,
+        "mayCleanup": true,
+        "notes": "Issue #1589 mission authority; bounded canon-drift fix inside recorded TUOP-V1 scope."
+      },
+      "provenance": {
+        "createdAt": "2026-09-11T19:30:00Z",
+        "source": "Derived from WO-TUOP Step Zero shell-lineage reconciliation (owner correction 2026-09-11).",
+        "schemaVersion": "0.1.0"
+      }
+    },
+    {
+      "id": "WO-TUOP-004",
+      "title": "Canonical release assembly + native-host authority release-proof",
+      "program": "TerraFusion Owner-Usable Product V1",
+      "goalId": "GOAL-TERRAFUSION-OWNER-USABLE-PRODUCT-V1",
+      "loopId": "LOOP-TERRAFUSION-OWNER-USABLE-PRODUCT-V1",
+      "goal": "Produce the TERRAFUSION RELEASE ASSEMBLY for the lab and SETTLE native-host authority through actual build/package/release evidence (WPF Terrafusion.Shell is the surviving candidate - prove or replace it; do not assume it): dotnet publish the API, build the frontend into native-shell/ui/dist, build/package the native host, assemble as one reproducible release with exact revision identity surfaced in-product (TerraCanon + shell), launch it on HERMES via a contract-consumed launcher, and observe planes 0-2 of the launch model. The repository does not currently prove API + UI bundle + native host are produced together as one installable product; this WO closes that gap. Discharges Matrix v1 release-identity FAIL and is the prerequisite for proving product layers THROUGH the assembled product instead of around it. MANDATORY GATE: before recording canonical-release-assembly-established this WO must produce a Runtime Dependency Closure Matrix from current source AND the real launched assembly - every runtime dependency classified exactly once as REQUIRED_CORE / REQUIRED_WHEN_ENABLED / EXTERNAL_BOUNDARY / OPTIONAL / SUPERSEDED / QUARANTINED-HISTORICAL / UNKNOWN, with the assembly unable to pass while any UNKNOWN remains. Not a giant audit; a release manifest.",
+      "riskClass": "R4",
+      "status": "blocked",
+      "dependencies": [
+        {
+          "id": "WO-TUOP-003",
+          "status": "required",
+          "notes": "Assembly must follow the reconciled lineage, not the stale electron pointer."
+        }
+      ],
+      "allowedSystems": [
+        {
+          "name": "Lab build tooling on HERMES/aegis (dotnet 8 SDK where available), release assembly scripts under ops/ or scripts/deployment/, lab-internal launch of the assembled release, in-product release-identity surfacing"
+        }
+      ],
+      "blockedSystems": [
+        {
+          "name": "Benton production; public promotion; protected county data/credentials; external county systems; weakening required checks or the seal gate"
+        }
+      ],
+      "allowedFiles": [
+        "scripts/deployment/*",
+        "ops/*",
+        "native-shell/*",
+        "docs/brain/evidence/*",
+        "docs/brain/workorders/active/*",
+        "docs/brain/workorders/registry/work-order-registry.seed.json",
+        "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
+        "docs/brain/workorders/goal-loop/COMMAND_TO_PROGRAM_MAP.md",
+        "docs/brain/workorders/programs/terrafusion-owner-usable-product-v1.md"
+      ],
+      "evidenceRequired": [
+        {
+          "kind": "file",
+          "description": "Release assembly receipt: exact git revision, host build output, API publish manifest, ui/dist hash, launch transcript, and product-proven release identity observation (native host rendering the assembled bundle, verified against the recorded revision)."
+        },
+        {
+          "kind": "file",
+          "description": "Runtime Dependency Closure Matrix (docs/brain/evidence/WO-TUOP-004-runtime-dependency-closure.md): every runtime dependency from current source and the launched assembly classified exactly once (REQUIRED_CORE / REQUIRED_WHEN_ENABLED / EXTERNAL_BOUNDARY / OPTIONAL / SUPERSEDED / QUARANTINED-HISTORICAL / UNKNOWN); zero UNKNOWN at pass; each REQUIRED_CORE row carries live-launch evidence."
+        }
+      ],
+      "validationGates": [
+        {
+          "name": "Assembly reproducibility",
+          "command": "Rebuild from the same revision yields the same ui/dist and publish manifest hashes; native host loads the assembled bundle and reports the exact revision",
+          "required": true,
+          "result": "not_run"
+        },
+        {
+          "name": "Runtime dependency closure",
+          "command": "Closure matrix complete: every discovered runtime mechanism (hosted services, hubs, registries, providers, storage, data plane, Pilot/Trace, AI, operations) carries exactly one classification with evidence; zero UNKNOWN; no SUPERSEDED component launches",
+          "required": true,
+          "result": "not_run"
+        }
+      ],
+      "stopConditions": [
+        {
+          "type": "authority_wall",
+          "description": "Missing build capability that requires new infrastructure authority, or any Benton/production surface."
+        }
+      ],
+      "nextCandidates": [],
+      "authority": {
+        "mayWrite": true,
+        "mayCommit": true,
+        "mayPush": true,
+        "mayOpenPr": true,
+        "mayMarkReady": true,
+        "mayMerge": true,
+        "mayCleanup": true,
+        "notes": "Issue #1589 mission authority; lab-internal assembly and launch authorized, public promotion is not."
+      },
+      "provenance": {
+        "createdAt": "2026-09-11T19:30:00Z",
+        "source": "Derived from WO-TUOP Step Zero: the corrected launch model plane 0 (native product host) and Matrix v1 release-identity FAIL.",
+        "schemaVersion": "0.1.0"
+      }
+    },
+    {
+      "id": "WO-TUOP-005",
+      "title": "Launcher reconciliation: retire or repair LAUNCH_TERRAFUSION_OS.ps1 to consume the platform contract",
+      "program": "TerraFusion Owner-Usable Product V1",
+      "goalId": "GOAL-TERRAFUSION-OWNER-USABLE-PRODUCT-V1",
+      "loopId": "LOOP-TERRAFUSION-OWNER-USABLE-PRODUCT-V1",
+      "goal": "The sanctioned-looking launcher contradicts platform.json (the declared single source of truth): it hardcodes deprecated localhost:5000 (canonical API default is TF_API_PORT 5046), targets backend/TerraFusion.API instead of the contract's backend/src/TerraFusion.API, hardcodes a foreign user home path (C:\\Users\\bsval\\...), and indiscriminately kills every dotnet process. Retire or repair it (and any sibling launchers) so launch consumes platform.json / the environment contract, never hardcodes deprecated ports or home paths, and kills only processes it started or that provably belong to TerraFusion.",
+      "riskClass": "R3",
+      "status": "ready",
+      "dependencies": [],
+      "allowedSystems": [
+        {
+          "name": "scripts/deployment launch scripts and their documentation; no runtime/backend/frontend product code"
+        }
+      ],
+      "blockedSystems": [
+        {
+          "name": "Product runtime behavior; CI release workflows (separate child if needed); Benton production; killing unrelated dotnet processes during repair"
+        }
+      ],
+      "allowedFiles": [
+        "scripts/deployment/*",
+        "docs/brain/evidence/*",
+        "docs/brain/workorders/active/*",
+        "docs/brain/workorders/registry/work-order-registry.seed.json",
+        "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
+        "docs/brain/workorders/goal-loop/COMMAND_TO_PROGRAM_MAP.md",
+        "docs/brain/workorders/programs/terrafusion-owner-usable-product-v1.md"
+      ],
+      "evidenceRequired": [
+        {
+          "kind": "file",
+          "description": "Launcher diff or retirement record; proof the repaired launcher resolves API project, port and paths from platform.json/env contract; a scoped process-handling policy replacing the blanket dotnet kill; dry-run transcript."
+        }
+      ],
+      "validationGates": [
+        {
+          "name": "Contract consumption",
+          "command": "Launcher contains no hardcoded 5000/home paths/API-path drift; parses platform.json for ports and paths; PSScriptAnalyzer or equivalent clean; required checks green",
+          "required": true,
+          "result": "not_run"
+        }
+      ],
+      "stopConditions": [
+        {
+          "type": "authority_wall",
+          "description": "A live production consumer of the current launcher semantics is discovered (coordinate before change), or repair requires CI workflow-file edits blocked by token scope."
+        }
+      ],
+      "nextCandidates": [],
+      "authority": {
+        "mayWrite": true,
+        "mayCommit": true,
+        "mayPush": true,
+        "mayOpenPr": true,
+        "mayMarkReady": true,
+        "mayMerge": true,
+        "mayCleanup": true,
+        "notes": "Issue #1589 mission authority; bounded launcher reconciliation inside recorded TUOP-V1 scope."
+      },
+      "provenance": {
+        "createdAt": "2026-09-11T20:30:00Z",
+        "source": "Derived from owner review of Step Zero: LAUNCH_TERRAFUSION_OS.ps1 contradicts platform.json (deprecated port 5000, wrong API path, foreign home path, blanket dotnet kill).",
         "schemaVersion": "0.1.0"
       }
     }

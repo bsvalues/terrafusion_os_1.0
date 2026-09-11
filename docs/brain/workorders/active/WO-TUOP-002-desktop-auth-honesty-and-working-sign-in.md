@@ -2,7 +2,7 @@
 
 | Field | Value |
 | --- | --- |
-| Status | `READY_ON_PROTECTED_MERGE_OF_WO-TUOP-001` |
+| Status | `BLOCKED_ON_WO-TUOP-004` (owner directive 2026-09-11: repair auth INSIDE the canonical assembled product, not ahead of it) |
 | Program | TerraFusion Owner-Usable Product V1 |
 | Goal | `GOAL-TERRAFUSION-OWNER-USABLE-PRODUCT-V1` |
 | Loop | `LOOP-TERRAFUSION-OWNER-USABLE-PRODUCT-V1` |
@@ -10,6 +10,13 @@
 | Repository | `bsvalues/terrafusion_os_1.0` |
 | Risk | R4 — frontend shell auth-state behavior + sign-in path; no schema migration, no protected data |
 | Terminal condition | `DESKTOP_HONESTLY_GATES_AUTH_AND_AUTHENTICATED_SESSION_REACHES_REAL_SURFACES` |
+
+## Sequencing (owner directive 2026-09-11)
+
+This child must NOT race ahead of `WO-TUOP-004`. Until the canonical release assembly and the
+Runtime Dependency Closure Matrix exist, an auth repair could land in a runtime configuration that
+is not the shippable product — wrong-target work. Order: 003 + 005 (drift removal) → 004 (assembly
++ closure + host release-proof) → **then** this child, executed against the assembled product.
 
 ## Defect being repaired (observed, not theorized)
 

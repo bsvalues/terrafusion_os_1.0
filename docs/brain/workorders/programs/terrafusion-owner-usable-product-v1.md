@@ -74,7 +74,7 @@ An empty-looking shell never counts as working capability. The matrix is continu
 
 ## Terminal acceptance (single receipt)
 
-**`TERRAFUSION_OWNER_USABLE_PRODUCT_V1: PASS`** — required from an actual launched candidate, browser-proven at an exact deployed revision:
+**`TERRAFUSION_OWNER_USABLE_PRODUCT_V1: PASS`** — required from an actual launched candidate, **product-surface proven through the assembled TerraFusion product** (the canonical release assembly: API + `native-shell/ui/dist` UI bundle + the native host once release-proven in WO-TUOP-004; WPF `Terrafusion.Shell` is the surviving candidate), at an exact deployed revision, using browser/WebView inspection as evidence. The browser/WebView is the verifier; it is not itself the product entry point. A green `localhost` docker SPA in a bare browser window is verifier evidence, not “TerraFusion launched.”:
 
 - **OS:** desktop/windowing/navigation/context is coherent and usable.
 - **Counties HUB:** Benton and statewide county context behaves truthfully.
@@ -88,7 +88,7 @@ An empty-looking shell never counts as working capability. The matrix is continu
 - **Persistence:** reload/restart/re-entry works.
 - **Cross-suite:** context and workflow handoffs work.
 - **UX:** no normal-looking button leads to a nonexistent product; queued capability is disabled/hidden, never broken-looking.
-- **Release identity:** the browser proves the exact deployed candidate.
+- **Release identity:** the canonical shell proves the exact deployed release assembly (host + API publish + `native-shell/ui/dist`) — not a bare browser tab. Step Zero (shell lineage) is settled in `docs/brain/evidence/WO-TUOP-000-STEP-ZERO-SHELL-LINEAGE-RECONCILIATION.md`: `native-shell/` (WPF/WebView2) is canonical; `frontend/electron/` is superseded.
 
 Only after this PASS should WAL V1 carry the accepted candidate through its real production gates (WO-WAL-007 exact-candidate acceptance → WO-WAL-008 production/external assessor acceptance).
 
@@ -98,10 +98,87 @@ Only after this PASS should WAL V1 carry the accepted candidate through its real
 | --- | --- | --- |
 | `WO-TUOP-000` | Canonicalize Issue #1589 mission authority, register this program, reconcile `docs/brain/canon/current-release.json` to the active owner decision set | owner directive |
 | `WO-TUOP-001` | Launch the current exact candidate in the lab and produce the first live Product Reality Matrix from the screen; classify every non-PASS verdict; derive the exact bounded repair children for defects inside this authority | 000 protected merge |
-| `WO-TUOP-0xx` (derived) | One exact bounded product-usability repair child per classified defect, created under `OWNER-TUOP-V1-MISSION-AUTHORITY-20260911` child policy — never floating, always registered | 001 matrix verdicts |
-| `WO-TUOP-099` | Terminal acceptance: full-journey browser proof on the exact deployed candidate; record `TERRAFUSION_OWNER_USABLE_PRODUCT_V1: PASS`; hand the accepted candidate identity to WAL V1 | all repair children |
+| `WO-TUOP-002` | Desktop auth-state honesty + working in-app sign-in — executed INSIDE the assembled product | 001 evidence merge + **004** (owner sequencing directive) |
+| `WO-TUOP-003` | Shell-lineage canon drift fix: stale root `package.json#main` → electron; record supersession | ready now |
+| `WO-TUOP-004` | Canonical release assembly + native-host release-proof + **Runtime Dependency Closure Matrix** (zero-UNKNOWN gate) | 003 |
+| `WO-TUOP-005` | Launcher reconciliation: `LAUNCH_TERRAFUSION_OS.ps1` must consume `platform.json`/env contract (no deprecated :5000, correct API path, no foreign home paths, no blanket dotnet kill) | ready now |
+| further derived children | One exact bounded product-usability repair child per classified defect, created under `OWNER-TUOP-V1-MISSION-AUTHORITY-20260911` child policy — never floating, always registered | matrix verdicts |
+| `WO-TUOP-099` | Terminal acceptance: full-journey product-surface proof through the assembled product on the exact deployed release; record `TERRAFUSION_OWNER_USABLE_PRODUCT_V1: PASS`; hand the accepted candidate identity to WAL V1 | all repair children |
 
 Child WOs are derived from observed defects (the matrix), not invented from source archaeology. The morning deep-dive feeds the same loop: for each finding, dispatch an existing bounded recovery child or derive the exact child inside this authority; stop only at a genuine owner authority wall.
+
+## Step Zero verdict — shell lineage (evidence-bounded, corrected after owner review 2026-09-11)
+
+**Proven (~99%):** the canonical UI/runtime assembly target is `frontend/apps/os-shell` → build output
+`native-shell/ui/dist` → served by the TerraFusion API (`platform.json`, `frontend/vite.config.ts`,
+`backend/src/TerraFusion.API/Program.cs`, release CI packaging, deployment-truth-gate E1).
+`frontend/electron/` is **superseded/non-canonical** (loads deprecated `frontend/dist`).
+
+**Not yet proven:** that the WPF `Terrafusion.Shell` executable is the canonical *packaged release host*.
+No CI workflow builds or packages it; the release artifact contains only `./publish` +
+`native-shell/ui/dist`; and the once-cited launcher `LAUNCH_TERRAFUSION_OS.ps1` is stale (hardcodes
+deprecated :5000, wrong API path, foreign home path, blanket `dotnet` kill) — evidence of past intent,
+not current authority. WPF is the surviving canonical-host **candidate**; `WO-TUOP-004` must settle it
+through actual build/package/release evidence rather than assume it, and `WO-TUOP-005` reconciles the
+launcher to the platform contract. Do not promote an inference to canon merely because it is probably
+correct. Full chain: `docs/brain/evidence/WO-TUOP-000-STEP-ZERO-SHELL-LINEAGE-RECONCILIATION.md`.
+
+**Foundational finding:** the repository does not currently prove that API + UI bundle + native host are
+produced together as one authoritative installable product. TerraFusion may have **no complete release
+assembly at all** — the first foundational productization defect, ahead of login.
+
+## The four-plane launch model (release assembly — observation must START here)
+
+The Product Reality Matrix must begin at the release assembly, not at “OS desktop.” Seeing desktop tiles proves only
+Layer 1. The complete launch is:
+
+```text
+TERRAFUSION RELEASE ASSEMBLY
+ 0 Native Product Host   canonical exe (Terrafusion.Shell/WPF+WebView2), installer/package, exact release identity
+ 1 Runtime Foundation    TerraFusion API · ServiceRegistry/ModuleRegistry · auth+session · RBAC/policy/tool allowlists · canonical CountyId · county/stamp routing
+ 2 Data Foundation       TerraFusion DB (product runtime truth) · county-scoped persistence · provenance/trust state · Sync ingestion · quarantine/reconciliation · Edge/source state
+ 3 Product L1 OS Shell   desktop / dock / topbar / windows
+ 4 Product L2            Home Scene (GIS/county orientation) + Counties HUB / county control surface
+ 5 Product L3            TerraForge · TerraAtlas · TerraDais · TerraDossier · TerraGPT (suite ≠ workbench tab)
+ 6 Product L4            Property Workbench: Summary · Forge · Atlas · Dais · Dossier · Pilot
+ 7 Product L5            actual applications/modules/tools (Cost/Comps/Sales/IncomeForge, ParcelLens, LayerWorks, TerraLevy, TerraPILT, TerraPermit, appeals/cert/notices, Dossier evidence, GPT/RAG)
+ 8 Action/Evidence Spine TerraPilot (governed action pipeline) · TerraTrace (append-only activity/evidence spine)
+ 9 Support/Operations    TerraCanon (release/runtime/suite/data/Sync/Edge/evidence/diagnostics)
+10 Recovery/Release      reload · restart · upgrade · rollback · exact-revision verification
+```
+
+Outside the product runtime, required for a CONNECTED production county: `County network → TerraFusion Edge/Sync →
+TerraFusion-controlled county DB → TerraFusion API/stamp → product`. HERMES does not connect protected Benton
+production; the launch carries the same contracts and exercises them with lawful lab data or truthfully shows `unavailable`.
+
+## "Launch TerraFusion" = staged dependency closure (owner definition, 2026-09-11)
+
+```text
+CANONICAL RELEASE ASSEMBLY (exact identity · native host · OS UI bundle)
+  → RUNTIME DEPENDENCY CLOSURE (API · configuration · migrations/schema · DB · auth/session/RBAC ·
+      county+tenant context · service/module registry · required hosted services · realtime plumbing ·
+      persistent storage · Pilot · Trace)
+  → DATA PLANE (TF DB truth · provenance/trust · Sync · quarantine/reconciliation · Edge posture)
+  → PRODUCT LAYERS (L1 OS Shell · L2 Home Scene · Counties HUB · L3 five suites · L4 Workbench · L5 applications)
+  → CROSS-CUTTING PRODUCT (TerraPilot · TerraTrace · TerraCanon · enabled AI runtime)
+  → OPERABILITY (restart · persistence · monitoring/logging · backup/restore · upgrade · rollback)
+```
+
+Only after closure may the native product launch and user journeys begin. **WO-TUOP-004 must produce
+the Runtime Dependency Closure Matrix** — every runtime dependency classified exactly once
+(`REQUIRED_CORE / REQUIRED_WHEN_ENABLED / EXTERNAL_BOUNDARY / OPTIONAL / SUPERSEDED /
+QUARANTINED-HISTORICAL / UNKNOWN`); the assembly cannot pass while any UNKNOWN remains. Classify from
+active-consumer evidence, never from platform-contract mentions alone (worked example: Redis is
+"Optional - graceful degradation" in Program.cs with NoOp fallback and only TerraFusion.AI consumers
+→ OPTIONAL/UNKNOWN pending necessity evidence, despite platform.json declaring its port).
+
+## Work ordering (owner directive, 2026-09-11)
+
+**003 + 005** (remove known launch-lineage drift: stale `package.json#main`; launcher contradicting
+platform.json) → **004** (settle native host via release-proof; build the authoritative release
+assembly; runtime dependency closure) → **then 002** (test and repair auth INSIDE the assembled
+product) → then drive Layer 1 through Layer 5 journeys against the assembly. Login repair must not
+race ahead of the release assembly.
 
 ## Hard walls (mandatory, unchanged)
 

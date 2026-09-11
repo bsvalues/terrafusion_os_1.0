@@ -82,6 +82,19 @@ first real defect, derive exact bounded child, implement/review/merge, deploy ex
 browser acceptance, continue. No owner relay between children; stop only at a genuine authority
 wall.
 
+**Step Zero update (2026-09-11, owner correction):** the launch model was widened from
+"browser-proven" to product-surface proven **through the canonical TerraFusion shell**, and the
+observation scope now starts at the release assembly (native host → runtime foundation → data
+foundation → five product layers → Pilot/Trace → TerraCanon → recovery/release). Shell lineage is
+SETTLED for the UI/runtime lineage: `frontend/apps/os-shell` -> `native-shell/ui/dist` -> TerraFusion API is canonical; `frontend/electron/` is superseded. OPEN: native-host release authority - WPF `Terrafusion.Shell` is the surviving candidate but no CI builds/packages it; WO-TUOP-004 must prove or replace it through actual build/package/release evidence. Evidence:
+`docs/brain/evidence/WO-TUOP-000-STEP-ZERO-SHELL-LINEAGE-RECONCILIATION.md`. Registered children:
+`WO-TUOP-002` (auth honesty + working sign-in), `WO-TUOP-003` (lineage drift fix — ready),
+`WO-TUOP-004` (canonical release assembly + native-host release-proof + Runtime Dependency
+Closure Matrix — blocked on 003), `WO-TUOP-005` (launcher reconciliation to platform.json —
+ready). Owner sequencing directive (2026-09-11): 003+005 → 004 → THEN 002 (auth repaired
+inside the assembled product, not ahead of it) → Layer 1-5 journeys. The assembly cannot be
+declared canonical while any closure row is UNKNOWN.
+
 ## Completed Five-Suite Goal
 
 The Five-Suite Federated Repository Buildout is terminal under
