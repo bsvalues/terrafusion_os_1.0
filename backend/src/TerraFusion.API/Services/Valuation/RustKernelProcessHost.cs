@@ -75,7 +75,9 @@ public class RustKernelProcessHost : IRustKernelProcessHost
         string? binarySha256 = null;
         if (string.Equals(kernelName, "terraforge.kernel.valuation", StringComparison.Ordinal))
         {
-            var provenanceFailure = ValidateValuationKernelProvenance(executablePath);
+            var provenanceFailure = invocation.Action is "cost" or "income"
+                ? ValidateCostIncomeKernelProvenance(executablePath)
+                : ValidateValuationKernelProvenance(executablePath);
             if (provenanceFailure != null)
                 return Fail<TResp>(KernelFailureMode.ProvenanceFailure, provenanceFailure.Value.Message,
                     startedAt, sw, kernelName, inputHash, provenanceFailure.Value.BinarySha256,
@@ -207,7 +209,7 @@ public class RustKernelProcessHost : IRustKernelProcessHost
                 return Fail<TResp>(KernelFailureMode.KernelReportedError, "Kernel reported failure.",
                     startedAt, sw, kernelName, inputHash, binarySha256,
                     invocation.RequestId,
-                    stdout.ByteCount, stdout.Sha256, stderr.ByteCount, stderr.Sha256);
+                    stdout.ByteCount, stdout.Sha256, stderr.ByteCount, stderr.Sha256, parsed.Validation);
 
             sw.Stop();
             return new KernelInvocationResult<TResp>(
@@ -381,6 +383,178 @@ public class RustKernelProcessHost : IRustKernelProcessHost
         return null;
     }
 
+    private (string Message, string? BinarySha256)? ValidateCostIncomeKernelProvenance(string executablePath)
+    {
+        var options = _options.Value;
+        var source = RustKernelsOptions.ForgeCostIncomeCanonicalSourceCommit;
+        var producer = RustKernelsOptions.ForgeCostIncomeProducerCommit;
+        var manifestSha = RustKernelsOptions.ForgeCostIncomeProducerManifestSha256;
+        var binarySha = RustKernelsOptions.ForgeCostIncomeExecutableSha256;
+        if (!options.Enabled || !IsLowerHex(source, 40) || !IsLowerHex(producer, 40)
+            || !IsLowerHex(manifestSha, 64) || !IsLowerHex(binarySha, 64)
+            || !IsLowerHex(RustKernelsOptions.ForgeCostIncomeSpecificationSha256, 64)
+            || !IsLowerHex(RustKernelsOptions.ForgeCostIncomeSourceClosureSha256, 64)
+            || !IsLowerHex(RustKernelsOptions.ForgeCostIncomeDependencyClosureSha256, 64)
+            || !IsLowerHex(RustKernelsOptions.ForgeCostIncomeReceiptSha256, 64)
+            || !IsLowerHex(RustKernelsOptions.ForgeCostIncomeArchiveSha256, 64)
+            || !IsPositiveIdentifier(RustKernelsOptions.ForgeCostIncomeWorkflowRunId)
+            || !IsPositiveIdentifier(RustKernelsOptions.ForgeCostIncomeWorkflowRunAttempt)
+            || !IsPositiveIdentifier(RustKernelsOptions.ForgeCostIncomeArtifactId)
+            || producer != source
+            || source == RustKernelsOptions.ForgeValuationCanonicalSourceCommit)
+            return ("Cost/Income artifact has not been admitted.", null);
+        if (options.CostIncomeKernelSourceCommit != source || options.CostIncomeKernelProducerCommit != producer
+            || options.CostIncomeKernelProducerManifestSha256 != manifestSha || options.CostIncomeKernelExecutableSha256 != binarySha
+            || string.IsNullOrWhiteSpace(options.CostIncomeKernelPath) || string.IsNullOrWhiteSpace(options.CostIncomeKernelManifestPath)
+            || string.IsNullOrWhiteSpace(options.CostIncomeKernelReceiptPath))
+            return ("Cost/Income configuration did not match the admitted artifact.", null);
+        try
+        {
+            var target = RustKernelsOptions.ForgeCostIncomeTarget;
+            // This admission is specifically the existing native Windows Actions artifact.
+            // A separate Linux publication receipt is not Windows execution authority.
+            if (!OperatingSystem.IsWindows() || target != "x86_64-pc-windows-msvc")
+                return ("Cost/Income artifact target did not match the native process platform.", null);
+            var comparison = OperatingSystem.IsWindows() ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
+            if (!string.Equals(Path.GetFullPath(executablePath), ResolveRepositoryRelativePath(options.CostIncomeKernelPath), comparison))
+                return ("Cost/Income executable path did not match its explicit configuration.", null);
+            var manifestPath = ResolveRepositoryRelativePath(options.CostIncomeKernelManifestPath);
+            var receiptPath = ResolveRepositoryRelativePath(options.CostIncomeKernelReceiptPath);
+            var file = new FileInfo(manifestPath);
+            var receiptFile = new FileInfo(receiptPath);
+            if (!file.Exists || file.Length <= 0 || file.Length > 1024 * 1024
+                || !receiptFile.Exists || receiptFile.Length <= 0 || receiptFile.Length > 64 * 1024
+                || !CostIncomePathIsUnlinked(manifestPath) || !CostIncomePathIsUnlinked(executablePath)
+                || !CostIncomePathIsUnlinked(receiptPath))
+                return ("Cost/Income manifest or executable was unavailable or invalid.", null);
+            var actualBinary = ComputeFileSha256(executablePath);
+            if (actualBinary != binarySha || ComputeFileSha256(manifestPath) != manifestSha)
+                return ("Cost/Income artifact bytes did not match the admitted identity.", actualBinary);
+            using var manifest = JsonDocument.Parse(File.ReadAllBytes(manifestPath));
+            if (!CostIncomeManifestMatches(manifest.RootElement, source, producer, binarySha,
+                RustKernelsOptions.ForgeCostIncomeSpecificationSha256, RustKernelsOptions.ForgeCostIncomeSourceClosureSha256,
+                RustKernelsOptions.ForgeCostIncomeDependencyClosureSha256, target, RustKernelsOptions.ForgeCostIncomeWorkflowRunId))
+                return ("Cost/Income manifest did not match its admitted source and dependency closure.", actualBinary);
+            var receiptBytes = File.ReadAllBytes(receiptPath);
+            if (ComputeSha256(receiptBytes) != RustKernelsOptions.ForgeCostIncomeReceiptSha256)
+                return ("Cost/Income producer receipt bytes did not match the admitted identity.", actualBinary);
+            // UTF-8 BOM is permitted without changing the exact-byte digest above.
+            var receiptJson = Encoding.UTF8.GetString(receiptBytes).TrimStart('\uFEFF');
+            using var receipt = JsonDocument.Parse(receiptJson);
+            if (!CostIncomeReceiptMatches(receipt.RootElement, source,
+                RustKernelsOptions.ForgeCostIncomeWorkflowRunId, RustKernelsOptions.ForgeCostIncomeWorkflowRunAttempt,
+                RustKernelsOptions.ForgeCostIncomeArtifactId, RustKernelsOptions.ForgeCostIncomeArchiveSha256, manifestSha, binarySha))
+                return ("Cost/Income producer receipt did not match the admitted native artifact.", actualBinary);
+            return null;
+        }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException or JsonException
+            or KeyNotFoundException or InvalidOperationException or FormatException or ArgumentException)
+        {
+            return ("Cost/Income provenance could not be verified.", null);
+        }
+    }
+
+    private static bool CostIncomePathIsUnlinked(string path)
+    {
+        for (string? current = Path.GetFullPath(path); current != null; current = Path.GetDirectoryName(current))
+            if ((File.GetAttributes(current) & FileAttributes.ReparsePoint) != 0) return false;
+        return true;
+    }
+
+    private static bool IsPositiveIdentifier(string value) => value.Length is >= 1 and <= 20
+        && value[0] != '0' && value.All(c => c is >= '0' and <= '9');
+
+    private static bool CostIncomeReceiptMatches(JsonElement root, string source, string runId, string runAttempt,
+        string artifactId, string archiveSha, string manifestSha, string binarySha)
+    {
+        try
+        {
+            return root.GetProperty("schemaVersion").GetInt32() == 1
+                && root.GetProperty("transport").GetString() == "github-actions-windows-artifact@1"
+                && root.GetProperty("repository").GetString() == ForgeRepository
+                && root.GetProperty("workflowPath").GetString() == ".github/workflows/suite-ci.yml"
+                && root.GetProperty("event").GetString() == "push" && root.GetProperty("branch").GetString() == "main"
+                && root.GetProperty("conclusion").GetString() == "success"
+                && root.GetProperty("runId").GetString() == runId && root.GetProperty("runAttempt").GetString() == runAttempt
+                && root.GetProperty("artifactId").GetString() == artifactId
+                && root.GetProperty("artifactName").GetString() == $"terraforge-valuation-kernel-windows-x64-{source}"
+                && root.GetProperty("protectedCommit").GetString() == source
+                && root.GetProperty("archiveSha256").GetString() == archiveSha
+                && root.GetProperty("manifestSha256").GetString() == manifestSha
+                && root.GetProperty("executableSha256").GetString() == binarySha;
+        }
+        catch (Exception exception) when (exception is JsonException or KeyNotFoundException or InvalidOperationException or FormatException)
+        {
+            return false;
+        }
+    }
+
+    private static bool CostIncomeManifestMatches(JsonElement root, string source, string producer, string binarySha,
+        string specSha, string sourceClosureSha, string dependenciesSha, string target, string workflowRunId)
+    {
+        const string specPath = "operations/work-orders/EO-TF-FORGE-COST-INCOME-001.md";
+        const string crate = "kernels/terraforge.kernel.valuation/";
+        try
+        {
+            if (root.GetProperty("schemaVersion").GetInt32() != 1 || root.GetProperty("repository").GetString() != ForgeRepository
+                || root.GetProperty("canonicalSourceCommit").GetString() != source || root.GetProperty("producerCommit").GetString() != producer
+                || !ContractsMatch(root.GetProperty("contracts"))) return false;
+            var exchanges = root.GetProperty("capabilityExchanges");
+            if (exchanges.GetArrayLength() != 2 || exchanges[0].GetString() != "forge.cost@1.0.0"
+                || exchanges[1].GetString() != "forge.income@1.0.0") return false;
+            var spec = root.GetProperty("specification");
+            if (spec.GetProperty("path").GetString() != specPath || spec.GetProperty("sha256").GetString() != specSha
+                || spec.GetProperty("sourceCommit").GetString() != source || spec.GetProperty("authorityRepository").GetString() != ForgeAuthorityRepository
+                || spec.GetProperty("workOrder").GetString() != "WO-EO-TF-FORGE-COST-INCOME-001") return false;
+            var files = root.GetProperty("canonicalSourceIntegrity").GetProperty("files");
+            var expectedPaths = new[] { crate + "Cargo.toml", crate + "Cargo.lock", crate + "build.rs",
+                crate + "src/main.rs", crate + "src/approaches.rs", crate + "tests/approaches.rs", specPath };
+            if (files.EnumerateObject().Count() != expectedPaths.Length || expectedPaths.Any(path =>
+                !files.TryGetProperty(path, out var value) || value.ValueKind != JsonValueKind.String || !IsLowerHex(value.GetString(), 64))
+                || files.GetProperty(specPath).GetString() != specSha) return false;
+            var sourceLines = expectedPaths.Order(StringComparer.Ordinal).Select(path => path + ":" + files.GetProperty(path).GetString());
+            if (ComputeSha256(Encoding.UTF8.GetBytes(string.Join("\n", sourceLines) + "\n")) != sourceClosureSha) return false;
+            var dependencies = root.GetProperty("dependencyClosure");
+            if (dependencies.GetArrayLength() is < 1 or > 512) return false;
+            var dependencyLines = new HashSet<string>(StringComparer.Ordinal);
+            foreach (var dependency in dependencies.EnumerateArray())
+            {
+                var name = dependency.GetProperty("name").GetString();
+                var version = dependency.GetProperty("version").GetString();
+                var registry = dependency.GetProperty("source").GetString();
+                var checksum = dependency.GetProperty("checksum").GetString();
+                if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(version) || name.Length > 128 || version.Length > 128
+                    || name.Any(c => !(char.IsAsciiLetterOrDigit(c) || c is '_' or '-'))
+                    || version.Any(c => !(char.IsAsciiLetterOrDigit(c) || c is '.' or '+' or '-'))
+                    || registry != "registry+https://github.com/rust-lang/crates.io-index" || !IsLowerHex(checksum, 64)
+                    || !dependencyLines.Add($"{name}@{version}|{registry}|{checksum}")) return false;
+            }
+            if (ComputeSha256(Encoding.UTF8.GetBytes(string.Join("\n", dependencyLines.Order(StringComparer.Ordinal)) + "\n")) != dependenciesSha)
+                return false;
+            if (target == "x86_64-pc-windows-msvc")
+            {
+                var legacyFiles = root.GetProperty("kernelSourceHashes");
+                return !string.IsNullOrWhiteSpace(workflowRunId) && root.GetProperty("workflowRunId").GetString() == workflowRunId
+                    && root.GetProperty("workflow").GetString() == "suite-ci" && root.GetProperty("commit").GetString() == source
+                    && root.GetProperty("artifactName").GetString() == $"terraforge-valuation-kernel-windows-x64-{source}"
+                    && root.GetProperty("target").GetString() == target && root.GetProperty("executableFilename").GetString() == "terraforge-kernel-valuation.exe"
+                    && root.GetProperty("executableSha256").GetString() == binarySha && legacyFiles.EnumerateObject().Count() == expectedPaths.Length
+                    && expectedPaths.All(path => legacyFiles.GetProperty(path).GetString() == files.GetProperty(path).GetString());
+            }
+            return target == "x86_64-unknown-linux-musl" && root.GetProperty("artifactType").GetString() == RustKernelsOptions.ForgeValuationArtifactType
+                && root.GetProperty("build").GetProperty("target").GetString() == target
+                && root.GetProperty("executable").GetProperty("filename").GetString() == "terraforge-kernel-valuation"
+                && root.GetProperty("executable").GetProperty("sha256").GetString() == binarySha;
+        }
+        catch (Exception exception) when (exception is JsonException or KeyNotFoundException or InvalidOperationException or FormatException)
+        {
+            return false;
+        }
+    }
+
+    private static bool IsLowerHex(string? value, int length) => value?.Length == length
+        && value.All(c => c is >= 'a' and <= 'f' or >= '0' and <= '9');
+
     private static bool SourceHashesMatch(JsonElement hashes)
     {
         if (hashes.ValueKind != JsonValueKind.Object || hashes.EnumerateObject().Count() != ForgeSourceSha256.Count)
@@ -433,13 +607,30 @@ public class RustKernelProcessHost : IRustKernelProcessHost
         string kernelName, string inputHash, string? binarySha256,
         string? requestId,
         int stdoutBytes = 0, string? stdoutSha256 = null,
-        int stderrBytes = 0, string? stderrSha256 = null)
+        int stderrBytes = 0, string? stderrSha256 = null,
+        KernelValidationFailure? validation = null)
     {
         sw.Stop();
         return new(false, kernelName, null, inputHash, startedAt,
             startedAt.AddMilliseconds(sw.ElapsedMilliseconds), (int)sw.ElapsedMilliseconds,
             default, null, Array.Empty<string>(), mode, message, binarySha256,
-            stdoutBytes, stdoutSha256, stderrBytes, stderrSha256, requestId);
+            stdoutBytes, stdoutSha256, stderrBytes, stderrSha256, requestId,
+            mode == KernelFailureMode.KernelReportedError ? BoundedValidation(validation) : null);
+    }
+
+    private static KernelValidationFailure? BoundedValidation(KernelValidationFailure? validation)
+    {
+        // Optional transport detail only. Discard malformed/oversized detail rather than
+        // truncating it into a different identifier; generic failure text remains unchanged.
+        if (validation is null || string.IsNullOrWhiteSpace(validation.Code) || validation.Code.Length > 64
+            || string.IsNullOrWhiteSpace(validation.Field) || validation.Field.Length > 128
+            || string.IsNullOrWhiteSpace(validation.Message) || validation.Message.Length > 512
+            || !validation.Code.All(c => c is >= 'A' and <= 'Z' or >= '0' and <= '9' or '_')
+            || !validation.Field.All(c => c is >= 'A' and <= 'Z' or >= 'a' and <= 'z'
+                or >= '0' and <= '9' or '_' or '.' or '[' or ']')
+            || validation.Message.Any(char.IsControl))
+            return null;
+        return validation;
     }
 
     private static string ComputeSha256(byte[] input)

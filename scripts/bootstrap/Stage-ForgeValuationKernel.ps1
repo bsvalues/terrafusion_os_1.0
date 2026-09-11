@@ -1,13 +1,267 @@
-[CmdletBinding()]
+[CmdletBinding(DefaultParameterSetName = 'Valuation')]
 param(
-    [Parameter(Mandatory)]
+    [Parameter(Mandatory, ParameterSetName = 'Valuation')]
     [string]$ForgeRepository,
+    [Parameter(Mandatory, ParameterSetName = 'CostIncome')]
+    [switch]$CostIncome,
+    [Parameter(Mandatory, ParameterSetName = 'CostIncome')]
+    [string]$ArtifactArchive,
+    [Parameter(Mandatory, ParameterSetName = 'CostIncome')]
+    [string]$ProducerReceipt,
     [string]$BuildRootBase = 'D:\tf-build\sr-006-forge-canonical-cutover',
     [string]$NuGetPackagesPath,
     [string]$ArtifactSlot
 )
 
 $ErrorActionPreference = 'Stop'
+
+# Native intake uses the existing merged-main Actions artifact, not a local build,
+# Linux OCI extraction, or a caller-supplied admission policy. Historical code below
+# this explicit branch retains its original source-build/default valuation behavior.
+function Get-ForgeCostIncomePins([string]$OptionsPath) {
+    $text = [IO.File]::ReadAllText($OptionsPath)
+    $pins = @{}
+    foreach ($name in @('CanonicalSourceCommit','ProducerCommit','ProducerManifestSha256','ExecutableSha256',
+        'SpecificationSha256','SourceClosureSha256','DependencyClosureSha256','Target','WorkflowRunId',
+        'WorkflowRunAttempt','ArtifactId','ArchiveSha256','ReceiptSha256')) {
+        $matches = [regex]::Matches($text, ('public const string ForgeCostIncome' + $name + ' = "([^"]*)";'))
+        if ($matches.Count -ne 1) { throw 'Cost/Income immutable admission declaration is missing or ambiguous.' }
+        $value = $matches[0].Groups[1].Value
+        $pattern = if ($name -in @('CanonicalSourceCommit','ProducerCommit')) { '^[a-f0-9]{40}$' }
+            elseif ($name -eq 'Target') { '^x86_64-pc-windows-msvc$' }
+            elseif ($name -in @('WorkflowRunId','WorkflowRunAttempt','ArtifactId')) { '^[1-9][0-9]{0,19}$' }
+            else { '^[a-f0-9]{64}$' }
+        if ($value -cnotmatch $pattern) { throw "Cost/Income artifact is not independently admitted: $name." }
+        $pins[$name] = $value
+    }
+    if ($pins.CanonicalSourceCommit -cne $pins.ProducerCommit -or
+        $pins.CanonicalSourceCommit -ceq '24059c3642339f36877cb454ca63683180915b71') { throw 'Invalid new capability source identity.' }
+    return $pins
+}
+
+function Assert-ForgeCostIncomeReceipt($Receipt, [hashtable]$Pins) {
+    $expected = @{
+        schemaVersion = 1; transport = 'github-actions-windows-artifact@1'
+        repository = 'bsvalues/terrafusion-forge'; workflowPath = '.github/workflows/suite-ci.yml'
+        event = 'push'; branch = 'main'; conclusion = 'success'
+        runId = $Pins.WorkflowRunId; runAttempt = $Pins.WorkflowRunAttempt; artifactId = $Pins.ArtifactId
+        artifactName = ('terraforge-valuation-kernel-windows-x64-' + $Pins.CanonicalSourceCommit)
+        protectedCommit = $Pins.CanonicalSourceCommit; archiveSha256 = $Pins.ArchiveSha256
+        manifestSha256 = $Pins.ProducerManifestSha256; executableSha256 = $Pins.ExecutableSha256
+    }
+    foreach ($key in $expected.Keys) {
+        if ($null -eq $Receipt[$key] -or $Receipt[$key] -cne $expected[$key]) { throw "Native artifact receipt mismatch: $key." }
+        if ($key -ne 'schemaVersion' -and $Receipt[$key] -isnot [string]) { throw "Native artifact receipt type mismatch: $key." }
+    }
+}
+
+function Assert-ForgeCostIncomePath([string]$Path) {
+    $current = [IO.Path]::GetFullPath($Path)
+    while ($current) {
+        if (Test-Path -LiteralPath $current) {
+            if (((Get-Item -Force -LiteralPath $current).Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0) {
+                throw 'Native artifact paths must not traverse reparse points.'
+            }
+        }
+        $current = [IO.Path]::GetDirectoryName($current)
+    }
+}
+
+function Expand-ForgeCostIncomeArchive([string]$ArchivePath, [string]$Destination, [hashtable]$Pins) {
+    Assert-ForgeCostIncomePath $ArchivePath
+    Assert-ForgeCostIncomePath $Destination
+    if (Test-Path -LiteralPath $Destination) { throw 'Candidate destination must be new.' }
+    $inputStream = [IO.File]::Open($ArchivePath, [IO.FileMode]::Open, [IO.FileAccess]::Read, [IO.FileShare]::Read)
+    try {
+        if ($inputStream.Length -le 0 -or $inputStream.Length -gt 64MB) { throw 'Archive exceeds native intake bounds.' }
+        $digest = [Convert]::ToHexString([Security.Cryptography.SHA256]::HashData($inputStream)).ToLowerInvariant()
+        if ($digest -cne $Pins.ArchiveSha256) { throw 'Downloaded archive identity mismatch.' }
+        $inputStream.Position = 0
+        $zip = [IO.Compression.ZipArchive]::new($inputStream, [IO.Compression.ZipArchiveMode]::Read, $true)
+        try {
+            if ($zip.Entries.Count -ne 2) { throw 'Archive must contain exactly the manifest and executable.' }
+            $seen = [Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
+            foreach ($entry in $zip.Entries) {
+                if ($entry.FullName -cnotin @('manifest.json','terraforge-kernel-valuation.exe') -or
+                    -not $seen.Add($entry.FullName)) { throw 'Unexpected, duplicate, or unsafe ZIP path.' }
+                $unixType = ($entry.ExternalAttributes -shr 16) -band 0xF000
+                if (($unixType -ne 0 -and $unixType -ne 0x8000) -or
+                    ($entry.ExternalAttributes -band 0x410) -ne 0) { throw 'ZIP links or directories are forbidden.' }
+                $limit = if ($entry.FullName -ceq 'manifest.json') { 1MB } else { 32MB }
+                if ($entry.Length -le 0 -or $entry.Length -gt $limit) { throw 'ZIP entry exceeds native intake bounds.' }
+            }
+            New-Item -ItemType Directory -Path $Destination | Out-Null
+            foreach ($entry in $zip.Entries) {
+                $path = Join-Path $Destination $entry.FullName
+                $source = $entry.Open()
+                $output = [IO.File]::Open($path, [IO.FileMode]::CreateNew, [IO.FileAccess]::Write, [IO.FileShare]::None)
+                try {
+                    $buffer = [byte[]]::new(65536); $count = 0L
+                    while (($read = $source.Read($buffer, 0, $buffer.Length)) -gt 0) {
+                        $count += $read
+                        if ($count -gt $entry.Length) { throw 'ZIP expanded length mismatch.' }
+                        $output.Write($buffer, 0, $read)
+                    }
+                    if ($count -ne $entry.Length) { throw 'ZIP truncated entry.' }
+                } finally { $output.Dispose(); $source.Dispose() }
+                $expected = if ($entry.FullName -ceq 'manifest.json') { $Pins.ProducerManifestSha256 } else { $Pins.ExecutableSha256 }
+                if ((Get-FileHash -LiteralPath $path -Algorithm SHA256).Hash.ToLowerInvariant() -cne $expected) {
+                    throw 'Extracted artifact identity mismatch.'
+                }
+            }
+        } finally { $zip.Dispose() }
+    } finally { $inputStream.Dispose() }
+}
+
+function Get-ForgeCostIncomeLinesHash([string[]]$Lines) {
+    [Array]::Sort($Lines, [StringComparer]::Ordinal)
+    return [Convert]::ToHexString([Security.Cryptography.SHA256]::HashData(
+        [Text.Encoding]::UTF8.GetBytes(($Lines -join "`n") + "`n"))).ToLowerInvariant()
+}
+
+function Assert-ForgeCostIncomeManifest($Manifest, [hashtable]$Pins) {
+    $specPath = 'operations/work-orders/EO-TF-FORGE-COST-INCOME-001.md'
+    $expected = @{ schemaVersion = 1; repository = 'bsvalues/terrafusion-forge'
+        producerCommit = $Pins.ProducerCommit; canonicalSourceCommit = $Pins.CanonicalSourceCommit
+        commit = $Pins.CanonicalSourceCommit; workflow = 'suite-ci'; workflowRunId = $Pins.WorkflowRunId
+        artifactName = ('terraforge-valuation-kernel-windows-x64-' + $Pins.CanonicalSourceCommit)
+        target = 'x86_64-pc-windows-msvc'; executableFilename = 'terraforge-kernel-valuation.exe'; executableSha256 = $Pins.ExecutableSha256 }
+    foreach ($key in $expected.Keys) {
+        if ($null -eq $Manifest[$key] -or $Manifest[$key] -cne $expected[$key]) { throw "Native manifest mismatch: $key." }
+    }
+    if ($Manifest.capabilityExchanges.Count -ne 2 -or $Manifest.capabilityExchanges[0] -cne 'forge.cost@1.0.0' -or
+        $Manifest.capabilityExchanges[1] -cne 'forge.income@1.0.0') { throw 'Capability exchange mismatch.' }
+    $spec = $Manifest.specification
+    if ($spec.path -cne $specPath -or $spec.sha256 -cne $Pins.SpecificationSha256 -or
+        $spec.sourceCommit -cne $Pins.CanonicalSourceCommit -or $spec.authorityRepository -cne 'bsvalues/terrafusion_os_1.0' -or
+        $spec.workOrder -cne 'WO-EO-TF-FORGE-COST-INCOME-001') { throw 'Specification identity mismatch.' }
+    $paths = @('Cargo.toml','Cargo.lock','build.rs','src/main.rs','src/approaches.rs','tests/approaches.rs') |
+        ForEach-Object { 'kernels/terraforge.kernel.valuation/' + $_ }
+    $paths += $specPath
+    $files = $Manifest.canonicalSourceIntegrity.files
+    if ($files.Count -ne 7 -or $Manifest.kernelSourceHashes.Count -ne 7) { throw 'Incomplete source closure.' }
+    $sourceLines = foreach ($path in $paths) {
+        if ($files[$path] -cnotmatch '^[a-f0-9]{64}$' -or $Manifest.kernelSourceHashes[$path] -cne $files[$path]) {
+            throw 'Missing or mismatched source module hash.'
+        }
+        $path + ':' + $files[$path]
+    }
+    if ($files[$specPath] -cne $Pins.SpecificationSha256 -or
+        (Get-ForgeCostIncomeLinesHash $sourceLines) -cne $Pins.SourceClosureSha256) { throw 'Source closure identity mismatch.' }
+    if ($Manifest.dependencyClosure.Count -lt 1 -or $Manifest.dependencyClosure.Count -gt 512) { throw 'Incomplete dependency closure.' }
+    $seen = [Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
+    $dependencyLines = foreach ($dependency in $Manifest.dependencyClosure) {
+        if ($dependency.name -cnotmatch '^[A-Za-z0-9_-]{1,128}$' -or $dependency.version -cnotmatch '^[A-Za-z0-9.+-]{1,128}$' -or
+            $dependency.source -cne 'registry+https://github.com/rust-lang/crates.io-index' -or $dependency.checksum -cnotmatch '^[a-f0-9]{64}$' -or
+            -not $seen.Add($dependency.name + '@' + $dependency.version)) { throw 'Invalid or duplicate locked dependency.' }
+        $dependency.name + '@' + $dependency.version + '|' + $dependency.source + '|' + $dependency.checksum
+    }
+    if ((Get-ForgeCostIncomeLinesHash @($dependencyLines)) -cne $Pins.DependencyClosureSha256) { throw 'Dependency closure identity mismatch.' }
+    # The exact manifest hash, admitted independently with the producer receipt,
+    # also binds the unchanged frozen contracts. The process host checks those fields.
+}
+
+function Assert-ForgeCostIncomePair([string]$Directory, [hashtable]$Pins) {
+    Assert-ForgeCostIncomePath $Directory
+    $expected = @{ 'manifest.json' = $Pins.ProducerManifestSha256
+        'terraforge-kernel-valuation.exe' = $Pins.ExecutableSha256; 'receipt.json' = $Pins.ReceiptSha256 }
+    $files = @(Get-ChildItem -LiteralPath $Directory -Force)
+    if ($files.Count -ne 3) { throw 'Native artifact slot must contain exactly the pair and receipt.' }
+    foreach ($file in $files) {
+        if ($file.PSIsContainer -or ($file.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0 -or
+            $file.Name -cnotin @('manifest.json','terraforge-kernel-valuation.exe','receipt.json') -or
+            (Get-FileHash -LiteralPath $file.FullName -Algorithm SHA256).Hash.ToLowerInvariant() -cne $expected[$file.Name]) {
+            throw 'Native artifact pair or receipt changed.'
+        }
+    }
+}
+
+function Publish-ForgeCostIncomeCandidate([string]$Repository, [string]$ProofRoot, [hashtable]$Pins) {
+    $root = [IO.Path]::GetFullPath((Join-Path $Repository '.terrafusion/runtime/forge'))
+    $slot = Join-Path $root 'cost-income'
+    $stagingRoot = Join-Path $root 'cost-income-staging'
+    $proof = [IO.Path]::GetFullPath($ProofRoot)
+    if ([IO.Path]::GetDirectoryName($proof) -cne $stagingRoot -or
+        [IO.Path]::GetFileName($proof) -cnotmatch '^run-[a-f0-9]{32}$') { throw 'Invalid isolated staging root.' }
+    Assert-ForgeCostIncomePath $proof
+    Assert-ForgeCostIncomePath $slot
+    $candidate = Join-Path $proof 'candidate'
+    $previous = Join-Path $proof 'previous'
+    $failed = Join-Path $proof 'failed'
+    if ((Test-Path -LiteralPath $previous) -or (Test-Path -LiteralPath $failed)) { throw 'Staging run was already used.' }
+    Assert-ForgeCostIncomePair $candidate $Pins
+    $backedUp = $false
+    if (Test-Path -LiteralPath $slot) {
+        # No recursive move of a foreign/link-bearing tree. Preserve an older complete
+        # pair, even if it predates this admission, so failure can restore those bytes.
+        $oldFiles = @(Get-ChildItem -LiteralPath $slot -Force)
+        if ($oldFiles.Count -ne 3 -or @($oldFiles | Where-Object {
+            $_.PSIsContainer -or ($_.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0 -or
+            $_.Name -cnotin @('manifest.json','terraforge-kernel-valuation.exe','receipt.json')
+        }).Count) { throw 'Existing slot is not an isolated native artifact triple.' }
+        Move-Item -LiteralPath $slot -Destination $previous
+        $backedUp = $true
+    }
+    try {
+        Copy-Item -LiteralPath $candidate -Destination $slot -Recurse
+        Assert-ForgeCostIncomePair $slot $Pins
+    } catch {
+        # All targets are exact children of the validated managed paths. Retain failed
+        # and previous evidence rather than deleting any material artifact bytes.
+        if (Test-Path -LiteralPath $slot) { Move-Item -LiteralPath $slot -Destination $failed }
+        if ($backedUp) { Move-Item -LiteralPath $previous -Destination $slot }
+        throw
+    }
+}
+
+if ($CostIncome) {
+    if (-not $IsWindows) { throw 'This mode admits native Windows Actions artifacts only.' }
+    $repository = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '../..'))
+    $pins = Get-ForgeCostIncomePins (Join-Path $repository 'backend/src/TerraFusion.API/Configuration/RustKernelsOptions.cs')
+    $status = @(& git -C $repository status --porcelain --untracked-files=all)
+    if ($LASTEXITCODE -ne 0 -or $status.Count) { throw 'Sovereign worktree must be clean before native intake.' }
+    $slot = [IO.Path]::GetFullPath((Join-Path $repository '.terrafusion/runtime/forge/cost-income'))
+    if ($ArtifactSlot -and [IO.Path]::GetFullPath($ArtifactSlot) -cne $slot) { throw 'Cost/Income artifact slot cannot be redirected.' }
+    $stagingRoot = [IO.Path]::GetFullPath((Join-Path $repository '.terrafusion/runtime/forge/cost-income-staging'))
+    foreach ($path in @($slot, $stagingRoot)) {
+        Assert-ForgeCostIncomePath $path
+        & git -C $repository check-ignore --quiet -- (Join-Path $path 'receipt.json')
+        if ($LASTEXITCODE -ne 0) { throw 'Native artifact and staging slots must already be ignored.' }
+    }
+    Assert-ForgeCostIncomePath $ProducerReceipt
+    $receiptStream = [IO.File]::Open($ProducerReceipt, [IO.FileMode]::Open, [IO.FileAccess]::Read, [IO.FileShare]::Read)
+    try {
+        if ($receiptStream.Length -le 0 -or $receiptStream.Length -gt 64KB) { throw 'Producer receipt exceeds bounds.' }
+        $receiptBytes = [byte[]]::new($receiptStream.Length)
+        $receiptStream.ReadExactly($receiptBytes, 0, $receiptBytes.Length)
+    } finally { $receiptStream.Dispose() }
+    if ([Convert]::ToHexString([Security.Cryptography.SHA256]::HashData($receiptBytes)).ToLowerInvariant() -cne $pins.ReceiptSha256) {
+        throw 'Receipt bytes do not match independently admitted evidence.'
+    }
+    $receipt = [Text.Encoding]::UTF8.GetString($receiptBytes).TrimStart([char]0xFEFF) | ConvertFrom-Json -AsHashtable
+    Assert-ForgeCostIncomeReceipt $receipt $pins
+    New-Item -ItemType Directory -Path $stagingRoot -Force | Out-Null
+    $lock = [IO.File]::Open((Join-Path $stagingRoot 'intake.lock'), [IO.FileMode]::OpenOrCreate, [IO.FileAccess]::ReadWrite, [IO.FileShare]::None)
+    try {
+        $proof = Join-Path $stagingRoot ('run-' + [Guid]::NewGuid().ToString('N'))
+        New-Item -ItemType Directory -Path $proof | Out-Null
+        $candidate = Join-Path $proof 'candidate'
+        Expand-ForgeCostIncomeArchive $ArtifactArchive $candidate $pins
+        [IO.File]::WriteAllBytes((Join-Path $candidate 'receipt.json'), $receiptBytes)
+        $manifest = Get-Content -LiteralPath (Join-Path $candidate 'manifest.json') -Raw | ConvertFrom-Json -AsHashtable
+        Assert-ForgeCostIncomeManifest $manifest $pins
+        Publish-ForgeCostIncomeCandidate $repository $proof $pins
+        [ordered]@{ result = 'PASS'; terminalCondition = 'FORGE_COST_INCOME_NATIVE_ARTIFACT_STAGED'
+            protectedCommit = $pins.CanonicalSourceCommit; runId = $pins.WorkflowRunId; runAttempt = $pins.WorkflowRunAttempt
+            artifactId = $pins.ArtifactId; archiveSha256 = $pins.ArchiveSha256; manifestSha256 = $pins.ProducerManifestSha256
+            executableSha256 = $pins.ExecutableSha256; receiptSha256 = $pins.ReceiptSha256
+            artifactSlot = '.terrafusion/runtime/forge/cost-income'; retainedEvidence = $proof
+            sourceBuildUsed = $false; linuxDeploymentClaimed = $false; runtimeAcceptance = 'NOT_RUN'
+        } | ConvertTo-Json -Depth 5
+    } finally { $lock.Dispose() }
+    return
+}
+
 $expectedForgeCommit = '24059c3642339f36877cb454ca63683180915b71'
 $expectedRepository = 'bsvalues/terrafusion-forge'
 $expectedBlobIds = [ordered]@{
