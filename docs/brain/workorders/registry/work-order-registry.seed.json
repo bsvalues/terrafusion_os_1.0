@@ -17545,6 +17545,11 @@
           "id": "WO-TUOP-003",
           "status": "required",
           "notes": "Assembly must follow the reconciled lineage, not the stale electron pointer."
+        },
+        {
+          "id": "WO-TUOP-005",
+          "status": "required",
+          "notes": "Owner directive rev-5 (2026-09-11): the assembled product must launch via a contract-consumed launcher; WO-TUOP-004 cannot dispatch until BOTH WO-TUOP-003 and WO-TUOP-005 are protected-main complete, or the scheduler could start 004 on the stale launcher (deprecated :5000, wrong API path, blanket dotnet kill) and recreate the wrong-target defect already fixed for auth."
         }
       ],
       "allowedSystems": [

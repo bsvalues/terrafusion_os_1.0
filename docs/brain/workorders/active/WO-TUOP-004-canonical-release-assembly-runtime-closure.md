@@ -2,7 +2,7 @@
 
 | Field | Value |
 | --- | --- |
-| Status | `BLOCKED_ON_WO-TUOP-003` |
+| Status | `BLOCKED_ON_WO-TUOP-003_AND_WO-TUOP-005` (owner rev-5: dispatches only when BOTH are protected-main complete — the assembled product must launch via the contract-consumed launcher 005 repairs) |
 | Program | TerraFusion Owner-Usable Product V1 |
 | Goal | `GOAL-TERRAFUSION-OWNER-USABLE-PRODUCT-V1` |
 | Loop | `LOOP-TERRAFUSION-OWNER-USABLE-PRODUCT-V1` |

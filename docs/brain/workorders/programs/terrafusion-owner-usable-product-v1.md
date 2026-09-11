@@ -100,7 +100,7 @@ Only after this PASS should WAL V1 carry the accepted candidate through its real
 | `WO-TUOP-001` | Launch the current exact candidate in the lab and produce the first live Product Reality Matrix from the screen; classify every non-PASS verdict; derive the exact bounded repair children for defects inside this authority | 000 protected merge |
 | `WO-TUOP-002` | Desktop auth-state honesty + working in-app sign-in — executed INSIDE the assembled product | 001 evidence merge + **004** (owner sequencing directive) |
 | `WO-TUOP-003` | Shell-lineage canon drift fix: stale root `package.json#main` → electron; record supersession | ready now |
-| `WO-TUOP-004` | Canonical release assembly + native-host release-proof + **Runtime Dependency Closure Matrix** (zero-UNKNOWN gate) | 003 |
+| `WO-TUOP-004` | Canonical release assembly + native-host release-proof + **Runtime Dependency Closure Matrix** (zero-UNKNOWN gate) | 003 + 005 (both protected-main complete) |
 | `WO-TUOP-005` | Launcher reconciliation: `LAUNCH_TERRAFUSION_OS.ps1` must consume `platform.json`/env contract (no deprecated :5000, correct API path, no foreign home paths, no blanket dotnet kill) | ready now |
 | further derived children | One exact bounded product-usability repair child per classified defect, created under `OWNER-TUOP-V1-MISSION-AUTHORITY-20260911` child policy — never floating, always registered | matrix verdicts |
 | `WO-TUOP-099` | Terminal acceptance: full-journey product-surface proof through the assembled product on the exact deployed release; record `TERRAFUSION_OWNER_USABLE_PRODUCT_V1: PASS`; hand the accepted candidate identity to WAL V1 | all repair children |
