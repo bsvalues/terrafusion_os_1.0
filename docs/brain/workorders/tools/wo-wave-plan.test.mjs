@@ -214,6 +214,105 @@ describe('wo-wave-plan', () => {
     assert.ok(plan.excludedWorkOrders.some(item => item.workOrderId === child.id));
   });
 
+  it('registers WAL-007B in review with exact diagnostic reservations and no parent unlock', () => {
+    // Missing/widened admission or dispatching this component/its blocked parents must fail.
+    const actualRegistry = JSON.parse(
+      fs.readFileSync(
+        path.join(root, 'docs/brain/workorders/registry/work-order-registry.seed.json'),
+        'utf8'
+      )
+    );
+    const matches = actualRegistry.records.filter(item => item.id === 'WO-WAL-007B');
+    assert.equal(matches.length, 1, '007B requires exactly one canonical registry record');
+    const child = matches[0];
+    const schema = JSON.parse(
+      fs.readFileSync(
+        path.join(root, 'docs/brain/workorders/schema/work-order.schema.json'),
+        'utf8'
+      )
+    );
+    const validate = new Ajv2020({ allErrors: true, strict: false }).compile(schema);
+    assert.equal(validate(child), true, JSON.stringify(validate.errors));
+    const workOrder = fs.readFileSync(
+      path.join(root, 'docs/brain/workorders/active/WO-WAL-007B-endpoint-diagnostic-isolation.md'),
+      'utf8'
+    );
+    const policyText = workOrder.split('<!-- brain-machine-policy: existing Brain exact scope -->')[1];
+    assert.ok(policyText, '007B must retain its machine-readable WO policy');
+    const policyMatch = policyText.match(/```json\s*([\s\S]*?)```/);
+    assert.ok(policyMatch);
+    const policy = JSON.parse(policyMatch[1]);
+    const expectedFiles = [
+      'backend/src/TerraFusion.API/Services/EliteEndpointValidationService.cs',
+      'backend/tests/TerraFusion.Unit.Tests/HostedServices/EliteEndpointValidationServiceTests.cs',
+      'docs/brain/workorders/active/WO-WAL-007B-endpoint-diagnostic-isolation.md',
+      'docs/brain/evidence/WO-WAL-007B-proof.md',
+      'docs/brain/workorders/registry/work-order-registry.seed.json',
+      'docs/brain/workorders/tools/wo-wave-plan.test.mjs',
+    ];
+    assert.equal(policy.id, child.id);
+    assert.deepEqual(child.allowedFiles, expectedFiles);
+    assert.deepEqual(policy.allowed_files, expectedFiles);
+    assert.deepEqual(child.blockedFiles, policy.forbidden_patterns);
+    assert.equal(child.riskClass, 'R3');
+    assert.equal(policy.risk, child.riskClass);
+    assert.equal(child.program, 'Washington Assessor Launch V1');
+    assert.equal(child.goalId, 'GOAL-WASHINGTON-ASSESSOR-LAUNCH-V1');
+    assert.equal(child.loopId, 'LOOP-WASHINGTON-ASSESSOR-LAUNCH-V1');
+    assert.equal(child.status, 'review');
+    assert.deepEqual(child.contractReservations, ['wal.endpoint-diagnostic.explicit-disable.v1']);
+    assert.deepEqual(child.environmentReservations, [
+      'local-in-memory-configuration-precancelled-service-only',
+    ]);
+    assert.deepEqual(child.dispatchGuard, {
+      type: 'protected_ref_head',
+      ref: 'refs/remotes/origin/main',
+    });
+    assert.deepEqual(
+      child.dependencies.map(({ id, status }) => ({ id, status })),
+      [{ id: 'WO-WAL-000', status: 'satisfied' }]
+    );
+    assert.deepEqual(child.nextCandidates, []);
+    assert.ok(child.evidenceRequired.length > 0);
+    assert.deepEqual(child.validationGates.map(gate => gate.command), policy.required_proof);
+    assert.ok(child.validationGates.every(gate => gate.required));
+    for (const type of [
+      'scope_boundary',
+      'state_mismatch',
+      'validation_failure',
+      'protected_data',
+      'production_risk',
+    ]) {
+      assert.ok(child.stopConditions.some(stop => stop.type === type), `Missing ${type} boundary`);
+    }
+    const mission = actualRegistry.records.find(item => item.id === 'WO-WAL-000');
+    const acceptance = actualRegistry.records.find(item => item.id === 'WO-WAL-007');
+    const production = actualRegistry.records.find(item => item.id === 'WO-WAL-008');
+    assert.equal(mission.status, 'complete');
+    assert.equal(acceptance.status, 'blocked');
+    assert.deepEqual(
+      acceptance.dependencies,
+      ['001', '002', '003', '004', '005', '006'].map(suffix => ({
+        id: `WO-WAL-${suffix}`,
+        status: 'required',
+      }))
+    );
+    assert.equal(production.status, 'blocked');
+    assert.deepEqual(production.dependencies, [{ id: 'WO-WAL-007', status: 'required' }]);
+    const selected = [mission, child, acceptance, production];
+    // Pure projection even with a supplied verified ref, not a live protected-ref attestation.
+    const plan = planWaves(
+      registry(selected),
+      rules,
+      optionsFor(selected, {
+        authority: 'R5',
+        verifiedDispatchRefs: ['refs/remotes/origin/main'],
+      })
+    );
+    assert.deepEqual(plan.initialExecutableSet, []);
+    assert.ok(plan.excludedWorkOrders.some(item => item.workOrderId === child.id));
+  });
+
   it('registers WAL-007C in review with exact Sync fixture reservations and no parent unlock', () => {
     // Missing admission, scope drift, or premature dispatch must fail against canonical inputs.
     const actualRegistry = JSON.parse(

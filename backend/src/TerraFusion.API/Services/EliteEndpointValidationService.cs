@@ -7,6 +7,7 @@
 using System.Diagnostics;
 using System.Net;
 using System.Text.Json;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -46,6 +47,15 @@ public class EliteEndpointValidationService : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
+        var configured = _serviceProvider.GetService<IConfiguration>()?["EndpointValidation:Enabled"];
+        if (configured is not null)
+        {
+            if (!bool.TryParse(configured, out var enabled))
+                throw new InvalidOperationException("ENDPOINT_VALIDATION_INVALID_ENABLED");
+            if (!enabled)
+                return;
+        }
+
         _logger.LogInformation("Endpoint Validation Service started.");
 
         // Wait for application startup to complete
@@ -99,6 +109,20 @@ public class EliteEndpointValidationService : BackgroundService
         }
     }
 
+    internal static string ResolveConfiguredApiUrl(IConfiguration? configuration)
+    {
+        var configured = configuration?["TF_API_PORT"];
+        var port = 5046;
+        if (configured is not null &&
+            (!int.TryParse(configured, System.Globalization.NumberStyles.Integer,
+                System.Globalization.CultureInfo.InvariantCulture, out port) || port < 1 || port > 65535))
+        {
+            throw new InvalidOperationException("ENDPOINT_VALIDATION_INVALID_PORT");
+        }
+
+        return $"http://localhost:{port.ToString(System.Globalization.CultureInfo.InvariantCulture)}";
+    }
+
     /// <summary>
     /// Auto-detect the API URL by checking common ports and configurations
     /// </summary>
@@ -106,7 +130,7 @@ public class EliteEndpointValidationService : BackgroundService
     {
         var candidateUrls = new[]
         {
-            "http://localhost:5000",
+            ResolveConfiguredApiUrl(_serviceProvider.GetService<IConfiguration>()),
             "http://localhost:5001",
             "http://localhost:8080",
             "https://localhost:5001",

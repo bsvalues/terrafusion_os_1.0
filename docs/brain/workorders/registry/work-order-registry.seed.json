@@ -16965,6 +16965,144 @@
       }
     },
     {
+      "id": "WO-WAL-007B",
+      "title": "Explicit optional endpoint diagnostic isolation",
+      "program": "Washington Assessor Launch V1",
+      "goalId": "GOAL-WASHINGTON-ASSESSOR-LAUNCH-V1",
+      "loopId": "LOOP-WASHINGTON-ASSESSOR-LAUNCH-V1",
+      "goal": "Add an explicit default-enabled endpoint diagnostic disable before startup activity and configure only the primary candidate from TF_API_PORT/default5046, without other enabled-mode network redesign, host acceptance or parent completion.",
+      "riskClass": "R3",
+      "status": "review",
+      "dependencies": [
+        {
+          "id": "WO-WAL-000",
+          "status": "satisfied",
+          "notes": "Existing protected mission activation under Issue #1485 authorizes finite child decomposition. Parent WO-WAL-007 remains blocked, not a satisfied acceptance dependency."
+        }
+      ],
+      "allowedSystems": [
+        {
+          "name": "Isolated optional diagnostic configuration, pre-cancelled component validation and serialized canonical admission",
+          "notes": "Preserve constructor, Program registration and enabled lifecycle; only the primary candidate changes to effective TF_API_PORT/default5046 with bounded integer validation. Explicit false returns before startup logging, delay, port resolution or discovery; invalid non-null settings fail with fixed codes. Main owns execution resources and protected delivery."
+        }
+      ],
+      "blockedSystems": [
+        {
+          "name": "Host or network probing, API or DB launch, deployment, county data, secrets, unrelated backend changes and parent acceptance",
+          "notes": "No all-host network sandbox or whole-host fail-fast claim. G consumption requires protected delivery and fresh source/build binding; L's independent unmerged delta is not imported."
+        }
+      ],
+      "allowedFiles": [
+        "backend/src/TerraFusion.API/Services/EliteEndpointValidationService.cs",
+        "backend/tests/TerraFusion.Unit.Tests/HostedServices/EliteEndpointValidationServiceTests.cs",
+        "docs/brain/workorders/active/WO-WAL-007B-endpoint-diagnostic-isolation.md",
+        "docs/brain/evidence/WO-WAL-007B-proof.md",
+        "docs/brain/workorders/registry/work-order-registry.seed.json",
+        "docs/brain/workorders/tools/wo-wave-plan.test.mjs"
+      ],
+      "blockedFiles": [
+        "backend/src/TerraFusion.API/Program.cs",
+        "backend/src/TerraFusion.Core/**",
+        "backend/src/TerraFusion.Data/**",
+        "frontend/**",
+        ".github/**",
+        "package.json",
+        "pnpm-lock.yaml",
+        "backend/**/appsettings*.json"
+      ],
+      "contractReservations": ["wal.endpoint-diagnostic.explicit-disable.v1"],
+      "environmentReservations": [
+        "local-in-memory-configuration-precancelled-service-only"
+      ],
+      "dispatchGuard": {
+        "type": "protected_ref_head",
+        "ref": "refs/remotes/origin/main"
+      },
+      "evidenceRequired": [
+        {
+          "kind": "file",
+          "description": "Exact source pins and normal WITH-build eight-case RED/GREEN receipts with unchanged tests and input continuity. Pre-cancelled component evidence is not host, probe or runtime acceptance."
+        },
+        {
+          "kind": "command",
+          "description": "Meaningful missing-row RED, complete query/wave GREEN, six-path WO agreement and unchanged prior registry rows, envelope and historical tests."
+        },
+        {
+          "kind": "review",
+          "description": "Independent source and actual-receipt assurance, Brain proof/review/commit-plan and normal protected checks before delivery. No runtime dispatch attestation or parent unlock."
+        }
+      ],
+      "validationGates": [
+        {
+          "name": "Normal focused component validation with build",
+          "command": "dotnet test backend/tests/TerraFusion.Unit.Tests/TerraFusion.Unit.Tests.csproj -c Release --filter FullyQualifiedName~EliteEndpointValidationServiceTests",
+          "required": true
+        },
+        {
+          "name": "Exact diff hygiene",
+          "command": "git diff --check",
+          "required": true
+        },
+        {
+          "name": "Canonical query and wave reservation validation",
+          "command": "node --test docs/brain/workorders/tools/wo-query.test.mjs docs/brain/workorders/tools/wo-wave-plan.test.mjs",
+          "required": true
+        },
+        {
+          "name": "Brain exact reservation review",
+          "command": "node scripts/brain/brain.mjs review-diff --workorder WO-WAL-007B",
+          "required": true
+        },
+        {
+          "name": "Brain evidence proof",
+          "command": "node scripts/brain/brain.mjs proof --workorder WO-WAL-007B",
+          "required": true
+        },
+        {
+          "name": "Brain protected delivery plan",
+          "command": "node scripts/brain/brain.mjs commit-plan --workorder WO-WAL-007B",
+          "required": true
+        }
+      ],
+      "stopConditions": [
+        {
+          "type": "scope_boundary",
+          "description": "Only the six recorded paths and current serialized writer grant are authorized; no other row, schema, planner, Program, configuration-file or enabled-mode network redesign."
+        },
+        {
+          "type": "state_mismatch",
+          "description": "Stop on source-pin drift, writer collision or missing exact-head binding. Preserve L's independent delta on later normal protected integration."
+        },
+        {
+          "type": "validation_failure",
+          "description": "Preserve failures and unresolved independent findings; no compiler-error RED claim, skipped proof, cancellation suppression or protected-check bypass."
+        },
+        {
+          "type": "protected_data",
+          "description": "No county/PACS payload, credential, secret, database or external write-back authority is granted."
+        },
+        {
+          "type": "production_risk",
+          "description": "No runtime launch, production, WO-WAL-007 acceptance, WO-WAL-008 release or parent completion follows from this component child."
+        }
+      ],
+      "nextCandidates": [],
+      "authority": {
+        "mayWrite": true,
+        "mayCommit": true,
+        "mayPush": true,
+        "mayOpenPr": true,
+        "mayMarkReady": true,
+        "mayMerge": true,
+        "mayCleanup": true,
+        "notes": "OWNER-WAL-V1-MISSION-AUTHORITY-20260827 and OWNER-TF-STANDING-OPERATOR-AUTHORITY cover only the bounded lifecycle subject to reservations and protected checks. Main owns Git/delivery and execution resources; this metadata grant does not authorize builder source, compiler or runtime actions. Registry data grants no new authority."
+      },
+      "provenance": {
+        "source": "WO-WAL-007B-endpoint-diagnostic-isolation.md, Main's 2026-09-09 actual component GREEN and serialized six-path admission release under Issue #1485. Status remains review pending independent assurance and protected delivery; historical parent 007/008 blockers remain unchanged.",
+        "schemaVersion": "0.1.0"
+      }
+    },
+    {
       "id": "WO-WAL-007C",
       "title": "Sync fixture scheduling boundary correction",
       "program": "Washington Assessor Launch V1",
