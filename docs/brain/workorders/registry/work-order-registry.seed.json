@@ -17473,7 +17473,7 @@
       "loopId": "LOOP-TERRAFUSION-OWNER-USABLE-PRODUCT-V1",
       "goal": "Correct the single artifact contradicting the Step Zero verdict: root package.json main points at frontend/electron/main.js while platform.json, vite outDir, backend static serving, release CI, deployment-truth-gate E1 and the sanctioned launcher all name native-shell (WPF Terrafusion.Shell) as canonical. Align package.json and record electron as superseded/retained-historical so no future agent rebuilds the dead lineage.",
       "riskClass": "R3",
-      "status": "ready",
+      "status": "pr_open",
       "dependencies": [],
       "allowedSystems": [
         {
@@ -17498,6 +17498,13 @@
         {
           "kind": "file",
           "description": "Step Zero reconciliation evidence (committed), corrected package.json main field or its documented removal, and the electron supersession classification recorded where future agents read it."
+        }
+      ],
+      "evidenceProduced": [
+        {
+          "kind": "file",
+          "location": "docs/brain/evidence/WO-TUOP-003-SHELL-LINEAGE-DRIFT-FIX.md",
+          "summary": "Root package.json#main (stale electron pointer) removed after bounded consumer check cleared both candidate consumers; electron supersession classification recorded; field deliberately not repointed at the unproven WPF host."
         }
       ],
       "validationGates": [
