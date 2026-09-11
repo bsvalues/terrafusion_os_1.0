@@ -86,6 +86,29 @@ namespace TerraFusion.API.Controllers
             return Ok(new { history = Array.Empty<object>(), total = 0 });
         }
 
+        // Keep unsupported media on the authenticated county boundary instead of allowing
+        // Consumes endpoint selection to fall through to the anonymous SPA fallback.
+        [HttpPost("api/upload", Order = 1)]
+        [Authorize(Policy = "RequireAssessor")]
+        [ApiExplorerSettings(IgnoreApi = true)]
+        public async Task<IActionResult> RejectUnsupportedUpload()
+        {
+            // No bound parameters: MVC must not read unsupported form bodies before this check.
+            var cancellationToken = HttpContext.RequestAborted;
+            cancellationToken.ThrowIfCancellationRequested();
+            var countyContext = await _countyContextProvider
+                .GetCurrentAsync(cancellationToken)
+                .ConfigureAwait(false);
+            if (countyContext.Decision != AuthenticatedCanonicalCountyContextDecision.Established
+                || countyContext.County is null
+                || countyContext.CountyId is null)
+            {
+                return Forbid();
+            }
+
+            return new UnsupportedMediaTypeResult();
+        }
+
         /// <summary>POST /api/upload — durably admit one assessor-authorized county CSV.</summary>
         [HttpPost("api/upload")]
         [Authorize(Policy = "RequireAssessor")]
