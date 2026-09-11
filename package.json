@@ -2,7 +2,6 @@
   "name": "terrafusion-os",
   "version": "1.0.0",
   "description": "Government AI Operating System - Coordination Repository (Polyrepo Architecture)",
-  "main": "frontend/electron/main.js",
   "homepage": "./",
   "private": true,
   "type": "module",
