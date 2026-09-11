@@ -437,12 +437,17 @@ public class DossierController : ControllerBase
         .Take(limit)
         .ToListAsync();
 
-    // SQLite materializes stored UTC timestamps as Local. Convert only that
-    // provider-proven representation; every other non-UTC value stays invalid.
+    // SQLite reloads EF-written UTC timestamps as Unspecified, preserving their UTC
+    // ticks; zone-bearing legacy values reload as Local. Normalize only this provider.
     if (_db.Database.IsSqlite())
     {
-      foreach (var evidence in sourcePage.Where(e => e.CreatedAt.Kind == DateTimeKind.Local))
-        evidence.CreatedAt = evidence.CreatedAt.ToUniversalTime();
+      foreach (var evidence in sourcePage)
+        evidence.CreatedAt = evidence.CreatedAt.Kind switch
+        {
+          DateTimeKind.Unspecified => DateTime.SpecifyKind(evidence.CreatedAt, DateTimeKind.Utc),
+          DateTimeKind.Local => evidence.CreatedAt.ToUniversalTime(),
+          _ => evidence.CreatedAt,
+        };
     }
 
     var request = new DossierEvidenceRegistryReadRequest

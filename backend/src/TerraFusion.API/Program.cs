@@ -1745,6 +1745,7 @@ builder.Services.AddDaisAppealWorkflowRuntime(builder.Configuration, builder.Env
 builder.Services.AddDossierEvidenceRegistryReadRuntime(builder.Configuration, builder.Environment);
 builder.Services.AddDaisAppealMutationRuntime(builder.Configuration, builder.Environment);
 builder.Services.AddDossierMutationRuntime(builder.Configuration, builder.Environment);
+builder.Services.AddDossierPacketWorkflowRuntime(builder.Configuration, builder.Environment);
 
 // Slice S1: PACS sale raw landing — drains an IPacsSaleSource into
 // legacy_pacs_raw.sale with provenance and writes the four S1

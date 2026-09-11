@@ -1,21 +1,7 @@
 /**
- * Phase 19 — TerraDossier Defense Spine, Tranche 4
- * Dossier Packet Finalization Domain Logic
- *
- * Pure functions for packet finalization, revision, cover sheet
- * generation, and section drift detection.
- *
- * Write-lane enforcement: finalizePacketModel calls assertWriteLane.
- * Trace emission: finalize/revise emit via emitTraceEvent (fire-and-forget).
+ * Retired browser decision entrypoints. Packet judgments, IDs, time and receipts are server-owned.
+ * Types remain for legacy presentation consumers; no function here can authorize or persist state.
  */
-
-import { assertWriteLane } from '../writeLane';
-import { emitTraceEvent } from '../terraTrace';
-
-// ============================================================================
-// Types (re-export PacketSection for test convenience)
-// ============================================================================
-
 export interface PacketSection {
   sectionType: string;
   itemIds: string[];
@@ -76,145 +62,32 @@ export interface CoverSheet {
   generatedAt: string;
 }
 
-// ============================================================================
-// Finalization
-// ============================================================================
+const serverRequired = 'Use the authenticated Dossier packet workflow server for this operation.';
 
-export function finalizePacketModel(input: FinalizationInput): FinalizationResult {
-  // Write-lane enforcement — throws before any state change
-  assertWriteLane('dossier', 'document');
-
-  const blockers: string[] = [];
-
-  if (!input.title || input.title.trim() === '') {
-    blockers.push('title is required');
-  }
-  if (!input.sections || input.sections.length === 0) {
-    blockers.push('at least one section is required');
-  }
-  if (!input.narrativeSummary || input.narrativeSummary.trim() === '') {
-    blockers.push('narrative summary is required');
-  }
-
-  if (blockers.length > 0) {
-    emitTraceEvent(
-      'packet_finalization_blocked',
-      'packet',
-      input.packetId,
-      undefined,
-      { blockers },
-    );
-
-    return { success: false, blockers };
-  }
-
-  const totalItems = input.sections.reduce((sum, s) => sum + s.itemIds.length, 0);
-
-  const snapshot: FinalizedSnapshot = {
-    parcelId: input.parcelId,
-    packetId: input.packetId,
-    title: input.title,
-    packetType: input.packetType,
-    status: 'finalized',
-    finalizedBy: input.finalizedBy,
-    finalizedAt: new Date().toISOString(),
-    sectionCount: input.sections.length,
-    totalItems,
-    frozen: true,
-    narrativeSummary: input.narrativeSummary,
-  };
-
-  emitTraceEvent(
-    'packet_finalized',
-    'packet',
-    input.packetId,
-    { status: 'draft' },
-    { status: 'finalized', finalizedBy: input.finalizedBy },
-  );
-
-  return { success: true, blockers: [], snapshot };
+export function finalizePacketModel(_input: FinalizationInput): FinalizationResult {
+  return { success: false, blockers: [serverRequired] };
 }
 
-// ============================================================================
-// Revision
-// ============================================================================
-
-export function checkFinalizedMutability(snapshot: FinalizedSnapshot): MutabilityResult {
-  if (snapshot.frozen && snapshot.status === 'finalized') {
-    return {
-      mutable: false,
-      reason: 'Packet is finalized and frozen. Use revisePacket() to reopen.',
-    };
-  }
-  return { mutable: true };
+export function checkFinalizedMutability(_snapshot: FinalizedSnapshot): MutabilityResult {
+  return { mutable: false, reason: serverRequired };
 }
 
-export function revisePacket(
-  snapshot: FinalizedSnapshot,
-  revisedBy: string,
-  revisionReason: string,
-): FinalizedSnapshot {
-  const revised: FinalizedSnapshot = {
-    ...snapshot,
-    status: 'draft',
-    frozen: false,
-    revisionReason,
-    revisedBy,
-    revisedAt: new Date().toISOString(),
-  };
-
-  emitTraceEvent(
-    'packet_revised',
-    'packet',
-    snapshot.packetId,
-    { status: 'finalized', frozen: true },
-    { status: 'draft', revisionReason, revisedBy },
-  );
-
-  return revised;
+export function revisePacket(_snapshot: FinalizedSnapshot, _revisedBy: string, _revisionReason: string): FinalizedSnapshot {
+  throw new Error(serverRequired);
 }
 
-export function checkSectionDrift(
-  snapshot: FinalizedSnapshot,
-  currentSections: PacketSection[],
-): DriftResult {
-  const currentSectionCount = currentSections.length;
-  const currentTotalItems = currentSections.reduce((s, sec) => s + sec.itemIds.length, 0);
-
-  if (
-    currentSectionCount !== snapshot.sectionCount ||
-    currentTotalItems !== snapshot.totalItems
-  ) {
-    return {
-      drifted: true,
-      reason: 'Packet has undergone material change since finalization.',
-    };
-  }
-
-  return { drifted: false };
+/** Equal item counts cannot establish revision identity. Reload the server's exact snapshot. */
+export function checkSectionDrift(_snapshot: FinalizedSnapshot, _currentSections: PacketSection[]): DriftResult {
+  return { drifted: true, reason: serverRequired };
 }
 
-// ============================================================================
-// Cover Sheet
-// ============================================================================
-
-export function buildCoverSheet(
-  snapshot: FinalizedSnapshot,
-  options?: { enforceWriteLane?: boolean },
-): CoverSheet {
-  if (options?.enforceWriteLane) {
-    assertWriteLane('dossier', 'document');
-  }
-
+/** Unverified presentation only: preserves supplied metadata, never creates a seal or a new time. */
+export function buildCoverSheet(snapshot: FinalizedSnapshot, options?: { enforceWriteLane?: boolean }): CoverSheet {
+  if (options?.enforceWriteLane) throw new Error(serverRequired);
   return {
-    parcelId: snapshot.parcelId,
-    packetId: snapshot.packetId,
-    packetType: snapshot.packetType,
-    title: snapshot.title,
-    readiness: snapshot.status,
-    sectionCount: snapshot.sectionCount,
-    totalItems: snapshot.totalItems,
-    narrativeSummary: snapshot.narrativeSummary,
-    generatedAt: new Date().toISOString(),
+    parcelId: snapshot.parcelId, packetId: snapshot.packetId, packetType: snapshot.packetType,
+    title: snapshot.title, readiness: 'unverified', sectionCount: snapshot.sectionCount,
+    totalItems: snapshot.totalItems, narrativeSummary: snapshot.narrativeSummary,
+    generatedAt: snapshot.finalizedAt,
   };
 }

@@ -31,7 +31,8 @@ public sealed class DossierWorkflowService(TerraFusionDbContext db)
             .Concat(await db.CertificationSteps.Where(x => x.CountyId == county).Select(x => x.TaxYear).Distinct().ToListAsync(ct))
             .Distinct().OrderByDescending(x => x).ToArray();
         var records = await db.DossierWorkflowRecords.AsNoTracking()
-            .Where(x => x.CountyId == county && (!year.HasValue || x.TaxYear == year)).ToListAsync(ct);
+            .Where(x => x.CountyId == county && (!year.HasValue || x.TaxYear == year) &&
+                (x.Kind == DraftKind || x.Kind == "equalization" || x.Kind == "audit")).ToListAsync(ct);
         var visible = records.Where(x => canReadValuations || !NeedsValuationPermission(x)).ToArray();
         return new { countyId = county, taxYears = years,
             studies = studies.Where(x => !year.HasValue || x.TaxYear == year).OrderBy(x => x.StudyId)
@@ -226,7 +227,8 @@ public sealed class DossierWorkflowService(TerraFusionDbContext db)
     }
 
     private async Task<DossierWorkflowRecord> Find(Guid county, Guid id, CancellationToken ct) =>
-        await db.DossierWorkflowRecords.AsNoTracking().SingleOrDefaultAsync(x => x.CountyId == county && x.Id == id, ct) ?? throw Missing();
+        await db.DossierWorkflowRecords.AsNoTracking().SingleOrDefaultAsync(x => x.CountyId == county && x.Id == id &&
+            (x.Kind == DraftKind || x.Kind == "equalization" || x.Kind == "audit"), ct) ?? throw Missing();
 
     private async Task<Appeal> Appeal(Guid county, Guid id, int year, string? parcel, CancellationToken ct) =>
         await db.Appeals.AsNoTracking().SingleOrDefaultAsync(x => x.Id == id && x.CountyId == county &&

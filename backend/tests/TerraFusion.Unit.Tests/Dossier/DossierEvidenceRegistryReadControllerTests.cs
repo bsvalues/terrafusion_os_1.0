@@ -308,6 +308,60 @@ public sealed class DossierEvidenceRegistryReadControllerTests
     problem.StatusCode.Should().Be(StatusCodes.Status500InternalServerError);
   }
 
+  [Theory]
+  [InlineData(1, 1L)]
+  [InlineData(8, 1234567L)]
+  public async Task SqliteEfPersistedUtcReloadPreservesExactTicksAndReturns200(int month, long fractionalTicks)
+  {
+    await using var connection = new SqliteConnection("Data Source=:memory:");
+    await connection.OpenAsync();
+    await using var db = new DataDbContext(new DbContextOptionsBuilder<DataDbContext>()
+        .UseSqlite(connection).Options, Mock.Of<Microsoft.Extensions.Configuration.IConfiguration>());
+    // Real EF persistence, including ordinary prerequisite audits. Do not hand-append a
+    // Z suffix: that exercises SQLite's Local representation, not its normal EF write.
+    var required = new HashSet<string>(StringComparer.Ordinal)
+        { "Counties", "DossierDocuments", "DossierEvidenceItems", "AuditLogs" };
+    var script = db.Database.GenerateCreateScript();
+    var tables = System.Text.RegularExpressions.Regex.Matches(script, "CREATE TABLE \"([^\"]+)\"[\\s\\S]*?;")
+        .Cast<System.Text.RegularExpressions.Match>()
+        .Where(match => required.Contains(match.Groups[1].Value)).ToArray();
+    tables.Select(match => match.Groups[1].Value).Should().OnlyHaveUniqueItems()
+        .And.BeEquivalentTo(required);
+    foreach (var table in tables) await db.Database.ExecuteSqlRawAsync(table.Value);
+    foreach (System.Text.RegularExpressions.Match index in System.Text.RegularExpressions.Regex.Matches(script, "CREATE (?:UNIQUE )?INDEX [^;]+;"))
+    {
+      var target = System.Text.RegularExpressions.Regex.Match(index.Value, "\\bON \"([^\"]+)\"");
+      target.Success.Should().BeTrue();
+      if (required.Contains(target.Groups[1].Value)) await db.Database.ExecuteSqlRawAsync(index.Value);
+    }
+    var expectedUtc = new DateTime(2026, month, 1, 10, 0, 0, DateTimeKind.Utc).AddTicks(fractionalTicks);
+    db.Counties.Add(new County { Id = CountyA, Name = "Benton", State = "WA", FipsCode = "53005" });
+    var evidence = Evidence(CountyA, "P-100", "48484848-4848-4484-8484-484848484848", "2026-01-01T10:00:00Z");
+    evidence.CreatedAt = expectedUtc;
+    db.DossierEvidenceItems.Add(evidence);
+    await db.SaveChangesAsync();
+    db.ChangeTracker.Clear();
+    var reloaded = await db.DossierEvidenceItems.AsNoTracking().SingleAsync();
+    reloaded.CreatedAt.Kind.Should().Be(DateTimeKind.Unspecified);
+    reloaded.CreatedAt.Ticks.Should().Be(expectedUtc.Ticks);
+    var auditCount = await db.AuditLogs.CountAsync();
+    auditCount.Should().Be(2);
+
+    var controller = CreateController(db, CountyA);
+    var response = await controller.GetEvidenceRegistryRead("P-100");
+
+    var content = response.Result.Should().BeOfType<ContentResult>().Subject;
+    (content.StatusCode ?? StatusCodes.Status200OK).Should().Be(StatusCodes.Status200OK);
+    var payload = Payload(response);
+    payload.Results.Should().ContainSingle();
+    payload.Results[0].CreatedAt.Offset.Should().Be(TimeSpan.Zero);
+    payload.Results[0].CreatedAt.UtcDateTime.Ticks.Should().Be(expectedUtc.Ticks);
+    var unchanged = await db.DossierEvidenceItems.AsNoTracking().SingleAsync();
+    unchanged.CreatedAt.Kind.Should().Be(DateTimeKind.Unspecified);
+    unchanged.CreatedAt.Ticks.Should().Be(expectedUtc.Ticks);
+    (await db.AuditLogs.CountAsync()).Should().Be(auditCount);
+  }
+
   [Fact]
   public async Task ForeignOnlyAndNoEvidenceReturnTheSameEmptyShape()
   {
