@@ -17313,7 +17313,7 @@
       "loopId": "LOOP-TERRAFUSION-OWNER-USABLE-PRODUCT-V1",
       "goal": "Launch the current exact candidate in the lab and record the first live Product Reality Matrix from the screen with classified verdicts and derived repair children.",
       "riskClass": "R3",
-      "status": "blocked",
+      "status": "in_progress",
       "dependencies": [
         {
           "id": "WO-TUOP-000",
@@ -17345,6 +17345,13 @@
           "description": "Product Reality Matrix with exact candidate identity, per-capability verdicts from the fixed enum, evidence pointers, and the derived/registered child list."
         }
       ],
+      "evidenceProduced": [
+        {
+          "kind": "file",
+          "location": "docs/brain/evidence/WO-TUOP-001-product-reality-matrix-v1.md",
+          "summary": "First live Product Reality Matrix: desktop PARTIAL, Sentinel FAIL, UX honesty FAIL, Counties HUB honest-unavailable (WAL-routed), suites auth-gated/unobserved; derived WO-TUOP-002."
+        }
+      ],
       "validationGates": [
         {
           "name": "Matrix completeness",
@@ -17373,6 +17380,83 @@
       "provenance": {
         "createdAt": "2026-09-11T16:30:00Z",
         "source": "Issue #1589 owner directive first-execution requirement.",
+        "schemaVersion": "0.1.0"
+      }
+    },
+    {
+      "id": "WO-TUOP-002",
+      "title": "Desktop auth-state honesty and working in-app sign-in",
+      "program": "TerraFusion Owner-Usable Product V1",
+      "goalId": "GOAL-TERRAFUSION-OWNER-USABLE-PRODUCT-V1",
+      "loopId": "LOOP-TERRAFUSION-OWNER-USABLE-PRODUCT-V1",
+      "goal": "Repair the first observed product defect: the unauthenticated desktop silently presents 401-bound surfaces as usable; make auth state honest and prove the in-app sign-in path so authenticated surfaces load real data and Sentinel resolves modules.",
+      "riskClass": "R4",
+      "status": "blocked",
+      "dependencies": [
+        {
+          "id": "WO-TUOP-001",
+          "status": "required",
+          "notes": "Matrix v1 derived this child; effective when the WO-TUOP-001 evidence PR reaches protected main."
+        }
+      ],
+      "allowedSystems": [
+        {
+          "name": "OS shell auth-state presentation, SPA sign-in path and its API wire, Sentinel truthful status, lab candidate redeploy from exact main"
+        }
+      ],
+      "blockedSystems": [
+        {
+          "name": "Schema migrations, GovernmentUsers/PasskeyCredentials data, credential values in evidence, Benton production, external county systems, county data, production promotion, suite redesign, weakening Sentinel"
+        }
+      ],
+      "allowedFiles": [
+        "frontend/apps/os-shell/src/auth/*",
+        "frontend/apps/os-shell/src/components/app-frame/*",
+        "frontend/apps/os-shell/src/Router.tsx",
+        "frontend/apps/os-shell/src/pages/login/*",
+        "frontend/apps/os-shell/src/components/sentinel/*",
+        "ops/*",
+        "docs/brain/evidence/*",
+        "docs/brain/workorders/active/*",
+        "docs/brain/workorders/registry/work-order-registry.seed.json",
+        "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
+        "docs/brain/workorders/programs/terrafusion-owner-usable-product-v1.md",
+        "docs/brain/workorders/goal-loop/COMMAND_TO_PROGRAM_MAP.md"
+      ],
+      "evidenceRequired": [
+        {
+          "kind": "file",
+          "description": "Browser-observed acceptance on the exact redeployed candidate: honest unauthenticated state, successful in-app sign-in, /api/service-registry 200 with modules, Sentinel ModuleLoader OK, one suite surface with real data, session survives reload. Never include credential values."
+        }
+      ],
+      "validationGates": [
+        {
+          "name": "Auth honesty acceptance",
+          "command": "Unauthenticated launch shows no silently-dead affordance; authenticated journey observed in browser on the exact candidate; required checks green",
+          "required": true,
+          "result": "not_run"
+        }
+      ],
+      "stopConditions": [
+        {
+          "type": "authority_wall",
+          "description": "Credentials beyond the provisioned bootstrap operator (SW-03), schema/migration need (SW-02), Benton production or public promotion (SW-01/04), unresolved canon conflict (SW-05)."
+        }
+      ],
+      "nextCandidates": [],
+      "authority": {
+        "mayWrite": true,
+        "mayCommit": true,
+        "mayPush": true,
+        "mayOpenPr": true,
+        "mayMarkReady": true,
+        "mayMerge": true,
+        "mayCleanup": true,
+        "notes": "Issue #1589 mission authority; derived repair child inside recorded TUOP-V1 scope."
+      },
+      "provenance": {
+        "createdAt": "2026-09-11T17:30:00Z",
+        "source": "Derived from WO-TUOP-001 Product Reality Matrix v1 (UX honesty FAIL, Sentinel FAIL root-caused to unauthenticated session).",
         "schemaVersion": "0.1.0"
       }
     }

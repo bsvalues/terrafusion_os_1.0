@@ -2,7 +2,7 @@
 
 | Field | Value |
 | --- | --- |
-| Status | `READY_ON_PROTECTED_MERGE_OF_WO-TUOP-000` |
+| Status | `IN_PROGRESS` — activation merged at `88a4629ea`; matrix v1 recorded at `docs/brain/evidence/WO-TUOP-001-product-reality-matrix-v1.md`; derived child `WO-TUOP-002` registered |
 | Program | TerraFusion Owner-Usable Product V1 |
 | Goal | `GOAL-TERRAFUSION-OWNER-USABLE-PRODUCT-V1` |
 | Loop | `LOOP-TERRAFUSION-OWNER-USABLE-PRODUCT-V1` |
