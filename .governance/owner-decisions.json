@@ -102,6 +102,60 @@
       }
     },
     {
+      "id": "OWNER-TUOP-V1-MISSION-AUTHORITY-20260911",
+      "program": "TerraFusion Owner-Usable Product V1",
+      "goal": "GOAL-TERRAFUSION-OWNER-USABLE-PRODUCT-V1",
+      "loop": "LOOP-TERRAFUSION-OWNER-USABLE-PRODUCT-V1",
+      "work_order": "WO-TUOP-000",
+      "status": "active",
+      "authority_class": "R5-bounded-terrafusion-owner-usable-product-recovery-mission",
+      "effective_base_sha": "cdb20e65338aa1d5eacc1da55f63ecf30e620129",
+      "scope_source": "GitHub Issue #1589, recording the owner directive issued directly on 2026-09-11. The directive authorizes continuous decomposition and execution of TerraFusion Owner-Usable Product V1 through exact child Work Orders, isolated worktrees, branches, PRs, validation, protected merges, lab-internal candidate deployment, browser acceptance on the launched candidate, and automatic continuation between dependency-cleared children without a fresh owner relay for each mechanical child, provided every child only executes the recorded mission and remains inside its hard walls.",
+      "terminal_condition": "TERRAFUSION_OWNER_USABLE_PRODUCT_V1_PASS_OBSERVED_ON_AN_EXACT_LAUNCHED_CANDIDATE",
+      "deadline": null,
+      "authorized_repositories": [
+        "bsvalues/terrafusion_os_1.0",
+        "bsvalues/terrafusion-forge",
+        "bsvalues/terrafusion-atlas",
+        "bsvalues/terrafusion-dais",
+        "bsvalues/terrafusion-dossier",
+        "bsvalues/terrafusion-gpt"
+      ],
+      "wal_coordination_rule": "Washington Assessor Launch V1 remains active and owns the production launch path. TUOP-V1 children touching Counties HUB, county data trust modes, Sync, or the WAL launch path must not duplicate or contradict an open WAL child; where both programs claim the same seam, the WAL child owns the merge and TUOP-V1 consumes its result. TUOP-V1 owns the product-usability recovery seams WAL does not cover, including the four conditional suite repositories for usability repair (not redesign).",
+      "authorized_actions": [
+        "create or refine exact child Work Orders that only decompose Issue #1589 and record their repository, path, contract, environment, evidence, test, review, rollback, and merge reservations",
+        "launch the current exact release candidate inside the personal lab and observe it from the screen to build and continuously refresh the live Product Reality Matrix (VISIBLE, OPENS, REAL DATA, OPERATES, WRITES/PERSISTS, RELOADS, HANDS OFF, PASS) using the PASS/PARTIAL/SHELL_ONLY/WRONG_SURFACE/HONEST_UNAVAILABLE/MISSING/FAIL discipline",
+        "classify observed product defects through Cortex authority resolution, contradiction scan, and canon reconciliation, and derive the exact bounded recovery child for each defect inside this authority",
+        "implement, build, test, review, remediate, and merge exact product-usability repairs through protected branch controls",
+        "deploy the exact accepted candidate to the lab-internal pre-production runtime and run OMEN/agent browser acceptance over the real product journey including persistence, cross-suite handoff, UX honesty, and release identity",
+        "operate isolated branches and worktrees, tests, reviews, remediations, pushes, PRs, required checks, eligible exact-head protected merges, post-merge verification, and automatic continuation between dependency-cleared children",
+        "record capability evidence per surface and mark the program PASS only when every Issue #1589 terminal acceptance criterion is observed on an exact launched candidate"
+      ],
+      "child_work_order_policy": {
+        "fresh_owner_decision_required": false,
+        "exact_child_scope_required": true,
+        "one_work_order_per_pr": true,
+        "isolated_worktree_required": true,
+        "independent_assurance_required": true,
+        "protected_main_and_required_checks_required": true,
+        "rollback_provenance_and_observed_verification_required": true
+      },
+      "hard_walls": [
+        "no external county-system write-back",
+        "no Benton production access; Benton remains outside the personal lab and HERMES must not become Benton production",
+        "no protected county data, credential, secret, or PACS access without exact recorded authorization",
+        "no cross-county disclosure and no silent Benton fallback",
+        "no unsupported capability claims and no fabricated evidence",
+        "no required-control, branch-protection, review, exact-head, or reservation bypass",
+        "no suite redesign beyond product-usability repair",
+        "production release remains the WAL V1 gated path (SW-01/SW-04); lab-internal candidate deployment for browser acceptance is authorized, public production promotion is not"
+      ],
+      "first_execution": "WO-TUOP-001: launch the current exact candidate and produce the first live Product Reality Matrix from the screen, not from source. Not a rebuild.",
+      "morning_process_directive": "The daily deep-dive must not merely report defects: for each finding, check for an existing bounded recovery child and dispatch it, or derive the exact child inside this authority and dispatch it; stop only at a genuine owner authority wall. Morning output becomes product health plus repairs already started plus the single owner decision, if any.",
+      "canon_reconciliation_directive": "docs/brain/canon/current-release.json must be reconciled to the active owner decision set (WAL V1 plus TUOP-V1); owner decisions outrank Brain canon. Authority resolution, contradiction scan, and canon reconciliation precede execution.",
+      "decision_basis": "Owner directive of 2026-09-11: the system was built so the owner does not manage the development process; HERMES owns the plan/dispatch/recovery loop and William makes actual owner decisions. Micro-WO completions without a parent product loop were the defect; this mission is that loop."
+    },
+    {
       "id": "OWNER-FIVE-SUITE-FEDERATED-COMPLETION-20260826",
       "program": "Five-Suite Federated Repository Buildout",
       "goal": "GOAL-FIVE-SUITE-FEDERATED-REPOSITORIES",
@@ -180,9 +234,18 @@
           "protected_suite_terminal_receipt_sha256": "4aa0b8ca01e0d89d327457e75ade323fe1c28651373361c42baa85a2e84ecb40"
         },
         "terminal_suite_mains": {
-          "forge": { "merge": "d7aff95257f29e0d1a7d301703d1cdc744f7690e", "tree": "dac66c3bd0bf0cc6822e010b71801a9b8b1b9482" },
-          "atlas": { "merge": "708fc5c31988405f9ca2cba7ebea7bb9d1fec3a6", "tree": "d986cc31da0077adb3a133bd1fa6d44bb2a79acc" },
-          "dais": { "merge": "ad5d1a36534ac8ce94024b3bc66ecf976d5c55bb", "tree": "37c97cf6d723d4d673b5c4ae2ee495f3bd086959" },
+          "forge": {
+            "merge": "d7aff95257f29e0d1a7d301703d1cdc744f7690e",
+            "tree": "dac66c3bd0bf0cc6822e010b71801a9b8b1b9482"
+          },
+          "atlas": {
+            "merge": "708fc5c31988405f9ca2cba7ebea7bb9d1fec3a6",
+            "tree": "d986cc31da0077adb3a133bd1fa6d44bb2a79acc"
+          },
+          "dais": {
+            "merge": "ad5d1a36534ac8ce94024b3bc66ecf976d5c55bb",
+            "tree": "37c97cf6d723d4d673b5c4ae2ee495f3bd086959"
+          },
           "dossier": {
             "merge": "4a109acef12804f89c894f8f139034bf975c0811",
             "tree": "eedad9c4e8b5c3f30d33f5e58a2856b896f7ae86",

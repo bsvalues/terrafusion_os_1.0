@@ -37,6 +37,32 @@ are compatibility aliases for read-only routing or loop control; they are not se
 Executable repository commands such as `corepack pnpm brain` and `corepack pnpm tf` are outside this
 operator-directive grammar and retain their own help surfaces.
 
+### /goal terrafusion-owner-usable-product-v1
+
+```
+Goal:     Make TerraFusion OS, Counties HUB, Workbench, Forge, Atlas, Dais, Dossier, GPT and
+          TerraCanon an owner-usable product in the launched application.
+Program:  TerraFusion Owner-Usable Product V1
+File:     programs/terrafusion-owner-usable-product-v1.md
+Success:  TERRAFUSION_OWNER_USABLE_PRODUCT_V1: PASS observed on an exact launched candidate via the
+          live Product Reality Matrix (VISIBLE - OPENS - REAL DATA - OPERATES - WRITES/PERSISTS -
+          RELOADS - HANDS OFF - PASS) across every surface, with browser-proven release identity.
+```
+
+**Current state:** Issue #1589 is recorded as `OWNER-TUOP-V1-MISSION-AUTHORITY-20260911`.
+`WO-TUOP-000` activation completes on protected merge; `WO-TUOP-001` (first live Product Reality
+Matrix from the screen) is the single dependency-cleared first execution. Repair children are
+derived from observed matrix verdicts under the mission child policy.
+
+**Allowed loop modes:** `once`, `program`, `merge-watch`, `evidence`, `recovery`, `discovery`
+
+**Blocked:** Benton production access; external county-system write-back; protected
+data/credentials; cross-county disclosure; silent Benton fallback; unsupported capability claims;
+suite redesign; fabricated evidence; production promotion outside the WAL V1 gated path; work
+outside Issue #1589.
+
+---
+
 ### /goal washington-assessor-launch-v1
 
 ```

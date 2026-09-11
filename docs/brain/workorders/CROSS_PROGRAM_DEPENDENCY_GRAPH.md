@@ -112,6 +112,7 @@ FIVE-SUITE FEDERATED REPOSITORIES
 | Program | Completed | Next recorded node | Dependency | State |
 |---------|-----------|--------------------|------------|-------|
 | washington-assessor-launch-v1 | 000 complete on protected merge | 001, 002, 003 plus bounded reservation-safe 004 | protected activation merge, exact child reservations, external read-only boundary; 007 gates production | ACTIVE |
+| terrafusion-owner-usable-product-v1 | 000 activation completes on protected merge | 001 first live Product Reality Matrix; derived repair-child waves | WAL seam coordination (WAL child owns shared-seam merges); Benton production wall; terminal browser-proven PASS on exact candidate | ACTIVE |
 | five-suite-federated-repository-buildout | Complete through `WO-SR-MISSION-COMPLETION` | no automatic successor | New work requires another applicable objective and authority; Forge WO-SR-007 remains outside this mission | CLOSED |
 | p8-management-dashboard | 001-006 | no automatic successor | authenticated verification needs SW-03; county release needs SW-04/SW-10 | BASELINE COMPLETE |
 | benton-demo | 002, 003A-C, CONFIG-001 | 003D live smoke | SW-01 + SW-04 | PARKED |

@@ -3,7 +3,7 @@
 **Work Order:** `WO-GOAL-LOOP-MASTER-PLAYBOOK-001`
 **Status:** Active execution graph
 **Authority:** TerraFusion Brain / Work Order Operator
-**Last Updated:** 2026-08-27
+**Last Updated:** 2026-09-11
 **Base:** `origin/main` at `b5a02db1758deda45d84c0ec99adb8f31d328c7b` or later
 
 ---
@@ -136,6 +136,31 @@ disclosure, silent Benton fallback, unsupported capability claims, failed exact-
 proof, conflicting higher canon, or a consequential objective outside Issue #1485.
 
 Program definition: [washington-assessor-launch-v1.md](washington-assessor-launch-v1.md).
+
+---
+
+## Active Program - TerraFusion Owner-Usable Product V1
+
+| Field | Value |
+| --- | --- |
+| Goal | `GOAL-TERRAFUSION-OWNER-USABLE-PRODUCT-V1` |
+| Loop | `LOOP-TERRAFUSION-OWNER-USABLE-PRODUCT-V1` |
+| Program slug | `terrafusion-owner-usable-product-v1` |
+| Authority | Issue #1589 / `OWNER-TUOP-V1-MISSION-AUTHORITY-20260911` |
+| Status | ACTIVE; `WO-TUOP-000` completes on protected merge of the activation PR |
+| Current | Canonical activation, canon reconciliation of `current-release.json`, and registration of the first observation child |
+| Next | `WO-TUOP-001` first live Product Reality Matrix, then derived repair-child waves |
+| Terminal | `TERRAFUSION_OWNER_USABLE_PRODUCT_V1: PASS` observed on an exact launched candidate; accepted candidate feeds WAL production gates |
+
+This is a mission-level product-recovery program. The owner outcome is a coherent, usable product:
+HERMES continuously inspects, repairs, integrates, deploys and browser-verifies TerraFusion OS,
+Counties HUB, Property Workbench, TerraForge, TerraAtlas, TerraDais, TerraDossier, TerraGPT and
+TerraCanon until the intended assessor workflows work in the launched application. Tests, PRs,
+routes, source ownership, contracts and backend functionality are supporting evidence only.
+Program file: [programs/terrafusion-owner-usable-product-v1.md](terrafusion-owner-usable-product-v1.md).
+
+WAL coordination: where TUOP-V1 and WAL V1 claim the same seam, the WAL child owns the merge and
+TUOP-V1 consumes its result; production promotion remains the WAL gated path (SW-01/SW-04).
 
 ---
 
