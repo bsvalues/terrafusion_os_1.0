@@ -1,8 +1,8 @@
 # Work Order Program Queue (Current State)
 
 **Version:** 1.0
-**Date:** 2026-09-01
-**Authority:** `OWNER-WAL-V1-MISSION-AUTHORITY-20260827` plus `OWNER-TF-STANDING-OPERATOR-AUTHORITY`
+**Date:** 2026-09-11
+**Authority:** `OWNER-WAL-V1-MISSION-AUTHORITY-20260827` plus `OWNER-TUOP-V1-MISSION-AUTHORITY-20260911` plus `OWNER-TF-STANDING-OPERATOR-AUTHORITY`
 **Classification:** Operator Doctrine — live cross-program queue snapshot
 
 > This file is the **current-state** view. Structural program definitions live in
@@ -54,6 +54,30 @@ blocked until `WO-WAL-007` accepts the exact release candidate; no individual PR
 mission boundary.
 
 ---
+
+## Active TerraFusion Owner-Usable Product V1 Goal
+
+TerraFusion Owner-Usable Product V1 is active under Issue #1589 and
+`OWNER-TUOP-V1-MISSION-AUTHORITY-20260911`. `WO-TUOP-000` (mission activation) completes on
+protected merge of the activation PR. `WO-TUOP-001` — the first live Product Reality Matrix,
+observed from the screen on the exact launched candidate, never from source — is the single
+dependency-cleared first execution. Repair children are derived from matrix verdicts under the
+mission child policy; they are registered, never floating.
+
+Mission outcome: TerraFusion OS, Counties HUB, Property Workbench, TerraForge, TerraAtlas,
+TerraDais, TerraDossier, TerraGPT and TerraCanon work as an owner-usable product in the launched
+application. Terminal receipt: `TERRAFUSION_OWNER_USABLE_PRODUCT_V1: PASS` observed on an exact
+deployed candidate; the accepted candidate then feeds the WAL V1 production gates.
+
+WAL coordination: WAL V1 remains active and owns the production launch path. Where both programs
+claim the same seam (Counties HUB, county data trust modes, Sync, WAL launch path), the WAL child
+owns the merge and TUOP-V1 consumes its result. TUOP-V1 owns the product-usability recovery seams
+WAL does not cover, including usability repair (not redesign) in the suite repositories.
+
+Loop discipline: HERMES owns the loop — launch exact candidate, exercise actual product, classify
+first real defect, derive exact bounded child, implement/review/merge, deploy exact candidate,
+browser acceptance, continue. No owner relay between children; stop only at a genuine authority
+wall.
 
 ## Completed Five-Suite Goal
 

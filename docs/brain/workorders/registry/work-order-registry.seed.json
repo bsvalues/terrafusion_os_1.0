@@ -1,8 +1,8 @@
 {
   "schemaVersion": "0.1.0",
-  "generatedBy": "WO-WAL-000I durable upload ledger release reconciliation",
-  "generatedAt": "2026-09-01T23:42:25Z",
-  "description": "The completed Five-Suite mission remains terminal. Washington Assessor Launch V1 is the active owner mission; protected 002F is complete and this reconciliation releases exactly upload-specific durable admission-ledger child 002G on protected merge while broad parents 001-004 remain open, WAL-005/006 remain blocked and live-source 003 continuation remains authority-blocked.",
+  "generatedBy": "WO-TUOP-000 TerraFusion Owner-Usable Product V1 mission activation",
+  "generatedAt": "2026-09-11T16:30:00Z",
+  "description": "The completed Five-Suite mission remains terminal. Washington Assessor Launch V1 remains the active production-launch mission. TerraFusion Owner-Usable Product V1 is registered as the active product-recovery mission under Issue #1589: WO-TUOP-000 activation completes on protected merge and releases exactly WO-TUOP-001, the first live Product Reality Matrix; repair children are derived from observed matrix verdicts.",
   "records": [
     {
       "id": "WO-WAL-003E",
@@ -17224,6 +17224,155 @@
       "provenance": {
         "createdAt": "2026-08-27T17:00:00Z",
         "source": "WO-WAL-009 and OWNER-WAL-V1-MISSION-AUTHORITY-20260827.",
+        "schemaVersion": "0.1.0"
+      }
+    },
+    {
+      "id": "WO-TUOP-000",
+      "title": "TerraFusion Owner-Usable Product V1 Mission Activation",
+      "program": "TerraFusion Owner-Usable Product V1",
+      "goalId": "GOAL-TERRAFUSION-OWNER-USABLE-PRODUCT-V1",
+      "loopId": "LOOP-TERRAFUSION-OWNER-USABLE-PRODUCT-V1",
+      "goal": "Canonize Issue #1589 product-recovery mission authority, register the program, and reconcile current-release.json to the active owner decision set.",
+      "riskClass": "R3",
+      "status": "pr_open",
+      "dependencies": [],
+      "allowedSystems": [
+        {
+          "name": "Governance-only TUOP owner-decision, program, queue, registry, canon and goal-loop activation"
+        }
+      ],
+      "blockedSystems": [
+        {
+          "name": "Product/runtime mutation, external county systems, protected data, credentials, Benton production and public production promotion"
+        }
+      ],
+      "allowedFiles": [
+        ".governance/owner-decisions.json",
+        "docs/brain/canon/current-release.json",
+        "docs/brain/workorders/CANON_INDEX.md",
+        "docs/brain/workorders/CROSS_PROGRAM_DEPENDENCY_GRAPH.md",
+        "docs/brain/workorders/PROGRAM_PLAYBOOK_REGISTER.md",
+        "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
+        "docs/brain/workorders/active/WO-TUOP-000-owner-usable-product-mission-activation.md",
+        "docs/brain/workorders/active/WO-TUOP-001-product-reality-matrix-first-live-observation.md",
+        "docs/brain/workorders/goal-loop/COMMAND_TO_PROGRAM_MAP.md",
+        "docs/brain/workorders/goal-loop/GOAL_COMMANDS.md",
+        "docs/brain/workorders/programs/ACTIVE_PROGRAM_PLAYBOOK.md",
+        "docs/brain/workorders/programs/terrafusion-owner-usable-product-v1.md",
+        "docs/brain/workorders/registry/work-order-registry.seed.json"
+      ],
+      "evidenceRequired": [
+        {
+          "kind": "file",
+          "description": "Issue #1589 authority, TUOP program registration, reconciled release canon, preserved WAL and Five-Suite states, and governance validation."
+        }
+      ],
+      "validationGates": [
+        {
+          "name": "TUOP activation governance",
+          "command": "JSON parse, work-order schema/query, canon, governance, formatting and exact changed-path checks",
+          "required": true,
+          "result": "not_run"
+        }
+      ],
+      "stopConditions": [
+        {
+          "type": "authority_wall",
+          "description": "Stop on any Issue #1589 hard wall, conflicting higher canon, failed required control or substantive unresolved review."
+        }
+      ],
+      "nextCandidates": [
+        {
+          "id": "WO-TUOP-001",
+          "reason": "First live Product Reality Matrix is the single dependency-cleared first execution of the mission.",
+          "riskClass": "R3"
+        }
+      ],
+      "authority": {
+        "mayWrite": true,
+        "mayCommit": true,
+        "mayPush": true,
+        "mayOpenPr": true,
+        "mayMarkReady": true,
+        "mayMerge": true,
+        "mayCleanup": true,
+        "notes": "Issue #1589 mission authority plus standing protected-PR lifecycle authority; activation is governance-only."
+      },
+      "provenance": {
+        "createdAt": "2026-09-11T16:30:00Z",
+        "source": "Issue #1589 owner directive based on cdb20e65338aa1d5eacc1da55f63ecf30e620129.",
+        "schemaVersion": "0.1.0"
+      }
+    },
+    {
+      "id": "WO-TUOP-001",
+      "title": "First Live Product Reality Matrix",
+      "program": "TerraFusion Owner-Usable Product V1",
+      "goalId": "GOAL-TERRAFUSION-OWNER-USABLE-PRODUCT-V1",
+      "loopId": "LOOP-TERRAFUSION-OWNER-USABLE-PRODUCT-V1",
+      "goal": "Launch the current exact candidate in the lab and record the first live Product Reality Matrix from the screen with classified verdicts and derived repair children.",
+      "riskClass": "R3",
+      "status": "blocked",
+      "dependencies": [
+        {
+          "id": "WO-TUOP-000",
+          "status": "required",
+          "notes": "Effective when the TUOP activation reaches protected main."
+        }
+      ],
+      "allowedSystems": [
+        {
+          "name": "Lab-internal launch and browser observation of the exact existing candidate; evidence recording; registry registration of derived children"
+        }
+      ],
+      "blockedSystems": [
+        {
+          "name": "Product/runtime code mutation inside this WO, external county systems, protected data, credentials, Benton production and public production promotion"
+        }
+      ],
+      "allowedFiles": [
+        "docs/brain/evidence/WO-TUOP-001-product-reality-matrix-v1.md",
+        "docs/brain/workorders/registry/work-order-registry.seed.json",
+        "docs/brain/workorders/active/*",
+        "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
+        "docs/brain/workorders/programs/terrafusion-owner-usable-product-v1.md",
+        "docs/brain/workorders/goal-loop/COMMAND_TO_PROGRAM_MAP.md"
+      ],
+      "evidenceRequired": [
+        {
+          "kind": "file",
+          "description": "Product Reality Matrix with exact candidate identity, per-capability verdicts from the fixed enum, evidence pointers, and the derived/registered child list."
+        }
+      ],
+      "validationGates": [
+        {
+          "name": "Matrix completeness",
+          "command": "Every capability row carries a fixed-enum verdict and evidence pointer; every non-PASS maps to exactly one disposition; derived children registered",
+          "required": true,
+          "result": "not_run"
+        }
+      ],
+      "stopConditions": [
+        {
+          "type": "authority_wall",
+          "description": "Stop only at a genuine owner authority wall (Issue #1589 hard walls, Benton production, protected data, conflicting higher canon)."
+        }
+      ],
+      "nextCandidates": [],
+      "authority": {
+        "mayWrite": true,
+        "mayCommit": true,
+        "mayPush": true,
+        "mayOpenPr": true,
+        "mayMarkReady": true,
+        "mayMerge": true,
+        "mayCleanup": true,
+        "notes": "Issue #1589 mission authority; observation and evidence only, no product mutation in this WO."
+      },
+      "provenance": {
+        "createdAt": "2026-09-11T16:30:00Z",
+        "source": "Issue #1589 owner directive first-execution requirement.",
         "schemaVersion": "0.1.0"
       }
     }

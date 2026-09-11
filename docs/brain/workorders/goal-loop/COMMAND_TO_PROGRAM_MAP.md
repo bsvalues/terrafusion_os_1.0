@@ -1,7 +1,7 @@
 # Command-to-Program Map
 
 **Authority:** WO-WOE-010
-**Last Updated:** 2026-08-27
+**Last Updated:** 2026-09-11
 **Classification:** Operator Doctrine — current state snapshot
 
 This file maps every `/goal` command or command alias to its program, current next WO, blockers,
@@ -15,6 +15,7 @@ resolves.
 | Command / alias | Program | Next state | Blocked? | Allowed /loop modes |
 |-----------------|---------|---------|----------|---------------------|
 | `washington-assessor-launch-v1` | Washington Assessor Launch V1 | 000 implementation complete on PR head; canonical/effective on protected merge; 001/002/003 plus bounded 004 clear next | NO - owner mission authority recorded; exact reservations still required | `once`, `program`, `merge-watch`, `evidence`, `recovery`, `discovery` |
+| `terrafusion-owner-usable-product-v1` | TerraFusion Owner-Usable Product V1 | 000 activation completes on protected merge; 001 first live Product Reality Matrix clears next | NO - owner mission authority recorded (Issue #1589); exact reservations still required | `once`, `program`, `merge-watch`, `evidence`, `recovery`, `discovery` |
 | `codex-operator-autonomy` | Codex Operator Autonomy | CLOSED at WO-OP-AUTO-012 | YES - governing autonomy baseline merged | `once`, `evidence` |
 | `codex-operator-playbook` | Codex Operator Work Order Playbook | CLOSED at WO-CODEX-OP-009 | YES - governance capability merged | `once`, `evidence` |
 | `goal-loop-master-playbook` | Master Goal/Loop Playbook Governance | CLOSED at WO-GOAL-LOOP-MASTER-PLAYBOOK-001 | YES - governing baseline merged | `once`, `evidence` |
