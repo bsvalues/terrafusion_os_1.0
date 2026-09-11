@@ -98,8 +98,12 @@ Only after this PASS should WAL V1 carry the accepted candidate through its real
 | --- | --- | --- |
 | `WO-TUOP-000` | Canonicalize Issue #1589 mission authority, register this program, reconcile `docs/brain/canon/current-release.json` to the active owner decision set | owner directive |
 | `WO-TUOP-001` | Launch the current exact candidate in the lab and produce the first live Product Reality Matrix from the screen; classify every non-PASS verdict; derive the exact bounded repair children for defects inside this authority | 000 protected merge |
-| `WO-TUOP-0xx` (derived) | One exact bounded product-usability repair child per classified defect, created under `OWNER-TUOP-V1-MISSION-AUTHORITY-20260911` child policy — never floating, always registered | 001 matrix verdicts |
-| `WO-TUOP-099` | Terminal acceptance: full-journey browser proof on the exact deployed candidate; record `TERRAFUSION_OWNER_USABLE_PRODUCT_V1: PASS`; hand the accepted candidate identity to WAL V1 | all repair children |
+| `WO-TUOP-002` | Desktop auth-state honesty + working in-app sign-in — executed INSIDE the assembled product | 001 evidence merge + **004** (owner sequencing directive) |
+| `WO-TUOP-003` | Shell-lineage canon drift fix: stale root `package.json#main` → electron; record supersession | ready now |
+| `WO-TUOP-004` | Canonical release assembly + native-host release-proof + **Runtime Dependency Closure Matrix** (zero-UNKNOWN gate) | 003 |
+| `WO-TUOP-005` | Launcher reconciliation: `LAUNCH_TERRAFUSION_OS.ps1` must consume `platform.json`/env contract (no deprecated :5000, correct API path, no foreign home paths, no blanket dotnet kill) | ready now |
+| further derived children | One exact bounded product-usability repair child per classified defect, created under `OWNER-TUOP-V1-MISSION-AUTHORITY-20260911` child policy — never floating, always registered | matrix verdicts |
+| `WO-TUOP-099` | Terminal acceptance: full-journey product-surface proof through the assembled product on the exact deployed release; record `TERRAFUSION_OWNER_USABLE_PRODUCT_V1: PASS`; hand the accepted candidate identity to WAL V1 | all repair children |
 
 Child WOs are derived from observed defects (the matrix), not invented from source archaeology. The morning deep-dive feeds the same loop: for each finding, dispatch an existing bounded recovery child or derive the exact child inside this authority; stop only at a genuine owner authority wall.
 
@@ -146,6 +150,35 @@ TERRAFUSION RELEASE ASSEMBLY
 Outside the product runtime, required for a CONNECTED production county: `County network → TerraFusion Edge/Sync →
 TerraFusion-controlled county DB → TerraFusion API/stamp → product`. HERMES does not connect protected Benton
 production; the launch carries the same contracts and exercises them with lawful lab data or truthfully shows `unavailable`.
+
+## "Launch TerraFusion" = staged dependency closure (owner definition, 2026-09-11)
+
+```text
+CANONICAL RELEASE ASSEMBLY (exact identity · native host · OS UI bundle)
+  → RUNTIME DEPENDENCY CLOSURE (API · configuration · migrations/schema · DB · auth/session/RBAC ·
+      county+tenant context · service/module registry · required hosted services · realtime plumbing ·
+      persistent storage · Pilot · Trace)
+  → DATA PLANE (TF DB truth · provenance/trust · Sync · quarantine/reconciliation · Edge posture)
+  → PRODUCT LAYERS (L1 OS Shell · L2 Home Scene · Counties HUB · L3 five suites · L4 Workbench · L5 applications)
+  → CROSS-CUTTING PRODUCT (TerraPilot · TerraTrace · TerraCanon · enabled AI runtime)
+  → OPERABILITY (restart · persistence · monitoring/logging · backup/restore · upgrade · rollback)
+```
+
+Only after closure may the native product launch and user journeys begin. **WO-TUOP-004 must produce
+the Runtime Dependency Closure Matrix** — every runtime dependency classified exactly once
+(`REQUIRED_CORE / REQUIRED_WHEN_ENABLED / EXTERNAL_BOUNDARY / OPTIONAL / SUPERSEDED /
+QUARANTINED-HISTORICAL / UNKNOWN`); the assembly cannot pass while any UNKNOWN remains. Classify from
+active-consumer evidence, never from platform-contract mentions alone (worked example: Redis is
+"Optional - graceful degradation" in Program.cs with NoOp fallback and only TerraFusion.AI consumers
+→ OPTIONAL/UNKNOWN pending necessity evidence, despite platform.json declaring its port).
+
+## Work ordering (owner directive, 2026-09-11)
+
+**003 + 005** (remove known launch-lineage drift: stale `package.json#main`; launcher contradicting
+platform.json) → **004** (settle native host via release-proof; build the authoritative release
+assembly; runtime dependency closure) → **then 002** (test and repair auth INSIDE the assembled
+product) → then drive Layer 1 through Layer 5 journeys against the assembly. Login repair must not
+race ahead of the release assembly.
 
 ## Hard walls (mandatory, unchanged)
 

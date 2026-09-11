@@ -17397,6 +17397,11 @@
           "id": "WO-TUOP-001",
           "status": "required",
           "notes": "Matrix v1 derived this child; effective when the WO-TUOP-001 evidence PR reaches protected main."
+        },
+        {
+          "id": "WO-TUOP-004",
+          "status": "required",
+          "notes": "Owner directive 2026-09-11: auth must be tested and repaired INSIDE the canonical assembled product with a settled runtime dependency closure, not raced ahead of it in a runtime configuration that is not the shippable product."
         }
       ],
       "allowedSystems": [
@@ -17532,7 +17537,7 @@
       "program": "TerraFusion Owner-Usable Product V1",
       "goalId": "GOAL-TERRAFUSION-OWNER-USABLE-PRODUCT-V1",
       "loopId": "LOOP-TERRAFUSION-OWNER-USABLE-PRODUCT-V1",
-      "goal": "Produce the TERRAFUSION RELEASE ASSEMBLY for the lab and SETTLE native-host authority through actual build/package/release evidence (WPF Terrafusion.Shell is the surviving candidate - prove or replace it; do not assume it): dotnet publish the API, build the frontend into native-shell/ui/dist, build/package the native host, assemble as one reproducible release with exact revision identity surfaced in-product (TerraCanon + shell), launch it on HERMES via a contract-consumed launcher, and observe planes 0-2 of the launch model. The repository does not currently prove API + UI bundle + native host are produced together as one installable product; this WO closes that gap. Discharges Matrix v1 release-identity FAIL and is the prerequisite for proving product layers THROUGH the assembled product instead of around it.",
+      "goal": "Produce the TERRAFUSION RELEASE ASSEMBLY for the lab and SETTLE native-host authority through actual build/package/release evidence (WPF Terrafusion.Shell is the surviving candidate - prove or replace it; do not assume it): dotnet publish the API, build the frontend into native-shell/ui/dist, build/package the native host, assemble as one reproducible release with exact revision identity surfaced in-product (TerraCanon + shell), launch it on HERMES via a contract-consumed launcher, and observe planes 0-2 of the launch model. The repository does not currently prove API + UI bundle + native host are produced together as one installable product; this WO closes that gap. Discharges Matrix v1 release-identity FAIL and is the prerequisite for proving product layers THROUGH the assembled product instead of around it. MANDATORY GATE: before recording canonical-release-assembly-established this WO must produce a Runtime Dependency Closure Matrix from current source AND the real launched assembly - every runtime dependency classified exactly once as REQUIRED_CORE / REQUIRED_WHEN_ENABLED / EXTERNAL_BOUNDARY / OPTIONAL / SUPERSEDED / QUARANTINED-HISTORICAL / UNKNOWN, with the assembly unable to pass while any UNKNOWN remains. Not a giant audit; a release manifest.",
       "riskClass": "R4",
       "status": "blocked",
       "dependencies": [
@@ -17566,13 +17571,23 @@
       "evidenceRequired": [
         {
           "kind": "file",
-          "description": "Release assembly receipt: exact git revision, host build output, API publish manifest, ui/dist hash, launch transcript, and shell-proven release identity observation (WebView2 host rendering the assembled bundle, verified against the recorded revision)."
+          "description": "Release assembly receipt: exact git revision, host build output, API publish manifest, ui/dist hash, launch transcript, and product-proven release identity observation (native host rendering the assembled bundle, verified against the recorded revision)."
+        },
+        {
+          "kind": "file",
+          "description": "Runtime Dependency Closure Matrix (docs/brain/evidence/WO-TUOP-004-runtime-dependency-closure.md): every runtime dependency from current source and the launched assembly classified exactly once (REQUIRED_CORE / REQUIRED_WHEN_ENABLED / EXTERNAL_BOUNDARY / OPTIONAL / SUPERSEDED / QUARANTINED-HISTORICAL / UNKNOWN); zero UNKNOWN at pass; each REQUIRED_CORE row carries live-launch evidence."
         }
       ],
       "validationGates": [
         {
           "name": "Assembly reproducibility",
-          "command": "Rebuild from the same revision yields the same ui/dist and publish manifest hashes; shell loads the assembled bundle and reports the exact revision",
+          "command": "Rebuild from the same revision yields the same ui/dist and publish manifest hashes; native host loads the assembled bundle and reports the exact revision",
+          "required": true,
+          "result": "not_run"
+        },
+        {
+          "name": "Runtime dependency closure",
+          "command": "Closure matrix complete: every discovered runtime mechanism (hosted services, hubs, registries, providers, storage, data plane, Pilot/Trace, AI, operations) carries exactly one classification with evidence; zero UNKNOWN; no SUPERSEDED component launches",
           "required": true,
           "result": "not_run"
         }
