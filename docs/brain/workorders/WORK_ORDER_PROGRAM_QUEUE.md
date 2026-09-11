@@ -60,8 +60,11 @@ mission boundary.
 TerraFusion Owner-Usable Product V1 is active under Issue #1589 and
 `OWNER-TUOP-V1-MISSION-AUTHORITY-20260911`. `WO-TUOP-000` (mission activation) completes on
 protected merge of the activation PR. `WO-TUOP-001` — the first live Product Reality Matrix,
-observed from the screen on the exact launched candidate, never from source — is the single
-dependency-cleared first execution. Repair children are derived from matrix verdicts under the
+observed from the screen on the exact launched candidate, never from source — is in progress:
+matrix v1 is recorded (desktop PARTIAL; Sentinel FAIL and UX honesty FAIL root-caused to the
+unauthenticated session; Counties HUB honest-unavailable and WAL-routed; suites auth-gated),
+and the derived repair child `WO-TUOP-002` (auth-state honesty + working in-app sign-in) is
+registered, blocked on the 001 evidence merge. Repair children are derived from matrix verdicts under the
 mission child policy; they are registered, never floating.
 
 Mission outcome: TerraFusion OS, Counties HUB, Property Workbench, TerraForge, TerraAtlas,
