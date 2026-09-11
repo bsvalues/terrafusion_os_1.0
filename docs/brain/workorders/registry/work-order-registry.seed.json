@@ -15434,6 +15434,92 @@
       }
     },
     {
+      "id": "WO-WAL-001F",
+      "title": "Public-Source Connector Truth",
+      "program": "Washington Assessor Launch V1",
+      "goalId": "GOAL-WASHINGTON-ASSESSOR-LAUNCH-V1",
+      "loopId": "LOOP-WASHINGTON-ASSESSOR-LAUNCH-V1",
+      "goal": "Report public-source connector health only from an observed bounded probe and refuse an unimplemented read instead of returning it as an empty success.",
+      "riskClass": "R3",
+      "status": "ready",
+      "dependencies": [],
+      "allowedSystems": [
+        {
+          "name": "Observed fail-closed health, refused connect and refused fetch for the bounded census-acs public-source connector, with offline focused xunit proof"
+        },
+        {
+          "name": "Contract reservation wal.public-source.connector-health-truth.v1"
+        },
+        {
+          "name": "Environment reservation offline-connector-health-proof-with-closed-loopback-sink-only"
+        }
+      ],
+      "blockedSystems": [
+        {
+          "name": "Network acquisition authorization, source registration or DI wiring, credential or secret access, county or protected data, PACS, CAMA, GIS or Sync access, external write, other connector files, schema or capability claims, runtime population, deployment and production"
+        }
+      ],
+      "allowedFiles": [
+        "docs/brain/workorders/active/WO-WAL-001F-public-source-connector-truth.md",
+        "docs/brain/workorders/evidence/WO-WAL-001F-PUBLIC-SOURCE-CONNECTOR-TRUTH.md",
+        "docs/brain/workorders/WORK_ORDER_PROGRAM_QUEUE.md",
+        "docs/brain/workorders/programs/washington-assessor-launch-v1.md",
+        "docs/brain/workorders/registry/work-order-registry.seed.json",
+        "backend/src/TerraFusion.Data/Connectors/CensusConnector.cs",
+        "backend/tests/TerraFusion.Unit.Tests/Connectors/CensusConnectorTruthTests.cs"
+      ],
+      "contractReservations": [
+        "wal.public-source.connector-health-truth.v1"
+      ],
+      "environmentReservations": [
+        "offline-connector-health-proof-with-closed-loopback-sink-only"
+      ],
+      "dispatchGuard": {
+        "type": "protected_ref_head",
+        "ref": "refs/remotes/origin/main"
+      },
+      "evidenceRequired": [
+        {
+          "kind": "command",
+          "description": "Focused offline tests prove that health is false without a key, false for an unreachable source, that connect does not claim connection, that fetch faults instead of returning an empty collection, and that Census key-rejection pages are detected."
+        }
+      ],
+      "validationGates": [
+        {
+          "name": "WAL public-source connector truth",
+          "command": "dotnet test backend/tests/TerraFusion.Unit.Tests/TerraFusion.Unit.Tests.csproj --filter FullyQualifiedName~CensusConnectorTruthTests && node docs/brain/workorders/tools/wo-query.mjs --json > /dev/null && git diff --check && exact changed-path audit",
+          "required": true,
+          "result": "not_run"
+        }
+      ],
+      "stopConditions": [
+        {
+          "type": "scope_boundary",
+          "description": "Stop before acquisition, DI registration, credential change, any connector other than census-acs, and any file, contract or environment outside the exact reservations."
+        },
+        {
+          "type": "protected_data",
+          "description": "No county, PACS, CAMA, GIS, Sync, credential, secret or protected data access; tests are offline and use a closed loopback port as the unreachable sink."
+        }
+      ],
+      "nextCandidates": [],
+      "authority": {
+        "mayWrite": true,
+        "mayCommit": true,
+        "mayPush": true,
+        "mayOpenPr": true,
+        "mayMarkReady": true,
+        "mayMerge": true,
+        "mayCleanup": true,
+        "notes": "Bounded child of the open WO-WAL-001 public-baseline parent under Issue #1485, which requires an explicit source-unavailable state and denies fabricated readiness. It claims no acquisition or registration capability."
+      },
+      "provenance": {
+        "createdAt": "2026-09-11T00:00:00Z",
+        "source": "Observed on protected main cdb20e65338aa1d5eacc1da55f63ecf30e620129: the census-acs connector could not return false from TestConnectionAsync, claimed connection without a round trip and returned an empty collection for an unimplemented read, while no DI registration exposes the IDataConnector family. Parent WO-WAL-001 remains open under OWNER-WAL-V1-MISSION-AUTHORITY-20260827.",
+        "schemaVersion": "0.1.0"
+      }
+    },
+    {
       "id": "WO-WAL-003",
       "title": "Read-Only Multi-County TerraFusion Sync",
       "program": "Washington Assessor Launch V1",

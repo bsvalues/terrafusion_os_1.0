@@ -1,5 +1,11 @@
 // TFT-022 — US Census ACS Connector
 // Canon-sync connector for Census Bureau American Community Survey data.
+//
+// WO-WAL-001F — public-source connector truth.
+// Health for this connector is OBSERVED, never assumed: TestConnectionAsync performs one bounded
+// probe against the configured source and fails closed on a missing key, a key rejection, a
+// non-2xx response, a non-array payload, or an unreachable source. FetchAsync fails closed rather
+// than returning an empty collection that a caller could read as "the source has no rows".
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -12,6 +18,15 @@ namespace TerraFusion.Data.Connectors;
 /// </summary>
 public sealed class CensusConnector : IDataConnector
 {
+    /// <summary>
+    /// Bounded probe client. Census answers a rejected key with a 302 to an
+    /// <c>invalid_key.html</c> page and a keyless request with <c>missing_key.html</c>, so the probe
+    /// inspects the final URI and the payload shape instead of trusting the status code alone.
+    /// </summary>
+    private static readonly HttpClient ProbeClient = new() { Timeout = TimeSpan.FromSeconds(6) };
+
+    private const string ProbePath = "/2023/acs/acs5?get=NAME&for=state:53";
+
     private readonly ILogger<CensusConnector> _logger;
     private readonly string _apiKey;
     private readonly string _baseUrl;
@@ -38,11 +53,21 @@ public sealed class CensusConnector : IDataConnector
     }
 
     /// <inheritdoc />
-    public Task ConnectAsync(CancellationToken ct = default)
+    public async Task ConnectAsync(CancellationToken ct = default)
     {
-        _logger.LogInformation("Connecting to Census ACS API");
-        _connected = true;
-        return Task.CompletedTask;
+        var observed = await TestConnectionAsync(ct);
+        _connected = observed;
+
+        if (observed)
+        {
+            _logger.LogInformation("Census ACS source verified reachable for {BaseUrl}", _baseUrl);
+        }
+        else
+        {
+            _logger.LogWarning(
+                "Census ACS connect refused: source not observed reachable for {BaseUrl}; connector stays disconnected",
+                _baseUrl);
+        }
     }
 
     /// <inheritdoc />
@@ -53,22 +78,94 @@ public sealed class CensusConnector : IDataConnector
         return Task.CompletedTask;
     }
 
+    /// <summary>
+    /// Observed health. Returns true only when a bounded live probe of the configured source
+    /// returned a Census data payload. Any missing configuration, rejection, transport failure or
+    /// unexpected payload reports the source unavailable.
+    /// </summary>
     /// <inheritdoc />
-    public Task<bool> TestConnectionAsync(CancellationToken ct = default)
+    public async Task<bool> TestConnectionAsync(CancellationToken ct = default)
     {
-        _logger.LogDebug("Testing Census ACS connection");
-        return Task.FromResult(!string.IsNullOrWhiteSpace(_baseUrl));
+        if (string.IsNullOrWhiteSpace(_apiKey))
+        {
+            _logger.LogWarning(
+                "Census ACS connector has no API key (Connectors:Census:ApiKey): source is unavailable, not healthy");
+            return false;
+        }
+
+        if (string.IsNullOrWhiteSpace(_baseUrl))
+        {
+            _logger.LogWarning("Census ACS connector has no base URL: source is unavailable, not healthy");
+            return false;
+        }
+
+        var probeUrl = _baseUrl.TrimEnd('/') + ProbePath + "&key=" + Uri.EscapeDataString(_apiKey);
+
+        try
+        {
+            using var response = await ProbeClient.GetAsync(probeUrl, HttpCompletionOption.ResponseHeadersRead, ct);
+            var finalUri = response.RequestMessage?.RequestUri?.AbsoluteUri ?? string.Empty;
+
+            if (IsSourceRejectionUri(finalUri))
+            {
+                _logger.LogWarning(
+                    "Census ACS probe was redirected to a key-rejection page ({Uri}): source is unavailable",
+                    finalUri);
+                return false;
+            }
+
+            if (!response.IsSuccessStatusCode)
+            {
+                _logger.LogWarning(
+                    "Census ACS probe returned status {Status}: source is unavailable",
+                    (int)response.StatusCode);
+                return false;
+            }
+
+            var payload = await response.Content.ReadAsStringAsync(ct);
+            var observed = !string.IsNullOrWhiteSpace(payload)
+                           && payload.TrimStart().StartsWith("[", StringComparison.Ordinal);
+
+            if (!observed)
+            {
+                _logger.LogWarning(
+                    "Census ACS probe returned a non-array payload: source is unavailable, not healthy");
+            }
+
+            return observed;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Census ACS probe could not reach the source: source is unavailable");
+            return false;
+        }
     }
 
+    /// <summary>
+    /// True when a response URI is one of the Census key-rejection pages, which are served with a
+    /// success status and therefore cannot be distinguished by status code alone.
+    /// </summary>
+    public static bool IsSourceRejectionUri(string? uri) =>
+        !string.IsNullOrWhiteSpace(uri)
+        && (uri.Contains("invalid_key", StringComparison.OrdinalIgnoreCase)
+            || uri.Contains("missing_key", StringComparison.OrdinalIgnoreCase));
+
+    /// <summary>
+    /// Fails closed. This connector has no implemented acquisition path, so it faults instead of
+    /// returning an empty collection that a caller could present as a successful read.
+    /// </summary>
     /// <inheritdoc />
     public Task<IReadOnlyList<Dictionary<string, object?>>> FetchAsync(
         ConnectorQuery query, CancellationToken ct = default)
     {
-        _logger.LogInformation("Census fetch: entity={Entity}, filter={Filter}",
-            query.EntityName, query.Filter);
-        IReadOnlyList<Dictionary<string, object?>> empty =
-            Array.Empty<Dictionary<string, object?>>();
-        return Task.FromResult(empty);
+        _logger.LogWarning(
+            "Census ACS fetch is not implemented for entity={Entity}: failing closed instead of reporting an empty success",
+            query.EntityName);
+
+        return Task.FromException<IReadOnlyList<Dictionary<string, object?>>>(
+            new NotSupportedException(
+                "census-acs connector does not implement FetchAsync: no rows were read from the source. "
+                + "An empty result must not be presented as acquired public data."));
     }
 
     /// <inheritdoc />
